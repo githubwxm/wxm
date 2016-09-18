@@ -1,0 +1,16 @@
+项目依赖
+<dependency>
+	<groupId>com.framework</groupId>
+	<artifactId>framework-common</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+</dependency>
+
+修改applicationContext.xml
+com.framework.common.ext.spring.config.DBPlaceholderConfigurer 的属性appName为唯一值,通常是当前项目名
+
+修改spring_datasource.xml中关于数据库的配置
+
+修改spring_client.xml spring_rpc.xml   如果项目中暂时没有用到soa相关的内容这两个文件内容为空
+
+修改spring_servlet.xml中的context:component-scan 包扫描设置,需要过滤mybatis已扫描的配置(spring_datasource.xml)
+

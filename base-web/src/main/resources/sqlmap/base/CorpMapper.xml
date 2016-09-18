@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.all580.base.hub.dao.auth.CorpMapper" >
+  <resultMap id="BaseResultMap" type="com.all580.base.hub.model.auth.CorpModel" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="client_id" property="clientId" jdbcType="VARCHAR" />
+    <result column="secret" property="secret" jdbcType="VARCHAR" />
+    <result column="state" property="state" jdbcType="BIT" />
+    <result column="created_time" property="createdTime" jdbcType="TIMESTAMP" />
+    <result column="updated_time" property="updatedTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, name, client_id, secret, state, created_time, updated_time
+  </sql>
+  <select id="selectCorpModelById" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from auth_corp
+    where id = #{value}
+  </select>
+  <delete id="deleteCorpModelById" parameterType="java.lang.Integer" >
+    delete from auth_corp
+    where id = #{value}
+  </delete>
+  <insert id="insertCorpModel" parameterType="com.all580.base.hub.model.auth.CorpModel" >
+    insert into auth_corp
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="clientId != null" >
+        client_id,
+      </if>
+      <if test="secret != null" >
+        secret,
+      </if>
+      <if test="state != null" >
+        state,
+      </if>
+      <if test="createdTime != null" >
+        created_time,
+      </if>
+      <if test="updatedTime != null" >
+        updated_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="clientId != null" >
+        #{clientId,jdbcType=VARCHAR},
+      </if>
+      <if test="secret != null" >
+        #{secret,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null" >
+        #{state,jdbcType=BIT},
+      </if>
+      <if test="createdTime != null" >
+        #{createdTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedTime != null" >
+        #{updatedTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateCorpModelById" parameterType="com.all580.base.hub.model.auth.CorpModel" >
+    update auth_corp
+    <set >
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="clientId != null" >
+        client_id = #{clientId,jdbcType=VARCHAR},
+      </if>
+      <if test="secret != null" >
+        secret = #{secret,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null" >
+        state = #{state,jdbcType=BIT},
+      </if>
+      <if test="createdTime != null" >
+        created_time = #{createdTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedTime != null" >
+        updated_time = #{updatedTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectCorpModel" resultMap="BaseResultMap" parameterType="com.all580.base.hub.model.auth.CorpModel" >
+    select
+    <include refid="Base_Column_List" />
+     from auth_corp
+    <where >
+      <if test="id != null" >
+        AND id=#{id}
+      </if>
+      <if test="name != null" >
+        AND name=#{name}
+      </if>
+      <if test="clientId != null" >
+        AND client_id=#{clientId}
+      </if>
+      <if test="secret != null" >
+        AND secret=#{secret}
+      </if>
+      <if test="state != null" >
+        AND state=#{state}
+      </if>
+      <if test="createdTime != null" >
+        AND created_time=#{createdTime}
+      </if>
+      <if test="updatedTime != null" >
+        AND updated_time=#{updatedTime}
+      </if>
+    </where>
+  </select>
+</mapper>
