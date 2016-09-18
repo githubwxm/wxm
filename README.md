@@ -52,4 +52,22 @@
   > 4. **启动服务**：`cd ~/apache-tomcat-7.0.70/ && bin/startup.sh`
   
 ## 第四章 基础工程骨架搭建
-
+> #### 工程导入编译及部署
+> 1. **下载工程**：`git clone http://code.all580.cn:8080/team-core-plateform/base.git`
+> 2. **导入IDE**：idea或eclipse导入maven工程
+> 3. **编译打包**： `mvn clean package`
+> 4. **部署**：
+  >  - rpc版直接解压缩打包target文件夹内的tar.gz文件并将解压缩的文件夹拷贝到相应文件夹内。windows系统执行start.bat文件，*inux系统（包括mac osx）执行start.sh。如单机多实例需要修改conf/dubbo.properties内dubbo.protocol.port参数为系统未占用端口号。
+  > - web版按常规web项目方式部署到web容器，如单机多实例需要修改web容器端为系统未占用端口号。
+> #### 工程结构说明
+> 1. **base-api**：
+  > src - main - java：接口相关代码文件夹
+    > com.all580.base.api.service：rpc服务接口
+    > com.all580.base.api.model：rpc数据模型
+    > com.all580.base.api.exception：可能出现的业务异常
+  > pom.xml：maven工程配置文件
+> 2. **base-rpc**：
+  > src - main - java：源码文件夹
+  > src - main - resources：配置文件夹
+  > src - test - java：测试文件夹
+  > src - test - resources：配置测试文件夹
