@@ -4,8 +4,8 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
 	http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
 	
-	<bean id="demoService" class="com.hentre.all580.demo.service.DemoServiceImpl" />
+	<bean id="demoService" class="com.all580.base.service.DemoServiceImpl" />
 	
-	<dubbo:service interface="com.hentre.all580.demo.api.service.DemoService" ref="demoService" />
+	<dubbo:service interface="com.all580.base.api.service.DemoService" ref="demoService" />
 	
 </beans>

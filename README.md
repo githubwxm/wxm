@@ -1,6 +1,4 @@
-# 畅旅小米秘书v3.0版系统环境搭建操作手册
-
--------
+]
 
 ## 第一章 概要
 > #### 编写目的：
@@ -69,5 +67,7 @@
 > 2. **base-rpc**：
   > src - main - java：源码文件夹
   > src - main - resources：配置文件夹
-  > src - test - java：测试文件夹
+  > src - main - assembly：打包配置
+  > src - test - java：单元测试文件夹
   > src - test - resources：配置测试文件夹
+  > pom.xml：maven工程配置文件

@@ -28,6 +28,10 @@
 			<artifactId>dubbo</artifactId>
 			<version>${dubbo_version}</version>
 		</dependency>
+		<dependency>
+			<groupId>com.github.sgroschupf</groupId>
+			<artifactId>zkclient</artifactId>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
