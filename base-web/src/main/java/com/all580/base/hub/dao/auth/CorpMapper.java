@@ -13,4 +13,5 @@ public interface CorpMapper {
     int updateCorpModelById(CorpModel record);
 
     List<CorpModel> selectCorpModel(CorpModel record);
+    int test();
 }
