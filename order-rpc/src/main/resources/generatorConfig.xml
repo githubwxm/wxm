@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+    <classPathEntry
+            location="E:\mvn_repository\mysql\mysql-connector-java\5.1.11\mysql-connector-java-5.1.11.jar"/>
+    <context id="my" targetRuntime="MyBatis3">
+        <!-- 抑制警告 -->
+        <property name="suppressTypeWarnings" value="true" />
+        <!-- generate entity时，生成serialVersionUID -->
+        <plugin type="org.mybatis.generator.plugins.SerializablePlugin" />
+        <commentGenerator>
+            <property name="suppressDate" value="false"/>
+            <property name="suppressAllComments" value="false"/>
+        </commentGenerator>
+
+        <jdbcConnection driverClass="com.mysql.jdbc.Driver"
+                        connectionURL="jdbc:mysql://121.42.44.170:3306/all580_order?characterEncoding=utf8" userId="root"
+                        password="abcd1234!@#"/>
+
+        <javaModelGenerator targetPackage="com.all580.order.entity"
+                            targetProject="E:\Gary\working\3.0\base\order-rpc\src\main\java">
+            <property name="enableSubPackages" value="true"/>
+            <property name="trimStrings" value="true"/>
+        </javaModelGenerator>
+
+        <sqlMapGenerator targetPackage="sqlmap.order"
+                         targetProject="E:\Gary\working\3.0\base\order-rpc\src\main\resources">
+            <property name="enableSubPackages" value="true"/>
+        </sqlMapGenerator>
+
+        <javaClientGenerator targetPackage="com.all580.order.dao"
+                             targetProject="E:\Gary\working\3.0\base\order-rpc\src\main\java" type="XMLMAPPER">
+            <property name="enableSubPackages" value="true"/>
+        </javaClientGenerator>
+
+        <table tableName="t_order_item_account" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false" domainObjectName="OrderItemAccount"/>
+        <table tableName="t_clearance_washed_serial" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false" domainObjectName="ClearanceWashedSerial"/>
+        <table tableName="t_order" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false" domainObjectName="Order"/>
+        <table tableName="t_order_clearance_detail" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false" domainObjectName="OrderClearanceDetail"/>
+        <table tableName="t_order_clearance_serial" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false" domainObjectName="OrderClearanceSerial"/>
+        <table tableName="t_order_item" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false" domainObjectName="OrderItem"/>
+        <table tableName="t_order_item_detail" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false" domainObjectName="OrderItemDetail"/>
+        <table tableName="t_refund_account" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false" domainObjectName="RefundAccount"/>
+        <table tableName="t_refund_order" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false" domainObjectName="RefundOrder"/>
+        <table tableName="t_refund_serial" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false" domainObjectName="RefundSerial"/>
+        <table tableName="t_shipping" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false" domainObjectName="Shipping"/>
+        <table tableName="t_visitor" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false" domainObjectName="Visitor"/>
+
+    </context>
+</generatorConfiguration>
