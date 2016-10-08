@@ -157,6 +157,7 @@ public class EpServiceImple implements EpService {
 
     /**
      * 获取企业状态（包括上级企业）
+     *0-未初始化1-正常\n2-已冻结\n3-已停用
      * @param id
      * @return
      */
