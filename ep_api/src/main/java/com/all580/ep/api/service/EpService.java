@@ -17,5 +17,11 @@ public interface EpService {
 
     Result<List<Ep>> all(Map params);
     Result<PlatformEp> validate(Map params);
+    /**
+     * 获取企业状态（包括上级企业）
+     *0-未初始化1-正常\n2-已冻结\n3-已停用
+     * @param id
+     * @return
+     */
     Result<Integer> getEpStatus(Integer id);
 }
