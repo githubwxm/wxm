@@ -87,7 +87,29 @@ public class EpServiceImple implements EpService {
         //TODO  Insert t_capital(添加通道费率)
         return result;
     }
-
+    @Override
+    public Result<Integer>  selectPlatformId(Integer epId){
+        Result<Integer> result = new Result<Integer>();
+        if(epId==null){
+            result.setFail();
+            result.setError(Result.PARAMS_ERROR, "参数错误");
+        }
+        Integer core_ep_id=null;
+        Map map = new HashMap();
+        map.put("id",epId);
+        Result<List<Ep>>  list= select(map);
+        if(null!=list){
+            if(!list.isEmpty()){
+                core_ep_id =  list.get().get(0).getCore_ep_id();
+                if(null==core_ep_id){
+                    core_ep_id=epId;
+                }
+                result.put(core_ep_id);
+                result.setSuccess();
+            }
+        }
+        return result;
+    }
     /**
      * 查询企业接口，列表单个
      * @param map
