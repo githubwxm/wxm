@@ -24,4 +24,5 @@ public interface EpService {
      * @return
      */
     Result<Integer> getEpStatus(Integer id);
+    public Result<Integer>  selectPlatformId(Integer epId);
 }
