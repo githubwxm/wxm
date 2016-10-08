@@ -14,7 +14,7 @@ public interface CoreEpPaymentConfService {
     * @param
     * @return
      */
-   Result<Integer> create(Map params);
+    Result<Integer> create(Map params);
 
     /**
      * 添加收款方式配置
