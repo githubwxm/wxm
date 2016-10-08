@@ -9,6 +9,13 @@ import java.util.Map;
 
 public interface CoreEpPaymentConfService {
 
-   int create(Map params);
-   CoreEpPaymentConf findById(Integer core_ep_id);
+   /**
+    *
+    * @param 初始余额配置
+    * @return
+     */
+   Result<Integer> create(Map params);
+   Result<Integer> add(Map map);
+   CoreEpPaymentConf findById( Integer core_ep_id);
+   List<CoreEpPaymentConf> isExists(Map map);
 }

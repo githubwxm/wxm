@@ -9,8 +9,18 @@ public class CoreEpPaymentConf implements Serializable{
     private static final long serialVersionUID = -7563342961804255874L;
     private Integer id ;//
     private Integer  core_ep_id ;//平台商企业id',
-    private Integer payment_type ;//支付接口类型\n1-余额\n2-支付宝扫码\n3-微信扫码\n4-银联NOCARD',
+    private Integer payment_type ;//支付接口类型\n111-余额\n112-支付宝扫码\n113-微信扫码\n114-银联NOCARD',
     private Integer conf_data ;//支付配置数据',
+    private Integer status;//  1111 正常1112停用
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
+
 
     public Integer getId() {
         return id;
