@@ -24,5 +24,11 @@ public interface EpService {
      * @return
      */
     Result<Integer> getEpStatus(Integer id);
-    public Result<Integer>  selectPlatformId(Integer epId);
+
+    /**
+     * 根据企业id查询平台商id
+     * @param epId
+     * @return
+     */
+    Result<Integer>  selectPlatformId(Integer epId);
 }
