@@ -287,14 +287,12 @@ public class EpServiceImple implements EpService {
         }, new ValidRule[]{new ValidRule.NotNull()});
 //
 //        // 校验整数
-//        rules.put(new String[]{
-//                "items.product_sub_id", // 订单子产品ID
-//                "items.plan_id", // 计划ID
-//                "items.days", // 天数：景点固定1
-//                "items.quantity", // 订票数量
-//                "ep_id", // 订票企业ID
-//                "user_id" // 订票用户ID
-//        }, new ValidRule[]{new ValidRule.Digits()});
+        rules.put(new String[]{
+                "link_phone", // 企业联系人电话
+                "province", // 企业省
+                "city", // 市
+                "area", // 区
+        }, new ValidRule[]{new ValidRule.Digits()});
         return rules;
     }
     private Map<String[], ValidRule[]> generateCreateStatusValidate() {
