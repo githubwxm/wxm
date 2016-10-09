@@ -1,6 +1,6 @@
 package com.all580.order.service;
 
-import com.all580.order.api.service.OrderService;
+import com.all580.order.api.service.BookingOrderService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -16,13 +16,13 @@ import javax.annotation.Resource;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:META-INF/spring/*.xml"})
-public class OrderServiceTest {
+public class BookingOrderServiceTest {
     @Resource
-    private OrderService orderService;
+    private BookingOrderService bookingOrderService;
 
     @Test
     public void createTest() {
-        System.out.println(orderService);
-        orderService.create(null);
+        System.out.println(bookingOrderService);
+        bookingOrderService.create(null);
     }
 }

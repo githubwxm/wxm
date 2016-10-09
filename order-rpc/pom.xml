@@ -30,6 +30,16 @@
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>
+            <groupId>com.all580</groupId>
+            <artifactId>product-api</artifactId>
+            <version>3.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.all580</groupId>
+            <artifactId>ep_api</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+        <dependency>
             <groupId>com.framework</groupId>
             <artifactId>framework-common</artifactId>
         </dependency>

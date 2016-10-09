@@ -7,10 +7,10 @@ import java.util.Map;
 /**
  * @author zhouxianjun(Alone)
  * @ClassName:
- * @Description: 订单服务
+ * @Description: 预定服务
  * @date 2016/9/27 8:52
  */
-public interface OrderService {
+public interface BookingOrderService {
     /**
      * 创建订单
      * @param params
@@ -38,25 +38,4 @@ public interface OrderService {
      * @return
      */
     Result<?> resendTicket(Map params);
-
-    /**
-     * 取消订单
-     * @param params
-     * @return
-     */
-    Result<?> cancel(Map params);
-
-    /**
-     * 退订申请
-     * @param params
-     * @return
-     */
-    Result<?> refundApply(Map params);
-
-    /**
-     * 退订审核(通过/驳回)
-     * @param params
-     * @return
-     */
-    Result<?> refundAudit(Map params);
 }
