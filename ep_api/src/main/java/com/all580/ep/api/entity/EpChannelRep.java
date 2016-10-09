@@ -1,6 +1,7 @@
 package com.all580.ep.api.entity;
 
 /**
+ * 通道管理显示对象
  * Created by Administrator on 2016/10/9 0009.
  */
 public class EpChannelRep {

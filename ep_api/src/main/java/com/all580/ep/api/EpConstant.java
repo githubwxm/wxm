@@ -11,7 +11,7 @@ public class EpConstant {
         public static final Integer   SELLER=10003;//销售商
     }
     public static class EpStatus{//企业状态
-        public static final Integer  UNINITIAL =100;//未初始化
+        public static final Integer  UNINITIAL =100;//初始化
         public static final Integer  ACTIVE =101;//激活
         public static final Integer  FREEZE=102;//冻结
         public static final Integer STOP=103;//停用
