@@ -25,41 +25,42 @@
         <!--<result column="group_id" property="group_id" jdbcType="INTEGER"/>-->
         <!--<result column="group_name" property="group_name" jdbcType="VARCHAR"/>-->
     <!--</resultMap>-->
-    <sql id="Base_Column_List">
-        id,name,en_name,ep_type,linkman,link_phone,address,code,license,
-        logo_pic,status,access_id,access_key,creator_ep_id,core_ep_id,
-        add_time,status_bak,province,city,area,group_id,group_name
-    </sql>
+    <!--<sql id="Base_Column_List">-->
+        <!--id,name,en_name,ep_type,linkman,link_phone,address,code,license,-->
+        <!--logo_pic,status,access_id,access_key,creator_ep_id,core_ep_id,-->
+        <!--add_time,status_bak,province,city,area,group_id,group_name,param.name as status_name-->
+    <!--</sql>-->
     <sql id="ep_list_where">
         <if test="id != null">
-            and `id`=#{id}
+            and ep.`id`=#{id}
         </if>
         <if test="name != null">
           <!--  and name like  CONCAT('%',#{name},'%')-->
-            and name =  #{name}
+            and ep.name =  #{name}
         </if>
         <if test="ep_type != null">
-            and ep_type=#{ep_type}
+            and ep.ep_type=#{ep_type}
         </if>
         <if test="status != null">
-            and status=#{status}
+            and ep.status=#{status}
         </if>
         <if test="province != null">
-            and province=#{province}
+            and ep.province=#{province}
         </if>
         <if test="city != null">
-            and city=#{city}
+            and ep.city=#{city}
         </if>
         <if test="link_phone != null">
-            and link_phone=#{link_phone}
+            and ep.link_phone=#{link_phone}
         </if>
         <if test="access_id != null">
-            and access_id = #{access_id}
+            and ep.access_id = #{access_id}
         </if>
 
     </sql>
     <select id="select" resultType="com.all580.ep.api.entity.Ep">
-       select  <include refid="Base_Column_List"/>  from t_ep
+       select  ep.*,param.`name` as status_name  from
+        t_ep  ep left JOIN t_ep_param param on ep.`status` = param.id
         where
         1=1
        <include refid="ep_list_where"/>
@@ -78,20 +79,23 @@
     <select id="all"  resultType="com.all580.ep.api.entity.Ep">
        select * from t_ep where  core_ep_id=#{core_ep_id};
     </select>
-    <!--<update id="updateStatus">-->
-        <!--update t_ep set status_bak=status,status=#{status} where id=#{id};-->
-    <!--</update>-->
+    <update id="updateStatus">
+        update t_ep set status_bak=status,status=#{status} where id=#{id}
+        <if test="statusActive != null">
+            and status=#{statusActive}
+        </if>
+    </update>
     <!--<update id="update">-->
         <!--update t_ep set core_ep_id=#{epId} where id=#{epId};-->
     <!--</update>-->
-    <!--<insert id="create">-->
-        <!--INSERT INTO `t_ep`(name,en_name,ep_type,linkman,link_phone,address,code,license,logo_pic,status,access_id,-->
-       <!--access_key,creator_ep_id,core_ep_id,status_bak,province,city,area,group_id,group_name)-->
-       <!--VALUES (#{name}, #{en_name}, #{ep_type}, #{linkman}, #{link_phone}, #{address}, #{code}, #{license},-->
-      <!--#{logo_pic}, #{status}, #{access_id}, #{access_key}, #{creator_ep_id}, #{core_ep_id}, #{status_bak},-->
-      <!--#{province}, #{city}, #{area}, #{group_id}, #{group_name});-->
-        <!--<selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">-->
-            <!--SELECT LAST_INSERT_ID();-->
-        <!--</selectKey>-->
-    <!--</insert>-->
+    <insert id="create">
+        INSERT INTO `t_ep`(name,en_name,ep_type,linkman,link_phone,address,code,license,logo_pic,status,access_id,
+       access_key,creator_ep_id,core_ep_id,status_bak,province,city,area,group_id,group_name)
+       VALUES (#{name}, #{en_name}, #{ep_type}, #{linkman}, #{link_phone}, #{address}, #{code}, #{license},
+      #{logo_pic}, #{status}, #{access_id}, #{access_key}, #{creator_ep_id}, #{core_ep_id}, #{status_bak},
+      #{province}, #{city}, #{area}, #{group_id}, #{group_name});
+        <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID();
+        </selectKey>
+    </insert>
 </mapper>

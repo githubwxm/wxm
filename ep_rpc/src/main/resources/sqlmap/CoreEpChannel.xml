@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.all580.ep.dao.CoreEpAccessMapper">
-    <!--<resultMap id="BaseResultMap" type="com.all580.ep.entity.Ep">-->
+<mapper namespace="com.all580.ep.dao.CoreEpChannelMapper">
+    <!--<resultMap id="BaseResultMap" type="com.all580.ep.api.entity.Ep">-->
         <!--<id column="id" property="id" jdbcType="INTEGER"/>-->
         <!--<id column="name" property="name" jdbcType="VARCHAR"/>-->
     <!--</resultMap>-->
@@ -14,8 +14,29 @@
         <!--</if>-->
     <!--</select>-->
 
-    <!--<insert id="create" parameterType="com.all580.ep.entity.CoreEpChannel">-->
-       <!--insert into t_core_ep_access(access_id ,access_key,link)-->
-       <!--values(#{access_id} ,#{access_key},#{link});-->
-    <!--</insert>-->
+    <insert id="create" parameterType="com.all580.ep.api.entity.CoreEpChannel">
+       insert into t_core_ep_channel(supplier_core_ep_id ,seller_core_ep_id,rate)
+       values(#{supplier_core_ep_id} ,#{seller_core_ep_id},#{rate});
+    </insert>
+
+    <update id="update">
+        update t_core_ep_channel set rate=#{rate} where `id`=#{id};
+    </update>
+    <delete id="cancel">
+          delete from t_core_ep_channel where `id`=#{id};
+    </delete>
+
+    <select id="select" resultType="com.all580.ep.api.entity.EpChannelRep">
+        select * from (
+        select id,
+        (select `name` from t_ep where id=supplier_core_ep_id  ) as supplier_name ,
+        (select link_phone from t_ep where id=supplier_core_ep_id) as supplier_phone ,
+        (select `name` from t_ep where id =seller_core_ep_id)   as seller_name ,
+        (select link_phone from t_ep where id =seller_core_ep_id)   as seller_phone ,
+        truncate(rate/100,2) as rate from t_core_ep_channel ) f
+        where 1=1
+        <if test="supplier_name != null">
+            and f.`supplier_name` like '%${supplier_name}%'
+        </if>
+    </select>
 </mapper>
