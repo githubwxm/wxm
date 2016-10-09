@@ -6,7 +6,9 @@ package com.all580.ep.api;
 public class EpConstant {
     public static class EpType{//企业类型
         public static final Integer  CHANGLV=10000;//畅旅
-        public static final Integer   PLATFORM=1001;//平台商A
+        public static final Integer   PLATFORM=10001;//平台商A
+        public static final Integer   SUPPLIER=10002;//供应商
+        public static final Integer   SELLER=10003;//销售商
     }
     public static class EpStatus{//企业状态
         public static final Integer  UNINITIAL =100;//未初始化

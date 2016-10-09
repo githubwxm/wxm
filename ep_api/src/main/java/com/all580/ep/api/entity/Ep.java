@@ -10,7 +10,7 @@ public class Ep implements Serializable{
     private static final long serialVersionUID = -2032438614881917537L;
 
     public Ep(String name, String en_name, String linkman, String link_phone, String address, String code,
-              String license, String logo_pic, Integer province, Integer city, Integer area) {
+              String license, String logo_pic, Integer province, Integer city, Integer area,String status_name) {
         this.name = name;
         this.en_name = en_name;
         this.linkman = linkman;
@@ -22,10 +22,12 @@ public class Ep implements Serializable{
         this.province = province;
         this.city = city;
         this.area = area;
+        this.status_name=status_name;
     }
     public Ep(){
 
     }
+    private String status_name;
     private Integer id ;
     private String name; // 企业名称
     private String en_name  ;//企业英文名',
@@ -48,6 +50,14 @@ public class Ep implements Serializable{
     private Integer area  ;//区',
     private Integer   group_id  ;//组ID',
     private String group_name  ;//组名称'
+
+    public String getStatus_name() {
+        return status_name;
+    }
+
+    public void setStatus_name(String status_name) {
+        this.status_name = status_name;
+    }
 
     public Integer getId() {
         return id;
