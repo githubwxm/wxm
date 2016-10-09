@@ -19,9 +19,17 @@ public class CoreEpAccessServiceImple implements CoreEpAccessService {
     private CoreEpAccessMapper coreEpAccessMapper;
 
     @Override
-    public Result<?> create(Map map) {
-        coreEpAccessMapper.create(map);
-        return null;
+    public Result<Integer> create(Map map) {
+        Result<Integer> result = new Result<Integer>();
+        try {
+            result.put( coreEpAccessMapper.create(map));
+            result.setSuccess();
+        } catch (Exception e) {
+            result.setFail();
+            result.setError(Result.DB_FAIL, "数据库查询出错。出错原因：***************");
+        }
+        return result;
+
     }
 
     @Override
