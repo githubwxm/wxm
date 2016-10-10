@@ -10,7 +10,7 @@ public class Ep implements Serializable{
     private static final long serialVersionUID = -2032438614881917537L;
 
     public Ep(String name, String en_name, String linkman, String link_phone, String address, String code,
-              String license, String logo_pic, Integer province, Integer city, Integer area) {
+              String license, String logo_pic, Integer province, Integer city, Integer area,String status_name) {
         this.name = name;
         this.en_name = en_name;
         this.linkman = linkman;
@@ -22,21 +22,23 @@ public class Ep implements Serializable{
         this.province = province;
         this.city = city;
         this.area = area;
+        this.status_name=status_name;
     }
     public Ep(){
 
     }
+    private String status_name;
     private Integer id ;
     private String name; // 企业名称
     private String en_name  ;//企业英文名',
-    private Integer ep_type  ;//11-畅旅平台商 12-平台商A 13-平台商B 14-平台商C\n21-供应商 22-叶子供应商\n31-销售商 32-自营商 33-OTA 34-叶子销售商',
+    private Integer ep_type  ;//1001-畅旅平台商 1002-平台商A 1003-平台商B 1004-平台商C1021-供应商 1022-叶子供应商1031-销售商 1032-自营商 1033-OTA 1034-叶子销售商
     private String linkman  ;//联系人',
     private String link_phone  ;//联系电话',
     private String address  ;//地址',
     private String code  ;//企业组织机构代码',
     private String license  ;//营业执照',
     private String logo_pic  ;//企业logo',
-    private Integer status  ;//1-正常\n2-已冻结\n3-已停用',
+    private Integer status  ;//100初始化101-正常\n102-已冻结\n103-已停用',
     private String access_id  ;//运营平台接口访问标识',
     private String access_key  ;//运营平台接口访问密钥',
     private Integer creator_ep_id  ;//上级企业',
@@ -48,6 +50,14 @@ public class Ep implements Serializable{
     private Integer area  ;//区',
     private Integer   group_id  ;//组ID',
     private String group_name  ;//组名称'
+
+    public String getStatus_name() {
+        return status_name;
+    }
+
+    public void setStatus_name(String status_name) {
+        this.status_name = status_name;
+    }
 
     public Integer getId() {
         return id;

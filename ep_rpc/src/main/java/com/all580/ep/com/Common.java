@@ -8,6 +8,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by Administrator on 2016/9/29 0029.
@@ -18,10 +20,10 @@ public class Common {
             'U', 'V', 'W', 'X', 'Y', 'Z', '2', '3', '4', '5', '6', '7', '8',
             '9' };
     public static String getAccessId(){
-        return getRandom(12);
+        return System.currentTimeMillis()+getRandom(8);
     }
     public static String getAccessKey(){
-        return getRandom(24);
+        return System.currentTimeMillis()+getRandom(14);
     }
 
     /**
@@ -37,6 +39,33 @@ public class Common {
             s.append(CHAR_32[((int) (Math.random() * 1000000)) % CHAR_32.length]);
         }
         return s.toString();
+    }
+    /**
+     * 正则差找字符串
+     *
+     * @param regmach
+     * @param code
+     * @return String
+     */
+    public static String matcher(String code, String regmach) {
+        Matcher matcher = Pattern.compile(regmach).matcher(code);
+        if (matcher.find()) {
+            return matcher.group(1);
+        }
+        return "";
+    }
+    /**
+     * 字符串是否为数字
+     *
+     * @param key
+     * @return
+     */
+    public static boolean isTrue(String key, String grep) {
+        if(null==key){
+            return false;
+        }
+        Pattern pattern = Pattern.compile(grep);
+        return pattern.matcher(key).matches();
     }
 
     /**
@@ -69,5 +98,41 @@ public class Common {
             }
         }
         return returnMap;
+    }
+
+    /**
+     * Map 转对象
+     * @param type
+     * @param map
+     * @return
+     * @throws IntrospectionException
+     * @throws IllegalAccessException
+     * @throws InstantiationException
+     * @throws InvocationTargetException
+     */
+    public static Object convertMap(Class type, Map map)
+            throws IntrospectionException, IllegalAccessException,
+            InstantiationException, InvocationTargetException {
+        BeanInfo beanInfo = Introspector.getBeanInfo(type); // 获取类属性
+        Object obj = type.newInstance(); // 创建 JavaBean 对象
+
+        // 给 JavaBean 对象的属性赋值
+        PropertyDescriptor[] propertyDescriptors = beanInfo
+                .getPropertyDescriptors();
+        for (int i = 0; i < propertyDescriptors.length; i++) {
+            PropertyDescriptor descriptor = propertyDescriptors[i];
+            String propertyName = descriptor.getName();
+
+            if (map.containsKey(propertyName)) {
+                // 下面一句可以 try 起来，这样当一个属性赋值失败的时候就不会影响其他属性赋值。
+                Object value = map.get(propertyName);
+
+                Object[] args = new Object[1];
+                args[0] = value;
+
+                descriptor.getWriteMethod().invoke(obj, args);
+            }
+        }
+        return obj;
     }
 }
