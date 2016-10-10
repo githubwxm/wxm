@@ -19,7 +19,7 @@ public class EpConstant {
     public static class EpClass{//企业分类
         public static final Integer  SCENIC =10010;//景区
         public static final Integer  HOTEL =10011;//酒店
-        public static final Integer TRAVEL=10012;//旅行社
+        public static final Integer  TRAVEL=10012;//旅行社
         public static final Integer  RESTS=10013;//其他
 
     }
