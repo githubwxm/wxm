@@ -35,22 +35,53 @@ public class epServiceTest {
     @Resource
     private CoreEpChannelService coreEpChannelService;
 
+    //     "name.", // 企业中文名
+//             "code", // '企业组织机构代码',
+//             "license", // 营业证编号
+//             "linkman", // 企业联系人姓名
+//             "link_phone", // 企业联系人电话
+//             "province", // 企业省
+//             "city", // 市
+//             "area", // 区
+//             "address", // 详细地址
+    @Test
+    public void createEp(){
+        Map map = new HashMap();
+        map.put("ep_type","10002");
+        map.put("creator_ep_id","1");//创建
+        map.put("core_ep_id",1);//平台
+        map.put("name","含浦大道");
+        map.put("code","code");
+        map.put("license","license");
+        map.put("linkman","linkman");
+        map.put("link_phone","13417325939");
+        map.put("province","1");
+        map.put("city","2");
+        map.put("area","123");
+        map.put("ep_class","10010");
+        map.put("address","含浦大道");
+        map.put("logo_pic","logopic");
+        epService.createEp(map);
+        map.put("address",map.get("address").toString()+"333333");
+        System.out.println(epService.updateEp(map).get());
+        // epService.createPlatform(map);
+    }
     @Test
     public void createTest() {
         Map map = new HashMap<String,Object>();
         map.put("supplier_name","adsf");
         map.put("","83YL8MD4JJAX");
-       // System.out.println(coreEpPaymentConfService.add(map)+"      *****");
+        // System.out.println(coreEpPaymentConfService.add(map)+"      *****");
         //System.out.println(epService.selectPlatformId(2).get());
-      // coreEpChannelService.cancle(2);
+        // coreEpChannelService.cancle(2);
 //        map.put("id",2);
 //        map.put("access_id", Common.getAccessId());
-       // epService.freeze(map);
+        // epService.freeze(map);
         map.put("core_ep_id","1");
         System.out.println(epService.select(map).get().size());
 
         System.out.println(coreEpPaymentConfService.isExists(map));
-       // map.put("id",11);
+        // map.put("id",11);
 //        map.put("access_id","123");
 //        map.put("link_phone","13417325939");
 //        map.put("id","123");
@@ -64,17 +95,17 @@ public class epServiceTest {
 //        ep.setAccess_key("key");
 //        ep.setAddress("地址");
 
-      //  System.out.println(epService.selectPlatformId(6).get()+"   ***");
+        //  System.out.println(epService.selectPlatformId(6).get()+"   ***");
         //System.out.print(epService.getEp(new Integer[]{1,2},new String[]{"ep_type","address"}));
 //        map.put("access_id","");
 //        map.put("core_ep_id","1");
         map.put("access_id","83YL8MD4JJAX");
         map.put("sdfasd","");
 //        epService.validate(map);
-//        coreEpPaymentConfService.create(map);
+        coreEpPaymentConfService.create(map);
 //        coreEpPaymentConfService.add(map);
 //        coreEpPaymentConfService.update(map);
-       // epService.validate(map);
+        // epService.validate(map);
         //epService.findById(1);
 //        epService.create(null);
 //        epService.all(null);
