@@ -31,7 +31,7 @@ public class CoreEpChannelServiceImple implements CoreEpChannelService {
         try {
             ParamsMapValidate.validate(params, generateCreateEpChannelValidate());
              String rate=  params.get("rate").toString();
-            if(Common.isTrue(rate,"\\d{1}\\.\\d{1,2}$|\\d{1}")){//校验汇率在0.01 - 9.99之间 乘100 取整
+            if(Common.isTrue(rate,"\\d{1}\\.\\d{1,2}$|\\d{1}")){//校验汇率在0 - 9.99之间 乘100 取整
                  Double temp =Double.parseDouble(rate)*100;
                 params.put("rate",temp.intValue());
             }else{
