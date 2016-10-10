@@ -56,6 +56,12 @@
         <if test="access_id != null">
             and ep.access_id = #{access_id}
         </if>
+        <if test="core_ep_id != null">
+            and ep.core_ep_id = #{core_ep_id}
+        </if>
+        <if test="creator_ep_id != null">
+            and ep.creator_ep_id = #{creator_ep_id}
+        </if>
 
     </sql>
     <select id="select" resultType="com.all580.ep.api.entity.Ep">
@@ -85,17 +91,21 @@
             and status=#{statusActive}
         </if>
     </update>
-    <!--<update id="update">-->
-        <!--update t_ep set core_ep_id=#{epId} where id=#{epId};-->
-    <!--</update>-->
+    <update id="update">
+        update t_ep
+         set name=#{name},en_name=#{en_name},linkman=#{linkman},link_phone=#{link_phone},address=#{address},
+         code=#{code},license=#{license},logo_pic=#{logo_pic},province=#{province},city=#{city},area=#{area}
+         ,ep_class=#{ep_class}
+        where id =#{id}
+    </update>
     <insert id="create">
         INSERT INTO `t_ep`(name,en_name,ep_type,linkman,link_phone,address,code,license,logo_pic,status,access_id,
-       access_key,creator_ep_id,core_ep_id,status_bak,province,city,area,group_id,group_name)
+       access_key,creator_ep_id,core_ep_id,status_bak,province,city,area,group_id,group_name,ep_class)
        VALUES (#{name}, #{en_name}, #{ep_type}, #{linkman}, #{link_phone}, #{address}, #{code}, #{license},
       #{logo_pic}, #{status}, #{access_id}, #{access_key}, #{creator_ep_id}, #{core_ep_id}, #{status_bak},
-      #{province}, #{city}, #{area}, #{group_id}, #{group_name});
+      #{province}, #{city}, #{area}, #{group_id}, #{group_name}, #{ep_class});
         <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
             SELECT LAST_INSERT_ID();
-        </selectKey>
+        </selectKey>   <!-- 添加到map里面key id  -->
     </insert>
 </mapper>
