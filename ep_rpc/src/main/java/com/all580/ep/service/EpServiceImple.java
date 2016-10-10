@@ -57,14 +57,13 @@ public class EpServiceImple implements EpService {
                 log.warn("平台商参数错误");
                 return new Result<>(false, Result.PARAMS_ERROR, e.getMessage());
             }
-
         int epId= epMapper.create(map);//返回刚添加的平台商
         CoreEpAccess access=null;
         Result<CoreEpAccess> result = new Result<CoreEpAccess>();
         if(epId>0){// 添加平台商t_core_ep_access
             access = new CoreEpAccess(epId,Common.getAccessId(),Common.getAccessKey());
             Map accessMap = new HashMap();
-            accessMap.put("id",epId);
+            accessMap.put("id",map.get("id"));
             accessMap.put("access_id",access.getAccess_id() );
             accessMap.put("access_key",access.getAccess_key() );
             accessMap.put("link", "");//TODO 待完善
@@ -88,6 +87,59 @@ public class EpServiceImple implements EpService {
         //TODO  Insert t_capital(添加通道费率, 余额 )
         return result;
     }
+
+    @Override
+    public Result<Map> createEp(Map map) {
+        map.put("status", EpConstant.EpStatus.UNINITIAL);// 状态默认未初始化
+        map.put("status_bak",EpConstant.EpStatus.UNINITIAL);// 状态默认未初始化
+        map.put("access_id", Common.getAccessId());
+        map.put("access_key", Common.getAccessKey());
+        try {
+            String ep_type=(String)map.get("ep_type");//企业类型
+            String creator_ep_id =(String) map.get("creator_ep_id");//上级企业id
+            String group_id=(String)map.get("group_id");
+            String ep_class = (String) map.get("ep_class");//企业分类
+            if(!Common.isTrue(creator_ep_id,"\\d+")){
+                throw new  ParamsMapValidationException("上级企业类型错误");
+            }
+            if(!Common.isTrue(ep_class,"\\d+")){
+                throw new  ParamsMapValidationException("企业分类错误");
+            }
+            if(!(null==map.get("group_id")||Common.isTrue(group_id,"\\d+"))){
+                throw new  ParamsMapValidationException("分组id只能为空或是数字");
+            }
+            if(!Common.isTrue(ep_type,"\\d+")){//供应商销售商添加企业
+                Map tempMap = new HashMap();
+                tempMap.put("id",creator_ep_id);
+                Integer epType=  select(tempMap).get().get(0).getEp_type();
+                if(EpConstant.EpType.SELLER.equals(epType)||EpConstant.EpType.SUPPLIER.equals(epType)){
+                    map.put("ep_type",epType);
+                }else{
+                throw new  ParamsMapValidationException("企业类型错误");}
+            }
+
+            ParamsMapValidate.validate(map, generateCreateEpValidate());
+            map.put("core_ep_id",selectPlatformId(Integer.parseInt(creator_ep_id ) ).get());
+        } catch (ParamsMapValidationException e) {
+            log.warn("企业商参数错误");
+            return new Result<>(false, Result.PARAMS_ERROR, e.getMessage());
+        }
+        Map resultMap= new HashMap();
+        Result<Map> result = new Result<Map>();
+        try {
+            epMapper.create(map);//添加企业信息
+            //Todo 添加余额
+            resultMap.put("ep_info",map);
+            result.put(resultMap);
+            result.setSuccess();
+        } catch (Exception e) {
+            result.setFail();
+            result.setError(Result.DB_FAIL, "添加企业。出错原因："+e.getMessage());
+        }
+        return result;
+
+    }
+
     @Override
     public Result<Integer>  selectPlatformId(Integer epId){
         Result<Integer> result = new Result<Integer>();
@@ -149,6 +201,35 @@ public class EpServiceImple implements EpService {
     public Result<Integer> enable(Map params) {
         params.put("status",EpConstant.EpStatus.ACTIVE);
         return updateStatus(params);
+    }
+
+    @Override
+    public Result<Map> updateEp(Map map) {
+        try {
+            String ep_class= (String)map.get("ep_class");
+            String id=map.get("id").toString();
+            if(!Common.isTrue(id,"\\d+")){
+                throw new  ParamsMapValidationException("企业id错误");
+            }
+            if(!Common.isTrue(ep_class,"\\d+")){
+                throw new  ParamsMapValidationException("企业分类错误");
+            }
+            ParamsMapValidate.validate(map, generateCreateEpValidate());
+        } catch (ParamsMapValidationException e) {
+            log.warn("平台商参数错误");
+            return new Result<>(false, Result.PARAMS_ERROR, e.getMessage());
+        }
+
+        Result<Map> result = new Result<>();
+        try {
+            epMapper.update(map);
+            result.put(map);
+            result.setSuccess();
+        } catch (Exception e) {
+            result.setFail();
+            result.setError(Result.DB_FAIL, "数据库更新错误。出错原因："+e.getMessage());
+        }
+        return result;
     }
 
     /**
@@ -271,13 +352,13 @@ public class EpServiceImple implements EpService {
     }
 
 
-
     private Map<String[], ValidRule[]> generateCreateEpValidate() {
         Map<String[], ValidRule[]> rules = new HashMap<>();
         // 校验不为空的参数
         rules.put(new String[]{
                 "name.", // 企业中文名
                 "code", // '企业组织机构代码',
+                "logo_pic", // '企业组织机构代码',
                 "license", // 营业证编号
                 "linkman", // 企业联系人姓名
                 "link_phone", // 企业联系人电话
@@ -289,11 +370,19 @@ public class EpServiceImple implements EpService {
 //
 //        // 校验整数
         rules.put(new String[]{
-                "link_phone", // 企业联系人电话
                 "province", // 企业省
                 "city", // 市
                 "area", // 区
         }, new ValidRule[]{new ValidRule.Digits()});
+
+//        // 校验身份证
+//        rules.put(new String[]{
+//                "items.visitor.sid" // 订单游客身份证号码
+//        }, new ValidRule[]{new ValidRule.IdCard()});
+        // 校验手机号码
+        rules.put(new String[]{
+                "link_phone", // 订单联系人手机号码
+        }, new ValidRule[]{new ValidRule.Pattern(ValidRule.MOBILE_PHONE)});
         return rules;
     }
     private Map<String[], ValidRule[]> generateCreateStatusValidate() {
