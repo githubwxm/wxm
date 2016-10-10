@@ -85,7 +85,7 @@ public class EpServiceImple implements EpService {
         map.put("core_ep_id",epId);
         map.put("payment_type",EpConstant.PaymentType.BALANCE);//默认方式余额
         coreEpPaymentConfService.create(map);//余额支付配置
-        //TODO  Insert t_capital(添加通道费率) 余额
+        //TODO  Insert t_capital(添加通道费率, 余额 )
         return result;
     }
     @Override
@@ -269,6 +269,7 @@ public class EpServiceImple implements EpService {
         return result;
 
     }
+
 
 
     private Map<String[], ValidRule[]> generateCreateEpValidate() {
