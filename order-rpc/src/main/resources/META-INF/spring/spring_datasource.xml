@@ -40,7 +40,7 @@
 	</bean>
 	<bean id="baseSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
 		<property name="dataSource" ref="baseBaseDS" />
-		<property name="mapperLocations" value="classpath*:sqlmap/*.xml" />
+		<property name="mapperLocations" value="classpath*:sqlmap/order/*.xml" />
 	</bean>
 
 	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
@@ -52,4 +52,5 @@
 	  <property name="dataSource" ref="baseBaseDS" />
 	</bean>
 
+	<tx:annotation-driven transaction-manager="transactionManager" />
 </beans>

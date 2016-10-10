@@ -68,4 +68,11 @@ public class OrderConstant {
         public static final int TRUST = 350; // 代收
         public static final int NON_TRUST = 351; // 不代收
     }
+
+    /**
+     * 任务执行器
+     */
+    public static class Actions {
+        public static final String PAYMENT_CALLBACK = "PAYMENT_CALLBACK";
+    }
 }

@@ -1,14 +1,29 @@
 package com.all580.order.manager;
 
+import com.all580.ep.api.service.EpService;
 import com.all580.order.api.OrderConstant;
+import com.all580.order.dto.AccountDataDto;
 import com.all580.order.dto.GenerateAccountDto;
+import com.all580.order.entity.OrderItem;
 import com.all580.order.entity.OrderItemAccount;
 import com.all580.product.api.model.EpSalesInfo;
+import com.all580.product.api.model.ProductSearchParams;
 import com.framework.common.Result;
+import com.framework.common.exception.ApiException;
+import com.framework.common.lang.JsonUtils;
+import com.framework.common.lang.UUIDGenerator;
+import com.framework.common.validate.ValidRule;
+import com.github.ltsopensource.core.domain.Job;
+import com.github.ltsopensource.jobclient.JobClient;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author zhouxianjun(Alone)
@@ -17,37 +32,19 @@ import java.util.List;
  * @date 2016/10/8 19:07
  */
 @Component
+@Transactional(rollbackFor = {Exception.class, RuntimeException.class}, readOnly = true)
 public class BaseOrderManager {
+    @Autowired
+    private EpService epService;
 
-    /**
-     * 生成分账（平账）
-     * @param dto
-     * @return
-     */
-    public List<OrderItemAccount> generateAccount(GenerateAccountDto dto) {
-        List<OrderItemAccount> accounts = new ArrayList<>();
-        OrderItemAccount subtractAccount = new OrderItemAccount();
-        subtractAccount.setEpId(dto.getSubtractEpId());
-        subtractAccount.setCoreEpId(dto.getSubtractCoreId());
-        subtractAccount.setOrderItemId(dto.getOrderItemId());
-        subtractAccount.setMoney(-dto.getMoney());
-        subtractAccount.setProfit(dto.getSubtractProfit());
-        subtractAccount.setSettledMoney(0);
-        subtractAccount.setStatus(OrderConstant.AccountSplitStatus.NOT);
-        accounts.add(subtractAccount);
+    @Autowired
+    private JobClient jobClient;
 
-        OrderItemAccount addAccount = new OrderItemAccount();
-        addAccount.setEpId(dto.getAddEpId());
-        addAccount.setCoreEpId(dto.getAddCoreId());
-        addAccount.setOrderItemId(dto.getOrderItemId());
-        addAccount.setMoney(dto.getMoney());
-        addAccount.setProfit(dto.getAddProfit());
-        addAccount.setSettledMoney(0);
-        addAccount.setStatus(OrderConstant.AccountSplitStatus.NOT);
-        accounts.add(addAccount);
+    @Value("${task.tracker}")
+    private String taskTracker;
 
-        return accounts;
-    }
+    @Value("${task.maxRetryTimes}")
+    private Integer maxRetryTimes;
 
     /**
      * 获取利润
@@ -55,7 +52,7 @@ public class BaseOrderManager {
      * @param epId 企业
      * @return
      */
-    public int getProfit(List<EpSalesInfo> salesInfoList, int epId) {
+    public AccountDataDto getProfit(List<EpSalesInfo> salesInfoList, int epId) {
         int salePrice = 0;
         int buyPrice = 0;
         for (EpSalesInfo info : salesInfoList) {
@@ -66,7 +63,7 @@ public class BaseOrderManager {
                 buyPrice = info.getPrice();
             }
         }
-        return salePrice - buyPrice;
+        return new AccountDataDto(salePrice, buyPrice, salePrice - buyPrice, null);
     }
 
     /**
@@ -107,5 +104,50 @@ public class BaseOrderManager {
             return null;
         }
         return result.get();
+    }
+
+    public Integer getCoreEp(Map<Integer, Integer> coreEpMap, Integer epId) {
+        Integer buyCoreEpId = coreEpMap.get(epId);
+        if (buyCoreEpId == null) {
+            buyCoreEpId = getCoreEpId(epService.selectPlatformId(epId));
+            if (buyCoreEpId == null) {
+                throw new ApiException("企业平台商不存在");
+            }
+            coreEpMap.put(epId, buyCoreEpId);
+        }
+        return buyCoreEpId;
+    }
+
+    /**
+     * 把子订单转换为产品参数
+     * @param orderItem 子订单
+     * @return
+     */
+    public ProductSearchParams parseParams(OrderItem orderItem) {
+        ProductSearchParams params = new ProductSearchParams();
+        params.setSubProductId(orderItem.getProSubId());
+        params.setStartDate(orderItem.getStart());
+        params.setDays(orderItem.getDays());
+        params.setQuantity(orderItem.getQuantity());
+        params.setSubProductId(orderItem.getId());
+        return params;
+    }
+
+    /**
+     * 添加任务
+     * @param action 任务执行器
+     * @param params 参数
+     */
+    public void addJob(String action, Map<String, String> params) {
+        Job job = new Job();
+        job.setTaskId("ORDER-JOB-" + UUIDGenerator.generateUUID());
+        job.setParam("ACTION", action);
+        job.setExtParams(params);
+        job.setTaskTrackerNodeGroup(taskTracker);
+        if (maxRetryTimes != null) {
+            job.setMaxRetryTimes(maxRetryTimes);
+        }
+        job.setNeedFeedback(true);
+        jobClient.submitJob(job);
     }
 }

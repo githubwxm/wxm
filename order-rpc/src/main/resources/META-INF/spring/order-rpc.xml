@@ -13,8 +13,8 @@
 	<dubbo:registry address="${dubbo.registry.zk}" />
 	<dubbo:protocol name="dubbo" port="${dubbo.port}" />
 
-	<bean id="orderService" class="com.all580.order.service.BookingOrderServiceImpl" />
-	
-	<dubbo:service interface="com.all580.order.api.service.BookingOrderService" ref="orderService" />
+	<bean id="bookingOrderService" class="com.all580.order.service.BookingOrderServiceImpl" />
+
+	<dubbo:service interface="com.all580.order.api.service.BookingOrderService" ref="bookingOrderService" />
 	
 </beans>

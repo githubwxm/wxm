@@ -57,4 +57,19 @@ public interface OrderItemMapper {
      */
     int countBySidAndProductForDate(@Param("productSubId") Integer productSubId, @Param("sid") String sid,
                                     @Param("start") Date start, @Param("end") Date end);
+
+    /**
+     * 根据订单ID查询子订单
+     * @param orderId 订单ID
+     * @return
+     */
+    List<OrderItem> selectByOrderId(@Param("orderId") Integer orderId);
+
+    /**
+     * 根据订单ID设置子订单状态
+     * @param orderId 订单ID
+     * @param status 状态
+     * @return
+     */
+    int setStatusByOrderId(@Param("orderId") Integer orderId, @Param("status") Integer status);
 }
