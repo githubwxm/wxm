@@ -35,8 +35,8 @@
             and ep.`id`=#{id}
         </if>
         <if test="name != null">
-          <!--  and name like  CONCAT('%',#{name},'%')-->
-            and ep.name =  #{name}
+          <!--  and ep.name like  CONCAT('%',#{name},'%'), and ep.name =  #{name} -->
+            and ep.name like  CONCAT('%',#{name},'%')
         </if>
         <if test="ep_type != null">
             and ep.ep_type=#{ep_type}
