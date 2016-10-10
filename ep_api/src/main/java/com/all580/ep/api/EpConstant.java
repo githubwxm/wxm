@@ -16,6 +16,13 @@ public class EpConstant {
         public static final Integer  FREEZE=102;//冻结
         public static final Integer STOP=103;//停用
     }
+    public static class EpClass{//企业分类
+        public static final Integer  SCENIC =10010;//景区
+        public static final Integer  HOTEL =10011;//酒店
+        public static final Integer TRAVEL=10012;//旅行社
+        public static final Integer  RESTS=10013;//其他
+
+    }
     public static class PaymentType{ //收款方式
         public static final Integer BALANCE=111;//余额
         public static final Integer ALI_PAY=112;//支付宝
