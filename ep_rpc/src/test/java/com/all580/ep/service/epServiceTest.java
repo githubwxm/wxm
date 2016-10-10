@@ -39,13 +39,17 @@ public class epServiceTest {
     public void createTest() {
         Map map = new HashMap<String,Object>();
         map.put("supplier_name","adsf");
+        map.put("","83YL8MD4JJAX");
        // System.out.println(coreEpPaymentConfService.add(map)+"      *****");
         //System.out.println(epService.selectPlatformId(2).get());
       // coreEpChannelService.cancle(2);
 //        map.put("id",2);
 //        map.put("access_id", Common.getAccessId());
        // epService.freeze(map);
+        map.put("core_ep_id","1");
         System.out.println(epService.select(map).get().size());
+
+        System.out.println(coreEpPaymentConfService.isExists(map));
        // map.put("id",11);
 //        map.put("access_id","123");
 //        map.put("link_phone","13417325939");
