@@ -1,30 +1,30 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.all580.ep.dao.EpMapper">
-    <!--<resultMap id="BaseResultMap" type="com.all580.ep.entity.Ep">-->
-        <!--<id column="id" property="id" jdbcType="INTEGER"/>-->
-        <!--<id column="name" property="name" jdbcType="VARCHAR"/>-->
-        <!--<result column="en_name" property="en_name" jdbcType="VARCHAR"/>-->
-        <!--<result column="ep_type" property="ep_type" jdbcType="INTEGER"/>-->
-        <!--<result column="linkman" property="linkman" jdbcType="VARCHAR"/>-->
-        <!--<result column="link_phone" property="link_phone" jdbcType="VARCHAR"/>-->
-        <!--<result column="address" property="address" jdbcType="VARCHAR"/>-->
-        <!--<result column="code" property="code" jdbcType="VARCHAR"/>-->
-        <!--<result column="license" property="license" jdbcType="VARCHAR"/>-->
-        <!--<result column="logo_pic" property="logo_pic" jdbcType="VARCHAR"/>-->
-        <!--<result column="status" property="status" jdbcType="INTEGER"/>-->
-        <!--<result column="access_id" property="access_id" jdbcType="INTEGER"/>-->
-        <!--<result column="access_key" property="access_key" jdbcType="VARCHAR"/>-->
-        <!--<result column="creator_ep_id" property="creator_ep_id" jdbcType="INTEGER"/>-->
-        <!--<result column="core_ep_id" property="core_ep_id" jdbcType="INTEGER"/>-->
-        <!--<result column="add_time" property="add_time" jdbcType="DATE"/>-->
-        <!--<result column="status_bak" property="status_bak" jdbcType="INTEGER"/>-->
-        <!--<result column="province" property="province" jdbcType="INTEGER"/>-->
-        <!--<result column="city" property="city" jdbcType="INTEGER"/>-->
-        <!--<result column="area" property="area" jdbcType="INTEGER"/>-->
-        <!--<result column="group_id" property="group_id" jdbcType="INTEGER"/>-->
-        <!--<result column="group_name" property="group_name" jdbcType="VARCHAR"/>-->
-    <!--</resultMap>-->
+    <!--  <resultMap id="BaseResultMap" type="com.all580.ep.entity.Ep">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <id column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="en_name" property="en_name" jdbcType="VARCHAR"/>
+        <result column="ep_type" property="ep_type" jdbcType="INTEGER"/>
+        <result column="linkman" property="linkman" jdbcType="VARCHAR"/>
+        <result column="link_phone" property="link_phone" jdbcType="VARCHAR"/>
+        <result column="address" property="address" jdbcType="VARCHAR"/>
+        <result column="code" property="code" jdbcType="VARCHAR"/>
+        <result column="license" property="license" jdbcType="VARCHAR"/>
+        <result column="logo_pic" property="logo_pic" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="INTEGER"/>
+        <result column="access_id" property="access_id" jdbcType="INTEGER"/>
+        <result column="access_key" property="access_key" jdbcType="VARCHAR"/>
+        <result column="creator_ep_id" property="creator_ep_id" jdbcType="INTEGER"/>
+        <result column="core_ep_id" property="core_ep_id" jdbcType="INTEGER"/>
+        <result column="add_time" property="add_time" jdbcType="DATE"/>
+        <result column="status_bak" property="status_bak" jdbcType="INTEGER"/>
+        <result column="province" property="province" jdbcType="INTEGER"/>
+        <result column="city" property="city" jdbcType="INTEGER"/>
+        <result column="area" property="area" jdbcType="INTEGER"/>
+        <result column="group_id" property="group_id" jdbcType="INTEGER"/>
+        <result column="group_name" property="group_name" jdbcType="VARCHAR"/>
+    </resultMap>-->
     <!--<sql id="Base_Column_List">-->
         <!--id,name,en_name,ep_type,linkman,link_phone,address,code,license,-->
         <!--logo_pic,status,access_id,access_key,creator_ep_id,core_ep_id,-->
