@@ -17,6 +17,13 @@ public interface EpService {
      * @return
      */
     Result<CoreEpAccess> createPlatform(Map ep);
+
+    /**
+     * 创建企业
+     * @param map
+     * @return
+     */
+    Result<Map> createEp(Map map);
     Result<List<Ep>> select (Map map);
 
     /**
@@ -60,4 +67,7 @@ public interface EpService {
     Result<Integer> freeze(Map params);
     Result<Integer> disable(Map params);
     Result<Integer> enable(Map params);
+
+    //    Result<List<Ep>> selectEp(Map map);
+    Result<Map> updateEp(Map map);
 }
