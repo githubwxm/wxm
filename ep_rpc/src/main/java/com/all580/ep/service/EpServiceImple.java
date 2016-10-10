@@ -108,12 +108,16 @@ public class EpServiceImple implements EpService {
             if(!(null==map.get("group_id")||Common.isTrue(group_id,"\\d+"))){
                 throw new  ParamsMapValidationException("分组id只能为空或是数字");
             }
-            if(!Common.isTrue(ep_type,"\\d+")){//供应商销售商添加企业
+            if(!Common.isTrue(ep_type,"\\d+")){//供应商添加企业    销售商自营商与OTA创建的都是销售商
                 Map tempMap = new HashMap();
                 tempMap.put("id",creator_ep_id);
-                Integer epType=  select(tempMap).get().get(0).getEp_type();
-                if(EpConstant.EpType.SELLER.equals(epType)||EpConstant.EpType.SUPPLIER.equals(epType)){
+                Integer epType=  select(tempMap).get().get(0).getEp_type();// 没有传企业类型获取创建企业类型
+
+                if(EpConstant.EpType.SUPPLIER.equals(epType)){
                     map.put("ep_type",epType);
+                }else if(EpConstant.EpType.SELLER.equals(epType)||EpConstant.EpType.OTA.equals(epType)||
+                        EpConstant.EpType.DEALER.equals(epType)){
+                    map.put("ep_type",EpConstant.EpType.SELLER);
                 }else{
                 throw new  ParamsMapValidationException("企业类型错误");}
             }
@@ -130,7 +134,7 @@ public class EpServiceImple implements EpService {
             epMapper.create(map);//添加企业信息
             //Todo 添加余额
             resultMap.put("ep_info",map);
-            result.put(resultMap);
+            result.put(resultMap);// 添加企业信息map
             result.setSuccess();
         } catch (Exception e) {
             result.setFail();
