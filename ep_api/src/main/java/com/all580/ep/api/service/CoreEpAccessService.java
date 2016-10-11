@@ -11,4 +11,6 @@ import java.util.Map;
 public interface CoreEpAccessService {
     Result<Integer> create(Map map);
     Result<CoreEpAccess> select(Map params);
+     Integer checkAccess_id(Object access_id);
+
 }
