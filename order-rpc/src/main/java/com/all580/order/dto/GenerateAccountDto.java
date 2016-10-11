@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 /**
  * @author zhouxianjun(Alone)
  * @ClassName:
@@ -29,4 +31,8 @@ public class GenerateAccountDto {
     private int subtractProfit;
 
     private int addProfit;
+
+    private List<AccountDataDto> subtractData;
+
+    private List<AccountDataDto> addData;
 }

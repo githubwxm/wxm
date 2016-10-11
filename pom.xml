@@ -16,6 +16,8 @@
 		<module>order-rpc</module>
 		<module>ep_api</module>
 		<module>ep_rpc</module>
+		<module>payment</module>
+		<module>payment-api</module>
 	</modules>
 	<properties>
 		<!-- Common libs -->

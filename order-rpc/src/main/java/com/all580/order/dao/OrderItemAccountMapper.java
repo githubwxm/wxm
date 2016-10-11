@@ -1,6 +1,8 @@
 package com.all580.order.dao;
 
 import com.all580.order.entity.OrderItemAccount;
+import org.apache.ibatis.annotations.Param;
+
 import java.util.List;
 
 public interface OrderItemAccountMapper {
@@ -43,4 +45,11 @@ public interface OrderItemAccountMapper {
      * @mbggenerated Fri Sep 30 15:22:08 CST 2016
      */
     int updateByPrimaryKey(OrderItemAccount record);
+
+    /**
+     * 根据子订单ID查询预分账记录
+     * @param itemId 子订单ID
+     * @return
+     */
+    List<OrderItemAccount> selectByOrderItem(@Param("itemId") Integer itemId);
 }

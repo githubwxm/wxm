@@ -116,4 +116,15 @@
         AND v.sid = #{sid}
         AND oi.start between #{start,jdbcType=TIMESTAMP} and #{end,jdbcType=TIMESTAMP}
     </select>
+
+    <select id="selectByOrderId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT * FROM t_order_item toi
+        WHERE toi.order_id = #{orderId,jdbcType=INTEGER}
+    </select>
+
+    <update id="setStatusByOrderId" parameterType="java.lang.Integer">
+        UPDATE t_order_item
+        SET `status` = #{status,jdbcType=INTEGER}
+        WHERE `order_id` = #{orderId,jdbcType=INTEGER}
+    </update>
 </mapper>

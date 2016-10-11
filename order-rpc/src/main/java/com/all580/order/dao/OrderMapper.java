@@ -43,4 +43,11 @@ public interface OrderMapper {
      * @mbggenerated Fri Sep 30 15:22:08 CST 2016
      */
     int updateByPrimaryKey(Order record);
+
+    /**
+     * 根据订单编号(流水)获取订单
+     * @param sn 编号(流水)
+     * @return
+     */
+    Order selectBySN(Long sn);
 }

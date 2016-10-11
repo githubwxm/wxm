@@ -7,6 +7,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
 
 /**
  * @author zhouxianjun(Alone)
@@ -23,6 +24,10 @@ public class BookingOrderServiceTest {
     @Test
     public void createTest() {
         System.out.println(bookingOrderService);
-        bookingOrderService.create(null);
+        bookingOrderService.payment(new HashMap<String, Object>(){{
+            put("name", "Alone");
+            put("phone", "15019418143");
+            put("sid", "15019418143");
+        }});
     }
 }

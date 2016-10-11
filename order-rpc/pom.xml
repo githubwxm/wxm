@@ -40,6 +40,46 @@
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>
+            <groupId>com.all580</groupId>
+            <artifactId>payment-api</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+        <!-- LTS 任务调度器 -->
+        <dependency>
+            <groupId>com.github.ltsopensource</groupId>
+            <artifactId>lts-core</artifactId>
+            <version>${lts_version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.ltsopensource</groupId>
+            <artifactId>lts-jobclient</artifactId>
+            <version>${lts_version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.ltsopensource</groupId>
+            <artifactId>lts-tasktracker</artifactId>
+            <version>${lts_version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.ltsopensource</groupId>
+            <artifactId>lts-spring</artifactId>
+            <version>${lts_version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.fusesource.leveldbjni</groupId>
+            <artifactId>leveldbjni-all</artifactId>
+            <version>1.8</version>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
+            <version>4.0.20.Final</version>
+        </dependency>
+        <dependency>
             <groupId>com.framework</groupId>
             <artifactId>framework-common</artifactId>
         </dependency>

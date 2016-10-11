@@ -61,7 +61,8 @@ public class epServiceTest {
         map.put("ep_class","10010");
         map.put("address","含浦大道");
         map.put("logo_pic","logopic");
-        epService.createEp(map);
+        //epService.createEp(map);
+        epService.createPlatform(map);
         map.put("address",map.get("address").toString()+"333333");
         System.out.println(epService.updateEp(map).get());
         // epService.createPlatform(map);
