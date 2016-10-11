@@ -15,10 +15,10 @@
 	<bean id="dbPlaceholderConfigurer"
 		class="com.framework.common.ext.spring.config.DBPlaceholderConfigurer">
 		<property name="appName" value="base" />
-		<property name="profileName" value="${active.profilename}" />
+		<!--<property name="profileName" value="${active.profilename}" />
 		<property name="name" value="${active.name}" />
 		<property name="pwd" value="${active.pwd}" />
-		<property name="url" value="${active.url}" />
+		<property name="url" value="${active.url}" />-->
 		<property name="locations">
 			<list>
 				<value>classpath:config/*.properties</value>
@@ -26,10 +26,7 @@
 		</property>
 	</bean>
 
-	<import resource="classpath:spring/spring_datasource.xml" />
-	<import resource="classpath:spring/spring_beans.xml" />
-	<import resource="classpath:spring/spring_cache.xml" />
 	<import resource="classpath:spring/spring_servlet.xml" />
-	<import resource="classpath:spring/spring_rpc.xml" />
+	<import resource="classpath:spring/spring_client.xml" />
 
 </beans>  
