@@ -1,6 +1,5 @@
 package com.all580.ep.api.service;
 
-import com.all580.ep.api.entity.EpChannelRep;
 import com.framework.common.Result;
 
 import java.util.List;
@@ -17,6 +16,7 @@ public interface CoreEpChannelService {
      * @return
      */
     Result<Integer> update(Map params);
-    Result<List<EpChannelRep>> select(Map params);
+    Result<List<Map>> select(Map params);
     Result<Integer> cancle(Integer id);
+
 }

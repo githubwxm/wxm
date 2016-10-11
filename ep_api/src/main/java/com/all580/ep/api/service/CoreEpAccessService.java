@@ -1,6 +1,5 @@
 package com.all580.ep.api.service;
 
-import com.all580.ep.api.entity.CoreEpAccess;
 import com.framework.common.Result;
 
 import java.util.Map;
@@ -11,7 +10,7 @@ import java.util.Map;
 public interface CoreEpAccessService {
 
     Result<Integer> create(Map map);
-    Result<CoreEpAccess> select(Map params);
+    Result<Map> select(Map params);
 
     /**
      * 校验access_id 是否存在
