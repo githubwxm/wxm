@@ -17,57 +17,11 @@
 		<context:exclude-filter type="regex"
 			expression="com.all580.base.hub.dao.*" />
 	</context:component-scan>
-	
-	<!--bean id="frontLoginInterceptor" class="com.framework.common.custom.login.FrontLoginInterceptor">
-        <property name="redisUtils" ref="redisUtils" />
-		<property name="cacheKeyPrefix" value="${passport.front.cachekey.prefix}" />
-		<property name="cookieDomain" value="${passport.front.cookie.domain}" />
-		<property name="cookieName" value="${passport.front.cookie.name}" />
-		<property name="loginUrl" value="${passport.front.url.login}" />
-		<property name="weixinLoginUrl" value="${passport.front.url.weixinlogin}" />
-		<property name="maxAge" value="${passport.front.cache.maxage}" />
-		<property name="maxLen" value="${passport.front.cache.maxlen}"/>
-	</bean-->
-	<mvc:interceptors>
-	    <!-- 登录拦截器 -->
-		<mvc:interceptor>
-			<mvc:mapping path="/**" />
-			<ref bean="frontLoginInterceptor" />
-		</mvc:interceptor>
-	</mvc:interceptors>
-	<!-- view -->
-	<!--bean id="viewResolver"
-		class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
-		<property name="viewClass"
-			value="org.springframework.web.servlet.view.freemarker.FreeMarkerView" />
-		<property name="cache" value="true" />
-		<property name="prefix" value="" />
-		<property name="suffix" value=".html" />
-		<property name="contentType" value="text/html;charset=UTF-8"></property>
-		<property name="requestContextAttribute" value="request" />
-		<property name="exposeSpringMacroHelpers" value="true" />
-		<property name="exposeRequestAttributes" value="true" />
-		<property name="exposeSessionAttributes" value="true" />
-	</bean-->
 
-	<!--bean id="freemarkerConfig"
-		class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
-		<property name="templateLoaderPath" value="/WEB-INF/views/" />
-		<property name="freemarkerSettings">
-			<props>
-				<prop key="locale">zh_CN</prop>
-				<prop key="template_update_delay">0</prop>
-				<prop key="default_encoding">UTF-8</prop>
-				<prop key="number_format">0.##########</prop>
-				<prop key="datetime_format">yyyy-MM-dd HH:mm:ss</prop>
-				<prop key="classic_compatible">true</prop>
-				<prop key="template_exception_handler">ignore</prop>
-			</props>
+	<!-- 总错误处理-->
+	<bean id="exceptionResolver" class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+		<property name="warnLogCategory">
+			<value>org.springframework.web.servlet.handler.SimpleMappingExceptionResolver</value>
 		</property>
-		<property name="freemarkerVariables">
-			<map>
-				<entry key="miscDomain" value="${domain.misc}" />
-			</map>
-		</property>
-	</bean-->
+	</bean>
 </beans>
