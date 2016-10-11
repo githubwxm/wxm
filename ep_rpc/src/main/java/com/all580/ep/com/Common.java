@@ -135,4 +135,11 @@ public class Common {
         }
         return obj;
     }
+    public static Integer objectParseInteger(Object obj){
+        if(null==obj){
+            return null;
+        }else{
+            return Integer.parseInt(obj.toString());
+        }
+    }
 }

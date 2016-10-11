@@ -1,9 +1,5 @@
 package com.all580.ep.dao;
 
-import com.all580.ep.api.entity.CoreEpAccess;
-import com.framework.common.Result;
-
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -11,5 +7,5 @@ import java.util.Map;
  */
 public interface CoreEpAccessMapper {
    int create(Map map);
-   CoreEpAccess select(Map params);
+   Map select(Map params);
 }

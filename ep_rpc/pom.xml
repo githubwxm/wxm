@@ -21,6 +21,11 @@
         <version>${project.parent.version}</version>
     </dependency>
     <dependencies>
+
+        <dependency>
+            <groupId>com.all580</groupId>
+            <artifactId>payment-api</artifactId>
+        </dependency>
         <dependency>
             <groupId>com.framework</groupId>
             <artifactId>framework-common</artifactId>

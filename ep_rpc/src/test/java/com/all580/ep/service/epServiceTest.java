@@ -2,9 +2,8 @@ package com.all580.ep.service;
 
 import com.all580.ep.api.service.CoreEpAccessService;
 import com.all580.ep.api.service.CoreEpChannelService;
-import com.all580.ep.api.service.CoreEpPaymentConfService;
+
 import com.all580.ep.api.service.EpService;
-import com.all580.ep.com.Common;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,43 +28,40 @@ public class epServiceTest {
     @Resource
     private CoreEpAccessService coreEpAccessService;
 
-    @Resource
-    private CoreEpPaymentConfService coreEpPaymentConfService;
 
     @Resource
     private CoreEpChannelService coreEpChannelService;
 
-    //     "name.", // 企业中文名
-//             "code", // '企业组织机构代码',
-//             "license", // 营业证编号
-//             "linkman", // 企业联系人姓名
-//             "link_phone", // 企业联系人电话
-//             "province", // 企业省
-//             "city", // 市
-//             "area", // 区
-//             "address", // 详细地址
+
+    @Test
+    public void createChannel(){
+        Map map = new HashMap();
+        System.out.println(coreEpChannelService.select(map).get());
+    }
     @Test
     public void createEp(){
         Map map = new HashMap();
-        map.put("ep_type","10002");
-        map.put("creator_ep_id","1");//创建
-        map.put("core_ep_id",1);//平台
-        map.put("name","含浦大道");
-        map.put("code","code");
-        map.put("license","license");
-        map.put("linkman","linkman");
-        map.put("link_phone","13417325939");
-        map.put("province","1");
-        map.put("city","2");
-        map.put("area","123");
-        map.put("ep_class","10010");
-        map.put("address","含浦大道");
-        map.put("logo_pic","logopic");
-        //epService.createEp(map);
-        epService.createPlatform(map);
-        map.put("address",map.get("address").toString()+"333333");
-        System.out.println(epService.updateEp(map).get());
-        // epService.createPlatform(map);
+//        map.put("ep_type","10002");
+//        map.put("creator_ep_id","1");//创建
+//        map.put("core_ep_id",1);//平台
+//        map.put("name","含浦大道");
+//        map.put("code","code");
+//        map.put("license","license");
+//        map.put("linkman","linkman");
+//        map.put("link_phone","13417325939");
+//        map.put("province","1");
+//        map.put("city","2");
+//        map.put("area","123");
+//        map.put("ep_class","10010");
+//        map.put("address","含浦大道");
+//        map.put("logo_pic","logopic");
+//        //epService.createEp(map);
+//        epService.createPlatform(map);
+//        map.put("address",map.get("address").toString()+"333333");
+//        System.out.println(epService.updateEp(map).get());
+//        // epService.createPlatform(map);
+
+                System.out.println(epService.select(map).get());
     }
     @Test
     public void createTest() {
@@ -81,7 +77,6 @@ public class epServiceTest {
         map.put("core_ep_id","1");
         System.out.println(epService.select(map).get().size());
 
-        System.out.println(coreEpPaymentConfService.isExists(map));
         // map.put("id",11);
 //        map.put("access_id","123");
 //        map.put("link_phone","13417325939");
@@ -103,7 +98,7 @@ public class epServiceTest {
         map.put("access_id","83YL8MD4JJAX");
         map.put("sdfasd","");
 //        epService.validate(map);
-        coreEpPaymentConfService.create(map);
+
 //        coreEpPaymentConfService.add(map);
 //        coreEpPaymentConfService.update(map);
         // epService.validate(map);
