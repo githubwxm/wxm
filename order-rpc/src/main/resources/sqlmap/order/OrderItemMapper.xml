@@ -107,10 +107,11 @@
 
     <select id="countBySidAndProductForDate" resultType="int">
         SELECT
-        count(*)
+        count(DISTINCT oi.id)
         FROM
         t_order_item oi
-        LEFT JOIN t_visitor v ON v.ref_id = oi.id
+        LEFT JOIN t_order_item_detail toid ON toid.order_item_id = oi.id
+        LEFT JOIN t_visitor v ON v.ref_id = toid.id
         WHERE
         oi.pro_sub_id = #{productSubId}
         AND v.sid = #{sid}
@@ -127,4 +128,15 @@
         SET `status` = #{status,jdbcType=INTEGER}
         WHERE `order_id` = #{orderId,jdbcType=INTEGER}
     </update>
+    
+    <select id="selectBySN" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        SELECT * FROM t_order_item
+        WHERE `number` = #{sn,jdbcType=BIGINT}
+    </select>
+
+    <select id="getProductNamesByOrderId" parameterType="java.lang.Integer" resultType="java.lang.String">
+        SELECT `pro_sub_name`
+        FROM t_order_item
+        WHERE `order_id` = #{orderId,jdbcType=INTEGER}
+    </select>
 </mapper>

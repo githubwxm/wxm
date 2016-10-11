@@ -159,15 +159,5 @@
                domainObjectName="Visitor">
             <generatedKey column="id" sqlStatement="MySql"/>
         </table>
-        <table tableName="t_order_item_account_error"
-               enableCountByExample="false"
-               enableUpdateByExample="false"
-               enableDeleteByExample="false"
-               enableSelectByExample="false"
-               selectByExampleQueryId="false"
-               delimitAllColumns="true"
-               domainObjectName="OrderItemAccountError">
-            <generatedKey column="id" sqlStatement="MySql"/>
-        </table>
     </context>
 </generatorConfiguration>

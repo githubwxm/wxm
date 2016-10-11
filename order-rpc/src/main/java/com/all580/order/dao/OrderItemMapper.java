@@ -72,4 +72,18 @@ public interface OrderItemMapper {
      * @return
      */
     int setStatusByOrderId(@Param("orderId") Integer orderId, @Param("status") Integer status);
+
+    /**
+     * 根据子订单编号获取
+     * @param sn 编号
+     * @return
+     */
+    OrderItem selectBySN(@Param("sn") Long sn);
+
+    /**
+     * 根据订单ID获取商品名称
+     * @param orderId 订单ID
+     * @return
+     */
+    List<String> getProductNamesByOrderId(@Param("orderId") Integer orderId);
 }

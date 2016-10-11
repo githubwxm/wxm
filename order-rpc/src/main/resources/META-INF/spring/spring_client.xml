@@ -17,6 +17,5 @@
 					 interface="com.all580.ep.api.service.EpService"/>
 
 	<dubbo:reference id="balancePayService"
-					 interface="com.all580.payment.api.service.BalancePayService"
-	                 stub="com.all580.order.stub.BalancePayServiceStub"/>
+					 interface="com.all580.payment.api.service.BalancePayService"/>
 </beans>
