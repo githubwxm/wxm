@@ -27,15 +27,15 @@ public class EpConstant {
         public static final Integer  RESTS=10013;//其他
     }
 
-    public static class PaymentType{ //收款方式
-        public static final Integer BALANCE=111;//余额
-        public static final Integer ALI_PAY=112;//支付宝
-        public static final Integer WE_CHAT=113;//微信
-        public static final Integer BANK=114;//银行
-
-    }
-    public static class PaymentStatus{//收款状态
-        public static final Integer STATUS_NORMAL =1111;// 收款正常
-        public static final Integer STATUS_STOP=1112;// 收款停用
-    }
+//    public static class PaymentType{ //收款方式
+//        public static final Integer BALANCE=111;//余额
+//        public static final Integer ALI_PAY=112;//支付宝
+//        public static final Integer WE_CHAT=113;//微信
+//        public static final Integer BANK=114;//银行
+//
+//    }
+//    public static class PaymentStatus{//收款状态
+//        public static final Integer STATUS_NORMAL =1111;// 收款正常
+//        public static final Integer STATUS_STOP=1112;// 收款停用
+//    }
 }
