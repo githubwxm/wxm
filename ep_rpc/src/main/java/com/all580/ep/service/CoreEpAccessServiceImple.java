@@ -10,6 +10,7 @@ import com.framework.common.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 @Service
@@ -44,5 +45,14 @@ public class CoreEpAccessServiceImple implements CoreEpAccessService {
         }
         return result;
     }
-
+    public Integer checkAccess_id(Object access_id){
+        Map map = new HashMap();
+        map.put("access_id",access_id);
+        Result<CoreEpAccess> access=  select(map);//校验access_id
+        if(null==access.get()){
+           return null;
+        }else{
+            return  access.get().getId();
+        }
+    }
 }
