@@ -64,7 +64,7 @@ public class CoreEpPaymentConfServiceImple implements CoreEpPaymentConfService {
                }
                Integer core_ep_id=  access.get().getId();
                map.put("core_ep_id",core_ep_id);
-               if(EpConstant.PaymentType.STATUS_NORMAL.equals(Integer.parseInt(map.get("status").toString()))){
+               if(EpConstant.PaymentStatus.STATUS_NORMAL.equals(Integer.parseInt(map.get("status").toString()))){
                     if(null==isExists(map)){
                       create(map);
                     }else{
@@ -97,7 +97,7 @@ public class CoreEpPaymentConfServiceImple implements CoreEpPaymentConfService {
             }
             Integer core_ep_id=  access.get().getId();
             map.put("core_ep_id",core_ep_id);
-            if(EpConstant.PaymentType.STATUS_NORMAL.equals(Integer.parseInt(map.get("status").toString()))){
+            if(EpConstant.PaymentStatus.STATUS_NORMAL.equals(Integer.parseInt(map.get("status").toString()))){
                 if(null==isExists(map)){
                     result.put(updateStatus(map).get());
                 }else{
