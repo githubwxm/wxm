@@ -36,6 +36,17 @@ public interface CoreEpPaymentConfService {
     * @return
      */
    Result<Integer> updateStatus(Map map);
+
+    /**
+     *  初始化之后返回余额的配置方式
+     * @param core_ep_id
+     * @return
+     */
    CoreEpPaymentConf findById( Integer core_ep_id);
+
+    /**
+     * @param map  平台上id  状态  支付方式
+     * @return
+     */
    List<CoreEpPaymentConf> isExists(Map map);
 }
