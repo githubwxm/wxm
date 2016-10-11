@@ -1,11 +1,9 @@
 package com.all580.ep.service;
 
 import com.all580.ep.api.EpConstant;
-import com.all580.ep.api.entity.CoreEpAccess;
-import com.all580.ep.api.entity.Ep;
-import com.all580.ep.api.entity.PlatformEp;
+
+import com.all580.ep.entity.PlatformEp;
 import com.all580.ep.api.service.CoreEpAccessService;
-import com.all580.ep.api.service.CoreEpPaymentConfService;
 import com.all580.ep.api.service.EpService;
 import com.all580.ep.com.Common;
 import com.all580.ep.dao.EpMapper;
@@ -36,16 +34,16 @@ public class EpServiceImple implements EpService {
     @Autowired
     private CoreEpAccessService coreEpAccessService;
 
-    @Autowired
-    private CoreEpPaymentConfService coreEpPaymentConfService;
+//    @Autowired
+//    private CoreEpPaymentConfService coreEpPaymentConfService;
 
     /**
      * // 创建平台商
      * @param map
-     * @return
+     * @return  CoreEpAccess
      */
     @Override
-    public Result<CoreEpAccess> createPlatform(Map map) {
+    public Result<Map> createPlatform(Map map) {
         map.put("status", EpConstant.EpStatus.UNINITIAL);// 状态默认未初始化
         map.put("status_bak",EpConstant.EpStatus.UNINITIAL);// 状态默认未初始化
         map.put("ep_type",EpConstant.EpType.PLATFORM);
@@ -58,18 +56,17 @@ public class EpServiceImple implements EpService {
                 return new Result<>(false, Result.PARAMS_ERROR, e.getMessage());
             }
         int epId= epMapper.create(map);//返回刚添加的平台商
-        CoreEpAccess access=null;
-        Result<CoreEpAccess> result = new Result<CoreEpAccess>();
+       // CoreEpAccess access=null;
+        Result<Map> result = new Result<>();
         if(epId>0){// 添加平台商t_core_ep_access
-            access = new CoreEpAccess(epId,Common.getAccessId(),Common.getAccessKey());
             Map accessMap = new HashMap();
             accessMap.put("id",map.get("id"));
-            accessMap.put("access_id",access.getAccess_id() );
-            accessMap.put("access_key",access.getAccess_key() );
+            accessMap.put("access_id",Common.getAccessId() );
+            accessMap.put("access_key",Common.getAccessKey() );
             accessMap.put("link", "");//TODO 待完善
             try {
                 coreEpAccessService.create(accessMap);
-                result.put(access);
+                result.put(accessMap);
                 result.setSuccess();
             } catch (Exception e) {
                 result.setFail();
@@ -83,8 +80,8 @@ public class EpServiceImple implements EpService {
        // epMapper.update(map);//TODO  所属平台商企业id为平台商时是否指定
         map.put("core_ep_id",map.get("id"));
         map.put("conf_data","");
-        map.put("payment_type",EpConstant.PaymentType.BALANCE);//默认方式余额
-        coreEpPaymentConfService.create(map);//余额支付配置
+        //map.put("payment_type",EpConstant.PaymentType.BALANCE);//默认方式余额
+        //coreEpPaymentConfService.create(map);//余额支付配置
         //TODO  Insert t_capital(添加通道费率, 余额 )
         return result;
     }
@@ -112,7 +109,7 @@ public class EpServiceImple implements EpService {
             if(!Common.isTrue(ep_type,"\\d+")){//供应商添加企业    销售商自营商与OTA创建的都是销售商
                 Map tempMap = new HashMap();
                 tempMap.put("id",creator_ep_id);
-                Integer epType=  select(tempMap).get().get(0).getEp_type();// 没有传企业类型获取创建企业类型
+                Integer epType= Common.objectParseInteger(select(tempMap).get().get(0).get("ep_type"));// 没有传企业类型获取创建企业类型
 
                 if(EpConstant.EpType.SUPPLIER.equals(epType)){
                     map.put("ep_type",epType);
@@ -155,10 +152,10 @@ public class EpServiceImple implements EpService {
         Integer core_ep_id=null;
         Map map = new HashMap();
         map.put("id",epId);
-        Result<List<Ep>>  list= select(map);
+        Result<List<Map>>  list= select(map);
         if(null!=list){
             if(!list.isEmpty()){
-                core_ep_id =  list.get().get(0).getCore_ep_id();
+                core_ep_id =  Common.objectParseInteger(list.get().get(0).get("core_ep_id"));//list.get().get(0).getCore_ep_id();
                 if(null==core_ep_id){
                     core_ep_id=epId;
                 }
@@ -169,7 +166,6 @@ public class EpServiceImple implements EpService {
         return result;
     }
 
-    @Override
     public Result<Integer> updateStatus(Map params) {
         try {
             ParamsMapValidate.validate(params, generateCreateStatusValidate());
@@ -209,6 +205,48 @@ public class EpServiceImple implements EpService {
     }
 
     @Override
+    public Result<Integer> platformFreeze(Map params) {
+        params.put("status",EpConstant.EpStatus.FREEZE);
+        return updatePlatfrom(params);
+    }
+    @Override
+    public Result<Integer> platformDisable(Map params) {
+        params.put("status",EpConstant.EpStatus.STOP);
+        return updatePlatfrom(params);
+    }
+    /**
+     * 平台商停用冻结
+     * @param map
+     * @return
+     */
+    private Result<Integer> updatePlatfrom(Map map){
+        Result<Integer>  result= new Result<Integer>() ;
+        try {
+            result.put(epMapper.updatePlatfromStatus(map));
+            result.setSuccess();
+        }catch (Exception e){
+            result.setFail();
+            result.setError(Result.DB_FAIL, "更新平台商状态异常");
+        }
+        return result;
+    }
+
+
+    @Override
+    public Result<Integer> platformEnable(Map params) {
+        params.put("status",EpConstant.EpStatus.ACTIVE);
+        Result<Integer>  result= new Result<Integer>() ;
+        try {
+            result.put(epMapper.platformEnable(params));
+            result.setSuccess();
+        }catch (Exception e){
+            result.setFail();
+            result.setError(Result.DB_FAIL, "更新平台商状态异常");
+        }
+        return result;
+    }
+
+    @Override
     public Result<Map> updateEp(Map map) {
         try {
             String ep_class= (String)map.get("ep_class");
@@ -240,11 +278,11 @@ public class EpServiceImple implements EpService {
     /**
      * 查询企业接口，列表单个
      * @param map
-     * @return
+     * @return   Ep  Map
      */
     @Override
-    public Result< List<Ep>> select(Map map) {
-        Result<List<Ep>> result = new Result<List<Ep>>();
+    public Result< List<Map>> select(Map map) {
+        Result<List<Map>> result = new Result<>();
         try {
             result.put(epMapper.select(map));
             result.setSuccess();
@@ -261,8 +299,8 @@ public class EpServiceImple implements EpService {
      * @return
      */
     @Override
-    public Result<List<Ep>> all(Map params) {
-     Result<List<Ep>> result = new Result<List<Ep>>();
+    public Result<List<Map>> all(Map params) {
+     Result<List<Map>> result = new Result<>();
         try {
             result.put(epMapper.all(params));
             result.setSuccess();
@@ -276,21 +314,24 @@ public class EpServiceImple implements EpService {
     /**
      * 验证平台商
      * @param params
-     * @return
+     * @return   PlatformEp
      */
     @Override
-    public Result<PlatformEp> validate(Map params) {
-        Result<PlatformEp> result = new Result<PlatformEp>();
-        CoreEpAccess access=  coreEpAccessService.select(params).get();
+    public Result<Map> validate(Map params) {
+        Result<Map> result = new Result<>();
+        Map access=  coreEpAccessService.select(params).get();
+        Map map = new HashMap();
         if(null!=access){
             PlatformEp platformEp  = new PlatformEp();
             params.clear();
-            params.put("id",access.getId());
+            params.put("id",access.get("id"));
             try {
-                platformEp.setEp_info( epMapper.select(params).get(0));
-                platformEp.setPayment(coreEpPaymentConfService.findById(access.getId()));
-                platformEp.setCapital(null);//TODO   t_capital(余额)
-                result.put(platformEp);
+//                platformEp.setEp_info( );
+                map.put("ep_info",epMapper.select(params).get(0));
+//                platformEp.setPayment();
+               // map.put("payment",coreEpPaymentConfService.findById(access.get("id")));
+//                platformEp.setCapital(null);//TODO   t_capital(余额)
+                result.put(map);
                 result.setSuccess();
             } catch (Exception e) {
                 result.setFail();
@@ -317,16 +358,16 @@ public class EpServiceImple implements EpService {
         Map map = new HashMap();
         while(true){
                map.put("id",id);
-            List<Ep> list=  epMapper.select(map);
+            List<Map> list=  epMapper.select(map);
             if(list==null){
                 result.setFail();
                 result.setError(Result.DB_FAIL, "查找企业出错");
                 break;
             }
-            Ep ep = list.get(0);
-             id= ep.getCreator_ep_id();//上级企业id
-             status = ep.getStatus();
-            if(status!=EpConstant.EpStatus.ACTIVE||ep.getEp_type()==EpConstant.EpType.PLATFORM) {//查到平台商 或者不是正常的就直接返回
+            Map ep = list.get(0);
+             id= Integer.parseInt(ep.get("creator_ep_id").toString());  //ep.getCreator_ep_id();//上级企业id
+             status =Integer.parseInt(ep.get("status").toString()) ;  //ep.getStatus();
+            if(status!=EpConstant.EpStatus.ACTIVE||EpConstant.EpType.PLATFORM.equals(Integer.parseInt(ep.get("ep_type").toString()))) {//查到平台商 或者不是正常的就直接返回
                 result.put(status);
                 break;
             }
@@ -340,11 +381,11 @@ public class EpServiceImple implements EpService {
      * @return
      */
     @Override
-    public Result<List<Ep>> getEp(Integer[] epids, String[] field) {
+    public Result<List<Map>> getEp(Integer[] epids, String[] field) {
         Map map = new HashMap();
         map.put("epids",epids);
         map.put("field",field);
-        Result<List<Ep>> result = new Result<List<Ep>>();
+        Result<List<Map>> result = new Result<>();
         try {
             result.put(epMapper.getEp(map));
             result.setSuccess();

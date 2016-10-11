@@ -1,6 +1,5 @@
 package com.all580.ep.service;
 
-import com.all580.ep.api.entity.EpChannelRep;
 import com.all580.ep.api.service.CoreEpChannelService;
 import com.all580.ep.com.Common;
 import com.all580.ep.dao.CoreEpChannelMapper;
@@ -77,9 +76,9 @@ public class CoreEpChannelServiceImple implements CoreEpChannelService {
         return result;
     }
 
-    @Override
-    public Result<List<EpChannelRep>> select(Map params) {
-        Result<List<EpChannelRep>> result = new Result<List<EpChannelRep>>();
+    @Override  //EpChannelRep
+    public Result<List<Map>> select(Map params) {
+        Result<List<Map>> result = new Result<>();
         try {
             result.put(coreEpChannelMapper.select(params));
             result.setSuccess();
