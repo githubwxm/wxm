@@ -37,6 +37,6 @@ public interface EpPaymentConfService {
      * @param epId 企业ID
      * @return {"coreEpId":xxx,"paymentType":7112,"confData":"...","status":1}
      */
-    Result<Map<String, Object>> findById(Integer epId);
+    Result<Map<String, String>> findById(Integer epId);
 
 }
