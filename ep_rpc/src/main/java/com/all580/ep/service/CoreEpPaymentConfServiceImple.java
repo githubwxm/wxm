@@ -2,7 +2,6 @@ package com.all580.ep.service;
 
 
 import com.all580.ep.api.EpConstant;
-import com.all580.ep.api.entity.CoreEpAccess;
 import com.all580.ep.api.entity.CoreEpPaymentConf;
 import com.all580.ep.api.service.CoreEpAccessService;
 import com.all580.ep.api.service.CoreEpPaymentConfService;
@@ -34,7 +33,7 @@ public class CoreEpPaymentConfServiceImple implements CoreEpPaymentConfService {
     private CoreEpAccessService coreEpAccessService;
 
 
-    // TODO: 2016/10/9 0009  2)创建同步数据,提交事务,开启新线程同步数据至运营平台
+    // TODO: 2016/10/9 0009  创建同步数据,提交事务,开启新线程同步数据至运营平台
     @Override
     public  Result<Integer> create(Map map) {
         Result<Integer> result = new Result<Integer>();
@@ -53,16 +52,16 @@ public class CoreEpPaymentConfServiceImple implements CoreEpPaymentConfService {
         Result<Integer> result = new Result<Integer>();
         try {
             ParamsMapValidate.validate(map, generateCreatePaymentValidate());
+
         } catch (ParamsMapValidationException e) {
             log.warn("收款方式配置有误", e);
             return new Result<>(false, Result.PARAMS_ERROR, e.getMessage());
         }
            try {
-               Result<CoreEpAccess> access=  coreEpAccessService.select(map);//校验access_id
-               if(null==access.get()){
-                   result.setError(Result.DB_FAIL, "参数access_id无效");
+               Integer  core_ep_id=coreEpAccessService.checkAccess_id(map.get("access_id"));
+               if(null==core_ep_id){
+                   return new Result<>(false, Result.PARAMS_ERROR, "参数access_id无效");
                }
-               Integer core_ep_id=  access.get().getId();
                map.put("core_ep_id",core_ep_id);
                if(EpConstant.PaymentStatus.STATUS_NORMAL.equals(Integer.parseInt(map.get("status").toString()))){
                     if(null==isExists(map)){
@@ -91,11 +90,10 @@ public class CoreEpPaymentConfServiceImple implements CoreEpPaymentConfService {
             return new Result<>(false, Result.PARAMS_ERROR, e.getMessage());
         }
         try {
-            Result<CoreEpAccess> access=  coreEpAccessService.select(map);//校验access_id
-            if(null==access.get()){
-                result.setError(Result.DB_FAIL, "参数access_id无效");
+            Integer  core_ep_id=coreEpAccessService.checkAccess_id(map.get("access_id"));
+            if(null==core_ep_id){
+                return new Result<>(false, Result.PARAMS_ERROR, "参数access_id无效");
             }
-            Integer core_ep_id=  access.get().getId();
             map.put("core_ep_id",core_ep_id);
             if(EpConstant.PaymentStatus.STATUS_NORMAL.equals(Integer.parseInt(map.get("status").toString()))){
                 if(null==isExists(map)){
@@ -123,9 +121,8 @@ public class CoreEpPaymentConfServiceImple implements CoreEpPaymentConfService {
         } catch (Exception e) {
         result.setFail();
         result.setError(Result.DB_FAIL, "参数无效");
-    }
-
-        return null;
+        }
+        return result;
     }
 
     @Override
@@ -154,4 +151,5 @@ public class CoreEpPaymentConfServiceImple implements CoreEpPaymentConfService {
         }, new ValidRule[]{new ValidRule.Digits()});
         return rules;
     }
+
 }
