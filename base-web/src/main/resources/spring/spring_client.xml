@@ -24,5 +24,7 @@
 					 interface="com.all580.ep.api.service.CoreEpChannelService" />
 	<dubbo:reference id="coreEpAccessService"
 					 interface="com.all580.ep.api.service.CoreEpAccessService" />
+	<dubbo:reference id="epBalanceThresholdService"
+					 interface="com.all580.ep.api.service.EpBalanceThresholdService" />
 
 </beans>
