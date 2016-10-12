@@ -4,14 +4,19 @@ import com.all580.ep.api.EpConstant;
 import com.all580.ep.api.service.EpService;
 import com.all580.order.api.OrderConstant;
 import com.all580.order.api.service.BookingOrderService;
-import com.all580.order.dao.*;
-import com.all580.order.dto.AccountDataDto;
-import com.all580.order.dto.GenerateAccountDto;
+import com.all580.order.dao.OrderItemDetailMapper;
+import com.all580.order.dao.OrderItemMapper;
+import com.all580.order.dao.OrderMapper;
 import com.all580.order.dto.LockStockDto;
-import com.all580.order.entity.*;
+import com.all580.order.entity.Order;
+import com.all580.order.entity.OrderItem;
+import com.all580.order.entity.OrderItemDetail;
+import com.all580.order.entity.Visitor;
 import com.all580.order.manager.BookingOrderManager;
 import com.all580.order.manager.RefundOrderManager;
-import com.all580.payment.api.service.BalancePayService;
+import com.all580.payment.api.conf.PaymentConstant;
+import com.all580.payment.api.model.BalanceChangeInfo;
+import com.all580.payment.api.service.ThirdPayService;
 import com.all580.product.api.consts.ProductConstants;
 import com.all580.product.api.model.EpSalesInfo;
 import com.all580.product.api.model.ProductSalesInfo;
@@ -19,10 +24,10 @@ import com.all580.product.api.model.ProductSearchParams;
 import com.all580.product.api.service.ProductSalesPlanRPCService;
 import com.framework.common.Result;
 import com.framework.common.exception.ApiException;
-import com.framework.common.exception.ParamsMapValidationException;
 import com.framework.common.lang.DateFormatUtils;
-import com.framework.common.validate.ParamsMapValidate;
+import com.framework.common.lang.UUIDGenerator;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -51,28 +56,16 @@ public class BookingOrderServiceImpl implements BookingOrderService {
     private OrderItemMapper orderItemMapper;
     @Autowired
     private OrderItemDetailMapper orderItemDetailMapper;
-    @Autowired
-    private OrderItemAccountMapper orderItemAccountMapper;
-    @Autowired
-    private VisitorMapper visitorMapper;
-    @Autowired
-    private ShippingMapper shippingMapper;
 
     @Autowired
     private ProductSalesPlanRPCService productSalesPlanRPCService;
     @Autowired
     private EpService epService;
+    @Autowired
+    private ThirdPayService thirdPayService;
 
     @Override
     public Result<?> create(Map params) {
-        // 验证参数 放在网关层
-        try {
-            ParamsMapValidate.validate(params, bookingOrderManager.generateCreateOrderValidate());
-        } catch (ParamsMapValidationException e) {
-            log.warn("创建订单参数验证失败", e);
-            return new Result<>(false, Result.PARAMS_ERROR, e.getMessage());
-        }
-
         try {
             Integer buyEpId = Integer.parseInt(params.get("ep_id").toString());
             Integer from = Integer.parseInt(params.get("from").toString());
@@ -99,6 +92,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
                 Integer productSubId = Integer.parseInt(item.get("product_sub_id").toString());
                 Integer quantity = Integer.parseInt(item.get("quantity").toString());
                 Integer days = Integer.parseInt(item.get("days").toString());
+                int visitorQuantity = 0; // 游客总票数
                 //预定日期
                 Date bookingDate = DateFormatUtils.parseString(DateFormatUtils.DATE_TIME_FORMAT, item.get("start").toString());
 
@@ -163,17 +157,22 @@ public class BookingOrderServiceImpl implements BookingOrderService {
                 for (Integer i = 0; i < days; i++) {
                     OrderItemDetail orderItemDetail = bookingOrderManager.generateDetail(salesInfo, orderItem.getId(), DateUtils.addDays(bookingDate, i), quantity);
                     detailList.add(orderItemDetail);
+                    // 创建游客信息
+                    for (Map v : visitors) {
+                        Visitor visitor = bookingOrderManager.generateVisitor(v, orderItemDetail.getId());
+                        visitorQuantity += visitor.getQuantity();
+                    }
+                }
+
+                // 判断总张数是否匹配
+                if (visitorQuantity != quantity) {
+                    throw new ApiException("游客票数与总票数不符");
                 }
                 lockStockDtoMap.put(orderItem.getId(), new LockStockDto(orderItem, detailList));
                 lockParams.add(bookingOrderManager.parseParams(orderItem));
 
                 // 预分账记录
                 bookingOrderManager.preSplitAccount(allDaysSales, orderItem.getId(), quantity, 1);
-
-                // 创建游客信息
-                for (Map v : visitors) {
-                    bookingOrderManager.generateVisitor(v, orderItem.getId());
-                }
             }
 
             // 创建订单联系人
@@ -239,14 +238,6 @@ public class BookingOrderServiceImpl implements BookingOrderService {
 
     @Override
     public Result<?> audit(Map params) {
-        // 验证参数 放在网关层
-        try {
-            ParamsMapValidate.validate(params, bookingOrderManager.generateAuditOrderValidate());
-        } catch (ParamsMapValidationException e) {
-            log.warn("审核订单参数验证失败", e);
-            return new Result<>(false, Result.PARAMS_ERROR, e.getMessage());
-        }
-
         try {
             int orderItemId = Integer.parseInt(params.get("order_item_id").toString());
             OrderItem orderItem = orderItemMapper.selectByPrimaryKey(orderItemId);
@@ -288,7 +279,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
 
             // 不通过
             // 取消订单
-            return refundOrderManager.cancel(order.getId());
+            return refundOrderManager.cancel(order.getNumber());
         } catch (Exception e) {
             log.error("审核订单异常", e);
             throw new ApiException("审核订单异常", e);
@@ -297,7 +288,70 @@ public class BookingOrderServiceImpl implements BookingOrderService {
 
     @Override
     public Result<?> payment(Map params) {
-        return new Result<>(true);
+        try {
+            Long sn = Long.valueOf(params.get("order_sn").toString());
+            Integer payType = Integer.parseInt(params.get("pay_type").toString());
+
+            Order order = orderMapper.selectBySN(sn);
+            if (order == null) {
+                throw new ApiException("订单不存在");
+            }
+            if (order.getStatus() != OrderConstant.OrderStatus.PAY_WAIT ||
+                    order.getStatus() != OrderConstant.OrderStatus.PAY_FAIL) {
+                throw new ApiException("订单不在待支付状态");
+            }
+            if (order.getPayAmount() <= 0) {
+                throw new ApiException("该订单不需要支付");
+            }
+
+            order.setStatus(OrderConstant.OrderStatus.PAYING);
+            order.setLocalPaymentSerialNo(String.valueOf(UUIDGenerator.generateUUID()));
+            order.setPaymentType(payType);
+            order.setPayTime(new Date());
+            orderMapper.updateByPrimaryKey(order);
+
+            // 调用支付RPC
+            // 余额支付
+            if (payType == PaymentConstant.PaymentType.BALANCE.intValue()) {
+                BalanceChangeInfo payInfo = new BalanceChangeInfo();
+                payInfo.setEpId(order.getBuyEpId());
+                payInfo.setCoreEpId(bookingOrderManager.getCoreEpId(epService.selectPlatformId(order.getBuyEpId())));
+                payInfo.setBalance(-order.getPayAmount());
+                payInfo.setCanCash(-order.getPayAmount());
+
+                BalanceChangeInfo saveInfo = new BalanceChangeInfo();
+                saveInfo.setEpId(payInfo.getCoreEpId());
+                saveInfo.setCoreEpId(payInfo.getCoreEpId());
+                saveInfo.setBalance(order.getPayAmount());
+                saveInfo.setCanCash(order.getPayAmount());
+                // 支付
+                Result result = bookingOrderManager.changeBalances(
+                        PaymentConstant.BalanceChangeType.BALANCE_PAY,
+                        order.getLocalPaymentSerialNo(), payInfo, saveInfo);
+                if (result.hasError()) {
+                    log.warn("余额支付失败:{}", result.get());
+                    throw new ApiException(result.getError());
+                }
+                return new Result<>(true);
+            }
+            // 第三方支付
+            // 获取商品名称
+            List<String> names = orderItemMapper.getProductNamesByOrderId(order.getId());
+            Result result = thirdPayService.reqPay(
+                    StringUtils.join(names, ","),
+                    order.getNumber(), order.getPayAmount(),
+                    order.getLocalPaymentSerialNo(),
+                    bookingOrderManager.getCoreEpId(epService.selectPlatformId(order.getBuyEpId())),
+                    payType);
+            if (result.hasError()) {
+                log.warn("第三方支付异常:{}", result);
+                throw new ApiException(result.getError());
+            }
+            return result;
+        } catch (Exception e) {
+            log.error("订单支付异常", e);
+            throw new ApiException("订单支付异常", e);
+        }
     }
 
     @Override

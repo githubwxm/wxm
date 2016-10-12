@@ -16,6 +16,7 @@ import com.github.ltsopensource.tasktracker.runner.JobRunner;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,6 +30,7 @@ import java.util.Map;
  * @date 2016/10/10 20:41
  */
 @Component(OrderConstant.Actions.PAYMENT_CALLBACK)
+@Transactional(rollbackFor = {Exception.class, RuntimeException.class})
 @Slf4j
 public class PaymentCallbackAction implements JobRunner {
     @Autowired
@@ -54,7 +56,7 @@ public class PaymentCallbackAction implements JobRunner {
         com.framework.common.Result result = productSalesPlanRPCService.addSoldProductStocks(lockParams);
         if (result.hasError()) {
             log.warn("支付成功加已售失败");
-            throw new ApiException(result.getError());
+            throw new Exception(result.getError());
         }
 
         // 子订单状态为未出票
