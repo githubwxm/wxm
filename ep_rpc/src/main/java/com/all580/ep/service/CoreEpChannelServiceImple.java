@@ -24,7 +24,7 @@ public class CoreEpChannelServiceImple implements CoreEpChannelService {
     @Autowired
     private CoreEpChannelMapper coreEpChannelMapper;
 
-    @Override
+    @Override   //// TODO: 2016/10/11 0011   上游下游供销关系同步 数据
     public Result<Integer> create(Map params) {
         Result<Integer> result = new Result<Integer>();
         try {
@@ -52,6 +52,19 @@ public class CoreEpChannelServiceImple implements CoreEpChannelService {
 
     @Override
     public Result<Integer> update(Map params) {
+        try {
+            ParamsMapValidate.validate(params, generateUpdateEpChannelValidate());
+            String rate=  params.get("rate").toString();
+            if(Common.isTrue(rate,"\\d{1}\\.\\d{1,2}$|\\d{1}")){//校验汇率在0 - 9.99之间 乘100 取整
+                Double temp =Double.parseDouble(rate)*100;
+                params.put("rate",temp.intValue());
+            }else{
+                throw new ParamsMapValidationException("汇率不合法");
+            }
+        } catch (ParamsMapValidationException e) {
+            log.warn("修改汇率通道参数错误");
+            return new Result<>(false, Result.PARAMS_ERROR, e.getMessage());
+        }
         Result<Integer> result = new Result<Integer>();
         try {
             result.put(coreEpChannelMapper.update(params));
@@ -64,7 +77,7 @@ public class CoreEpChannelServiceImple implements CoreEpChannelService {
     }
 
     @Override
-    public Result<Integer> cancle(Integer id) {
+    public Result<Integer> cancel(Integer id) {
         Result<Integer> result = new Result<Integer>();
         try {
             result.put(coreEpChannelMapper.cancel(id));
@@ -77,10 +90,14 @@ public class CoreEpChannelServiceImple implements CoreEpChannelService {
     }
 
     @Override  //EpChannelRep
-    public Result<List<Map>> select(Map params) {
-        Result<List<Map>> result = new Result<>();
+    public Result<Map> select(Map params) {
+        Map resultMap = new HashMap();
+        Result<Map> result = new Result<>();
         try {
-            result.put(coreEpChannelMapper.select(params));
+            Common.checkPage(params);
+            resultMap.put("list",coreEpChannelMapper.select(params));
+            resultMap.put("totalCount",coreEpChannelMapper.selectCount(params));
+            result.put(resultMap);
             result.setSuccess();
         } catch (Exception e) {
             result.setFail();
@@ -107,6 +124,18 @@ public class CoreEpChannelServiceImple implements CoreEpChannelService {
         return rules;
     }
 
+    private Map<String[], ValidRule[]> generateUpdateEpChannelValidate() {
+        Map<String[], ValidRule[]> rules = new HashMap<>();
+        // 校验不为空的参数
+        rules.put(new String[]{
+                "id.", //
+                "rate", // 费率
+        }, new ValidRule[]{new ValidRule.NotNull()});
 
-
+        // 校验整数
+        rules.put(new String[]{
+                "id", // 订单子产品ID
+        }, new ValidRule[]{new ValidRule.Digits()});
+        return rules;
+    }
 }
