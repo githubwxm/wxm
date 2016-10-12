@@ -28,4 +28,11 @@ public interface BalancePayService {
     Result<BalanceChangeRsp> changeBalances(List<BalanceChangeInfo> balanceChangeInfoList,Integer type,String
             serialNum);
 
+    /**
+     * 创建余额账户
+     * @param epId 企业ID
+     * @param coreEpId 平台ID
+     * @return 成功，返回{success:true}；失败，返回{success:false,error:错误信息}
+     */
+    Result createBalanceAccount(Integer epId,Integer coreEpId);
 }
