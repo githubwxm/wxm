@@ -16,7 +16,7 @@ public interface CoreEpChannelService {
      * @return
      */
     Result<Integer> update(Map params);
-    Result<List<Map>> select(Map params);
-    Result<Integer> cancle(Integer id);
+    Result<Map> select(Map params);
+    Result<Integer> cancel(Integer id);
 
 }
