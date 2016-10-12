@@ -80,7 +80,7 @@ public class EpServiceImple implements EpService {
             map.put("confData", "");
             map.put("paymentType", PaymentConstant.PaymentType.BALANCE );//默认方式余额
             epPaymentConfService.create(map);//添加支付方式
-            balancePayService.createBalanceAccount(coreEpId,coreEpId);//添加余额
+            balancePayService.createBalanceAccount(coreEpId,coreEpId);//添加余额d
             try {
                 coreEpAccessService.create(accessMap);
                 result.put(accessMap);
