@@ -11,6 +11,7 @@ import com.all580.product.api.service.ProductSalesPlanRPCService;
 import com.framework.common.Result;
 import com.framework.common.exception.ApiException;
 import com.framework.common.lang.DateFormatUtils;
+import com.framework.common.lang.JsonUtils;
 import com.framework.common.lang.UUIDGenerator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,7 +97,8 @@ public class RefundOrderManager extends BaseOrderManager {
      * @param itemId 子订单
      * @throws Exception
      */
-    public void canRefundForDays(Map daysMap, int itemId) throws Exception {
+    public int canRefundForDays(Map daysMap, int itemId) throws Exception {
+        int total = 0;
         List<OrderItemDetail> detailList = orderItemDetailMapper.selectByItemId(itemId);
         for (Object day : daysMap.keySet()) {
             Date date = DateFormatUtils.parseString(DateFormatUtils.DATE_TIME_FORMAT, day.toString());
@@ -110,10 +112,15 @@ public class RefundOrderManager extends BaseOrderManager {
                         String.format("日期:%s余票不足,已用:%s,已退:%s",
                         new Object[]{day, detail.getUsedQuantity(), detail.getRefundQuantity()}));
             }
+            total += quantity;
+            // 修改退票数
+            detail.setRefundQuantity(detail.getRefundQuantity() + quantity);
+            orderItemDetailMapper.updateByPrimaryKey(detail);
 
             // 判断游客余票
             List<Visitor> visitorList = visitorMapper.selectByOrderDetailId(detail.getId());
             if (visitorList != null) {
+                int tmpVqty = 0;
                 Map visitors = (Map) daysMap.get("visitors");
                 if (visitors == null) {
                     throw new ApiException("缺少游客退票信息");
@@ -129,9 +136,18 @@ public class RefundOrderManager extends BaseOrderManager {
                                 String.format("日期:%s游客:%s余票不足",
                                         new Object[]{day, sid}));
                     }
+                    visitor.setPreReturn(vqty);
+                    visitorMapper.updateByPrimaryKey(visitor);
+                    tmpVqty += vqty;
+                }
+
+                if (tmpVqty != quantity) {
+                    throw  new ApiException(String.format("日期:%s游客退票数不符",
+                            new Object[]{day}));
                 }
             }
         }
+        return total;
     }
 
     /**
@@ -170,10 +186,15 @@ public class RefundOrderManager extends BaseOrderManager {
         return null;
     }
 
-    public RefundOrder generateRefundOrder(int itemId) {
+    public RefundOrder generateRefundOrder(int itemId, Map daysMap, int quantity) {
         RefundOrder refundOrder = new RefundOrder();
         refundOrder.setOrderItemId(itemId);
         refundOrder.setNumber(UUIDGenerator.generateUUID());
+        refundOrder.setQuantity(quantity);
+        refundOrder.setData(JsonUtils.toJson(daysMap));
+        refundOrder.setStatus(OrderConstant.RefundOrderStatus.AUDIT_WAIT);
+        refundOrder.setCreateTime(new Date());
+        refundOrder.setMoney(0);
         return refundOrder;
     }
 }

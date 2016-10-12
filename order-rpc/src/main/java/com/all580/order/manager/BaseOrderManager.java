@@ -108,10 +108,14 @@ public class BaseOrderManager {
         return result.get();
     }
 
+    public Result<Integer> getCoreEpId(int epId) {
+        return epService.selectPlatformId(epId);
+    }
+
     public Integer getCoreEp(Map<Integer, Integer> coreEpMap, Integer epId) {
         Integer buyCoreEpId = coreEpMap.get(epId);
         if (buyCoreEpId == null) {
-            buyCoreEpId = getCoreEpId(epService.selectPlatformId(epId));
+            buyCoreEpId = getCoreEpId(getCoreEpId(epId));
             if (buyCoreEpId == null) {
                 throw new ApiException("企业平台商不存在");
             }
