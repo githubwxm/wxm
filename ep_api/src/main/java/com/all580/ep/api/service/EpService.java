@@ -71,4 +71,11 @@ public interface EpService {
     Result<Integer> platformEnable(Map params);
     //    Result<List<Ep>> selectEp(Map map);
     Result<Map> updateEp(Map map);
+
+    /**
+     * 下游平台商列表接口
+     * @param map
+     * @return
+     */
+    Result<List<Map>> platformListDown(Map map);
 }
