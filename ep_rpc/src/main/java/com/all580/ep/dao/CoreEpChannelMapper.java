@@ -14,4 +14,5 @@ public interface CoreEpChannelMapper {
    int update(Map params);
    List<Map> select(Map params);
    int cancel(@Param("id") Integer id);
+   int selectCount(Map map);
 }
