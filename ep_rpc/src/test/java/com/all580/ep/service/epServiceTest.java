@@ -3,6 +3,7 @@ package com.all580.ep.service;
 import com.all580.ep.api.service.CoreEpAccessService;
 import com.all580.ep.api.service.CoreEpChannelService;
 
+import com.all580.ep.api.service.EpBalanceThresholdService;
 import com.all580.ep.api.service.EpService;
 
 import org.junit.Test;
@@ -28,7 +29,8 @@ public class epServiceTest {
     @Resource
     private CoreEpAccessService coreEpAccessService;
 
-
+    @Resource
+    private EpBalanceThresholdService cpBalanceThresholdService;
     @Resource
     private CoreEpChannelService coreEpChannelService;
 
@@ -36,11 +38,16 @@ public class epServiceTest {
     @Test
     public void createChannel(){
         Map map = new HashMap();
-        System.out.println(coreEpChannelService.select(map).get());
+        map.put("ep_id","10");
+        map.put("core_ep_id","10");
+        cpBalanceThresholdService.createOrUpdate(map);
+       // System.out.println(coreEpChannelService.select(map).get());
     }
     @Test
     public void createEp(){
         Map map = new HashMap();
+        map.put("ep_id",2);
+        print(epService.platformListDown(map).get());
 //        map.put("ep_type","10002");
 //        map.put("creator_ep_id","1");//创建
 //        map.put("core_ep_id",1);//平台
@@ -61,7 +68,7 @@ public class epServiceTest {
 //        System.out.println(epService.updateEp(map).get());
 //        // epService.createPlatform(map);
 
-                System.out.println(epService.select(map).get());
+             //   System.out.println(epService.select(map).get());
     }
     @Test
     public void createTest() {
@@ -106,5 +113,8 @@ public class epServiceTest {
 //        epService.create(null);
 //        epService.all(null);
 //        epService.validate(null);
+    }
+    public void print(Object obj){
+        System.out.println(obj);
     }
 }
