@@ -5,26 +5,18 @@ import com.all580.order.api.service.RefundOrderService;
 import com.all580.order.dao.OrderItemDetailMapper;
 import com.all580.order.dao.OrderItemMapper;
 import com.all580.order.dao.OrderMapper;
-import com.all580.order.dao.VisitorMapper;
-import com.all580.order.dto.CanRefundResult;
-import com.all580.order.dto.RefundRate;
 import com.all580.order.entity.Order;
 import com.all580.order.entity.OrderItem;
 import com.all580.order.entity.OrderItemDetail;
-import com.all580.order.entity.Visitor;
 import com.all580.order.manager.RefundOrderManager;
-import com.all580.product.api.consts.ProductConstants;
-import com.all580.product.api.consts.ProductRules;
 import com.framework.common.Result;
 import com.framework.common.exception.ApiException;
-import com.framework.common.lang.DateFormatUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 

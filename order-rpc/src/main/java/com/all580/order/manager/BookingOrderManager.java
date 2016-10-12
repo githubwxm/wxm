@@ -371,7 +371,7 @@ public class BookingOrderManager extends BaseOrderManager {
             if (coreEpId.intValue() == epId) {
                 AccountDataDto dto = dataDtos.get(0);
                 if (dto != null && dto.getSaleCoreEpId() != null) {
-                    accountDto = new GenerateAccountDto()
+                    accountDto = new GenerateAccountDto();
                     int totalAddProfit = 0;
                     // 卖家平台商每天的利润
                     List<AccountDataDto> saleAccountDataDtoList = daysAccountDataMap.get(dto.getSaleCoreEpId());
@@ -405,7 +405,7 @@ public class BookingOrderManager extends BaseOrderManager {
                     }
                 }
             } else {
-                accountDto = new GenerateAccountDto()
+                accountDto = new GenerateAccountDto();
                 // 平台内部企业分账(利润)
                 accountDto.setSubtractEpId(coreEpId); // 平台商扣钱给企业分利润
                 accountDto.setSubtractCoreId(coreEpId);

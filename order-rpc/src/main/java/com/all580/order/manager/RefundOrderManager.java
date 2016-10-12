@@ -4,8 +4,6 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.all580.order.api.OrderConstant;
 import com.all580.order.dao.*;
-import com.all580.order.dto.CanRefundResult;
-import com.all580.order.dto.RefundRate;
 import com.all580.order.entity.*;
 import com.all580.product.api.consts.ProductConstants;
 import com.all580.product.api.consts.ProductRules;
