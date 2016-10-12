@@ -6,11 +6,15 @@ import com.all580.order.dao.OrderItemDetailMapper;
 import com.all580.order.dao.OrderItemMapper;
 import com.all580.order.dao.OrderMapper;
 import com.all580.order.dao.VisitorMapper;
+import com.all580.order.dto.CanRefundResult;
+import com.all580.order.dto.RefundRate;
 import com.all580.order.entity.Order;
 import com.all580.order.entity.OrderItem;
 import com.all580.order.entity.OrderItemDetail;
 import com.all580.order.entity.Visitor;
 import com.all580.order.manager.RefundOrderManager;
+import com.all580.product.api.consts.ProductConstants;
+import com.all580.product.api.consts.ProductRules;
 import com.framework.common.Result;
 import com.framework.common.exception.ApiException;
 import com.framework.common.lang.DateFormatUtils;
@@ -73,15 +77,20 @@ public class RefundOrderServiceImpl implements RefundOrderService {
                 throw new ApiException("订单不在可退订状态");
             }
 
+            List<OrderItemDetail> detailList = orderItemDetailMapper.selectByItemId(orderItem.getId());
             // 判断余票 并修改明细退票数量
             Map daysMap = (Map) params.get("days");
-            int tmpQuantity = refundOrderManager.canRefundForDays(daysMap, orderItem.getId());
+            int tmpQuantity = refundOrderManager.canRefundForDays(daysMap, detailList);
             Integer quantity = Integer.parseInt(params.get("quantity").toString());
             if (tmpQuantity != quantity) {
                 throw new ApiException("退票总数与每天退票数不符");
             }
 
+            // 计算退款金额
+            int money = refundOrderManager.calcRefundMoney(detailList, orderItem.getId(), order.getBuyEpId(),
+                    refundOrderManager.getCoreEpId(refundOrderManager.getCoreEpId(order.getBuyEpId())));
             // 创建退订订单
+            refundOrderManager.generateRefundOrder(orderItem.getId(), daysMap, quantity, money);
         } catch (Exception e) {
             log.error("订单申请退订异常", e);
             throw new ApiException("订单申请退订异常", e);

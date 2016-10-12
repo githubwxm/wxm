@@ -62,7 +62,50 @@ public class AccountTest {
                 EpSalesInfo c3 = new EpSalesInfo();
                 c3.setSaleEpId(303);
                 c3.setBuyEpId(-1);
-                c3.setPrice(45);
+                c3.setPrice(38);
+                add(c3);
+            }});
+            add(new ArrayList<EpSalesInfo>(){{
+                EpSalesInfo a1 = new EpSalesInfo();
+                a1.setSaleEpId(101);
+                a1.setBuyEpId(102);
+                a1.setPrice(5);
+                add(a1);
+
+                EpSalesInfo a2 = new EpSalesInfo();
+                a2.setSaleEpId(102);
+                a2.setBuyEpId(103);
+                a2.setPrice(11);
+                add(a2);
+
+                EpSalesInfo a3 = new EpSalesInfo();
+                a3.setSaleEpId(103);
+                a3.setBuyEpId(201);
+                a3.setPrice(17);
+                add(a3);
+
+                EpSalesInfo b1 = new EpSalesInfo();
+                b1.setSaleEpId(201);
+                b1.setBuyEpId(301);
+                b1.setPrice(23);
+                add(b1);
+
+                EpSalesInfo c1 = new EpSalesInfo();
+                c1.setSaleEpId(301);
+                c1.setBuyEpId(302);
+                c1.setPrice(37);
+                add(c1);
+
+                EpSalesInfo c2 = new EpSalesInfo();
+                c2.setSaleEpId(302);
+                c2.setBuyEpId(303);
+                c2.setPrice(40);
+                add(c2);
+
+                EpSalesInfo c3 = new EpSalesInfo();
+                c3.setSaleEpId(303);
+                c3.setBuyEpId(-1);
+                c3.setPrice(40);
                 add(c3);
             }});
         }};
@@ -133,11 +176,12 @@ public class AccountTest {
                 totalInPrice += dataDto.getInPrice();
                 totalProfit += dataDto.getProfit();
             }
-            GenerateAccountDto accountDto = new GenerateAccountDto();
+            GenerateAccountDto accountDto = null;
             // 平台商之间分账(进货价)
             if (coreEpId.intValue() == epId) {
                 AccountDataDto dto = dataDtos.get(0);
                 if (dto != null && dto.getSaleCoreEpId() != null) {
+                    accountDto = new GenerateAccountDto();
                     int totalAddProfit = 0;
                     // 卖家平台商每天的利润
                     List<AccountDataDto> saleAccountDataDtoList = daysAccountDataMap.get(dto.getSaleCoreEpId());
@@ -170,9 +214,9 @@ public class AccountTest {
                         accountDto.setAddData(dataDtos); // 买家每天的单价利润
                     }
                 }
-
             } else {
                 // 平台内部企业分账(利润)
+                accountDto = new GenerateAccountDto();
                 accountDto.setSubtractEpId(coreEpId); // 平台商扣钱给企业分利润
                 accountDto.setSubtractCoreId(coreEpId);
                 accountDto.setAddEpId(epId); // 收钱企业ID
@@ -185,7 +229,7 @@ public class AccountTest {
                 accountDto.setAddData(dataDtos); // 每天的单价利润
             }
 
-            if (accountDto.getMoney() != 0) {
+            if (accountDto != null) {
                 System.out.println(JsonUtils.toJson(generateAccount(accountDto)));
             }
         }
