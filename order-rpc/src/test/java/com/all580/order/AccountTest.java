@@ -67,7 +67,7 @@ public class AccountTest {
             }});
         }};
 
-        ooxx(daySalesList, 1, 1, 5012);
+        ooxx(daySalesList, 1, 1, 5011);
     }
 
     public static void ooxx(List<List<EpSalesInfo>> daySalesList, int itemId, int quantity, int payType) {

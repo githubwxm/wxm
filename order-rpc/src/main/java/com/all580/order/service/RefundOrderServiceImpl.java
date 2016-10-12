@@ -73,9 +73,15 @@ public class RefundOrderServiceImpl implements RefundOrderService {
                 throw new ApiException("订单不在可退订状态");
             }
 
-            // 判断余票
+            // 判断余票 并修改明细退票数量
             Map daysMap = (Map) params.get("days");
-            refundOrderManager.canRefundForDays(daysMap, orderItem.getId());
+            int tmpQuantity = refundOrderManager.canRefundForDays(daysMap, orderItem.getId());
+            Integer quantity = Integer.parseInt(params.get("quantity").toString());
+            if (tmpQuantity != quantity) {
+                throw new ApiException("退票总数与每天退票数不符");
+            }
+
+            // 创建退订订单
         } catch (Exception e) {
             log.error("订单申请退订异常", e);
             throw new ApiException("订单申请退订异常", e);

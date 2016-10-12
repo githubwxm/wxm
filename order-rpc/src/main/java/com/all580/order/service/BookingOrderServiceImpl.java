@@ -1,6 +1,6 @@
 package com.all580.order.service;
 
-import com.all580.ep.api.EpConstant;
+import com.all580.ep.api.conf.EpConstant;
 import com.all580.ep.api.service.EpService;
 import com.all580.order.api.OrderConstant;
 import com.all580.order.api.service.BookingOrderService;
@@ -315,7 +315,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             if (payType == PaymentConstant.PaymentType.BALANCE.intValue()) {
                 BalanceChangeInfo payInfo = new BalanceChangeInfo();
                 payInfo.setEpId(order.getBuyEpId());
-                payInfo.setCoreEpId(bookingOrderManager.getCoreEpId(epService.selectPlatformId(order.getBuyEpId())));
+                payInfo.setCoreEpId(bookingOrderManager.getCoreEpId(bookingOrderManager.getCoreEpId(order.getBuyEpId())));
                 payInfo.setBalance(-order.getPayAmount());
                 payInfo.setCanCash(-order.getPayAmount());
 
