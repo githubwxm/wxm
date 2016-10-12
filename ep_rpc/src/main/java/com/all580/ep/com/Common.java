@@ -67,6 +67,22 @@ public class Common {
         Pattern pattern = Pattern.compile(grep);
         return pattern.matcher(key).matches();
     }
+    /**
+     * 字符串是否为数字
+     *
+     * @param obj
+     * @return
+     */
+    public static boolean objectIsNumber(Object obj) {
+        String key="";
+        if(null==obj){
+            return false;
+        }else{
+            key=obj.toString();
+        }
+        Pattern pattern = Pattern.compile("\\d+");
+        return pattern.matcher(key).matches();
+    }
 
     /**
      * 对象转Map
@@ -135,11 +151,23 @@ public class Common {
         }
         return obj;
     }
+
+
     public static Integer objectParseInteger(Object obj){
         if(null==obj){
             return null;
         }else{
             return Integer.parseInt(obj.toString());
+        }
+    }
+
+    /**
+     * 检查分页参数  起始 余总数  record_start  record_count
+     * @param map
+     */
+    public static void checkPage(Map map){
+        if(objectIsNumber(map.get("record_start"))&&objectIsNumber(map.get("record_count"))){
+            map.put("limit","");
         }
     }
 }
