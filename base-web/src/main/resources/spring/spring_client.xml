@@ -18,4 +18,11 @@
 
 	<dubbo:reference id="bookingOrderService"
 					 interface="com.all580.order.api.service.BookingOrderService" />
+	<dubbo:reference id="epService"
+					 interface="com.all580.ep.api.service.EpService" />
+	<dubbo:reference id="creEpChannelService"
+					 interface="com.all580.ep.api.service.CoreEpChannelService" />
+	<dubbo:reference id="coreEpAccessService"
+					 interface="com.all580.ep.api.service.CoreEpAccessService" />
+
 </beans>
