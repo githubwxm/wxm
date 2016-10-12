@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.all580.ep.dao.EpBalanceThresholdMapper">
+
+    <insert id="createOrUpdate">
+      insert into t_ep_balance_threshold(ep_id,core_ep_id) values
+       (#{ep_id},#{core_ep_id}) ON DUPLICATE KEY UPDATE threshold=#{threshold};
+    </insert>
+
+    <select id="select" resultType="java.util.HashMap">
+       select * from t_ep_balance_threshold
+       where ep_id=#{ep_id} and core_ep_id=#{core_ep_id}
+    </select>
+
+</mapper>
