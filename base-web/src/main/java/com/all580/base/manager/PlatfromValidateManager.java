@@ -34,23 +34,16 @@ public class PlatfromValidateManager {
                 "city", // 市
                 "area", // 区
         }, new ValidRule[]{new ValidRule.Digits()});
-
-//        // 校验身份证
-//        rules.put(new String[]{
-//                "items.visitor.sid" // 订单游客身份证号码
-//        }, new ValidRule[]{new ValidRule.IdCard()});
-        // 校验手机号码
         rules.put(new String[]{
                 "link_phone", // 订单联系人手机号码
         }, new ValidRule[]{new ValidRule.Pattern(ValidRule.MOBILE_PHONE)});
         return rules;
     }
-    private Map<String[], ValidRule[]> generateCreateStatusValidate() {
+    public Map<String[], ValidRule[]> generateCreateStatusValidate() {
         Map<String[], ValidRule[]> rules = new HashMap<>();
         // 校验不为空的参数
         rules.put(new String[]{
                 "id.", //
-                "access_id"
         }, new ValidRule[]{new ValidRule.NotNull()});
 
         // 校验整数
