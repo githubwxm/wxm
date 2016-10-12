@@ -8,6 +8,9 @@ import com.all580.ep.api.service.EpService;
 import com.all580.ep.com.Common;
 import com.all580.ep.dao.EpMapper;
 
+import com.all580.payment.api.conf.PaymentConstant;
+import com.all580.payment.api.service.BalancePayService;
+import com.all580.payment.api.service.EpPaymentConfService;
 import com.framework.common.Result;
 import com.framework.common.exception.ParamsMapValidationException;
 import com.framework.common.validate.ParamsMapValidate;
@@ -34,11 +37,11 @@ public class EpServiceImple implements EpService {
     @Autowired
     private CoreEpAccessService coreEpAccessService;
 
-//    @Autowired
-//    private BalancePayService balancePayService;
+    @Autowired
+    private EpPaymentConfService epPaymentConfService;
 
-//    @Autowired
-//    private CoreEpPaymentConfService coreEpPaymentConfService;
+    @Autowired
+    private BalancePayService balancePayService;
 
     /**
      * // 创建平台商
@@ -48,6 +51,7 @@ public class EpServiceImple implements EpService {
      */
     @Override
     public Result<Map> createPlatform(Map map) {
+
         map.put("status", EpConstant.EpStatus.UNINITIAL);// 状态默认未初始化
         map.put("status_bak", EpConstant.EpStatus.UNINITIAL);// 状态默认未初始化
         map.put("ep_type", EpConstant.EpType.PLATFORM);
@@ -59,15 +63,24 @@ public class EpServiceImple implements EpService {
 //                log.warn("平台商参数错误");
 //                return new Result<>(false, Result.PARAMS_ERROR, e.getMessage());
 //            }
-        int epId = epMapper.create(map);//返回刚添加的平台商
+        int epId = epMapper.create(map);//添加成功
+        Integer coreEpId =null;//企业id 平台商id
         // CoreEpAccess access=null;
         Result<Map> result = new Result<>();
         if (epId > 0) {// 添加平台商t_core_ep_access
+            coreEpId=Integer.parseInt(map.get("id").toString());
             Map accessMap = new HashMap();
-            accessMap.put("id", map.get("id"));
+            accessMap.put("id", coreEpId);
             accessMap.put("access_id", Common.getAccessId());
             accessMap.put("access_key", Common.getAccessKey());
             accessMap.put("link", "");//TODO 待完善
+
+             //epMapper.update(map);//TODO  所属平台商企业id为平台商时是否指定
+            map.put("coreEpId", coreEpId);
+            map.put("confData", "");
+            map.put("paymentType", PaymentConstant.PaymentType.BALANCE );//默认方式余额
+            epPaymentConfService.create(map);//添加支付方式
+            balancePayService.createBalanceAccount(coreEpId,coreEpId);//添加余额
             try {
                 coreEpAccessService.create(accessMap);
                 result.put(accessMap);
@@ -80,14 +93,44 @@ public class EpServiceImple implements EpService {
             log.warn("添加平台商错误");
             return new Result<>(false, Result.PARAMS_ERROR, "添加平台商错误");
         }
-        // map.put("epId",epId);
-        // epMapper.update(map);//TODO  所属平台商企业id为平台商时是否指定
-        map.put("core_ep_id", map.get("id"));
-        map.put("conf_data", "");
-       // map.put("payment_type", PaymentConstant.PaymentType.BALANCE );//默认方式余额
-        //coreEpPaymentConfService.create(map);//余额支付配置
-        //TODO  Insert t_capital(添加通道费率, 余额 )
         return result;
+    }
+
+    /**
+     * 验证平台商
+     *
+     * @param params
+     * @return PlatformEp
+     */
+    @Override
+    public Result<Map> validate(Map params) {
+        Result<Map> result = new Result<>();
+        Map access = coreEpAccessService.select(params).get();
+        Map map = new HashMap();
+        if (null != access) {
+            PlatformEp platformEp = new PlatformEp();
+            params.clear();
+            params.put("id", access.get("id"));
+            try {
+//                platformEp.setEp_info( );
+                map.put("ep_info", epMapper.select(params).get(0));
+//                platformEp.setPayment();
+                Integer epId =Integer.parseInt(access.get("id").toString()) ;
+                // 查询支付方式，刚添加的应该只有个余额支付的方式
+                map.put("payment",epPaymentConfService.listByEpId(epId).get().get(0));
+//                platformEp.setCapital(null);//TODO   t_capital(余额)
+                result.put(map);
+                result.setSuccess();
+            } catch (Exception e) {
+                result.setFail();
+                result.setError(Result.DB_FAIL, "平台商校验失败");
+            }
+            return result;
+        } else {
+            result.setFail();
+            result.setError(Result.DB_FAIL, "授权ID校验失败");
+            return result;
+        }
     }
 
     @Override
@@ -96,11 +139,11 @@ public class EpServiceImple implements EpService {
         map.put("status_bak", EpConstant.EpStatus.UNINITIAL);// 状态默认未初始化
         map.put("access_id", Common.getAccessId());
         map.put("access_key", Common.getAccessKey());
+        String ep_type = (String) map.get("ep_type");//企业类型
+        String creator_ep_id = (String) map.get("creator_ep_id");//上级企业id
+        String group_id = (String) map.get("group_id");
+        String ep_class = (String) map.get("ep_class");//企业分类
         try {
-            String ep_type = (String) map.get("ep_type");//企业类型
-            String creator_ep_id = (String) map.get("creator_ep_id");//上级企业id
-            String group_id = (String) map.get("group_id");
-            String ep_class = (String) map.get("ep_class");//企业分类
             if (!Common.isTrue(creator_ep_id, "\\d+")) {
                 throw new ParamsMapValidationException("上级企业类型错误");
             }
@@ -119,14 +162,13 @@ public class EpServiceImple implements EpService {
                     map.put("ep_type", epType);
                 } else if (EpConstant.EpType.SELLER.equals(epType) || EpConstant.EpType.OTA.equals(epType) ||
                         EpConstant.EpType.DEALER.equals(epType)) {
+                    //todo 企业余额提醒值
                     map.put("ep_type", EpConstant.EpType.SELLER);
                 } else {
                     throw new ParamsMapValidationException("企业类型错误");
                 }
             }
 
-            ParamsMapValidate.validate(map, generateCreateEpValidate());
-            map.put("core_ep_id", selectPlatformId(Integer.parseInt(creator_ep_id)).get());
         } catch (ParamsMapValidationException e) {
             log.warn("企业商参数错误");
             return new Result<>(false, Result.PARAMS_ERROR, e.getMessage());
@@ -135,7 +177,9 @@ public class EpServiceImple implements EpService {
         Result<Map> result = new Result<Map>();
         try {
             epMapper.create(map);//添加企业信息
-            //Todo 添加余额
+            Integer epId=Common.objectParseInteger(map.get("id"));
+            Integer core_ep_id =selectPlatformId(Integer.parseInt(creator_ep_id)).get();
+            balancePayService.createBalanceAccount(epId,core_ep_id); //
             resultMap.put("ep_info", map);
             resultMap.put("capital",null);
             result.put(resultMap);// 添加企业信息map
@@ -330,45 +374,9 @@ public class EpServiceImple implements EpService {
         return result;
     }
 
-    /**
-     * 验证平台商
-     *
-     * @param params
-     * @return PlatformEp
-     */
-    @Override
-    public Result<Map> validate(Map params) {
-        Result<Map> result = new Result<>();
-        Map access = coreEpAccessService.select(params).get();
-        Map map = new HashMap();
-        if (null != access) {
-            PlatformEp platformEp = new PlatformEp();
-            params.clear();
-            params.put("id", access.get("id"));
-            try {
-//                platformEp.setEp_info( );
-                map.put("ep_info", epMapper.select(params).get(0));
-//                platformEp.setPayment();
-                // map.put("payment",coreEpPaymentConfService.findById(access.get("id")));
-//                platformEp.setCapital(null);//TODO   t_capital(余额)
-                result.put(map);
-                result.setSuccess();
-            } catch (Exception e) {
-                result.setFail();
-                result.setError(Result.DB_FAIL, "平台商校验失败");
-            }
-            return result;
-        } else {
-            result.setFail();
-            result.setError(Result.DB_FAIL, "授权ID校验失败");
-            return result;
-        }
-    }
 
     /**
      * 获取企业状态（包括上级企业）
-     * 0-未初始化1-正常\n2-已冻结\n3-已停用
-     *
      * @param id
      * @return
      */
@@ -420,39 +428,39 @@ public class EpServiceImple implements EpService {
 
     }
 
-    public Map<String[], ValidRule[]> generateCreateEpValidate() {
-        Map<String[], ValidRule[]> rules = new HashMap<>();
-        // 校验不为空的参数
-        rules.put(new String[]{
-                "name.", // 企业中文名
-                "code", // '企业组织机构代码',
-                "logo_pic", // '企业组织机构代码',
-                "license", // 营业证编号
-                "linkman", // 企业联系人姓名
-                "link_phone", // 企业联系人电话
-                "province", // 企业省
-                "city", // 市
-                "area", // 区
-                "address", // 详细地址
-        }, new ValidRule[]{new ValidRule.NotNull()});
-//
-//        // 校验整数
-        rules.put(new String[]{
-                "province", // 企业省
-                "city", // 市
-                "area", // 区
-        }, new ValidRule[]{new ValidRule.Digits()});
-
-//        // 校验身份证
+//    public Map<String[], ValidRule[]> generateCreateEpValidate() {
+//        Map<String[], ValidRule[]> rules = new HashMap<>();
+//        // 校验不为空的参数
 //        rules.put(new String[]{
-//                "items.visitor.sid" // 订单游客身份证号码
-//        }, new ValidRule[]{new ValidRule.IdCard()});
-        // 校验手机号码
-        rules.put(new String[]{
-                "link_phone", // 订单联系人手机号码
-        }, new ValidRule[]{new ValidRule.Pattern(ValidRule.MOBILE_PHONE)});
-        return rules;
-    }
+//                "name.", // 企业中文名
+//                "code", // '企业组织机构代码',
+//                "logo_pic", // '企业组织机构代码',
+//                "license", // 营业证编号
+//                "linkman", // 企业联系人姓名
+//                "link_phone", // 企业联系人电话
+//                "province", // 企业省
+//                "city", // 市
+//                "area", // 区
+//                "address", // 详细地址
+//        }, new ValidRule[]{new ValidRule.NotNull()});
+////
+////        // 校验整数
+//        rules.put(new String[]{
+//                "province", // 企业省
+//                "city", // 市
+//                "area", // 区
+//        }, new ValidRule[]{new ValidRule.Digits()});
+//
+////        // 校验身份证
+////        rules.put(new String[]{
+////                "items.visitor.sid" // 订单游客身份证号码
+////        }, new ValidRule[]{new ValidRule.IdCard()});
+//        // 校验手机号码
+//        rules.put(new String[]{
+//                "link_phone", // 订单联系人手机号码
+//        }, new ValidRule[]{new ValidRule.Pattern(ValidRule.MOBILE_PHONE)});
+//        return rules;
+//    }
 
     private Map<String[], ValidRule[]> generateCreateStatusValidate() {
         Map<String[], ValidRule[]> rules = new HashMap<>();
