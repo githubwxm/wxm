@@ -18,4 +18,5 @@ public interface EpMapper {
     int updateStatus(Map params);
     int updatePlatfromStatus(Map map);
     int platformEnable(Map map);
+    List<Map> platformListDown(Map map);
 }
