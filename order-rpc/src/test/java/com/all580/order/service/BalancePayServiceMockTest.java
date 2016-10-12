@@ -23,6 +23,5 @@ public class BalancePayServiceMockTest {
     @Test
     public void createTest() {
         System.out.println(balancePayService);
-        balancePayService.changeBalances(null, 1);
     }
 }

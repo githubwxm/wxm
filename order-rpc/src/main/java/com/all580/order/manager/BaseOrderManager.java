@@ -6,6 +6,9 @@ import com.all580.order.dto.AccountDataDto;
 import com.all580.order.dto.GenerateAccountDto;
 import com.all580.order.entity.OrderItem;
 import com.all580.order.entity.OrderItemAccount;
+import com.all580.payment.api.model.BalanceChangeInfo;
+import com.all580.payment.api.model.BalanceChangeRsp;
+import com.all580.payment.api.service.BalancePayService;
 import com.all580.product.api.model.EpSalesInfo;
 import com.all580.product.api.model.ProductSearchParams;
 import com.framework.common.Result;
@@ -20,10 +23,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author zhouxianjun(Alone)
@@ -36,6 +36,8 @@ import java.util.Map;
 public class BaseOrderManager {
     @Autowired
     private EpService epService;
+    @Autowired
+    private BalancePayService balancePayService;
 
     @Autowired
     private JobClient jobClient;
@@ -149,5 +151,27 @@ public class BaseOrderManager {
         }
         job.setNeedFeedback(true);
         jobClient.submitJob(job);
+    }
+
+    /**
+     * 余额变动
+     * @param type 变动类型
+     * @param sn 流水
+     * @param infos 账户
+     * @return
+     */
+    public Result<BalanceChangeRsp> changeBalances(int type, String sn, BalanceChangeInfo... infos) {
+        return changeBalances(type, sn, Arrays.asList(infos));
+    }
+
+    /**
+     * 余额变动
+     * @param type 变动类型
+     * @param sn 流水
+     * @param infos 账户
+     * @return
+     */
+    public Result<BalanceChangeRsp> changeBalances(int type, String sn, List<BalanceChangeInfo> infos) {
+        return balancePayService.changeBalances(infos, type, sn);
     }
 }

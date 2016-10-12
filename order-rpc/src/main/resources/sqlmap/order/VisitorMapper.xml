@@ -79,15 +79,23 @@
 
     <select id="quantityBySidAndProductForDate" resultType="int">
         SELECT
-        IFNULL(sum(v.quantity),0)
+        IFNULL(sum(v.quantity - v.return_quantity),0)
         FROM
         t_visitor v
-        LEFT JOIN t_order_item oi ON v.ref_id = oi.id
+        LEFT JOIN t_order_item_detail toid ON toid.id = v.ref_id
+        LEFT JOIN t_order_item oi ON toid.order_item_id = oi.id
         WHERE
         oi.pro_sub_id = #{productSubId}
         AND v.sid = #{sid}
         AND oi.status not in(326)
         AND (<![CDATA[ oi.refund_quantity <= 0 ]]> OR oi.refund_quantity IS NULL)
         AND oi.start between #{start,jdbcType=TIMESTAMP} and #{end,jdbcType=TIMESTAMP}
+    </select>
+
+    <select id="selectByOrderDetailId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT * FROM
+        t_visitor
+        WHERE
+        `ref_id` = #{refId,jdbcType=INTEGER}
     </select>
 </mapper>

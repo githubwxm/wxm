@@ -131,4 +131,10 @@ public class BalancePayServiceImpl implements BalancePayService {
         // TODO panyi
         logger.info("余额变更事件----->");
     }
+
+    @Override
+    public Result createBalanceAccount(Integer epId, Integer coreEpId) {
+        // TODO panyi
+        return null;
+    }
 }

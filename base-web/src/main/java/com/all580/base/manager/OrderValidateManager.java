@@ -58,6 +58,11 @@ public class OrderValidateManager {
                 "items.visitor.mobile" // 订单游客手机号码
         }, new ValidRule[]{new ValidRule.Pattern(ValidRule.MOBILE_PHONE)});
 
+        // 校验日期
+        rules.put(new String[]{
+                "items.start" // 计划开始时间
+        }, new ValidRule[]{new ValidRule.Date()});
+
         return rules;
     }
 
@@ -87,6 +92,64 @@ public class OrderValidateManager {
         rules.put(new String[]{
                 "order_sn", // 订单编号(流水)
                 "pay_type" // 支付类型
+        }, new ValidRule[]{new ValidRule.NotNull(), new ValidRule.Digits()});
+
+        return rules;
+    }
+
+    /**
+     * 订单退订申请验证
+     * @return
+     */
+    public Map<String[], ValidRule[]> refundApplyValidate() {
+        Map<String[], ValidRule[]> rules = new HashMap<>();
+        rules.put(new String[]{
+                "order_item_sn", // 订单编号(流水)
+                "days.quantity", // 退票数量
+                "visitors.quantity", // 退票数量
+                "quantity", // 退票数量
+        }, new ValidRule[]{new ValidRule.NotNull(), new ValidRule.Digits()});
+
+        rules.put(new String[]{
+                "days.day" // 日期
+        }, new ValidRule[]{new ValidRule.NotNull(), new ValidRule.Date()});
+
+        rules.put(new String[]{
+                "visitors.sid" // 身份证
+        }, new ValidRule[]{new ValidRule.NotNull(), new ValidRule.IdCard()});
+
+        return rules;
+    }
+
+    /**
+     * 订单退订审核验证
+     * @return
+     */
+    public Map<String[], ValidRule[]> refundAuditValidate() {
+        Map<String[], ValidRule[]> rules = new HashMap<>();
+        rules.put(new String[]{
+                "refund_sn" // 订单编号(流水)
+        }, new ValidRule[]{new ValidRule.NotNull(), new ValidRule.Digits()});
+
+        rules.put(new String[]{
+                "status" // 通过/不通过
+        }, new ValidRule[]{new ValidRule.NotNull(), new ValidRule.Boolean()});
+
+        rules.put(new String[]{
+                "reason" // 原因
+        }, new ValidRule[]{new ValidRule.NotNull()});
+
+        return rules;
+    }
+
+    /**
+     * 订单取消验证
+     * @return
+     */
+    public Map<String[], ValidRule[]> cancelValidate() {
+        Map<String[], ValidRule[]> rules = new HashMap<>();
+        rules.put(new String[]{
+                "order_sn" // 订单编号(流水)
         }, new ValidRule[]{new ValidRule.NotNull(), new ValidRule.Digits()});
 
         return rules;
