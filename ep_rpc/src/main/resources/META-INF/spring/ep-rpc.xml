@@ -21,12 +21,12 @@
 
 	<dubbo:service interface="com.all580.ep.api.service.CoreEpAccessService" ref="coreEpAccessService" />
 
-	<!--<bean id="coreEpPaymentConfService" class="com.all580.ep.service.CoreEpPaymentConfServiceImple" />-->
-
-	<!--<dubbo:service interface="com.all580.ep.api.service.CoreEpPaymentConfServices" ref="coreEpPaymentConfService" />-->
-
 	<bean id="coreEpChannelServiceImple" class="com.all580.ep.service.CoreEpChannelServiceImple" />
 
 	<dubbo:service interface="com.all580.ep.api.service.CoreEpChannelService" ref="coreEpChannelServiceImple" />
+
+	<!--<bean id="epPaymentConfService" class="com.all580.payment.api.service." />-->
+
+	<!--<dubbo:service interface="com.all580.payment.api.service.EpPaymentConfService" ref="epPaymentConfService" />-->
 	
 </beans>
