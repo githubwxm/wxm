@@ -27,7 +27,7 @@ public class PlatfromValidateManager {
                 "area", // 区
                 "address", // 详细地址
         }, new ValidRule[]{new ValidRule.NotNull()});
-//
+
 //        // 校验整数
         rules.put(new String[]{
                 "province", // 企业省
