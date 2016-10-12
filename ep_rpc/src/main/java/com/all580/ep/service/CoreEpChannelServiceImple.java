@@ -1,8 +1,10 @@
 package com.all580.ep.service;
 
 import com.all580.ep.api.service.CoreEpChannelService;
+import com.all580.ep.api.service.EpBalanceThresholdService;
 import com.all580.ep.com.Common;
 import com.all580.ep.dao.CoreEpChannelMapper;
+import com.all580.payment.api.service.BalancePayService;
 import com.framework.common.Result;
 import com.framework.common.exception.ParamsMapValidationException;
 import com.framework.common.validate.ParamsMapValidate;
@@ -14,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 @Service
 @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
@@ -23,6 +24,12 @@ public class CoreEpChannelServiceImple implements CoreEpChannelService {
 
     @Autowired
     private CoreEpChannelMapper coreEpChannelMapper;
+
+    @Autowired
+    private BalancePayService balancePayService;
+
+    @Autowired
+    private EpBalanceThresholdService epBalanceThresholdService;
 
     @Override   //// TODO: 2016/10/11 0011   上游下游供销关系同步 数据
     public Result<Integer> create(Map params) {
@@ -41,6 +48,13 @@ public class CoreEpChannelServiceImple implements CoreEpChannelService {
             return new Result<>(false, Result.PARAMS_ERROR, e.getMessage());
         }
         try {
+            //     销售
+            Integer epId= Common.objectParseInteger(params.get("seller_core_ep_id"));
+            Integer coreEpId = Common.objectParseInteger(params.get("supplier_core_ep_id"));
+            balancePayService.createBalanceAccount(epId,coreEpId);
+            params.put("ep_id",epId);
+            params.put("core_ep_id",coreEpId);
+            epBalanceThresholdService.createOrUpdate(params);
             result.put(coreEpChannelMapper.create(params));
             result.setSuccess();
         } catch (Exception e) {
