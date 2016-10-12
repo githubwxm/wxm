@@ -1,4 +1,4 @@
-package com.all580.ep.api.entity;
+package com.all580.ep.entity;
 
 /**
  * 通道管理显示对象

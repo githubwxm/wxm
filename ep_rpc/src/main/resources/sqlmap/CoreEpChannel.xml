@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.all580.ep.dao.CoreEpChannelMapper">
-    <!--<resultMap id="BaseResultMap" type="com.all580.ep.api.entity.Ep">-->
-        <!--<id column="id" property="id" jdbcType="INTEGER"/>-->
-        <!--<id column="name" property="name" jdbcType="VARCHAR"/>-->
-    <!--</resultMap>-->
+
     <!--<select id="findById" resultType="com.all580.ep.entity.CoreEpChannel">-->
        <!--select  <include refid="Base_Column_List"/>  from t_ep-->
         <!--where-->
@@ -14,7 +11,7 @@
         <!--</if>-->
     <!--</select>-->
 
-    <insert id="create" parameterType="com.all580.ep.api.entity.CoreEpChannel">
+    <insert id="create">
        insert into t_core_ep_channel(supplier_core_ep_id ,seller_core_ep_id,rate)
        values(#{supplier_core_ep_id} ,#{seller_core_ep_id},#{rate});
     </insert>
@@ -26,17 +23,38 @@
           delete from t_core_ep_channel where `id`=#{id};
     </delete>
 
-    <select id="select" resultType="com.all580.ep.api.entity.EpChannelRep">
+    <select id="select" resultType="java.util.HashMap">
         select * from (
         select id,
+        supplier_core_ep_id,
         (select `name` from t_ep where id=supplier_core_ep_id  ) as supplier_name ,
         (select link_phone from t_ep where id=supplier_core_ep_id) as supplier_phone ,
+        seller_core_ep_id,
         (select `name` from t_ep where id =seller_core_ep_id)   as seller_name ,
         (select link_phone from t_ep where id =seller_core_ep_id)   as seller_phone ,
         truncate(rate/100,2) as rate from t_core_ep_channel ) f
         where 1=1
         <if test="supplier_name != null">
-            and f.`supplier_name` like '%${supplier_name}%'
+            and f.`supplier_name` like   CONCAT('%',#{supplier_name}'%')
+        </if>
+        <if test="limit != null">
+         limit #{record_start},#{record_count}
+        </if>
+    </select>
+
+    <select id="selectCount" resultType="java.lang.Integer">
+        select count(1) from (
+        select id,
+        supplier_core_ep_id,
+        (select `name` from t_ep where id=supplier_core_ep_id  ) as supplier_name ,
+        (select link_phone from t_ep where id=supplier_core_ep_id) as supplier_phone ,
+        seller_core_ep_id,
+        (select `name` from t_ep where id =seller_core_ep_id)   as seller_name ,
+        (select link_phone from t_ep where id =seller_core_ep_id)   as seller_phone ,
+        truncate(rate/100,2) as rate from t_core_ep_channel ) f
+        where 1=1
+        <if test="supplier_name != null">
+            and f.`supplier_name` like  CONCAT('%',#{supplier_name}'%')
         </if>
     </select>
 </mapper>

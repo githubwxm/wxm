@@ -15,7 +15,7 @@
        values(#{id},#{access_id} ,#{access_key},#{link});
     </insert>
 
-    <select id="select" resultType="com.all580.ep.api.entity.CoreEpAccess">
+    <select id="select" resultType="java.util.HashMap">
         select * from t_core_ep_access
         where 1=1 and access_id=#{access_id};
     </select>

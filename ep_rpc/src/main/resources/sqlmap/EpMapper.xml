@@ -1,30 +1,30 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.all580.ep.dao.EpMapper">
-    <!--<resultMap id="BaseResultMap" type="com.all580.ep.entity.Ep">-->
-        <!--<id column="id" property="id" jdbcType="INTEGER"/>-->
-        <!--<id column="name" property="name" jdbcType="VARCHAR"/>-->
-        <!--<result column="en_name" property="en_name" jdbcType="VARCHAR"/>-->
-        <!--<result column="ep_type" property="ep_type" jdbcType="INTEGER"/>-->
-        <!--<result column="linkman" property="linkman" jdbcType="VARCHAR"/>-->
-        <!--<result column="link_phone" property="link_phone" jdbcType="VARCHAR"/>-->
-        <!--<result column="address" property="address" jdbcType="VARCHAR"/>-->
-        <!--<result column="code" property="code" jdbcType="VARCHAR"/>-->
-        <!--<result column="license" property="license" jdbcType="VARCHAR"/>-->
-        <!--<result column="logo_pic" property="logo_pic" jdbcType="VARCHAR"/>-->
-        <!--<result column="status" property="status" jdbcType="INTEGER"/>-->
-        <!--<result column="access_id" property="access_id" jdbcType="INTEGER"/>-->
-        <!--<result column="access_key" property="access_key" jdbcType="VARCHAR"/>-->
-        <!--<result column="creator_ep_id" property="creator_ep_id" jdbcType="INTEGER"/>-->
-        <!--<result column="core_ep_id" property="core_ep_id" jdbcType="INTEGER"/>-->
-        <!--<result column="add_time" property="add_time" jdbcType="DATE"/>-->
-        <!--<result column="status_bak" property="status_bak" jdbcType="INTEGER"/>-->
-        <!--<result column="province" property="province" jdbcType="INTEGER"/>-->
-        <!--<result column="city" property="city" jdbcType="INTEGER"/>-->
-        <!--<result column="area" property="area" jdbcType="INTEGER"/>-->
-        <!--<result column="group_id" property="group_id" jdbcType="INTEGER"/>-->
-        <!--<result column="group_name" property="group_name" jdbcType="VARCHAR"/>-->
-    <!--</resultMap>-->
+    <!--  <resultMap id="BaseResultMap" type="com.all580.ep.entity.Ep">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <id column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="en_name" property="en_name" jdbcType="VARCHAR"/>
+        <result column="ep_type" property="ep_type" jdbcType="INTEGER"/>
+        <result column="linkman" property="linkman" jdbcType="VARCHAR"/>
+        <result column="link_phone" property="link_phone" jdbcType="VARCHAR"/>
+        <result column="address" property="address" jdbcType="VARCHAR"/>
+        <result column="code" property="code" jdbcType="VARCHAR"/>
+        <result column="license" property="license" jdbcType="VARCHAR"/>
+        <result column="logo_pic" property="logo_pic" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="INTEGER"/>
+        <result column="access_id" property="access_id" jdbcType="INTEGER"/>
+        <result column="access_key" property="access_key" jdbcType="VARCHAR"/>
+        <result column="creator_ep_id" property="creator_ep_id" jdbcType="INTEGER"/>
+        <result column="core_ep_id" property="core_ep_id" jdbcType="INTEGER"/>
+        <result column="add_time" property="add_time" jdbcType="DATE"/>
+        <result column="status_bak" property="status_bak" jdbcType="INTEGER"/>
+        <result column="province" property="province" jdbcType="INTEGER"/>
+        <result column="city" property="city" jdbcType="INTEGER"/>
+        <result column="area" property="area" jdbcType="INTEGER"/>
+        <result column="group_id" property="group_id" jdbcType="INTEGER"/>
+        <result column="group_name" property="group_name" jdbcType="VARCHAR"/>
+    </resultMap>-->
     <!--<sql id="Base_Column_List">-->
         <!--id,name,en_name,ep_type,linkman,link_phone,address,code,license,-->
         <!--logo_pic,status,access_id,access_key,creator_ep_id,core_ep_id,-->
@@ -35,8 +35,8 @@
             and ep.`id`=#{id}
         </if>
         <if test="name != null">
-          <!--  and name like  CONCAT('%',#{name},'%')-->
-            and ep.name =  #{name}
+          <!--  and ep.name like  CONCAT('%',#{name},'%'), and ep.name =  #{name} -->
+            and ep.name like  CONCAT('%',#{name},'%')
         </if>
         <if test="ep_type != null">
             and ep.ep_type=#{ep_type}
@@ -56,16 +56,22 @@
         <if test="access_id != null">
             and ep.access_id = #{access_id}
         </if>
+        <if test="core_ep_id != null">
+            and ep.core_ep_id = #{core_ep_id}
+        </if>
+        <if test="creator_ep_id != null">
+            and ep.creator_ep_id = #{creator_ep_id}
+        </if>
 
     </sql>
-    <select id="select" resultType="com.all580.ep.api.entity.Ep">
+    <select id="select" resultType="java.util.HashMap">
        select  ep.*,param.`name` as status_name  from
         t_ep  ep left JOIN t_ep_param param on ep.`status` = param.id
         where
         1=1
        <include refid="ep_list_where"/>
     </select>
-    <select id="getEp" resultType="com.all580.ep.api.entity.Ep">
+    <select id="getEp" resultType="java.util.HashMap">
         select    <foreach item="name" index="index" collection="field" open="" separator="," close="">
         ${name}
     </foreach> from t_ep
@@ -76,26 +82,68 @@
         </foreach>
 
     </select>
-    <select id="all"  resultType="com.all580.ep.api.entity.Ep">
+    <select id="all" resultType="java.util.HashMap" >
        select * from t_ep where  core_ep_id=#{core_ep_id};
     </select>
+<!-- platform/list/down-->
+    <select id="platformListDown" resultType="java.util.HashMap">
+    select name,linkman,link_phone,province,city,area,address,truncate(rate/100,2) as rate from t_core_ep_channel c
+       join t_ep e on e.id=c.seller_core_ep_id
+        where  1=1 and e.id= #{ep_id} and ep_type=#{ep_type}
+        <if test="epName != null">
+            and   name like CONCAT('%',#{epName}'%')
+        </if>
+        <if test="epProvince != null">
+            and province =#{epProvince}
+        </if>
+        <if test="epCity != null">
+            and city=#{epCity}
+        </if>
+        <if test="epPhone != null">
+            and link_phone =#{epPhone}
+        </if>
+    </select>
+
+    <!--  停用，冻结平台商  -->
+    <update id="updatePlatfromStatus">
+     update t_ep
+     set status_bak=  status  ,`status`=#{status}
+     where id=#{id} or core_ep_id=#{id}
+    </update>
+    <!-- 激活平台商-->
+   <update id="platformEnable">
+      update t_ep
+     set `status`=#{status_bak}
+     where id=#{id} or core_ep_id=#{id}
+   </update>
     <update id="updateStatus">
-        update t_ep set status_bak=status,status=#{status} where id=#{id}
+        update t_ep set status_bak=#{status},status=#{status} where id=#{id}
         <if test="statusActive != null">
             and status=#{statusActive}
         </if>
     </update>
-    <!--<update id="update">-->
-        <!--update t_ep set core_ep_id=#{epId} where id=#{epId};-->
-    <!--</update>-->
+    <update id="update">
+        update t_ep
+         set name=#{name},en_name=#{en_name},linkman=#{linkman},link_phone=#{link_phone},address=#{address},
+         code=#{code},license=#{license},logo_pic=#{logo_pic},province=#{province},city=#{city},area=#{area}
+         ,ep_class=#{ep_class}
+        where id =#{id}
+    </update>
     <insert id="create">
         INSERT INTO `t_ep`(name,en_name,ep_type,linkman,link_phone,address,code,license,logo_pic,status,access_id,
-       access_key,creator_ep_id,core_ep_id,status_bak,province,city,area,group_id,group_name)
+       access_key,creator_ep_id,core_ep_id,status_bak,province,city,area,group_id,group_name,ep_class)
        VALUES (#{name}, #{en_name}, #{ep_type}, #{linkman}, #{link_phone}, #{address}, #{code}, #{license},
       #{logo_pic}, #{status}, #{access_id}, #{access_key}, #{creator_ep_id}, #{core_ep_id}, #{status_bak},
-      #{province}, #{city}, #{area}, #{group_id}, #{group_name});
+      #{province}, #{city}, #{area}, #{group_id}, #{group_name}, #{ep_class});
         <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
             SELECT LAST_INSERT_ID();
-        </selectKey>
+        </selectKey>   <!-- 添加到map里面key id  -->
     </insert>
+    <update id="platFormfreeze">
+        update t_ep set status_bak=status,status=#{status}
+        where id=#{id} or or core_ep_id=#{id}
+        <if test="statusActive != null">
+            and status=#{statusActive}
+        </if>
+    </update>
 </mapper>

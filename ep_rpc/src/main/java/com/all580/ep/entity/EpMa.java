@@ -1,4 +1,4 @@
-package com.all580.ep.api.entity;
+package com.all580.ep.entity;
 
 import java.io.Serializable;
 

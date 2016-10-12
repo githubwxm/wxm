@@ -1,7 +1,6 @@
 package com.all580.ep.dao;
 
-import com.all580.ep.api.entity.EpChannelRep;
-import com.framework.common.Result;
+
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -13,6 +12,7 @@ import java.util.Map;
 public interface CoreEpChannelMapper {
    int create(Map params);
    int update(Map params);
-   List<EpChannelRep> select(Map params);
+   List<Map> select(Map params);
    int cancel(@Param("id") Integer id);
+   int selectCount(Map map);
 }
