@@ -85,6 +85,24 @@
     <select id="all" resultType="java.util.HashMap" >
        select * from t_ep where  core_ep_id=#{core_ep_id};
     </select>
+<!-- platform/list/down-->
+    <select id="platformListDown" resultType="java.util.HashMap">
+    select name,linkman,link_phone,province,city,area,address,truncate(rate/100,2) as rate from t_core_ep_channel c
+       join t_ep e on e.id=c.seller_core_ep_id
+        where  1=1 and e.id= #{ep_id} and ep_type=#{ep_type}
+        <if test="epName != null">
+            and   name like CONCAT('%',#{epName}'%')
+        </if>
+        <if test="epProvince != null">
+            and province =#{epProvince}
+        </if>
+        <if test="epCity != null">
+            and city=#{epCity}
+        </if>
+        <if test="epPhone != null">
+            and link_phone =#{epPhone}
+        </if>
+    </select>
 
     <!--  停用，冻结平台商  -->
     <update id="updatePlatfromStatus">
