@@ -1,7 +1,5 @@
 package com.all580.payment.api.conf;
 
-import com.all580.payment.api.model.BalanceChangeInfo;
-
 /**
  * 支付模块常量类
  *
@@ -22,6 +20,7 @@ public class PaymentConstant {
         public static final Integer REVERSE_SPLIT = 7004; // 核销冲正分账
         public static final Integer REFUND_PAY = 7005; // 退票分账
         public static final Integer MANUAL_CHANGE_BALANCE = 7006; // 余额调整
+        public static final Integer THIRD_PAY_FOR_ORDER = 7007; // 第三方下单支付
     }
 
     /**

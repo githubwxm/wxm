@@ -5,8 +5,6 @@ import com.all580.payment.api.service.EpPaymentConfService;
 import com.all580.payment.dao.EpPaymentConfMapper;
 import com.all580.payment.entity.EpPaymentConf;
 import com.framework.common.Result;
-import com.framework.common.exception.ParamsMapValidationException;
-import com.framework.common.validate.ParamsMapValidate;
 import com.framework.common.validate.ValidRule;
 import org.apache.commons.beanutils.BeanUtils;
 import org.slf4j.Logger;
@@ -14,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,12 +24,13 @@ public class EpPaymentConfServiceImpl implements EpPaymentConfService {
     private EpPaymentConfMapper epPaymentConfMapper;
 
     @Override
-    public Result create(Map<String,Object> map) {
+    public Result create(Map<String, Object> map) {
         Result result = new Result();
         try {
-            // TODO panyi 检查同一企业下是否已经存在相同支付类型的配置
             EpPaymentConf conf = new EpPaymentConf();
-            BeanUtils.populate(conf,map);
+            BeanUtils.populate(conf, map);
+            // 检查同一企业下是否已经存在相同支付类型的配置
+            checkExistSameTypeRecord(conf.getCoreEpId(), conf.getPaymentType());
             epPaymentConfMapper.insert(conf);
             result.setSuccess();
         } catch (Exception e) {
@@ -42,29 +40,38 @@ public class EpPaymentConfServiceImpl implements EpPaymentConfService {
         return result;
     }
 
+    private void checkExistSameTypeRecord(Integer coreEpId, Integer paymentType) {
+        int count = epPaymentConfMapper.countByEpIdAndType(coreEpId, paymentType);
+        if (count > 0) {
+            throw new RuntimeException("该企业下已经存在相同类型的支付账号");
+        }
+    }
+
 
     @Override
     public Result update(Map<String, Object> map) {
         Result result = new Result();
         try {
             EpPaymentConf conf = new EpPaymentConf();
-            BeanUtils.populate(conf,map);
+            BeanUtils.populate(conf, map);
+            // 检查同一企业下是否已经存在相同支付类型的配置
+            checkExistSameTypeRecord(conf.getCoreEpId(), conf.getPaymentType());
             epPaymentConfMapper.updateByPrimaryKeySelective(conf);
             result.setSuccess();
         } catch (Exception e) {
             result.setFail();
-            result.setError(Result.DB_FAIL, "修改失败:"+e.getMessage());
+            result.setError(Result.DB_FAIL, "修改失败:" + e.getMessage());
         }
         return result;
     }
 
     @Override
-    public Result<Map<String, String>> findById(Integer core_ep_id) {
-        Result<Map<String, String>> result = new Result<>();
+    public Result<List<Map<String, Object>>> listByEpId(Integer core_ep_id) {
+        Result<List<Map<String, Object>>> result = new Result<>();
         try {
-            EpPaymentConf conf = epPaymentConfMapper.findByEpId(core_ep_id);
+            List<Map<String, Object>> conf = epPaymentConfMapper.listByEpId(core_ep_id);
             result.setSuccess();
-            result.put(BeanUtils.describe(conf));
+            result.put(conf);
         } catch (Exception e) {
             e.printStackTrace();
         }

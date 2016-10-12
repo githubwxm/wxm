@@ -2,6 +2,7 @@ package com.all580.payment.api.service;
 
 import com.framework.common.Result;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -37,6 +38,6 @@ public interface EpPaymentConfService {
      * @param epId 企业ID
      * @return {"coreEpId":xxx,"paymentType":7112,"confData":"...","status":1}
      */
-    Result<Map<String, String>> findById(Integer epId);
+    Result<List<Map<String, Object>>> listByEpId(Integer epId);
 
 }

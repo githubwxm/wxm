@@ -26,7 +26,7 @@
 		<lombok_version>1.16.8</lombok_version>
 		<lts_version>1.6.9</lts_version>
 		<commons-pool2_version>2.4.2</commons-pool2_version>
-		<dubbo_version>2.8.4</dubbo_version>
+		<dubbo_version>2.5.4-SNAPSHOT</dubbo_version>
 		<spring_version>3.2.16.RELEASE</spring_version>
 		<javassist_version>3.20.0-GA</javassist_version>
 		<netty_version>3.2.5.Final</netty_version>
