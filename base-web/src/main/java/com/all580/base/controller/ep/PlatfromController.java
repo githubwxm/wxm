@@ -45,27 +45,73 @@ public class PlatfromController extends BaseController {
     @RequestMapping(value = "validate", method = RequestMethod.GET)
     @ResponseBody
     public Result<Map> validate(@RequestBody Map map) {
-        // 验证参数
-        try {
-            ParamsMapValidate.validate(map, null);
-        } catch (ParamsMapValidationException e) {
-            log.warn("创建订单参数验证失败", e);
-            return new Result<>(false, Result.PARAMS_ERROR, e.getMessage());
-        }
         return epService.validate(map);
     }
+//
+//    /**
+//     *
+//     * @param map
+//     * @return
+//     */
+//    @RequestMapping(value = "channel/add", method = RequestMethod.GET)
+//    @ResponseBody
+//    public Result<Map> channelAdd(@RequestBody Map map) {
+//        // 验证参数
+//        try {
+//            ParamsMapValidate.validate(map, platfromValidateManager.generateCreateEpValidate());
+//        } catch (ParamsMapValidationException e) {
+//            log.warn("创建订单参数验证失败", e);
+//            return new Result<>(false, Result.PARAMS_ERROR, e.getMessage());
+//        }
+//        return epService.validate(map);
+//    } //
 
-
-    @RequestMapping(value = "channel/add", method = RequestMethod.GET)
+    /**
+     * 平台商停用
+     * @param map
+     * @return
+     */
+    @RequestMapping(value = "status/disable", method = RequestMethod.GET)
     @ResponseBody
-    public Result<Map> channelAdd(@RequestBody Map map) {
-        // 验证参数
+    public Result<Integer> disable(@RequestBody Map map) {
         try {
-            ParamsMapValidate.validate(map, null);
+            ParamsMapValidate.validate(map, platfromValidateManager.generateCreateStatusValidate());
         } catch (ParamsMapValidationException e) {
-            log.warn("创建订单参数验证失败", e);
+            log.warn("冻结企业参数验证失败", e);
             return new Result<>(false, Result.PARAMS_ERROR, e.getMessage());
         }
-        return epService.validate(map);
+        return epService.platformDisable(map);
+    }
+    /**
+     * 平台商冻结
+     * @param map
+     * @return
+     */
+    @RequestMapping(value = "status/freeze", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<Integer> freeze(@RequestBody Map map) {
+        try {
+            ParamsMapValidate.validate(map, platfromValidateManager.generateCreateStatusValidate());
+        } catch (ParamsMapValidationException e) {
+            log.warn("冻结企业参数验证失败", e);
+            return new Result<>(false, Result.PARAMS_ERROR, e.getMessage());
+        }
+        return epService.platformFreeze(map);
+    }
+    /**
+     * 平台商激活
+     * @param map
+     * @return
+     */
+    @RequestMapping(value = "status/enable", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<Integer> enable(@RequestBody Map map) {
+        try {
+            ParamsMapValidate.validate(map, platfromValidateManager.generateCreateStatusValidate());
+        } catch (ParamsMapValidationException e) {
+            log.warn("冻结企业参数验证失败", e);
+            return new Result<>(false, Result.PARAMS_ERROR, e.getMessage());
+        }
+        return epService.platformEnable(map);
     }
 }
