@@ -23,10 +23,6 @@
     <dependencies>
 
         <dependency>
-            <groupId>com.all580</groupId>
-            <artifactId>payment-api</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.framework</groupId>
             <artifactId>framework-common</artifactId>
         </dependency>
@@ -37,6 +33,11 @@
         <dependency>
             <groupId>com.all580</groupId>
             <artifactId>ep_api</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.all580</groupId>
+            <artifactId>payment-api</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>
