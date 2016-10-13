@@ -77,5 +77,19 @@ public interface EpService {
      * @param map
      * @return
      */
-    Result<List<Map>> platformListDown(Map map);
+    Result<Map> platformListDown(Map map);
+
+    /**
+     * 下游
+     * @param map
+     * @return
+     */
+    Result<Map> platformListUp(Map map);
+
+    /**
+     *
+     * @param id
+     * @return
+     */
+    Result<Integer> selectCreatorEpId(Integer id);
 }
