@@ -5,18 +5,25 @@ import com.all580.order.api.service.RefundOrderService;
 import com.all580.order.dao.OrderItemDetailMapper;
 import com.all580.order.dao.OrderItemMapper;
 import com.all580.order.dao.OrderMapper;
+import com.all580.order.dao.RefundOrderMapper;
 import com.all580.order.entity.Order;
 import com.all580.order.entity.OrderItem;
 import com.all580.order.entity.OrderItemDetail;
+import com.all580.order.entity.RefundOrder;
 import com.all580.order.manager.RefundOrderManager;
+import com.all580.payment.api.conf.PaymentConstant;
+import com.all580.payment.api.model.BalanceChangeInfo;
+import com.all580.payment.api.service.ThirdPayService;
 import com.framework.common.Result;
 import com.framework.common.exception.ApiException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -39,6 +46,11 @@ public class RefundOrderServiceImpl implements RefundOrderService {
     private OrderMapper orderMapper;
     @Autowired
     private OrderItemDetailMapper orderItemDetailMapper;
+    @Autowired
+    private RefundOrderMapper refundOrderMapper;
+
+    @Autowired
+    private ThirdPayService thirdPayService;
 
     @Override
     public Result<?> cancel(Map params) {
@@ -69,29 +81,122 @@ public class RefundOrderServiceImpl implements RefundOrderService {
                 throw new ApiException("订单不在可退订状态");
             }
 
+            // 每日订单详情
             List<OrderItemDetail> detailList = orderItemDetailMapper.selectByItemId(orderItem.getId());
-            // 判断余票 并修改明细退票数量
+            // 每日退票详情
             Map daysMap = (Map) params.get("days");
-            int tmpQuantity = refundOrderManager.canRefundForDays(daysMap, detailList);
+            // 总退票数量
             Integer quantity = Integer.parseInt(params.get("quantity").toString());
-            if (tmpQuantity != quantity) {
-                throw new ApiException("退票总数与每天退票数不符");
+
+            if (order.getStatus() == OrderConstant.OrderStatus.PAID) {
+                if (daysMap == null) {
+                    throw new ApiException("缺少退票详情");
+                }
+                // 判断余票 并修改明细退票数量
+                int tmpQuantity = refundOrderManager.canRefundForDays(daysMap, detailList);
+                if (tmpQuantity != quantity) {
+                    throw new ApiException("退票总数与每天退票数不符");
+                }
             }
 
+            Date refundDate = new Date();
             // 计算退款金额
             int money = refundOrderManager.calcRefundMoney(detailList, orderItem.getId(), order.getBuyEpId(),
-                    refundOrderManager.getCoreEpId(refundOrderManager.getCoreEpId(order.getBuyEpId())));
+                    refundOrderManager.getCoreEpId(refundOrderManager.getCoreEpId(order.getBuyEpId())), refundDate);
             // 创建退订订单
-            refundOrderManager.generateRefundOrder(orderItem.getId(), daysMap, quantity, money);
+            RefundOrder refundOrder = refundOrderManager.generateRefundOrder(orderItem.getId(), daysMap, quantity, money, "");
+
+            // 退订分账
+            refundOrderManager.preRefundAccount(orderItem.getId(), refundOrder.getId(), detailList, refundDate);
         } catch (Exception e) {
             log.error("订单申请退订异常", e);
             throw new ApiException("订单申请退订异常", e);
         }
-        return null;
+        return new Result<>(true);
+    }
+
+    @Override
+    public Result<?> cancelNoSplit(Map params) {
+        try {
+            Order order = orderMapper.selectBySN(Long.valueOf(params.get("order_sn").toString()));
+            if (order == null) {
+                throw new ApiException("订单不存在");
+            }
+            if (order.getStatus() != OrderConstant.OrderStatus.PAID_HANDLING) {
+                throw new ApiException("订单不在已支付处理中状态");
+            }
+
+            Integer coreEpId = refundOrderManager.getCoreEpId(refundOrderManager.getCoreEpId(order.getBuyEpId()));
+            // 退款
+            // 余额退款
+            if (order.getPaymentType() == PaymentConstant.PaymentType.BALANCE.intValue()) {
+                BalanceChangeInfo payInfo = new BalanceChangeInfo();
+                payInfo.setEpId(coreEpId);
+                payInfo.setCoreEpId(coreEpId);
+                payInfo.setBalance(-order.getPayAmount());
+
+                BalanceChangeInfo saveInfo = new BalanceChangeInfo();
+                saveInfo.setEpId(order.getBuyEpId());
+                saveInfo.setCoreEpId(payInfo.getCoreEpId());
+                saveInfo.setBalance(order.getPayAmount());
+                saveInfo.setCanCash(order.getPayAmount());
+                // 退款
+                Result result = refundOrderManager.changeBalances(
+                        PaymentConstant.BalanceChangeType.BALANCE_PAY,
+                        order.getLocalPaymentSerialNo(), payInfo, saveInfo);
+                if (result.hasError()) {
+                    log.warn("余额退款失败:{}", result.get());
+                    throw new ApiException(result.getError());
+                }
+                return new Result<>(true);
+            }
+            // 第三方退款
+            Result result = thirdPayService.reqRefund(order.getNumber(), order.getPayAmount(),
+                    order.getPayAmount(), order.getLocalPaymentSerialNo(),
+                    coreEpId, order.getPaymentType());
+            if (result.hasError()) {
+                log.warn("第三方退款异常:{}", result);
+                throw new ApiException(result.getError());
+            }
+        } catch (Exception e) {
+            log.error("取消未分账订单异常", e);
+            throw new ApiException("取消已支付处理中订单异常", e);
+        }
+        return new Result<>(true);
     }
 
     @Override
     public Result<?> audit(Map params) {
-        return null;
+        RefundOrder refundOrder = refundOrderMapper.selectBySN(Long.valueOf(params.get("refund_sn").toString()));
+        if (refundOrder == null) {
+            throw new ApiException("退订订单不存在");
+        }
+        if (refundOrder.getStatus() != OrderConstant.RefundOrderStatus.AUDIT_WAIT) {
+            throw new ApiException("退订订单不在待审核状态");
+        }
+        OrderItem orderItem = orderItemMapper.selectByPrimaryKey(refundOrder.getOrderItemId());
+        if (orderItem == null) {
+            throw new ApiException("订单不存在");
+        }
+        Order order = orderMapper.selectByPrimaryKey(orderItem.getOrderId());
+        if (order == null) {
+            throw new ApiException("订单不存在");
+        }
+        boolean status = Boolean.parseBoolean(params.get("status").toString());
+        // 通过
+        if (status) {
+            if (order.getStatus() == OrderConstant.OrderStatus.PAID) {
+                // 调用退票
+            }
+            // 没有出票直接调用取消
+            return refundOrderManager.cancel(order);
+        }
+        try {
+            refundOrderManager.refundFail(refundOrder);
+        } catch (Exception e) {
+            log.error("订单退订审核异常", e);
+            throw new ApiException("订单退订审核异常", e);
+        }
+        return new Result<>(true);
     }
 }

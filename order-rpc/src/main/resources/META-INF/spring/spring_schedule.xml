@@ -36,4 +36,6 @@
 			</props>
 		</property>
 	</bean>
+
+	<task:annotation-driven/>
 </beans>

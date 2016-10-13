@@ -9,6 +9,8 @@ import com.all580.product.api.consts.ProductConstants;
 import com.all580.product.api.consts.ProductRules;
 import com.all580.product.api.model.ProductSearchParams;
 import com.all580.product.api.service.ProductSalesPlanRPCService;
+import com.all580.voucher.api.model.RefundTicketParams;
+import com.all580.voucher.api.service.VoucherRPCService;
 import com.framework.common.Result;
 import com.framework.common.exception.ApiException;
 import com.framework.common.lang.DateFormatUtils;
@@ -20,10 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author zhouxianjun(Alone)
@@ -45,10 +44,18 @@ public class RefundOrderManager extends BaseOrderManager {
     @Autowired
     private RefundOrderMapper refundOrderMapper;
     @Autowired
+    private RefundAccountMapper refundAccountMapper;
+    @Autowired
     private OrderItemAccountMapper orderItemAccountMapper;
+    @Autowired
+    private RefundSerialMapper refundSerialMapper;
+    @Autowired
+    private MaSendResponseMapper maSendResponseMapper;
 
     @Autowired
     private ProductSalesPlanRPCService productSalesPlanRPCService;
+    @Autowired
+    private VoucherRPCService voucherRPCService;
 
     /**
      * 取消订单
@@ -57,7 +64,16 @@ public class RefundOrderManager extends BaseOrderManager {
      */
     @Transactional
     public Result cancel(long sn) {
-        Order order = orderMapper.selectBySN(sn);
+        return cancel(orderMapper.selectBySN(sn));
+    }
+
+    /**
+     * 取消订单
+     * @param order 订单
+     * @return
+     */
+    @Transactional
+    public Result cancel(Order order) {
         if (order == null) {
             throw new ApiException("订单不存在");
         }
@@ -208,7 +224,7 @@ public class RefundOrderManager extends BaseOrderManager {
      * @param coreEpId 支付企业余额托管平台商ID
      * @return
      */
-    public int calcRefundMoney(List<OrderItemDetail> detailList, int itemId, int epId, int coreEpId) {
+    public int calcRefundMoney(List<OrderItemDetail> detailList, int itemId, int epId, int coreEpId, Date refundDate) {
         OrderItemAccount account = orderItemAccountMapper.selectByOrderItemAndEp(itemId, epId, coreEpId);
         if (account == null) {
             throw new ApiException("数据异常,分账记录不存在");
@@ -223,15 +239,14 @@ public class RefundOrderManager extends BaseOrderManager {
         }
         int i = 0;
         int money = 0;
-        Date refundDate = new Date();
         for (OrderItemDetail detail : detailList) {
             JSONObject dayData = daysData.getJSONObject(i);
             int outPrice = dayData.getIntValue("outPrice");
             Map<String, Integer> rate = ProductRules.calcRefund(detail.getCustRefundRule(), detail.getDay(), refundDate);
             if (rate.get("type") == ProductConstants.AddPriceType.FIX) {
-                money += outPrice + rate.get("fixed");
+                money += outPrice - rate.get("fixed");
             } else {
-                money += money * (rate.get("percent") / 100);
+                money += outPrice - outPrice * (rate.get("percent") / 100);
             }
             i++;
         }
@@ -246,7 +261,7 @@ public class RefundOrderManager extends BaseOrderManager {
      * @param money 退支付金额
      * @return
      */
-    public RefundOrder generateRefundOrder(int itemId, Map daysMap, int quantity, int money) {
+    public RefundOrder generateRefundOrder(int itemId, Map daysMap, int quantity, int money, String cause) {
         RefundOrder refundOrder = new RefundOrder();
         refundOrder.setOrderItemId(itemId);
         refundOrder.setNumber(UUIDGenerator.generateUUID());
@@ -255,7 +270,182 @@ public class RefundOrderManager extends BaseOrderManager {
         refundOrder.setStatus(OrderConstant.RefundOrderStatus.AUDIT_WAIT);
         refundOrder.setCreateTime(new Date());
         refundOrder.setMoney(money);
+        refundOrder.setCause(cause);
         refundOrderMapper.insert(refundOrder);
         return refundOrder;
+    }
+
+    /**
+     * 退货预分账
+     * @param itemId 子订单ID
+     * @param refundOrderId 退订订单ID
+     * @param detailList 每天详情
+     * @param refundDate 退订时间
+     */
+    public void preRefundAccount(int itemId, int refundOrderId, List<OrderItemDetail> detailList, Date refundDate) {
+        Map<Integer, Integer> coreEpIdMap = new HashMap<>();
+        List<OrderItemAccount> accounts = orderItemAccountMapper.selectByOrderItem(itemId);
+        for (OrderItemAccount account : accounts) {
+            String data = account.getData();
+            if (StringUtils.isEmpty(data) || account.getEpId() == account.getCoreEpId().intValue()) {
+                continue;
+            }
+            JSONArray daysData = JSONArray.parseArray(data);
+            if (daysData.size() != detailList.size()) {
+                throw new ApiException("数据异常,分账记录的每日单价与订单详情不匹配");
+            }
+            int coreEpId = getCoreEp(coreEpIdMap, account.getEpId());
+            int money = 0;
+            for (int i = 0; i < detailList.size(); i++) {
+                OrderItemDetail detail = detailList.get(i);
+                Map<String, Integer> rate = ProductRules.calcRefund(detail.getCustRefundRule(), detail.getDay(), refundDate);
+                JSONObject dayData = daysData.getJSONObject(i);
+                // 平台内部分账->利润
+                if (coreEpId == account.getCoreEpId()) {
+                    int profit = dayData.getIntValue("profit");
+                    if (rate.get("type") == ProductConstants.AddPriceType.FIX) {
+                        money += profit - rate.get("fixed");
+                    } else {
+                        money += profit - profit * (rate.get("percent") / 100);
+                    }
+                } else {
+                    // 平台之间分账->进货价
+                    int inPrice = dayData.getIntValue("inPrice");
+                    if (rate.get("type") == ProductConstants.AddPriceType.FIX) {
+                        money += inPrice - rate.get("fixed");
+                    } else {
+                        money += inPrice - inPrice * (rate.get("percent") / 100);
+                    }
+                }
+            }
+            // 平台内部分账
+            if (coreEpId == account.getCoreEpId()) {
+                RefundAccount refundAccount = new RefundAccount();
+                refundAccount.setEpId(account.getEpId());
+                refundAccount.setCoreEpId(coreEpId);
+                refundAccount.setMoney(-money);
+                refundAccount.setStatus(OrderConstant.AccountSplitStatus.NOT);
+                refundAccount.setRefundOrderId(refundOrderId);
+                refundAccountMapper.insert(refundAccount);
+
+                RefundAccount addRefundAccount = new RefundAccount();
+                addRefundAccount.setEpId(coreEpId);
+                addRefundAccount.setCoreEpId(coreEpId);
+                addRefundAccount.setMoney(money);
+                addRefundAccount.setStatus(OrderConstant.AccountSplitStatus.NOT);
+                refundAccount.setRefundOrderId(refundOrderId);
+                refundAccountMapper.insert(addRefundAccount);
+            } else {
+                RefundAccount refundAccount = new RefundAccount();
+                refundAccount.setEpId(coreEpId);
+                refundAccount.setCoreEpId(coreEpId);
+                refundAccount.setMoney(-money);
+                refundAccount.setStatus(OrderConstant.AccountSplitStatus.NOT);
+                refundAccount.setRefundOrderId(refundOrderId);
+                refundAccountMapper.insert(refundAccount);
+
+                RefundAccount addRefundAccount = new RefundAccount();
+                addRefundAccount.setEpId(account.getEpId());
+                addRefundAccount.setCoreEpId(coreEpId);
+                addRefundAccount.setMoney(money);
+                addRefundAccount.setStatus(OrderConstant.AccountSplitStatus.NOT);
+                refundAccount.setRefundOrderId(refundOrderId);
+                refundAccountMapper.insert(addRefundAccount);
+            }
+        }
+    }
+
+    /**
+     * 退订失败把之前的预退票信息退回
+     * @param daysMap
+     * @param detailList
+     * @return
+     * @throws Exception
+     */
+    public void returnRefundForDays(Map daysMap, List<OrderItemDetail> detailList) throws Exception {
+        for (Object day : daysMap.keySet()) {
+            Date date = DateFormatUtils.parseString(DateFormatUtils.DATE_TIME_FORMAT, day.toString());
+            OrderItemDetail detail = getDetailByDay(detailList, date);
+            if (detail == null) {
+                throw new ApiException(String.format("日期:%s没有订单数据,数据异常", day));
+            }
+            Integer quantity = Integer.parseInt(daysMap.get(day).toString());
+            // 修改退票数
+            detail.setRefundQuantity(detail.getRefundQuantity() - quantity);
+            orderItemDetailMapper.updateByPrimaryKey(detail);
+
+            // 游客预退票退回
+            Map visitors = (Map) daysMap.get("visitors");
+            returnVisitorRefund(visitors, detail);
+        }
+    }
+
+    /**
+     * 退订失败把之前的预退票信息退回
+     * @param visitors 游客信息
+     * @param detail 订单详情
+     */
+    private void returnVisitorRefund(Map visitors, OrderItemDetail detail) {
+        List<Visitor> visitorList = visitorMapper.selectByOrderDetailId(detail.getId());
+        if (visitorList != null) {
+            for (Object sid : visitors.keySet()) {
+                Visitor visitor = getVisitorBySid(visitorList, sid.toString());
+                if (visitor == null) {
+                    throw new ApiException(String.format("缺少游客:%s", sid));
+                }
+                visitor.setPreReturn(0);
+                visitorMapper.updateByPrimaryKey(visitor);
+            }
+        }
+    }
+
+    /**
+     * 退票失败
+     * @param refundOrder
+     * @throws Exception
+     */
+    public void refundFail(RefundOrder refundOrder) throws Exception {
+        refundOrder.setStatus(OrderConstant.RefundOrderStatus.FAIL);
+        Map daysMap = JsonUtils.json2Map(refundOrder.getData());
+        List<OrderItemDetail> detailList = orderItemDetailMapper.selectByItemId(refundOrder.getOrderItemId());
+        returnRefundForDays(daysMap, detailList);
+        refundOrderMapper.updateByPrimaryKey(refundOrder);
+    }
+
+    public void refundTicket(RefundOrder refundOrder) {
+        // 生成退票流水
+        RefundSerial refundSerial = new RefundSerial();
+        refundSerial.setLocalSerialNo(UUIDGenerator.generateUUID());
+        refundSerial.setQuantity(refundOrder.getQuantity());
+        refundSerial.setData(refundOrder.getData());
+        refundSerial.setRefundOrderId(refundOrder.getId());
+        refundSerial.setCreateTime(new Date());
+        refundSerialMapper.insert(refundSerial);
+
+        refundOrder.setStatus(OrderConstant.RefundOrderStatus.REFUNDING);
+        refundOrder.setLocalRefundSerialNo(refundSerial.getLocalSerialNo());
+
+        List<MaSendResponse> maList = maSendResponseMapper.selectByOrderItemId(refundOrder.getOrderItemId());
+        Map daysMap = JsonUtils.json2Map(refundOrder.getData());
+        Map<String, Integer> sidMap = new HashMap<>();
+        for (int i = 0; i < daysMap.size(); i++) {
+            Map visitors = (Map) daysMap.get("visitors");
+            for (Object sid : visitors.keySet()) {
+                Integer q = sidMap.get(sid.toString());
+                int quantity = Integer.parseInt(visitors.get("quantity").toString());
+                sidMap.put(sid.toString(), q == null ? quantity : q + quantity);
+            }
+        }
+        for (String sid : sidMap.keySet()) {
+            for (MaSendResponse maSendResponse : maList) {
+                if (maSendResponse.getSid().equals(sid)) {
+
+                }
+            }
+        }
+        RefundTicketParams params = new RefundTicketParams();
+        params.setReFundId(refundSerial.getRefundOrderId().toString());
+        params.setCause(refundOrder.getCause());
+        voucherRPCService.invokeVoucherRefundTicket(params);
     }
 }

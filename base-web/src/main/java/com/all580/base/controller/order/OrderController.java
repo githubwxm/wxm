@@ -11,7 +11,6 @@ import com.framework.common.validate.ParamsMapValidate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -56,7 +55,7 @@ public class OrderController extends BaseController {
 
     @RequestMapping(value = "audit", method = RequestMethod.POST)
     @ResponseBody
-    public Result<?> audit(@RequestBody @Validated Map params) {
+    public Result<?> audit(@RequestBody Map params) {
         // 验证参数
         try {
             ParamsMapValidate.validate(params, orderValidateManager.auditValidate());

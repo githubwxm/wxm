@@ -50,4 +50,18 @@ public interface OrderMapper {
      * @return
      */
     Order selectBySN(Long sn);
+
+    /**
+     * 查询未支付的订单
+     * @param minute 未支付时间
+     * @return
+     */
+    List<Order> selectNoPayForMinute(int minute);
+
+    /**
+     * 查询待审核的订单
+     * @param minute 时间
+     * @return
+     */
+    List<Order> selectAuditWaitForMinute(int minute);
 }

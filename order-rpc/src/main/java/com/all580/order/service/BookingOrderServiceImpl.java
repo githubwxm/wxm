@@ -129,6 +129,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
                     allDaysSales.add(new ArrayList<>(salesInfo.getSales()));
                 }
 
+                // 子订单总进货价
                 int saleAmount = 0;
                 for (List<EpSalesInfo> daySales : allDaysSales) {
                     // 获取销售商价格
@@ -172,7 +173,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
                 lockParams.add(bookingOrderManager.parseParams(orderItem));
 
                 // 预分账记录
-                bookingOrderManager.preSplitAccount(allDaysSales, orderItem.getId(), quantity, 1);
+                bookingOrderManager.preSplitAccount(allDaysSales, orderItem.getId(), quantity, salesInfo.getPayType(), bookingDate);
             }
 
             // 创建订单联系人
@@ -323,7 +324,6 @@ public class BookingOrderServiceImpl implements BookingOrderService {
                 saveInfo.setEpId(payInfo.getCoreEpId());
                 saveInfo.setCoreEpId(payInfo.getCoreEpId());
                 saveInfo.setBalance(order.getPayAmount());
-                saveInfo.setCanCash(order.getPayAmount());
                 // 支付
                 Result result = bookingOrderManager.changeBalances(
                         PaymentConstant.BalanceChangeType.BALANCE_PAY,

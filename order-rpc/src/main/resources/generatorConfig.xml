@@ -39,7 +39,7 @@
             <property name="enableSubPackages" value="true"/>
         </javaClientGenerator>
 
-        <table tableName="t_order_item_account"
+        <!--<table tableName="t_order_item_account"
                enableCountByExample="false"
                enableUpdateByExample="false"
                enableDeleteByExample="false"
@@ -157,6 +157,16 @@
                selectByExampleQueryId="false"
                delimitAllColumns="true"
                domainObjectName="Visitor">
+            <generatedKey column="id" sqlStatement="MySql"/>
+        </table>-->
+        <table tableName="t_ma_send_response"
+               enableCountByExample="false"
+               enableUpdateByExample="false"
+               enableDeleteByExample="false"
+               enableSelectByExample="false"
+               selectByExampleQueryId="false"
+               delimitAllColumns="true"
+               domainObjectName="MaSendResponse">
             <generatedKey column="id" sqlStatement="MySql"/>
         </table>
     </context>

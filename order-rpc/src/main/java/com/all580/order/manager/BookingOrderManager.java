@@ -157,6 +157,7 @@ public class BookingOrderManager extends BaseOrderManager {
         orderItem.setQuantity(quantity);
         orderItem.setPaymentFlag(info.getPayType());
         orderItem.setStatus(OrderConstant.OrderItemStatus.AUDIT_SUCCESS);
+        orderItem.setSupplierEpId(info.getEpId());
         orderItemMapper.insert(orderItem);
         return orderItem;
     }
@@ -211,6 +212,25 @@ public class BookingOrderManager extends BaseOrderManager {
         orderItemDetail.setCustRefundRule(info.getCustRefundRule()); // 销售方退货规则
         orderItemDetail.setSalerRefundRule(info.getSalerRefundRule()); // 供应方退货规则
         orderItemDetail.setOrderItemId(itemId);
+        orderItemDetail.setCreateTime(new Date());
+        orderItemDetail.setDisableDay(info.getDisableDate());
+        orderItemDetail.setDisableWeek(info.getDisableWeek());
+        orderItemDetail.setUseHoursLimit(info.getUseHoursLimit());
+        Date effectiveDate = null;
+        if (orderItemDetail.getDay().before(orderItemDetail.getCreateTime())) {
+            effectiveDate = DateUtils.addHours(orderItemDetail.getCreateTime(), orderItemDetail.getUseHoursLimit());
+        } else {
+            effectiveDate = DateUtils.addHours(orderItemDetail.getDay(), orderItemDetail.getUseHoursLimit());
+        }
+        orderItemDetail.setEffectiveDate(effectiveDate);
+        Date expiryDate = null;
+        if (info.getEffectiveType() == 1) {
+            // 这里目前只做了门票的,默认结束日期就是当天的,酒店应该是第二天
+            expiryDate = DateUtils.addDays(orderItemDetail.getDay(), info.getEffectiveDay() - 1);
+        } else {
+            expiryDate = info.getEffectiveEndDate();
+        }
+        orderItemDetail.setExpiryDate(expiryDate);
         orderItemDetail.setRefundQuantity(0);
         orderItemDetail.setUsedQuantity(0);
         orderItemDetailMapper.insert(orderItemDetail);
@@ -308,7 +328,7 @@ public class BookingOrderManager extends BaseOrderManager {
      * @param quantity 每天(时间段)票数
      * @return
      */
-    public List<OrderItemAccount> preSplitAccount(List<List<EpSalesInfo>> daySalesList, int itemId, int quantity, int payType) {
+    public List<OrderItemAccount> preSplitAccount(List<List<EpSalesInfo>> daySalesList, int itemId, int quantity, int payType, Date bookingDate) {
         // 预分账记录
         List<OrderItemAccount> accounts = new ArrayList<>();
         // 缓存平台商ID
@@ -318,9 +338,11 @@ public class BookingOrderManager extends BaseOrderManager {
         // 叶子销售商最终卖价
         int salePrice = 0;
         // 遍历每天的销售链
+        int i = 0;
         for (List<EpSalesInfo> infoList : daySalesList) {
             // 一天的利润单价
             Map<Integer, AccountDataDto> dayAccountDataMap = new HashMap<>();
+            Date day = DateUtils.addDays(bookingDate, i);
             for (EpSalesInfo info : infoList) {
                 Integer buyCoreEpId = null;
                 // 叶子销售商门市价销售
@@ -333,14 +355,14 @@ public class BookingOrderManager extends BaseOrderManager {
                 Integer saleCoreEpId = getCoreEp(coreEpMap, info.getSaleEpId());
                 // 卖家 == 平台商 && 买家 == 平台商
                 if (info.getBuyEpId() == buyCoreEpId && saleCoreEpId == info.getSaleEpId()) {
-                    AccountDataDto dto = addDayAccount(dayAccountDataMap, infoList, buyCoreEpId);
+                    AccountDataDto dto = addDayAccount(dayAccountDataMap, infoList, buyCoreEpId, day);
                     dto.setSaleCoreEpId(saleCoreEpId);
-                    addDayAccount(dayAccountDataMap, infoList, saleCoreEpId);
+                    addDayAccount(dayAccountDataMap, infoList, saleCoreEpId, day);
                 }
 
                 // 买家平台商ID == 卖家平台商ID && 卖家ID != 卖家平台商ID
                 if (buyCoreEpId.intValue() == saleCoreEpId && info.getSaleEpId() != saleCoreEpId) {
-                    AccountDataDto dto = addDayAccount(dayAccountDataMap, infoList, info.getSaleEpId());
+                    AccountDataDto dto = addDayAccount(dayAccountDataMap, infoList, info.getSaleEpId(), day);
                     dto.setSaleCoreEpId(saleCoreEpId);
                 }
             }
@@ -354,6 +376,7 @@ public class BookingOrderManager extends BaseOrderManager {
                 }
                 accountDataDtoList.add(dayAccountDataMap.get(epId));
             }
+            i++;
         }
 
         // 把每天的利润集合做分账
@@ -426,10 +449,11 @@ public class BookingOrderManager extends BaseOrderManager {
         return accounts;
     }
 
-    private AccountDataDto addDayAccount(Map<Integer, AccountDataDto> dayAccountDataMap, List<EpSalesInfo> infoList, Integer epId) {
+    private AccountDataDto addDayAccount(Map<Integer, AccountDataDto> dayAccountDataMap, List<EpSalesInfo> infoList, Integer epId, Date day) {
         AccountDataDto accountDataDto = dayAccountDataMap.get(epId);
         if (accountDataDto == null) {
             accountDataDto = getProfit(infoList, epId);
+            accountDataDto.setDay(day);
             dayAccountDataMap.put(epId, accountDataDto);
         }
         return accountDataDto;

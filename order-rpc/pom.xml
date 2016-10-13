@@ -31,6 +31,11 @@
         </dependency>
         <dependency>
             <groupId>com.all580</groupId>
+            <artifactId>voucher-api</artifactId>
+            <version>3.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.all580</groupId>
             <artifactId>product-api</artifactId>
             <version>3.0.1-SNAPSHOT</version>
         </dependency>
