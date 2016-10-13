@@ -24,6 +24,7 @@
 		<skip_maven_deploy>true</skip_maven_deploy>
 		<framework-common_version>0.0.1-SNAPSHOT</framework-common_version>
 		<lombok_version>1.16.8</lombok_version>
+		<lts_version>1.6.9</lts_version>
 		<commons-pool2_version>2.4.2</commons-pool2_version>
 		<dubbo_version>2.5.4-SNAPSHOT</dubbo_version>
 		<spring_version>3.2.16.RELEASE</spring_version>

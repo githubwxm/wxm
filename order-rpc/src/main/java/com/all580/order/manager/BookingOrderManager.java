@@ -8,20 +8,14 @@ import com.all580.order.entity.*;
 import com.all580.payment.api.conf.PaymentConstant;
 import com.all580.payment.api.model.BalanceChangeInfo;
 import com.all580.payment.api.model.BalanceChangeRsp;
-import com.all580.payment.api.service.BalancePayService;
 import com.all580.product.api.consts.ProductConstants;
 import com.all580.product.api.model.EpSalesInfo;
 import com.all580.product.api.model.ProductSalesInfo;
-import com.all580.product.api.model.ProductSearchParams;
-import com.all580.product.api.service.ProductSalesPlanRPCService;
 import com.framework.common.Result;
 import com.framework.common.exception.ApiException;
 import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.lang.UUIDGenerator;
-import com.framework.common.validate.ValidRule;
-import com.github.ltsopensource.core.domain.Job;
-import com.github.ltsopensource.jobclient.JobClient;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,8 +56,12 @@ public class BookingOrderManager extends BaseOrderManager {
      * @return
      */
     public Result validateVisitor(List<Map> visitors, Integer productSubId, Date bookingDate, Integer maxCount, Integer maxQuantity) {
+        Set<String> sids = new HashSet<>();
         for (Map visitorMap : visitors) {
             String sid = visitorMap.get("sid").toString();
+            if (sids.contains(sid)) {
+                return new Result<>(false, Result.PARAMS_ERROR, "身份证:" + sid + "重复");
+            }
             if (!canOrderByCount(productSubId, sid, bookingDate, maxCount)) {
                 return new Result<>(false, Result.PARAMS_ERROR, "身份证:" + sid + "超出该产品当天最大订单数");
             }
@@ -72,6 +70,7 @@ public class BookingOrderManager extends BaseOrderManager {
                 return new Result<>(false, Result.PARAMS_ERROR,
                         "身份证:" + sid + "超出该产品当天最大购票数,现已定" + qty + "张,最大购票" + maxQuantity + "张");
             }
+            sids.add(sid);
         }
         return new Result(true);
     }
@@ -367,11 +366,12 @@ public class BookingOrderManager extends BaseOrderManager {
                 totalInPrice += dataDto.getInPrice();
                 totalProfit += dataDto.getProfit();
             }
-            GenerateAccountDto accountDto = new GenerateAccountDto();
+            GenerateAccountDto accountDto = null;
             // 平台商之间分账(进货价)
             if (coreEpId.intValue() == epId) {
                 AccountDataDto dto = dataDtos.get(0);
                 if (dto != null && dto.getSaleCoreEpId() != null) {
+                    accountDto = new GenerateAccountDto();
                     int totalAddProfit = 0;
                     // 卖家平台商每天的利润
                     List<AccountDataDto> saleAccountDataDtoList = daysAccountDataMap.get(dto.getSaleCoreEpId());
@@ -404,8 +404,8 @@ public class BookingOrderManager extends BaseOrderManager {
                         accountDto.setAddData(dataDtos); // 买家每天的单价利润
                     }
                 }
-
             } else {
+                accountDto = new GenerateAccountDto();
                 // 平台内部企业分账(利润)
                 accountDto.setSubtractEpId(coreEpId); // 平台商扣钱给企业分利润
                 accountDto.setSubtractCoreId(coreEpId);
@@ -419,7 +419,7 @@ public class BookingOrderManager extends BaseOrderManager {
                 accountDto.setAddData(dataDtos); // 每天的单价利润
             }
 
-            if (accountDto.getMoney() != 0) {
+            if (accountDto != null) {
                 accounts.addAll(generateAccount(accountDto));
             }
         }

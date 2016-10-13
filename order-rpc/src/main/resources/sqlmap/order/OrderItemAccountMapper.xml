@@ -87,4 +87,12 @@
         SELECT * FROM t_order_item_account
         WHERE `order_item_id` = #{itemId,jdbcType=INTEGER}
     </select>
+
+    <select id="selectByOrderItemAndEp" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT * FROM t_order_item_account
+        WHERE `order_item_id` = #{itemId,jdbcType=INTEGER}
+        AND `ep_id` = #{epId,jdbcType=INTEGER},
+        AND `core_ep_id` = #{coreEpId,jdbcType=INTEGER}
+        limit 1
+    </select>
 </mapper>

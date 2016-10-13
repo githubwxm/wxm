@@ -52,4 +52,13 @@ public interface OrderItemAccountMapper {
      * @return
      */
     List<OrderItemAccount> selectByOrderItem(@Param("itemId") Integer itemId);
+
+    /**
+     * 根据子订单ID&&企业查询预分账记录
+     * @param itemId 子订单
+     * @param epId 企业ID
+     * @param coreEpId 企业托管平台
+     * @return
+     */
+    OrderItemAccount selectByOrderItemAndEp(@Param("itemId") Integer itemId, @Param("epId") Integer epId, @Param("coreEpId") Integer coreEpId);
 }
