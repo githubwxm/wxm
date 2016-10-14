@@ -65,7 +65,7 @@ public class BaseOrderManager {
                 buyPrice = info.getPrice();
             }
         }
-        return new AccountDataDto(salePrice, buyPrice, salePrice - buyPrice, null);
+        return new AccountDataDto(salePrice, buyPrice, salePrice - buyPrice, null, null);
     }
 
     /**

@@ -2,6 +2,8 @@ package com.all580.order.task.action;
 
 import com.all580.order.api.OrderConstant;
 import com.all580.order.dao.OrderItemMapper;
+import com.all580.order.dao.OrderMapper;
+import com.all580.order.entity.Order;
 import com.all580.order.entity.OrderItem;
 import com.all580.order.manager.BookingOrderManager;
 import com.all580.product.api.model.ProductSearchParams;
@@ -36,6 +38,8 @@ public class PaymentCallbackAction implements JobRunner {
     @Autowired
     private OrderItemMapper orderItemMapper;
     @Autowired
+    private OrderMapper orderMapper;
+    @Autowired
     private BookingOrderManager bookingOrderManager;
 
     @Autowired
@@ -46,6 +50,12 @@ public class PaymentCallbackAction implements JobRunner {
         validateParams(params);
 
         int orderId = Integer.parseInt(params.get("orderId"));
+        Order order = orderMapper.selectByPrimaryKey(orderId);
+        if (order == null) {
+            log.warn("支付成功回调,订单不存在");
+            throw new Exception("订单不存在");
+        }
+
         List<OrderItem> orderItems = orderItemMapper.selectByOrderId(orderId);
         List<ProductSearchParams> lockParams = new ArrayList<>();
         for (OrderItem orderItem : orderItems) {
@@ -62,8 +72,10 @@ public class PaymentCallbackAction implements JobRunner {
         // 子订单状态为未出票
         orderItemMapper.setStatusByOrderId(orderId, OrderConstant.OrderItemStatus.NON_SEND);
 
-        // 分账
-        bookingOrderManager.paySplitAccount(orderId, orderItems);
+        // 分账 到付不分账
+        if (order.getPayAmount() > 0) {
+            bookingOrderManager.paySplitAccount(orderId, orderItems);
+        }
 
         // 出票
         return new Result(Action.EXECUTE_SUCCESS);

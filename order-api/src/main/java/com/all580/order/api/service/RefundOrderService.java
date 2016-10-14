@@ -26,6 +26,13 @@ public interface RefundOrderService {
     Result<?> apply(Map params);
 
     /**
+     * 取消已支付未分账的订单
+     * @param params
+     * @return
+     */
+    Result<?> cancelNoSplit(Map params);
+
+    /**
      * 退订审核(通过/驳回)
      * @param params
      * @return
