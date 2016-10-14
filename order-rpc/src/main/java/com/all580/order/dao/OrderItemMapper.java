@@ -86,4 +86,11 @@ public interface OrderItemMapper {
      * @return
      */
     List<String> getProductNamesByOrderId(@Param("orderId") Integer orderId);
+
+    /**
+     * 根据订单ID获取商品ID
+     * @param orderId 订单ID
+     * @return
+     */
+    List<Integer> getProductIdsByOrderId(@Param("orderId") Integer orderId);
 }

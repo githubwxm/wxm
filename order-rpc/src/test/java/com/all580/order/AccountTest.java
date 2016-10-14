@@ -259,7 +259,7 @@ public class AccountTest {
                 buyPrice = info.getPrice();
             }
         }
-        return new AccountDataDto(salePrice, buyPrice, salePrice - buyPrice, null);
+        return new AccountDataDto(salePrice, buyPrice, salePrice - buyPrice, null, null);
     }
 
     public static List<OrderItemAccount> generateAccount(GenerateAccountDto dto) {

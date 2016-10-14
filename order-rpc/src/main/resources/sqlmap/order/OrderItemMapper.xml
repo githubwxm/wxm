@@ -145,4 +145,10 @@
         FROM t_order_item
         WHERE `order_id` = #{orderId,jdbcType=INTEGER}
     </select>
+
+    <select id="getProductIdsByOrderId" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        SELECT `pro_sub_id`
+        FROM t_order_item
+        WHERE `order_id` = #{orderId,jdbcType=INTEGER}
+    </select>
 </mapper>

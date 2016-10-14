@@ -148,7 +148,7 @@
                delimitAllColumns="true"
                domainObjectName="Shipping">
             <generatedKey column="id" sqlStatement="MySql"/>
-        </table>
+        </table>-->
         <table tableName="t_visitor"
                enableCountByExample="false"
                enableUpdateByExample="false"
@@ -158,8 +158,8 @@
                delimitAllColumns="true"
                domainObjectName="Visitor">
             <generatedKey column="id" sqlStatement="MySql"/>
-        </table>-->
-        <table tableName="t_ma_send_response"
+        </table>
+        <!--<table tableName="t_ma_send_response"
                enableCountByExample="false"
                enableUpdateByExample="false"
                enableDeleteByExample="false"
@@ -168,6 +168,6 @@
                delimitAllColumns="true"
                domainObjectName="MaSendResponse">
             <generatedKey column="id" sqlStatement="MySql"/>
-        </table>
+        </table>-->
     </context>
 </generatorConfiguration>

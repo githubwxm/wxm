@@ -1,11 +1,17 @@
 package com.all580.order.task.action;
 
 import com.all580.order.api.OrderConstant;
+import com.all580.order.dao.OrderItemDetailMapper;
 import com.all580.order.dao.OrderItemMapper;
 import com.all580.order.dao.OrderMapper;
+import com.all580.order.dao.VisitorMapper;
 import com.all580.order.entity.Order;
 import com.all580.order.entity.OrderItem;
+import com.all580.order.entity.OrderItemDetail;
+import com.all580.order.entity.Visitor;
 import com.all580.order.manager.BookingOrderManager;
+import com.all580.product.api.model.Contact;
+import com.all580.product.api.model.GetTicketParams;
 import com.all580.product.api.model.ProductSearchParams;
 import com.all580.product.api.service.ProductSalesPlanRPCService;
 import com.framework.common.exception.ApiException;
@@ -39,6 +45,10 @@ public class PaymentCallbackAction implements JobRunner {
     private OrderItemMapper orderItemMapper;
     @Autowired
     private OrderMapper orderMapper;
+    @Autowired
+    private OrderItemDetailMapper orderItemDetailMapper;
+    @Autowired
+    private VisitorMapper visitorMapper;
     @Autowired
     private BookingOrderManager bookingOrderManager;
 
@@ -78,6 +88,35 @@ public class PaymentCallbackAction implements JobRunner {
         }
 
         // 出票
+        for (OrderItem orderItem : orderItems) {
+            List<OrderItemDetail> detailList = orderItemDetailMapper.selectByItemId(orderItem.getId());
+            OrderItemDetail detail = detailList.get(0); // 景点只有一天
+            GetTicketParams getTicketParams = new GetTicketParams();
+            getTicketParams.setSn(orderItem.getNumber());
+            getTicketParams.setBookinDate(orderItem.getStart());
+            getTicketParams.setCreateTime(order.getCreateTime());
+            getTicketParams.setProductSubId(orderItem.getProSubId());
+            getTicketParams.setDisableDate(detail.getDisableDay());
+            getTicketParams.setDisableWeek(detail.getDisableWeek());
+            getTicketParams.setValidStart(detail.getEffectiveDate());
+            getTicketParams.setValidEnd(detail.getExpiryDate());
+            List<Visitor> visitorList = visitorMapper.selectByOrderDetailId(detail.getId());
+            List<Contact> contacts = new ArrayList<>();
+            for (Visitor visitor : visitorList) {
+                Contact contact = new Contact();
+                contact.setName(visitor.getName());
+                contact.setPhone(visitor.getPhone());
+                contact.setSid(visitor.getSid());
+                contact.setQuantity(visitor.getQuantity());
+                contacts.add(contact);
+            }
+            getTicketParams.setVisitors(contacts);
+            com.framework.common.Result r = productSalesPlanRPCService.invokeVoucherFotTicket(getTicketParams);
+            if (r.hasError()) {
+                log.warn("出票失败");
+                throw new Exception(result.getError());
+            }
+        }
         return new Result(Action.EXECUTE_SUCCESS);
     }
 

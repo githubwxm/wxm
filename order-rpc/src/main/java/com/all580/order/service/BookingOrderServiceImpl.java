@@ -327,7 +327,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
                 // 支付
                 Result result = bookingOrderManager.changeBalances(
                         PaymentConstant.BalanceChangeType.BALANCE_PAY,
-                        order.getLocalPaymentSerialNo(), payInfo, saveInfo);
+                        order.getNumber().toString(), payInfo, saveInfo);
                 if (result.hasError()) {
                     log.warn("余额支付失败:{}", result.get());
                     throw new ApiException(result.getError());
@@ -337,12 +337,16 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             // 第三方支付
             // 获取商品名称
             List<String> names = orderItemMapper.getProductNamesByOrderId(order.getId());
-            Result result = thirdPayService.reqPay(
-                    StringUtils.join(names, ","),
-                    order.getNumber(), order.getPayAmount(),
-                    order.getLocalPaymentSerialNo(),
+            List<Integer> ids = orderItemMapper.getProductIdsByOrderId(order.getId());
+            Map<String, Object> payParams = new HashMap<>();
+            payParams.put("prodName", StringUtils.join(names, ","));
+            payParams.put("totalFee", order.getPayAmount());
+            payParams.put("serialNum", order.getNumber().toString());
+            payParams.put("prodId", StringUtils.join(ids, ","));
+
+            Result result = thirdPayService.reqPay(order.getNumber(),
                     bookingOrderManager.getCoreEpId(epService.selectPlatformId(order.getBuyEpId())),
-                    payType);
+                    payType, payParams);
             if (result.hasError()) {
                 log.warn("第三方支付异常:{}", result);
                 throw new ApiException(result.getError());
