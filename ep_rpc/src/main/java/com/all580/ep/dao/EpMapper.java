@@ -2,6 +2,8 @@ package com.all580.ep.dao;
 
 
 
+import org.springframework.stereotype.Repository;
+
 import java.util.List;
 import java.util.Map;
 
@@ -19,4 +21,8 @@ public interface EpMapper {
     int updatePlatfromStatus(Map map);
     int platformEnable(Map map);
     List<Map> platformListDown(Map map);
+    int platformListDownCount(Map map);
+
+    List<Map> platformListUp(Map map);
+    int platformListUpCount(Map map);
 }
