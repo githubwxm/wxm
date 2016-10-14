@@ -17,6 +17,6 @@ public interface CoreEpAccessService {
      * @param access_id
      * @return   平台商id
      */
-     Integer checkAccess_id(Object access_id);
+    Result<Integer> checkAccessId(Object access_id);
 
 }
