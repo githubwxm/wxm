@@ -4,6 +4,7 @@ import com.all580.base.manager.PlatfromValidateManager;
 import com.all580.ep.api.service.EpService;
 import com.framework.common.BaseController;
 import com.framework.common.Result;
+import com.framework.common.exception.ApiException;
 import com.framework.common.exception.ParamsMapValidationException;
 import com.framework.common.validate.ParamsMapValidate;
 import lombok.extern.slf4j.Slf4j;
@@ -39,13 +40,22 @@ public class PlatfromController extends BaseController {
             log.warn("创建订单参数验证失败", e);
             return new Result<>(false, Result.PARAMS_ERROR, e.getMessage());
         }
-        return epService.createPlatform(map);
+        try {
+            return epService.createPlatform(map);
+        }catch (ApiException e){
+            return new Result<>(false, e.getCode(), e.getMsg());
+        }
     }
 
     @RequestMapping(value = "validate", method = RequestMethod.GET)
     @ResponseBody
     public Result<Map> validate(@RequestBody Map map) {
-        return epService.validate(map);
+
+        try {
+            return epService.validate(map);
+        }catch (ApiException e){
+            return new Result<>(false, e.getCode(), e.getMsg());
+        }
     }
 //
 //    /**
@@ -80,7 +90,12 @@ public class PlatfromController extends BaseController {
             log.warn("冻结企业参数验证失败", e);
             return new Result<>(false, Result.PARAMS_ERROR, e.getMessage());
         }
-        return epService.platformDisable(map);
+        try {
+            return epService.platformDisable(map);
+        }catch (ApiException e){
+            return new Result<>(false, e.getCode(), e.getMsg());
+        }
+
     }
     /**
      * 平台商冻结
@@ -96,7 +111,12 @@ public class PlatfromController extends BaseController {
             log.warn("冻结企业参数验证失败", e);
             return new Result<>(false, Result.PARAMS_ERROR, e.getMessage());
         }
-        return epService.platformFreeze(map);
+        try {
+            return epService.platformFreeze(map);
+        }catch (ApiException e){
+            return new Result<>(false, e.getCode(), e.getMsg());
+        }
+
     }
     /**
      * 平台商激活
@@ -112,6 +132,52 @@ public class PlatfromController extends BaseController {
             log.warn("冻结企业参数验证失败", e);
             return new Result<>(false, Result.PARAMS_ERROR, e.getMessage());
         }
-        return epService.platformEnable(map);
-    }
+        try {
+            return epService.platformEnable(map);
+        }catch (ApiException e){
+            return new Result<>(false, e.getCode(), e.getMsg());
+        }
+    }//
+    /**
+     * 上游平台商
+     * @param map
+     * @return
+     */
+    @RequestMapping(value = "list/up", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<Map> platformListUp(@RequestBody Map map) {
+        try {//
+            ParamsMapValidate.validate(map, platfromValidateManager.generateCreateDownUpValidate());
+        } catch (ParamsMapValidationException e) {
+            log.warn("冻结企业参数验证失败", e);
+            return new Result<>(false, Result.PARAMS_ERROR, e.getMessage());
+        }
+
+
+        try {
+            return epService.platformListUp(map)  ;
+        }catch (ApiException e){
+            return new Result<>(false, e.getCode(), e.getMsg());
+        }
+    }//list/up
+    /**
+     * 上游平台商
+     * @param map
+     * @return
+     */
+    @RequestMapping(value = "list/down", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<Map> platformListDown(@RequestBody Map map) {
+        try {//
+            ParamsMapValidate.validate(map, platfromValidateManager.generateCreateDownUpValidate());
+        } catch (ParamsMapValidationException e) {
+            log.warn("冻结企业参数验证失败", e);
+            return new Result<>(false, Result.PARAMS_ERROR, e.getMessage());
+        }
+        try {
+            return epService.platformListDown(map);
+        }catch (ApiException e){
+            return new Result<>(false, e.getCode(), e.getMsg());
+        }
+    }//list/u
 }

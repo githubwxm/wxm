@@ -4,7 +4,9 @@ import com.all580.base.manager.PlatfromValidateManager;
 import com.all580.ep.api.service.EpService;
 import com.framework.common.BaseController;
 import com.framework.common.Result;
+import com.framework.common.exception.ApiException;
 import com.framework.common.exception.ParamsMapValidationException;
+import com.framework.common.util.CommonUtil;
 import com.framework.common.validate.ParamsMapValidate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +46,18 @@ public class EpController extends BaseController {
             log.warn("创建企业参数验证失败", e);
             return new Result<>(false, Result.PARAMS_ERROR, e.getMessage());
         }
-        return epService.createEp(map);
+        try {
+            return epService.createEp(map);
+        } catch (ParamsMapValidationException e) {
+            log.warn("创建企业参数验证失败", e);
+            return new Result<>(false, Result.PARAMS_ERROR, e.getMessage());
+        }catch(ApiException e){
+            log.warn("创建企业参数验证失败", e);
+            return new Result<>(false, e.getCode(), e.getMessage());
+        }
+
+
+
 
     }
 
@@ -59,11 +72,24 @@ public class EpController extends BaseController {
         // 验证参数
         try {
             ParamsMapValidate.validate(map, platfromValidateManager.generateCreateEpValidate());
+            String ep_class = (String) map.get("ep_class");
+            String id = map.get("id").toString();
+            if (!CommonUtil.isTrue(id, "\\d+")) {
+                throw new ParamsMapValidationException("企业id错误");
+            }
+            if (!CommonUtil.isTrue(ep_class, "\\d+")) {
+                throw new ParamsMapValidationException("企业分类错误");
+            }
         } catch (ParamsMapValidationException e) {
             log.warn("修改企业参数验证失败", e);
             return new Result<>(false, Result.PARAMS_ERROR, e.getMessage());
         }
-        return epService.updateEp(map);
+        try {
+            return epService.updateEp(map);
+        }catch (ApiException e){
+            return new Result<>(false, e.getCode(), e.getMsg());
+        }
+
     }
 
     /**
@@ -81,7 +107,12 @@ public class EpController extends BaseController {
             log.warn("修改企业参数验证失败", e);
             return new Result<>(false, Result.PARAMS_ERROR, e.getMessage());
         }
-        return epService.freeze(map);
+        try {
+            return epService.freeze(map);
+        }catch (ApiException e){
+            return new Result<>(false, e.getCode(), e.getMsg());
+        }
+
     }
     /**
      * 冻结企业
@@ -98,7 +129,12 @@ public class EpController extends BaseController {
             log.warn("修改企业参数验证失败", e);
             return new Result<>(false, Result.PARAMS_ERROR, e.getMessage());
         }
-        return epService.disable(map);
+        try {
+            return epService.disable(map);
+        }catch (ApiException e){
+            return new Result<>(false, e.getCode(), e.getMsg());
+        }
+
     }
     /**
      * 激活企业
@@ -115,6 +151,10 @@ public class EpController extends BaseController {
             log.warn("修改企业参数验证失败", e);
             return new Result<>(false, Result.PARAMS_ERROR, e.getMessage());
         }
-        return epService.enable(map);
+        try {
+            return epService.enable(map);
+        }catch (ApiException e){
+            return new Result<>(false, e.getCode(), e.getMsg());
+        }
     }
 }
