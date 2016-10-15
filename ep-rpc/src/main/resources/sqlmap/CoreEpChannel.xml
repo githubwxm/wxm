@@ -38,7 +38,7 @@
             and f.`supplier_name` like   CONCAT('%',#{supplier_name}'%')
         </if>
         <if test="limit != null">
-         limit #{record_start},#{record_count}
+            limit #{record_start},#{record_count}
         </if>
     </select>
 

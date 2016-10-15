@@ -4,7 +4,8 @@
 
     <insert id="createOrUpdate">
       insert into t_ep_balance_threshold(ep_id,core_ep_id) values
-       (#{ep_id},#{core_ep_id}) ON DUPLICATE KEY UPDATE threshold=#{threshold};
+       (#{ep_id},#{core_ep_id}) ON DUPLICATE KEY UPDATE
+       threshold = case  when #{threshold} is null then threshold else #{threshold} end;
     </insert>
 
     <select id="select" resultType="java.util.HashMap">

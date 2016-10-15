@@ -30,6 +30,11 @@
         <!--logo_pic,status,access_id,access_key,creator_ep_id,core_ep_id,-->
         <!--add_time,status_bak,province,city,area,group_id,group_name,param.name as status_name-->
     <!--</sql>-->
+    <sql id="limit">
+        <if test="limit != null">
+            limit #{record_start},#{record_count}
+        </if>
+    </sql>
     <sql id="ep_list_where">
         <if test="id != null">
             and ep.`id`=#{id}
@@ -64,6 +69,21 @@
         </if>
 
     </sql>
+    <sql id="platformListUpDown">
+        <if test="epName != null">
+            and   name like CONCAT('%',#{epName}'%')
+        </if>
+        <if test="epProvince != null">
+            and province =#{epProvince}
+        </if>
+        <if test="epCity != null">
+            and city=#{epCity}
+        </if>
+        <if test="epPhone != null">
+            and link_phone =#{epPhone}
+        </if>
+        <include refid="limit"/>
+    </sql>
     <select id="select" resultType="java.util.HashMap">
        select  ep.*,param.`name` as status_name  from
         t_ep  ep left JOIN t_ep_param param on ep.`status` = param.id
@@ -85,23 +105,31 @@
     <select id="all" resultType="java.util.HashMap" >
        select * from t_ep where  core_ep_id=#{core_ep_id};
     </select>
-<!-- platform/list/down-->
+<!-- platform/list/down   下游平台商-->
     <select id="platformListDown" resultType="java.util.HashMap">
     select name,linkman,link_phone,province,city,area,address,truncate(rate/100,2) as rate from t_core_ep_channel c
        join t_ep e on e.id=c.seller_core_ep_id
-        where  1=1 and e.id= #{ep_id} and ep_type=#{ep_type}
-        <if test="epName != null">
-            and   name like CONCAT('%',#{epName}'%')
-        </if>
-        <if test="epProvince != null">
-            and province =#{epProvince}
-        </if>
-        <if test="epCity != null">
-            and city=#{epCity}
-        </if>
-        <if test="epPhone != null">
-            and link_phone =#{epPhone}
-        </if>
+        where  1=1 and supplier_core_ep_id= #{ep_id} and ep_type=#{ep_type}
+               <include refid="platformListUpDown"/>
+    </select>
+    <select id="platformListDownCount" resultType="java.lang.Integer">
+        select count(1) from t_core_ep_channel c
+        join t_ep e on e.id=c.seller_core_ep_id
+        where  1=1 and supplier_core_ep_id= #{ep_id} and ep_type=#{ep_type}
+        <include refid="platformListUpDown"/>
+    </select>
+    <!-- platform/list/up   上游平台商-->
+    <select id="platformListUp" resultType="java.util.HashMap">
+        select name,linkman,link_phone,province,city,area,address,truncate(rate/100,2) as rate from t_core_ep_channel c
+        join t_ep e on e.id=c.supplier_core_ep_id
+        where  1=1 and seller_core_ep_id= #{ep_id} and ep_type=#{ep_type}
+        <include refid="platformListUpDown"/>
+    </select>
+    <select id="platformListUpCount" resultType="java.lang.Integer">
+        select count(1) from t_core_ep_channel c
+        join t_ep e on e.id=c.supplier_core_ep_id
+        where  1=1 and seller_core_ep_id= #{ep_id} and ep_type=#{ep_type}
+        <include refid="platformListUpDown"/>
     </select>
 
     <!--  停用，冻结平台商  -->
