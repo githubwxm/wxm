@@ -1,6 +1,8 @@
 package com.all580.order.dao;
 
 import com.all580.order.entity.MaSendResponse;
+import org.apache.ibatis.annotations.Param;
+
 import java.util.List;
 
 public interface MaSendResponseMapper {
@@ -50,4 +52,13 @@ public interface MaSendResponseMapper {
      * @return
      */
     List<MaSendResponse> selectByOrderItemId(Integer itemId);
+
+    /**
+     * 根据子订单ID和凭证订单ID获取凭证
+     * @param itemId 子订单ID
+     * @param maId 凭证出票ID
+     * @param epMaId 凭证ID
+     * @return
+     */
+    MaSendResponse selectByOrderItemIdAndMaId(@Param("itemId") Integer itemId, @Param("maId") String maId, @Param("epMaId") Integer epMaId);
 }
