@@ -16,7 +16,7 @@ public class PlatfromValidateManager {
         Map<String[], ValidRule[]> rules = new HashMap<>();
         // 校验不为空的参数
         rules.put(new String[]{
-                "name.", // 企业中文名
+                "name", // 企业中文名
                 "code", // '企业组织机构代码',
                 "logo_pic", // '企业组织机构代码',
                 "license", // 营业证编号
@@ -43,12 +43,26 @@ public class PlatfromValidateManager {
         Map<String[], ValidRule[]> rules = new HashMap<>();
         // 校验不为空的参数
         rules.put(new String[]{
-                "id.", //
+                "id", //
         }, new ValidRule[]{new ValidRule.NotNull()});
 
         // 校验整数
         rules.put(new String[]{
                 "id" // 企业id
+        }, new ValidRule[]{new ValidRule.Digits()});
+        return rules;
+    }
+
+    public Map<String[], ValidRule[]> generateCreateDownUpValidate() {
+        Map<String[], ValidRule[]> rules = new HashMap<>();
+        // 校验不为空的参数
+        rules.put(new String[]{
+                "ep_id", //
+        }, new ValidRule[]{new ValidRule.NotNull()});
+
+        // 校验整数
+        rules.put(new String[]{
+                "ep_id" // 企业id
         }, new ValidRule[]{new ValidRule.Digits()});
         return rules;
     }
