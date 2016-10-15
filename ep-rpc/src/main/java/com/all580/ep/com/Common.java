@@ -74,14 +74,13 @@ public class Common {
      * @return
      */
     public static boolean objectIsNumber(Object obj) {
-        String key="";
         if(null==obj){
             return false;
         }else{
-            key=obj.toString();
+            String  key=obj.toString();
+            Pattern pattern = Pattern.compile("\\d+");
+            return pattern.matcher(key).matches();
         }
-        Pattern pattern = Pattern.compile("\\d+");
-        return pattern.matcher(key).matches();
     }
 
     /**
@@ -167,7 +166,7 @@ public class Common {
      */
     public static void checkPage(Map map){
         if(objectIsNumber(map.get("record_start"))&&objectIsNumber(map.get("record_count"))){
-            map.put("limit","");
+            map.put("limit","limit");
         }
     }
 }
