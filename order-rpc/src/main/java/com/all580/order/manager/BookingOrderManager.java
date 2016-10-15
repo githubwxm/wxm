@@ -249,7 +249,7 @@ public class BookingOrderManager extends BaseOrderManager {
         visitor.setRefId(itemDetailId);
         visitor.setName(v.get("name").toString());
         visitor.setPhone(v.get("phone").toString());
-        visitor.setSid(v.get("sid").toString());
+        visitor.setSid(v.containsKey("sid") ? v.get("sid").toString() : null);
         visitor.setQuantity(Integer.parseInt(v.get("quantity").toString()));
         visitorMapper.insert(visitor);
         return visitor;

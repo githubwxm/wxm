@@ -10,6 +10,7 @@ import com.all580.product.api.consts.ProductRules;
 import com.all580.product.api.model.ProductSearchParams;
 import com.all580.product.api.service.ProductSalesPlanRPCService;
 import com.all580.voucher.api.model.RefundTicketParams;
+import com.all580.voucher.api.model.RefundTicketPersonInfo;
 import com.all580.voucher.api.service.VoucherRPCService;
 import com.framework.common.Result;
 import com.framework.common.exception.ApiException;
@@ -162,6 +163,21 @@ public class RefundOrderManager extends BaseOrderManager {
                 throw new ApiException("缺少游客退票信息");
             }
             for (Object sid : visitors.keySet()) {
+                if (sid == null) {
+                    if (visitorList.size() != 1) {
+                        throw new ApiException("游客信息异常");
+                    }
+                    Visitor visitor = visitorList.get(0);
+                    Integer vqty = Integer.parseInt(visitors.get("quantity").toString());
+                    if (visitor.getQuantity() - visitor.getReturnQuantity() < vqty) {
+                        throw new ApiException(
+                                String.format("日期:%s余票不足", new Object[]{day}));
+                    }
+                    visitor.setPreReturn(vqty);
+                    visitorMapper.updateByPrimaryKey(visitor);
+                    total += vqty;
+                    return total;
+                }
                 Visitor visitor = getVisitorBySid(visitorList, sid.toString());
                 if (visitor == null) {
                     throw new ApiException(String.format("日期:%s缺少游客:%s", day, sid));
@@ -412,6 +428,10 @@ public class RefundOrderManager extends BaseOrderManager {
         refundOrderMapper.updateByPrimaryKey(refundOrder);
     }
 
+    /**
+     * 退票
+     * @param refundOrder
+     */
     public void refundTicket(RefundOrder refundOrder) {
         // 生成退票流水
         RefundSerial refundSerial = new RefundSerial();
@@ -431,21 +451,41 @@ public class RefundOrderManager extends BaseOrderManager {
         for (int i = 0; i < daysMap.size(); i++) {
             Map visitors = (Map) daysMap.get("visitors");
             for (Object sid : visitors.keySet()) {
-                Integer q = sidMap.get(sid.toString());
+                String s = sid == null ? "" : sid.toString();
+                Integer q = sidMap.get(s);
                 int quantity = Integer.parseInt(visitors.get("quantity").toString());
-                sidMap.put(sid.toString(), q == null ? quantity : q + quantity);
+                sidMap.put(s, q == null ? quantity : q + quantity);
             }
         }
+
+        Integer epMaId = null;
+        List<RefundTicketPersonInfo> personInfos = new ArrayList<>();
         for (String sid : sidMap.keySet()) {
             for (MaSendResponse maSendResponse : maList) {
-                if (maSendResponse.getSid().equals(sid)) {
-
+                if ((maSendResponse.getSid() == null && sid.equals("")) || maSendResponse.getSid().equals(sid)) {
+                    epMaId = epMaId == null ? maSendResponse.getEpMaId() : epMaId;
+                    RefundTicketPersonInfo info = new RefundTicketPersonInfo();
+                    info.setSid(sid);
+                    info.setMaOrderId(maSendResponse.getMaOrderId());
+                    info.setQuantity(sidMap.get(sid));
+                    personInfos.add(info);
                 }
             }
         }
-        RefundTicketParams params = new RefundTicketParams();
-        params.setReFundId(refundSerial.getRefundOrderId().toString());
-        params.setCause(refundOrder.getCause());
-        voucherRPCService.invokeVoucherRefundTicket(params);
+
+        if (epMaId == null) {
+            throw new ApiException("缺少凭证ID");
+        }
+        OrderItem orderItem = orderItemMapper.selectByPrimaryKey(refundOrder.getOrderItemId());
+        RefundTicketParams ticketParams = new RefundTicketParams();
+        ticketParams.setReFundId(refundOrder.getLocalRefundSerialNo().toString());
+        ticketParams.setSn(orderItem.getNumber());
+        ticketParams.setCause(refundOrder.getCause());
+        ticketParams.setEpMaId(epMaId);
+        ticketParams.setVisitor(personInfos);
+        Result result = voucherRPCService.invokeVoucherRefundTicket(ticketParams);
+        if (result.hasError()) {
+            throw new ApiException(result.getError());
+        }
     }
 }

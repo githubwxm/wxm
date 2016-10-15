@@ -135,7 +135,7 @@ public class BaseOrderManager {
         params.setStartDate(orderItem.getStart());
         params.setDays(orderItem.getDays());
         params.setQuantity(orderItem.getQuantity());
-        params.setSubProductId(orderItem.getId());
+        params.setSubOrderId(orderItem.getId());
         return params;
     }
 

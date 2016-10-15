@@ -137,4 +137,21 @@ public class OrderController extends BaseController {
             return new Result<>(false, e.getCode(), e.getMsg());
         }
     }
+
+    @RequestMapping(value = "cancel/nosplit", method = RequestMethod.POST)
+    @ResponseBody
+    public Result<?> cancelNoSplit(@RequestBody Map params) {
+        // 验证参数
+        try {
+            ParamsMapValidate.validate(params, orderValidateManager.cancelValidate());
+        } catch (ParamsMapValidationException e) {
+            log.warn("取消已支付未分账的订单验证失败", e);
+            return new Result<>(false, Result.PARAMS_ERROR, e.getMessage());
+        }
+        try {
+            return refundOrderService.cancelNoSplit(params);
+        } catch (ApiException e) {
+            return new Result<>(false, e.getCode(), e.getMsg());
+        }
+    }
 }

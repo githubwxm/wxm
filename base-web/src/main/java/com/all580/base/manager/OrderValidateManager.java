@@ -34,7 +34,7 @@ public class OrderValidateManager {
                 "ep_id", // 订票企业ID
                 "user_id", // 订票用户ID
                 "user_name", // 订票用户名称
-                "sale_amount", // 销售金额
+                //"sale_amount", // 销售金额
                 "from" // 来源 0-平台下单 1-接口下单
         }, new ValidRule[]{new ValidRule.NotNull()});
 
@@ -118,6 +118,7 @@ public class OrderValidateManager {
                 "visitors.sid" // 身份证
         }, new ValidRule[]{new ValidRule.NotNull(), new ValidRule.IdCard()});
 
+        rules.put(new String[]{"cause"}, new ValidRule[]{new ValidRule.NotNull()});
         return rules;
     }
 

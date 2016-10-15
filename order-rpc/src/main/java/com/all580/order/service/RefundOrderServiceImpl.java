@@ -17,15 +17,11 @@ import com.all580.payment.api.service.ThirdPayService;
 import com.framework.common.Result;
 import com.framework.common.exception.ApiException;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author zhouxianjun(Alone)
@@ -87,6 +83,7 @@ public class RefundOrderServiceImpl implements RefundOrderService {
             Map daysMap = (Map) params.get("days");
             // 总退票数量
             Integer quantity = Integer.parseInt(params.get("quantity").toString());
+            String cause = params.get("cause").toString();
 
             if (order.getStatus() == OrderConstant.OrderStatus.PAID) {
                 if (daysMap == null) {
@@ -104,7 +101,7 @@ public class RefundOrderServiceImpl implements RefundOrderService {
             int money = refundOrderManager.calcRefundMoney(detailList, orderItem.getId(), order.getBuyEpId(),
                     refundOrderManager.getCoreEpId(refundOrderManager.getCoreEpId(order.getBuyEpId())), refundDate);
             // 创建退订订单
-            RefundOrder refundOrder = refundOrderManager.generateRefundOrder(orderItem.getId(), daysMap, quantity, money, "");
+            RefundOrder refundOrder = refundOrderManager.generateRefundOrder(orderItem.getId(), daysMap, quantity, money, cause);
 
             // 退订分账
             refundOrderManager.preRefundAccount(orderItem.getId(), refundOrder.getId(), detailList, refundDate);
@@ -142,7 +139,7 @@ public class RefundOrderServiceImpl implements RefundOrderService {
                 saveInfo.setCanCash(order.getPayAmount());
                 // 退款
                 Result result = refundOrderManager.changeBalances(
-                        PaymentConstant.BalanceChangeType.BALANCE_PAY,
+                        PaymentConstant.BalanceChangeType.BALANCE_REFUND,
                         order.getLocalPaymentSerialNo(), payInfo, saveInfo);
                 if (result.hasError()) {
                     log.warn("余额退款失败:{}", result.get());
@@ -151,9 +148,11 @@ public class RefundOrderServiceImpl implements RefundOrderService {
                 return new Result<>(true);
             }
             // 第三方退款
-            Result result = thirdPayService.reqRefund(order.getNumber(), order.getPayAmount(),
-                    order.getPayAmount(), order.getLocalPaymentSerialNo(),
-                    coreEpId, order.getPaymentType());
+            Map<String, Object> payParams = new HashMap<>();
+            payParams.put("totalFee", order.getPayAmount());
+            payParams.put("refundFee", order.getPayAmount());
+            payParams.put("serialNum", order.getLocalPaymentSerialNo());
+            Result result = thirdPayService.reqRefund(order.getNumber(), coreEpId, order.getPaymentType(), payParams);
             if (result.hasError()) {
                 log.warn("第三方退款异常:{}", result);
                 throw new ApiException(result.getError());
@@ -187,6 +186,7 @@ public class RefundOrderServiceImpl implements RefundOrderService {
         if (status) {
             if (order.getStatus() == OrderConstant.OrderStatus.PAID) {
                 // 调用退票
+                refundOrderManager.refundTicket(refundOrder);
             }
             // 没有出票直接调用取消
             return refundOrderManager.cancel(order);
