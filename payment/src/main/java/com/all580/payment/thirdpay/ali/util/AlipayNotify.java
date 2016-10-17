@@ -1,7 +1,8 @@
 package com.all580.payment.thirdpay.ali.util;
 
-import com.hentre.alipay.config.AlipayConfig;
-import com.hentre.alipay.sign.MD5;
+
+import com.all580.payment.thirdpay.ali.config.AlipayConfig;
+import com.all580.payment.thirdpay.ali.sign.MD5;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;

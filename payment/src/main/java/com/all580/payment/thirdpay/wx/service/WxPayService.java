@@ -3,10 +3,7 @@ package com.all580.payment.thirdpay.wx.service;
 import com.all580.payment.thirdpay.wx.client.ClientResponseHandler;
 import com.all580.payment.thirdpay.wx.client.RequestHandler;
 import com.all580.payment.thirdpay.wx.client.TenpayHttpClient;
-import com.all580.payment.thirdpay.wx.model.CommonsReq;
-import com.all580.payment.thirdpay.wx.model.UnifiedOrderReq;
-import com.all580.payment.thirdpay.wx.model.UnifiedOrderRsp;
-import com.all580.payment.thirdpay.wx.model.WxProperties;
+import com.all580.payment.thirdpay.wx.model.*;
 import com.all580.payment.thirdpay.wx.util.ConstantUtil;
 import com.all580.payment.thirdpay.wx.util.WXUtil;
 import com.framework.common.lang.JsonUtils;
@@ -27,8 +24,8 @@ import java.util.SortedMap;
  * @author panyi on 2016/10/13.
  * @since V0.0.1
  */
-@Service("wxPaymentService")
-public class WxPaymentService {
+@Service("wxPayService")
+public class WxPayService {
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
     @Value("${base.url}")
     private String domain;
@@ -63,6 +60,24 @@ public class WxPaymentService {
 
         return unifiedOrderRsp.getCode_url();
 
+    }
+
+    // 申请退款
+    public RefundRsp reqRefund(long ordCode, Map<String, Object> params, String confData) throws Exception {
+        RefundReq req = new RefundReq();
+        req.setTransaction_id("");
+        req.setOut_trade_no(String.valueOf(ordCode));
+        req.setOut_refund_no(String.valueOf(params.get("refundId")));
+        req.setTotal_fee((Integer) params.get("totalFee"));
+        req.setRefund_fee((Integer) params.get("refundFee"));
+        req.setRefund_fee_type("CNY");
+        req.setAppid(wxProperties.getAPP_ID());
+        req.setMch_id(wxProperties.getPARTNER());
+        req.setNonce_str(WXUtil.getNonceStr());
+        req.setOp_user_id(wxProperties.getPARTNER());
+        req.setDevice_info("");
+
+        return this.request(ConstantUtil.REFUND, req, RefundRsp.class, true);
     }
 
     /**

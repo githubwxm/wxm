@@ -1,6 +1,6 @@
 package com.all580.payment.thirdpay.ali.util.httpClient;
 
-import com.hentre.alipay.config.AlipayConfig;
+import com.all580.payment.thirdpay.ali.config.AlipayConfig;
 import org.apache.commons.httpclient.Header;
 
 import java.io.UnsupportedEncodingException;

@@ -4,7 +4,9 @@ import com.all580.payment.api.conf.PaymentConstant;
 import com.all580.payment.api.service.ThirdPayService;
 import com.all580.payment.dao.EpPaymentConfMapper;
 import com.all580.payment.entity.EpPaymentConf;
-import com.all580.payment.thirdpay.wx.service.WxPaymentService;
+import com.all580.payment.thirdpay.ali.service.AliPayService;
+import com.all580.payment.thirdpay.wx.model.RefundRsp;
+import com.all580.payment.thirdpay.wx.service.WxPayService;
 import com.framework.common.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,8 +28,9 @@ public class ThirdPayServiceImpl implements ThirdPayService {
     @Autowired
     private EpPaymentConfMapper epPaymentConfMapper;
     @Autowired
-    private WxPaymentService wxPaymentService;
-
+    private WxPayService wxPayService;
+    @Autowired
+    private AliPayService aliPayService;
 
     @Override
     public Result<String> reqPay(long ordCode, int coreEpId, int payType, Map<String, Object> params) {
@@ -37,7 +40,7 @@ public class ThirdPayServiceImpl implements ThirdPayService {
         String confData = epPaymentConf.getConfData();
         if (PaymentConstant.PaymentType.WX_PAY == payType) {
             try {
-                String codeUrl = wxPaymentService.reqPay(ordCode, params, confData);
+                String codeUrl = wxPayService.reqPay(ordCode, params, confData);
                 logger.info(codeUrl);
                 result.setSuccess();
                 result.put(codeUrl);
@@ -45,7 +48,10 @@ public class ThirdPayServiceImpl implements ThirdPayService {
                 e.printStackTrace();
             }
         } else if (PaymentConstant.PaymentType.ALI_PAY == payType) {
-            // TODO
+            String html = aliPayService.reqPay(ordCode, params, confData);
+            logger.info(html);
+            result.put(html);
+            result.setSuccess();
         } else {
             throw new RuntimeException("不支持的支付类型:" + payType);
         }
@@ -54,7 +60,28 @@ public class ThirdPayServiceImpl implements ThirdPayService {
 
     @Override
     public Result<String> reqRefund(long ordCode, int coreEpId, int payType, Map<String, Object> params) {
-        return null;
+        Result<String> result = new Result<>();
+        EpPaymentConf epPaymentConf = epPaymentConfMapper.getByEpIdAndType(coreEpId, payType);
+        Assert.notNull(epPaymentConf);
+        String confData = epPaymentConf.getConfData();
+        if (PaymentConstant.PaymentType.WX_PAY == payType) {
+            try {
+                RefundRsp refundRsp = wxPayService.reqRefund(ordCode, params, confData);
+                logger.info(refundRsp.getResult_code());
+                result.setSuccess();
+                result.put(refundRsp.getTransaction_id());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else if (PaymentConstant.PaymentType.ALI_PAY == payType) {
+            String html = aliPayService.reqRefund(params, confData);
+            logger.info(html);
+            result.put(html);
+            result.setSuccess();
+        } else {
+            throw new RuntimeException("不支持的支付类型:" + payType);
+        }
+        return result;
     }
 
     @Override

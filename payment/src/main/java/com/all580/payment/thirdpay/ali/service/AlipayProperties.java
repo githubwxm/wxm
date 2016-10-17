@@ -7,7 +7,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 /**
- * @author Zale
+ * 阿里支付配置信息类
+ *
+ * @author panyi on 2016/10/15
+ * @since V0.0.1
  */
 @Component
 public class AlipayProperties {

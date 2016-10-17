@@ -1,6 +1,6 @@
 package com.all580.payment.thirdpay.ali.util;
 
-import com.hentre.alipay.config.AlipayConfig;
+import com.all580.payment.thirdpay.ali.config.AlipayConfig;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.httpclient.methods.multipart.FilePartSource;
 import org.apache.commons.httpclient.methods.multipart.PartSource;
