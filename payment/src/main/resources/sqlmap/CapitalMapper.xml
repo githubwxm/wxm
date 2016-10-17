@@ -105,13 +105,7 @@
       core_ep_id = #{coreEpId,jdbcType=INTEGER}
     where id = #{id,jdbcType=INTEGER}
     </update>
-    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-        select
-        <include refid="Base_Column_List"/>
-        from t_capital
-        where id = #{id,jdbcType=INTEGER}
-    </select>
-    <select id="selectForUpdateByEpList" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <select id="selectForUpdateByEpList" parameterType="java.util.List" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from t_capital
@@ -126,13 +120,13 @@
         <foreach close="" collection="capitalList" index="index" item="item" open="" separator=";">
             update t_capital
             <set>
-                <if test="credit != null">
+                <if test="item.credit != null">
                     credit = #{item.credit},
                 </if>
-                <if test="balance != null">
+                <if test="item.balance != null">
                     balance = #{item.balance},
                 </if>
-                <if test="canCash != null">
+                <if test="item.canCash != null">
                     can_cash = #{item.canCash},
                 </if>
             </set>
