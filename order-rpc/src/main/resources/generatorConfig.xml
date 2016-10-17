@@ -58,7 +58,7 @@
                delimitAllColumns="true"
                domainObjectName="ClearanceWashedSerial">
             <generatedKey column="id" sqlStatement="MySql"/>
-        </table>-->
+        </table>
         <table tableName="t_order"
                enableCountByExample="false"
                enableUpdateByExample="false"
@@ -68,8 +68,8 @@
                delimitAllColumns="true"
                domainObjectName="Order">
             <generatedKey column="id" sqlStatement="MySql"/>
-        </table>
-        <!--<table tableName="t_order_clearance_detail"
+        </table>-->
+        <table tableName="t_order_clearance_detail"
                enableCountByExample="false"
                enableUpdateByExample="false"
                enableDeleteByExample="false"
@@ -79,7 +79,7 @@
                domainObjectName="OrderClearanceDetail">
             <generatedKey column="id" sqlStatement="MySql"/>
         </table>
-        <table tableName="t_order_clearance_serial"
+        <!--<table tableName="t_order_clearance_serial"
                enableCountByExample="false"
                enableUpdateByExample="false"
                enableDeleteByExample="false"

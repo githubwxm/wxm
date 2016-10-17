@@ -66,10 +66,11 @@ public interface VisitorMapper {
     List<Visitor> selectByOrderDetailId(@Param("detailId") Integer detailId);
 
     /**
-     * 根据子订单详情ID和身份证获取游客信息
+     * 根据发码信息获取游客信息
      * @param detailId 子订单详情ID
      * @param sid 身份证
+     * @param phone 手机号码
      * @return
      */
-    Visitor selectByRefAndSid(@Param("detailId") Integer detailId, @Param("sid") String sid);
+    Visitor selectByMa(@Param("detailId") Integer detailId, @Param("sid") String sid, @Param("phone") String phone);
 }

@@ -123,40 +123,7 @@ public class RefundOrderServiceImpl implements RefundOrderService {
                 throw new ApiException("订单不在已支付处理中状态");
             }
 
-            Integer coreEpId = refundOrderManager.getCoreEpId(refundOrderManager.getCoreEpId(order.getBuyEpId()));
-            // 退款
-            // 余额退款
-            if (order.getPaymentType() == PaymentConstant.PaymentType.BALANCE.intValue()) {
-                BalanceChangeInfo payInfo = new BalanceChangeInfo();
-                payInfo.setEpId(coreEpId);
-                payInfo.setCoreEpId(coreEpId);
-                payInfo.setBalance(-order.getPayAmount());
-
-                BalanceChangeInfo saveInfo = new BalanceChangeInfo();
-                saveInfo.setEpId(order.getBuyEpId());
-                saveInfo.setCoreEpId(payInfo.getCoreEpId());
-                saveInfo.setBalance(order.getPayAmount());
-                saveInfo.setCanCash(order.getPayAmount());
-                // 退款
-                Result result = refundOrderManager.changeBalances(
-                        PaymentConstant.BalanceChangeType.BALANCE_REFUND,
-                        order.getLocalPaymentSerialNo(), payInfo, saveInfo);
-                if (result.hasError()) {
-                    log.warn("余额退款失败:{}", result.get());
-                    throw new ApiException(result.getError());
-                }
-                return new Result<>(true);
-            }
-            // 第三方退款
-            Map<String, Object> payParams = new HashMap<>();
-            payParams.put("totalFee", order.getPayAmount());
-            payParams.put("refundFee", order.getPayAmount());
-            payParams.put("serialNum", order.getLocalPaymentSerialNo());
-            Result result = thirdPayService.reqRefund(order.getNumber(), coreEpId, order.getPaymentType(), payParams);
-            if (result.hasError()) {
-                log.warn("第三方退款异常:{}", result);
-                throw new ApiException(result.getError());
-            }
+            refundOrderManager.refundMoney(order, order.getPayAmount());
         } catch (Exception e) {
             log.error("取消未分账订单异常", e);
             throw new ApiException("取消已支付处理中订单异常", e);

@@ -43,4 +43,11 @@ public interface RefundSerialMapper {
      * @mbggenerated Tue Oct 11 19:38:33 CST 2016
      */
     int updateByPrimaryKey(RefundSerial record);
+
+    /**
+     * 根据本地退票流水获取退票流水
+     * @param localSn 本地退票流水
+     * @return
+     */
+    RefundSerial selectByLocalSn(Long localSn);
 }

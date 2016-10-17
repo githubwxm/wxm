@@ -14,9 +14,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RefundTicketInfo {
-    /** 退票流水 */
-    private String refundSn;
-
     /** 票ID */
     private String ticketId;
 

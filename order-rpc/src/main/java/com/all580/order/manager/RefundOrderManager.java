@@ -5,6 +5,9 @@ import com.alibaba.fastjson.JSONObject;
 import com.all580.order.api.OrderConstant;
 import com.all580.order.dao.*;
 import com.all580.order.entity.*;
+import com.all580.payment.api.conf.PaymentConstant;
+import com.all580.payment.api.model.BalanceChangeInfo;
+import com.all580.payment.api.service.ThirdPayService;
 import com.all580.product.api.consts.ProductConstants;
 import com.all580.product.api.consts.ProductRules;
 import com.all580.product.api.model.ProductSearchParams;
@@ -57,6 +60,8 @@ public class RefundOrderManager extends BaseOrderManager {
     private ProductSalesPlanRPCService productSalesPlanRPCService;
     @Autowired
     private VoucherRPCService voucherRPCService;
+    @Autowired
+    private ThirdPayService thirdPayService;
 
     /**
      * 取消订单
@@ -485,6 +490,47 @@ public class RefundOrderManager extends BaseOrderManager {
         ticketParams.setVisitor(personInfos);
         Result result = voucherRPCService.invokeVoucherRefundTicket(ticketParams);
         if (result.hasError()) {
+            throw new ApiException(result.getError());
+        }
+    }
+
+    /**
+     * 退款
+     * @param order 订单
+     */
+    public void refundMoney(Order order, int money) {
+        Integer coreEpId = getCoreEpId(getCoreEpId(order.getBuyEpId()));
+        // 退款
+        // 余额退款
+        if (order.getPaymentType() == PaymentConstant.PaymentType.BALANCE.intValue()) {
+            BalanceChangeInfo payInfo = new BalanceChangeInfo();
+            payInfo.setEpId(coreEpId);
+            payInfo.setCoreEpId(coreEpId);
+            payInfo.setBalance(-money);
+
+            BalanceChangeInfo saveInfo = new BalanceChangeInfo();
+            saveInfo.setEpId(order.getBuyEpId());
+            saveInfo.setCoreEpId(payInfo.getCoreEpId());
+            saveInfo.setBalance(money);
+            saveInfo.setCanCash(money);
+            // 退款
+            Result result = changeBalances(
+                    PaymentConstant.BalanceChangeType.BALANCE_REFUND,
+                    order.getLocalPaymentSerialNo(), payInfo, saveInfo);
+            if (result.hasError()) {
+                log.warn("余额退款失败:{}", result.get());
+                throw new ApiException(result.getError());
+            }
+            return;
+        }
+        // 第三方退款
+        Map<String, Object> payParams = new HashMap<>();
+        payParams.put("totalFee", order.getPayAmount());
+        payParams.put("refundFee", money);
+        payParams.put("serialNum", order.getLocalPaymentSerialNo());
+        Result result = thirdPayService.reqRefund(order.getNumber(), coreEpId, order.getPaymentType(), payParams);
+        if (result.hasError()) {
+            log.warn("第三方退款异常:{}", result);
             throw new ApiException(result.getError());
         }
     }

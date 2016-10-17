@@ -6,6 +6,7 @@ import com.all580.order.api.model.RefundTicketInfo;
 import com.all580.order.api.model.SendTicketInfo;
 import com.framework.common.Result;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -26,6 +27,8 @@ public interface TicketCallbackService {
 
     /**
      * 消费验票通知
+     * @param orderSn 子订单流水编号
+     * @param epMaId 凭证ID
      * @param info 验票信息
      * @return
      */
@@ -33,6 +36,8 @@ public interface TicketCallbackService {
 
     /**
      * 反核销通知
+     * @param orderSn 子订单流水编号
+     * @param epMaId 凭证ID
      * @param info 反核销信息
      * @return
      */
@@ -40,8 +45,12 @@ public interface TicketCallbackService {
 
     /**
      * 退票回调
-     * @param info 退票信息
+     * @param orderSn 子订单流水编号
+     * @param epMaId 凭证ID
+     * @param localSn 本地流水
+     * @param refundSn 票务退票流水
+     * @param infoList 退票信息
      * @return
      */
-    Result refundTicket(Long orderSn, Integer epMaId, RefundTicketInfo info);
+    Result refundTicket(Long orderSn, Integer epMaId, String localSn, String refundSn, Date refundDate, List<RefundTicketInfo> infoList);
 }
