@@ -451,6 +451,7 @@ public class EpServiceImple implements EpService {
     public Result<List<Map>> all(Map params) {
         Result<List<Map>> result = new Result<>();
         try {
+            CommonUtil.checkPage(params);
             result.put(epMapper.all(params));
             result.setSuccess();
         } catch (Exception e) {
