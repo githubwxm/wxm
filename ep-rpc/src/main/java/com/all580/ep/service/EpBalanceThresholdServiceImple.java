@@ -28,7 +28,7 @@ public class EpBalanceThresholdServiceImple implements EpBalanceThresholdService
             result.put(coreEpAccessMapper.createOrUpdate(map));
             result.setSuccess();
         } catch (Exception e) {
-            log.error("添加更新余额阀值出错", e);
+           // log.error("添加更新余额阀值出错", e);
             throw new ApiException("添加更新余额阀值出错", e);
         }
         return result;
@@ -43,7 +43,7 @@ public class EpBalanceThresholdServiceImple implements EpBalanceThresholdService
             result.put(coreEpAccessMapper.select(map));
             result.setSuccess();
         } catch (Exception e) {
-            log.error("查询余额阀值出错", e);
+           // log.error("查询余额阀值出错", e);
             throw new ApiException("查询余额阀值出错", e);
         }
         return result;
@@ -56,12 +56,12 @@ public class EpBalanceThresholdServiceImple implements EpBalanceThresholdService
             Integer balance=Common.objectParseInteger(map.get("balance"));//传来的余额
             Integer threshold = Common.objectParseInteger(result.get("threshold"));//阀值
             if(null==result.get()){
-                log.error("未查询到阀值数据"+map);
+               // log.error("未查询到阀值数据"+map);
                 throw new ApiException("添加更新余额阀值出错"+map);
             }
             return balance<threshold;
         } catch (Exception e) {
-            log.error("查询数据库出错", e);
+           // log.error("查询数据库出错", e);
             throw new ApiException("查询数据库出错", e);
         }
 

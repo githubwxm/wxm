@@ -12,12 +12,8 @@
 		<module>base-api</module>
 		<module>base-web</module>
 		<module>base-rpc</module>
-		<module>order-api</module>
-		<module>order-rpc</module>
-		<module>ep_api</module>
-		<module>ep_rpc</module>
-		<module>payment</module>
-		<module>payment-api</module>
+		<module>ep-api</module>
+		<module>ep-rpc</module>
 	</modules>
 	<properties>
 		<!-- Common libs -->
