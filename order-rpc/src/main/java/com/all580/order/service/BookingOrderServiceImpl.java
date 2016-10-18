@@ -69,6 +69,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         try {
             Integer buyEpId = Integer.parseInt(params.get("ep_id").toString());
             Integer from = Integer.parseInt(params.get("from").toString());
+            String remark = params.get("remark").toString();
             int totalPrice = 0;
             int totalPayPrice = 0;
             int totalPayShopPrice = 0;
@@ -84,7 +85,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             // 创建订单
             Order order = bookingOrderManager.generateOrder(buyEpId,
                     Integer.parseInt(params.get("user_id").toString()),
-                    params.get("user_name").toString(), from);
+                    params.get("user_name").toString(), from, remark);
 
             // 获取子订单
             List<Map> items = (List<Map>) params.get("items");

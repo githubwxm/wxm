@@ -10,12 +10,14 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Service("epPaymentConfService")
 @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
 public class EpPaymentConfServiceImpl implements EpPaymentConfService {
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -25,6 +27,7 @@ public class EpPaymentConfServiceImpl implements EpPaymentConfService {
 
     @Override
     public Result create(Map<String, Object> map) {
+        logger.info("开始 -> 创建企业收款方式配置");
         Result result = new Result();
         try {
             EpPaymentConf conf = new EpPaymentConf();
@@ -33,7 +36,9 @@ public class EpPaymentConfServiceImpl implements EpPaymentConfService {
             checkExistSameTypeRecord(conf.getCoreEpId(), conf.getPaymentType());
             epPaymentConfMapper.insert(conf);
             result.setSuccess();
+            logger.info("完成 -> 创建企业收款方式配置");
         } catch (Exception e) {
+            logger.error("失败 -> 创建企业收款方式配置：" + e.getMessage(), e);
             result.setFail();
             result.setError(Result.DB_FAIL, "新增失败" + e.getMessage());
         }
@@ -41,6 +46,7 @@ public class EpPaymentConfServiceImpl implements EpPaymentConfService {
     }
 
     private void checkExistSameTypeRecord(Integer coreEpId, Integer paymentType) {
+        System.out.println(coreEpId + "|" + paymentType);
         int count = epPaymentConfMapper.countByEpIdAndType(coreEpId, paymentType);
         if (count > 0) {
             throw new RuntimeException("该企业下已经存在相同类型的支付账号");

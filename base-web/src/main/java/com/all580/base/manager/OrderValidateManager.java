@@ -35,7 +35,8 @@ public class OrderValidateManager {
                 "user_id", // 订票用户ID
                 "user_name", // 订票用户名称
                 //"sale_amount", // 销售金额
-                "from" // 来源 0-平台下单 1-接口下单
+                "from", // 来源 0-平台下单 1-接口下单
+                "remark" // 备注
         }, new ValidRule[]{new ValidRule.NotNull()});
 
         // 校验整数

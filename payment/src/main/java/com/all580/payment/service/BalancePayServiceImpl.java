@@ -12,6 +12,8 @@ import com.framework.common.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import java.text.MessageFormat;
@@ -25,6 +27,8 @@ import java.util.Map;
  *
  * @author Created by panyi on 2016/9/28.
  */
+@Service("balancePayService")
+@Transactional(rollbackFor = {Exception.class, RuntimeException.class})
 public class BalancePayServiceImpl implements BalancePayService {
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -36,7 +40,7 @@ public class BalancePayServiceImpl implements BalancePayService {
     @Override
     public Result<BalanceChangeRsp> changeBalances(List<BalanceChangeInfo> balanceChangeInfoList, Integer type, String
             serialNum) {
-        logger.debug(MessageFormat.format("余额变更开始：type={0}|serialNum={1}",type.toString(),serialNum));
+        logger.info(MessageFormat.format("开始 -> 余额变更：type={0}|serialNum={1}", type.toString(), serialNum));
         Result<BalanceChangeRsp> result = new Result<>();
         try {
             // 批量锁定
@@ -49,9 +53,10 @@ public class BalancePayServiceImpl implements BalancePayService {
             changeBalances(capitals);
             // 发布余额变更事件
             fireBalanceChangedEvent();
-            logger.debug("余额变更完成");
+            result.setSuccess();
+            logger.info("完成 -> 余额变更");
         } catch (BusinessException e) {
-            logger.error("余额变更出现异常，原因："+e.getMessage());
+            logger.error("失败 -> 余额变更出现异常，原因：" + e.getMessage(), e);
             result.setFail();
             result.put((BalanceChangeRsp) e.getData());
         }
@@ -135,6 +140,16 @@ public class BalancePayServiceImpl implements BalancePayService {
     @Override
     public Result createBalanceAccount(Integer epId, Integer coreEpId) {
         // TODO panyi
+        return null;
+    }
+
+    @Override
+    public Result setCredit(Integer epId, Integer coreEpId, Integer credit) {
+        return null;
+    }
+
+    @Override
+    public Result<Map<String, String>> getBalanceAccountInfo(Integer epId, Integer coreEpId) {
         return null;
     }
 }

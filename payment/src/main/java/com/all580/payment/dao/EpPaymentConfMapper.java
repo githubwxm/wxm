@@ -1,6 +1,7 @@
 package com.all580.payment.dao;
 
 import com.all580.payment.entity.EpPaymentConf;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
@@ -20,6 +21,7 @@ public interface EpPaymentConfMapper {
 
     /**
      * 通过企业ID获取配置信息
+     *
      * @param epId 企业ID
      * @return List<Map<String, Object>>
      */
@@ -28,9 +30,11 @@ public interface EpPaymentConfMapper {
     /**
      * 根据企业ID和支付类型统计记录数
      *
-     * @param epId 企业ID
-     * @param type 支付类型
+     * @param coreEpId    企业ID
+     * @param paymentType 支付类型
      * @return 记录数
      */
-    int countByEpIdAndType(Integer epId, Integer type);
+    int countByEpIdAndType(@Param("coreEpId") Integer coreEpId, @Param("paymentType") Integer paymentType);
+
+    EpPaymentConf getByEpIdAndType(@Param("coreEpId") Integer coreEpId, @Param("paymentType") Integer paymentType);
 }

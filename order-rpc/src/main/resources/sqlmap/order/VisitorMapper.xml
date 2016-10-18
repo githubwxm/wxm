@@ -102,6 +102,15 @@
         SELECT * FROM
         t_visitor
         WHERE
-        `ref_id` = #{refId,jdbcType=INTEGER}
+        `ref_id` = #{detailId,jdbcType=INTEGER}
+    </select>
+
+    <select id="selectByMa" resultMap="BaseResultMap">
+        SELECT * FROM
+        t_visitor
+        WHERE
+        `ref_id` = #{detailId,jdbcType=INTEGER}
+        and `sid` = #{sid,jdbcType=VARCHAR}
+        and `phone` = #{phone,jdbcType=VARCHAR}
     </select>
 </mapper>

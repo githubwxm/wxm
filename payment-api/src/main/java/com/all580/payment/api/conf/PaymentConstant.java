@@ -15,12 +15,13 @@ public class PaymentConstant {
      */
     public static class BalanceChangeType {
         public static final Integer BALANCE_PAY = 7001; // 余额支付
-        public static final Integer PAY_SPLIT = 7002; // 支付分账
-        public static final Integer CONSUME_SPLIT = 7003; // 核销分账
-        public static final Integer REVERSE_SPLIT = 7004; // 核销冲正分账
-        public static final Integer REFUND_PAY = 7005; // 退票分账
-        public static final Integer MANUAL_CHANGE_BALANCE = 7006; // 余额调整
-        public static final Integer THIRD_PAY_FOR_ORDER = 7007; // 第三方下单支付
+        public static final Integer BALANCE_REFUND = 7002; // 余额退款
+        public static final Integer PAY_SPLIT = 7003; // 支付分账
+        public static final Integer CONSUME_SPLIT = 7004; // 核销分账
+        public static final Integer REVERSE_SPLIT = 7005; // 核销冲正分账
+        public static final Integer REFUND_PAY = 7006; // 退票分账
+        public static final Integer MANUAL_CHANGE_BALANCE = 7007; // 余额调整
+        public static final Integer THIRD_PAY_FOR_ORDER = 7008; // 下单第三方支付
     }
 
     /**

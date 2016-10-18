@@ -68,7 +68,7 @@
                delimitAllColumns="true"
                domainObjectName="Order">
             <generatedKey column="id" sqlStatement="MySql"/>
-        </table>
+        </table>-->
         <table tableName="t_order_clearance_detail"
                enableCountByExample="false"
                enableUpdateByExample="false"
@@ -79,7 +79,7 @@
                domainObjectName="OrderClearanceDetail">
             <generatedKey column="id" sqlStatement="MySql"/>
         </table>
-        <table tableName="t_order_clearance_serial"
+        <!--<table tableName="t_order_clearance_serial"
                enableCountByExample="false"
                enableUpdateByExample="false"
                enableDeleteByExample="false"
@@ -148,7 +148,7 @@
                delimitAllColumns="true"
                domainObjectName="Shipping">
             <generatedKey column="id" sqlStatement="MySql"/>
-        </table>-->
+        </table>
         <table tableName="t_visitor"
                enableCountByExample="false"
                enableUpdateByExample="false"
@@ -159,7 +159,7 @@
                domainObjectName="Visitor">
             <generatedKey column="id" sqlStatement="MySql"/>
         </table>
-        <!--<table tableName="t_ma_send_response"
+        <table tableName="t_ma_send_response"
                enableCountByExample="false"
                enableUpdateByExample="false"
                enableDeleteByExample="false"

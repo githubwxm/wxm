@@ -1,6 +1,8 @@
 package com.all580.order.dao;
 
 import com.all580.order.entity.RefundOrder;
+import org.apache.ibatis.annotations.Param;
+
 import java.util.List;
 
 public interface RefundOrderMapper {
@@ -50,4 +52,12 @@ public interface RefundOrderMapper {
      * @return
      */
     RefundOrder selectBySN(Long sn);
+
+    /**
+     * 根据子订单ID以及退票本地流水查询退票订单
+     * @param itemId 子订单ID
+     * @param refundSn 本地退票流水
+     * @return
+     */
+    RefundOrder selectByItemIdAndRefundSn(@Param("itemId") Integer itemId, @Param("refundSn") Long refundSn);
 }

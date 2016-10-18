@@ -119,7 +119,7 @@ public class BookingOrderManager extends BaseOrderManager {
      * @return
      */
     @Transactional
-    public Order generateOrder(Integer buyEpId, Integer userId, String userName, Integer from) {
+    public Order generateOrder(Integer buyEpId, Integer userId, String userName, Integer from, String remark) {
         Order order = new Order();
         order.setNumber(UUIDGenerator.generateUUID());
         order.setStatus(OrderConstant.OrderStatus.PAY_WAIT);
@@ -128,6 +128,7 @@ public class BookingOrderManager extends BaseOrderManager {
         order.setBuyOperatorName(userName);
         order.setCreateTime(new Date());
         order.setFromType(from);
+        order.setRemark(remark);
         orderMapper.insert(order);
         return order;
     }

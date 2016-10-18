@@ -94,11 +94,21 @@
     </update>
 
     <select id="listByEpId" resultType="java.util.Map">
-        select *  from t_core_ep_payment_conf
+        select
+        <include refid="Base_Column_List"/>
+        from t_core_ep_payment_conf
         where core_ep_id=#{core_ep_id}
     </select>
+
     <select id="countByEpIdAndType" resultType="java.lang.Integer">
         select count(1)  from t_core_ep_payment_conf
-        where core_ep_id=#{core_ep_id} and payment_type=#{type}
+        where core_ep_id=#{coreEpId,jdbcType=INTEGER} and payment_type=#{paymentType,jdbcType=INTEGER}
+    </select>
+
+    <select id="getByEpIdAndType" resultType="com.all580.payment.entity.EpPaymentConf">
+        select
+        <include refid="Base_Column_List"/>
+        from t_core_ep_payment_conf
+        where core_ep_id=#{coreEpId,jdbcType=INTEGER} and payment_type=#{paymentType,jdbcType=INTEGER}
     </select>
 </mapper>
