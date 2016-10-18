@@ -52,7 +52,7 @@ public interface EpService {
     group_id  组ID
     group_name  组名称
     ep_class   10010;//景区10011;//酒店10012;//旅行社10013;//其他
-     * @return
+     * @return  map 的key  为 field
      */
     Result<List<Map>>  getEp(Integer [] epids, String[] field);
 
