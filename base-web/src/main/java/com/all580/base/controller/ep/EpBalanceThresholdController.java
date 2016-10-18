@@ -1,6 +1,5 @@
 package com.all580.base.controller.ep;
 
-import com.all580.ep.api.service.CoreEpChannelService;
 import com.all580.ep.api.service.EpBalanceThresholdService;
 import com.all580.ep.api.service.EpService;
 import com.framework.common.BaseController;
