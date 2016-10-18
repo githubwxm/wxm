@@ -1,6 +1,7 @@
 package com.all580.base.manager;
 
 import com.framework.common.validate.ValidRule;
+import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,6 +10,7 @@ import java.util.Map;
  * Created by Administrator on 2016/10/11 0011.
  *
  */
+@Component
 public class PlatfromValidateManager {
 
 
