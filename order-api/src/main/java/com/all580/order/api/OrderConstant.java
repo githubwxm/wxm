@@ -46,7 +46,7 @@ public class OrderConstant {
      */
     public static class AccountSplitStatus {
         public static final int NOT = 330; // 未结清
-        public static final int HAS = 331; // 已结清
+        public static final int HAS = 331; // 已结 清
     }
 
     /**
