@@ -9,6 +9,10 @@ import java.util.Map;
  * Created by Administrator on 2016/9/29 0029.
  */
 public interface CoreEpChannelService {
+    /**params{supplier_core_ep_id:int 必填 供应侧平台商ID,seller_core_ep_id:int 必填 销售侧平台商ID,rate }
+     * @param params
+     * @return
+     */
     Result<Integer> create(Map params);
     /**
      * 只能修改汇率

@@ -10,4 +10,11 @@ import java.util.Map;
 public interface EpBalanceThresholdService {
     Result<Integer>  createOrUpdate(Map map);
     Result<Map>  select(Map map);
+
+    /**
+     *
+     * @param mpa
+     * @return  余额小于阀值
+     */
+    boolean warn(Map mpa);
 }
