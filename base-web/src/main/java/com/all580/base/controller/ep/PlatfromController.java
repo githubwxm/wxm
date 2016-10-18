@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -176,6 +177,20 @@ public class PlatfromController extends BaseController {
         }
         try {
             return epService.platformListDown(map);
+        }catch (ApiException e){
+            return new Result<>(false, e.getCode(), e.getMsg());
+        }
+    }//list/u
+    /**
+     * 上游平台商
+     * @param map
+     * @return
+     */
+    @RequestMapping(value = "list", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<List<Map>> platformList(@RequestBody Map map) {
+        try {
+            return epService.all(map);
         }catch (ApiException e){
             return new Result<>(false, e.getCode(), e.getMsg());
         }

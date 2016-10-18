@@ -125,7 +125,7 @@ public class EpChannelController extends BaseController {
      * @param map
      * @return
      */
-    @RequestMapping(value = "list", method = RequestMethod.POST)
+    @RequestMapping(value = "list", method = RequestMethod.GET)
     @ResponseBody
     public Result<Map> list(@RequestBody Map map) {
         try {
