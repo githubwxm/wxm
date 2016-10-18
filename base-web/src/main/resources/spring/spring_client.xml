@@ -18,6 +18,9 @@
 
 	<dubbo:reference id="bookingOrderService"
 					 interface="com.all580.order.api.service.BookingOrderService" />
+	<dubbo:reference id="refundOrderService"
+					 interface="com.all580.order.api.service.RefundOrderService" />
+
 	<dubbo:reference id="epService"
 					 interface="com.all580.ep.api.service.EpService" />
 	<dubbo:reference id="creEpChannelService"
