@@ -41,7 +41,7 @@
         </dependency>
         <dependency>
             <groupId>com.all580</groupId>
-            <artifactId>ep-api</artifactId>
+            <artifactId>ep_api</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>
