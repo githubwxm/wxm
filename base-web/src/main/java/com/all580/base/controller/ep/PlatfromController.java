@@ -37,7 +37,7 @@ public class PlatfromController extends BaseController {
         try {
             ParamsMapValidate.validate(map, platfromValidateManager.generateCreateEpValidate());
         } catch (ParamsMapValidationException e) {
-            log.warn("创建订单参数验证失败", e);
+            log.warn("创建平台商参数验证失败", e);
             return new Result<>(false, Result.PARAMS_ERROR, e.getMessage());
         }
         try {
