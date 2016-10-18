@@ -17,7 +17,13 @@
 
     <select id="select" resultType="java.util.HashMap">
         select * from t_core_ep_access
-        where 1=1 and access_id=#{access_id};
+        where 1=1
+        <if test="id != null">
+        and `id`=#{id}
+        </if>
+        <if test="access_id != null">
+            and `access_id`=#{access_id}
+        </if>
     </select>
 
 </mapper>
