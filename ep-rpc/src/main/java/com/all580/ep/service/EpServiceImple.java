@@ -67,7 +67,7 @@ public class EpServiceImple implements EpService {
         try {
             epId = epMapper.create(map);//添加成功
         } catch (Exception e) {
-            log.error("添加平台商异常", e);
+           // log.error("添加平台商异常", e);
             throw new ApiException("添加平台商异常", e);
         }
         map.put("access_key", Common.getAccessKey());
@@ -94,11 +94,11 @@ public class EpServiceImple implements EpService {
                 result.put(accessMap);
                 result.setSuccess();
             } catch (Exception e) {
-                log.error("添加平台商未成功", e);
+               // log.error("添加平台商未成功", e);
                 throw new ApiException("添加平台商异常", e);
             }
         } else {
-            log.warn("添加平台商未成功");
+           // log.warn("添加平台商未成功");
             throw new ApiException("添加平台商未成功");
         }
         return result;
@@ -115,9 +115,9 @@ public class EpServiceImple implements EpService {
         Result<Map> result = new Result<>();
         Map access;
         try {
-            access = coreEpAccessService.select(params).get();
+            access = coreEpAccessService.select(params).get().get(0);
         } catch (Exception e) {
-            log.error("查询数据库异常", e);
+           // log.error("查询数据库异常", e);
             throw new ApiException("查询数据库异常", e);
         }
 
@@ -134,12 +134,12 @@ public class EpServiceImple implements EpService {
                 result.put(map);
                 result.setSuccess();
             } catch (Exception e) {
-                log.error("添加平台商未成功", e);
+               // log.error("添加平台商未成功", e);
                 throw new ApiException("添加平台商异常", e);
             }
             return result;
         } else {
-            log.error("授权ID校验失败未找到");
+           // log.error("授权ID校验失败未找到");
             throw new ApiException("授权ID校验失败未找到");
         }
     }
@@ -183,11 +183,11 @@ public class EpServiceImple implements EpService {
             }
 
         } catch (ParamsMapValidationException e) {
-            log.error("企业商参数错误");
+           // log.error("企业商参数错误");
             throw new ParamsMapValidationException("企业类型错误");
 
         } catch (Exception e) {
-            log.error("企业商参数错误", e);
+           // log.error("企业商参数错误", e);
             throw new ApiException("企业商参数错误", e);
         }
         Map resultMap = new HashMap();
@@ -208,7 +208,7 @@ public class EpServiceImple implements EpService {
             result.put(resultMap);// 添加企业信息map
             result.setSuccess();
         } catch (Exception e) {
-            log.error("添加企业出错", e);
+           // log.error("添加企业出错", e);
             throw new ApiException("添加企业出错", e);
         }
         return result;
@@ -238,7 +238,7 @@ public class EpServiceImple implements EpService {
                 }
             }
         } catch (Exception e) {
-            log.error("查询平台商出错", e);
+           // log.error("查询平台商出错", e);
             throw new ApiException("查询平台商出错", e);
         }
         return result;
@@ -251,7 +251,7 @@ public class EpServiceImple implements EpService {
             result.put(epMapper.updateStatus(params));
             result.setSuccess();
         } catch (Exception e) {
-            log.error("更新异常", e);
+           // log.error("更新异常", e);
             throw new ApiException("更新异常", e);
         }
         return result;
@@ -264,7 +264,7 @@ public class EpServiceImple implements EpService {
         try {
             return updateStatus(params);
         }catch (ApiException e){
-            log.error("更新异常", e);
+           // log.error("更新异常", e);
             throw new ApiException("更新异常", e);
         }
     }
@@ -276,7 +276,7 @@ public class EpServiceImple implements EpService {
         try {
             return updateStatus(params);
         }catch (ApiException e){
-            log.error("更新异常", e);
+           // log.error("更新异常", e);
             throw new ApiException("更新异常", e);
         }
     }
@@ -287,7 +287,7 @@ public class EpServiceImple implements EpService {
         try {
             return updateStatus(params);
         }catch (ApiException e){
-            log.error("更新异常", e);
+           // log.error("更新异常", e);
             throw new ApiException("更新异常", e);
         }
 
@@ -299,7 +299,7 @@ public class EpServiceImple implements EpService {
         try {
             return updatePlatfrom(params);
         }catch (ApiException e){
-            log.error("更新异常", e);
+           // log.error("更新异常", e);
             throw new ApiException("更新异常", e);
         }
     }
@@ -310,7 +310,7 @@ public class EpServiceImple implements EpService {
         try {
             return updatePlatfrom(params);
         }catch (ApiException e){
-            log.error("更新异常", e);
+           // log.error("更新异常", e);
             throw new ApiException("更新异常", e);
         }
     }
@@ -327,7 +327,7 @@ public class EpServiceImple implements EpService {
             result.put(epMapper.updatePlatfromStatus(map));
             result.setSuccess();
         } catch (Exception e) {
-            log.error("更新异常", e);
+           // log.error("更新异常", e);
             throw new ApiException("更新异常", e);
         }
         return result;
@@ -342,7 +342,7 @@ public class EpServiceImple implements EpService {
             result.put(epMapper.platformEnable(params));
             result.setSuccess();
         } catch (Exception e) {
-            log.error("更新平台商状态异常", e);
+           // log.error("更新平台商状态异常", e);
             throw new ApiException("更新平台商状态异常", e);
         }
         return result;
@@ -356,7 +356,7 @@ public class EpServiceImple implements EpService {
             result.put(map);
             result.setSuccess();
         } catch (Exception e) {
-            log.error("数据库更新错误", e);
+           // log.error("数据库更新错误", e);
             throw new ApiException("数据库更新错误", e);
         }
         return result;
@@ -374,7 +374,7 @@ public class EpServiceImple implements EpService {
             result.put(resultMap);
             result.setSuccess();
         } catch (Exception e) {
-            log.error("数据库查询错误", e);
+           // log.error("数据库查询错误", e);
             throw new ApiException("数据库查询错误", e);
         }
         return result;
@@ -392,7 +392,7 @@ public class EpServiceImple implements EpService {
             result.put(resultMap);
             result.setSuccess();
         } catch (Exception e) {
-            log.error("数据库查询错误", e);
+           // log.error("数据库查询错误", e);
             throw new ApiException("数据库查询错误", e);
         }
         return result;
@@ -417,7 +417,7 @@ public class EpServiceImple implements EpService {
                 return new Result<>(false, Result.PARAMS_ERROR, "参数不合法");
             }
         } catch (Exception e) {
-            log.error("查询数据库异常", e);
+           // log.error("查询数据库异常", e);
             throw new ApiException("查询数据库异常", e);
         }
         return result;
@@ -435,7 +435,7 @@ public class EpServiceImple implements EpService {
         try {
             result.put(epMapper.select(map));
         } catch (Exception e) {
-            log.error("查询数据库异常", e);
+           // log.error("查询数据库异常", e);
             throw new ApiException("查询数据库异常", e);
         }
         return result;
@@ -454,7 +454,7 @@ public class EpServiceImple implements EpService {
             result.put(epMapper.all(params));
             result.setSuccess();
         } catch (Exception e) {
-            log.error("查询数据库异常", e);
+           // log.error("查询数据库异常", e);
             throw new ApiException("查询数据库异常", e);
         }
         return result;
@@ -493,7 +493,7 @@ public class EpServiceImple implements EpService {
                 }
             }
         } catch (Exception e) {
-            log.error("查询数据库异常", e);
+           // log.error("查询数据库异常", e);
             throw new ApiException("查询数据库异常", e);
         }
         return result;
@@ -539,7 +539,7 @@ public class EpServiceImple implements EpService {
             result.put(epMapper.getEp(map));
             result.setSuccess();
         } catch (Exception e) {
-            log.error("查询数据库异常", e);
+           // log.error("查询数据库异常", e);
             throw new ApiException("查询数据库异常", e);
         }
         return result;

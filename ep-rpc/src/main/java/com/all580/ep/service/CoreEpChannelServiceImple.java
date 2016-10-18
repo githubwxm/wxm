@@ -7,8 +7,6 @@ import com.all580.ep.dao.CoreEpChannelMapper;
 import com.all580.payment.api.service.BalancePayService;
 import com.framework.common.Result;
 import com.framework.common.exception.ApiException;
-import com.framework.common.exception.ParamsMapValidationException;
-import com.framework.common.validate.ParamsMapValidate;
 import com.framework.common.validate.ValidRule;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +45,7 @@ public class CoreEpChannelServiceImple implements CoreEpChannelService {
             result.put(coreEpChannelMapper.create(params));
             result.setSuccess();
         } catch (Exception e) {
-            log.error("添加汇率通道参数错误", e);
+           // log.error("添加汇率通道参数错误", e);
             throw new ApiException("添加汇率通道参数错误", e);
         }
         return result;
@@ -60,7 +58,7 @@ public class CoreEpChannelServiceImple implements CoreEpChannelService {
             result.put(coreEpChannelMapper.update(params));
             result.setSuccess();
         } catch (Exception e) {
-            log.error("数据库修改出错", e);
+           // log.error("数据库修改出错", e);
             throw new ApiException("数据库修改出错", e);
         }
         return result;
@@ -73,7 +71,7 @@ public class CoreEpChannelServiceImple implements CoreEpChannelService {
             result.put(coreEpChannelMapper.cancel(id));
             result.setSuccess();
         } catch (Exception e) {
-            log.error("添加汇率通道参数错误", e);
+           // log.error("添加汇率通道参数错误", e);
             throw new ApiException("添加汇率通道参数错误", e);
         }
         return result;
@@ -90,7 +88,7 @@ public class CoreEpChannelServiceImple implements CoreEpChannelService {
             result.put(resultMap);
             result.setSuccess();
         } catch (Exception e) {
-            log.error("数据库查询出错", e);
+           // log.error("数据库查询出错", e);
             throw new ApiException("数据库查询出错", e);
         }
         return result;
