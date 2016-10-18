@@ -9,19 +9,19 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>ep_rpc</artifactId>
+    <artifactId>ep-rpc</artifactId>
     <name>${project.artifactId}</name>
     <description>ep rpc</description>
     <properties>
         <skip_maven_deploy>false</skip_maven_deploy>
     </properties>
-    <dependency>
-        <groupId>com.all580</groupId>
-        <artifactId>base-api</artifactId>
-        <version>${project.parent.version}</version>
-    </dependency>
-    <dependencies>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.all580</groupId>
+            <artifactId>base-api</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
         <dependency>
             <groupId>com.framework</groupId>
             <artifactId>framework-common</artifactId>
@@ -32,7 +32,7 @@
         </dependency>
         <dependency>
             <groupId>com.all580</groupId>
-            <artifactId>ep_api</artifactId>
+            <artifactId>ep-api</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>
@@ -59,6 +59,7 @@
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
