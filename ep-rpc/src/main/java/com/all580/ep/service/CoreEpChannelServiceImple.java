@@ -7,6 +7,7 @@ import com.all580.ep.dao.CoreEpChannelMapper;
 import com.all580.payment.api.service.BalancePayService;
 import com.framework.common.Result;
 import com.framework.common.exception.ApiException;
+import com.framework.common.util.CommonUtil;
 import com.framework.common.validate.ValidRule;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,7 +83,7 @@ public class CoreEpChannelServiceImple implements CoreEpChannelService {
         Map resultMap = new HashMap();
         Result<Map> result = new Result<>();
         try {
-            Common.checkPage(params);
+            CommonUtil.checkPage(params);
             resultMap.put("list",coreEpChannelMapper.select(params));
             resultMap.put("totalCount",coreEpChannelMapper.selectCount(params));
             result.put(resultMap);

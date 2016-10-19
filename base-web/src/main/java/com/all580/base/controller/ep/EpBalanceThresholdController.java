@@ -83,7 +83,7 @@ public class EpBalanceThresholdController extends BaseController {
 
     /**
      *余额阀值校验
-     * @param map
+     * @param map {balance:int  必填余额}
      * @return
      */
     @RequestMapping(value = "balance/warn", method = RequestMethod.GET)

@@ -18,7 +18,6 @@ public interface CoreEpAccessService {
      */
     Result<Integer> create(Map map);
 
-
     /**
      *
      * @param params  {  id :企业id ,access_id:中心平台借口标识}

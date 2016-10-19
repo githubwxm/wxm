@@ -29,8 +29,8 @@
 
 	<dubbo:service interface="com.all580.ep.api.service.EpBalanceThresholdService" ref="epBalanceThresholdServiceImple" />
 
-	<!--<bean id="epPaymentConfService" class="com.all580.payment.api.service." />-->
+	<bean id="logCreditServiceImple" class="com.all580.ep.service.LogCreditServiceImple" />
 
-	<!--<dubbo:service interface="com.all580.payment.api.service.EpPaymentConfService" ref="epPaymentConfService" />-->
+	<dubbo:service interface="com.all580.ep.api.service.LogCreditService" ref="logCreditServiceImple" />
 	
 </beans>
