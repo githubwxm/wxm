@@ -11,10 +11,10 @@ import java.util.Map;
 public interface LogCreditMapper {
     /**
      *   查询企业id最后一次修改的授信额度
-     * @param ep_id  ep_id 必填
+     * @param ep_id  ep_id 必填 core_ep_id 必填
      * @return   credit_after
      */
-     Integer select (@Param("ep_id") Integer ep_id );
+     Integer select (@Param("ep_id") Integer ep_id,@Param("core_ep_id") Integer core_ep_id );
 
     /**
      * ,credit_before,credit_after
@@ -33,5 +33,13 @@ public interface LogCreditMapper {
      List<Map> selectList(Map map);
 
      Integer selectListCount(Map map);
+
+    /**
+     *
+     * @param ep_id
+     * @param core_ep_id
+     * @return name 名称,credit_before 修改前额度,credit_after 修改前额度,credit_date 修改时间
+     */
+     List<Map> hostoryCredit(@Param("ep_id") Integer ep_id,@Param("core_ep_id") Integer core_ep_id );
 
 }
