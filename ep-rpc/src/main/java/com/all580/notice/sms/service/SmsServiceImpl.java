@@ -6,6 +6,8 @@ import com.all580.notice.dao.SmsTmplMapper;
 import com.all580.notice.entity.SmsAccountConf;
 import com.all580.notice.entity.SmsTmpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.framework.common.Result;
+import com.framework.common.lang.JsonUtils;
 import com.taobao.api.DefaultTaobaoClient;
 import com.taobao.api.TaobaoClient;
 import com.taobao.api.request.AlibabaAliqinFcSmsNumSendRequest;
@@ -24,8 +26,8 @@ import java.util.Map;
  */
 public class SmsServiceImpl implements SmsService {
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
-    private static String FORMAT = "json";
-    private static String SMS_TYPE = "normal";
+    String format = "json";
+    String smsType = "normal";
 
     @Autowired
     private SmsTmplMapper smsTmplMapper;
@@ -37,6 +39,16 @@ public class SmsServiceImpl implements SmsService {
         SmsTmpl smsTmpl = smsTmplMapper.selectByEpIdAndType(epId, smsType);
         SmsAccountConf smsAccountConf = smsAccountConfMapper.selectByEpId(epId);
         return send(destPhoneNum, params, smsTmpl.getOutSmsTplId(), smsAccountConf);
+    }
+
+    @Override
+    public Result createConf(Integer epId, Map<String, String> conf) {
+        Result result = new Result();
+        SmsAccountConf smsAccountConf = JsonUtils.map2obj(conf, SmsAccountConf.class);
+        smsAccountConf.setEpId(epId);
+        smsAccountConfMapper.insertSelective(smsAccountConf);
+        result.setSuccess();
+        return result;
     }
 
     /**
@@ -55,10 +67,10 @@ public class SmsServiceImpl implements SmsService {
         String secret = smsAccountConf.getApppwd();
         String epSignName = smsAccountConf.getSign(); // 企业签名
 
-        TaobaoClient client = new DefaultTaobaoClient(url, appKey, secret, FORMAT);
+        TaobaoClient client = new DefaultTaobaoClient(url, appKey, secret, format);
 
         AlibabaAliqinFcSmsNumSendRequest req = new AlibabaAliqinFcSmsNumSendRequest();
-        req.setSmsType(SMS_TYPE);
+        req.setSmsType(smsType);
         req.setRecNum(destPhoneNum);//号码
         req.setSmsTemplateCode(outTplId);//短信模板
 

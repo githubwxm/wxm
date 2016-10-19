@@ -1,5 +1,7 @@
 package com.all580.notice.api.service;
 
+import com.framework.common.Result;
+
 import java.util.Map;
 
 /**
@@ -20,4 +22,17 @@ public interface SmsService {
      * @return 发送是否成功
      */
     boolean send(String destPhoneNum, Integer smsType, Integer epId, Map<String, String> params);
+
+    /**
+     * 创建企业短信通道配置
+     *
+     * @param epId 企业ID
+     * @param conf 配置信息:{url:xx,appId:xx,appPwd:xx,sign:xx}
+     *             url - String - 短信通道url
+     *             appId - String - 在短信通道中配置的应用ID
+     *             appPwd - String - 短信通道提供的密码
+     *             sign - String - 短信签名
+     * @return 成功
+     */
+    Result createConf(Integer epId, Map<String, String> conf);
 }
