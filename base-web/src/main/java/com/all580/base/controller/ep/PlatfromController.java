@@ -140,12 +140,15 @@ public class PlatfromController extends BaseController {
     }//
     /**
      * 上游平台商
-     * @param map
+     * @param
      * @return
      */
     @RequestMapping(value = "list/up", method = RequestMethod.GET)
     @ResponseBody
-    public Result<Map> platformListUp(@RequestBody Map map) {
+    public Result<Map> platformListUp(HttpServletRequest request, @RequestParam(value="ep_id",
+            required=false) String ep_id) {
+        Map map = new HashMap();
+        map.put("ep_id",ep_id);
         try {//
             ParamsMapValidate.validate(map, platfromValidateManager.generateCreateDownUpValidate());
         } catch (ParamsMapValidationException e) {
