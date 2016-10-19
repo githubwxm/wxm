@@ -78,15 +78,13 @@ public class LogCreditServiceImple implements LogCreditService{
     @Override
     public Result<Map> hostoryCredit(Integer ep_id,Integer core_ep_id) {
         Result<Map> result = new Result<>(true);
-
         try {
-            logCreditMapper.hostoryCredit(ep_id,core_ep_id);
-            Map map =null;
+            Map map =new HashMap();
+            map.put("list",logCreditMapper.hostoryCredit(ep_id,core_ep_id));
             result.put(map);
-            result.setSuccess();
         } catch (Exception e) {
             // log.error("创建中心平台接口访问配置", e);
-            throw new ApiException("查询授信列表出错", e);
+            throw new ApiException("查询历史授信列表出错", e);
         }
         return result;
     }
