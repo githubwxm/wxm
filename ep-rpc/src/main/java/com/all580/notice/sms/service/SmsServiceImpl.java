@@ -15,6 +15,7 @@ import com.taobao.api.response.AlibabaAliqinFcSmsNumSendResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.Map;
 
@@ -24,6 +25,7 @@ import java.util.Map;
  * @author panyi on 2016/10/18.
  * @since V0.0.1
  */
+@Service("smsServiceImpl")
 public class SmsServiceImpl implements SmsService {
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
     String format = "json";
