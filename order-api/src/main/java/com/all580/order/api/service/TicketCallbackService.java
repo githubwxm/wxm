@@ -19,38 +19,34 @@ public interface TicketCallbackService {
     /**
      * 出票回调
      * @param orderSn 子订单流水编号
-     * @param epMaId 凭证ID
      * @param infoList 票信息
      * @return
      */
-    Result sendTicket(Long orderSn, Integer epMaId, List<SendTicketInfo> infoList);
+    Result sendTicket(Long orderSn, List<SendTicketInfo> infoList);
 
     /**
      * 消费验票通知
      * @param orderSn 子订单流水编号
-     * @param epMaId 凭证ID
      * @param info 验票信息
      * @return
      */
-    Result consumeTicket(Long orderSn, Integer epMaId, ConsumeTicketInfo info);
+    Result consumeTicket(Long orderSn, ConsumeTicketInfo info);
 
     /**
      * 反核销通知
      * @param orderSn 子订单流水编号
-     * @param epMaId 凭证ID
      * @param info 反核销信息
      * @return
      */
-    Result reConsumeTicket(Long orderSn, Integer epMaId, ReConsumeTicketInfo info);
+    Result reConsumeTicket(Long orderSn, ReConsumeTicketInfo info);
 
     /**
      * 退票回调
      * @param orderSn 子订单流水编号
-     * @param epMaId 凭证ID
      * @param localSn 本地流水
      * @param refundSn 票务退票流水
      * @param infoList 退票信息
      * @return
      */
-    Result refundTicket(Long orderSn, Integer epMaId, String localSn, String refundSn, Date refundDate, List<RefundTicketInfo> infoList);
+    Result refundTicket(Long orderSn, String localSn, String refundSn, Date refundDate, List<RefundTicketInfo> infoList);
 }

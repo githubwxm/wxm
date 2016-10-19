@@ -68,7 +68,7 @@
                delimitAllColumns="true"
                domainObjectName="Order">
             <generatedKey column="id" sqlStatement="MySql"/>
-        </table>-->
+        </table>
         <table tableName="t_order_clearance_detail"
                enableCountByExample="false"
                enableUpdateByExample="false"
@@ -79,7 +79,7 @@
                domainObjectName="OrderClearanceDetail">
             <generatedKey column="id" sqlStatement="MySql"/>
         </table>
-        <!--<table tableName="t_order_clearance_serial"
+        <table tableName="t_order_clearance_serial"
                enableCountByExample="false"
                enableUpdateByExample="false"
                enableDeleteByExample="false"
@@ -88,7 +88,7 @@
                delimitAllColumns="true"
                domainObjectName="OrderClearanceSerial">
             <generatedKey column="id" sqlStatement="MySql"/>
-        </table>
+        </table>-->
         <table tableName="t_order_item"
                enableCountByExample="false"
                enableUpdateByExample="false"
@@ -99,7 +99,7 @@
                domainObjectName="OrderItem">
             <generatedKey column="id" sqlStatement="MySql"/>
         </table>
-        <table tableName="t_order_item_detail"
+        <!--<table tableName="t_order_item_detail"
                enableCountByExample="false"
                enableUpdateByExample="false"
                enableDeleteByExample="false"
