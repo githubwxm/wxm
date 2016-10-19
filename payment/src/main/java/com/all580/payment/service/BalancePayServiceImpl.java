@@ -139,8 +139,13 @@ public class BalancePayServiceImpl implements BalancePayService {
 
     @Override
     public Result createBalanceAccount(Integer epId, Integer coreEpId) {
-        // TODO panyi
-        return null;
+        Result result = new Result();
+        Capital capital = new Capital();
+        capital.setEpId(epId);
+        capital.setCoreEpId(coreEpId);
+        capitalMapper.insertSelective(capital);
+        result.setSuccess();
+        return result;
     }
 
     @Override
