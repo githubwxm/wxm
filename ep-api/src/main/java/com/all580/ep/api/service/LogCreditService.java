@@ -20,8 +20,8 @@ public interface LogCreditService {
     /**
      * ,credit_before,credit_after
      * @param map{ep_id: int 企业id 必填，core_ep_id:int 平台商id
-     *           credit_before:int  修改之前的额度，credit_after：int 修改之后的额度}
-     * @return  Integer
+     *           credit_after：int 修改之后的额度}
+     * @return  Integer credit_before:int  修改之前的额度，
      */
     Result<Integer> create(Map map);
 
@@ -32,5 +32,5 @@ public interface LogCreditService {
      * @return t.id,name,linkman,link_phone,province,city,area,credit_after,credit_date
      */
     Result<Map> selectList(Map map);
-    Result<Map> hostoryCredit( Integer ep_id ,Integer core_ep_id );
+    Result<Map> hostoryCredit( Map map );
 }
