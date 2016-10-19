@@ -207,10 +207,12 @@ public class EpServiceImple implements EpService {
             resultMap.put("capital", balancePayService.getBalanceAccountInfo(epId, core_ep_id));
             result.put(resultMap);// 添加企业信息map
             result.setSuccess();
+            result.setCode(200);
         } catch (Exception e) {
            // log.error("添加企业出错", e);
             throw new ApiException("添加企业出错", e);
         }
+
         return result;
 
     }
