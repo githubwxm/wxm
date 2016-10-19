@@ -33,7 +33,6 @@ public class CoreEpAccessServiceImple implements CoreEpAccessService {
             throw new ApiException("创建中心平台接口访问配置", e);
         }
         return result;
-
     }
 
     @Override
