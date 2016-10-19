@@ -25,8 +25,13 @@
 		</dependency>
 		<dependency>
 			<groupId>com.all580</groupId>
-			<artifactId>ep_api</artifactId>
+			<artifactId>ep-api</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.all580</groupId>
+			<artifactId>voucher-api</artifactId>
+			<version>3.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.tomcat</groupId>
@@ -64,11 +69,10 @@
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 		</dependency>
-        <dependency>
-            <groupId>com.all580</groupId>
-            <artifactId>ep-api</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-        </dependency>
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>fastjson</artifactId>
+		</dependency>
     </dependencies>
 
 	<build>
