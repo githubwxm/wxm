@@ -44,7 +44,7 @@ public class LogCreditServiceImple implements LogCreditService{
         Result<Integer> result = new Result<Integer>();
         try {
             Integer ep_id = CommonUtil.objectParseInteger(map.get("ep_id")) ;
-            Integer core_ep_id=CommonUtil.objectParseInteger(map.get("core_ep_id")) ;;
+            Integer core_ep_id=CommonUtil.objectParseInteger(map.get("core_ep_id")) ;
             Integer credit_before= logCreditMapper.select(ep_id,core_ep_id);
             map.put("credit_before",credit_before==null?0:credit_before);
             result.put(logCreditMapper.create(map));
@@ -76,11 +76,11 @@ public class LogCreditServiceImple implements LogCreditService{
     }
 
     @Override
-    public Result<Map> hostoryCredit(Integer ep_id,Integer core_ep_id) {
+    public Result<Map> hostoryCredit(Map params) {
         Result<Map> result = new Result<>(true);
         try {
             Map map =new HashMap();
-            map.put("list",logCreditMapper.hostoryCredit(ep_id,core_ep_id));
+            map.put("list",logCreditMapper.hostoryCredit(params));
             result.put(map);
         } catch (Exception e) {
             // log.error("创建中心平台接口访问配置", e);
