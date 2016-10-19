@@ -66,6 +66,15 @@
             <version>5.1.30</version>
         </dependency>
 
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>taobaosdk</groupId>
+            <artifactId>taobao</artifactId>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
