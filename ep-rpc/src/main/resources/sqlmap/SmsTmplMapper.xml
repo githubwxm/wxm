@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.all580.notice.dao.SmsTmplMapper">
+    <resultMap id="BaseResultMap" type="com.all580.notice.entity.SmsTmpl">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="content" jdbcType="VARCHAR" property="content"/>
+        <result column="status" jdbcType="INTEGER" property="status"/>
+        <result column="ep_id" jdbcType="INTEGER" property="epId"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="sms_type" jdbcType="INTEGER" property="smsType"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="allow_associate_ep" jdbcType="BIT" property="allowAssociateEp"/>
+        <result column="channel_type" jdbcType="INTEGER" property="channelType"/>
+        <result column="out_sms_tpl_id" jdbcType="VARCHAR" property="outSmsTplId"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, name, content, status, ep_id, create_time, sms_type, update_time, allow_associate_ep, 
+    channel_type, out_sms_tpl_id
+  </sql>
+    <select id="selectByEpIdAndType" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_sms_tmpl
+        where ep_id = #{epId,jdbcType=INTEGER} and sms_type = #{smsType}
+    </select>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_sms_tmpl
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_sms_tmpl
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+    <insert id="insert" parameterType="com.all580.notice.entity.SmsTmpl">
+        <selectKey keyProperty="id" order="BEFORE" resultType="java.lang.Integer">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into t_sms_tmpl (id, name, content,
+        status, ep_id, create_time,
+        sms_type, update_time, allow_associate_ep,
+        channel_type, out_sms_tpl_id)
+        values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{content,jdbcType=VARCHAR},
+        #{status,jdbcType=INTEGER}, #{epId,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP},
+        #{smsType,jdbcType=INTEGER}, #{updateTime,jdbcType=TIMESTAMP}, #{allowAssociateEp,jdbcType=BIT},
+        #{channelType,jdbcType=INTEGER}, #{outSmsTplId,jdbcType=VARCHAR})
+    </insert>
+    <insert id="insertSelective" parameterType="com.all580.notice.entity.SmsTmpl">
+        <selectKey keyProperty="id" order="BEFORE" resultType="java.lang.Integer">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into t_sms_tmpl
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            id,
+            <if test="name != null">
+                name,
+            </if>
+            <if test="content != null">
+                content,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="epId != null">
+                ep_id,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="smsType != null">
+                sms_type,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="allowAssociateEp != null">
+                allow_associate_ep,
+            </if>
+            <if test="channelType != null">
+                channel_type,
+            </if>
+            <if test="outSmsTplId != null">
+                out_sms_tpl_id,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            #{id,jdbcType=INTEGER},
+            <if test="name != null">
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="content != null">
+                #{content,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=INTEGER},
+            </if>
+            <if test="epId != null">
+                #{epId,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="smsType != null">
+                #{smsType,jdbcType=INTEGER},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="allowAssociateEp != null">
+                #{allowAssociateEp,jdbcType=BIT},
+            </if>
+            <if test="channelType != null">
+                #{channelType,jdbcType=INTEGER},
+            </if>
+            <if test="outSmsTplId != null">
+                #{outSmsTplId,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.all580.notice.entity.SmsTmpl">
+        update t_sms_tmpl
+        <set>
+            <if test="name != null">
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="content != null">
+                content = #{content,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=INTEGER},
+            </if>
+            <if test="epId != null">
+                ep_id = #{epId,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="smsType != null">
+                sms_type = #{smsType,jdbcType=INTEGER},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="allowAssociateEp != null">
+                allow_associate_ep = #{allowAssociateEp,jdbcType=BIT},
+            </if>
+            <if test="channelType != null">
+                channel_type = #{channelType,jdbcType=INTEGER},
+            </if>
+            <if test="outSmsTplId != null">
+                out_sms_tpl_id = #{outSmsTplId,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.all580.notice.entity.SmsTmpl">
+    update t_sms_tmpl
+    set name = #{name,jdbcType=VARCHAR},
+      content = #{content,jdbcType=VARCHAR},
+      status = #{status,jdbcType=INTEGER},
+      ep_id = #{epId,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      sms_type = #{smsType,jdbcType=INTEGER},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      allow_associate_ep = #{allowAssociateEp,jdbcType=BIT},
+      channel_type = #{channelType,jdbcType=INTEGER},
+      out_sms_tpl_id = #{outSmsTplId,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
