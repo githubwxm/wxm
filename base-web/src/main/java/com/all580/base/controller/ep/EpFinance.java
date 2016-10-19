@@ -35,7 +35,7 @@ public class EpFinance extends BaseController {
      * @param map
      * @return
      */
-    @RequestMapping(value = "platform/list", method = RequestMethod.POST)
+    @RequestMapping(value = "platform/list", method = RequestMethod.GET)
     @ResponseBody
     public Result<Map>  getList(@RequestBody Map map) {
         // 验证参数
@@ -46,15 +46,14 @@ public class EpFinance extends BaseController {
         }
 
     }
-
     /**
-     * 查询授信列表
+     * 查询授信历史列表
      * @param map
      * @return
      */
-    @RequestMapping(value = "set", method = RequestMethod.POST)
+    @RequestMapping(value = "hostoryCredit", method = RequestMethod.GET)
     @ResponseBody
-    public Result<Map>  set(@RequestBody Map map) {
+    public Result<Map>  hostoryCredit(@RequestBody Map map) {
         // 验证参数
         try {
             ParamsMapValidate.validate(map, generateCreateSelectValidate());
@@ -63,15 +62,34 @@ public class EpFinance extends BaseController {
             return new Result<>(false, Result.PARAMS_ERROR, e.getMessage());
         }
         try {
-            Integer ep_id=CommonUtil.objectParseInteger(map.get("ep_id"));
-            Integer core_ep_id=CommonUtil.objectParseInteger(map.get("core_ep_id"));
-            logCreditService.hostoryCredit(ep_id,core_ep_id);
-            return null;
+            return logCreditService.hostoryCredit(map);
         }catch (ApiException e){
             return new Result<>(false, e.getCode(), e.getMsg());
         }
 
+    }
+    /**
+     * 添加授信
+     * @param map
+     * @return
+     */
+    @RequestMapping(value = "set", method = RequestMethod.POST)
+    @ResponseBody
+    public Result<Integer>  set(@RequestBody Map map) {
+        // 验证参数
+        try {
+            ParamsMapValidate.validate(map, generateCreateCreditValidate());
+        } catch (ParamsMapValidationException e) {
+            log.warn("修改企业参数验证失败", e);
+            return new Result<>(false, Result.PARAMS_ERROR, e.getMessage());
+        }
+        try {
+            return logCreditService.create(map);
+        }catch (ApiException e){
+            return new Result<>(false, e.getCode(), e.getMsg());
+        }
     }//set
+
 
     public Map<String[], ValidRule[]> generateCreateCreditValidate() {
         Map<String[], ValidRule[]> rules = new HashMap<>();
@@ -93,13 +111,11 @@ public class EpFinance extends BaseController {
         // 校验不为空的参数
         rules.put(new String[]{
                 "ep_id", //
-                "core_ep_id", //
         }, new ValidRule[]{new ValidRule.NotNull()});
 
         // 校验整数
         rules.put(new String[]{
                 "ep_id", //
-                "core_ep_id", //授信额度
         }, new ValidRule[]{new ValidRule.Digits()});
         return rules;
     }
