@@ -56,7 +56,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
     private RefundOrderManager refundOrderManager;
 
     @Override
-    public Result sendTicket(Long orderSn, Integer epMaId, List<SendTicketInfo> infoList) {
+    public Result sendTicket(Long orderSn, List<SendTicketInfo> infoList) {
         OrderItem orderItem = orderItemMapper.selectBySN(orderSn);
         if (orderItem == null) {
             return new Result(false, "订单不存在");
@@ -71,7 +71,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
 
         for (SendTicketInfo ticketInfo : infoList) {
             MaSendResponse response = new MaSendResponse();
-            response.setEpMaId(epMaId); // 哪个凭证的
+            response.setEpMaId(orderItem.getEpMaId()); // 哪个凭证的商户ID
             response.setMaOrderId(ticketInfo.getTicketId()); // 凭证号对应的凭证ID
             response.setSid(ticketInfo.getSid()); // 身份证
             response.setPhone(ticketInfo.getPhone()); // 手机号码
@@ -86,7 +86,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
     }
 
     @Override
-    public Result consumeTicket(Long orderSn, Integer epMaId, ConsumeTicketInfo info) {
+    public Result consumeTicket(Long orderSn, ConsumeTicketInfo info) {
         OrderItem orderItem = orderItemMapper.selectBySN(orderSn);
         if (orderItem == null) {
             return new Result(false, "订单不存在");
@@ -114,7 +114,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         orderClearanceSerialMapper.insert(serial);
 
         // 获取已出票的凭证
-        MaSendResponse response = maSendResponseMapper.selectByOrderItemIdAndMaId(orderItem.getId(), info.getTicketId(), epMaId);
+        MaSendResponse response = maSendResponseMapper.selectByOrderItemIdAndMaId(orderItem.getId(), info.getTicketId(), orderItem.getEpMaId());
         // 获取核销人信息
         Visitor visitor = visitorMapper.selectByMa(itemDetail.getId(), response.getSid(), response.getPhone());
         // 保存核销明细
@@ -146,7 +146,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
     }
 
     @Override
-    public Result reConsumeTicket(Long orderSn, Integer epMaId, ReConsumeTicketInfo info) {
+    public Result reConsumeTicket(Long orderSn, ReConsumeTicketInfo info) {
         OrderItem orderItem = orderItemMapper.selectBySN(orderSn);
         if (orderItem == null) {
             return new Result(false, "订单不存在");
@@ -173,7 +173,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         serial.setQuantity(info.getConsumeQuantity());
 
         // 获取已出票的凭证
-        MaSendResponse response = maSendResponseMapper.selectByOrderItemIdAndMaId(orderItem.getId(), info.getTicketId(), epMaId);
+        MaSendResponse response = maSendResponseMapper.selectByOrderItemIdAndMaId(orderItem.getId(), info.getTicketId(), orderItem.getEpMaId());
         // 获取核销人信息
         Visitor visitor = visitorMapper.selectByMa(itemDetail.getId(), response.getSid(), response.getPhone());
         // 设置核销人核销数量
@@ -185,7 +185,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
     }
 
     @Override
-    public Result refundTicket(Long orderSn, Integer epMaId, String localSn, String refundSn, Date refundDate, List<RefundTicketInfo> infoList) {
+    public Result refundTicket(Long orderSn, String localSn, String refundSn, Date refundDate, List<RefundTicketInfo> infoList) {
         OrderItem orderItem = orderItemMapper.selectBySN(orderSn);
         if (orderItem == null) {
             return new Result(false, "订单不存在");
@@ -215,7 +215,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         int quantity = 0;
         for (RefundTicketInfo ticketInfo : infoList) {
             // 获取已出票的凭证
-            MaSendResponse response = maSendResponseMapper.selectByOrderItemIdAndMaId(orderItem.getId(), ticketInfo.getTicketId(), epMaId);
+            MaSendResponse response = maSendResponseMapper.selectByOrderItemIdAndMaId(orderItem.getId(), ticketInfo.getTicketId(), orderItem.getEpMaId());
             // 获取核销人信息
             Visitor visitor = visitorMapper.selectByMa(detail.getId(), response.getSid(), response.getPhone());
             if (ticketInfo.getRefundQuantity() != visitor.getPreReturn().intValue()) {
