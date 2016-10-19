@@ -32,5 +32,5 @@ public interface LogCreditService {
      * @return t.id,name,linkman,link_phone,province,city,area,credit_after,credit_date
      */
     Result<Map> selectList(Map map);
-    Result<List<Map>> hostoryCredit( Integer ep_id ,Integer core_ep_id );
+    Result<Map> hostoryCredit( Integer ep_id ,Integer core_ep_id );
 }
