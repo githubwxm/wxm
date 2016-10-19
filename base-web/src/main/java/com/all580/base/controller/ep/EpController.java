@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+
 import java.util.Map;
 
 /**
@@ -115,7 +116,7 @@ public class EpController extends BaseController {
 
     }
     /**
-     * 冻结企业
+     * 停用企业
      * @param map
      * @return
      */
