@@ -32,5 +32,8 @@
 	<bean id="logCreditServiceImple" class="com.all580.ep.service.LogCreditServiceImple" />
 
 	<dubbo:service interface="com.all580.ep.api.service.LogCreditService" ref="logCreditServiceImple" />
+
+	<bean id="smsService" class="com.all580.notice.sms.service.SmsServiceImpl"/>
+	<dubbo:service interface="com.all580.notice.api.service.SmsService" ref="smsService"/>
 	
 </beans>
