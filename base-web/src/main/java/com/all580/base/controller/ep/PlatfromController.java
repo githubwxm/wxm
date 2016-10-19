@@ -10,11 +10,10 @@ import com.framework.common.validate.ParamsMapValidate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -163,12 +162,14 @@ public class PlatfromController extends BaseController {
     }//list/up
     /**
      * 上游平台商
-     * @param map
      * @return
      */
     @RequestMapping(value = "list/down", method = RequestMethod.GET)
     @ResponseBody
-    public Result<Map> platformListDown(@RequestBody Map map) {
+    public Result<Map> platformListDown(HttpServletRequest request, @RequestParam(value="ep_id",
+            required=false) String ep_id) {
+        Map map = new HashMap();
+        map.put("ep_id",ep_id);
         try {//
             ParamsMapValidate.validate(map, platfromValidateManager.generateCreateDownUpValidate());
         } catch (ParamsMapValidationException e) {
