@@ -7,7 +7,12 @@
             limit #{record_start},#{record_count}
         </if>
     </sql>
-
+    <select id="hostoryCredit" resultType="java.util.HashMap">
+     select name,credit_before,credit_after,credit_date
+     from t_log_credit tl join t_ep t on t.id=tl.ep_id
+     where tl.ep_id=#{ep_id} and tl.core_ep_id=#{core_ep_id}
+     ORDER BY credit_date
+    </select>
     <select id="select" resultType="java.lang.Integer">
         select credit_after from t_log_credit
          where  ep_id=#{ep_id} and  core_ep_id=#{core_ep_id}
@@ -18,10 +23,11 @@
          values(#{ep_id},#{core_ep_id},#{credit_before},#{credit_after});
     </insert>
     <select id="selectList" resultType="java.util.HashMap">
-        select t.id,name,linkman,link_phone,province,city,area,credit_after,credit_date from
+        select t.id,name,linkman,link_phone,province,city,area,credit_after,
+        DATE_FORMAT(credit_date,'%Y-%m-%d') as credit_date  from
         ( select * from( select  * from t_log_credit
         <if test="core_ep_id != null">
-            and core_ep_id=#{core_ep_id}
+            where core_ep_id=#{core_ep_id}
         </if>
         ORDER BY credit_date desc ) as a
         GROUP BY ep_id) as credit RIGHT JOIN t_ep t on t.id = credit.ep_id
@@ -33,7 +39,7 @@
         select count(1) from
         ( select * from( select  * from t_log_credit
         <if test="core_ep_id != null">
-            and core_ep_id=#{core_ep_id}
+            where core_ep_id=#{core_ep_id}
         </if>
         ORDER BY credit_date desc ) as a
         GROUP BY ep_id) as credit RIGHT JOIN t_ep t on t.id = credit.ep_id
