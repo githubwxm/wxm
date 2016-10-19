@@ -170,7 +170,7 @@ public class PlatfromController extends BaseController {
             required=false) String ep_id) {
         Map map = new HashMap();
         map.put("ep_id",ep_id);
-        try {//
+        try {//test
             ParamsMapValidate.validate(map, platfromValidateManager.generateCreateDownUpValidate());
         } catch (ParamsMapValidationException e) {
             log.warn("冻结企业参数验证失败", e);
