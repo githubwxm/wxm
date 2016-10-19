@@ -80,7 +80,7 @@ public class SmsServiceImpl implements SmsService {
         ObjectMapper mapper = new ObjectMapper();
         try {
             req.setSmsParamString(mapper.writeValueAsString(params));
-            req.setSmsFreeSignName(new String(epSignName.getBytes("ISO-8859-1")));//短信签名
+            req.setSmsFreeSignName(epSignName);//短信签名
             rsp = client.execute(req);
             logger.debug("result:" + rsp.getBody());
             Map<String, Map<String, Map>> resultMap = mapper.readValue(rsp.getBody(), Map.class);
@@ -88,12 +88,14 @@ public class SmsServiceImpl implements SmsService {
             if (resultMap.containsKey("alibaba_aliqin_fc_sms_num_send_response")) {
                 Object result = resultMap.get("alibaba_aliqin_fc_sms_num_send_response").get("result").get("success");
                 if (result != null && Boolean.TRUE.equals(result)) {
+                    // logger.info("短信发送成功");
                     return true;
                 }
             } else if (resultMap.containsKey("error_response")) {
                 String code = String.valueOf(resultMap.get("error_response").get("code")) + ":" +
                         String.valueOf(resultMap.get("error_response").get("sub_msg"));
-                return true;// TODO panyi  返回报错信息
+                logger.info("短信发送失败："+code);
+                return false;// TODO panyi  返回报错信息
             }
 
         } catch (Exception e) {
