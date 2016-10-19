@@ -10,8 +10,6 @@
 		http://www.springframework.org/schema/context  
 		http://www.springframework.org/schema/context/spring-context-4.0.xsd">
 
-	<mvc:annotation-driven />
-
 	<!-- 设置包扫描以及过滤mybatis已配置的扫描 -->
 	<context:component-scan base-package="com.all580.base">
 		<context:exclude-filter type="regex"
@@ -24,4 +22,22 @@
 			<value>org.springframework.web.servlet.handler.SimpleMappingExceptionResolver</value>
 		</property>
 	</bean>
+
+	<!-- 注解转换适配器 -->
+	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+		<property name="messageConverters">
+			<list >
+				<bean class="com.all580.base.util.CustomJacksonConvert">
+					<property name="supportedMediaTypes">
+						<list>
+							<value>application/json;charset=UTF-8</value>
+							<value>text/html;charset=UTF-8</value>
+						</list>
+					</property>
+				</bean>
+			</list>
+		</property>
+	</bean>
+
+	<mvc:annotation-driven />
 </beans>
