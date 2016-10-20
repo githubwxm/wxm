@@ -66,23 +66,33 @@ public class PaymentCallbackServiceImpl implements PaymentCallbackService {
         if (order == null) {
             return new Result(false, "订单不存在");
         }
+        if (order.getStatus() != OrderConstant.OrderStatus.PAID_HANDLING) {
+            RefundOrder refundOrder = refundOrderMapper.selectBySN(Long.valueOf(serialNum));
+            if (refundOrder == null) {
+                return new Result(false, "退订订单不存在");
+            }
+            refundOrder.setRefundMoneyTime(new Date());
+            refundOrder.setStatus(success ? OrderConstant.RefundOrderStatus.REFUND_SUCCESS : OrderConstant.RefundOrderStatus.REFUND_MONEY_FAIL);
+            refundOrderMapper.updateByPrimaryKey(refundOrder);
+        }
+
+        if (!success) {
+            log.info("退款失败 加入任务处理...");
+            // 退款失败回调 记录任务
+            Map<String, String> jobParams = new HashMap<>();
+            jobParams.put("ordCode", String.valueOf(ordCode));
+            jobParams.put("serialNum", serialNum);
+            bookingOrderManager.addJob(OrderConstant.Actions.REFUND_MONEY, jobParams);
+            return new Result(true);
+        }
         // 已支付,处理中 分账失败 直接取消
         if (order.getStatus() == OrderConstant.OrderStatus.PAID_HANDLING) {
             // 记录任务
-            if (success) {
-                Map<String, String> jobParams = new HashMap<>();
-                jobParams.put("orderId", order.getId().toString());
-                bookingOrderManager.addJob(OrderConstant.Actions.CANCEL_CALLBACK, jobParams);
-            }
+            Map<String, String> jobParams = new HashMap<>();
+            jobParams.put("orderId", order.getId().toString());
+            bookingOrderManager.addJob(OrderConstant.Actions.CANCEL_CALLBACK, jobParams);
             return new Result(true);
         }
-        RefundOrder refundOrder = refundOrderMapper.selectBySN(Long.valueOf(serialNum));
-        if (refundOrder == null) {
-            return new Result(false, "退订订单不存在");
-        }
-        refundOrder.setRefundMoneyTime(new Date());
-        refundOrder.setStatus(success ? OrderConstant.RefundOrderStatus.REFUND_SUCCESS : OrderConstant.RefundOrderStatus.REFUND_MONEY_FAIL);
-        refundOrderMapper.updateByPrimaryKey(refundOrder);
         return new Result(true);
     }
 }

@@ -75,5 +75,6 @@ public class OrderConstant {
     public static class Actions {
         public static final String PAYMENT_CALLBACK = "PAYMENT_CALLBACK";
         public static final String CANCEL_CALLBACK = "CANCEL_CALLBACK";
+        public static final String REFUND_MONEY = "REFUND_MONEY";
     }
 }
