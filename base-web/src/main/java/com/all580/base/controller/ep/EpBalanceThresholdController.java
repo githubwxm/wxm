@@ -12,11 +12,9 @@ import com.framework.common.validate.ValidRule;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,61 +39,50 @@ public class EpBalanceThresholdController extends BaseController {
     @RequestMapping(value = "update", method = RequestMethod.POST)
     @ResponseBody
     public Result<Integer> update(@RequestBody Map map) {
-        try {//core_ep_id
+            //core_ep_id
             ParamsMapValidate.validate(map, generateEpBalanceThresholdUpdateValidate());
-        } catch (ParamsMapValidationException e) {
-            log.warn("余额提醒设置失败", e);
-            return new Result<>(false, Result.PARAMS_ERROR, e.getMessage());
-        }
-        try {
             //   Integer core_ep_id = Integer.parseInt(map.get("id").toString());
              //  map.put("core_ep_id",epService.selectPlatformId(core_ep_id)) ;
             return epBalanceThresholdService.createOrUpdate(map);
-        } catch (ApiException e) {
-            return new Result<>(false, e.getCode(), e.getMsg());
-        }
+
     }
 
     /**
      *余额提醒查询
-     * @param map
      * @return
      */
     @RequestMapping(value = "select", method = RequestMethod.GET)
     @ResponseBody
-    public Result<Map> select(@RequestBody Map map) {
-
-        try {
-            ParamsMapValidate.validate(map, generateEpBalanceThresholdValidate());
-        } catch (ParamsMapValidationException e) {
-            log.warn("余额提醒查询校验失败", e);
-            return new Result<>(false, Result.PARAMS_ERROR, e.getMessage());
-        }
-        try {
-            Integer core_ep_id = CommonUtil.objectParseInteger(map.get("ep_id"));
-            map.put("core_ep_id",epService.selectPlatformId(core_ep_id).get()) ;
+    public Result<Map> select(HttpServletRequest request,
+                              @RequestParam(value="ep_id") Integer ep_id
+                             ) {
+           Integer core_ep_id=1;//// TODO: 2016/10/20 0020   获取平台商id
+            Map map = new HashMap();
+            map.put("ep_id",ep_id);
+            map.put("core_ep_id",core_ep_id) ;//epService.selectPlatformId(ep_id).get() 查询平台商
+         ParamsMapValidate.validate(map, generateEpBalanceThresholdValidate());
             return epBalanceThresholdService.select(map);
-        } catch (ApiException e) {
-            return new Result<>(false, e.getCode(), e.getMsg());
-        }
-
     }
 
     /**
      *余额阀值校验
-     * @param map {balance:int  必填余额}
+     * @param  {balance:int  必填余额}
      * @return
      */
     @RequestMapping(value = "balance/warn", method = RequestMethod.GET)
     @ResponseBody
-    public Result<Map> warn(@RequestBody Map map) {
-        try {
-            ParamsMapValidate.validate(map, generateEpBalanceThresholdWarnValidate());
-        } catch (ParamsMapValidationException e) {
-            log.warn("余额提醒参数校验失败", e);
-            return new Result<>(false, Result.PARAMS_ERROR, e.getMessage());
-        }
-        try {
+    public Result<Map> warn(
+                            @RequestParam(value="ep_id") Integer ep_id,
+                            @RequestParam(value="balance") Integer balance
+                           ) {
+        Integer core_ep_id=1;//// TODO: 2016/10/20 0020   获取平台商id
+            Map map = new HashMap();
+             map.put("ep_id",ep_id);
+             map.put("core_ep_id",core_ep_id);
+             map.put("balance",balance);
+            ParamsMapValidate.validate(map, generateEpBalanceThresholdUpdateValidate());
+
+
             if(epBalanceThresholdService.warn(map)){
                 //Todo  发送余额短信
                 Map epMap = new HashMap();
@@ -104,10 +91,6 @@ public class EpBalanceThresholdController extends BaseController {
                 //TODO  发送之后操作
             }
             return null;
-        } catch (ApiException e) {
-            return new Result<>(false, e.getCode(), e.getMsg());
-        }
-
     }
 
     private Map<String[], ValidRule[]> generateEpBalanceThresholdValidate() {
@@ -115,11 +98,13 @@ public class EpBalanceThresholdController extends BaseController {
         // 校验不为空的参数
         rules.put(new String[]{
                 "ep_id", //
+                "core_ep_id",
         }, new ValidRule[]{new ValidRule.NotNull()});
 
         // 校验整数
         rules.put(new String[]{
                 "ep_id", //
+                "core_ep_id",
         }, new ValidRule[]{new ValidRule.Digits()});
         return rules;
     }
@@ -146,14 +131,12 @@ public class EpBalanceThresholdController extends BaseController {
         // 校验不为空的参数
         rules.put(new String[]{
                 "ep_id", //
-                "core_ep_id", //
                 "balance",
         }, new ValidRule[]{new ValidRule.NotNull()});
 
         // 校验整数
         rules.put(new String[]{
                 "ep_id", //
-                "core_ep_id", //
                 "balance",
         }, new ValidRule[]{new ValidRule.Digits()});
         return rules;

@@ -40,26 +40,8 @@ public class EpController extends BaseController {
     @RequestMapping(value = "create", method = RequestMethod.POST)
     @ResponseBody
     public Result<Map> create(@RequestBody Map map) {
-        // 验证参数
-        try {
             ParamsMapValidate.validate(map, platfromValidateManager.generateCreateEpValidate());
-        } catch (ParamsMapValidationException e) {
-            log.warn("创建企业参数验证失败", e);
-            return new Result<>(false, Result.PARAMS_ERROR, e.getMessage());
-        }
-        try {
             return epService.createEp(map);
-        } catch (ParamsMapValidationException e) {
-            log.warn("创建企业参数验证失败", e);
-            return new Result<>(false, Result.PARAMS_ERROR, e.getMessage());
-        }catch(ApiException e){
-            log.warn("创建企业参数验证失败", e);
-            return new Result<>(false, e.getCode(), e.getMessage());
-        }
-
-
-
-
     }
 
     /**
@@ -71,7 +53,7 @@ public class EpController extends BaseController {
     @ResponseBody
     public Result<Map> update(@RequestBody Map map) {
         // 验证参数
-        try {
+
             ParamsMapValidate.validate(map, platfromValidateManager.generateCreateEpValidate());
             String ep_class = (String) map.get("ep_class");
             String id = map.get("id").toString();
@@ -81,16 +63,7 @@ public class EpController extends BaseController {
             if (!CommonUtil.isTrue(ep_class, "\\d+")) {
                 throw new ParamsMapValidationException("企业分类错误");
             }
-        } catch (ParamsMapValidationException e) {
-            log.warn("修改企业参数验证失败", e);
-            return new Result<>(false, Result.PARAMS_ERROR, e.getMessage());
-        }
-        try {
             return epService.updateEp(map);
-        }catch (ApiException e){
-            return new Result<>(false, e.getCode(), e.getMsg());
-        }
-
     }
 
     /**
@@ -102,17 +75,10 @@ public class EpController extends BaseController {
     @ResponseBody
     public Result<Integer> statusFreeze(@RequestBody Map map) {
         // 验证参数
-        try {
+
             ParamsMapValidate.validate(map, platfromValidateManager.generateCreateStatusValidate());
-        } catch (ParamsMapValidationException e) {
-            log.warn("修改企业参数验证失败", e);
-            return new Result<>(false, Result.PARAMS_ERROR, e.getMessage());
-        }
-        try {
             return epService.freeze(map);
-        }catch (ApiException e){
-            return new Result<>(false, e.getCode(), e.getMsg());
-        }
+
 
     }
     /**
@@ -124,18 +90,9 @@ public class EpController extends BaseController {
     @ResponseBody
     public Result<Integer> statusDisable(@RequestBody Map map) {
         // 验证参数D
-        try {
-            ParamsMapValidate.validate(map, platfromValidateManager.generateCreateStatusValidate());
-        } catch (ParamsMapValidationException e) {
-            log.warn("修改企业参数验证失败", e);
-            return new Result<>(false, Result.PARAMS_ERROR, e.getMessage());
-        }
-        try {
-            return epService.disable(map);
-        }catch (ApiException e){
-            return new Result<>(false, e.getCode(), e.getMsg());
-        }
 
+            ParamsMapValidate.validate(map, platfromValidateManager.generateCreateStatusValidate());
+            return epService.disable(map);
     }
     /**
      * 激活企业
@@ -146,16 +103,9 @@ public class EpController extends BaseController {
     @ResponseBody
     public Result<Integer> statusEnable(@RequestBody Map map) {
         // 验证参数D
-        try {
+
             ParamsMapValidate.validate(map, platfromValidateManager.generateCreateStatusValidate());
-        } catch (ParamsMapValidationException e) {
-            log.warn("修改企业参数验证失败", e);
-            return new Result<>(false, Result.PARAMS_ERROR, e.getMessage());
-        }
-        try {
             return epService.enable(map);
-        }catch (ApiException e){
-            return new Result<>(false, e.getCode(), e.getMsg());
-        }
+
     }
 }

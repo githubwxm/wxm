@@ -59,7 +59,7 @@
         <if test="limitStart != null">
             and credit_after BETWEEN #{limitStart} and #{limitEnd}
         </if>
-        <if test="credit != null">
+        <if test="credit != false">
             and credit_after is not null
         </if>
         <if test="province != null">
