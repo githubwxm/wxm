@@ -80,17 +80,17 @@ public class RefundOrderServiceImpl implements RefundOrderService {
             // 每日订单详情
             List<OrderItemDetail> detailList = orderItemDetailMapper.selectByItemId(orderItem.getId());
             // 每日退票详情
-            Map daysMap = (Map) params.get("days");
+            List daysList = (List) params.get("days");
             // 总退票数量
             Integer quantity = Integer.parseInt(params.get("quantity").toString());
             String cause = params.get("cause").toString();
 
             if (order.getStatus() == OrderConstant.OrderStatus.PAID) {
-                if (daysMap == null) {
+                if (daysList == null) {
                     throw new ApiException("缺少退票详情");
                 }
                 // 判断余票 并修改明细退票数量
-                int tmpQuantity = refundOrderManager.canRefundForDays(daysMap, detailList);
+                int tmpQuantity = refundOrderManager.canRefundForDays(daysList, detailList);
                 if (tmpQuantity != quantity) {
                     throw new ApiException("退票总数与每天退票数不符");
                 }
@@ -98,13 +98,13 @@ public class RefundOrderServiceImpl implements RefundOrderService {
 
             Date refundDate = new Date();
             // 计算退款金额
-            int money = refundOrderManager.calcRefundMoney(detailList, orderItem.getId(), order.getBuyEpId(),
+            int money = refundOrderManager.calcRefundMoney(daysList, detailList, orderItem.getId(), order.getBuyEpId(),
                     refundOrderManager.getCoreEpId(refundOrderManager.getCoreEpId(order.getBuyEpId())), refundDate);
             // 创建退订订单
-            RefundOrder refundOrder = refundOrderManager.generateRefundOrder(orderItem.getId(), daysMap, quantity, money, cause);
+            RefundOrder refundOrder = refundOrderManager.generateRefundOrder(orderItem.getId(), daysList, quantity, money, cause);
 
             // 退订分账
-            refundOrderManager.preRefundAccount(orderItem.getId(), refundOrder.getId(), detailList, refundDate);
+            refundOrderManager.preRefundAccount(daysList, orderItem.getId(), refundOrder.getId(), detailList, refundDate);
         } catch (Exception e) {
             log.error("订单申请退订异常", e);
             throw new ApiException("订单申请退订异常", e);
@@ -123,7 +123,7 @@ public class RefundOrderServiceImpl implements RefundOrderService {
                 throw new ApiException("订单不在已支付处理中状态");
             }
 
-            refundOrderManager.refundMoney(order, order.getPayAmount());
+            refundOrderManager.refundMoney(order, order.getPayAmount(), null);
         } catch (Exception e) {
             log.error("取消未分账订单异常", e);
             throw new ApiException("取消已支付处理中订单异常", e);
