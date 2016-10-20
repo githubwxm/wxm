@@ -23,21 +23,26 @@
 		</property>
 	</bean>
 
+	<bean id="jacksonConvert" class="com.all580.base.util.CustomJacksonConvert">
+		<property name="supportedMediaTypes">
+			<list>
+				<value>application/json;charset=UTF-8</value>
+				<value>text/html;charset=UTF-8</value>
+			</list>
+		</property>
+	</bean>
 	<!-- 注解转换适配器 -->
 	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
 		<property name="messageConverters">
 			<list >
-				<bean class="com.all580.base.util.CustomJacksonConvert">
-					<property name="supportedMediaTypes">
-						<list>
-							<value>application/json;charset=UTF-8</value>
-							<value>text/html;charset=UTF-8</value>
-						</list>
-					</property>
-				</bean>
+				<ref bean="jacksonConvert"/>
 			</list>
 		</property>
 	</bean>
 
-	<mvc:annotation-driven />
+	<mvc:annotation-driven>
+		<mvc:message-converters>
+			<ref bean="jacksonConvert"/>
+		</mvc:message-converters>
+	</mvc:annotation-driven>
 </beans>
