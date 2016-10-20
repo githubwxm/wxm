@@ -13,6 +13,7 @@ import java.util.Map;
 public interface EpMapper {
     int create(Object obj);
     List<Map> select (Map params);
+    Integer selectCount(Map params);
     List<Map>  getEp(Map params);
     List<Map> all(Map params);
     List<List<?>>  validate(Map params);
