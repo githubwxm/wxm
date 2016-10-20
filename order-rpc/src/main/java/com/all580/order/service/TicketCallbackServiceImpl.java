@@ -233,7 +233,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
 
         // 退款
         Order order = orderMapper.selectByPrimaryKey(orderItem.getOrderId());
-        refundOrderManager.refundMoney(order, refundOrder.getMoney());
+        refundOrderManager.refundMoney(order, refundOrder.getMoney(), String.valueOf(refundOrder.getNumber()));
         return new Result(true);
     }
 }

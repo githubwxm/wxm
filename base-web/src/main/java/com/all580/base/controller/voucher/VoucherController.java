@@ -68,4 +68,10 @@ public class VoucherController extends BaseController {
     public Result list(Integer record_start, Integer record_count) {
         return voucherRPCService.selectVoucherForList(record_start, record_count);
     }
+
+    @RequestMapping(value = "merchant/list")
+    @ResponseBody
+    public Result merchantList(Integer target_ep_id, Integer record_start, Integer record_count) {
+        return voucherRPCService.selectVoucherOfMerchantForList(target_ep_id, record_start, record_count);
+    }
 }

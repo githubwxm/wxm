@@ -8,10 +8,7 @@ import com.all580.product.api.consts.ProductConstants;
 import com.all580.product.api.model.EpSalesInfo;
 import com.framework.common.lang.JsonUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author zhouxianjun(Alone)
@@ -65,7 +62,7 @@ public class AccountTest {
                 c3.setPrice(38);
                 add(c3);
             }});
-            add(new ArrayList<EpSalesInfo>(){{
+            /*add(new ArrayList<EpSalesInfo>(){{
                 EpSalesInfo a1 = new EpSalesInfo();
                 a1.setSaleEpId(101);
                 a1.setBuyEpId(102);
@@ -107,7 +104,7 @@ public class AccountTest {
                 c3.setBuyEpId(-1);
                 c3.setPrice(40);
                 add(c3);
-            }});
+            }});*/
         }};
 
         ooxx(daySalesList, 1, 1, 5011);
@@ -144,6 +141,7 @@ public class AccountTest {
                 // 卖家 == 平台商 && 买家 == 平台商
                 if (info.getBuyEpId() == buyCoreEpId && saleCoreEpId == info.getSaleEpId()) {
                     AccountDataDto dto = addDayAccount(dayAccountDataMap, infoList, buyCoreEpId);
+                    dto.setDay(new Date());
                     dto.setSaleCoreEpId(saleCoreEpId);
                     addDayAccount(dayAccountDataMap, infoList, saleCoreEpId);
                 }
@@ -167,6 +165,7 @@ public class AccountTest {
         }
 
         // 把每天的利润集合做分账
+        Map<Integer, Integer> coreSubMap = new HashMap<>();
         for (Integer epId : daysAccountDataMap.keySet()) {
             Integer coreEpId = getCoreEp(coreEpMap, epId);
             List<AccountDataDto> dataDtos = daysAccountDataMap.get(epId);
@@ -216,7 +215,19 @@ public class AccountTest {
                 }
             } else {
                 // 平台内部企业分账(利润)
-                accountDto = new GenerateAccountDto();
+                OrderItemAccount account = new OrderItemAccount();
+                account.setEpId(epId);
+                account.setCoreEpId(coreEpId);
+                account.setMoney(totalProfit * quantity);
+                account.setProfit(totalProfit * quantity);
+                account.setOrderItemId(itemId);
+                account.setData(JsonUtils.toJson(dataDtos));
+                account.setSettledMoney(0);
+                account.setStatus(OrderConstant.AccountSplitStatus.NOT);
+                System.out.println(JsonUtils.toJson(account));
+                Integer val = coreSubMap.get(coreEpId);
+                coreSubMap.put(coreEpId, val == null ? account.getMoney() : val + account.getMoney());
+                /*accountDto = new GenerateAccountDto();
                 accountDto.setSubtractEpId(coreEpId); // 平台商扣钱给企业分利润
                 accountDto.setSubtractCoreId(coreEpId);
                 accountDto.setAddEpId(epId); // 收钱企业ID
@@ -226,12 +237,24 @@ public class AccountTest {
                 accountDto.setAddProfit(totalProfit * quantity); // 买家每天的总利润 * 票数
                 accountDto.setOrderItemId(itemId);
                 accountDto.setSubtractData(null); // 平台商的利润在平台商之间分账中体现
-                accountDto.setAddData(dataDtos); // 每天的单价利润
+                accountDto.setAddData(dataDtos); // 每天的单价利润*/
             }
 
             if (accountDto != null) {
                 System.out.println(JsonUtils.toJson(generateAccount(accountDto)));
             }
+        }
+        for (Integer id : coreSubMap.keySet()) {
+            OrderItemAccount account = new OrderItemAccount();
+            account.setEpId(id);
+            account.setCoreEpId(id);
+            account.setMoney(-coreSubMap.get(id));
+            account.setProfit(0);
+            account.setOrderItemId(itemId);
+            account.setData(JsonUtils.toJson(daysAccountDataMap.get(id)));
+            account.setSettledMoney(0);
+            account.setStatus(OrderConstant.AccountSplitStatus.NOT);
+            System.out.println(JsonUtils.toJson(account));
         }
     }
 

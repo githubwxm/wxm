@@ -382,6 +382,8 @@ public class BookingOrderManager extends BaseOrderManager {
         }
 
         // 把每天的利润集合做分账
+        // 平台商本企业内部分账一次扣款
+        Map<Integer, Integer> coreSubMap = new HashMap<>();
         for (Integer epId : daysAccountDataMap.keySet()) {
             Integer coreEpId = getCoreEp(coreEpMap, epId);
             List<AccountDataDto> dataDtos = daysAccountDataMap.get(epId);
@@ -391,12 +393,11 @@ public class BookingOrderManager extends BaseOrderManager {
                 totalInPrice += dataDto.getInPrice();
                 totalProfit += dataDto.getProfit();
             }
-            GenerateAccountDto accountDto = null;
             // 平台商之间分账(进货价)
             if (coreEpId.intValue() == epId) {
                 AccountDataDto dto = dataDtos.get(0);
                 if (dto != null && dto.getSaleCoreEpId() != null) {
-                    accountDto = new GenerateAccountDto();
+                    GenerateAccountDto accountDto = new GenerateAccountDto();
                     int totalAddProfit = 0;
                     // 卖家平台商每天的利润
                     List<AccountDataDto> saleAccountDataDtoList = daysAccountDataMap.get(dto.getSaleCoreEpId());
@@ -428,25 +429,37 @@ public class BookingOrderManager extends BaseOrderManager {
                         accountDto.setSubtractData(saleAccountDataDtoList); // 卖家每天的单价利润
                         accountDto.setAddData(dataDtos); // 买家每天的单价利润
                     }
+                    accounts.addAll(generateAccount(accountDto));
                 }
             } else {
-                accountDto = new GenerateAccountDto();
                 // 平台内部企业分账(利润)
-                accountDto.setSubtractEpId(coreEpId); // 平台商扣钱给企业分利润
-                accountDto.setSubtractCoreId(coreEpId);
-                accountDto.setAddEpId(epId); // 收钱企业ID
-                accountDto.setAddCoreId(coreEpId);
-                accountDto.setMoney(totalProfit * quantity); // 金额 每天的总利润 * 票数
-                accountDto.setSubtractProfit(0); // 平台商的利润在平台商之间分账中体现
-                accountDto.setAddProfit(totalProfit * quantity); // 买家每天的总利润 * 票数
-                accountDto.setOrderItemId(itemId);
-                accountDto.setSubtractData(null); // 平台商的利润在平台商之间分账中体现
-                accountDto.setAddData(dataDtos); // 每天的单价利润
+                OrderItemAccount account = new OrderItemAccount();
+                account.setEpId(epId);
+                account.setCoreEpId(coreEpId);
+                account.setMoney(totalProfit * quantity);
+                account.setProfit(totalProfit * quantity);
+                account.setOrderItemId(itemId);
+                account.setData(JsonUtils.toJson(dataDtos));
+                account.setSettledMoney(0);
+                account.setStatus(OrderConstant.AccountSplitStatus.NOT);
+                orderItemAccountMapper.insert(account);
+                accounts.add(account);
+                Integer val = coreSubMap.get(coreEpId);
+                coreSubMap.put(coreEpId, val == null ? account.getMoney() : val + account.getMoney());
             }
-
-            if (accountDto != null) {
-                accounts.addAll(generateAccount(accountDto));
-            }
+        }
+        for (Integer id : coreSubMap.keySet()) {
+            OrderItemAccount account = new OrderItemAccount();
+            account.setEpId(id);
+            account.setCoreEpId(id);
+            account.setMoney(-coreSubMap.get(id));
+            account.setProfit(0);
+            account.setOrderItemId(itemId);
+            account.setData(JsonUtils.toJson(daysAccountDataMap.get(id)));
+            account.setSettledMoney(0);
+            account.setStatus(OrderConstant.AccountSplitStatus.NOT);
+            orderItemAccountMapper.insert(account);
+            accounts.add(account);
         }
         return accounts;
     }
