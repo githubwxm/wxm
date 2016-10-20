@@ -186,12 +186,24 @@ public class PlatfromController extends BaseController {
      */
     @RequestMapping(value = "list", method = RequestMethod.GET)
     @ResponseBody
-    public Result<List<Map>> platformList(@RequestParam(value = "record_start") Integer record_start,
-                                          @RequestParam(value = "record_count") Integer record_count) {
+    public Result<Map> platformList(@RequestParam(value = "record_start") Integer record_start,
+                                          @RequestParam(value = "record_count") Integer record_count,
+                                          @RequestParam(value = "name",required = false) String name,
+                                    @RequestParam(value = "ep_type",required = false) Integer ep_type,
+                                    @RequestParam(value = "status",required = false) Integer status,
+                                    @RequestParam(value = "province",required = false) Integer province,
+                                    @RequestParam(value = "city",required = false) Integer city,
+                                    @RequestParam(value = "link_phone",required = false) Integer link_phone) {
         Map map = new HashMap();
         map.put("record_start", record_start);
         map.put("record_count", record_count);
-        return epService.all(map);
+        map.put("name", name);
+        map.put("ep_type", ep_type);
+        map.put("status", status);
+        map.put("province", province);
+        map.put("city", city);
+        map.put("link_phone", link_phone);
+        return epService.select(map);
 
     }//list/u
 }
