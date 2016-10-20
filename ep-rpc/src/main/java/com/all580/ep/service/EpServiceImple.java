@@ -168,7 +168,7 @@ public class EpServiceImple implements EpService {
             if (!Common.isTrue(ep_type, "\\d+")) {//供应商添加企业    销售商自营商与OTA创建的都是销售商
                 Map tempMap = new HashMap();
                 tempMap.put("id", creator_ep_id);
-                Integer epType = Common.objectParseInteger(select(tempMap).get().get(0).get("ep_type"));// 没有传企业类型获取创建企业类型
+                Integer epType = Common.objectParseInteger(epMapper.select(tempMap).get(0).get("ep_type"));// 没有传企业类型获取创建企业类型
 
                 if (EpConstant.EpType.SUPPLIER.equals(epType)) {
                     map.put("ep_type", epType);
@@ -228,10 +228,10 @@ public class EpServiceImple implements EpService {
         Map map = new HashMap();
         map.put("id", epId);
         try {
-            Result<List<Map>> list = select(map);
+            List<Map> list = epMapper.select(map);
             if (null != list) {
                 if (!list.isEmpty()) {
-                    core_ep_id = Common.objectParseInteger(list.get().get(0).get("core_ep_id"));//list.get().get(0).getCore_ep_id();
+                    core_ep_id = Common.objectParseInteger(list.get(0).get("core_ep_id"));//list.get().get(0).getCore_ep_id();
                     if (null == core_ep_id) {
                         core_ep_id = epId;
                     }
@@ -319,7 +319,6 @@ public class EpServiceImple implements EpService {
 
     /**
      * 平台商停用冻结
-     *
      * @param map
      * @return
      */
@@ -426,16 +425,19 @@ public class EpServiceImple implements EpService {
     }
 
     /**
-     * 查询企业接口，列表单个
-     *
+     * 查询企业列表
      * @param map
      * @return Ep  Map
      */
     @Override
-    public Result<List<Map>> select(Map map) {
-        Result<List<Map>> result = new Result<>(true);
+    public Result<Map> select(Map map) {
+        Result<Map> result = new Result<>(true);
         try {
-            result.put(epMapper.select(map));
+            Map  resultMap= new HashMap();
+            CommonUtil.checkPage(map);
+            resultMap.put("list", epMapper.select(map));
+            resultMap.put("totalCount", epMapper.selectCount(map));
+            result.put(resultMap);
         } catch (Exception e) {
            // log.error("查询数据库异常", e);
             throw new ApiException("查询数据库异常", e);

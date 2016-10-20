@@ -36,10 +36,9 @@ public interface LogCreditMapper {
 
     /**
      *
-     * @param ep_id
-     * @param core_ep_id
+     * @param params ep_id core_ep_id
      * @return name 名称,credit_before 修改前额度,credit_after 修改前额度,credit_date 修改时间
      */
-     List<Map> hostoryCredit(@Param("ep_id") Integer ep_id,@Param("core_ep_id") Integer core_ep_id );
+     List<Map> hostoryCredit(Map params );
 
 }
