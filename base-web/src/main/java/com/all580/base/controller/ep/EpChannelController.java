@@ -12,10 +12,7 @@ import com.sun.org.apache.bcel.internal.classfile.ExceptionTable;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -41,8 +38,6 @@ public class EpChannelController extends BaseController {
     @RequestMapping(value = "update", method = RequestMethod.POST)
     @ResponseBody
     public Result<Integer> update(@RequestBody Map params) {
-
-        try {
             ParamsMapValidate.validate(params, generateUpdateEpChannelValidate());
             String rate = params.get("rate").toString();
             if (CommonUtil.isTrue(rate, "\\d{1}\\.\\d{1,2}$|\\d{1}")) {//校验汇率在0 - 9.99之间 乘100 取整
@@ -51,17 +46,7 @@ public class EpChannelController extends BaseController {
             } else {
                 throw new ParamsMapValidationException("汇率不合法");
             }
-        } catch (ParamsMapValidationException e) {
-            log.warn("修改汇率通道参数错误");
-            return new Result<>(false, Result.PARAMS_ERROR, e.getMessage());
-        }
-        try {
             return coreEpChannelService.update(params);
-        } catch (ApiException e) {
-            return new Result<>(false, e.getCode(), e.getMsg());
-        }
-
-
     }
 
     /**
@@ -73,7 +58,7 @@ public class EpChannelController extends BaseController {
     @RequestMapping(value = "add", method = RequestMethod.POST)
     @ResponseBody
     public Result<Integer> create(@RequestBody Map params) {
-        try {
+
             ParamsMapValidate.validate(params, generateCreateEpChannelValidate());
             String rate = params.get("rate").toString();
             if (CommonUtil.isTrue(rate, "\\d{1}\\.\\d{1,2}$|\\d{1}")) {//校验汇率在0 - 9.99之间 乘100 取整
@@ -82,59 +67,47 @@ public class EpChannelController extends BaseController {
             } else {
                 throw new ParamsMapValidationException("汇率不合法");
             }
-        } catch (ParamsMapValidationException e) {
-            log.warn("添加汇率通道参数错误");
-            return new Result<>(false, Result.PARAMS_ERROR, e.getMessage());
-        }
-        try {
             return coreEpChannelService.create(params);
-        } catch (ApiException e) {
-            return new Result<>(false, e.getCode(), e.getMsg());
-        }
+
 
     }
 
     /**
      * 取消通道汇率   现在是删除，
      *
-     * @param map
+     * @param
      * @return
      */
-    @RequestMapping(value = "cancel", method = RequestMethod.POST)
+    @RequestMapping(value = "cancel", method = RequestMethod.GET)
     @ResponseBody
-    public Result<Integer> cancel(@RequestBody Map map) {
-        try {
-            if(CommonUtil.objectIsNumber(map.get("id"))){
+    public Result<Integer> cancel(@RequestParam(value="access_id") String access_id,
+                                  @RequestParam(value="id") Integer ep_id,
+                                  @RequestParam(value="sign") String sign) {
+
+            if(null==ep_id){
                  throw new ParamsMapValidationException("参数不合法");
             }
-        } catch (ParamsMapValidationException e) {
-            log.warn("取消通道汇率参数错误");
-            return new Result<>(false, Result.PARAMS_ERROR, e.getMessage());
-        }
-        try {
-            return coreEpChannelService.cancel(CommonUtil.objectParseInteger(map.get("id")));
-        } catch (ApiException e) {
-            log.error("取消通道汇率", e);
-            return new Result<>(false, e.getCode(), e.getMsg());
-        }
+            return coreEpChannelService.cancel(ep_id);
+
     }//
 
     /**
      * 查找通道汇率
-     *
-     * @param map
+     * @param
      * @return
      */
     @RequestMapping(value = "list", method = RequestMethod.GET)
     @ResponseBody
-    public Result<Map> list(@RequestBody Map map) {
-        try {
-            return coreEpChannelService.select(map);
-        } catch (ApiException e) {
-            log.error("查找通道汇率", e);
-            return new Result<>(false, e.getCode(), e.getMsg());
-        }
-
+    public Result<Map> list(@RequestParam(value="access_id") String access_id,
+                            @RequestParam(value="supplier_name") String supplier_name,
+                            @RequestParam(value="record_start",required = false) Integer record_start,
+                            @RequestParam(value="record_count",required = false) Integer record_count,
+                            @RequestParam(value="sign") String sign) {
+          Map map = new HashMap();
+          map.put("supplier_name",supplier_name);
+          map.put("record_start",record_start);
+          map.put("record_count",record_count);
+        return coreEpChannelService.select(map);
     }
 
     private Map<String[], ValidRule[]> generateCreateEpChannelValidate() {

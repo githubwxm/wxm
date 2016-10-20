@@ -33,29 +33,19 @@ public class PlatfromController extends BaseController {
     @RequestMapping(value = "create", method = RequestMethod.POST)
     @ResponseBody
     public Result<Map> create(@RequestBody Map map) {
-        // 验证参数
-        try {
-            ParamsMapValidate.validate(map, platfromValidateManager.generateCreateEpValidate());
-        } catch (ParamsMapValidationException e) {
-            log.warn("创建平台商参数验证失败", e);
-            return new Result<>(false, Result.PARAMS_ERROR, e.getMessage());
-        }
-        try {
-            return epService.createPlatform(map);
-        }catch (ApiException e){
-            return new Result<>(false, e.getCode(), e.getMsg());
-        }
+        ParamsMapValidate.validate(map, platfromValidateManager.generateCreateEpValidate());
+        return epService.createPlatform(map);
+
     }
 
     @RequestMapping(value = "validate", method = RequestMethod.GET)
     @ResponseBody
-    public Result<Map> validate(@RequestBody Map map) {
+    public Result<Map> validate(@RequestParam(value = "access_id") String access_id,
+                                @RequestParam(value = "sign") String sign) {
+        Map map = new HashMap();
+        map.put("access_id", access_id);
+        return epService.validate(map);
 
-        try {
-            return epService.validate(map);
-        }catch (ApiException e){
-            return new Result<>(false, e.getCode(), e.getMsg());
-        }
     }
 //
 //    /**
@@ -78,10 +68,11 @@ public class PlatfromController extends BaseController {
 
     /**
      * 平台商停用
+     *
      * @param map
      * @return
      */
-    @RequestMapping(value = "status/disable", method = RequestMethod.GET)
+    @RequestMapping(value = "status/disable", method = RequestMethod.POST)
     @ResponseBody
     public Result<Integer> disable(@RequestBody Map map) {
         try {
@@ -92,111 +83,101 @@ public class PlatfromController extends BaseController {
         }
         try {
             return epService.platformDisable(map);
-        }catch (ApiException e){
+        } catch (ApiException e) {
             return new Result<>(false, e.getCode(), e.getMsg());
         }
 
     }
+
     /**
      * 平台商冻结
-     * @param map
+     *
+     * @param
      * @return
      */
-    @RequestMapping(value = "status/freeze", method = RequestMethod.GET)
+    @RequestMapping(value = "status/freeze", method = RequestMethod.POST)
     @ResponseBody
-    public Result<Integer> freeze(@RequestBody Map map) {
-        try {
-            ParamsMapValidate.validate(map, platfromValidateManager.generateCreateStatusValidate());
-        } catch (ParamsMapValidationException e) {
-            log.warn("冻结企业参数验证失败", e);
-            return new Result<>(false, Result.PARAMS_ERROR, e.getMessage());
-        }
+    public Result<Integer> freeze(HttpServletRequest request, @RequestParam(value = "id",
+            required = true) String id) {
+        Map map = new HashMap();
+        ParamsMapValidate.validate(map, platfromValidateManager.generateCreateStatusValidate());
+
         try {
             return epService.platformFreeze(map);
-        }catch (ApiException e){
+        } catch (ApiException e) {
             return new Result<>(false, e.getCode(), e.getMsg());
         }
 
     }
+
     /**
      * 平台商激活
-     * @param map
+     *
+     * @param
      * @return
      */
-    @RequestMapping(value = "status/enable", method = RequestMethod.GET)
+    @RequestMapping(value = "status/enable", method = RequestMethod.POST)
     @ResponseBody
-    public Result<Integer> enable(@RequestBody Map map) {
-        try {
-            ParamsMapValidate.validate(map, platfromValidateManager.generateCreateStatusValidate());
-        } catch (ParamsMapValidationException e) {
-            log.warn("冻结企业参数验证失败", e);
-            return new Result<>(false, Result.PARAMS_ERROR, e.getMessage());
-        }
-        try {
-            return epService.platformEnable(map);
-        }catch (ApiException e){
-            return new Result<>(false, e.getCode(), e.getMsg());
-        }
+    public Result<Integer> enable(HttpServletRequest request, @RequestParam(value = "id",
+            required = true) String id) {
+        Map map = new HashMap();
+        ParamsMapValidate.validate(map, platfromValidateManager.generateCreateStatusValidate());
+        map.put("id", id);
+        return epService.platformEnable(map);
+
     }//
+
     /**
      * 上游平台商
+     *
      * @param
      * @return
      */
     @RequestMapping(value = "list/up", method = RequestMethod.GET)
     @ResponseBody
-    public Result<Map> platformListUp(HttpServletRequest request, @RequestParam(value="ep_id",
-            required=false) String ep_id) {
+    public Result<Map> platformListUp(HttpServletRequest request, @RequestParam(value = "ep_id",
+            required = true) String ep_id) {
         Map map = new HashMap();
-        map.put("ep_id",ep_id);
-        try {//
-            ParamsMapValidate.validate(map, platfromValidateManager.generateCreateDownUpValidate());
-        } catch (ParamsMapValidationException e) {
-            log.warn("冻结企业参数验证失败", e);
-            return new Result<>(false, Result.PARAMS_ERROR, e.getMessage());
-        }
+        map.put("ep_id", ep_id);
+        ParamsMapValidate.validate(map, platfromValidateManager.generateCreateDownUpValidate());
+        return epService.platformListUp(map);
 
-
-        try {
-            return epService.platformListUp(map)  ;
-        }catch (ApiException e){
-            return new Result<>(false, e.getCode(), e.getMsg());
-        }
     }//list/up
+
     /**
      * 上游平台商
+     *
      * @return
      */
     @RequestMapping(value = "list/down", method = RequestMethod.GET)
     @ResponseBody
-    public Result<Map> platformListDown(HttpServletRequest request, @RequestParam(value="ep_id",
-            required=false) String ep_id) {
+    public Result<Map> platformListDown(HttpServletRequest request, @RequestParam(value = "ep_id",
+            required = true) String ep_id) {
         Map map = new HashMap();
-        map.put("ep_id",ep_id);
-        try {
-            ParamsMapValidate.validate(map, platfromValidateManager.generateCreateDownUpValidate());
-        } catch (ParamsMapValidationException e) {
-            log.warn("冻结企业参数验证失败", e);
-            return new Result<>(false, Result.PARAMS_ERROR, e.getMessage());
-        }
-        try {
-            return epService.platformListDown(map);
-        }catch (ApiException e){
-            return new Result<>(false, e.getCode(), e.getMsg());
-        }
+        map.put("ep_id", ep_id);
+
+        ParamsMapValidate.validate(map, platfromValidateManager.generateCreateDownUpValidate());
+
+
+        return epService.platformListDown(map);
+
     }//list/u
+
     /**
-     * 上游平台商
-     * @param map
+     * 平台商列表
+     *
      * @return
      */
     @RequestMapping(value = "list", method = RequestMethod.GET)
     @ResponseBody
-    public Result<List<Map>> platformList(@RequestBody Map map) {
-        try {
-            return epService.all(map);
-        }catch (ApiException e){
-            return new Result<>(false, e.getCode(), e.getMsg());
-        }
+    public Result<List<Map>> platformList(@RequestParam(value = "access_id") String access_id,
+                                          @RequestParam(value = "record_start") Integer record_start,
+                                          @RequestParam(value = "record_count") Integer record_count,
+                                          @RequestParam(value = "sign") String sign) {
+        Map map = new HashMap();
+        map.put("record_start", record_start);
+        map.put("record_count", record_count);
+        return epService.all(map);
+
     }//list/u
 }
