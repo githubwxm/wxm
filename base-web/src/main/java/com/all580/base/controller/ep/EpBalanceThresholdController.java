@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -52,10 +53,10 @@ public class EpBalanceThresholdController extends BaseController {
      */
     @RequestMapping(value = "select", method = RequestMethod.GET)
     @ResponseBody
-    public Result<Map> select(@RequestParam(value="access_id") String access_id,
-                              @RequestParam(value="ep_id") Integer ep_id,
-                              @RequestParam(value="core_ep_id") Integer core_ep_id,
-                              @RequestParam(value="sign") String sign) {
+    public Result<Map> select(HttpServletRequest request,
+                              @RequestParam(value="ep_id") Integer ep_id
+                             ) {
+           Integer core_ep_id=1;//// TODO: 2016/10/20 0020   获取平台商id
             Map map = new HashMap();
             map.put("ep_id",ep_id);
             map.put("core_ep_id",core_ep_id) ;//epService.selectPlatformId(ep_id).get() 查询平台商
@@ -70,11 +71,11 @@ public class EpBalanceThresholdController extends BaseController {
      */
     @RequestMapping(value = "balance/warn", method = RequestMethod.GET)
     @ResponseBody
-    public Result<Map> warn(@RequestParam(value="access_id") String access_id,
+    public Result<Map> warn(
                             @RequestParam(value="ep_id") Integer ep_id,
-                            @RequestParam(value="core_ep_id") Integer core_ep_id,
-                            @RequestParam(value="balance") Integer balance,
-                            @RequestParam(value="sign") String sign) {
+                            @RequestParam(value="balance") Integer balance
+                           ) {
+        Integer core_ep_id=1;//// TODO: 2016/10/20 0020   获取平台商id
             Map map = new HashMap();
              map.put("ep_id",ep_id);
              map.put("core_ep_id",core_ep_id);

@@ -80,9 +80,9 @@ public class EpChannelController extends BaseController {
      */
     @RequestMapping(value = "cancel", method = RequestMethod.GET)
     @ResponseBody
-    public Result<Integer> cancel(@RequestParam(value="access_id") String access_id,
-                                  @RequestParam(value="id") Integer ep_id,
-                                  @RequestParam(value="sign") String sign) {
+    public Result<Integer> cancel(
+                                  @RequestParam(value="id") Integer ep_id
+                                 ) {
 
             if(null==ep_id){
                  throw new ParamsMapValidationException("参数不合法");
@@ -98,11 +98,10 @@ public class EpChannelController extends BaseController {
      */
     @RequestMapping(value = "list", method = RequestMethod.GET)
     @ResponseBody
-    public Result<Map> list(@RequestParam(value="access_id") String access_id,
-                            @RequestParam(value="supplier_name") String supplier_name,
+    public Result<Map> list( @RequestParam(value="supplier_name") String supplier_name,
                             @RequestParam(value="record_start",required = false) Integer record_start,
-                            @RequestParam(value="record_count",required = false) Integer record_count,
-                            @RequestParam(value="sign") String sign) {
+                            @RequestParam(value="record_count",required = false) Integer record_count
+                         ) {
           Map map = new HashMap();
           map.put("supplier_name",supplier_name);
           map.put("record_start",record_start);

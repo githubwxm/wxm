@@ -40,8 +40,8 @@ public class PlatfromController extends BaseController {
 
     @RequestMapping(value = "validate", method = RequestMethod.GET)
     @ResponseBody
-    public Result<Map> validate(@RequestParam(value = "access_id") String access_id,
-                                @RequestParam(value = "sign") String sign) {
+    public Result<Map> validate(@RequestParam(value = "access_id") String access_id
+                               ) {
         Map map = new HashMap();
         map.put("access_id", access_id);
         return epService.validate(map);
@@ -135,26 +135,42 @@ public class PlatfromController extends BaseController {
      */
     @RequestMapping(value = "list/up", method = RequestMethod.GET)
     @ResponseBody
-    public Result<Map> platformListUp(HttpServletRequest request, @RequestParam(value = "ep_id",
-            required = true) String ep_id) {
+    public Result<Map> platformListUp(HttpServletRequest request,
+                                      @RequestParam(value = "ep_id") String ep_id,
+                                      @RequestParam(value = "epName", required = false) String epName,
+                                      @RequestParam(value = "epProvince", required = false) String epProvince,
+                                      @RequestParam(value = "epCity", required = false) String epCity,
+                                      @RequestParam(value = "epPhone", required = false) String epPhone) {
         Map map = new HashMap();
         map.put("ep_id", ep_id);
+        map.put("epName",epName);
+        map.put("epProvince",epProvince);
+        map.put("epCity",epCity);
+        map.put("epPhone",epPhone);
         ParamsMapValidate.validate(map, platfromValidateManager.generateCreateDownUpValidate());
         return epService.platformListUp(map);
 
     }//list/up
 
     /**
-     * 上游平台商
+     * 下游平台商
      *
      * @return
      */
     @RequestMapping(value = "list/down", method = RequestMethod.GET)
     @ResponseBody
-    public Result<Map> platformListDown(HttpServletRequest request, @RequestParam(value = "ep_id",
-            required = true) String ep_id) {
+    public Result<Map> platformListDown(HttpServletRequest request,
+                                        @RequestParam(value = "ep_id") String ep_id,
+                                        @RequestParam(value = "epName", required = false) String epName,
+                                        @RequestParam(value = "epProvince", required = false) String epProvince,
+                                        @RequestParam(value = "epCity", required = false) String epCity,
+                                        @RequestParam(value = "epPhone", required = false) String epPhone) {
         Map map = new HashMap();
         map.put("ep_id", ep_id);
+        map.put("epName",epName);
+        map.put("epProvince",epProvince);
+        map.put("epCity",epCity);
+        map.put("epPhone",epPhone);
 
         ParamsMapValidate.validate(map, platfromValidateManager.generateCreateDownUpValidate());
 
@@ -170,10 +186,8 @@ public class PlatfromController extends BaseController {
      */
     @RequestMapping(value = "list", method = RequestMethod.GET)
     @ResponseBody
-    public Result<List<Map>> platformList(@RequestParam(value = "access_id") String access_id,
-                                          @RequestParam(value = "record_start") Integer record_start,
-                                          @RequestParam(value = "record_count") Integer record_count,
-                                          @RequestParam(value = "sign") String sign) {
+    public Result<List<Map>> platformList(@RequestParam(value = "record_start") Integer record_start,
+                                          @RequestParam(value = "record_count") Integer record_count) {
         Map map = new HashMap();
         map.put("record_start", record_start);
         map.put("record_count", record_count);

@@ -35,7 +35,7 @@ public class EpFinance extends BaseController {
      */
     @RequestMapping(value = "platform/list", method = RequestMethod.GET)
     @ResponseBody
-    public Result<Map> getList(@RequestParam(value = "access_id") String access_id,
+    public Result<Map> getList(
                                @RequestParam(value = "name", required = false) String name,
                                @RequestParam(value = "link_phone", required = false) String link_phone,
                                @RequestParam(value = "province", required = false) Integer province,
@@ -45,8 +45,9 @@ public class EpFinance extends BaseController {
                                @RequestParam(value = "limitEnd", required = false) Integer limitEnd,
                                @RequestParam(value = "credit", required = false) boolean credit,
                                @RequestParam(value = "record_start", required = false) Integer record_start,
-                               @RequestParam(value = "record_count", required = false) Integer record_count,
-                               @RequestParam(value = "sign") String sign) {
+                               @RequestParam(value = "record_count", required = false) Integer record_count
+                             ) {
+        Integer core_ep_id=1;//// TODO: 2016/10/20 0020   获取平台商id
         Map map = new HashMap();
         map.put("name", name);
         map.put("link_phone", link_phone);
@@ -58,6 +59,7 @@ public class EpFinance extends BaseController {
         map.put("credit", credit);
         map.put("record_start", record_start);
         map.put("record_count", record_count);
+        map.put("core_ep_id",core_ep_id);
         return logCreditService.selectList(map);
 
 
@@ -70,10 +72,10 @@ public class EpFinance extends BaseController {
      */
     @RequestMapping(value = "hostoryCredit", method = RequestMethod.GET)
     @ResponseBody
-    public Result<Map> hostoryCredit(@RequestParam(value = "access_id") String access_id,
-                                     @RequestParam(value = "ep_id") Integer ep_id,
-                                     @RequestParam(value = "croe_ep_id") Integer croe_ep_id,
-                                     @RequestParam(value = "sign") String sign) {
+    public Result<Map> hostoryCredit(
+                                     @RequestParam(value = "ep_id") Integer ep_id
+                                    ) {
+        Integer croe_ep_id=1;//// TODO: 2016/10/20 0020   获取平台商id
         Map map = new HashMap();
         map.put("ep_id", ep_id);
         map.put("croe_ep_id", croe_ep_id);
@@ -92,18 +94,9 @@ public class EpFinance extends BaseController {
     @RequestMapping(value = "set", method = RequestMethod.POST)
     @ResponseBody
     public Result<Integer> set(@RequestBody Map map) {
-        // 验证参数
-        try {
             ParamsMapValidate.validate(map, generateCreateCreditValidate());
-        } catch (ParamsMapValidationException e) {
-            log.warn("修改企业参数验证失败", e);
-            return new Result<>(false, Result.PARAMS_ERROR, e.getMessage());
-        }
-        try {
             return logCreditService.create(map);
-        } catch (ApiException e) {
-            return new Result<>(false, e.getCode(), e.getMsg());
-        }
+
     }//set
 
 
