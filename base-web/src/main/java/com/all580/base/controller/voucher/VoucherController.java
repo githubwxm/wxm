@@ -37,57 +37,30 @@ public class VoucherController extends BaseController {
     @ResponseBody
     public Result add(@RequestBody Map params) {
         // 验证参数
-        try {
-            ParamsMapValidate.validate(params, voucherValidateManager.addValidate());
-        } catch (ParamsMapValidationException e) {
-            log.warn("添加凭证参数验证失败", e);
-            return new Result<>(false, Result.PARAMS_ERROR, e.getMessage());
-        }
-        try {
-            return voucherRPCService.addVoucher(params.get("name").toString(), params.get("link").toString());
-        } catch (ApiException e) {
-            return new Result<>(false, e.getCode(), e.getMsg());
-        }
+        ParamsMapValidate.validate(params, voucherValidateManager.addValidate());
+        return voucherRPCService.addVoucher(params.get("name").toString(), params.get("link").toString());
     }
 
     @RequestMapping(value = "update", method = RequestMethod.POST)
     @ResponseBody
     public Result update(@RequestBody Map params) {
         // 验证参数
-        try {
-            ParamsMapValidate.validate(params, voucherValidateManager.updateValidate());
-        } catch (ParamsMapValidationException e) {
-            log.warn("修改凭证参数验证失败", e);
-            return new Result<>(false, Result.PARAMS_ERROR, e.getMessage());
-        }
-        try {
-            int id = Integer.parseInt(params.get("id").toString());
-            return voucherRPCService.updateVoucher(id, params.get("name").toString(), params.get("link").toString());
-        } catch (ApiException e) {
-            return new Result<>(false, e.getCode(), e.getMsg());
-        }
+        ParamsMapValidate.validate(params, voucherValidateManager.updateValidate());
+        int id = Integer.parseInt(params.get("id").toString());
+        return voucherRPCService.updateVoucher(id, params.get("name").toString(), params.get("link").toString());
     }
 
     @RequestMapping(value = "merchant/add", method = RequestMethod.POST)
     @ResponseBody
     public Result addMerchantToVoucher(@RequestBody Map params) {
         // 验证参数
-        try {
-            ParamsMapValidate.validate(params, voucherValidateManager.merchantValidate());
-        } catch (ParamsMapValidationException e) {
-            log.warn("关联凭证商户参数验证失败", e);
-            return new Result<>(false, Result.PARAMS_ERROR, e.getMessage());
-        }
-        try {
-            int epId = Integer.parseInt(params.get("ep_id").toString());
-            int voucherId = Integer.parseInt(params.get("voucher_id").toString());
-            String accessId = params.get("access_id").toString();
-            String accessKey = params.get("access_key").toString();
-            String accessName = params.get("access_name").toString();
-            return voucherRPCService.addMerchantToVoucher(epId, 0, voucherId, accessId, accessKey, accessName);
-        } catch (ApiException e) {
-            return new Result<>(false, e.getCode(), e.getMsg());
-        }
+        ParamsMapValidate.validate(params, voucherValidateManager.merchantValidate());
+        int epId = Integer.parseInt(params.get("ep_id").toString());
+        int voucherId = Integer.parseInt(params.get("voucher_id").toString());
+        String accessId = params.get("access_id").toString();
+        String accessKey = params.get("access_key").toString();
+        String accessName = params.get("access_name").toString();
+        return voucherRPCService.addMerchantToVoucher(epId, 0, voucherId, accessId, accessKey, accessName);
     }
 
     @RequestMapping(value = "list")

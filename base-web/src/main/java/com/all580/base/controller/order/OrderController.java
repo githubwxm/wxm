@@ -40,118 +40,55 @@ public class OrderController extends BaseController {
     @ResponseBody
     public Result<?> create(@RequestBody Map params) {
         // 验证参数
-        try {
-            ParamsMapValidate.validate(params, orderValidateManager.createValidate());
-        } catch (ParamsMapValidationException e) {
-            log.warn("创建订单参数验证失败", e);
-            return new Result<>(false, Result.PARAMS_ERROR, e.getMessage());
-        }
-        try {
-            return bookingOrderService.create(params);
-        } catch (ApiException e) {
-            return new Result<>(false, e.getCode(), e.getMsg());
-        }
+        ParamsMapValidate.validate(params, orderValidateManager.createValidate());
+        return bookingOrderService.create(params);
     }
 
     @RequestMapping(value = "audit", method = RequestMethod.POST)
     @ResponseBody
     public Result<?> audit(@RequestBody Map params) {
         // 验证参数
-        try {
-            ParamsMapValidate.validate(params, orderValidateManager.auditValidate());
-        } catch (ParamsMapValidationException e) {
-            log.warn("审核订单参数验证失败", e);
-            return new Result<>(false, Result.PARAMS_ERROR, e.getMessage());
-        }
-        try {
-            return bookingOrderService.audit(params);
-        } catch (ApiException e) {
-            return new Result<>(false, e.getCode(), e.getMsg());
-        }
+        ParamsMapValidate.validate(params, orderValidateManager.auditValidate());
+        return bookingOrderService.audit(params);
     }
 
     @RequestMapping(value = "payment", method = RequestMethod.POST)
     @ResponseBody
     public Result<?> payment(@RequestBody Map params) {
         // 验证参数
-        try {
-            ParamsMapValidate.validate(params, orderValidateManager.paymentValidate());
-        } catch (ParamsMapValidationException e) {
-            log.warn("订单支付参数验证失败", e);
-            return new Result<>(false, Result.PARAMS_ERROR, e.getMessage());
-        }
-        try {
-            return bookingOrderService.payment(params);
-        } catch (ApiException e) {
-            return new Result<>(false, e.getCode(), e.getMsg());
-        }
+        ParamsMapValidate.validate(params, orderValidateManager.paymentValidate());
+        return bookingOrderService.payment(params);
     }
 
     @RequestMapping(value = "refund/apply", method = RequestMethod.POST)
     @ResponseBody
     public Result<?> refundApply(@RequestBody Map params) {
         // 验证参数
-        try {
-            ParamsMapValidate.validate(params, orderValidateManager.refundApplyValidate());
-        } catch (ParamsMapValidationException e) {
-            log.warn("订单退订申请参数验证失败", e);
-            return new Result<>(false, Result.PARAMS_ERROR, e.getMessage());
-        }
-        try {
-            return refundOrderService.apply(params);
-        } catch (ApiException e) {
-            return new Result<>(false, e.getCode(), e.getMsg());
-        }
+        ParamsMapValidate.validate(params, orderValidateManager.refundApplyValidate());
+        return refundOrderService.apply(params);
     }
 
     @RequestMapping(value = "refund/audit", method = RequestMethod.POST)
     @ResponseBody
     public Result<?> refundAudit(@RequestBody Map params) {
         // 验证参数
-        try {
-            ParamsMapValidate.validate(params, orderValidateManager.refundAuditValidate());
-        } catch (ParamsMapValidationException e) {
-            log.warn("订单退订审核参数验证失败", e);
-            return new Result<>(false, Result.PARAMS_ERROR, e.getMessage());
-        }
-        try {
-            return refundOrderService.audit(params);
-        } catch (ApiException e) {
-            return new Result<>(false, e.getCode(), e.getMsg());
-        }
+        ParamsMapValidate.validate(params, orderValidateManager.refundAuditValidate());
+        return refundOrderService.audit(params);
     }
 
     @RequestMapping(value = "cancel", method = RequestMethod.POST)
     @ResponseBody
     public Result<?> cancel(@RequestBody Map params) {
         // 验证参数
-        try {
-            ParamsMapValidate.validate(params, orderValidateManager.cancelValidate());
-        } catch (ParamsMapValidationException e) {
-            log.warn("订单取消参数验证失败", e);
-            return new Result<>(false, Result.PARAMS_ERROR, e.getMessage());
-        }
-        try {
-            return refundOrderService.cancel(params);
-        } catch (ApiException e) {
-            return new Result<>(false, e.getCode(), e.getMsg());
-        }
+        ParamsMapValidate.validate(params, orderValidateManager.cancelValidate());
+        return refundOrderService.cancel(params);
     }
 
     @RequestMapping(value = "cancel/nosplit", method = RequestMethod.POST)
     @ResponseBody
     public Result<?> cancelNoSplit(@RequestBody Map params) {
         // 验证参数
-        try {
-            ParamsMapValidate.validate(params, orderValidateManager.cancelValidate());
-        } catch (ParamsMapValidationException e) {
-            log.warn("取消已支付未分账的订单验证失败", e);
-            return new Result<>(false, Result.PARAMS_ERROR, e.getMessage());
-        }
-        try {
-            return refundOrderService.cancelNoSplit(params);
-        } catch (ApiException e) {
-            return new Result<>(false, e.getCode(), e.getMsg());
-        }
+        ParamsMapValidate.validate(params, orderValidateManager.cancelValidate());
+        return refundOrderService.cancelNoSplit(params);
     }
 }
