@@ -43,4 +43,11 @@ public interface ClearanceWashedSerialMapper {
      * @mbggenerated Fri Sep 30 15:22:08 CST 2016
      */
     int updateByPrimaryKey(ClearanceWashedSerial record);
+
+    /**
+     * 根据流水号获取冲正流水
+     * @param sn
+     * @return
+     */
+    ClearanceWashedSerial selectBySn(String sn);
 }

@@ -43,4 +43,11 @@ public interface OrderClearanceSerialMapper {
      * @mbggenerated Sat Oct 15 10:53:41 CST 2016
      */
     int updateByPrimaryKey(OrderClearanceSerial record);
+
+    /**
+     * 根据流水号获取核销流水
+     * @param sn 流水号
+     * @return
+     */
+    OrderClearanceSerial selectBySn(String sn);
 }
