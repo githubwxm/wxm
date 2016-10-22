@@ -60,7 +60,9 @@
     </select>
 
     <select id="select" resultType="java.util.HashMap">
-        select  creator_ep_id,core_ep_id,en_name,ep_type,ep.id ,ep.name,ep.linkman,ep.link_phone,ep.province,ep.city,ep.area,ep.address,ep.status,
+        select  ep.id,ep.name,ep.en_name,ep.ep_type,ep.linkman,ep.link_phone,ep.address,ep.code,ep.license,ep.logo_pic,ep.status,ep.access_id,
+        ep.access_key,ep.creator_ep_id,ep.core_ep_id,ep.status_bak,ep.province,
+        ep.city,ep.area,ep.group_id,ep.group_name,ep.ep_class,
         date_format(ep.add_time,'%Y-%m-%d') add_time,param.`name` as status_name  from
         t_ep  ep left JOIN t_ep_param param on ep.`status` = param.id
         where
