@@ -20,7 +20,7 @@ import java.util.Map;
 public class CoreEpAccessServiceImple implements CoreEpAccessService {
 
     @Autowired
-    private CoreEpAccessMapper coreEpAccessMapper;
+    private CoreEpAccessMapper coreEpAccessMapper;//ddd
 
     @Override
     public Result<Integer> create(Map map) {
