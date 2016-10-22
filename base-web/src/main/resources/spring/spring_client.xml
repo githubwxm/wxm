@@ -43,4 +43,5 @@
 	<dubbo:reference id="logCreditService"
 					 interface="com.all580.ep.api.service.LogCreditService" />
 
+
 </beans>
