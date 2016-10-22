@@ -38,7 +38,7 @@
         truncate(rate/100,2) as rate from t_core_ep_channel ) f
         where 1=1
         <if test="supplier_name != null">
-            and f.`supplier_name` like   CONCAT('%',#{supplier_name}'%')
+            and f.`supplier_name` like   CONCAT('%',#{supplier_name},'%')
         </if>
         <if test="limit != null">
             limit #{record_start},#{record_count}
