@@ -112,6 +112,7 @@ public class BookingOrderManager extends BaseOrderManager {
 
     /**
      * 创建订单生成订单数据
+     * @param coreEpId 操作平台商
      * @param buyEpId 销售企业ID
      * @param userId 销售用户ID
      * @param userName 销售用户名称
@@ -119,7 +120,7 @@ public class BookingOrderManager extends BaseOrderManager {
      * @return
      */
     @Transactional
-    public Order generateOrder(Integer buyEpId, Integer userId, String userName, Integer from, String remark) {
+    public Order generateOrder(Integer coreEpId, Integer buyEpId, Integer userId, String userName, Integer from, String remark) {
         Order order = new Order();
         order.setNumber(UUIDGenerator.generateUUID());
         order.setStatus(OrderConstant.OrderStatus.PAY_WAIT);
@@ -129,6 +130,7 @@ public class BookingOrderManager extends BaseOrderManager {
         order.setCreateTime(new Date());
         order.setFromType(from);
         order.setRemark(remark);
+        order.setPayeeEpId(coreEpId);
         orderMapper.insert(order);
         return order;
     }

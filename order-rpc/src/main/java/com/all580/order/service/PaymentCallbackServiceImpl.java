@@ -38,11 +38,12 @@ public class PaymentCallbackServiceImpl implements PaymentCallbackService {
     private RefundOrderMapper refundOrderMapper;
 
     @Override
-    public Result payCallback(long ordCode, String serialNum) {
+    public Result payCallback(long ordCode, String serialNum, String outTransId) {
         Order order = orderMapper.selectBySN(ordCode);
         if (order == null) {
             return new Result(false, "订单不存在");
         }
+        order.setThirdSerialNo(outTransId);
         order.setStatus(OrderConstant.OrderStatus.PAID_HANDLING); // 已支付,处理中
         orderMapper.updateByPrimaryKey(order);
 
@@ -61,8 +62,13 @@ public class PaymentCallbackServiceImpl implements PaymentCallbackService {
     }
 
     @Override
-    public Result refundCallback(long ordCode, String serialNum, boolean success) {
-        Order order = orderMapper.selectBySN(ordCode);
+    public Result refundCallback(Long ordCode, String serialNum, String outTransId, boolean success) {
+        Order order = null;
+        if (ordCode == null) {
+            order = orderMapper.selectByThirdSn(outTransId);
+        } else {
+            order = orderMapper.selectBySN(ordCode);
+        }
         if (order == null) {
             return new Result(false, "订单不存在");
         }

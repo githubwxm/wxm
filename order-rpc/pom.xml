@@ -49,6 +49,10 @@
             <artifactId>payment-api</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+        </dependency>
         <!-- LTS 任务调度器 -->
         <dependency>
             <groupId>com.github.ltsopensource</groupId>

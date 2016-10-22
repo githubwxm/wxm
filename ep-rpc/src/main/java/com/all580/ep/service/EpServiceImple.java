@@ -550,6 +550,19 @@ public class EpServiceImple implements EpService {
         return result;
     }
 
+    @Override
+    public Result<Map> selectId(Map params) {
+        Result<Map> result = new Result<>();
+        try {
+            CommonUtil.checkPage(params);
+            result.put(epMapper.select(params).get(0));
+            result.setSuccess();
+        } catch (Exception e) {
+            log.error("查询数据库异常", e);
+            throw new ApiException("查询数据库异常", e);
+        }
+        return result;
+    }
     /**
      * 获取企业基本信息接口
      *

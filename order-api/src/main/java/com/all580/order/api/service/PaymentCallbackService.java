@@ -14,16 +14,18 @@ public interface PaymentCallbackService {
      * 支付成功回调
      * @param ordCode 订单编号
      * @param serialNum 支付流水号
+     * @param outTransId 第三方交易号
      * @return
      */
-    Result payCallback(long ordCode, String serialNum);
+    Result payCallback(long ordCode, String serialNum, String outTransId);
 
     /**
      * 退款回调
      * @param ordCode 订单编号
      * @param serialNum 退款流水号
+     * @param outTransId 第三方交易号
      * @param success 是否成功
      * @return
      */
-    Result refundCallback(long ordCode, String serialNum, boolean success);
+    Result refundCallback(Long ordCode, String serialNum, String outTransId, boolean success);
 }

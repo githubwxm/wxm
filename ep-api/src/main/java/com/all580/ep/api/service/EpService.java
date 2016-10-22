@@ -31,6 +31,7 @@ public interface EpService {
     Result<Map> createEp(Map map);
     Result<Map> select (Map map);
 
+    Result<Map> selectId (Map map);
     /**
      * 获取企业基本信息接口
      *

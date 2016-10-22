@@ -67,25 +67,28 @@ public class OrderControllerTest {
                 put("name", "周先军");
                 put("mobile", "15019418143");
             }});
-            put("items", new HashMap<String, Object>(){{
-                put("visitor", new ArrayList<Map<String, Object>>(){{
-                    add(new HashMap<String, Object>(){{
-                        put("name", "Alone");
-                        put("mobile", "15019418143");
-                        put("sid", "511702198606266283");
-                        put("quantity", "1");
+            put("items", new ArrayList<Map>(){{
+                add(new HashMap<String, Object>(){{
+                    put("visitor", new ArrayList<Map<String, Object>>(){{
+                        add(new HashMap<String, Object>(){{
+                            put("name", "Alone");
+                            put("mobile", "15019418143");
+                            put("sid", "511702198606266283");
+                            put("quantity", "1");
+                        }});
                     }});
+                    put("product_sub_id", "1");
+                    put("start", "2016-10-01 00:00:00");
+                    put("days", "1");
+                    put("quantity", "1");
                 }});
-                put("product_sub_id", "1");
-                put("start", "2016-10-01 00:00:00");
-                put("days", "1");
-                put("quantity", "1");
             }});
             put("from", "350");
-            put("ep_id", "1");
+            put("ep_id", "54");
             put("user_id", "1");
             put("user_name", "xxx");
             put("sale_amount", "0");
+            put("remark", "test");
         }};
         mockMvc.perform(
                     post("/api/order/create").contentType(MediaType.APPLICATION_JSON).content(JsonUtils.toJson(params))
