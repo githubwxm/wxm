@@ -29,7 +29,7 @@ public class CoreEpAccessServiceImple implements CoreEpAccessService {
             result.put( coreEpAccessMapper.create(map));
             result.setSuccess();
         } catch (Exception e) {
-           // log.error("创建中心平台接口访问配置", e);
+            log.error("创建中心平台接口访问配置", e);
             throw new ApiException("创建中心平台接口访问配置", e);
         }
         return result;
@@ -42,7 +42,7 @@ public class CoreEpAccessServiceImple implements CoreEpAccessService {
             result.put(coreEpAccessMapper.select(params));
             result.setSuccess();
         } catch (Exception e) {
-           // log.error("查询中心平台接口访问配置", e);
+           log.error("查询中心平台接口访问配置", e);
             throw new ApiException("查询中心平台接口访问配置", e);
         }
         return result;//CoreEpAccess
@@ -62,7 +62,7 @@ public class CoreEpAccessServiceImple implements CoreEpAccessService {
                 return  result ;
             }
         } catch (Exception e) {
-           // log.error("查询中心平台接口访问配置", e);
+            log.error("查询中心平台接口访问配置", e);
             throw new ApiException("查询中心平台接口访问配置", e);
         }
 

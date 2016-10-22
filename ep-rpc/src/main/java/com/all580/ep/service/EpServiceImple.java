@@ -67,7 +67,7 @@ public class EpServiceImple implements EpService {
         try {
             epId = epMapper.create(map);//添加成功
         } catch (Exception e) {
-           // log.error("添加平台商异常", e);
+            // log.error("添加平台商异常", e);
             throw new ApiException("添加平台商异常", e);
         }
         map.put("access_key", Common.getAccessKey());
@@ -94,14 +94,29 @@ public class EpServiceImple implements EpService {
                 result.put(accessMap);
                 result.setSuccess();
             } catch (Exception e) {
-               // log.error("添加平台商未成功", e);
+                // log.error("添加平台商未成功", e);
                 throw new ApiException("添加平台商异常", e);
             }
         } else {
-           // log.warn("添加平台商未成功");
+            // log.warn("添加平台商未成功");
             throw new ApiException("添加平台商未成功");
         }
         return result;
+    }
+
+    @Override
+    public Result<Map> selectPlatform() {
+        Result<Map> result = new Result<>(true);
+        try {
+             Map map = new HashMap();
+            map.put("list",epMapper.selectPlatform());
+            result.setCode(200);
+            result.put(map);
+            return result;
+        } catch (Exception e) {
+            log.error("查询数据库错误", e);
+            throw new ApiException("查询数据库错误", e);
+        }
     }
 
     /**
@@ -117,7 +132,7 @@ public class EpServiceImple implements EpService {
         try {
             access = coreEpAccessService.select(params).get().get(0);
         } catch (Exception e) {
-           // log.error("查询数据库异常", e);
+            // log.error("查询数据库异常", e);
             throw new ApiException("查询数据库异常", e);
         }
 
@@ -134,12 +149,12 @@ public class EpServiceImple implements EpService {
                 result.put(map);
                 result.setSuccess();
             } catch (Exception e) {
-               // log.error("添加平台商未成功", e);
+                // log.error("添加平台商未成功", e);
                 throw new ApiException("添加平台商异常", e);
             }
             return result;
         } else {
-           // log.error("授权ID校验失败未找到");
+            // log.error("授权ID校验失败未找到");
             throw new ApiException("授权ID校验失败未找到");
         }
     }
@@ -151,6 +166,7 @@ public class EpServiceImple implements EpService {
         map.put("status_bak", EpConstant.EpStatus.UNINITIAL);// 状态默认未初始化
         map.put("access_id", Common.getAccessId());
         map.put("access_key", Common.getAccessKey());
+
         String ep_type = (String) map.get("ep_type");//企业类型
         String creator_ep_id = (String) map.get("creator_ep_id");//上级企业id
         String group_id = (String) map.get("group_id");
@@ -183,11 +199,11 @@ public class EpServiceImple implements EpService {
             }
 
         } catch (ParamsMapValidationException e) {
-           // log.error("企业商参数错误");
+            // log.error("企业商参数错误");
             throw new ParamsMapValidationException("企业类型错误");
 
         } catch (Exception e) {
-           // log.error("企业商参数错误", e);
+            // log.error("企业商参数错误", e);
             throw new ApiException("企业商参数错误", e);
         }
         Map resultMap = new HashMap();
@@ -209,7 +225,7 @@ public class EpServiceImple implements EpService {
             result.setSuccess();
             result.setCode(200);
         } catch (Exception e) {
-           // log.error("添加企业出错", e);
+            // log.error("添加企业出错", e);
             throw new ApiException("添加企业出错", e);
         }
 
@@ -240,7 +256,7 @@ public class EpServiceImple implements EpService {
                 }
             }
         } catch (Exception e) {
-           // log.error("查询平台商出错", e);
+            // log.error("查询平台商出错", e);
             throw new ApiException("查询平台商出错", e);
         }
         return result;
@@ -253,7 +269,7 @@ public class EpServiceImple implements EpService {
             result.put(epMapper.updateStatus(params));
             result.setSuccess();
         } catch (Exception e) {
-           // log.error("更新异常", e);
+            // log.error("更新异常", e);
             throw new ApiException("更新异常", e);
         }
         return result;
@@ -265,8 +281,8 @@ public class EpServiceImple implements EpService {
         params.put("statusActive", EpConstant.EpStatus.ACTIVE);
         try {
             return updateStatus(params);
-        }catch (ApiException e){
-           // log.error("更新异常", e);
+        } catch (ApiException e) {
+            // log.error("更新异常", e);
             throw new ApiException("更新异常", e);
         }
     }
@@ -277,8 +293,8 @@ public class EpServiceImple implements EpService {
         params.put("statusActive", EpConstant.EpStatus.ACTIVE);
         try {
             return updateStatus(params);
-        }catch (ApiException e){
-           // log.error("更新异常", e);
+        } catch (ApiException e) {
+            // log.error("更新异常", e);
             throw new ApiException("更新异常", e);
         }
     }
@@ -288,8 +304,8 @@ public class EpServiceImple implements EpService {
         params.put("status", EpConstant.EpStatus.ACTIVE);
         try {
             return updateStatus(params);
-        }catch (ApiException e){
-           // log.error("更新异常", e);
+        } catch (ApiException e) {
+            // log.error("更新异常", e);
             throw new ApiException("更新异常", e);
         }
 
@@ -300,8 +316,8 @@ public class EpServiceImple implements EpService {
         params.put("status", EpConstant.EpStatus.FREEZE);
         try {
             return updatePlatfrom(params);
-        }catch (ApiException e){
-           // log.error("更新异常", e);
+        } catch (ApiException e) {
+            // log.error("更新异常", e);
             throw new ApiException("更新异常", e);
         }
     }
@@ -311,14 +327,15 @@ public class EpServiceImple implements EpService {
         params.put("status", EpConstant.EpStatus.STOP);
         try {
             return updatePlatfrom(params);
-        }catch (ApiException e){
-           // log.error("更新异常", e);
+        } catch (ApiException e) {
+            // log.error("更新异常", e);
             throw new ApiException("更新异常", e);
         }
     }
 
     /**
      * 平台商停用冻结
+     *
      * @param map
      * @return
      */
@@ -328,7 +345,7 @@ public class EpServiceImple implements EpService {
             result.put(epMapper.updatePlatfromStatus(map));
             result.setSuccess();
         } catch (Exception e) {
-           // log.error("更新异常", e);
+            // log.error("更新异常", e);
             throw new ApiException("更新异常", e);
         }
         return result;
@@ -343,7 +360,7 @@ public class EpServiceImple implements EpService {
             result.put(epMapper.platformEnable(params));
             result.setSuccess();
         } catch (Exception e) {
-           // log.error("更新平台商状态异常", e);
+             log.error("更新平台商状态异常", e);
             throw new ApiException("更新平台商状态异常", e);
         }
         return result;
@@ -357,7 +374,7 @@ public class EpServiceImple implements EpService {
             result.put(map);
             result.setSuccess();
         } catch (Exception e) {
-           // log.error("数据库更新错误", e);
+             log.error("数据库更新错误", e);
             throw new ApiException("数据库更新错误", e);
         }
         return result;
@@ -375,7 +392,7 @@ public class EpServiceImple implements EpService {
             result.put(resultMap);
             result.setSuccess();
         } catch (Exception e) {
-           // log.error("数据库查询错误", e);
+             log.error("数据库查询错误", e);
             throw new ApiException("数据库查询错误", e);
         }
         return result;
@@ -393,7 +410,7 @@ public class EpServiceImple implements EpService {
             result.put(resultMap);
             result.setSuccess();
         } catch (Exception e) {
-           // log.error("数据库查询错误", e);
+             log.error("数据库查询错误", e);
             throw new ApiException("数据库查询错误", e);
         }
         return result;
@@ -414,11 +431,11 @@ public class EpServiceImple implements EpService {
                     result.put(Common.objectParseInteger(list.get(0).get("creator_ep_id")));
                     result.setSuccess();
                 }
-            }else{
+            } else {
                 return new Result<>(false, Result.PARAMS_ERROR, "参数不合法");
             }
         } catch (Exception e) {
-           // log.error("查询数据库异常", e);
+             log.error("查询数据库异常", e);
             throw new ApiException("查询数据库异常", e);
         }
         return result;
@@ -426,6 +443,7 @@ public class EpServiceImple implements EpService {
 
     /**
      * 查询企业列表
+     *
      * @param map
      * @return Ep  Map
      */
@@ -433,13 +451,13 @@ public class EpServiceImple implements EpService {
     public Result<Map> select(Map map) {
         Result<Map> result = new Result<>(true);
         try {
-            Map  resultMap= new HashMap();
+            Map resultMap = new HashMap();
             CommonUtil.checkPage(map);
             resultMap.put("list", epMapper.select(map));
             resultMap.put("totalCount", epMapper.selectCount(map));
             result.put(resultMap);
         } catch (Exception e) {
-           // log.error("查询数据库异常", e);
+             log.error("查询数据库异常", e);
             throw new ApiException("查询数据库异常", e);
         }
         return result;
@@ -459,7 +477,7 @@ public class EpServiceImple implements EpService {
             result.put(epMapper.all(params));
             result.setSuccess();
         } catch (Exception e) {
-           // log.error("查询数据库异常", e);
+             log.error("查询数据库异常", e);
             throw new ApiException("查询数据库异常", e);
         }
         return result;
@@ -476,7 +494,7 @@ public class EpServiceImple implements EpService {
     public Result<Integer> getEpStatus(Integer id) {
         Result<Integer> result = new Result<>();
         int status = -1;
-        if (!Common.objectIsNumber(id)){
+        if (!Common.objectIsNumber(id)) {
             return new Result<>(false, Result.PARAMS_ERROR, "参数不合法");
         }
         Map map = new HashMap();
@@ -485,7 +503,7 @@ public class EpServiceImple implements EpService {
                 map.put("id", id);
                 List<Map> list = epMapper.select(map);
                 if (list == null) {
-                    result= new Result<>(false, Result.PARAMS_ERROR, "参数不合法");
+                    result = new Result<>(false, Result.PARAMS_ERROR, "参数不合法");
                     break;
                 }
                 Map ep = list.get(0);
@@ -498,7 +516,7 @@ public class EpServiceImple implements EpService {
                 }
             }
         } catch (Exception e) {
-           // log.error("查询数据库异常", e);
+             log.error("查询数据库异常", e);
             throw new ApiException("查询数据库异常", e);
         }
         return result;
@@ -507,31 +525,31 @@ public class EpServiceImple implements EpService {
     /**
      * 获取企业基本信息接口
      *
-     * @param epids    企业id
-     * @param field    企业列    所传的值必在一下列里面
-     id
-    name  企业名称
-    en_name  企业英文名
-    ep_type   10000-畅旅平台商10001平台商10002供应商10003销售商10004自营商10005OTA
-    linkman    联系人
-    link_phone  联系电话
-    address   地址
-    code   企业组织机构代码
-    license  营业执照
-    logo_pic  企业logo
-    status  100初始化101-正常\n102-已冻结\n103-已停用
-    access_id   运营平台接口访问标识
-    access_key  运营平台接口访问密钥
-    creator_ep_id    上级企业
-    core_ep_id   所属平台商企业id
-    add_time
-    status_bak    ' 冻结/停用平台商操作时企业当前的状态
-    province  省
-    city  市
-    area  区
-    group_id  组ID
-    group_name  组名称
-    ep_class   10010;//景区10011;//酒店10012;//旅行社10013;//其他
+     * @param epids 企业id
+     * @param field 企业列    所传的值必在一下列里面
+     *              id
+     *              name  企业名称
+     *              en_name  企业英文名
+     *              ep_type   10000-畅旅平台商10001平台商10002供应商10003销售商10004自营商10005OTA
+     *              linkman    联系人
+     *              link_phone  联系电话
+     *              address   地址
+     *              code   企业组织机构代码
+     *              license  营业执照
+     *              logo_pic  企业logo
+     *              status  100初始化101-正常\n102-已冻结\n103-已停用
+     *              access_id   运营平台接口访问标识
+     *              access_key  运营平台接口访问密钥
+     *              creator_ep_id    上级企业
+     *              core_ep_id   所属平台商企业id
+     *              add_time
+     *              status_bak    ' 冻结/停用平台商操作时企业当前的状态
+     *              province  省
+     *              city  市
+     *              area  区
+     *              group_id  组ID
+     *              group_name  组名称
+     *              ep_class   10010;//景区10011;//酒店10012;//旅行社10013;//其他
      * @return
      */
     @Override
@@ -544,7 +562,7 @@ public class EpServiceImple implements EpService {
             result.put(epMapper.getEp(map));
             result.setSuccess();
         } catch (Exception e) {
-           // log.error("查询数据库异常", e);
+            log.error("查询数据库异常", e);
             throw new ApiException("查询数据库异常", e);
         }
         return result;

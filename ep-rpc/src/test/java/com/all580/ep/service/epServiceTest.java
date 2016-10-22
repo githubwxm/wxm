@@ -1,16 +1,15 @@
 package com.all580.ep.service;
 
-import com.all580.ep.api.service.CoreEpAccessService;
-import com.all580.ep.api.service.CoreEpChannelService;
+import com.all580.ep.api.service.*;
 
-import com.all580.ep.api.service.EpBalanceThresholdService;
-import com.all580.ep.api.service.EpService;
-
+import com.all580.ep.dao.EpMapper;
 import com.framework.common.Result;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -33,6 +32,12 @@ import java.util.Map;
 public class epServiceTest {
     @Resource
     private EpService epService;
+    @Resource
+    private LogCreditService logCreditService;
+
+    @Resource
+    private EpFinanceService epFinanceService;
+
 //    @Resource
 //    private CoreEpAccessService coreEpAccessService;
 //
@@ -40,17 +45,40 @@ public class epServiceTest {
 //    private EpBalanceThresholdService cpBalanceThresholdService;
 //    @Resource
 //    private CoreEpChannelService coreEpChannelService;
+   @Test
+    public void EpFinanceServiceImple(){
+       Map map = new HashMap();
+       map.put("core_ep_id","1");
+       epFinanceService.getAccountInfoList(map);
+    }
 
+    @Test
+    public void logCreditService(){
+        Map map = new HashMap();
+        map.put("ep_id",55);
+        map.put("core_ep_id",55);
+        map.put("credit_after",9999);
+//        map.put("credit_after",5646);
+       // logCreditService.create(map);
+        try {
+            print(logCreditService.create(map).get());
 
+        }catch (DuplicateKeyException e){
+            print(11111111);
+        }
+       // print(logCreditService.selectList(map).get());
+    }
     @Test
     public void createChannel() {
         Map map = new HashMap();
-        map.put("id", "-1");
+        map.put("ep_id", "1");
 //        map.put("core_ep_id", "-1");
        // log.info("132132");
-    print(epService.select(map).toString());
-        print(epService.select(map).get()==null);
-        print(epService.select(map).get().isEmpty());
+      print(epService.platformListDown(map));
+
+//    print(epService.select(map).toString());
+//        print(epService.select(map).get()==null);
+//        print(epService.select(map).get().isEmpty());
 
       //  print(cpBalanceThresholdService.createOrUpdate(map));
        // System.out.println(coreEpChannelService.select(map).get());
@@ -67,7 +95,7 @@ public class epServiceTest {
 //      //  print(result.get("status"));
         //  print(epService.selectCreatorEpId(15));
         // print(epService.platformListDown(map).get());
-        map.put("ep_type", "10002");
+        map.put("ep_type", null);
         map.put("creator_ep_id", "1");//创建
         map.put("core_ep_id", 1);//平台
         map.put("name", "含浦大道");
@@ -81,6 +109,7 @@ public class epServiceTest {
         map.put("ep_class", "10010");
         map.put("address", "含浦大道");
         map.put("logo_pic", "logopic");
+        epService.createEp(map);
         //epService.createPlatform(map);
         Integer [] ids=new Integer []{1,3};
         String [] fields = new String []{"id","ep_type"};

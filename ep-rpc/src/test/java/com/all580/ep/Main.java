@@ -8,7 +8,6 @@ package com.all580.ep;
  */
 public class Main {
     public static void main(String[] args) {
-        System.out.print("123456789");
        com.alibaba.dubbo.container.Main.main(args);
     }
 }

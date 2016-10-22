@@ -2,6 +2,7 @@ package com.all580.ep.service;
 
 import com.all580.ep.api.service.LogCreditService;
 import com.all580.ep.dao.LogCreditMapper;
+import com.all580.payment.api.service.BalancePayService;
 import com.framework.common.Result;
 import com.framework.common.exception.ApiException;
 import com.framework.common.util.CommonUtil;
@@ -24,6 +25,9 @@ public class LogCreditServiceImple implements LogCreditService{
 
     @Autowired
     private LogCreditMapper logCreditMapper;
+
+    @Autowired
+    private BalancePayService balancePayService;
 
     @Override
     public Result<Integer> select(Integer ep_id,Integer core_ep_id) {
@@ -48,6 +52,9 @@ public class LogCreditServiceImple implements LogCreditService{
             Integer credit_before= logCreditMapper.select(ep_id,core_ep_id);
             map.put("credit_before",credit_before==null?0:credit_before);
             result.put(logCreditMapper.create(map));
+            Integer credit_after = CommonUtil.objectParseInteger(map.get("credit_after"));
+            //balancePayService. //修改余额里的授信  ep_id   core_ep_id   credit_after
+            balancePayService.setCredit(ep_id,core_ep_id,credit_after);
             result.setSuccess();
         } catch (Exception e) {
             // log.error("创建中心平台接口访问配置", e);

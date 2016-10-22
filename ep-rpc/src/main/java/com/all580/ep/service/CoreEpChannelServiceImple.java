@@ -39,14 +39,17 @@ public class CoreEpChannelServiceImple implements CoreEpChannelService {
             //     销售
             Integer epId= Common.objectParseInteger(params.get("seller_core_ep_id"));
             Integer coreEpId = Common.objectParseInteger(params.get("supplier_core_ep_id"));
+            if(coreEpChannelMapper.selectChannel(params)>0){
+                throw new ApiException("通道汇率已经存在");
+            }
+            result.put(coreEpChannelMapper.create(params));
+            result.setSuccess();
             balancePayService.createBalanceAccount(epId,coreEpId);//添加钱包
             params.put("ep_id",epId);
             params.put("core_ep_id",coreEpId);
             epBalanceThresholdService.createOrUpdate(params);//添加余额阀值
-            result.put(coreEpChannelMapper.create(params));
-            result.setSuccess();
         } catch (Exception e) {
-           // log.error("添加汇率通道参数错误", e);
+            log.error("添加汇率通道参数错误", e);
             throw new ApiException("添加汇率通道参数错误", e);
         }
         return result;
@@ -59,7 +62,7 @@ public class CoreEpChannelServiceImple implements CoreEpChannelService {
             result.put(coreEpChannelMapper.update(params));
             result.setSuccess();
         } catch (Exception e) {
-           // log.error("数据库修改出错", e);
+           log.error("数据库修改出错", e);
             throw new ApiException("数据库修改出错", e);
         }
         return result;
@@ -72,7 +75,7 @@ public class CoreEpChannelServiceImple implements CoreEpChannelService {
             result.put(coreEpChannelMapper.cancel(id));
             result.setSuccess();
         } catch (Exception e) {
-           // log.error("添加汇率通道参数错误", e);
+            log.error("添加汇率通道参数错误", e);
             throw new ApiException("添加汇率通道参数错误", e);
         }
         return result;

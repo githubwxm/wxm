@@ -11,6 +11,7 @@ import java.util.Map;
  * Created by Administrator on 2016/9/28 0028.
  */
 public interface EpMapper {
+     List<Map> selectPlatform();
     int create(Object obj);
     List<Map> select (Map params);
     Integer selectCount(Map params);
@@ -26,4 +27,8 @@ public interface EpMapper {
 
     List<Map> platformListUp(Map map);
     int platformListUpCount(Map map);
+
+
+    List<Map> getAccountInfoList(Map map);
+    List<Map> getAccountInfoListCount(Map map);
 }
