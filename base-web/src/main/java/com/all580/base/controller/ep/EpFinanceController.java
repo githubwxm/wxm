@@ -1,6 +1,7 @@
 package com.all580.base.controller.ep;
 
 
+import com.all580.ep.api.service.EpFinanceService;
 import com.all580.ep.api.service.LogCreditService;
 import com.framework.common.BaseController;
 import com.framework.common.Result;
@@ -23,13 +24,15 @@ import java.util.Map;
 @Controller
 @RequestMapping("api/finance/credit")
 @Slf4j
-public class EpFinance extends BaseController {
+public class EpFinanceController extends BaseController {
     @Autowired
     private LogCreditService logCreditService;
 
+    @Autowired
+    private EpFinanceService epFinanceService;
+
     /**
      * 查询授信列表
-     *
      * @param
      * @return
      */
@@ -87,7 +90,6 @@ public class EpFinance extends BaseController {
 
     /**
      * 添加授信
-     *
      * @param map
      * @return
      */
@@ -98,6 +100,18 @@ public class EpFinance extends BaseController {
             return logCreditService.create(map);
 
     }//set
+    /**
+     * 企业账户管理列表
+     * @param map
+     * @return
+     */
+    @RequestMapping(value = "getAccountInfoList", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<Map> getAccountInfoList(@RequestBody Map map){
+        ParamsMapValidate.validate(map, generateCreateSelectValidate());
+        return epFinanceService.getAccountInfoList(map);
+
+    }
 
 
     public Map<String[], ValidRule[]> generateCreateCreditValidate() {

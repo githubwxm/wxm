@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -80,10 +81,9 @@ public class EpChannelController extends BaseController {
      */
     @RequestMapping(value = "cancel", method = RequestMethod.GET)
     @ResponseBody
-    public Result<Integer> cancel(
+    public Result<Integer> cancel(HttpServletRequest request,
                                   @RequestParam(value="id") Integer ep_id
                                  ) {
-
             if(null==ep_id){
                  throw new ParamsMapValidationException("参数不合法");
             }

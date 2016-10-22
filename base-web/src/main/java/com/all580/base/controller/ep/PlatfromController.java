@@ -41,51 +41,28 @@ public class PlatfromController extends BaseController {
     @RequestMapping(value = "validate", method = RequestMethod.GET)
     @ResponseBody
     public Result<Map> validate(@RequestParam(value = "access_id") String access_id
-                               ) {
+    ) {
         Map map = new HashMap();
         map.put("access_id", access_id);
         return epService.validate(map);
 
     }
-//
-//    /**
-//     *
-//     * @param map
-//     * @return
-//     */
-//    @RequestMapping(value = "channel/add", method = RequestMethod.GET)
-//    @ResponseBody
-//    public Result<Map> channelAdd(@RequestBody Map map) {
-//        // 验证参数
-//        try {
-//            ParamsMapValidate.validate(map, platfromValidateManager.generateCreateEpValidate());
-//        } catch (ParamsMapValidationException e) {
-//            log.warn("创建订单参数验证失败", e);
-//            return new Result<>(false, Result.PARAMS_ERROR, e.getMessage());
-//        }
-//        return epService.validate(map);
-//    } //
 
     /**
      * 平台商停用
      *
-     * @param map
+     * @param// map
      * @return
      */
     @RequestMapping(value = "status/disable", method = RequestMethod.POST)
     @ResponseBody
     public Result<Integer> disable(@RequestBody Map map) {
-        try {
-            ParamsMapValidate.validate(map, platfromValidateManager.generateCreateStatusValidate());
-        } catch (ParamsMapValidationException e) {
-            log.warn("冻结企业参数验证失败", e);
-            return new Result<>(false, Result.PARAMS_ERROR, e.getMessage());
-        }
-        try {
-            return epService.platformDisable(map);
-        } catch (ApiException e) {
-            return new Result<>(false, e.getCode(), e.getMsg());
-        }
+     // Map map = new HashMap();
+      //  map.put("id",id);
+        ParamsMapValidate.validate(map, platfromValidateManager.generateCreateStatusValidate());
+
+        return epService.platformDisable(map);
+
 
     }
 
@@ -100,13 +77,10 @@ public class PlatfromController extends BaseController {
     public Result<Integer> freeze(HttpServletRequest request, @RequestParam(value = "id",
             required = true) String id) {
         Map map = new HashMap();
+        map.put("id", id);
         ParamsMapValidate.validate(map, platfromValidateManager.generateCreateStatusValidate());
+        return epService.platformFreeze(map);
 
-        try {
-            return epService.platformFreeze(map);
-        } catch (ApiException e) {
-            return new Result<>(false, e.getCode(), e.getMsg());
-        }
 
     }
 
@@ -121,8 +95,9 @@ public class PlatfromController extends BaseController {
     public Result<Integer> enable(HttpServletRequest request, @RequestParam(value = "id",
             required = true) String id) {
         Map map = new HashMap();
-        ParamsMapValidate.validate(map, platfromValidateManager.generateCreateStatusValidate());
         map.put("id", id);
+        ParamsMapValidate.validate(map, platfromValidateManager.generateCreateStatusValidate());
+
         return epService.platformEnable(map);
 
     }//
@@ -143,10 +118,10 @@ public class PlatfromController extends BaseController {
                                       @RequestParam(value = "epPhone", required = false) String epPhone) {
         Map map = new HashMap();
         map.put("ep_id", ep_id);
-        map.put("epName",epName);
-        map.put("epProvince",epProvince);
-        map.put("epCity",epCity);
-        map.put("epPhone",epPhone);
+        map.put("epName", epName);
+        map.put("epProvince", epProvince);
+        map.put("epCity", epCity);
+        map.put("epPhone", epPhone);
         ParamsMapValidate.validate(map, platfromValidateManager.generateCreateDownUpValidate());
         return epService.platformListUp(map);
 
@@ -167,10 +142,10 @@ public class PlatfromController extends BaseController {
                                         @RequestParam(value = "epPhone", required = false) String epPhone) {
         Map map = new HashMap();
         map.put("ep_id", ep_id);
-        map.put("epName",epName);
-        map.put("epProvince",epProvince);
-        map.put("epCity",epCity);
-        map.put("epPhone",epPhone);
+        map.put("epName", epName);
+        map.put("epProvince", epProvince);
+        map.put("epCity", epCity);
+        map.put("epPhone", epPhone);
 
         ParamsMapValidate.validate(map, platfromValidateManager.generateCreateDownUpValidate());
 
@@ -186,14 +161,14 @@ public class PlatfromController extends BaseController {
      */
     @RequestMapping(value = "list", method = RequestMethod.GET)
     @ResponseBody
-    public Result<Map> platformList(@RequestParam(value = "record_start") Integer record_start,
-                                          @RequestParam(value = "record_count") Integer record_count,
-                                          @RequestParam(value = "name",required = false) String name,
-                                    @RequestParam(value = "ep_type",required = false) Integer ep_type,
-                                    @RequestParam(value = "status",required = false) Integer status,
-                                    @RequestParam(value = "province",required = false) Integer province,
-                                    @RequestParam(value = "city",required = false) Integer city,
-                                    @RequestParam(value = "link_phone",required = false) Integer link_phone) {
+    public Result<Map> platformList(@RequestParam(value = "record_start", required = false) Integer record_start,
+                                    @RequestParam(value = "record_count", required = false) Integer record_count,
+                                    @RequestParam(value = "name", required = false) String name,
+                                    @RequestParam(value = "ep_type", required = false) Integer ep_type,
+                                    @RequestParam(value = "status", required = false) Integer status,
+                                    @RequestParam(value = "province", required = false) Integer province,
+                                    @RequestParam(value = "city", required = false) Integer city,
+                                    @RequestParam(value = "link_phone", required = false) Integer link_phone) {
         Map map = new HashMap();
         map.put("record_start", record_start);
         map.put("record_count", record_count);
@@ -206,4 +181,15 @@ public class PlatfromController extends BaseController {
         return epService.select(map);
 
     }//list/u
+
+    /**
+     * 所有平台上那个下拉框
+     * @return
+     */
+    @RequestMapping(value = "selectPlatform", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<Map> selectPlatform() {
+        log.info("dsafsafsadfsafsdf");
+        return epService.selectPlatform();
+    }
 }
