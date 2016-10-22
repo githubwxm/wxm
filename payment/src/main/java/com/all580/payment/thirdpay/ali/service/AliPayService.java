@@ -1,13 +1,23 @@
 package com.all580.payment.thirdpay.ali.service;
 
+import com.all580.payment.entity.EpPaymentConf;
 import com.all580.payment.thirdpay.ali.config.AlipayConfig;
+import com.all580.payment.thirdpay.ali.util.AlipayNotify;
 import com.all580.payment.thirdpay.ali.util.AlipaySubmit;
+import com.all580.payment.thirdpay.wx.model.WxProperties;
+import com.all580.payment.vo.PayAttachVO;
+import com.framework.common.lang.DateFormatUtils;
+import com.framework.common.lang.JsonUtils;
+import org.apache.commons.httpclient.util.DateUtil;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -55,7 +65,8 @@ public class AliPayService {
         return rsp;
     }
 
-    public String reqPay(long ordCode, Map<String, Object> params, String confData) {
+    public String reqPay(long ordCode, int coreEpId, Map<String, Object> params, String confData) {
+        AlipayProperties alipayProperties = JsonUtils.fromJson(confData, AlipayProperties.class);
         String notify_url = alipayProperties.getPay_notify_url();
 
         // 把请求参数打包成数组
@@ -77,7 +88,9 @@ public class AliPayService {
         // sParaTemp.put("show_url", null);
         sParaTemp.put("anti_phishing_key", "");
         sParaTemp.put("exter_invoke_ip", "");
-        sParaTemp.put("extra_common_param", String.valueOf(params.get("serialNum")));
+
+        PayAttachVO attachVO = new PayAttachVO("" + coreEpId, String.valueOf(params.get("serialNum")));
+        sParaTemp.put("extra_common_param", JsonUtils.toJson(attachVO));
 
         // 建立请求
         String sHtmlText = AlipaySubmit.buildRequest(alipayProperties.getKey(), sParaTemp, "get", "确认");
@@ -86,6 +99,7 @@ public class AliPayService {
     }
 
     public String reqRefund(Map<String, Object> params, String confData) {
+        AlipayProperties alipayProperties = JsonUtils.fromJson(confData, AlipayProperties.class);
         String notify_url = alipayProperties.getRecharge_notify_url();
 
         // 把请求参数打包成数组
@@ -95,13 +109,26 @@ public class AliPayService {
         sParaTemp.put("_input_charset", AlipayConfig.input_charset);
         sParaTemp.put("notify_url", alipayProperties.getRefund_notify_url());
         sParaTemp.put("seller_email", alipayProperties.getSeller_email());
-        sParaTemp.put("refund_date", String.valueOf(params.get("refundDate")));
-        sParaTemp.put("batch_no", String.valueOf(params.get("batchNo")));
-        sParaTemp.put("batch_num", String.valueOf(params.get("batchNum")));
-        sParaTemp.put("detail_data", String.valueOf(params.get("detailData")));
+        sParaTemp.put("refund_date", DateFormatUtils.converToStringDate(new Date()));
+        sParaTemp.put("batch_no", DateFormatUtils.getToday()+params.get("serialNum"));
+        sParaTemp.put("batch_num", "1");
+        String detail = params.get("outTransId")+"^"+params.get("")+"^"+"协议退款";
+        sParaTemp.put("detail_data", detail);
 
         // 建立请求
         String sHtmlText = AlipaySubmit.buildRequest(alipayProperties.getKey(), sParaTemp, "get", "确认");
         return sHtmlText;
+    }
+
+    public boolean refundCallback(Map<String, String> params, EpPaymentConf epPaymentConf) {
+        AlipayProperties alipayProperties = JsonUtils.fromJson(epPaymentConf.getConfData(), AlipayProperties.class);
+        return AlipayNotify.verify(params, alipayProperties.getPartner(), alipayProperties.getKey());//验证成功
+
+    }
+
+    public boolean payCallback(Map<String, String> params, EpPaymentConf epPaymentConf) {
+        AlipayProperties alipayProperties = JsonUtils.fromJson(epPaymentConf.getConfData(), AlipayProperties.class);
+        return AlipayNotify.verify(params, alipayProperties.getPartner(), alipayProperties.getKey());//验证成功
+
     }
 }
