@@ -43,5 +43,9 @@
 	<dubbo:reference id="logCreditService"
 					 interface="com.all580.ep.api.service.LogCreditService" />
 
+	<dubbo:reference id="epFinanceService"
+					 interface="com.all580.ep.api.service.EpFinanceService" />
+	<dubbo:reference id="productSalesPlanService" interface="com.all580.product.api.service.ProductSalesPlanRPCService" />
+	<dubbo:reference id="productService" interface="com.all580.product.api.service.ProductRPCService" />
 
 </beans>

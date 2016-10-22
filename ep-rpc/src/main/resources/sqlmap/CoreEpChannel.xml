@@ -10,13 +10,13 @@
             <!--and id=#{id}-->
         <!--</if>-->
     <!--</select>-->
-   <select id="selectChannel">
+   <select id="selectChannel" resultType="java.lang.Integer">
       select count(1) from  t_core_ep_channel
       where supplier_core_ep_id=#{supplier_core_ep_id} and seller_core_ep_id=#{seller_core_ep_id}
    </select>
     <insert id="create">
-       insert into t_core_ep_channel(supplier_core_ep_id ,seller_core_ep_id,rate)
-       values(#{supplier_core_ep_id} ,#{seller_core_ep_id},#{rate});
+       insert into t_core_ep_channel(supplier_core_ep_id ,seller_core_ep_id,rate,remark)
+       values(#{supplier_core_ep_id} ,#{seller_core_ep_id},#{rate},#{remark});
     </insert>
 
     <update id="update">

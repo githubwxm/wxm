@@ -63,6 +63,18 @@ public class EpServiceImple implements EpService {
         map.put("status_bak", EpConstant.EpStatus.UNINITIAL);// 状态默认未初始化
         map.put("ep_type", EpConstant.EpType.PLATFORM);
         map.put("access_id", Common.getAccessId());
+        String province_name = map.get("province_name").toString();
+        String city_name = map.get("city_name").toString();
+        String area_name = map.get("area_name").toString();
+        String address = map.get("address").toString();
+        if(EpConstant.EpNotArea.ONE.contains(city_name)){
+            address=city_name+","+city_name;
+        }else if(EpConstant.EpNotArea.ONE.contains(city_name)){
+            address=province_name+area_name;
+        }else{
+            address=province_name+","+city_name+","+area_name;
+        }
+        map.put("address",address);
         int epId = 0;
         try {
             epId = epMapper.create(map);//添加成功
@@ -82,12 +94,13 @@ public class EpServiceImple implements EpService {
             accessMap.put("access_key", Common.getAccessKey());
             accessMap.put("link", "");//TODO 待完善
 
-            //epMapper.update(map);//TODO  所属平台商企业id为平台商时是否指定
+
             map.put("coreEpId", coreEpId);
             map.put("confData", "");
             map.put("paymentType", PaymentConstant.PaymentType.BALANCE);//默认方式余额
 
             try {
+                epMapper.updateCoreEpId(map);//TODO  所属平台商企业id为平台商时是否指定
                 coreEpAccessService.create(accessMap);
                 epPaymentConfService.create(map);//添加支付方式
                 balancePayService.createBalanceAccount(coreEpId, coreEpId);//添加余额d
@@ -166,7 +179,19 @@ public class EpServiceImple implements EpService {
         map.put("status_bak", EpConstant.EpStatus.UNINITIAL);// 状态默认未初始化
         map.put("access_id", Common.getAccessId());
         map.put("access_key", Common.getAccessKey());
-
+        String province_name = map.get("province_name").toString();
+        String city_name = map.get("city_name").toString();
+        String area_name = map.get("area_name").toString();
+        String address = map.get("address").toString();
+        if(EpConstant.EpNotArea.ONE.contains(city_name)){
+            address=city_name+","+city_name;
+        }else if(EpConstant.EpNotArea.ONE.contains(city_name)){
+            address=province_name+area_name;
+        }else{
+            address=province_name+","+city_name+","+area_name;
+        }
+        map.put("address",address);
+    //address  // TODO: 2016/10/22 0022
         String ep_type = (String) map.get("ep_type");//企业类型
         String creator_ep_id = (String) map.get("creator_ep_id");//上级企业id
         String group_id = (String) map.get("group_id");
@@ -333,8 +358,21 @@ public class EpServiceImple implements EpService {
         }
     }
 
+    @Override
+    public Result<Integer> platformEnable(Map params) {
+        params.put("status", EpConstant.EpStatus.ACTIVE);
+        Result<Integer> result = new Result<Integer>();
+        try {
+            result.put(epMapper.platformEnable(params));
+            result.setSuccess();
+        } catch (Exception e) {
+            log.error("更新平台商状态异常", e);
+            throw new ApiException("更新平台商状态异常", e);
+        }
+        return result;
+    }
     /**
-     * 平台商停用冻结
+     * 平台商停用冻结激活
      *
      * @param map
      * @return
@@ -352,19 +390,7 @@ public class EpServiceImple implements EpService {
     }
 
 
-    @Override
-    public Result<Integer> platformEnable(Map params) {
-        params.put("status", EpConstant.EpStatus.ACTIVE);
-        Result<Integer> result = new Result<Integer>();
-        try {
-            result.put(epMapper.platformEnable(params));
-            result.setSuccess();
-        } catch (Exception e) {
-             log.error("更新平台商状态异常", e);
-            throw new ApiException("更新平台商状态异常", e);
-        }
-        return result;
-    }
+
 
     @Override
     public Result<Map> updateEp(Map map) {
@@ -509,7 +535,9 @@ public class EpServiceImple implements EpService {
                 Map ep = list.get(0);
                 id = CommonUtil.objectParseInteger(ep.get("creator_ep_id"));  //ep.getCreator_ep_id();//上级企业id
                 status = CommonUtil.objectParseInteger(ep.get("status"));  //ep.getStatus();
-                if (status != EpConstant.EpStatus.ACTIVE || EpConstant.EpType.PLATFORM.equals(Integer.parseInt(ep.get("ep_type").toString()))) {//查到平台商 或者不是正常的就直接返回
+
+                if (status != EpConstant.EpStatus.ACTIVE ||
+                        EpConstant.EpType.PLATFORM.equals(Integer.parseInt(ep.get("ep_type").toString()))) {//查到平台商 或者不是正常的就直接返回
                     result.put(status);
                     result.setSuccess();
                     break;

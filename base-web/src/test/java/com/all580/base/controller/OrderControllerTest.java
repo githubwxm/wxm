@@ -48,6 +48,19 @@ public class OrderControllerTest {
     }
 
     @Test
+    public void createEp()throws Exception{
+        Map params = new HashMap();
+        params.put("id",1);
+        mockMvc.perform(
+                post("/api/ep/platform/status/disable").contentType(MediaType.APPLICATION_JSON).
+                        content(JsonUtils.toJson(params))
+        ).andExpect(
+                status().isOk()
+        ).andExpect(
+                jsonPath("$.code", is(1))
+        ).andDo(print());
+    }
+    @Test
     public void createTest() throws Exception {
         Map<String, Object> params = new HashMap<String, Object>(){{
             put("shipping", new HashMap<String, Object>(){{

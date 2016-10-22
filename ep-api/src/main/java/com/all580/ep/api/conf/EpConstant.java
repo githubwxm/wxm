@@ -13,8 +13,13 @@ public class EpConstant {
         public static final Integer   OTA=10005;//OTA
     }
 
+    public static class EpNotArea{//不取全部范围的地址
+        public static final String  ONE="澳门特别行政区香港特别行政区";//省市区只取一个
+        public static final String  TOW="市辖区县";//省市区只取一个
+    }
+
     public static class EpStatus{//企业状态
-        public static final Integer  UNINITIAL =100;//初始化
+        public static final Integer  UNINITIAL =100;//未初始化
         public static final Integer  ACTIVE =101;//激活
         public static final Integer  FREEZE=102;//冻结
         public static final Integer STOP=103;//停用

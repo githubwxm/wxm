@@ -18,6 +18,7 @@ public interface EpMapper {
     List<Map>  getEp(Map params);
     List<Map> all(Map params);
     List<List<?>>  validate(Map params);
+    int updateCoreEpId(Map map);
     int update(Map params);
     int updateStatus(Map params);
     int updatePlatfromStatus(Map map);

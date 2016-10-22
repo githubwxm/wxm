@@ -51,7 +51,7 @@ public class EpFinanceServiceImple implements EpFinanceService {
             }
             Map resultMap= new HashMap();
             resultMap.put("list",balanceList);
-            resultMap.put("totalCount",epMapper.selectCount(map));
+            resultMap.put("totalCount",epMapper.getAccountInfoListCount(map));
             result.put(map);
             result.setSuccess();
         } catch (Exception e) {

@@ -74,10 +74,7 @@ public class PlatfromController extends BaseController {
      */
     @RequestMapping(value = "status/freeze", method = RequestMethod.POST)
     @ResponseBody
-    public Result<Integer> freeze(HttpServletRequest request, @RequestParam(value = "id",
-            required = true) String id) {
-        Map map = new HashMap();
-        map.put("id", id);
+    public Result<Integer> freeze(@RequestBody Map map) {
         ParamsMapValidate.validate(map, platfromValidateManager.generateCreateStatusValidate());
         return epService.platformFreeze(map);
 
@@ -92,10 +89,7 @@ public class PlatfromController extends BaseController {
      */
     @RequestMapping(value = "status/enable", method = RequestMethod.POST)
     @ResponseBody
-    public Result<Integer> enable(HttpServletRequest request, @RequestParam(value = "id",
-            required = true) String id) {
-        Map map = new HashMap();
-        map.put("id", id);
+    public Result<Integer> enable(@RequestBody Map map) {
         ParamsMapValidate.validate(map, platfromValidateManager.generateCreateStatusValidate());
 
         return epService.platformEnable(map);
@@ -189,7 +183,6 @@ public class PlatfromController extends BaseController {
     @RequestMapping(value = "selectPlatform", method = RequestMethod.GET)
     @ResponseBody
     public Result<Map> selectPlatform() {
-        logger.info("");
         return epService.selectPlatform();
     }
 }

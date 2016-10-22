@@ -27,6 +27,9 @@ public class PlatfromValidateManager {
                 "province", // 企业省
                 "city", // 市
                 "area", // 区
+                "province_name", // 企业省
+                "city_name", // 市
+                "area_name", // 区
                 "address", // 详细地址
         }, new ValidRule[]{new ValidRule.NotNull()});
 

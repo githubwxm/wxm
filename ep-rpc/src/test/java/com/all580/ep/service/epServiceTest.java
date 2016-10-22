@@ -109,7 +109,9 @@ public class epServiceTest {
         map.put("ep_class", "10010");
         map.put("address", "含浦大道");
         map.put("logo_pic", "logopic");
-        epService.createEp(map);
+       // epService.createEp(map);
+        map.put("id","1");
+        epService.platformFreeze(map);
         //epService.createPlatform(map);
         Integer [] ids=new Integer []{1,3};
         String [] fields = new String []{"id","ep_type"};
