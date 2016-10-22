@@ -189,7 +189,7 @@ public class PlatfromController extends BaseController {
     @RequestMapping(value = "selectPlatform", method = RequestMethod.GET)
     @ResponseBody
     public Result<Map> selectPlatform() {
-        log.info("dsafsafsadfsafsdf");
+        logger.info("");
         return epService.selectPlatform();
     }
 }
