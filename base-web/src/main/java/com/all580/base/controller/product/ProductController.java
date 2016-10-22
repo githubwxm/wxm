@@ -34,4 +34,12 @@ public class ProductController extends BaseController {
         System.out.println(params.get("type"));
         return new Result<>(true);
     }
+
+    @RequestMapping(value = "sub/add")
+    @ResponseBody
+    public Result<?> addScenerySubProduct(@RequestBody Map params) {
+        System.out.println("add sub success!");
+        System.out.println(params.get("type"));
+        return new Result<>(true);
+    }
 }

@@ -78,12 +78,14 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             if (!bookingOrderManager.isEpStatus(epService.getEpStatus(buyEpId), EpConstant.EpStatus.ACTIVE)) {
                 throw new ApiException("销售商企业已冻结");
             }
+            // 获取平台商ID
+            Integer coreEpId = bookingOrderManager.getCoreEpId(bookingOrderManager.getCoreEpId(buyEpId));
             // 锁定库存集合(统一锁定)
             Map<Integer, LockStockDto> lockStockDtoMap = new HashMap<>();
             List<ProductSearchParams> lockParams = new ArrayList<>();
 
             // 创建订单
-            Order order = bookingOrderManager.generateOrder(buyEpId,
+            Order order = bookingOrderManager.generateOrder(coreEpId, buyEpId,
                     Integer.parseInt(params.get("user_id").toString()),
                     params.get("user_name").toString(), from, remark);
 
@@ -108,6 +110,24 @@ public class BookingOrderServiceImpl implements BookingOrderService {
                     throw new ApiException(salesInfoResult.getError());
                 }
                 ProductSalesInfo salesInfo = salesInfoResult.get();
+
+                // 验证预定时间限制
+                if (salesInfo.isBookingLimit()) {
+                    Date when = new Date();
+                    for (Integer i = 0; i < days; i++) {
+                        int dayLimit = salesInfo.getBookingDayLimit();
+                        Date limit = DateUtils.addDays(bookingDate, dayLimit);
+                        String time = salesInfo.getBookingTimeLimit();
+                        if (time != null) {
+                            String[] timeArray = time.split(":");
+                            limit = DateUtils.setHours(limit, Integer.parseInt(timeArray[0]));
+                            limit = DateUtils.setMinutes(limit, Integer.parseInt(timeArray[1]));
+                        }
+                        if (limit.after(when)) {
+                            throw new ApiException("预定时间限制");
+                        }
+                    }
+                }
 
                 // 判断供应商状态是否为已冻结
                 if (!bookingOrderManager.isEpStatus(epService.getEpStatus(salesInfo.getEpId()), EpConstant.EpStatus.ACTIVE)) {

@@ -58,7 +58,7 @@
                delimitAllColumns="true"
                domainObjectName="ClearanceWashedSerial">
             <generatedKey column="id" sqlStatement="MySql"/>
-        </table>
+        </table>-->
         <table tableName="t_order"
                enableCountByExample="false"
                enableUpdateByExample="false"
@@ -69,7 +69,7 @@
                domainObjectName="Order">
             <generatedKey column="id" sqlStatement="MySql"/>
         </table>
-        <table tableName="t_order_clearance_detail"
+        <!--<table tableName="t_order_clearance_detail"
                enableCountByExample="false"
                enableUpdateByExample="false"
                enableDeleteByExample="false"
@@ -88,7 +88,7 @@
                delimitAllColumns="true"
                domainObjectName="OrderClearanceSerial">
             <generatedKey column="id" sqlStatement="MySql"/>
-        </table>-->
+        </table>
         <table tableName="t_order_item"
                enableCountByExample="false"
                enableUpdateByExample="false"
@@ -98,7 +98,7 @@
                delimitAllColumns="true"
                domainObjectName="OrderItem">
             <generatedKey column="id" sqlStatement="MySql"/>
-        </table>
+        </table>-->
         <!--<table tableName="t_order_item_detail"
                enableCountByExample="false"
                enableUpdateByExample="false"
@@ -118,7 +118,7 @@
                delimitAllColumns="true"
                domainObjectName="RefundAccount">
             <generatedKey column="id" sqlStatement="MySql"/>
-        </table>
+        </table>-->
         <table tableName="t_refund_order"
                enableCountByExample="false"
                enableUpdateByExample="false"
@@ -129,6 +129,7 @@
                domainObjectName="RefundOrder">
             <generatedKey column="id" sqlStatement="MySql"/>
         </table>
+        <!--
         <table tableName="t_refund_serial"
                enableCountByExample="false"
                enableUpdateByExample="false"
