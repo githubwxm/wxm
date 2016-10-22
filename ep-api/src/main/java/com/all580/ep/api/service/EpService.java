@@ -9,6 +9,8 @@ import java.util.Map;
 
 public interface EpService {
 
+
+
     /**
      * 创建平台商
      * @param ep
@@ -17,12 +19,17 @@ public interface EpService {
     Result<Map> createPlatform(Map ep);
 
     /**
+     *查询平台商通道
+     * @return   ｛list:{id:1 平台商id,name:String 平台上名称}｝
+     */
+    Result<Map> selectPlatform();
+    /**
      * 创建企业
      * @param map
      * @return
      */
     Result<Map> createEp(Map map);
-    Result<List<Map>> select (Map map);
+    Result<Map> select (Map map);
 
     /**
      * 获取企业基本信息接口

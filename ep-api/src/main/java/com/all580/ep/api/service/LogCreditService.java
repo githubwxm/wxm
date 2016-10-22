@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * 授信
  * Created by Administrator on 2016/9/29 0029.
  */
 public interface LogCreditService {

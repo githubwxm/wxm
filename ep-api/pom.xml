@@ -22,7 +22,6 @@
             <groupId>com.framework</groupId>
             <artifactId>framework-common</artifactId>
         </dependency>
-
     </dependencies>
     <distributionManagement>
         <repository>
