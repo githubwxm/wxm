@@ -498,6 +498,7 @@ public class RefundOrderManager extends BaseOrderManager {
         payParams.put("totalFee", order.getPayAmount());
         payParams.put("refundFee", money);
         payParams.put("serialNum", sn == null ? order.getLocalPaymentSerialNo() : sn);
+        payParams.put("outTransId", order.getThirdSerialNo());
         Result result = thirdPayService.reqRefund(order.getNumber(), coreEpId, order.getPaymentType(), payParams);
         if (result.hasError()) {
             log.warn("第三方退款异常:{}", result);
