@@ -31,7 +31,7 @@ public class CustomJacksonConvert extends MappingJackson2HttpMessageConverter {
 			Result r = (Result) object;
 			Map<String, Object> result = new HashMap<>();
 			result.put("code", r.getCode() == null ? (r.isSuccess() ? Result.SUCCESS : Result.FAIL) : r.getCode());
-			result.put("msg", r.getError());
+			result.put("message", r.getError());
 			result.put("data", r.get());
 			result.put("sign", "");
 			super.writeInternal(result, outputMessage);
