@@ -192,44 +192,6 @@ public class RefundOrderManager extends BaseOrderManager {
     }
 
     /**
-     * 获取某天详情
-     * @param detailList 天数据
-     * @param day 某一天
-     * @return
-     */
-    private OrderItemDetail getDetailByDay(List<OrderItemDetail> detailList, Date day) {
-        if (detailList == null || day == null) {
-            return null;
-        }
-        for (OrderItemDetail detail : detailList) {
-            if (detail.getDay().equals(day)) {
-                return detail;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * 获取某天详情
-     * @param daysData 天数据
-     * @param day 某一天
-     * @return
-     */
-    private JSONObject getAccountDataByDay(JSONArray daysData, String day) {
-        if (daysData == null || day == null) {
-            return null;
-        }
-        for (Object o : daysData) {
-            JSONObject json = (JSONObject) o;
-            String d = json.getString("day");
-            if (day.equals(d)) {
-                return json;
-            }
-        }
-        return null;
-    }
-
-    /**
      * 获取游客信息
      * @param visitorList 游客数据
      * @param sid 身份证

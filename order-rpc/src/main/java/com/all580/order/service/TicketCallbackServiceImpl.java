@@ -9,7 +9,6 @@ import com.all580.order.api.service.TicketCallbackService;
 import com.all580.order.dao.*;
 import com.all580.order.entity.*;
 import com.all580.order.manager.RefundOrderManager;
-import com.all580.product.api.consts.ProductConstants;
 import com.framework.common.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,8 +44,6 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
     private MaSendResponseMapper maSendResponseMapper;
     @Autowired
     private VisitorMapper visitorMapper;
-    @Autowired
-    private OrderItemAccountMapper orderItemAccountMapper;
     @Autowired
     private RefundOrderMapper refundOrderMapper;
     @Autowired
@@ -130,18 +127,10 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         visitorMapper.updateByPrimaryKey(visitor);
 
         // 分账
-        /*List<OrderItemAccount> accounts = orderItemAccountMapper.selectByOrderItem(orderItem.getId());
-        Map<Integer, Integer> coreEpIdMap = new HashMap<>();
-        if (orderItem.getPaymentFlag() == ProductConstants.PayType.PREPAY) {
-            for (OrderItemAccount account : accounts) {
-                if (account.getEpId() == account.getCoreEpId().intValue()) {
-                    continue;
-                }
-                if (coreEpId == account.getCoreEpId()) {
-
-                }
-            }
-        }*/
+        // 核销成功 记录任务
+        Map<String, String> jobParams = new HashMap<>();
+        jobParams.put("sn", serial.getSerialNo());
+        refundOrderManager.addJob(OrderConstant.Actions.CONSUME_SPLIT_ACCOUNT, jobParams);
         return new Result(true);
     }
 
@@ -181,6 +170,10 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         visitorMapper.updateByPrimaryKey(visitor);
 
         // 分账
+        // 记录任务
+        Map<String, String> jobParams = new HashMap<>();
+        jobParams.put("sn", serial.getSerialNo());
+        refundOrderManager.addJob(OrderConstant.Actions.RE_CONSUME_SPLIT_ACCOUNT, jobParams);
         return new Result(true);
     }
 

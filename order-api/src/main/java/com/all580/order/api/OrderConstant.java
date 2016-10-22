@@ -8,14 +8,6 @@ package com.all580.order.api;
  */
 public class OrderConstant {
     /**
-     * 票据团散
-     */
-    public static class TicketFlag {
-        public static final int INDIVIDUAL = 300;// 散购票
-        public static final int GROUP = 301;// 团购票
-    }
-
-    /**
      * 订单状态（支付）
      */
     public static class OrderStatus {
@@ -73,7 +65,10 @@ public class OrderConstant {
      * 任务执行器
      */
     public static class Actions {
-        public static final String PAYMENT_CALLBACK = "PAYMENT_CALLBACK";
-        public static final String CANCEL_CALLBACK = "CANCEL_CALLBACK";
+        public static final String PAYMENT_CALLBACK = "PAYMENT_CALLBACK"; // 支付回调
+        public static final String CANCEL_CALLBACK = "CANCEL_CALLBACK"; // 取消回调
+        public static final String REFUND_MONEY = "REFUND_MONEY";   // 退款
+        public static final String CONSUME_SPLIT_ACCOUNT = "CONSUME_SPLIT_ACCOUNT"; // 核销分账
+        public static final String RE_CONSUME_SPLIT_ACCOUNT = "RE_CONSUME_SPLIT_ACCOUNT"; // 反核销分账
     }
 }

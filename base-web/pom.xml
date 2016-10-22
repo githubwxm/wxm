@@ -90,4 +90,29 @@
 		</pluginManagement>
 		<finalName>base-webapp</finalName>
 	</build>
+
+	<profiles>
+		<profile>
+			<id>dev</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<active.profilename>dev</active.profilename>
+				<active.driverClass>com.mysql.jdbc.Driver</active.driverClass>
+				<active.name>root</active.name>
+				<active.pwd>abcd1234</active.pwd>
+				<active.url>jdbc:mysql://192.168.1.250:3306/config?characterEncoding=utf8</active.url>
+			</properties>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.tomcat.maven</groupId>
+						<artifactId>tomcat7-maven-plugin</artifactId>
+						<version>2.2</version>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>
