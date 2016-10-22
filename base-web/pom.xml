@@ -79,11 +79,10 @@
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 		</dependency>
-<<<<<<< HEAD
 		<dependency>
 			<groupId>com.alibaba</groupId>
 			<artifactId>fastjson</artifactId>
-=======
+		</dependency>
         <dependency>
             <groupId>com.all580</groupId>
             <artifactId>ep-api</artifactId>
@@ -93,7 +92,6 @@
 			<groupId>org.jdom</groupId>
 			<artifactId>jdom</artifactId>
 			<version>1.1.3</version>
->>>>>>> panyi
 		</dependency>
     </dependencies>
 
