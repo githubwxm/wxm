@@ -1,11 +1,14 @@
 package com.all580.payment.thirdpay.wx.service;
 
+import com.all580.payment.entity.EpPaymentConf;
 import com.all580.payment.thirdpay.wx.client.ClientResponseHandler;
 import com.all580.payment.thirdpay.wx.client.RequestHandler;
+import com.all580.payment.thirdpay.wx.client.ResponseHandler;
 import com.all580.payment.thirdpay.wx.client.TenpayHttpClient;
 import com.all580.payment.thirdpay.wx.model.*;
 import com.all580.payment.thirdpay.wx.util.ConstantUtil;
 import com.all580.payment.thirdpay.wx.util.WXUtil;
+import com.all580.payment.vo.PayAttachVO;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.net.IPUtils;
 import org.slf4j.Logger;
@@ -16,6 +19,8 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.lang.reflect.Field;
+import java.text.MessageFormat;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.SortedMap;
@@ -36,7 +41,7 @@ public class WxPayService {
     @Autowired
     private WxProperties wxProperties;
 
-    public String reqPay(long ordCode, Map<String, Object> params, String confData) throws Exception {
+    public String reqPay(long ordCode,int coreEpId, Map<String, Object> params, String confData) throws Exception {
         WxProperties wxProperties2 = JsonUtils.fromJson(confData, WxProperties.class);
         UnifiedOrderReq req = new UnifiedOrderReq();
         req.setAppid(wxProperties.getAPP_ID());
@@ -44,8 +49,9 @@ public class WxPayService {
         req.setNonce_str(WXUtil.getNonceStr());
         req.setDevice_info("");
         req.setTotal_fee(String.valueOf(params.get("totalFee")));
-        //保存交易号
-        req.setAttach("");
+        //透传参数
+        PayAttachVO attachVO = new PayAttachVO("" + coreEpId, String.valueOf(params.get("serialNum")));
+        req.setAttach(JsonUtils.toJson(attachVO));
         req.setTrade_type(ConstantUtil.NATIVE_TRADE_TYPE);
         req.setProduct_id(String.valueOf(params.get("prodId")));
         req.setSpbill_create_ip(IPUtils.getRealIp(true));
@@ -64,6 +70,7 @@ public class WxPayService {
 
     // 申请退款
     public RefundRsp reqRefund(long ordCode, Map<String, Object> params, String confData) throws Exception {
+        WxProperties wxProperties2 = JsonUtils.fromJson(confData, WxProperties.class);
         RefundReq req = new RefundReq();
         req.setTransaction_id("");
         req.setOut_trade_no(String.valueOf(ordCode));
@@ -78,6 +85,27 @@ public class WxPayService {
         req.setDevice_info("");
 
         return this.request(ConstantUtil.REFUND, req, RefundRsp.class, true);
+    }
+
+    public Map<String,String> payCallback(Map<String, String> params, EpPaymentConf epPaymentConf){
+        WxProperties wxProperties = JsonUtils.fromJson(epPaymentConf.getConfData(), WxProperties.class);
+        ResponseHandler resHandler = new ResponseHandler(params);
+        resHandler.setKey(wxProperties.getPARTNER_KEY());
+        Map<String,String> rsp = new HashMap<>();
+        // 判断签名
+        if (resHandler.isTenpaySign()) {
+            if (null != resHandler.getParameter(ConstantUtil.RETURN_CODE) && resHandler.
+                    getParameter(ConstantUtil.RETURN_CODE).equals(ConstantUtil.SUCCESS)) {
+                rsp.put("return_code","SUCCESS");
+                rsp.put("return_msg", "OK");
+
+            } else {
+                rsp.put("return_code", "FAIL");
+            }
+        } else {
+            rsp.put("return_code", "FAIL");
+        }
+        return rsp;
     }
 
     /**

@@ -157,4 +157,14 @@ public class BalancePayServiceImpl implements BalancePayService {
     public Result<Map<String, String>> getBalanceAccountInfo(Integer epId, Integer coreEpId) {
         return null;
     }
+
+    @Override
+    public Result<List<Map<String, String>>> getBalanceList(List<Integer> epIdList, Integer coreEpId) {
+        return null;
+    }
+
+    @Override
+    public Result<Map<String, String>> getBalanceSerialList(Integer epId, Integer coreEpId, int startRecord, int maxRecords) {
+        return null;
+    }
 }

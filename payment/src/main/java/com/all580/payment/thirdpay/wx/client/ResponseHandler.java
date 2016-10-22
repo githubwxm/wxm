@@ -1,16 +1,9 @@
 package com.all580.payment.thirdpay.wx.client;
 
 
-import com.all580.payment.thirdpay.wx.util.HttpClientUtil;
 import com.all580.payment.thirdpay.wx.util.MD5Util;
-import com.all580.payment.thirdpay.wx.util.TenpayUtil;
-import com.all580.payment.thirdpay.wx.util.XMLUtil;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.*;
 
@@ -37,10 +30,10 @@ public class ResponseHandler {
      * debug信息
      */
     private String debugInfo;
-
-    private HttpServletRequest request;
-
-    private HttpServletResponse response;
+//
+//    private HttpServletRequest request;
+//
+//    private HttpServletResponse response;
 
     private String uriEncoding;
 
@@ -50,10 +43,9 @@ public class ResponseHandler {
      * @param request
      * @param response
      */
-    public ResponseHandler(HttpServletRequest request,
-                           HttpServletResponse response) throws Exception {
-        this.request = request;
-        this.response = response;
+    public ResponseHandler(Map<String,String> param){
+        //this.request = request;
+        //this.response = response;
 
         this.key = "";
         this.parameters = new TreeMap();
@@ -61,27 +53,27 @@ public class ResponseHandler {
 
         this.uriEncoding = "";
 
-        InputStream inputStream = request.getInputStream();
+        //InputStream inputStream = request.getInputStream();
 
         // 获取应答内容
-        String resContent = HttpClientUtil.InputStreamTOString(inputStream, "UTF-8");
+        //String resContent = HttpClientUtil.InputStreamTOString(inputStream, "UTF-8");
 
         //解析xml,得到map
-        Map m = XMLUtil.doXMLParse(resContent);
+        // Map param = XMLUtil.doXMLParse(resContent);
 
         //设置参数
-        Iterator it = m.keySet().iterator();
+        Iterator it = param.keySet().iterator();
         while (it.hasNext()) {
             String k = (String) it.next();
-            String v = (String) m.get(k);
+            String v = param.get(k);
             this.setParameter(k, v);
         }
 
-//        Map m = this.request.getParameterMap();
-//		Iterator it = m.keySet().iterator();
+//        Map param = this.request.getParameterMap();
+//		Iterator it = param.keySet().iterator();
 //		while (it.hasNext()) {
 //			String k = (String) it.next();
-//			String v = ((String[]) m.get(k))[0];
+//			String v = ((String[]) param.get(k))[0];
 //			this.setParameter(k, v);
 //		}
 
@@ -156,7 +148,7 @@ public class ResponseHandler {
         sb.append("key=" + this.getKey());
 
         //算出摘要
-        String enc = TenpayUtil.getCharacterEncoding(this.request, this.response);
+        String enc =  "UTF-8";// TenpayUtil.getCharacterEncoding(this.request, this.response);
         String sign = MD5Util.MD5Encode(sb.toString(), enc).toLowerCase();
 
         String tenpaySign = this.getParameter("sign").toLowerCase();
@@ -175,11 +167,11 @@ public class ResponseHandler {
      * @throws IOException
      */
     public void sendToCFT(String msg) throws IOException {
-        String strHtml = msg;
-        PrintWriter out = this.getHttpServletResponse().getWriter();
-        out.println(strHtml);
-        out.flush();
-        out.close();
+//        String strHtml = msg;
+//        PrintWriter out = this.getHttpServletResponse().getWriter();
+//        out.println(strHtml);
+//        out.flush();
+//        out.close();
 
     }
 
@@ -204,7 +196,7 @@ public class ResponseHandler {
             this.uriEncoding = uriEncoding;
 
             // 编码转换
-            String enc = TenpayUtil.getCharacterEncoding(request, response);
+            String enc = "UTF-8";// TenpayUtil.getCharacterEncoding(request, response);
             Iterator it = this.parameters.keySet().iterator();
             while (it.hasNext()) {
                 String k = (String) it.next();
@@ -227,14 +219,6 @@ public class ResponseHandler {
      */
     protected void setDebugInfo(String debugInfo) {
         this.debugInfo = debugInfo;
-    }
-
-    protected HttpServletRequest getHttpServletRequest() {
-        return this.request;
-    }
-
-    protected HttpServletResponse getHttpServletResponse() {
-        return this.response;
     }
 
 }

@@ -35,24 +35,18 @@ public interface ThirdPayService {
      * @param params   {totalFee:xx,refundFee:xx,serialNum:xx}
      *                 totalFee - int - 支付总金额，单位分
      *                 refundFee - int - 退款金额，单位分
-     *                 serialNum - String - 退款流水号
+     *                 serialNum - String - 退款流水号（订退订单号）
+     *                 outTransId - String - 第三方交易号
      * @return 支付宝：返回form表单html片段；微信：后台直接发起退款，返回成功失败
      */
     Result<String> reqRefund(long ordCode, int coreEpId, int payType, Map<String, Object> params);
 
     // 支付回调，发布回调订单模块的任务
-    Result payCallback(int payType);
+    Result<Map<String,String>> payCallback(String ordId,String trade_no,Map<String, String> params,int payType);
+
 
     // 退款回调，发布回调订单模块的任务
-    Result refundCallback(int payType);
-
-    /**
-     * 获取二维码，支付方式为微信时使用
-     *
-     * @param ordCode 订单编号
-     * @return 二维码图片
-     */
-    Result<byte[]> getQrCode(String ordCode);
+    Result refundCallback(Map<String,String> params,int payType);
 
     /**
      * 获取支付状态
