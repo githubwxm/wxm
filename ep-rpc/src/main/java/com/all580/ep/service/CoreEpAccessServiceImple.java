@@ -36,13 +36,25 @@ public class CoreEpAccessServiceImple implements CoreEpAccessService {
     }
 
     @Override
+    public Result<Map> selectAccess(Map params) {
+        Result<Map> result = new Result<>();
+        try {
+            result.put(coreEpAccessMapper.selectAccess(params));
+            result.setSuccess();
+        } catch (Exception e) {
+           log.error("查询中心平台接口访问配置", e);
+            throw new ApiException("查询中心平台接口访问配置", e);
+        }
+        return result;//CoreEpAccess
+    }
+    @Override
     public Result<List<Map>> select(Map params) {
         Result<List<Map>> result = new Result<>();
         try {
             result.put(coreEpAccessMapper.select(params));
             result.setSuccess();
         } catch (Exception e) {
-           log.error("查询中心平台接口访问配置", e);
+            log.error("查询中心平台接口访问配置", e);
             throw new ApiException("查询中心平台接口访问配置", e);
         }
         return result;//CoreEpAccess
