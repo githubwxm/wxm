@@ -54,9 +54,12 @@ public class PlatfromController extends BaseController {
      */
     @RequestMapping(value = "selectPlatfromId", method = RequestMethod.GET)
     @ResponseBody
-    public Result<Map> selectPlatfromId( Integer id) {
+    public Result<Map> selectPlatfromId(HttpServletRequest request,  Integer id, Integer core_ep_id) {
         Map map = new HashMap();
         map.put("id", id);
+        String test =request.getAttribute("core_ep_id").toString();
+        System.out.println(core_ep_id);
+        ParamsMapValidate.validate(map, platfromValidateManager.generateCreateStatusValidate());
         return epService.selectId(map);
 
     }
@@ -121,13 +124,15 @@ public class PlatfromController extends BaseController {
                                        String epName,
                                       String epProvince,
                                       String epCity,
-                                     String epPhone) {
+                                     String epPhone,Integer record_start,Integer record_count) {
         Map map = new HashMap();
         map.put("ep_id", ep_id);
         map.put("epName", epName);
         map.put("epProvince", epProvince);
         map.put("epCity", epCity);
         map.put("epPhone", epPhone);
+        map.put("record_start",record_start);
+        map.put("record_count",record_count);
         ParamsMapValidate.validate(map, platfromValidateManager.generateCreateDownUpValidate());
         return epService.platformListUp(map);
 
@@ -144,14 +149,15 @@ public class PlatfromController extends BaseController {
                                         String epName,
                                         String epProvince,
                                          String epCity,
-                                        String epPhone) {
+                                        String epPhone,Integer record_start,Integer record_count) {
         Map map = new HashMap();
         map.put("ep_id", ep_id);
         map.put("epName", epName);
         map.put("epProvince", epProvince);
         map.put("epCity", epCity);
         map.put("epPhone", epPhone);
-
+        map.put("record_start",record_start);
+        map.put("record_count",record_count);
         ParamsMapValidate.validate(map, platfromValidateManager.generateCreateDownUpValidate());
 
 
