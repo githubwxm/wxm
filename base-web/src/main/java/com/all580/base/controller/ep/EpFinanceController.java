@@ -102,12 +102,14 @@ public class EpFinanceController extends BaseController {
     }//set
     /**
      * 企业账户管理列表
-     * @param map
      * @return
      */
     @RequestMapping(value = "getAccountInfoList", method = RequestMethod.GET)
     @ResponseBody
-    public Result<Map> getAccountInfoList(@RequestBody Map map){
+    public Result<Map> getAccountInfoList(Integer ep_id,Integer croe_ep_id){
+        Map map = new HashMap();
+        map.put("ep_id",ep_id);
+        map.put("croe_ep_id",croe_ep_id);
         ParamsMapValidate.validate(map, generateCreateSelectValidate());
         return epFinanceService.getAccountInfoList(map);
 
