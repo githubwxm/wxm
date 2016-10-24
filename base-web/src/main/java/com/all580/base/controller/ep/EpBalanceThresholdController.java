@@ -2,6 +2,7 @@ package com.all580.base.controller.ep;
 
 import com.all580.ep.api.service.EpBalanceThresholdService;
 import com.all580.ep.api.service.EpService;
+import com.all580.notice.api.service.SmsService;
 import com.framework.common.BaseController;
 import com.framework.common.Result;
 import com.framework.common.exception.ApiException;
@@ -31,6 +32,7 @@ public class EpBalanceThresholdController extends BaseController {
     @Autowired
     private EpService epService;
 
+
     /**
      *余额提醒修改设置
      * @param map
@@ -53,8 +55,7 @@ public class EpBalanceThresholdController extends BaseController {
      */
     @RequestMapping(value = "select", method = RequestMethod.GET)
     @ResponseBody
-    public Result<Map> select(HttpServletRequest request,
-                              @RequestParam(value="ep_id") Integer ep_id
+    public Result<Map> select( Integer ep_id
                              ) {
            Integer core_ep_id=1;//// TODO: 2016/10/20 0020   获取平台商id
             Map map = new HashMap();
@@ -71,9 +72,8 @@ public class EpBalanceThresholdController extends BaseController {
      */
     @RequestMapping(value = "balance/warn", method = RequestMethod.GET)
     @ResponseBody
-    public Result<Map> warn(
-                            @RequestParam(value="ep_id") Integer ep_id,
-                            @RequestParam(value="balance") Integer balance
+    public Result<Map> warn(Integer ep_id,
+                            Integer balance
                            ) {
         Integer core_ep_id=1;//// TODO: 2016/10/20 0020   获取平台商id
             Map map = new HashMap();
@@ -84,11 +84,7 @@ public class EpBalanceThresholdController extends BaseController {
 
 
             if(epBalanceThresholdService.warn(map)){
-                //Todo  发送余额短信
-                Map epMap = new HashMap();
-                epMap.put("id",map.get("ep_id"));//再看发送短信所需要的参数
-                epService.select(epMap);//link_phone   获取企业信息
-                //TODO  发送之后操作
+
             }
             return null;
     }

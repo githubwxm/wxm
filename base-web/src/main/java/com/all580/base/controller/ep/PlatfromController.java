@@ -33,14 +33,14 @@ public class PlatfromController extends BaseController {
     @RequestMapping(value = "create", method = RequestMethod.POST)
     @ResponseBody
     public Result<Map> create(@RequestBody Map map) {
-        ParamsMapValidate.validate(map, platfromValidateManager.generateCreateEpValidate());
+        ParamsMapValidate.validate(map, platfromValidateManager.generateCreateEpPlatfromValidate());
         return epService.createPlatform(map);
 
     }
 
     @RequestMapping(value = "validate", method = RequestMethod.GET)
     @ResponseBody
-    public Result<Map> validate(@RequestParam(value = "access_id") String access_id
+    public Result<Map> validate( String access_id
     ) {
         Map map = new HashMap();
         map.put("access_id", access_id);
@@ -48,6 +48,18 @@ public class PlatfromController extends BaseController {
 
     }
 
+
+    /**
+     *查询平台上id
+     */
+    @RequestMapping(value = "selectPlatfromId", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<Map> selectPlatfromId( Integer id) {
+        Map map = new HashMap();
+        map.put("id", id);
+        return epService.selectId(map);
+
+    }
     /**
      * 平台商停用
      *
@@ -104,12 +116,12 @@ public class PlatfromController extends BaseController {
      */
     @RequestMapping(value = "list/up", method = RequestMethod.GET)
     @ResponseBody
-    public Result<Map> platformListUp(HttpServletRequest request,
-                                      @RequestParam(value = "ep_id") String ep_id,
-                                      @RequestParam(value = "epName", required = false) String epName,
-                                      @RequestParam(value = "epProvince", required = false) String epProvince,
-                                      @RequestParam(value = "epCity", required = false) String epCity,
-                                      @RequestParam(value = "epPhone", required = false) String epPhone) {
+    public Result<Map> platformListUp(
+                                       String ep_id,
+                                       String epName,
+                                      String epProvince,
+                                      String epCity,
+                                     String epPhone) {
         Map map = new HashMap();
         map.put("ep_id", ep_id);
         map.put("epName", epName);
@@ -128,12 +140,11 @@ public class PlatfromController extends BaseController {
      */
     @RequestMapping(value = "list/down", method = RequestMethod.GET)
     @ResponseBody
-    public Result<Map> platformListDown(HttpServletRequest request,
-                                        @RequestParam(value = "ep_id") String ep_id,
-                                        @RequestParam(value = "epName", required = false) String epName,
-                                        @RequestParam(value = "epProvince", required = false) String epProvince,
-                                        @RequestParam(value = "epCity", required = false) String epCity,
-                                        @RequestParam(value = "epPhone", required = false) String epPhone) {
+    public Result<Map> platformListDown( String ep_id,
+                                        String epName,
+                                        String epProvince,
+                                         String epCity,
+                                        String epPhone) {
         Map map = new HashMap();
         map.put("ep_id", ep_id);
         map.put("epName", epName);
@@ -155,14 +166,14 @@ public class PlatfromController extends BaseController {
      */
     @RequestMapping(value = "list", method = RequestMethod.GET)
     @ResponseBody
-    public Result<Map> platformList(@RequestParam(value = "record_start", required = false) Integer record_start,
-                                    @RequestParam(value = "record_count", required = false) Integer record_count,
-                                    @RequestParam(value = "name", required = false) String name,
-                                    @RequestParam(value = "ep_type", required = false) Integer ep_type,
-                                    @RequestParam(value = "status", required = false) Integer status,
-                                    @RequestParam(value = "province", required = false) Integer province,
-                                    @RequestParam(value = "city", required = false) Integer city,
-                                    @RequestParam(value = "link_phone", required = false) Integer link_phone) {
+    public Result<Map> platformList( Integer record_start,
+                                     Integer record_count,
+                                     String name,
+                                    Integer ep_type,
+                                     Integer status,
+                                    Integer province,
+                                    Integer city,
+                                    Integer link_phone) {
         Map map = new HashMap();
         map.put("record_start", record_start);
         map.put("record_count", record_count);
