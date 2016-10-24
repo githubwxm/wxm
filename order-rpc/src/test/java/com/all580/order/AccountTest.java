@@ -21,6 +21,25 @@ public class AccountTest {
         List<List<EpSalesInfo>> daySalesList = new ArrayList<List<EpSalesInfo>>(){{
             /*add(new ArrayList<EpSalesInfo>(){{
                 EpSalesInfo a1 = new EpSalesInfo();
+                a1.setSaleEpId(31);
+                a1.setBuyEpId(1);
+                a1.setPrice(30);
+                add(a1);
+
+                EpSalesInfo a2 = new EpSalesInfo();
+                a2.setSaleEpId(1);
+                a2.setBuyEpId(54);
+                a2.setPrice(40);
+                add(a2);
+
+                EpSalesInfo a3 = new EpSalesInfo();
+                a3.setSaleEpId(54);
+                a3.setBuyEpId(-1);
+                a3.setPrice(40);
+                add(a3);
+            }});*/
+            add(new ArrayList<EpSalesInfo>(){{
+                EpSalesInfo a1 = new EpSalesInfo();
                 a1.setSaleEpId(101);
                 a1.setBuyEpId(102);
                 a1.setPrice(5);
@@ -61,9 +80,9 @@ public class AccountTest {
                 c3.setBuyEpId(-1);
                 c3.setPrice(38);
                 add(c3);
-            }});*/
+            }});
             // 到付
-            add(new ArrayList<EpSalesInfo>(){{
+            /*add(new ArrayList<EpSalesInfo>(){{
 
                 EpSalesInfo a3 = new EpSalesInfo();
                 a3.setSaleEpId(103);
@@ -94,7 +113,7 @@ public class AccountTest {
                 c3.setBuyEpId(-1);
                 c3.setPrice(38);
                 add(c3);
-            }});
+            }});*/
             /*add(new ArrayList<EpSalesInfo>(){{
                 EpSalesInfo a1 = new EpSalesInfo();
                 a1.setSaleEpId(101);
@@ -140,12 +159,19 @@ public class AccountTest {
             }});*/
         }};
 
-        ooxx(daySalesList, 1, 1, 5012);
+        ooxx(daySalesList, 1, 1, 5011);
     }
 
     public static void ooxx(List<List<EpSalesInfo>> daySalesList, int itemId, int quantity, int payType) {
         int pays = 0;
+        /*Map<Integer, Integer> coreEpMap = new HashMap<Integer, Integer>(){{
+            put(31, 1);
+            put(1, 1);
+            put(54, 1);
+        }};*/
         Map<Integer, Integer> coreEpMap = new HashMap<Integer, Integer>(){{
+            put(101, 103);
+            put(102, 103);
             put(103, 103);
             put(201, 201);
             put(301, 301);
@@ -179,7 +205,7 @@ public class AccountTest {
                 }
 
                 // 买家平台商ID == 卖家平台商ID && 卖家ID != 卖家平台商ID
-                if (buyCoreEpId.intValue() == saleCoreEpId && info.getSaleEpId() != saleCoreEpId) {
+                if (buyCoreEpId.intValue() == saleCoreEpId/* && info.getSaleEpId() != saleCoreEpId*/) {
                     AccountDataDto dto = addDayAccount(dayAccountDataMap, infoList, info.getSaleEpId());
                     dto.setSaleCoreEpId(saleCoreEpId);
                 }
@@ -197,6 +223,7 @@ public class AccountTest {
         }
 
         // 把每天的利润集合做分账
+        Map<Integer, Integer> coreSubMap = new HashMap<>();
         for (Integer epId : daysAccountDataMap.keySet()) {
             Integer coreEpId = getCoreEp(coreEpMap, epId);
             List<AccountDataDto> dataDtos = daysAccountDataMap.get(epId);
@@ -206,36 +233,23 @@ public class AccountTest {
                 totalInPrice += dataDto.getInPrice();
                 totalProfit += dataDto.getProfit();
             }
-            if (payType == ProductConstants.PayType.PAYS) {
-                if (epId == 103) {
-                    continue;
-                }
-                // 到付
-                OrderItemAccount account = new OrderItemAccount();
-                account.setEpId(epId);
-                account.setCoreEpId(coreEpId);
-                account.setMoney(totalProfit * quantity);
-                account.setProfit(totalProfit * quantity);
-                account.setOrderItemId(itemId);
-                account.setData(JsonUtils.toJson(dataDtos));
-                account.setSettledMoney(0);
-                account.setStatus(OrderConstant.AccountSplitStatus.NOT);
-                System.out.println(JsonUtils.toJson(account));
-                pays += account.getMoney();
-            } else {
-                Map<Integer, Integer> coreSubMap = new HashMap<>();
-                // 平台商之间分账(进货价)
-                if (coreEpId.intValue() == epId) {
-                    AccountDataDto dto = dataDtos.get(0);
-                    if (dto != null && dto.getSaleCoreEpId() != null) {
-                        int totalAddProfit = 0;
-                        // 卖家平台商每天的利润
-                        List<AccountDataDto> saleAccountDataDtoList = daysAccountDataMap.get(dto.getSaleCoreEpId());
-                        for (AccountDataDto dataDto : saleAccountDataDtoList) {
-                            totalAddProfit += dataDto.getProfit();
-                        }
-                        // 预付
-                        GenerateAccountDto accountDto = new GenerateAccountDto();
+            GenerateAccountDto accountDto = null;
+            // 平台商之间分账(进货价)
+            if (coreEpId.intValue() == epId) {
+                AccountDataDto dto = dataDtos.get(0);
+                if (dto != null && dto.getSaleCoreEpId() != null) {
+                    if (dto.getSaleCoreEpId().intValue() == epId) {
+                        continue;
+                    }
+                    accountDto = new GenerateAccountDto();
+                    int totalAddProfit = 0;
+                    // 卖家平台商每天的利润
+                    List<AccountDataDto> saleAccountDataDtoList = daysAccountDataMap.get(dto.getSaleCoreEpId());
+                    for (AccountDataDto dataDto : saleAccountDataDtoList) {
+                        totalAddProfit += dataDto.getProfit();
+                    }
+                    // 预付
+                    if (payType == ProductConstants.PayType.PREPAY) {
                         accountDto.setSubtractEpId(epId); // 买家 扣钱
                         accountDto.setSubtractCoreId(dto.getSaleCoreEpId()); // 在卖家的平台商
                         accountDto.setAddEpId(dto.getSaleCoreEpId()); // 卖家的平台商收钱
@@ -246,46 +260,59 @@ public class AccountTest {
                         accountDto.setOrderItemId(itemId);
                         accountDto.setSubtractData(dataDtos); // 买家每天的单价利润
                         accountDto.setAddData(saleAccountDataDtoList); // 卖家每天的单价利润
-                        System.out.println(JsonUtils.toJson(generateAccount(accountDto)));
+                    } else {
+                        // 到付
+                        accountDto.setSubtractEpId(dto.getSaleCoreEpId()); // 卖家 扣钱
+                        accountDto.setSubtractCoreId(dto.getSaleCoreEpId()); // 在卖家的平台商
+                        accountDto.setAddEpId(epId); // 买家的平台商收钱
+                        accountDto.setAddCoreId(dto.getSaleCoreEpId()); // 在卖家平台商的余额
+                        accountDto.setMoney((salePrice - totalInPrice) * quantity); // 金额 卖价 * 票数
+                        accountDto.setSubtractProfit(totalAddProfit * quantity); // 卖家每天的总利润 * 票数
+                        accountDto.setAddProfit(totalProfit * quantity); // 买家每天的总利润 * 票数
+                        accountDto.setOrderItemId(itemId);
+                        accountDto.setSubtractData(saleAccountDataDtoList); // 卖家每天的单价利润
+                        accountDto.setAddData(dataDtos); // 买家每天的单价利润
                     }
-                } else {
-                    // 平台内部企业分账(利润)
-                    OrderItemAccount account = new OrderItemAccount();
-                    account.setEpId(epId);
-                    account.setCoreEpId(coreEpId);
-                    account.setMoney(totalProfit * quantity);
-                    account.setProfit(totalProfit * quantity);
-                    account.setOrderItemId(itemId);
-                    account.setData(JsonUtils.toJson(dataDtos));
-                    account.setSettledMoney(0);
-                    account.setStatus(OrderConstant.AccountSplitStatus.NOT);
-                    System.out.println(JsonUtils.toJson(account));
-                    Integer val = coreSubMap.get(coreEpId);
-                    coreSubMap.put(coreEpId, val == null ? account.getMoney() : val + account.getMoney());
                 }
-                for (Integer id : coreSubMap.keySet()) {
-                    OrderItemAccount account = new OrderItemAccount();
-                    account.setEpId(id);
-                    account.setCoreEpId(id);
-                    account.setMoney(-coreSubMap.get(id));
-                    account.setProfit(0);
-                    account.setOrderItemId(itemId);
-                    account.setData(JsonUtils.toJson(daysAccountDataMap.get(id)));
-                    account.setSettledMoney(0);
-                    account.setStatus(OrderConstant.AccountSplitStatus.NOT);
-                    System.out.println(JsonUtils.toJson(account));
-                }
+            } else {
+                // 平台内部企业分账(利润)
+                OrderItemAccount account = new OrderItemAccount();
+                account.setEpId(epId);
+                account.setCoreEpId(coreEpId);
+                account.setMoney(totalProfit * quantity);
+                account.setProfit(totalProfit * quantity);
+                account.setOrderItemId(itemId);
+                account.setData(JsonUtils.toJson(dataDtos));
+                account.setSettledMoney(0);
+                account.setStatus(OrderConstant.AccountSplitStatus.NOT);
+                System.out.println(JsonUtils.toJson(account));
+                Integer val = coreSubMap.get(coreEpId);
+                coreSubMap.put(coreEpId, val == null ? account.getMoney() : val + account.getMoney());
+                /*accountDto = new GenerateAccountDto();
+                accountDto.setSubtractEpId(coreEpId); // 平台商扣钱给企业分利润
+                accountDto.setSubtractCoreId(coreEpId);
+                accountDto.setAddEpId(epId); // 收钱企业ID
+                accountDto.setAddCoreId(coreEpId);
+                accountDto.setMoney(totalProfit * quantity); // 金额 每天的总利润 * 票数
+                accountDto.setSubtractProfit(0); // 平台商的利润在平台商之间分账中体现
+                accountDto.setAddProfit(totalProfit * quantity); // 买家每天的总利润 * 票数
+                accountDto.setOrderItemId(itemId);
+                accountDto.setSubtractData(null); // 平台商的利润在平台商之间分账中体现
+                accountDto.setAddData(dataDtos); // 每天的单价利润*/
             }
 
+            if (accountDto != null) {
+                System.out.println(JsonUtils.toJson(generateAccount(accountDto)));
+            }
         }
-        if (payType == ProductConstants.PayType.PAYS) {
+        for (Integer id : coreSubMap.keySet()) {
             OrderItemAccount account = new OrderItemAccount();
-            account.setEpId(103);
-            account.setCoreEpId(103);
-            account.setMoney(-pays);
+            account.setEpId(id);
+            account.setCoreEpId(id);
+            account.setMoney(-coreSubMap.get(id));
             account.setProfit(0);
             account.setOrderItemId(itemId);
-            account.setData(JsonUtils.toJson(daysAccountDataMap.get(103)));
+            account.setData(JsonUtils.toJson(daysAccountDataMap.get(id)));
             account.setSettledMoney(0);
             account.setStatus(OrderConstant.AccountSplitStatus.NOT);
             System.out.println(JsonUtils.toJson(account));

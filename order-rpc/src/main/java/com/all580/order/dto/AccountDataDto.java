@@ -1,6 +1,5 @@
 package com.all580.order.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -24,7 +23,6 @@ public class AccountDataDto {
 
     private int profit;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date day;
 
     @JsonIgnore
