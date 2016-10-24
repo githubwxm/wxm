@@ -5,6 +5,7 @@ import com.all580.payment.entity.Capital;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 public interface CapitalMapper {
     int deleteByPrimaryKey(Integer id);
@@ -14,8 +15,11 @@ public interface CapitalMapper {
     int insertSelective(Capital record);
 
     Capital selectByPrimaryKey(Integer id);
+    Capital selectByEpIdAndCoreEpId(@Param("epId")Integer epId, @Param("coreEpId")Integer coreEpIds);
 
     List<Capital> selectForUpdateByEpList(@Param("changeInfos") List<BalanceChangeInfo> changeInfos);
+    List<Map<String,String>> listByEpIdAndCoreEpId(@Param("epIdList") List<Integer> epIdList,@Param("coreEpId")
+                                                   Integer coreEpId);
 
     int updateByPrimaryKeySelective(Capital record);
 

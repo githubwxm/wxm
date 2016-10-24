@@ -18,6 +18,21 @@
         from t_capital
         where id = #{id,jdbcType=INTEGER}
     </select>
+    <select id="selectByEpIdAndCoreEpId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_capital
+        where ep_id = #{epId,jdbcType=INTEGER} and core_ep_id = #{coreEpId}
+    </select>
+    <select id="listByEpIdAndCoreEpId" parameterType="java.lang.Integer" resultType="map">
+        select
+        id, ep_id as epId, credit, balance, can_cash as canCash, core_ep_id as coreEpId
+        from t_capital
+        where core_ep_id = #{coreEpId} and ep_id in
+        <foreach collection="epIdList" close=")" open="(" separator="," item="item">
+            #{item}
+        </foreach>
+    </select>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from t_capital
     where id = #{id,jdbcType=INTEGER}
