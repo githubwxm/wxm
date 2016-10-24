@@ -150,7 +150,20 @@ public class BalancePayServiceImpl implements BalancePayService {
 
     @Override
     public Result setCredit(Integer epId, Integer coreEpId, Integer credit) {
-        return null;
+        Result result = new Result();
+        try {
+            Capital capital = new Capital();
+            capital.setEpId(epId);
+            capital.setCoreEpId(coreEpId);
+            capital.setCredit(credit);
+            capitalMapper.updateByEpIdAndCoreEpId(capital);
+            result.setSuccess();
+        } catch (Exception e) {
+            logger.error(e.getMessage(),e);
+            result.setFail();
+            result.setError(e.getMessage());
+        }
+        return result;
     }
 
     @Override

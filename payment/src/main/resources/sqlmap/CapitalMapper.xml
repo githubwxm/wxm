@@ -96,6 +96,21 @@
         </set>
         where id = #{id,jdbcType=INTEGER}
     </update>
+    <update id="updateByEpIdAndCoreEpId" parameterType="com.all580.payment.entity.Capital">
+        update t_capital
+        <set>
+            <if test="credit != null">
+                credit = #{credit,jdbcType=INTEGER},
+            </if>
+            <if test="balance != null">
+                balance = #{balance,jdbcType=INTEGER},
+            </if>
+            <if test="canCash != null">
+                can_cash = #{canCash,jdbcType=INTEGER},
+            </if>
+        </set>
+        where ep_id = #{epId,jdbcType=INTEGER} and core_ep_id = #{coreEpId}
+    </update>
     <update id="updateByPrimaryKey" parameterType="com.all580.payment.entity.Capital">
     update t_capital
     set ep_id = #{epId,jdbcType=INTEGER},

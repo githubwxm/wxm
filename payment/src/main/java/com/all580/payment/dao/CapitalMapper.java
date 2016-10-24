@@ -21,5 +21,7 @@ public interface CapitalMapper {
 
     int updateByPrimaryKey(Capital record);
 
+    int updateByEpIdAndCoreEpId(Capital record);
+
     int batchUpdateById(@Param("capitalList") List<Capital> capitalList);
 }
