@@ -14,7 +14,7 @@
 	<dubbo:registry address="${dubbo.registry.zk}" />
 	<dubbo:protocol name="dubbo" port="${dubbo.port}" />
 
-	<dubbo:consumer check="false" retries="0" timeout="6000"/>
+	<dubbo:consumer check="false" retries="0" timeout="60000"/>
 
 	<dubbo:reference id="bookingOrderService"
 					 interface="com.all580.order.api.service.BookingOrderService" />

@@ -10,6 +10,7 @@ import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,6 +20,7 @@ public class CustomJacksonConvert extends MappingJackson2HttpMessageConverter {
 		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		mapper.setSerializationInclusion(Include.NON_NULL);
 		mapper.configure(JsonGenerator.Feature.WRITE_NUMBERS_AS_STRINGS, true);
+		mapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
 		super.setObjectMapper(mapper);
 	}
 

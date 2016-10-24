@@ -181,4 +181,9 @@
             and status=#{statusActive}
         </if>
     </update>
+
+    <select id="checkNamePhone" resultType="java.util.Map">
+        select name,link_phone from t_ep
+         where name =#{name} or link_phone=#{link_phone}
+    </select>
 </mapper>

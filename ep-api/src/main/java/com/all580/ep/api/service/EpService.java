@@ -124,4 +124,7 @@ public interface EpService {
      * @return   未找到 -1  平台商0   上级企业id
      */
     Result<Integer> selectCreatorEpId(Integer id);
+
+    Result<Boolean>  checkNamePhone(Map map);
+
 }

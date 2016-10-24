@@ -60,4 +60,10 @@ public class EpFinanceServiceImple implements EpFinanceService {
         }
         return result;
     }
+
+
+    public Result<Map> getAccountInfo(Map map) {
+
+        return null;
+    }
 }

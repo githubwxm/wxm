@@ -58,23 +58,12 @@ public class EpServiceImple implements EpService {
      */
     @Override
     public Result<Map> createPlatform(Map map) {
-
+        checkNamePhone(map);//检查电话与名字是否存在 ，存在抛出异常
         map.put("status", EpConstant.EpStatus.UNINITIAL);// 状态默认未初始化
         map.put("status_bak", EpConstant.EpStatus.UNINITIAL);// 状态默认未初始化
         map.put("ep_type", EpConstant.EpType.PLATFORM);
         map.put("access_id", Common.getAccessId());
-        String province_name = map.get("province_name").toString();
-        String city_name = map.get("city_name").toString();
-        String area_name = map.get("area_name").toString();
-        String address = map.get("address").toString();
-        if(EpConstant.EpNotArea.ONE.contains(city_name)){
-            address=city_name+","+city_name;
-        }else if(EpConstant.EpNotArea.ONE.contains(city_name)){
-            address=province_name+area_name;
-        }else{
-            address=province_name+","+city_name+","+area_name;
-        }
-        map.put("address",address);
+        CommonUtil.formtAddress(map);
         int epId = 0;
         try {
             epId = epMapper.create(map);//添加成功
@@ -174,23 +163,13 @@ public class EpServiceImple implements EpService {
 
     @Override
     public Result<Map> createEp(Map map) {
+            checkNamePhone(map);
         boolean flag = false;//是否添加余额阀值标识
         map.put("status", EpConstant.EpStatus.UNINITIAL);// 状态默认未初始化
         map.put("status_bak", EpConstant.EpStatus.UNINITIAL);// 状态默认未初始化
         map.put("access_id", Common.getAccessId());
         map.put("access_key", Common.getAccessKey());
-        String province_name = map.get("province_name").toString();
-        String city_name = map.get("city_name").toString();
-        String area_name = map.get("area_name").toString();
-        String address = map.get("address").toString();
-        if(EpConstant.EpNotArea.ONE.contains(city_name)){
-            address=city_name+","+city_name;
-        }else if(EpConstant.EpNotArea.ONE.contains(city_name)){
-            address=province_name+area_name;
-        }else{
-            address=province_name+","+city_name+","+area_name;
-        }
-        map.put("address",address);
+        CommonUtil.formtAddress(map);
     //address  // TODO: 2016/10/22 0022
         String ep_type = (String) map.get("ep_type");//企业类型
         String creator_ep_id = (String) map.get("creator_ep_id");//上级企业id
@@ -396,6 +375,7 @@ public class EpServiceImple implements EpService {
     public Result<Map> updateEp(Map map) {
         Result<Map> result = new Result<>();
         try {
+            CommonUtil.formtAddress(map);
             epMapper.update(map);
             result.put(map);
             result.setSuccess();
@@ -463,6 +443,37 @@ public class EpServiceImple implements EpService {
         } catch (Exception e) {
              log.error("查询数据库异常", e);
             throw new ApiException("查询数据库异常", e);
+        }
+        return result;
+    }
+
+    @Override
+    public Result<Boolean> checkNamePhone(Map map) {
+        List<Map> list = epMapper.checkNamePhone(map);
+        Result<Boolean> result = new Result<>();
+        String message="";
+        try{
+            if(list.isEmpty()){
+                result.put(true);
+                result.setSuccess();
+            }else if(list.size()==2){
+                message="企业名字与电话重复";
+                throw new ApiException(message);
+            }else if(list.size()==1){
+                Map mapResult =list.get(0);
+                  String name= mapResult.get("name").toString();
+                  String link_phone =mapResult.get("link_phone").toString();
+                   if(name.equals(map.get("name"))){
+                          message="企业名字重复 ";
+                   }
+                   if(link_phone.equals(map.get("link_phone"))){
+                       message="号码已经存在 ";
+                   }
+                throw new ApiException(message);
+            }
+        } catch (Exception e) {
+            log.error("查询数据库异常", e);
+            throw new ApiException(message, e);
         }
         return result;
     }
@@ -568,29 +579,6 @@ public class EpServiceImple implements EpService {
      *
      * @param epids 企业id
      * @param field 企业列    所传的值必在一下列里面
-     *              id
-     *              name  企业名称
-     *              en_name  企业英文名
-     *              ep_type   10000-畅旅平台商10001平台商10002供应商10003销售商10004自营商10005OTA
-     *              linkman    联系人
-     *              link_phone  联系电话
-     *              address   地址
-     *              code   企业组织机构代码
-     *              license  营业执照
-     *              logo_pic  企业logo
-     *              status  100初始化101-正常\n102-已冻结\n103-已停用
-     *              access_id   运营平台接口访问标识
-     *              access_key  运营平台接口访问密钥
-     *              creator_ep_id    上级企业
-     *              core_ep_id   所属平台商企业id
-     *              add_time
-     *              status_bak    ' 冻结/停用平台商操作时企业当前的状态
-     *              province  省
-     *              city  市
-     *              area  区
-     *              group_id  组ID
-     *              group_name  组名称
-     *              ep_class   10010;//景区10011;//酒店10012;//旅行社10013;//其他
      * @return
      */
     @Override

@@ -34,4 +34,7 @@ public interface CoreEpAccessService {
      */
     Result<Integer> checkAccessId(Object access_id);
 
+
+    Result<Map>  selectAccess(Map map);
+
 }
