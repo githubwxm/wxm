@@ -48,4 +48,6 @@
 	<dubbo:reference id="productSalesPlanService" interface="com.all580.product.api.service.ProductSalesPlanRPCService" />
 	<dubbo:reference id="productService" interface="com.all580.product.api.service.ProductRPCService" />
 
+	<dubbo:reference id="thirdPayService" interface="com.all580.payment.api.service.ThirdPayService"/>
+
 </beans>
