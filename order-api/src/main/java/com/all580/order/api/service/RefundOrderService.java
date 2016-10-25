@@ -23,7 +23,7 @@ public interface RefundOrderService {
      * @param params
      * @return
      */
-    Result<?> apply(Map params);
+    Result<?> apply(Map params) throws Exception;
 
     /**
      * 取消已支付未分账的订单
@@ -37,5 +37,5 @@ public interface RefundOrderService {
      * @param params
      * @return
      */
-    Result<?> audit(Map params);
+    Result<?> audit(Map params) throws Exception;
 }
