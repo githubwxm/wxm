@@ -107,7 +107,7 @@ public class OrderValidateManager {
         rules.put(new String[]{
                 "order_item_sn", // 订单编号(流水)
                 "days.quantity", // 退票数量
-                "visitors.quantity", // 退票数量
+                "days.visitors.quantity", // 退票数量
                 "quantity", // 退票数量
         }, new ValidRule[]{new ValidRule.NotNull(), new ValidRule.Digits()});
 
@@ -116,8 +116,12 @@ public class OrderValidateManager {
         }, new ValidRule[]{new ValidRule.NotNull(), new ValidRule.Date()});
 
         rules.put(new String[]{
-                "visitors.sid" // 身份证
+                "days.visitors.sid" // 身份证
         }, new ValidRule[]{new ValidRule.NotNull(), new ValidRule.IdCard()});
+
+        rules.put(new String[]{
+                "days.visitors.phone" // 身份证
+        }, new ValidRule[]{new ValidRule.NotNull()});
 
         rules.put(new String[]{"cause"}, new ValidRule[]{new ValidRule.NotNull()});
         return rules;

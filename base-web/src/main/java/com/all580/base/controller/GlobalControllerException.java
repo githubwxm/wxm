@@ -2,8 +2,8 @@ package com.all580.base.controller;
 
 import com.alibaba.dubbo.rpc.RpcException;
 import com.framework.common.Result;
-import com.framework.common.exception.ApiException;
-import com.framework.common.exception.ParamsMapValidationException;
+import javax.lang.exception.ApiException;
+import javax.lang.exception.ParamsMapValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -39,7 +39,7 @@ public class GlobalControllerException {
     @ResponseBody
     public Result processApiException(ApiException e) {
         log.error("API业务异常", e);
-        return new Result(false, Result.BUSINESS_EXCEPTION, e.getMsg());
+        return new Result(false, Result.BUSINESS_EXCEPTION, e.getMessage());
     }
 
     @ExceptionHandler(ParamsMapValidationException.class)
