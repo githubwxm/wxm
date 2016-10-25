@@ -32,4 +32,6 @@ public interface EpMapper {
 
     List<Map> getAccountInfoList(Map map);
     List<Map> getAccountInfoListCount(Map map);
+
+    List<Map> checkNamePhone(Map map);
 }

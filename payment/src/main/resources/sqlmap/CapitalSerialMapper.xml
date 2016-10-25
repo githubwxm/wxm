@@ -27,7 +27,7 @@
     where id = #{id,jdbcType=INTEGER}
   </delete>
     <insert id="insert" parameterType="com.all580.payment.entity.CapitalSerial">
-        <selectKey keyProperty="id" order="BEFORE" resultType="java.lang.Integer">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
             SELECT LAST_INSERT_ID()
         </selectKey>
         insert into t_capital_serial (id, ref_id, ref_type,
@@ -40,7 +40,7 @@
         )
     </insert>
     <insert id="insertSelective" parameterType="com.all580.payment.entity.CapitalSerial">
-        <selectKey keyProperty="id" order="BEFORE" resultType="java.lang.Integer">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
             SELECT LAST_INSERT_ID()
         </selectKey>
         insert into t_capital_serial
@@ -143,16 +143,24 @@
   </update>
 
     <insert id="insertBatch" parameterType="java.util.List" useGeneratedKeys="true">
-        <selectKey keyProperty="id" order="BEFORE" resultType="long">
+        <selectKey keyProperty="id" order="AFTER" resultType="long">
             SELECT
             LAST_INSERT_ID()
         </selectKey>
         insert into t_capital_serial (id, ref_id, ref_type,capital_id, old_balance, old_can_cash,
-        new_balance, new_can_cash, create_time)
+        new_balance, new_can_cash)
         values
         <foreach collection="records" index="index" item="item" separator=",">
             (#{item.id}, #{item.refId}, #{item.refType},#{item.capitalId}, #{item.oldBalance}, #{item.oldCanCash},
-            #{item.newBalance}, #{item.newCanCash}, #{item.createTime,jdbcType=TIMESTAMP})
+            #{item.newBalance}, #{item.newCanCash})
         </foreach>
     </insert>
+
+    <select id="listByCapitalId" parameterType="java.lang.Integer" resultMap="map">
+        select
+        id, create_time as createTime,new_balance-old_balance as balanceAdd,new_can_cash-old_can_cash as canCashAdd
+        from t_capital_serial
+        where capital_id = #{capitalId,jdbcType=INTEGER}
+        limit #{startRecord}, #{maxRecords}
+    </select>
 </mapper>

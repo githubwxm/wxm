@@ -16,7 +16,7 @@ public interface BookingOrderService {
      * @param params
      * @return
      */
-    Result<?> create(Map params);
+    Result<?> create(Map params) throws Exception;
 
     /**
      * 供应商审核订单

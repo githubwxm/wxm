@@ -8,19 +8,11 @@
 
 	<!-- 远程rpc类声明 -->
 	<!-- 提供方应用信息，用于计算依赖关系 -->
-	<dubbo:consumer check="false" retries="0" timeout="60000"/>
+	<dubbo:consumer check="false" retries="0" timeout="6000"/>
 
-	<dubbo:reference id="productSalesPlanRPCService"
-		interface="com.all580.product.api.service.ProductSalesPlanRPCService" />
+	<dubbo:reference id="paymentCallbackService"
+		interface="com.all580.order.api.service.PaymentCallbackService" />
+	<dubbo:reference id="orderService"
+		interface="com.all580.order.api.service.OrderService" />
 
-	<dubbo:reference id="epService"
-					 interface="com.all580.ep.api.service.EpService"/>
-
-	<dubbo:reference id="balancePayService"
-					 interface="com.all580.payment.api.service.BalancePayService"/>
-	<dubbo:reference id="thirdPayService"
-					 interface="com.all580.payment.api.service.ThirdPayService"/>
-
-	<dubbo:reference id="voucherRPCService"
-					 interface="com.all580.voucher.api.service.VoucherRPCService"/>
 </beans>

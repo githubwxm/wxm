@@ -20,6 +20,7 @@ import com.framework.common.exception.ApiException;
 import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.lang.UUIDGenerator;
+import com.framework.common.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -128,13 +129,13 @@ public class RefundOrderManager extends BaseOrderManager {
         int total = 0;
         for (Object item : daysList) {
             Map dayMap = (Map) item;
-            String day = dayMap.get("day").toString();
+            String day = CommonUtil.objectParseString(dayMap.get("day"));
             Date date = DateFormatUtils.parseString(DateFormatUtils.DATE_TIME_FORMAT, day);
             OrderItemDetail detail = getDetailByDay(detailList, date);
             if (detail == null) {
                 throw new ApiException(String.format("日期:%s没有订单数据", day));
             }
-            Integer quantity = Integer.parseInt(dayMap.get("quantity").toString());
+            Integer quantity = CommonUtil.objectParseInteger(dayMap.get("quantity"));
             if (detail.getQuantity() - detail.getUsedQuantity() - detail.getRefundQuantity() < quantity) {
                 throw new ApiException(
                         String.format("日期:%s余票不足,已用:%s,已退:%s",
@@ -171,13 +172,13 @@ public class RefundOrderManager extends BaseOrderManager {
             }
             for (Object v : visitors) {
                 Map vMap = (Map) v;
-                String sid = vMap.get("sid").toString();
-                String phone = vMap.get("phone").toString();
+                String sid = CommonUtil.objectParseString(vMap.get("sid"));
+                String phone = CommonUtil.objectParseString(vMap.get("phone"));
                 Visitor visitor = getVisitorBySid(visitorList, sid, phone);
                 if (visitor == null) {
                     throw new ApiException(String.format("日期:%s缺少游客:%s", day, sid));
                 }
-                Integer vqty = Integer.parseInt(vMap.get("quantity").toString());
+                Integer vqty = CommonUtil.objectParseInteger(vMap.get("quantity"));
                 if (visitor.getQuantity() - visitor.getReturnQuantity() < vqty) {
                     throw new ApiException(
                             String.format("日期:%s游客:%s余票不足",
@@ -234,7 +235,7 @@ public class RefundOrderManager extends BaseOrderManager {
         int money = 0;
         for (Object item : daysList) {
             Map dayMap = (Map) item;
-            String day = dayMap.get("sid").toString();
+            String day = CommonUtil.objectParseString(dayMap.get("sid"));
             Date date = DateFormatUtils.parseString(DateFormatUtils.DATE_TIME_FORMAT, day);
             OrderItemDetail detail = getDetailByDay(detailList, date);
             if (detail == null) {
@@ -245,7 +246,7 @@ public class RefundOrderManager extends BaseOrderManager {
                 throw new ApiException(String.format("日期:%s没有利润数据", day));
             }
             int outPrice = dayData.getIntValue("outPrice");
-            Integer quantity = Integer.parseInt(dayMap.get("quantity").toString());
+            Integer quantity = CommonUtil.objectParseInteger(dayMap.get("quantity"));
             Map<String, Integer> rate = ProductRules.calcRefund(detail.getCustRefundRule(), detail.getDay(), refundDate);
             if (rate.get("type") == ProductConstants.AddPriceType.FIX) {
                 money += (outPrice * quantity) - rate.get("fixed") * quantity;
@@ -298,9 +299,9 @@ public class RefundOrderManager extends BaseOrderManager {
             int money = 0;
             for (Object item : daysList) {
                 Map dayMap = (Map) item;
-                String day = dayMap.get("day").toString();
+                String day = CommonUtil.objectParseString(dayMap.get("day"));
                 Date date = DateFormatUtils.parseString(DateFormatUtils.DATE_TIME_FORMAT, day);
-                int quantity = Integer.parseInt(dayMap.get("quantity").toString());
+                int quantity = CommonUtil.objectParseInteger(dayMap.get("quantity"));
                 OrderItemDetail detail = getDetailByDay(detailList, date);
                 if (detail == null) {
                     throw new ApiException(String.format("日期:%s没有订单数据,数据异常", day));
@@ -348,7 +349,7 @@ public class RefundOrderManager extends BaseOrderManager {
     public void returnRefundForDays(List daysList, List<OrderItemDetail> detailList) throws Exception {
         for (Object item : daysList) {
             Map dayMap = (Map) item;
-            String day = dayMap.get("day").toString();
+            String day = CommonUtil.objectParseString(dayMap.get("day"));
             Date date = DateFormatUtils.parseString(DateFormatUtils.DATE_TIME_FORMAT, day);
             OrderItemDetail detail = getDetailByDay(detailList, date);
             if (detail == null) {
@@ -375,8 +376,8 @@ public class RefundOrderManager extends BaseOrderManager {
         if (visitorList != null) {
             for (Object v : visitors) {
                 Map vMap = (Map) v;
-                String sid = vMap.get("sid").toString();
-                String phone = vMap.get("phone").toString();
+                String sid = CommonUtil.objectParseString(vMap.get("sid"));
+                String phone = CommonUtil.objectParseString(vMap.get("phone"));
                 Visitor visitor = getVisitorBySid(visitorList, sid, phone);
                 if (visitor == null) {
                     throw new ApiException(String.format("缺少游客:%s", sid));
@@ -425,10 +426,10 @@ public class RefundOrderManager extends BaseOrderManager {
             List visitors = (List) dayMap.get("visitors");
             for (Object v : visitors) {
                 Map vMap = (Map) v;
-                String sid = vMap.get("sid").toString();
+                String sid = CommonUtil.objectParseString(vMap.get("sid"));
                 String s = sid == null ? "" : sid;
                 Integer q = sidMap.get(s);
-                int quantity = Integer.parseInt(vMap.get("quantity").toString());
+                int quantity = CommonUtil.objectParseInteger(vMap.get("quantity"));
                 sidMap.put(s, q == null ? quantity : q + quantity);
             }
         }

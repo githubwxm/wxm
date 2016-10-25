@@ -36,7 +36,7 @@ public class OrderController extends BaseController {
 
     @RequestMapping(value = "create", method = RequestMethod.POST)
     @ResponseBody
-    public Result<?> create(@RequestBody Map params) {
+    public Result<?> create(@RequestBody Map params) throws Exception {
         // 验证参数
         ParamsMapValidate.validate(params, orderValidateManager.createValidate());
         return bookingOrderService.create(params);
@@ -60,7 +60,7 @@ public class OrderController extends BaseController {
 
     @RequestMapping(value = "refund/apply", method = RequestMethod.POST)
     @ResponseBody
-    public Result<?> refundApply(@RequestBody Map params) {
+    public Result<?> refundApply(@RequestBody Map params) throws Exception {
         // 验证参数
         ParamsMapValidate.validate(params, orderValidateManager.refundApplyValidate());
         return refundOrderService.apply(params);
@@ -68,7 +68,7 @@ public class OrderController extends BaseController {
 
     @RequestMapping(value = "refund/audit", method = RequestMethod.POST)
     @ResponseBody
-    public Result<?> refundAudit(@RequestBody Map params) {
+    public Result<?> refundAudit(@RequestBody Map params) throws Exception {
         // 验证参数
         ParamsMapValidate.validate(params, orderValidateManager.refundAuditValidate());
         return refundOrderService.audit(params);

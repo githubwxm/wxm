@@ -1,5 +1,6 @@
 package com.all580.base.controller;
 
+import com.all580.order.api.OrderConstant;
 import com.framework.common.lang.JsonUtils;
 import org.hamcrest.core.IsNull;
 import org.junit.Before;
@@ -57,7 +58,7 @@ public class OrderControllerTest {
         ).andExpect(
                 status().isOk()
         ).andExpect(
-                jsonPath("$.code", is(1))
+                jsonPath("$.code", is(200))
         ).andDo(print());
     }
     @Test
@@ -65,28 +66,28 @@ public class OrderControllerTest {
         Map<String, Object> params = new HashMap<String, Object>(){{
             put("shipping", new HashMap<String, Object>(){{
                 put("name", "周先军");
-                put("mobile", "15019418143");
+                put("phone", "15019418143");
             }});
             put("items", new ArrayList<Map>(){{
                 add(new HashMap<String, Object>(){{
                     put("visitor", new ArrayList<Map<String, Object>>(){{
                         add(new HashMap<String, Object>(){{
                             put("name", "Alone");
-                            put("mobile", "15019418143");
-                            put("sid", "511702198606266283");
+                            put("phone", "15019418143");
+                            put("sid", "210905197807210546");
                             put("quantity", "1");
                         }});
                     }});
                     put("product_sub_id", "1");
-                    put("start", "2016-10-01 00:00:00");
+                    put("start", "2016-10-26 00:00:00");
                     put("days", "1");
                     put("quantity", "1");
                 }});
             }});
-            put("from", "350");
+            put("from", OrderConstant.FromType.NON_TRUST);
             put("ep_id", "54");
-            put("user_id", "1");
-            put("user_name", "xxx");
+            put("operator_id", "1");
+            put("operator_name", "xxx");
             put("sale_amount", "0");
             put("remark", "test");
         }};
@@ -95,8 +96,136 @@ public class OrderControllerTest {
                 ).andExpect(
                     status().isOk()
                 ).andExpect(
-                    jsonPath("$.code", is(1))
+                    jsonPath("$.code", is("200"))
                 ).andDo(print());
     }
 
+    @Test
+    public void createAuditTest() throws Exception {
+        Map<String, Object> params = new HashMap<String, Object>(){{
+            put("shipping", new HashMap<String, Object>(){{
+                put("name", "周先军");
+                put("phone", "15019418143");
+            }});
+            put("items", new ArrayList<Map>(){{
+                add(new HashMap<String, Object>(){{
+                    put("visitor", new ArrayList<Map<String, Object>>(){{
+                        add(new HashMap<String, Object>(){{
+                            put("name", "Alone");
+                            put("phone", "15019418143");
+                            put("sid", "511702197403222585");
+                            put("quantity", "1");
+                        }});
+                    }});
+                    put("product_sub_id", "2");
+                    put("start", "2016-10-26 00:00:00");
+                    put("days", "1");
+                    put("quantity", "1");
+                }});
+            }});
+            put("from", OrderConstant.FromType.NON_TRUST);
+            put("ep_id", "54");
+            put("operator_id", "1");
+            put("operator_name", "xxx");
+            put("sale_amount", "0");
+            put("remark", "test");
+        }};
+        mockMvc.perform(
+                post("/api/order/create").contentType(MediaType.APPLICATION_JSON).content(JsonUtils.toJson(params))
+        ).andExpect(
+                status().isOk()
+        ).andExpect(
+                jsonPath("$.code", is("200"))
+        ).andDo(print());
+    }
+
+    @Test
+    public void createAuditAcceptTest() throws Exception {
+        Map<String, Object> params = new HashMap<String, Object>(){{
+            put("order_item_id", "1477363084692670");
+            put("status", "true");
+        }};
+        mockMvc.perform(
+                post("/api/order/audit").contentType(MediaType.APPLICATION_JSON).content(JsonUtils.toJson(params))
+        ).andExpect(
+                status().isOk()
+        ).andExpect(
+                jsonPath("$.code", is("200"))
+        ).andDo(print());
+    }
+
+    @Test
+    public void createAuditFailTest() throws Exception {
+        Map<String, Object> params = new HashMap<String, Object>(){{
+            put("order_item_id", "1477362994524670");
+            put("status", "false");
+        }};
+        mockMvc.perform(
+                post("/api/order/audit").contentType(MediaType.APPLICATION_JSON).content(JsonUtils.toJson(params))
+        ).andExpect(
+                status().isOk()
+        ).andExpect(
+                jsonPath("$.code", is("200"))
+        ).andDo(print());
+    }
+
+    @Test
+    public void paymentBalancesTest() throws Exception {
+        Map<String, Object> params = new HashMap<String, Object>(){{
+            put("order_sn", "1477387869417520");
+            put("pay_type", "7111");
+        }};
+        mockMvc.perform(
+                    post("/api/order/payment").contentType(MediaType.APPLICATION_JSON).content(JsonUtils.toJson(params))
+                ).andExpect(
+                    status().isOk()
+                ).andExpect(
+                    jsonPath("$.code", is("200"))
+                ).andDo(print());
+    }
+
+    @Test
+    public void refundApplyTest() throws Exception {
+        Map<String, Object> params = new HashMap<String, Object>(){{
+            put("order_item_sn", "1477387869542520");
+            put("quantity", "1");
+            put("cause", "自愿");
+            put("days", new ArrayList<Map>(){{
+                add(new HashMap<String, Object>(){{
+                    put("day", "2016-10-26 00:00:00");
+                    put("quantity", "1");
+                    put("visitors", new ArrayList<Map>(){{
+                        add(new HashMap<String, Object>(){{
+                            put("sid", "210905197807210546");
+                            put("phone", "15019418143");
+                            put("quantity", "1");
+                        }});
+                    }});
+                }});
+            }});
+        }};
+        mockMvc.perform(
+                    post("/api/order/refund/apply").contentType(MediaType.APPLICATION_JSON).content(JsonUtils.toJson(params))
+                ).andExpect(
+                    status().isOk()
+                ).andExpect(
+                    jsonPath("$.code", is("200"))
+                ).andDo(print());
+    }
+
+    @Test
+    public void refundAcceptTest() throws Exception {
+        Map<String, Object> params = new HashMap<String, Object>(){{
+            put("refund_sn", "1477388159346520");
+            put("status", "true");
+            put("reason", "自愿");
+        }};
+        mockMvc.perform(
+                    post("/api/order/refund/audit").contentType(MediaType.APPLICATION_JSON).content(JsonUtils.toJson(params))
+                ).andExpect(
+                    status().isOk()
+                ).andExpect(
+                    jsonPath("$.code", is("200"))
+                ).andDo(print());
+    }
 }

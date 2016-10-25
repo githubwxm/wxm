@@ -56,7 +56,7 @@ public interface BalancePayService {
      * @return 成功，返回{success:true,result:{id:x,epId:x,coreEpId:x,canCash:x,balance:x,
      * credit:x}}；失败，返回{success:false,error:错误信息}
      */
-    Result<Map<String, String>> getBalanceAccountInfo(Integer epId, Integer coreEpId);
+    Result<Map<String, Object>> getBalanceAccountInfo(Integer epId, Integer coreEpId);
 
     /**
      * 批量获取余额账户信息
@@ -72,12 +72,12 @@ public interface BalancePayService {
      * @param coreEpId 平台商ID
      * @param startRecord 开始记录
      * @param maxRecords  最大记录数
-     * @return {id,refId,refType,createTime,balanceAdd,canCashAdd}
+     * @return [{id,refId,refType,createTime,balanceAdd,canCashAdd}]
      * -------------refId - String - 关联ID
      * -------------refType - int - 余额变动类型 @see PaymentConstant.BalanceChangeType
      * -------------createTime - String - 创建时间 yyyyMMddHHmmSS
      * -------------balanceAdd - int - 余额增加金额，单位分
      * -------------canCashAdd - int - 可提现金额变动金额，单位分
      */
-    Result<Map<String,String>> getBalanceSerialList(Integer epId, Integer coreEpId,int startRecord,int maxRecords);
+    Result<List<Map<String, String>>> getBalanceSerialList(Integer epId, Integer coreEpId,int startRecord,int maxRecords);
 }

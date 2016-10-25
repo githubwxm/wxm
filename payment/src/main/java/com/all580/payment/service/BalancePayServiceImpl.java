@@ -1,5 +1,7 @@
 package com.all580.payment.service;
 
+import com.all580.order.api.service.PaymentCallbackService;
+import com.all580.payment.api.conf.PaymentConstant;
 import com.all580.payment.api.model.BalanceChangeInfo;
 import com.all580.payment.api.model.BalanceChangeRsp;
 import com.all580.payment.api.service.BalancePayService;
@@ -8,9 +10,13 @@ import com.all580.payment.dao.CapitalSerialMapper;
 import com.all580.payment.entity.Capital;
 import com.all580.payment.entity.CapitalSerial;
 import com.all580.payment.exception.BusinessException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.framework.common.Result;
+import com.framework.common.lang.JsonUtils;
+import org.apache.commons.beanutils.BeanMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,9 +42,11 @@ public class BalancePayServiceImpl implements BalancePayService {
     private CapitalMapper capitalMapper;
     @Autowired
     private CapitalSerialMapper capitalSerialMapper;
+    @Autowired
+    private PaymentCallbackService paymentCallbackService;
 
     @Override
-    public Result<BalanceChangeRsp> changeBalances(List<BalanceChangeInfo> balanceChangeInfoList, Integer type, String
+    public Result<BalanceChangeRsp> changeBalances(List<BalanceChangeInfo> balanceChangeInfoList, Integer type, final String
             serialNum) {
         logger.info(MessageFormat.format("开始 -> 余额变更：type={0}|serialNum={1}", type.toString(), serialNum));
         Result<BalanceChangeRsp> result = new Result<>();
@@ -53,6 +61,16 @@ public class BalancePayServiceImpl implements BalancePayService {
             changeBalances(capitals);
             // 发布余额变更事件
             fireBalanceChangedEvent();
+
+            // 回调订单模块-余额支付
+            if (PaymentConstant.BalanceChangeType.BALANCE_PAY.equals(type)) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        paymentCallbackService.payCallback(Long.parseLong(serialNum), serialNum, null);
+                    }
+                }).start();
+            }
             result.setSuccess();
             logger.info("完成 -> 余额变更");
         } catch (BusinessException e) {
@@ -159,7 +177,7 @@ public class BalancePayServiceImpl implements BalancePayService {
             capitalMapper.updateByEpIdAndCoreEpId(capital);
             result.setSuccess();
         } catch (Exception e) {
-            logger.error(e.getMessage(),e);
+            logger.error(e.getMessage(), e);
             result.setFail();
             result.setError(e.getMessage());
         }
@@ -167,17 +185,40 @@ public class BalancePayServiceImpl implements BalancePayService {
     }
 
     @Override
-    public Result<Map<String, String>> getBalanceAccountInfo(Integer epId, Integer coreEpId) {
-        return null;
+    @SuppressWarnings("unchecked")
+    public Result<Map<String, Object>> getBalanceAccountInfo(Integer epId, Integer coreEpId) {
+        Result result = new Result();
+        Capital capital = capitalMapper.selectByEpIdAndCoreEpId(epId, coreEpId);
+        result.put(new BeanMap(capital));
+        return result;
     }
 
     @Override
     public Result<List<Map<String, String>>> getBalanceList(List<Integer> epIdList, Integer coreEpId) {
-        return null;
+        Result<List<Map<String, String>>> result = new Result<>();
+        if (epIdList.size() > 100) {
+            epIdList = epIdList.subList(0, 100);
+        }
+        List<Map<String, String>> list = capitalMapper.listByEpIdAndCoreEpId(epIdList, coreEpId);
+        result.setSuccess();
+        result.put(list);
+        return result;
     }
 
     @Override
-    public Result<Map<String, String>> getBalanceSerialList(Integer epId, Integer coreEpId, int startRecord, int maxRecords) {
-        return null;
+    public Result<List<Map<String, String>>> getBalanceSerialList(Integer epId, Integer coreEpId, int startRecord, int maxRecords) {
+        Result<List<Map<String, String>>> result = new Result<>();
+        Capital capital = capitalMapper.selectByEpIdAndCoreEpId(epId, coreEpId);
+        if (capital == null) {
+            result.setFail();
+            result.setError("余额账户不存在。");
+            logger.error(MessageFormat.format("余额账户不存在，epId={0},coreEpId={1}", epId, coreEpId));
+        } else {
+            List<Map<String, String>> capitalSerials = capitalSerialMapper.listByCapitalId(capital.getId(),
+                    startRecord, maxRecords);
+            result.setSuccess();
+            result.put(capitalSerials);
+        }
+        return result;
     }
 }

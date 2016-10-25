@@ -9,4 +9,5 @@ import java.util.Map;
 public interface CoreEpAccessMapper {
    int create(Map map);
    List<Map> select(Map params);
+   Map selectAccess(Map params);
 }

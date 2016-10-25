@@ -150,4 +150,5 @@ public class ThirdPayServiceImpl implements ThirdPayService {
     public Result getPaidStatus(Long ordCode) {
         return null;
     }
+
 }

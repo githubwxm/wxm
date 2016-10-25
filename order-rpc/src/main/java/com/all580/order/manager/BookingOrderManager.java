@@ -16,12 +16,15 @@ import com.framework.common.exception.ApiException;
 import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.lang.UUIDGenerator;
+import com.framework.common.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -58,14 +61,14 @@ public class BookingOrderManager extends BaseOrderManager {
     public Result validateVisitor(List<Map> visitors, Integer productSubId, Date bookingDate, Integer maxCount, Integer maxQuantity) {
         Set<String> sids = new HashSet<>();
         for (Map visitorMap : visitors) {
-            String sid = visitorMap.get("sid").toString();
+            String sid = CommonUtil.objectParseString(visitorMap.get("sid"));
             if (sids.contains(sid)) {
                 return new Result<>(false, Result.PARAMS_ERROR, "身份证:" + sid + "重复");
             }
             if (!canOrderByCount(productSubId, sid, bookingDate, maxCount)) {
                 return new Result<>(false, Result.PARAMS_ERROR, "身份证:" + sid + "超出该产品当天最大订单数");
             }
-            Integer qty = (Integer) visitorMap.get("quantity");
+            Integer qty = CommonUtil.objectParseInteger(visitorMap.get("quantity"));
             if (!canOrderByQuantity(productSubId, sid, bookingDate, maxQuantity, qty)) {
                 return new Result<>(false, Result.PARAMS_ERROR,
                         "身份证:" + sid + "超出该产品当天最大购票数,现已定" + qty + "张,最大购票" + maxQuantity + "张");
@@ -149,7 +152,11 @@ public class BookingOrderManager extends BaseOrderManager {
         OrderItem orderItem = new OrderItem();
         orderItem.setNumber(UUIDGenerator.generateUUID());
         orderItem.setStart(bookingDate);
-        orderItem.setEnd(DateUtils.addDays(bookingDate, days - 1));
+        Date end = DateUtils.addDays(info.getEndTime(), days - 1);
+        end = DateUtils.setHours(end, DateFormatUtils.get(end, Calendar.HOUR_OF_DAY));
+        end = DateUtils.setMinutes(end, DateFormatUtils.get(end, Calendar.MINUTE));
+        end = DateUtils.setSeconds(end, DateFormatUtils.get(end, Calendar.SECOND));
+        orderItem.setEnd(end);
         orderItem.setSaleAmount(saleAmount); // 进货价
         orderItem.setDays(days);
         orderItem.setGroupId(0); // 散客为0
@@ -251,10 +258,10 @@ public class BookingOrderManager extends BaseOrderManager {
     public Visitor generateVisitor(Map v, int itemDetailId) {
         Visitor visitor = new Visitor();
         visitor.setRefId(itemDetailId);
-        visitor.setName(v.get("name").toString());
-        visitor.setPhone(v.get("phone").toString());
-        visitor.setSid(v.containsKey("sid") ? v.get("sid").toString() : null);
-        visitor.setQuantity(Integer.parseInt(v.get("quantity").toString()));
+        visitor.setName(CommonUtil.objectParseString(v.get("name")));
+        visitor.setPhone(CommonUtil.objectParseString(v.get("phone")));
+        visitor.setSid(CommonUtil.objectParseString(v.get("sid")));
+        visitor.setQuantity(CommonUtil.objectParseInteger(v.get("quantity")));
         visitorMapper.insert(visitor);
         return visitor;
     }
@@ -269,9 +276,9 @@ public class BookingOrderManager extends BaseOrderManager {
     public Shipping generateShipping(Map shippingMap, int orderId) {
         Shipping shipping = new Shipping();
         shipping.setOrderId(orderId);
-        shipping.setName(shippingMap.get("name").toString());
-        shipping.setPhone(shippingMap.get("phone").toString());
-        shipping.setSid(shippingMap.get("sid").toString());
+        shipping.setName(CommonUtil.objectParseString(shippingMap.get("name")));
+        shipping.setPhone(CommonUtil.objectParseString(shippingMap.get("phone")));
+        shipping.setSid(CommonUtil.objectParseString(shippingMap.get("sid")));
         shippingMapper.insert(shipping);
         return shipping;
     }
@@ -365,7 +372,7 @@ public class BookingOrderManager extends BaseOrderManager {
                 }
 
                 // 买家平台商ID == 卖家平台商ID && 卖家ID != 卖家平台商ID
-                if (buyCoreEpId.intValue() == saleCoreEpId && info.getSaleEpId() != saleCoreEpId) {
+                if (buyCoreEpId.intValue() == saleCoreEpId/* && info.getSaleEpId() != saleCoreEpId*/) {
                     AccountDataDto dto = addDayAccount(dayAccountDataMap, infoList, info.getSaleEpId(), day);
                     dto.setSaleCoreEpId(saleCoreEpId);
                 }
@@ -399,6 +406,9 @@ public class BookingOrderManager extends BaseOrderManager {
             if (coreEpId.intValue() == epId) {
                 AccountDataDto dto = dataDtos.get(0);
                 if (dto != null && dto.getSaleCoreEpId() != null) {
+                    if (dto.getSaleCoreEpId().intValue() == epId) {
+                        continue;
+                    }
                     GenerateAccountDto accountDto = new GenerateAccountDto();
                     int totalAddProfit = 0;
                     // 卖家平台商每天的利润

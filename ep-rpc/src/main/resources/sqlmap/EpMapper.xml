@@ -68,6 +68,7 @@
         where
         1=1
        <include refid="ep_list_where"/>
+        ORDER BY ep.id desc
         <include refid="limit"/>
     </select>
     <select id="selectCount" resultType="java.lang.Integer">

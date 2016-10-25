@@ -6,13 +6,13 @@ import com.all580.ep.dao.EpBalanceThresholdMapper;
 import com.all580.ep.dao.EpMapper;
 import com.all580.notice.api.service.SmsService;
 import com.framework.common.Result;
-import com.framework.common.exception.ApiException;
 import com.framework.common.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.lang.exception.ApiException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +23,7 @@ import java.util.Map;
 public class EpBalanceThresholdServiceImple implements EpBalanceThresholdService {
 
     @Autowired
-    private EpBalanceThresholdMapper coreEpAccessMapper;
+    private EpBalanceThresholdMapper epBalanceThresholdMapper;
 
     @Autowired
     private EpMapper epMapper;
@@ -35,7 +35,7 @@ public class EpBalanceThresholdServiceImple implements EpBalanceThresholdService
     public  Result<Integer> createOrUpdate(Map map) {
         Result<Integer> result = new Result<>();
         try {
-            result.put(coreEpAccessMapper.createOrUpdate(map));
+            result.put(epBalanceThresholdMapper.createOrUpdate(map));
             result.setSuccess();
         } catch (Exception e) {
             log.error("添加更新余额阀值出错", e);
@@ -50,7 +50,7 @@ public class EpBalanceThresholdServiceImple implements EpBalanceThresholdService
     public  Result<Map> select(Map map) {
         Result<Map> result = new Result<>();
         try {
-            result.put(coreEpAccessMapper.select(map));
+            result.put(epBalanceThresholdMapper.select(map));
             result.setSuccess();
         } catch (Exception e) {
             log.error("查询余额阀值出错", e);
@@ -77,7 +77,8 @@ public class EpBalanceThresholdServiceImple implements EpBalanceThresholdService
                  List<Map> list= epMapper.select(epMap);//   获取企业信息
                  if(null==list){
                      if(!list.isEmpty()){
-                       String destPhoneNum=  list.get(0).get("link_phone").toString();
+                         Map mapResult = list.get(0);
+                        String destPhoneNum=  mapResult.get("link_phone").toString();
                          return smsService.send(destPhoneNum,-1,ep_id,null);//发送短信
                      }
                  }

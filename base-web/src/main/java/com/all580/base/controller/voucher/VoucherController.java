@@ -4,16 +4,14 @@ import com.all580.base.manager.VoucherValidateManager;
 import com.all580.voucher.api.service.VoucherRPCService;
 import com.framework.common.BaseController;
 import com.framework.common.Result;
-import com.framework.common.exception.ApiException;
-import com.framework.common.exception.ParamsMapValidationException;
+import javax.lang.exception.ApiException;
+import javax.lang.exception.ParamsMapValidationException;
 import com.framework.common.validate.ParamsMapValidate;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -38,7 +36,13 @@ public class VoucherController extends BaseController {
     public Result add(@RequestBody Map params) {
         // 验证参数
         ParamsMapValidate.validate(params, voucherValidateManager.addValidate());
-        return voucherRPCService.addVoucher(params.get("name").toString(), params.get("link").toString());
+        return voucherRPCService.addVoucher(params.get("name").toString(), params.get("link").toString(), (String) params.get("memo"));
+    }
+
+    @RequestMapping(value = "get/id")
+    @ResponseBody
+    public Result getId(@RequestParam Integer id) {
+        return voucherRPCService.selectVoucherById(id);
     }
 
     @RequestMapping(value = "update", method = RequestMethod.POST)
@@ -47,7 +51,7 @@ public class VoucherController extends BaseController {
         // 验证参数
         ParamsMapValidate.validate(params, voucherValidateManager.updateValidate());
         int id = Integer.parseInt(params.get("id").toString());
-        return voucherRPCService.updateVoucher(id, params.get("name").toString(), params.get("link").toString());
+        return voucherRPCService.updateVoucher(id, params.get("name").toString(), params.get("link").toString(), (String) params.get("memo"));
     }
 
     @RequestMapping(value = "merchant/add", method = RequestMethod.POST)

@@ -1,11 +1,13 @@
 package com.all580.payment.api.model;
 
+import java.io.Serializable;
+
 /**
  * 余额变更的返回结果
  *
  * @author Created by panyi on 2016/10/10.
  */
-public class BalanceChangeRsp {
+public class BalanceChangeRsp implements Serializable{
     private Integer epId; // 企业ID
     private Integer coreEpId; // 平台商ID
     private Integer lessBalance; // 缺少的余额

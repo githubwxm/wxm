@@ -33,7 +33,7 @@ public class BalanceChangeInfo implements Serializable {
     }
 
     public Integer getBalance() {
-        return balance;
+        return balance = balance == null ? 0 : balance;
     }
 
     public void setBalance(Integer balance) {
@@ -41,7 +41,7 @@ public class BalanceChangeInfo implements Serializable {
     }
 
     public Integer getCanCash() {
-        return canCash;
+        return canCash = canCash == null ? 0 : canCash;
     }
 
     public void setCanCash(Integer canCash) {
