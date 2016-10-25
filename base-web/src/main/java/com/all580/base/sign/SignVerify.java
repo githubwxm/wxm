@@ -36,24 +36,6 @@ public class SignVerify {
         return sign.equals(resultSign);
     }
 
-//    public static void main(String agrs[]) {
-//
-//        String value="{access_id:1476425987296LFJFURKK,address:1212,area:120102,area_name:河东区,city:120100,city_name:市辖区,code:1212,ep_id:30,license:13212,link_phone:13417325939,linkman:1,logo_pic:star/upls/2016/10/25/580f24946fa4d.png,name:121212,operator_id:9,operator_name:ZOUJING,province:120000,province_name:天津市}";
-//
-//        String key="1476425996329CJCJ6VXG3YMCNB";
-//        System.out.println(verifyPost(value,"",key));
-//
-//
-////	       new TestMain().toMD5("123456789dfadefq123456789dfadefq123456789d","key");//加密LXD
-////	       Object obj=null;
-////	       String  s = (String) obj;
-////	       System.out.println(s);
-//        // JSONObject jsonObject = JSONObject.fromObject(productMap);
-//
-//    }
-
-
-
 
     public static String toMD5(String plainText,String key) {
         try {
