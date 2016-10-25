@@ -2,14 +2,15 @@ package com.all580.base.controller;
 
 import com.alibaba.dubbo.rpc.RpcException;
 import com.framework.common.Result;
-import com.framework.common.exception.ApiException;
-import com.framework.common.exception.ParamsMapValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.lang.exception.ApiException;
+import javax.lang.exception.ParamsMapValidationException;
 
 /**
  * @author zhouxianjun(Alone)
