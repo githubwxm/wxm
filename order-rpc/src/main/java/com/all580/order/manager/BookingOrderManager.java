@@ -22,6 +22,7 @@ import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -344,6 +345,7 @@ public class BookingOrderManager extends BaseOrderManager {
      * @param quantity 每天(时间段)票数
      * @return
      */
+    @Transactional
     public List<OrderItemAccount> preSplitAccount(List<List<EpSalesInfo>> daySalesList, int itemId, int quantity, int payType, Date bookingDate) {
         // 预分账记录
         List<OrderItemAccount> accounts = new ArrayList<>();
@@ -497,5 +499,15 @@ public class BookingOrderManager extends BaseOrderManager {
             totalAddProfit += dataDto.getProfit();
         }
         return totalAddProfit;
+    }
+
+    public void syncCreateOrderData(int orderId) {
+        Map<String, List<Object>> data = new HashMap<>();
+        Order order = orderMapper.selectByPrimaryKey(orderId);
+        List<List<Object>> oneOrder = new ArrayList<>();
+        List<Object> orderFieldValues = new ArrayList<>();
+        orderFieldValues.add(order);
+        oneOrder.add(orderFieldValues);
+        data.put("t_order", orderFieldValues);
     }
 }
