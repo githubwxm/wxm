@@ -5,8 +5,7 @@ import com.all580.ep.api.service.EpService;
 import com.all580.notice.api.service.SmsService;
 import com.framework.common.BaseController;
 import com.framework.common.Result;
-import com.framework.common.exception.ApiException;
-import com.framework.common.exception.ParamsMapValidationException;
+
 import com.framework.common.util.CommonUtil;
 import com.framework.common.validate.ParamsMapValidate;
 import com.framework.common.validate.ValidRule;
@@ -80,10 +79,10 @@ public class EpBalanceThresholdController extends BaseController {
              map.put("ep_id",ep_id);
              map.put("core_ep_id",core_ep_id);
              map.put("balance",balance);
-            ParamsMapValidate.validate(map, generateEpBalanceThresholdUpdateValidate());
+            ParamsMapValidate.validate(map, generateEpBalanceValidate());
 
-
-            if(epBalanceThresholdService.warn(map)){
+            boolean bool =epBalanceThresholdService.warn(map);
+            if(bool){
 
             }
             return null;
@@ -133,6 +132,24 @@ public class EpBalanceThresholdController extends BaseController {
         // 校验整数
         rules.put(new String[]{
                 "ep_id", //
+                "balance",
+        }, new ValidRule[]{new ValidRule.Digits()});
+        return rules;
+    }
+
+    private Map<String[], ValidRule[]> generateEpBalanceValidate() {
+        Map<String[], ValidRule[]> rules = new HashMap<>();
+        // 校验不为空的参数
+        rules.put(new String[]{
+                "ep_id", //
+                "core_ep_id", //
+                "balance",
+        }, new ValidRule[]{new ValidRule.NotNull()});
+
+        // 校验整数
+        rules.put(new String[]{
+                "ep_id", //
+                "core_ep_id", //
                 "balance",
         }, new ValidRule[]{new ValidRule.Digits()});
         return rules;

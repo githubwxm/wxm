@@ -3,8 +3,7 @@ package com.all580.base.controller.ep;
 import com.all580.ep.api.service.CoreEpChannelService;
 import com.framework.common.BaseController;
 import com.framework.common.Result;
-import com.framework.common.exception.ApiException;
-import com.framework.common.exception.ParamsMapValidationException;
+
 import com.framework.common.util.CommonUtil;
 import com.framework.common.validate.ParamsMapValidate;
 import com.framework.common.validate.ValidRule;
@@ -14,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.lang.exception.ParamsMapValidationException;
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;

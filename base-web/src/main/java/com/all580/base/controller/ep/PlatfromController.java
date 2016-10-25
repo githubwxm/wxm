@@ -4,8 +4,7 @@ import com.all580.base.manager.PlatfromValidateManager;
 import com.all580.ep.api.service.EpService;
 import com.framework.common.BaseController;
 import com.framework.common.Result;
-import com.framework.common.exception.ApiException;
-import com.framework.common.exception.ParamsMapValidationException;
+
 import com.framework.common.validate.ParamsMapValidate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,11 +53,9 @@ public class PlatfromController extends BaseController {
      */
     @RequestMapping(value = "selectPlatfromId", method = RequestMethod.GET)
     @ResponseBody
-    public Result<Map> selectPlatfromId(HttpServletRequest request,  Integer id, Integer core_ep_id) {
+    public Result<Map> selectPlatfromId(HttpServletRequest request,  Integer id) {
         Map map = new HashMap();
         map.put("id", id);
-        String test =request.getAttribute("core_ep_id").toString();
-        System.out.println(core_ep_id);
         ParamsMapValidate.validate(map, platfromValidateManager.generateCreateStatusValidate());
         return epService.selectId(map);
 

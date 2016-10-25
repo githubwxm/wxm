@@ -6,8 +6,7 @@ import com.all580.ep.api.service.EpFinanceService;
 import com.all580.ep.api.service.LogCreditService;
 import com.framework.common.BaseController;
 import com.framework.common.Result;
-import com.framework.common.exception.ApiException;
-import com.framework.common.exception.ParamsMapValidationException;
+
 import com.framework.common.util.CommonUtil;
 import com.framework.common.validate.ParamsMapValidate;
 import com.framework.common.validate.ValidRule;
@@ -77,8 +76,7 @@ public class EpFinanceController extends BaseController {
      */
     @RequestMapping(value = "hostoryCredit", method = RequestMethod.GET)
     @ResponseBody
-    public Result<Map> hostoryCredit(HttpServletRequest request,Integer ep_id
-                                    ) {
+    public Result<Map> hostoryCredit(HttpServletRequest request,Integer ep_id) {
         Map map = new HashMap();
         map.put("ep_id", ep_id);
         map.put("croe_ep_id", request.getAttribute("croe_ep_id"));
