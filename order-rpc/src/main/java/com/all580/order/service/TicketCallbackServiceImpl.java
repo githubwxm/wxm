@@ -64,7 +64,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         orderItem.setStatus(OrderConstant.OrderItemStatus.SEND);
         Date sendMaTime = new Date();
         orderItem.setSendMaTime(sendMaTime);
-        orderItemMapper.updateByPrimaryKey(orderItem);
+        orderItemMapper.updateByPrimaryKeySelective(orderItem);
 
         for (SendTicketInfo ticketInfo : infoList) {
             MaSendResponse response = new MaSendResponse();
@@ -77,7 +77,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
             response.setMaProductId(ticketInfo.getMaProductId()); // 凭证产品ID
             response.setOrderItemId(orderItem.getId()); // 子订单ID
             response.setCreateTime(sendMaTime);
-            maSendResponseMapper.insert(response);
+            maSendResponseMapper.insertSelective(response);
         }
         return new Result(true);
     }
@@ -98,7 +98,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         // 目前景点只有一天
         OrderItemDetail itemDetail = detailList.get(0);
         itemDetail.setUsedQuantity(itemDetail.getUsedQuantity() + info.getConsumeQuantity());
-        orderItemDetailMapper.updateByPrimaryKey(itemDetail);
+        orderItemDetailMapper.updateByPrimaryKeySelective(itemDetail);
 
         // 保存核销流水
         OrderClearanceSerial serial = new OrderClearanceSerial();
@@ -108,7 +108,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         serial.setDay(orderItem.getStart());
         serial.setQuantity(info.getConsumeQuantity());
         serial.setSerialNo(info.getValidateSn());
-        orderClearanceSerialMapper.insert(serial);
+        orderClearanceSerialMapper.insertSelective(serial);
 
         // 获取已出票的凭证
         MaSendResponse response = maSendResponseMapper.selectByOrderItemIdAndMaId(orderItem.getId(), info.getTicketId(), orderItem.getEpMaId());
@@ -120,11 +120,11 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         detail.setName(visitor.getName());
         detail.setSid(response.getSid());
         detail.setPhone(response.getPhone());
-        orderClearanceDetailMapper.insert(detail);
+        orderClearanceDetailMapper.insertSelective(detail);
 
         // 设置核销人核销数量
         visitor.setUseQuantity(visitor.getUseQuantity() + info.getConsumeQuantity());
-        visitorMapper.updateByPrimaryKey(visitor);
+        visitorMapper.updateByPrimaryKeySelective(visitor);
 
         // 分账
         // 核销成功 记录任务
@@ -150,7 +150,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         // 目前景点只有一天
         OrderItemDetail itemDetail = detailList.get(0);
         itemDetail.setUsedQuantity(itemDetail.getUsedQuantity() - info.getConsumeQuantity());
-        orderItemDetailMapper.updateByPrimaryKey(itemDetail);
+        orderItemDetailMapper.updateByPrimaryKeySelective(itemDetail);
 
         // 保存冲正流水
         ClearanceWashedSerial serial = new ClearanceWashedSerial();
@@ -167,7 +167,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         Visitor visitor = visitorMapper.selectByMa(itemDetail.getId(), response.getSid(), response.getPhone());
         // 设置核销人核销数量
         visitor.setUseQuantity(visitor.getUseQuantity() - info.getConsumeQuantity());
-        visitorMapper.updateByPrimaryKey(visitor);
+        visitorMapper.updateByPrimaryKeySelective(visitor);
 
         // 分账
         // 记录任务
@@ -216,13 +216,13 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
             }
             visitor.setReturnQuantity(visitor.getReturnQuantity() + visitor.getPreReturn());
             visitor.setPreReturn(0);
-            visitorMapper.updateByPrimaryKey(visitor);
+            visitorMapper.updateByPrimaryKeySelective(visitor);
             quantity += ticketInfo.getRefundQuantity();
         }
         orderItem.setRefundQuantity(orderItem.getRefundQuantity() + quantity);
-        orderItemMapper.updateByPrimaryKey(orderItem);
-        refundOrderMapper.updateByPrimaryKey(refundOrder);
-        refundSerialMapper.updateByPrimaryKey(refundSerial);
+        orderItemMapper.updateByPrimaryKeySelective(orderItem);
+        refundOrderMapper.updateByPrimaryKeySelective(refundOrder);
+        refundSerialMapper.updateByPrimaryKeySelective(refundSerial);
 
         // 退款
         Order order = orderMapper.selectByPrimaryKey(orderItem.getOrderId());

@@ -16,7 +16,7 @@ import com.all580.voucher.api.model.RefundTicketParams;
 import com.all580.voucher.api.model.RefundTicketPersonInfo;
 import com.all580.voucher.api.service.VoucherRPCService;
 import com.framework.common.Result;
-import com.framework.common.exception.ApiException;
+import javax.lang.exception.ApiException;
 import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.lang.UUIDGenerator;
@@ -89,7 +89,6 @@ public class RefundOrderManager extends BaseOrderManager {
             case OrderConstant.OrderStatus.CANCEL:
                 throw new ApiException("重复操作,订单已取消");
             case OrderConstant.OrderStatus.PAID:
-            case OrderConstant.OrderStatus.PAID_HANDLING:
                 throw new ApiException("订单已支付,请走退订流程");
             case OrderConstant.OrderStatus.PAYING:
                 throw new ApiException("支付中,不能取消");
@@ -106,15 +105,28 @@ public class RefundOrderManager extends BaseOrderManager {
             }
 
             orderItem.setStatus(OrderConstant.OrderItemStatus.CANCEL);
-            orderItemMapper.updateByPrimaryKey(orderItem);
-            lockParams.add(parseParams(orderItem));
+            orderItemMapper.updateByPrimaryKeySelective(orderItem);
+            List<OrderItemDetail> detailList = orderItemDetailMapper.selectByItemId(orderItem.getId());
+            for (OrderItemDetail detail : detailList) {
+                if (!detail.getOversell()) {
+                    ProductSearchParams params = new ProductSearchParams();
+                    params.setSubProductId(orderItem.getProSubId());
+                    params.setStartDate(detail.getDay());
+                    params.setDays(1);
+                    params.setQuantity(detail.getQuantity());
+                    params.setSubOrderId(orderItem.getId());
+                    lockParams.add(params);
+                }
+            }
         }
         // 更新主订单为已取消
-        orderMapper.updateByPrimaryKey(order);
+        orderMapper.updateByPrimaryKeySelective(order);
         // 还库存
-        Result result = productSalesPlanRPCService.addProductStocks(lockParams);
-        if (result.hasError()) {
-            throw new ApiException(result.getError());
+        if (!lockParams.isEmpty()) {
+            Result result = productSalesPlanRPCService.addProductStocks(lockParams);
+            if (result.hasError()) {
+                throw new ApiException(result.getError());
+            }
         }
         return new Result(true);
     }
@@ -125,6 +137,7 @@ public class RefundOrderManager extends BaseOrderManager {
      * @param detailList 订单详情
      * @throws Exception
      */
+    @Transactional
     public int canRefundForDays(List daysList, List<OrderItemDetail> detailList) throws Exception {
         int total = 0;
         for (Object item : daysList) {
@@ -144,7 +157,7 @@ public class RefundOrderManager extends BaseOrderManager {
             total += quantity;
             // 修改退票数
             detail.setRefundQuantity(detail.getRefundQuantity() + quantity);
-            orderItemDetailMapper.updateByPrimaryKey(detail);
+            orderItemDetailMapper.updateByPrimaryKeySelective(detail);
 
             // 判断游客余票
             List visitors = (List) dayMap.get("visitors");
@@ -163,7 +176,8 @@ public class RefundOrderManager extends BaseOrderManager {
      * @param day 日期
      * @param detail 订单详情
      */
-    private int canVisitorRefund(List visitors, String day, OrderItemDetail detail) {
+    @Transactional
+    public int canVisitorRefund(List visitors, String day, OrderItemDetail detail) {
         int total = 0;
         List<Visitor> visitorList = visitorMapper.selectByOrderDetailId(detail.getId());
         if (visitorList != null) {
@@ -185,7 +199,7 @@ public class RefundOrderManager extends BaseOrderManager {
                                     new Object[]{day, sid}));
                 }
                 visitor.setPreReturn(vqty);
-                visitorMapper.updateByPrimaryKey(visitor);
+                visitorMapper.updateByPrimaryKeySelective(visitor);
                 total += vqty;
             }
         }
@@ -235,7 +249,7 @@ public class RefundOrderManager extends BaseOrderManager {
         int money = 0;
         for (Object item : daysList) {
             Map dayMap = (Map) item;
-            String day = CommonUtil.objectParseString(dayMap.get("sid"));
+            String day = CommonUtil.objectParseString(dayMap.get("day"));
             Date date = DateFormatUtils.parseString(DateFormatUtils.DATE_TIME_FORMAT, day);
             OrderItemDetail detail = getDetailByDay(detailList, date);
             if (detail == null) {
@@ -251,7 +265,7 @@ public class RefundOrderManager extends BaseOrderManager {
             if (rate.get("type") == ProductConstants.AddPriceType.FIX) {
                 money += (outPrice * quantity) - rate.get("fixed") * quantity;
             } else {
-                money += outPrice - outPrice * quantity * (rate.get("percent") / 100);
+                money += outPrice - outPrice * quantity * (float)rate.get("percent") / 100;
             }
         }
         return money;
@@ -265,6 +279,7 @@ public class RefundOrderManager extends BaseOrderManager {
      * @param money 退支付金额
      * @return
      */
+    @Transactional
     public RefundOrder generateRefundOrder(int itemId, List daysList, int quantity, int money, String cause) {
         RefundOrder refundOrder = new RefundOrder();
         refundOrder.setOrderItemId(itemId);
@@ -275,7 +290,7 @@ public class RefundOrderManager extends BaseOrderManager {
         refundOrder.setCreateTime(new Date());
         refundOrder.setMoney(money);
         refundOrder.setCause(cause);
-        refundOrderMapper.insert(refundOrder);
+        refundOrderMapper.insertSelective(refundOrder);
         return refundOrder;
     }
 
@@ -286,6 +301,7 @@ public class RefundOrderManager extends BaseOrderManager {
      * @param detailList 每天详情
      * @param refundDate 退订时间
      */
+    @Transactional
     public void preRefundAccount(List daysList, int itemId, int refundOrderId, List<OrderItemDetail> detailList, Date refundDate) throws Exception {
         Map<Integer, Integer> coreEpIdMap = new HashMap<>();
         List<OrderItemAccount> accounts = orderItemAccountMapper.selectByOrderItem(itemId);
@@ -317,7 +333,7 @@ public class RefundOrderManager extends BaseOrderManager {
                     if (rate.get("type") == ProductConstants.AddPriceType.FIX) {
                         money += profit * quantity - rate.get("fixed") * quantity;
                     } else {
-                        money += profit - profit * quantity * (rate.get("percent") / 100);
+                        money += profit - profit * quantity * (float)rate.get("percent") / 100;
                     }
                 } else {
                     // 平台之间分账->进货价
@@ -325,7 +341,7 @@ public class RefundOrderManager extends BaseOrderManager {
                     if (rate.get("type") == ProductConstants.AddPriceType.FIX) {
                         money += inPrice * quantity - rate.get("fixed") * quantity;
                     } else {
-                        money += inPrice * quantity - inPrice * (rate.get("percent") / 100);
+                        money += inPrice * quantity - inPrice * (float)rate.get("percent") / 100;
                     }
                 }
             }
@@ -335,7 +351,7 @@ public class RefundOrderManager extends BaseOrderManager {
             refundAccount.setMoney(money == 0 ? 0 : account.getMoney() > 0 ? -money : money);
             refundAccount.setStatus(OrderConstant.AccountSplitStatus.NOT);
             refundAccount.setRefundOrderId(refundOrderId);
-            refundAccountMapper.insert(refundAccount);
+            refundAccountMapper.insertSelective(refundAccount);
         }
     }
 
@@ -346,6 +362,7 @@ public class RefundOrderManager extends BaseOrderManager {
      * @return
      * @throws Exception
      */
+    @Transactional
     public void returnRefundForDays(List daysList, List<OrderItemDetail> detailList) throws Exception {
         for (Object item : daysList) {
             Map dayMap = (Map) item;
@@ -358,7 +375,7 @@ public class RefundOrderManager extends BaseOrderManager {
             Integer quantity = Integer.parseInt(dayMap.get(day).toString());
             // 修改退票数
             detail.setRefundQuantity(detail.getRefundQuantity() - quantity);
-            orderItemDetailMapper.updateByPrimaryKey(detail);
+            orderItemDetailMapper.updateByPrimaryKeySelective(detail);
 
             // 游客预退票退回
             List visitors = (List) dayMap.get("visitors");
@@ -371,7 +388,8 @@ public class RefundOrderManager extends BaseOrderManager {
      * @param visitors 游客信息
      * @param detail 订单详情
      */
-    private void returnVisitorRefund(List visitors, OrderItemDetail detail) {
+    @Transactional
+    public void returnVisitorRefund(List visitors, OrderItemDetail detail) {
         List<Visitor> visitorList = visitorMapper.selectByOrderDetailId(detail.getId());
         if (visitorList != null) {
             for (Object v : visitors) {
@@ -383,9 +401,56 @@ public class RefundOrderManager extends BaseOrderManager {
                     throw new ApiException(String.format("缺少游客:%s", sid));
                 }
                 visitor.setPreReturn(0);
-                visitorMapper.updateByPrimaryKey(visitor);
+                visitorMapper.updateByPrimaryKeySelective(visitor);
             }
         }
+    }
+
+    /**
+     * 已支付未出票的订单退订 更新游客退票数据
+     * @param daysList
+     * @param detailList
+     * @return
+     * @throws Exception
+     */
+    @Transactional
+    public int nonSendTicketRefund(List daysList, List<OrderItemDetail> detailList) throws Exception {
+        int total = 0;
+        for (Object item : daysList) {
+            Map dayMap = (Map) item;
+            String day = CommonUtil.objectParseString(dayMap.get("day"));
+            Date date = DateFormatUtils.parseString(DateFormatUtils.DATE_TIME_FORMAT, day);
+            OrderItemDetail detail = getDetailByDay(detailList, date);
+            if (detail == null) {
+                throw new ApiException(String.format("日期:%s没有订单数据,数据异常", day));
+            }
+            Integer quantity = Integer.parseInt(dayMap.get("quantity").toString());
+
+            // 游客预退票退回
+            List visitors = (List) dayMap.get("visitors");
+            List<Visitor> visitorList = visitorMapper.selectByOrderDetailId(detail.getId());
+            if (visitorList != null) {
+                int vqty = 0;
+                for (Object v : visitors) {
+                    Map vMap = (Map) v;
+                    String sid = CommonUtil.objectParseString(vMap.get("sid"));
+                    String phone = CommonUtil.objectParseString(vMap.get("phone"));
+                    Visitor visitor = getVisitorBySid(visitorList, sid, phone);
+                    if (visitor == null) {
+                        throw new ApiException(String.format("缺少游客:%s", sid));
+                    }
+                    vqty += visitor.getPreReturn();
+                    visitor.setReturnQuantity(visitor.getReturnQuantity() + visitor.getPreReturn());
+                    visitor.setPreReturn(0);
+                    visitorMapper.updateByPrimaryKeySelective(visitor);
+                }
+                if (quantity != vqty) {
+                    throw new ApiException("当天退票数与游客退票数不匹配");
+                }
+            }
+            total += quantity;
+        }
+        return total;
     }
 
     /**
@@ -393,18 +458,20 @@ public class RefundOrderManager extends BaseOrderManager {
      * @param refundOrder
      * @throws Exception
      */
+    @Transactional
     public void refundFail(RefundOrder refundOrder) throws Exception {
         refundOrder.setStatus(OrderConstant.RefundOrderStatus.FAIL);
         List daysList = JsonUtils.json2List(refundOrder.getData());
         List<OrderItemDetail> detailList = orderItemDetailMapper.selectByItemId(refundOrder.getOrderItemId());
         returnRefundForDays(daysList, detailList);
-        refundOrderMapper.updateByPrimaryKey(refundOrder);
+        refundOrderMapper.updateByPrimaryKeySelective(refundOrder);
     }
 
     /**
      * 退票
      * @param refundOrder
      */
+    @Transactional
     public void refundTicket(RefundOrder refundOrder) {
         // 生成退票流水
         RefundSerial refundSerial = new RefundSerial();
@@ -413,7 +480,7 @@ public class RefundOrderManager extends BaseOrderManager {
         refundSerial.setData(refundOrder.getData());
         refundSerial.setRefundOrderId(refundOrder.getId());
         refundSerial.setCreateTime(new Date());
-        refundSerialMapper.insert(refundSerial);
+        refundSerialMapper.insertSelective(refundSerial);
 
         refundOrder.setStatus(OrderConstant.RefundOrderStatus.REFUNDING);
         refundOrder.setLocalRefundSerialNo(refundSerial.getLocalSerialNo());
@@ -427,23 +494,30 @@ public class RefundOrderManager extends BaseOrderManager {
             for (Object v : visitors) {
                 Map vMap = (Map) v;
                 String sid = CommonUtil.objectParseString(vMap.get("sid"));
-                String s = sid == null ? "" : sid;
-                Integer q = sidMap.get(s);
+                String phone = CommonUtil.objectParseString(vMap.get("phone"));
+                String key = sid + "|" + phone;
+                Integer q = sidMap.get(key);
                 int quantity = CommonUtil.objectParseInteger(vMap.get("quantity"));
-                sidMap.put(s, q == null ? quantity : q + quantity);
+                sidMap.put(key, q == null ? quantity : q + quantity);
             }
         }
 
         Integer epMaId = null;
         List<RefundTicketPersonInfo> personInfos = new ArrayList<>();
-        for (String sid : sidMap.keySet()) {
+        for (String key : sidMap.keySet()) {
             for (MaSendResponse maSendResponse : maList) {
-                if ((maSendResponse.getSid() == null && sid.equals("")) || maSendResponse.getSid().equals(sid)) {
+                String[] split = key.split("|");
+                String sid = split[0];
+                String phone = split[1];
+                if (phone.equals(maSendResponse.getPhone()) &&
+                        (maSendResponse.getSid() == null && (sid == null || sid.equals("") || sid.equals("null"))||
+                                (maSendResponse.getSid() != null && maSendResponse.getSid().equals(sid)))) {
                     epMaId = epMaId == null ? maSendResponse.getEpMaId() : epMaId;
                     RefundTicketPersonInfo info = new RefundTicketPersonInfo();
                     info.setSid(sid);
+                    info.setPhone(phone);
                     info.setMaOrderId(maSendResponse.getMaOrderId());
-                    info.setQuantity(sidMap.get(sid));
+                    info.setQuantity(sidMap.get(key));
                     personInfos.add(info);
                 }
             }

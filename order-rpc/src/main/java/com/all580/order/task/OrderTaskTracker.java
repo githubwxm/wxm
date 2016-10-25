@@ -26,7 +26,7 @@ public class OrderTaskTracker implements JobRunner, ApplicationContextAware {
     public Result run(JobContext jobContext) throws Throwable {
         Job job = jobContext.getJob();
         JobExtInfo jobExtInfo = jobContext.getJobExtInfo();
-        String action = job.getParam("ACTION");
+        String action = job.getParam("$ACTION$");
         log.info("执行任务ID:{},Action:{},Type:{},重试次数:{}", new Object[]{
                 job.getTaskId(), action, jobExtInfo.getJobType(), jobExtInfo.getRetryTimes() + 1
         });
