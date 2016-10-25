@@ -37,8 +37,6 @@ public class VerifyDataInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
-        if (1 == 2)
-            return 1 == 1;
         String method = request.getMethod();
         String postParams = "";
         String url = request.getRequestURI();
