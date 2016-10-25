@@ -1,6 +1,7 @@
 package com.all580.payment.service;
 
 import com.all580.order.api.service.PaymentCallbackService;
+import com.all580.payment.api.conf.PaymentConstant;
 import com.all580.payment.api.model.BalanceChangeInfo;
 import com.all580.payment.api.model.BalanceChangeRsp;
 import com.all580.payment.api.service.BalancePayService;
@@ -61,13 +62,15 @@ public class BalancePayServiceImpl implements BalancePayService {
             // 发布余额变更事件
             fireBalanceChangedEvent();
 
-            // 回调订单模块
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    paymentCallbackService.payCallback(Long.parseLong(serialNum),serialNum,null);
-                }
-            }).start();
+            // 回调订单模块-余额支付
+            if (PaymentConstant.BalanceChangeType.BALANCE_PAY.equals(type)) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        paymentCallbackService.payCallback(Long.parseLong(serialNum), serialNum, null);
+                    }
+                }).start();
+            }
             result.setSuccess();
             logger.info("完成 -> 余额变更");
         } catch (BusinessException e) {
@@ -174,7 +177,7 @@ public class BalancePayServiceImpl implements BalancePayService {
             capitalMapper.updateByEpIdAndCoreEpId(capital);
             result.setSuccess();
         } catch (Exception e) {
-            logger.error(e.getMessage(),e);
+            logger.error(e.getMessage(), e);
             result.setFail();
             result.setError(e.getMessage());
         }
@@ -191,11 +194,10 @@ public class BalancePayServiceImpl implements BalancePayService {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public Result<List<Map<String, String>>> getBalanceList(List<Integer> epIdList, Integer coreEpId) {
-        Result result = new Result();
-        if(epIdList.size() > 100){
-            epIdList = epIdList.subList(0,100);
+        Result<List<Map<String, String>>> result = new Result<>();
+        if (epIdList.size() > 100) {
+            epIdList = epIdList.subList(0, 100);
         }
         List<Map<String, String>> list = capitalMapper.listByEpIdAndCoreEpId(epIdList, coreEpId);
         result.setSuccess();
@@ -204,7 +206,19 @@ public class BalancePayServiceImpl implements BalancePayService {
     }
 
     @Override
-    public Result<Map<String, String>> getBalanceSerialList(Integer epId, Integer coreEpId, int startRecord, int maxRecords) {
-        return null;
+    public Result<List<Map<String, String>>> getBalanceSerialList(Integer epId, Integer coreEpId, int startRecord, int maxRecords) {
+        Result<List<Map<String, String>>> result = new Result<>();
+        Capital capital = capitalMapper.selectByEpIdAndCoreEpId(epId, coreEpId);
+        if (capital == null) {
+            result.setFail();
+            result.setError("余额账户不存在。");
+            logger.error(MessageFormat.format("余额账户不存在，epId={0},coreEpId={1}", epId, coreEpId));
+        } else {
+            List<Map<String, String>> capitalSerials = capitalSerialMapper.listByCapitalId(capital.getId(),
+                    startRecord, maxRecords);
+            result.setSuccess();
+            result.put(capitalSerials);
+        }
+        return result;
     }
 }

@@ -83,13 +83,12 @@ public class AliPayController extends BaseController {
         }
     }
 
-
     /**
      * 支付回调
      *
      * @throws IOException
      */
-    @RequestMapping(value = "/payment", method = RequestMethod.POST)
+    @RequestMapping(value = "/payment")
     public void payment(HttpServletRequest request, HttpServletResponse rsp) throws IOException {
         logger.info("支付宝支付回调开始");
         Map<String, String> params = new HashMap<String, String>();
@@ -119,7 +118,7 @@ public class AliPayController extends BaseController {
         logger.info("支付宝支付回调单号：" + ordId + "|支付宝交易号：" + trade_no + "|交易状态：" + trade_status);
 
         //获取支付宝的通知返回参数，可参考技术文档中页面跳转同步通知参数列表(以上仅供参考)//
-        Result result = thirdPayService.payCallback(ordId, trade_no, params,PaymentConstant.PaymentType.ALI_PAY);
+        Result result = thirdPayService.payCallback(ordId, trade_no, params, PaymentConstant.PaymentType.ALI_PAY);
         if (result.isSuccess()) {//验证成功
 
             rsp.getWriter().println("success");    //请不要修改或删除
@@ -129,5 +128,21 @@ public class AliPayController extends BaseController {
             rsp.getWriter().println("fail");
         }
         logger.info("支付宝支付回调结束");
+    }
+
+    @RequestMapping(value = "/reqPay")
+    public void reqPayTest(HttpServletResponse rsp) throws Exception{
+        long ordCode = 1111111111;
+        int coreEpId = 2;
+        int payType = PaymentConstant.PaymentType.ALI_PAY;
+        Map<String, Object> params = new HashMap<>();
+        params.put("totalFee", 10);
+        params.put("prodId", 1010);
+        params.put("prodName", "测试产品名称");
+        params.put("serialNum", "110110");
+        Result<String> result = thirdPayService.reqPay(ordCode, coreEpId, payType, params);
+        rsp.setContentType("text/html; charset=UTF-8");
+        rsp.getWriter().print(result.get());
+        rsp.getWriter().flush();
     }
 }

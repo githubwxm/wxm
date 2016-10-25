@@ -22,7 +22,7 @@
     where id = #{id,jdbcType=INTEGER}
   </delete>
     <insert id="insert" parameterType="com.all580.payment.entity.EpPaymentConf">
-        <selectKey resultType="java.lang.Integer" keyProperty="id" order="BEFORE">
+        <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
             SELECT LAST_INSERT_ID()
         </selectKey>
         insert into t_core_ep_payment_conf (id, core_ep_id, payment_type,
@@ -31,7 +31,7 @@
         #{confData,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER})
     </insert>
     <insert id="insertSelective" parameterType="com.all580.payment.entity.EpPaymentConf">
-        <selectKey resultType="java.lang.Integer" keyProperty="id" order="BEFORE">
+        <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
             SELECT LAST_INSERT_ID()
         </selectKey>
         insert into t_core_ep_payment_conf

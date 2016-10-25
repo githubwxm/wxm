@@ -4,6 +4,7 @@ import com.all580.payment.entity.CapitalSerial;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 public interface CapitalSerialMapper {
     int deleteByPrimaryKey(Integer id);
@@ -15,6 +16,10 @@ public interface CapitalSerialMapper {
     int insertSelective(CapitalSerial record);
 
     CapitalSerial selectByPrimaryKey(Integer id);
+
+    List<Map<String,String>> listByCapitalId(@Param("capitalId") Integer capitalId,
+                                             @Param("startRecord")int startRecord,
+                                             @Param("maxRecords")int maxRecords);
 
     int updateByPrimaryKeySelective(CapitalSerial record);
 
