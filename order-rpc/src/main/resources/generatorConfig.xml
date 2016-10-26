@@ -39,7 +39,7 @@
             <property name="enableSubPackages" value="true"/>
         </javaClientGenerator>
 
-        <!--<table tableName="t_order_item_account"
+        <table tableName="t_order_item_account"
                enableCountByExample="false"
                enableUpdateByExample="false"
                enableDeleteByExample="false"
@@ -118,7 +118,7 @@
                delimitAllColumns="true"
                domainObjectName="RefundAccount">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
-        </table>-->
+        </table>
         <table tableName="t_refund_order"
                enableCountByExample="false"
                enableUpdateByExample="false"
@@ -129,7 +129,7 @@
                domainObjectName="RefundOrder">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
         </table>
-        <!--<table tableName="t_refund_serial"
+        <table tableName="t_refund_serial"
                enableCountByExample="false"
                enableUpdateByExample="false"
                enableDeleteByExample="false"
@@ -168,6 +168,6 @@
                delimitAllColumns="true"
                domainObjectName="MaSendResponse">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
-        </table>-->
+        </table>
     </context>
 </generatorConfiguration>
