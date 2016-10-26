@@ -23,11 +23,9 @@ import com.all580.product.api.model.ProductSalesInfo;
 import com.all580.product.api.model.ProductSearchParams;
 import com.all580.product.api.service.ProductSalesPlanRPCService;
 import com.framework.common.Result;
-import javax.lang.exception.ApiException;
 import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.lang.UUIDGenerator;
-import com.framework.common.synchronize.SynchronizeDataManager;
 import com.framework.common.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
@@ -36,6 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.lang.exception.ApiException;
 import java.util.*;
 
 /**
@@ -52,8 +51,6 @@ public class BookingOrderServiceImpl implements BookingOrderService {
     private BookingOrderManager bookingOrderManager;
     @Autowired
     private RefundOrderManager refundOrderManager;
-    @Autowired
-    private SynchronizeDataManager synchronizeDataManager;
 
     @Autowired
     private OrderMapper orderMapper;
@@ -257,7 +254,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         result.put(resultMap);
 
         // 同步数据
-        System.out.println(synchronizeDataManager);
+        bookingOrderManager.syncCreateOrderData(order.getId());
         return result;
     }
 

@@ -18,14 +18,13 @@
 		<property name="jobClient" ref="syncJobClient"/>
 		<property name="taskTracker" value="${task.sync.tracker}"/>
 		<property name="maxRetryTimes" value="${task.sync.maxRetryTimes}"/>
-		<property name="topicName" value="allorder-rsp"/>
-		<property name="tag" value="sync"/>
+		<property name="topicName" value="${mns.topic}"/>
 	</bean>
 
 	<!-- 同步数据提交客户端 -->
 	<bean id="syncJobClient" class="com.github.ltsopensource.spring.JobClientFactoryBean" init-method="start">
-		<property name="clusterName" value="sync_cluster"/>
-		<property name="registryAddress" value="zookeeper://127.0.0.1:2181"/>
+		<property name="clusterName" value="${task.cluster}"/>
+		<property name="registryAddress" value="${task.registry}"/>
 		<property name="nodeGroup" value="sync_jobClient"/>
 		<property name="configs">
 			<props>
@@ -40,8 +39,8 @@
 	<bean id="syncTaskTracker" class="com.github.ltsopensource.spring.TaskTrackerAnnotationFactoryBean" init-method="start">
 		<property name="jobRunnerClass" value="com.framework.common.synchronize.SynchronizeDataTaskTracker"/>
 		<property name="bizLoggerLevel" value="INFO"/>
-		<property name="clusterName" value="sync_cluster"/>
-		<property name="registryAddress" value="zookeeper://127.0.0.1:2181"/>
+		<property name="clusterName" value="${task.cluster}"/>
+		<property name="registryAddress" value="${task.registry}"/>
 		<property name="nodeGroup" value="${task.sync.tracker}"/>
 		<property name="workThreads" value="20"/>
 		<property name="configs">

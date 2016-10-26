@@ -1,6 +1,7 @@
 package com.all580.order.dao;
 
 import com.all580.order.entity.Shipping;
+import org.apache.ibatis.annotations.Param;
 
 public interface ShippingMapper {
     /**
@@ -50,4 +51,11 @@ public interface ShippingMapper {
      * @mbggenerated Mon Oct 24 14:36:57 CST 2016
      */
     int updateByPrimaryKey(Shipping record);
+
+    /**
+     * 根据订单ID获取订单联系人信息
+     * @param orderId 订单ID
+     * @return
+     */
+    Shipping selectByOrder(@Param("orderId") Integer orderId);
 }

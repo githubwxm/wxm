@@ -2,6 +2,7 @@ package com.all580.order.manager;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.all580.ep.api.service.CoreEpAccessService;
 import com.all580.ep.api.service.EpService;
 import com.all580.order.dao.OrderItemAccountMapper;
 import com.all580.order.dto.AccountDataDto;
@@ -17,7 +18,9 @@ import com.all580.product.api.model.EpSalesInfo;
 import com.all580.product.api.model.ProductSearchParams;
 import com.framework.common.Result;
 import com.framework.common.lang.DateFormatUtils;
+import com.framework.common.lang.JsonUtils;
 import com.framework.common.lang.UUIDGenerator;
+import com.framework.common.synchronize.SynchronizeDataManager;
 import com.github.ltsopensource.core.domain.Job;
 import com.github.ltsopensource.jobclient.JobClient;
 import lombok.extern.slf4j.Slf4j;
@@ -45,6 +48,11 @@ public class BaseOrderManager {
     private BalancePayService balancePayService;
     @Autowired
     private OrderItemAccountMapper orderItemAccountMapper;
+    @Autowired
+    private SynchronizeDataManager synchronizeDataManager;
+
+    @Autowired
+    private CoreEpAccessService coreEpAccessService;
 
     @Autowired
     private JobClient jobClient;
@@ -292,6 +300,23 @@ public class BaseOrderManager {
         if (result.hasError()) {
             log.warn("核销OR反核销:{},分账失败:{}", consume, result.get());
             throw new ApiException(result.getError());
+        }
+    }
+
+    /**
+     * 同步订单数据
+     * @param orderId 订单ID
+     * @param data 同步数据
+     */
+    public void syncOrderData(int orderId, Map<String, List<?>> data) {
+        List<Integer> coreEpIds = orderItemAccountMapper.selectCoreEpIdByOrder(orderId);
+        if (coreEpIds != null) {
+            Result<List<String>> accessKeyResult = coreEpAccessService.selectAccessList(coreEpIds);
+            if (accessKeyResult.hasError()) {
+                throw new ApiException(accessKeyResult.getError());
+            }
+            List<String> accessKeyList = accessKeyResult.get();
+            synchronizeDataManager.push(accessKeyList, data);
         }
     }
 }

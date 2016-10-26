@@ -24,11 +24,9 @@ public class Test {
         Order order2 = new Order();
         order2.setId(22);
         order2.setRemark("222");
-        List<List<Object>> oneOrder = new ArrayList<>();
         List<Object> orderFieldValues = new ArrayList<>();
         orderFieldValues.add(order);
         orderFieldValues.add(order2);
-        oneOrder.add(orderFieldValues);
         data.put("t_order", orderFieldValues);
         System.out.println(JsonUtils.toJson(data));
     }

@@ -12,7 +12,6 @@ import com.all580.product.api.consts.ProductConstants;
 import com.all580.product.api.model.EpSalesInfo;
 import com.all580.product.api.model.ProductSalesInfo;
 import com.framework.common.Result;
-import javax.lang.exception.ApiException;
 import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.lang.UUIDGenerator;
@@ -22,10 +21,8 @@ import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.ObjectUtils;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import javax.lang.exception.ApiException;
 import java.util.*;
 
 /**
@@ -501,13 +498,36 @@ public class BookingOrderManager extends BaseOrderManager {
         return totalAddProfit;
     }
 
-    public void syncCreateOrderData(int orderId) {
-        Map<String, List<Object>> data = new HashMap<>();
-        Order order = orderMapper.selectByPrimaryKey(orderId);
-        List<List<Object>> oneOrder = new ArrayList<>();
-        List<Object> orderFieldValues = new ArrayList<>();
-        orderFieldValues.add(order);
-        oneOrder.add(orderFieldValues);
-        data.put("t_order", orderFieldValues);
+    /**
+     * 同步创建订单数据
+     * @param orderId 订单ID
+     */
+    public void syncCreateOrderData(final int orderId) {
+        Map<String, List<?>> data = new HashMap<>();
+
+        // 同步订单表
+        data.put("t_order", new ArrayList<Order>(){{
+            add(orderMapper.selectByPrimaryKey(orderId));
+        }});
+
+        // 同步子订单表
+        List<OrderItem> orderItems = orderItemMapper.selectByOrderId(orderId);
+        data.put("t_order_item", orderItems);
+
+        // 同步子订单明细表
+        data.put("t_order_item_detail", orderItemDetailMapper.selectByOrderId(orderId));
+
+        // 同步分账表
+        data.put("t_order_item_account", orderItemAccountMapper.selectByOrder(orderId));
+
+        // 同步联系人表
+        data.put("t_shipping", new ArrayList<Shipping>(){{
+            add(shippingMapper.selectByOrder(orderId));
+        }});
+
+        // 同步游客信息表
+        data.put("t_visitor", visitorMapper.selectByOrder(orderId));
+
+        syncOrderData(orderId, data);
     }
 }

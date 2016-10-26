@@ -70,4 +70,11 @@ public interface OrderItemDetailMapper {
      * @return
      */
     List<OrderItemDetail> selectByItemId(@Param("itemId") Integer itemId);
+
+    /**
+     * 根据订单ID获取所有子订单详情
+     * @param orderId 订单ID
+     * @return
+     */
+    List<OrderItemDetail> selectByOrderId(@Param("orderId") Integer orderId);
 }

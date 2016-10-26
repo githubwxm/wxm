@@ -81,4 +81,11 @@ public interface VisitorMapper {
      * @return
      */
     Visitor selectByMa(@Param("detailId") Integer detailId, @Param("sid") String sid, @Param("phone") String phone);
+
+    /**
+     * 根据订单ID获取所有游客信息
+     * @param orderId 订单ID
+     * @return
+     */
+    List<Visitor> selectByOrder(@Param("orderId") Integer orderId);
 }

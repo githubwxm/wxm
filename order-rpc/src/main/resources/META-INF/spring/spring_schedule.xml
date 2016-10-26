@@ -9,8 +9,8 @@
 
 
 	<bean id="jobClient" class="com.github.ltsopensource.spring.JobClientFactoryBean" init-method="start">
-		<property name="clusterName" value="order_cluster"/>
-		<property name="registryAddress" value="zookeeper://127.0.0.1:2181"/>
+		<property name="clusterName" value="${task.cluster}"/>
+		<property name="registryAddress" value="${task.registry}"/>
 		<property name="nodeGroup" value="order_jobClient"/>
 		<property name="jobCompletedHandler">
 			<bean class="com.all580.order.task.JobCompletedHandlerImpl"/>
@@ -27,8 +27,8 @@
 	<bean id="taskTracker" class="com.github.ltsopensource.spring.TaskTrackerAnnotationFactoryBean" init-method="start">
 		<property name="jobRunnerClass" value="com.all580.order.task.OrderTaskTracker"/>
 		<property name="bizLoggerLevel" value="INFO"/>
-		<property name="clusterName" value="order_cluster"/>
-		<property name="registryAddress" value="zookeeper://127.0.0.1:2181"/>
+		<property name="clusterName" value="${task.cluster}"/>
+		<property name="registryAddress" value="${task.registry}"/>
 		<property name="nodeGroup" value="order_TaskTracker"/>
 		<property name="workThreads" value="20"/>
 		<property name="configs">
