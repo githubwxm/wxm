@@ -6,14 +6,14 @@
 
 
     <!-- POOL配置 -->
-    <bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
+    <!--<bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
         <property name="minIdle" value="${redis.pool.minIdle}"/>
         <property name="maxIdle" value="${redis.pool.maxIdle}"/>
         <property name="testOnBorrow" value="${redis.pool.testOnBorrow}"/>
         <property name="testOnReturn" value="${redis.pool.testOnReturn}"/>
         <property name="testWhileIdle" value="${redis.pool.testWhileIdle}"/>
         <property name="timeBetweenEvictionRunsMillis" value="${redis.pool.timeBetweenEvictionRunsMillis}"/>
-    </bean>
+    </bean>-->
 
     <!--<bean id="redisUtils" class="com.framework.common.io.cache.redis.RedisUtils">
         <constructor-arg index="0" value="${redis.url}" />

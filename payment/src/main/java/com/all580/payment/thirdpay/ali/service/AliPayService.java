@@ -4,19 +4,15 @@ import com.all580.payment.entity.EpPaymentConf;
 import com.all580.payment.thirdpay.ali.config.AlipayConfig;
 import com.all580.payment.thirdpay.ali.util.AlipayNotify;
 import com.all580.payment.thirdpay.ali.util.AlipaySubmit;
-import com.all580.payment.thirdpay.wx.model.WxProperties;
 import com.all580.payment.vo.PayAttachVO;
 import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.JsonUtils;
-import org.apache.commons.httpclient.util.DateUtil;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.text.MessageFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -66,8 +62,9 @@ public class AliPayService {
     }
 
     public String reqPay(long ordCode, int coreEpId, Map<String, Object> params, String confData) {
-        AlipayProperties alipayProperties = JsonUtils.fromJson(confData, AlipayProperties.class);
-        String notify_url = alipayProperties.getPay_notify_url();
+        // AlipayProperties alipayProperties = JsonUtils.fromJson(confData, AlipayProperties.class);
+        String notify_url = "http://core.py.ngrok.wendal.cn/callback/ali/payment";// alipayProperties
+        // .getPay_notify_url();
 
         // 把请求参数打包成数组
         Map<String, String> sParaTemp = new HashMap<>();
@@ -77,20 +74,21 @@ public class AliPayService {
 
         sParaTemp.put("payment_type", AlipayConfig.PayType.PROD_PURCHASE.toString());
         sParaTemp.put("notify_url", notify_url);
-        sParaTemp.put("return_url", String.valueOf(params.get("returnUrl")));
-        sParaTemp.put("seller_email", alipayProperties.getSeller_email());
+        sParaTemp.put("return_url", "");
+        sParaTemp.put("seller_email", "admin@all580.com");
         sParaTemp.put("out_trade_no", String.valueOf(ordCode));
         sParaTemp.put("subject", String.valueOf(params.get("prodName")));
         sParaTemp.put("total_fee", String.valueOf(params.get("totalFee")));
         // sParaTemp.put("body", null);
-        sParaTemp.put("paymethod", "");
-        sParaTemp.put("defaultbank", "");
+//        sParaTemp.put("paymethod", "");
+//        sParaTemp.put("defaultbank", "");
         // sParaTemp.put("show_url", null);
-        sParaTemp.put("anti_phishing_key", "");
-        sParaTemp.put("exter_invoke_ip", "");
+        // sParaTemp.put("anti_phishing_key", "");
+//        sParaTemp.put("exter_invoke_ip", "");
 
         PayAttachVO attachVO = new PayAttachVO("" + coreEpId, String.valueOf(params.get("serialNum")));
-        sParaTemp.put("extra_common_param", JsonUtils.toJson(attachVO));
+//        sParaTemp.put("extra_common_param", JsonUtils.toJson(attachVO));
+        sParaTemp.put("extra_common_param", "" + coreEpId);
 
         // 建立请求
         String sHtmlText = AlipaySubmit.buildRequest(alipayProperties.getKey(), sParaTemp, "get", "确认");

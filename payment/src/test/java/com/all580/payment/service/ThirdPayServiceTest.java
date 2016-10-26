@@ -35,7 +35,7 @@ public class ThirdPayServiceTest extends BaseTest {
     @Test
     public void reqPayToAliTest() {
         long ordCode = 1111111111;
-        int coreEpId = 2;
+        int coreEpId = 1;
         int payType = PaymentConstant.PaymentType.ALI_PAY;
         Map<String, Object> params = new HashMap<>();
         params.put("totalFee", 10);
