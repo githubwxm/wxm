@@ -1,12 +1,16 @@
 package com.all580.order.task.action;
 
 import com.all580.order.api.OrderConstant;
+import com.all580.order.dao.OrderItemDetailMapper;
 import com.all580.order.dao.OrderItemMapper;
 import com.all580.order.dao.OrderMapper;
+import com.all580.order.dao.VisitorMapper;
 import com.all580.order.entity.Order;
 import com.all580.order.entity.OrderItem;
-import com.all580.order.manager.BookingOrderManager;
-import com.all580.product.api.model.ProductSearchParams;
+import com.all580.order.entity.OrderItemDetail;
+import com.all580.order.entity.Visitor;
+import com.all580.product.api.model.Contact;
+import com.all580.product.api.model.GetTicketParams;
 import com.all580.product.api.service.ProductSalesPlanRPCService;
 import com.framework.common.validate.ParamsMapValidate;
 import com.framework.common.validate.ValidRule;
@@ -27,22 +31,25 @@ import java.util.Map;
 /**
  * @author zhouxianjun(Alone)
  * @ClassName:
- * @Description: 支付成功任务
- * @date 2016/10/10 20:41
+ * @Description: 出票任务
+ * @date 2016/10/25 11:30
  */
-@Component(OrderConstant.Actions.PAYMENT_CALLBACK)
+@Component(OrderConstant.Actions.SEND_TICKET)
 @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
 @Slf4j
-public class PaymentCallbackAction implements JobRunner {
+public class SendTicketAction implements JobRunner {
     @Autowired
     private OrderItemMapper orderItemMapper;
     @Autowired
     private OrderMapper orderMapper;
     @Autowired
-    private BookingOrderManager bookingOrderManager;
+    private OrderItemDetailMapper orderItemDetailMapper;
+    @Autowired
+    private VisitorMapper visitorMapper;
 
     @Autowired
     private ProductSalesPlanRPCService productSalesPlanRPCService;
+
     @Override
     public Result run(JobContext jobContext) throws Throwable {
         Map<String, String> params = jobContext.getJob().getExtParams();
@@ -51,38 +58,39 @@ public class PaymentCallbackAction implements JobRunner {
         int orderId = Integer.parseInt(params.get("orderId"));
         Order order = orderMapper.selectByPrimaryKey(orderId);
         if (order == null) {
-            log.warn("支付成功回调,订单不存在");
+            log.warn("出票任务,订单不存在");
             throw new Exception("订单不存在");
         }
 
         List<OrderItem> orderItems = orderItemMapper.selectByOrderId(orderId);
-        List<ProductSearchParams> lockParams = new ArrayList<>();
         for (OrderItem orderItem : orderItems) {
-            lockParams.add(bookingOrderManager.parseParams(orderItem));
+            List<OrderItemDetail> detailList = orderItemDetailMapper.selectByItemId(orderItem.getId());
+            OrderItemDetail detail = detailList.get(0); // 景点只有一天
+            GetTicketParams getTicketParams = new GetTicketParams();
+            getTicketParams.setSn(orderItem.getNumber());
+            getTicketParams.setBookinDate(orderItem.getStart());
+            getTicketParams.setCreateTime(order.getCreateTime());
+            getTicketParams.setProductSubId(orderItem.getProSubId());
+            getTicketParams.setDisableDate(detail.getDisableDay());
+            getTicketParams.setDisableWeek(detail.getDisableWeek());
+            getTicketParams.setValidStart(detail.getEffectiveDate());
+            getTicketParams.setValidEnd(detail.getExpiryDate());
+            List<Visitor> visitorList = visitorMapper.selectByOrderDetailId(detail.getId());
+            List<Contact> contacts = new ArrayList<>();
+            for (Visitor visitor : visitorList) {
+                Contact contact = new Contact();
+                contact.setName(visitor.getName());
+                contact.setPhone(visitor.getPhone());
+                contact.setSid(visitor.getSid());
+                contact.setQuantity(visitor.getQuantity());
+                contacts.add(contact);
+            }
+            getTicketParams.setVisitors(contacts);
+            com.framework.common.Result r = productSalesPlanRPCService.invokeVoucherFotTicket(getTicketParams);
+            if (r.hasError()) {
+                log.warn("子订单:{},出票失败:{}", orderItem.getNumber(), r.getError());
+            }
         }
-
-        // 加已售
-        com.framework.common.Result result = productSalesPlanRPCService.addSoldProductStocks(lockParams);
-        if (result.hasError()) {
-            log.warn("支付成功加已售失败");
-            throw new Exception(result.getError());
-        }
-
-        // 子订单状态为未出票
-        orderItemMapper.setStatusByOrderId(orderId, OrderConstant.OrderItemStatus.NON_SEND);
-
-        // 分账 到付不分账
-        if (order.getPayAmount() > 0) {
-            bookingOrderManager.paySplitAccount(orderId, orderItems);
-        }
-        order.setStatus(OrderConstant.OrderStatus.PAID);
-        orderMapper.updateByPrimaryKey(order);
-
-        // 出票
-        // 记录任务
-        Map<String, String> jobParams = new HashMap<>();
-        jobParams.put("orderId", order.getId().toString());
-        bookingOrderManager.addJob(OrderConstant.Actions.SEND_TICKET, jobParams);
         return new Result(Action.EXECUTE_SUCCESS);
     }
 
@@ -92,7 +100,7 @@ public class PaymentCallbackAction implements JobRunner {
      */
     private void validateParams(Map<String, String> params) {
         if (params == null) {
-            throw new RuntimeException("支付成功任务参数为空");
+            throw new RuntimeException("出票任务参数为空");
         }
         Map<String[], ValidRule[]> rules = new HashMap<>();
         rules.put(new String[]{

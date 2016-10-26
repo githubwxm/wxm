@@ -31,38 +31,46 @@ public class CancelOrderTimer {
     @Autowired
     private RefundOrderManager refundOrderManager;
 
-    @Scheduled(fixedDelay = 10000)
+    @Scheduled(fixedDelay = 30000)
     public void payTimerJob() {
         try {
             List<Order> orderList = orderMapper.selectNoPayForMinute(payTimeOut);
             if (orderList != null && !orderList.isEmpty()) {
+                boolean retry = true;
                 for (Order order : orderList) {
                     try {
                         refundOrderManager.cancel(order.getNumber());
                     } catch (Exception e) {
+                        retry = false;
                         log.error("订单:"+ order.getNumber() +"未支付超时取消异常", e);
                     }
                 }
-                payTimerJob();
+                if (retry) {
+                    payTimerJob();
+                }
             }
         } catch (Exception e) {
             log.error("未支付订单超时取消异常", e);
         }
     }
 
-    @Scheduled(fixedDelay = 10000)
+    @Scheduled(fixedDelay = 30000)
     public void auditTimerJob() {
         try {
             List<Order> orderList = orderMapper.selectAuditWaitForMinute(auditTimeOut);
             if (orderList != null && !orderList.isEmpty()) {
+                boolean retry = true;
                 for (Order order : orderList) {
                     try {
                         refundOrderManager.cancel(order.getNumber());
                     } catch (Exception e) {
+                        retry = false;
                         log.error("订单:"+ order.getNumber() +"待审核超时取消异常", e);
                     }
                 }
-                auditTimerJob();
+                if (retry) {
+                    auditTimerJob();
+                }
             }
         } catch (Exception e) {
             log.error("待审核订单超时取消异常", e);

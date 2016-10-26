@@ -70,5 +70,6 @@ public class OrderConstant {
         public static final String REFUND_MONEY = "REFUND_MONEY";   // 退款
         public static final String CONSUME_SPLIT_ACCOUNT = "CONSUME_SPLIT_ACCOUNT"; // 核销分账
         public static final String RE_CONSUME_SPLIT_ACCOUNT = "RE_CONSUME_SPLIT_ACCOUNT"; // 反核销分账
+        public static final String SEND_TICKET = "SEND_TICKET"; // 出票
     }
 }

@@ -14,7 +14,15 @@
 	<dubbo:protocol name="dubbo" port="${dubbo.port}" />
 
 	<bean id="bookingOrderService" class="com.all580.order.service.BookingOrderServiceImpl" />
+	<bean id="refundOrderService" class="com.all580.order.service.RefundOrderServiceImpl" />
+	<bean id="paymentCallbackService" class="com.all580.order.service.PaymentCallbackServiceImpl" />
+	<bean id="orderService" class="com.all580.order.service.OrderServiceImpl" />
+	<bean id="ticketCallbackService" class="com.all580.order.service.TicketCallbackServiceImpl" />
 
 	<dubbo:service interface="com.all580.order.api.service.BookingOrderService" ref="bookingOrderService" />
-	
+	<dubbo:service interface="com.all580.order.api.service.PaymentCallbackService" ref="paymentCallbackService" />
+	<dubbo:service interface="com.all580.order.api.service.OrderService" ref="orderService" />
+	<dubbo:service interface="com.all580.order.api.service.TicketCallbackService" ref="ticketCallbackService" />
+	<dubbo:service interface="com.all580.order.api.service.RefundOrderService" ref="refundOrderService" />
+
 </beans>
