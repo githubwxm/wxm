@@ -7,6 +7,7 @@ import com.all580.order.dao.RefundOrderMapper;
 import com.all580.order.entity.Order;
 import com.all580.order.entity.RefundOrder;
 import com.all580.order.manager.BookingOrderManager;
+import com.all580.order.manager.RefundOrderManager;
 import com.all580.payment.api.conf.PaymentConstant;
 import com.all580.payment.api.model.BalanceChangeInfo;
 import com.framework.common.Result;
@@ -31,6 +32,8 @@ import java.util.Map;
 public class PaymentCallbackServiceImpl implements PaymentCallbackService {
     @Autowired
     private BookingOrderManager bookingOrderManager;
+    @Autowired
+    private RefundOrderManager refundOrderManager;
 
     @Autowired
     private OrderMapper orderMapper;
@@ -58,6 +61,9 @@ public class PaymentCallbackServiceImpl implements PaymentCallbackService {
         Map<String, String> jobParams = new HashMap<>();
         jobParams.put("orderId", order.getId().toString());
         bookingOrderManager.addJob(OrderConstant.Actions.PAYMENT_CALLBACK, jobParams);
+
+        // 同步数据
+        bookingOrderManager.syncOrderPaymentData(order.getId());
         return new Result(true);
     }
 
@@ -72,8 +78,9 @@ public class PaymentCallbackServiceImpl implements PaymentCallbackService {
         if (order == null) {
             return new Result(false, "订单不存在");
         }
+        RefundOrder refundOrder = null;
         if (order.getStatus() != OrderConstant.OrderStatus.PAID_HANDLING) {
-            RefundOrder refundOrder = refundOrderMapper.selectBySN(Long.valueOf(serialNum));
+            refundOrder = refundOrderMapper.selectBySN(Long.valueOf(serialNum));
             if (refundOrder == null) {
                 return new Result(false, "退订订单不存在");
             }
@@ -88,7 +95,12 @@ public class PaymentCallbackServiceImpl implements PaymentCallbackService {
             Map<String, String> jobParams = new HashMap<>();
             jobParams.put("ordCode", String.valueOf(ordCode));
             jobParams.put("serialNum", serialNum);
-            bookingOrderManager.addJob(OrderConstant.Actions.REFUND_MONEY, jobParams);
+            bookingOrderManager.addJob(OrderConstant.Actions.REFUND_MONEY, jobParams, true);
+
+            // 同步数据
+            if (refundOrder != null) {
+                refundOrderManager.syncRefundOrderMoney(refundOrder.getId());
+            }
             return new Result(true);
         }
         // 已支付,处理中(分账失败)退订 直接取消
@@ -98,6 +110,11 @@ public class PaymentCallbackServiceImpl implements PaymentCallbackService {
             jobParams.put("orderId", order.getId().toString());
             bookingOrderManager.addJob(OrderConstant.Actions.CANCEL_CALLBACK, jobParams);
             return new Result(true);
+        }
+
+        // 同步数据
+        if (refundOrder != null) {
+            refundOrderManager.syncRefundOrderMoney(refundOrder.getId());
         }
         return new Result(true);
     }

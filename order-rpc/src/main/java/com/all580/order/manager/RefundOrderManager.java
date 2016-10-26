@@ -16,7 +16,6 @@ import com.all580.voucher.api.model.RefundTicketParams;
 import com.all580.voucher.api.model.RefundTicketPersonInfo;
 import com.all580.voucher.api.service.VoucherRPCService;
 import com.framework.common.Result;
-import javax.lang.exception.ApiException;
 import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.lang.UUIDGenerator;
@@ -27,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.lang.exception.ApiException;
 import java.util.*;
 
 /**
@@ -128,6 +128,8 @@ public class RefundOrderManager extends BaseOrderManager {
                 throw new ApiException(result.getError());
             }
         }
+        // 同步数据
+        syncOrderCancelData(order.getId());
         return new Result(true);
     }
 
@@ -579,5 +581,115 @@ public class RefundOrderManager extends BaseOrderManager {
             log.warn("第三方退款异常:{}", result);
             throw new ApiException(result.getError());
         }
+    }
+
+    /**
+     * 同步订单取消数据
+     * @param orderId 订单ID
+     */
+    public void syncOrderCancelData(final int orderId) {
+        Map<String, List<?>> data = new HashMap<>();
+
+        // 同步订单表
+        data.put("t_order", new ArrayList<Order>(){{
+            add(orderMapper.selectByPrimaryKey(orderId));
+        }});
+
+        // 同步子订单表
+        data.put("t_order_item", orderItemMapper.selectByOrderId(orderId));
+
+        syncOrderData(orderId, data);
+    }
+
+    /**
+     * 同步退订订单申请数据
+     * @param refundId 退订订单ID
+     */
+    public void syncRefundOrderApplyData(int refundId) {
+        Map<String, List<?>> data = new HashMap<>();
+
+        // 同步退订订单表
+        final RefundOrder refundOrder = refundOrderMapper.selectByPrimaryKey(refundId);
+        data.put("t_refund_order", new ArrayList<RefundOrder>(){{
+            add(refundOrder);
+        }});
+
+        // 同步订单详情表
+        data.put("t_order_item_detail", orderItemDetailMapper.selectByItemId(refundOrder.getOrderItemId()));
+
+        // 同步游客表
+        data.put("t_visitor", visitorMapper.selectByOrderItem(refundOrder.getOrderItemId()));
+
+        // 同步退订分账表
+        data.put("t_refund_account", refundAccountMapper.selectByRefundId(refundId));
+
+        syncOrderItemData(refundOrder.getOrderItemId(), data);
+    }
+
+    /**
+     * 同步退订审核通过数据
+     * @param refundId 退订订单ID
+     */
+    public void syncRefundOrderAuditAcceptData(int refundId) {
+        Map<String, List<?>> data = new HashMap<>();
+
+        // 同步退订订单表
+        final RefundOrder refundOrder = refundOrderMapper.selectByPrimaryKey(refundId);
+        data.put("t_refund_order", new ArrayList<RefundOrder>(){{
+            add(refundOrder);
+        }});
+
+        // 同步退票流水表
+        data.put("t_refund_serial", new ArrayList<RefundSerial>(){{
+            add(refundSerialMapper.selectByRefundOrder(refundOrder.getId()));
+        }});
+
+        // 同步游客表
+        data.put("t_visitor", visitorMapper.selectByOrderItem(refundOrder.getOrderItemId()));
+
+        // 同步子订单表
+        data.put("t_order_item", new ArrayList<OrderItem>(){{
+            add(orderItemMapper.selectByPrimaryKey(refundOrder.getOrderItemId()));
+        }});
+
+        syncOrderItemData(refundOrder.getOrderItemId(), data);
+    }
+
+    /**
+     * 同步退订订单审核拒绝数据
+     * @param refundId 退订订单ID
+     */
+    public void syncRefundOrderAuditRefuse(int refundId) {
+        Map<String, List<?>> data = new HashMap<>();
+
+        // 同步退订订单表
+        final RefundOrder refundOrder = refundOrderMapper.selectByPrimaryKey(refundId);
+        data.put("t_refund_order", new ArrayList<RefundOrder>(){{
+            add(refundOrder);
+        }});
+
+        // 同步订单详情表
+        data.put("t_order_item_detail", orderItemDetailMapper.selectByItemId(refundOrder.getOrderItemId()));
+
+        // 同步游客表
+        data.put("t_visitor", visitorMapper.selectByOrderItem(refundOrder.getOrderItemId()));
+
+        syncOrderItemData(refundOrder.getOrderItemId(), data);
+    }
+
+    /**
+     * 同步退订订单退款数据
+     * @param refundId 退订订单ID
+     */
+    public void syncRefundOrderMoney(int refundId) {
+        Map<String, List<?>> data = new HashMap<>();
+
+        // 同步退订订单表
+        final RefundOrder refundOrder = refundOrderMapper.selectByPrimaryKey(refundId);
+        data.put("t_refund_order", new ArrayList<RefundOrder>(){{
+            add(refundOrder);
+        }});
+
+        syncOrderItemData(refundOrder.getOrderItemId(), data);
     }
 }

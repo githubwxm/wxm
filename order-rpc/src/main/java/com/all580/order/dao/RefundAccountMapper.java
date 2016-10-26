@@ -1,6 +1,9 @@
 package com.all580.order.dao;
 
 import com.all580.order.entity.RefundAccount;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 public interface RefundAccountMapper {
     /**
@@ -50,4 +53,11 @@ public interface RefundAccountMapper {
      * @mbggenerated Wed Oct 26 16:03:36 CST 2016
      */
     int updateByPrimaryKey(RefundAccount record);
+
+    /**
+     * 根据退订订单ID获取退订分账
+     * @param refundId 退订订单ID
+     * @return
+     */
+    List<RefundAccount> selectByRefundId(@Param("refundId") Integer refundId);
 }

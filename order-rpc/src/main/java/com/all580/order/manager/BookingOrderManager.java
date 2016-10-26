@@ -530,4 +530,52 @@ public class BookingOrderManager extends BaseOrderManager {
 
         syncOrderData(orderId, data);
     }
+
+    /**
+     * 同步订单审核通过数据
+     * @param orderId 订单ID
+     */
+    public void syncOrderAuditAcceptData(final int orderId, final int orderItemId) {
+        Map<String, List<?>> data = new HashMap<>();
+
+        // 同步订单表
+        data.put("t_order", new ArrayList<Order>(){{
+            add(orderMapper.selectByPrimaryKey(orderId));
+        }});
+
+        // 同步子订单表
+        data.put("t_order_item", new ArrayList<OrderItem>(){{
+            add(orderItemMapper.selectByPrimaryKey(orderItemId));
+        }});
+
+        syncOrderData(orderId, data);
+    }
+
+    /**
+     * 同步订单支付数据
+     * @param orderId 订单ID
+     */
+    public void syncOrderPaymentData(final int orderId) {
+        Map<String, List<?>> data = new HashMap<>();
+
+        // 同步订单表
+        data.put("t_order", new ArrayList<Order>(){{
+            add(orderMapper.selectByPrimaryKey(orderId));
+        }});
+
+        syncOrderData(orderId, data);
+    }
+
+    /**
+     * 同步订单分账数据
+     * @param itemId 子订单ID
+     */
+    public void syncOrderAccountData(int itemId) {
+        Map<String, List<?>> data = new HashMap<>();
+
+        // 同步分账表
+        data.put("t_order_item_account", orderItemAccountMapper.selectByOrderItem(itemId));
+
+        syncOrderItemData(itemId, data);
+    }
 }

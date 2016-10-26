@@ -88,4 +88,11 @@ public interface VisitorMapper {
      * @return
      */
     List<Visitor> selectByOrder(@Param("orderId") Integer orderId);
+
+    /**
+     * 根据子订单获取游客信息
+     * @param itemId 子订单ID
+     * @return
+     */
+    List<Visitor> selectByOrderItem(@Param("itemId") Integer itemId);
 }
