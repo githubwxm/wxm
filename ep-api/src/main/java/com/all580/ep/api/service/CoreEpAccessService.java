@@ -37,4 +37,10 @@ public interface CoreEpAccessService {
 
     Result<Map>  selectAccess(Map map);
 
+    /**
+     *
+     * @param ids
+     * @return   access_key
+     */
+    Result<List<String>> selectAccessList(List<Integer> ids);
 }

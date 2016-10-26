@@ -74,12 +74,12 @@ public class OrderControllerTest {
                         add(new HashMap<String, Object>(){{
                             put("name", "Alone");
                             put("phone", "15019418143");
-                            put("sid", "511702197403222585");
+                            put("sid", "210905197807210546");
                             put("quantity", "1");
                         }});
                     }});
                     put("product_sub_id", "1");
-                    put("start", "2016-10-22 00:00:00");
+                    put("start", "2016-10-27 00:00:00");
                     put("days", "1");
                     put("quantity", "1");
                 }});
@@ -118,7 +118,7 @@ public class OrderControllerTest {
                         }});
                     }});
                     put("product_sub_id", "2");
-                    put("start", "2016-10-22 00:00:00");
+                    put("start", "2016-10-26 00:00:00");
                     put("days", "1");
                     put("quantity", "1");
                 }});
@@ -140,13 +140,88 @@ public class OrderControllerTest {
     }
 
     @Test
+    public void createAuditAcceptTest() throws Exception {
+        Map<String, Object> params = new HashMap<String, Object>(){{
+            put("order_item_id", "1477363084692670");
+            put("status", "true");
+        }};
+        mockMvc.perform(
+                post("/api/order/audit").contentType(MediaType.APPLICATION_JSON).content(JsonUtils.toJson(params))
+        ).andExpect(
+                status().isOk()
+        ).andExpect(
+                jsonPath("$.code", is("200"))
+        ).andDo(print());
+    }
+
+    @Test
+    public void createAuditFailTest() throws Exception {
+        Map<String, Object> params = new HashMap<String, Object>(){{
+            put("order_item_id", "1477362994524670");
+            put("status", "false");
+        }};
+        mockMvc.perform(
+                post("/api/order/audit").contentType(MediaType.APPLICATION_JSON).content(JsonUtils.toJson(params))
+        ).andExpect(
+                status().isOk()
+        ).andExpect(
+                jsonPath("$.code", is("200"))
+        ).andDo(print());
+    }
+
+    @Test
     public void paymentBalancesTest() throws Exception {
         Map<String, Object> params = new HashMap<String, Object>(){{
-            put("order_sn", "1477309875089380");
+            put("order_sn", "1477387869417520");
             put("pay_type", "7111");
         }};
         mockMvc.perform(
                     post("/api/order/payment").contentType(MediaType.APPLICATION_JSON).content(JsonUtils.toJson(params))
+                ).andExpect(
+                    status().isOk()
+                ).andExpect(
+                    jsonPath("$.code", is("200"))
+                ).andDo(print());
+    }
+
+    @Test
+    public void refundApplyTest() throws Exception {
+        Map<String, Object> params = new HashMap<String, Object>(){{
+            put("order_item_sn", "1477387869542520");
+            put("quantity", "1");
+            put("cause", "自愿");
+            put("days", new ArrayList<Map>(){{
+                add(new HashMap<String, Object>(){{
+                    put("day", "2016-10-26 00:00:00");
+                    put("quantity", "1");
+                    put("visitors", new ArrayList<Map>(){{
+                        add(new HashMap<String, Object>(){{
+                            put("sid", "210905197807210546");
+                            put("phone", "15019418143");
+                            put("quantity", "1");
+                        }});
+                    }});
+                }});
+            }});
+        }};
+        mockMvc.perform(
+                    post("/api/order/refund/apply").contentType(MediaType.APPLICATION_JSON).content(JsonUtils.toJson(params))
+                ).andExpect(
+                    status().isOk()
+                ).andExpect(
+                    jsonPath("$.code", is("200"))
+                ).andDo(print());
+    }
+
+    @Test
+    public void refundAcceptTest() throws Exception {
+        Map<String, Object> params = new HashMap<String, Object>(){{
+            put("refund_sn", "1477388159346520");
+            put("status", "true");
+            put("reason", "自愿");
+        }};
+        mockMvc.perform(
+                    post("/api/order/refund/audit").contentType(MediaType.APPLICATION_JSON).content(JsonUtils.toJson(params))
                 ).andExpect(
                     status().isOk()
                 ).andExpect(

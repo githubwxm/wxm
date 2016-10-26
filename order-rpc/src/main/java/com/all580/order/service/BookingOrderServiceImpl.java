@@ -23,7 +23,6 @@ import com.all580.product.api.model.ProductSalesInfo;
 import com.all580.product.api.model.ProductSearchParams;
 import com.all580.product.api.service.ProductSalesPlanRPCService;
 import com.framework.common.Result;
-import com.framework.common.exception.ApiException;
 import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.lang.UUIDGenerator;
@@ -35,6 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.lang.exception.ApiException;
 import java.util.*;
 
 /**
@@ -225,10 +225,10 @@ public class BookingOrderServiceImpl implements BookingOrderService {
                 // 如果是超卖则把子订单状态修改为待审
                 if (oversell && item.getStatus() == OrderConstant.OrderItemStatus.AUDIT_SUCCESS) {
                     item.setStatus(OrderConstant.OrderItemStatus.AUDIT_WAIT);
-                    orderItemMapper.updateByPrimaryKey(item);
+                    orderItemMapper.updateByPrimaryKeySelective(item);
                 }
                 // 更新子订单详情
-                orderItemDetailMapper.updateByPrimaryKey(detail);
+                orderItemDetailMapper.updateByPrimaryKeySelective(detail);
                 i++;
             }
             orderItems.add(item);
@@ -245,20 +245,23 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         // 更新订单金额
         order.setPayAmount(from == OrderConstant.FromType.TRUST ? totalPayShopPrice : totalPayPrice);
         order.setSaleAmount(totalPrice);
-        orderMapper.updateByPrimaryKey(order);
+        orderMapper.updateByPrimaryKeySelective(order);
 
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("order", JsonUtils.obj2map(order));
         resultMap.put("items", JsonUtils.toJson(orderItems));
         Result<Object> result = new Result<>(true);
         result.put(resultMap);
+
+        // 同步数据
+        bookingOrderManager.syncCreateOrderData(order.getId());
         return result;
     }
 
     @Override
     public Result<?> audit(Map params) {
-        int orderItemId = CommonUtil.objectParseInteger(params.get("order_item_id"));
-        OrderItem orderItem = orderItemMapper.selectByPrimaryKey(orderItemId);
+        long orderItemSn = Long.valueOf(params.get("order_item_id").toString());
+        OrderItem orderItem = orderItemMapper.selectBySN(orderItemSn);
         if (orderItem == null) {
             throw new ApiException("订单不存在");
         }
@@ -274,11 +277,13 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             throw new ApiException("订单不在待审状态");
         }
 
+        orderItem.setAuditUserId(CommonUtil.objectParseInteger(params.get("operator_id")));
+        orderItem.setAuditUserName(CommonUtil.objectParseString(params.get("operator_name")));
         boolean status = Boolean.parseBoolean(params.get("status").toString());
         // 通过
         if (status) {
             orderItem.setStatus(OrderConstant.OrderItemStatus.AUDIT_SUCCESS);
-            orderItemMapper.updateByPrimaryKey(orderItem);
+            orderItemMapper.updateByPrimaryKeySelective(orderItem);
             boolean allAudit = bookingOrderManager.isOrderAllAudit(orderItem.getOrderId(), orderItem.getId());
             if (allAudit) {
                 order.setStatus(OrderConstant.OrderStatus.PAY_WAIT);
@@ -290,10 +295,11 @@ public class BookingOrderServiceImpl implements BookingOrderService {
                     jobParams.put("orderId", order.getId().toString());
                     bookingOrderManager.addJob(OrderConstant.Actions.PAYMENT_CALLBACK, jobParams);
                 }
-                orderMapper.updateByPrimaryKey(order);
+                orderMapper.updateByPrimaryKeySelective(order);
             }
             return new Result<>(true);
         }
+        orderItemMapper.updateByPrimaryKeySelective(orderItem);
 
         // 不通过
         // 取消订单
@@ -321,7 +327,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         order.setLocalPaymentSerialNo(String.valueOf(UUIDGenerator.generateUUID()));
         order.setPaymentType(payType);
         order.setPayTime(new Date());
-        orderMapper.updateByPrimaryKey(order);
+        orderMapper.updateByPrimaryKeySelective(order);
 
         // 调用支付RPC
         // 余额支付

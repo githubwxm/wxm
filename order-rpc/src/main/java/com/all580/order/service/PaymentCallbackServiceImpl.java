@@ -45,7 +45,7 @@ public class PaymentCallbackServiceImpl implements PaymentCallbackService {
         }
         order.setThirdSerialNo(outTransId);
         order.setStatus(OrderConstant.OrderStatus.PAID_HANDLING); // 已支付,处理中
-        orderMapper.updateByPrimaryKey(order);
+        orderMapper.updateByPrimaryKeySelective(order);
 
         // 支付成功后加平台商余额(平帐)
         BalanceChangeInfo info = new BalanceChangeInfo();
@@ -79,7 +79,7 @@ public class PaymentCallbackServiceImpl implements PaymentCallbackService {
             }
             refundOrder.setRefundMoneyTime(new Date());
             refundOrder.setStatus(success ? OrderConstant.RefundOrderStatus.REFUND_SUCCESS : OrderConstant.RefundOrderStatus.REFUND_MONEY_FAIL);
-            refundOrderMapper.updateByPrimaryKey(refundOrder);
+            refundOrderMapper.updateByPrimaryKeySelective(refundOrder);
         }
 
         if (!success) {
@@ -91,7 +91,7 @@ public class PaymentCallbackServiceImpl implements PaymentCallbackService {
             bookingOrderManager.addJob(OrderConstant.Actions.REFUND_MONEY, jobParams);
             return new Result(true);
         }
-        // 已支付,处理中 分账失败 直接取消
+        // 已支付,处理中(分账失败)退订 直接取消
         if (order.getStatus() == OrderConstant.OrderStatus.PAID_HANDLING) {
             // 记录任务
             Map<String, String> jobParams = new HashMap<>();

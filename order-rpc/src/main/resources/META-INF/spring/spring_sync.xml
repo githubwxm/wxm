@@ -7,14 +7,25 @@
         http://www.springframework.org/schema/task
         http://www.springframework.org/schema/task/spring-task-3.0.xsd">
 
+	<bean id="topicPushManager" class="com.framework.common.mns.TopicPushManager">
+		<property name="accessId" value="dDC0LZdqDRje0YJC"/>
+		<property name="accessKey" value="TR1BkfTY6IuajALJqHYxSTWwpSPGwl"/>
+		<property name="accountEndpoint" value="http://1356025265125084.mns.cn-shenzhen.aliyuncs.com"/>
+	</bean>
 
-	<bean id="jobClient" class="com.github.ltsopensource.spring.JobClientFactoryBean" init-method="start">
+	<!-- 同步数据提交管理器 -->
+	<bean id="synchronizeDataManager" class="com.framework.common.synchronize.SynchronizeDataManager">
+		<property name="jobClient" ref="syncJobClient"/>
+		<property name="taskTracker" value="${task.sync.tracker}"/>
+		<property name="maxRetryTimes" value="${task.sync.maxRetryTimes}"/>
+		<property name="topicName" value="${mns.topic}"/>
+	</bean>
+
+	<!-- 同步数据提交客户端 -->
+	<bean id="syncJobClient" class="com.github.ltsopensource.spring.JobClientFactoryBean" init-method="start">
 		<property name="clusterName" value="${task.cluster}"/>
 		<property name="registryAddress" value="${task.registry}"/>
-		<property name="nodeGroup" value="order_jobClient"/>
-		<property name="jobCompletedHandler">
-			<bean class="com.all580.order.task.JobCompletedHandlerImpl"/>
-		</property>
+		<property name="nodeGroup" value="sync_jobClient"/>
 		<property name="configs">
 			<props>
 				<!-- 参数 -->
@@ -24,12 +35,13 @@
 		</property>
 	</bean>
 
-	<bean id="taskTracker" class="com.github.ltsopensource.spring.TaskTrackerAnnotationFactoryBean" init-method="start">
-		<property name="jobRunnerClass" value="com.all580.order.task.OrderTaskTracker"/>
+	<!-- 同步数据任务执行器 -->
+	<bean id="syncTaskTracker" class="com.github.ltsopensource.spring.TaskTrackerAnnotationFactoryBean" init-method="start">
+		<property name="jobRunnerClass" value="com.framework.common.synchronize.SynchronizeDataTaskTracker"/>
 		<property name="bizLoggerLevel" value="INFO"/>
 		<property name="clusterName" value="${task.cluster}"/>
 		<property name="registryAddress" value="${task.registry}"/>
-		<property name="nodeGroup" value="order_TaskTracker"/>
+		<property name="nodeGroup" value="${task.sync.tracker}"/>
 		<property name="workThreads" value="20"/>
 		<property name="configs">
 			<props>
@@ -38,6 +50,4 @@
 			</props>
 		</property>
 	</bean>
-
-	<task:annotation-driven/>
 </beans>

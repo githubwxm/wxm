@@ -2,12 +2,10 @@ package com.all580.order.manager;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.all580.ep.api.service.CoreEpAccessService;
 import com.all580.ep.api.service.EpService;
-import com.all580.order.api.OrderConstant;
 import com.all580.order.dao.OrderItemAccountMapper;
-import com.all580.order.dao.RefundOrderMapper;
 import com.all580.order.dto.AccountDataDto;
-import com.all580.order.dto.GenerateAccountDto;
 import com.all580.order.entity.OrderItem;
 import com.all580.order.entity.OrderItemAccount;
 import com.all580.order.entity.OrderItemDetail;
@@ -19,11 +17,10 @@ import com.all580.product.api.consts.ProductConstants;
 import com.all580.product.api.model.EpSalesInfo;
 import com.all580.product.api.model.ProductSearchParams;
 import com.framework.common.Result;
-import com.framework.common.exception.ApiException;
 import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.lang.UUIDGenerator;
-import com.framework.common.validate.ValidRule;
+import com.framework.common.synchronize.SynchronizeDataManager;
 import com.github.ltsopensource.core.domain.Job;
 import com.github.ltsopensource.jobclient.JobClient;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +29,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.lang.exception.ApiException;
 import java.util.*;
 
 /**
@@ -50,6 +48,11 @@ public class BaseOrderManager {
     private BalancePayService balancePayService;
     @Autowired
     private OrderItemAccountMapper orderItemAccountMapper;
+    @Autowired
+    private SynchronizeDataManager synchronizeDataManager;
+
+    @Autowired
+    private CoreEpAccessService coreEpAccessService;
 
     @Autowired
     private JobClient jobClient;
@@ -157,10 +160,13 @@ public class BaseOrderManager {
      * @param params 参数
      */
     public void addJob(String action, Map<String, String> params) {
+        if (action == null) {
+            throw new RuntimeException("任务Action为空");
+        }
         Job job = new Job();
         job.setTaskId("ORDER-JOB-" + UUIDGenerator.generateUUID());
-        job.setParam("ACTION", action);
         job.setExtParams(params);
+        job.setParam("$ACTION$", action);
         job.setTaskTrackerNodeGroup(taskTracker);
         if (maxRetryTimes != null) {
             job.setMaxRetryTimes(maxRetryTimes);
@@ -286,7 +292,7 @@ public class BaseOrderManager {
                 changeInfo.setCanCash(account.getMoney() > 0 ? (consume ? money : -money) : (consume ? -money : money));
                 balanceChangeInfoList.add(changeInfo);
                 account.setSettledMoney(consume ? account.getSettledMoney() + money : account.getSettledMoney() - money); // 设置已结算金额
-                orderItemAccountMapper.updateByPrimaryKey(account);
+                orderItemAccountMapper.updateByPrimaryKeySelective(account);
             }
         }
         // 调用分账
@@ -294,6 +300,23 @@ public class BaseOrderManager {
         if (result.hasError()) {
             log.warn("核销OR反核销:{},分账失败:{}", consume, result.get());
             throw new ApiException(result.getError());
+        }
+    }
+
+    /**
+     * 同步订单数据
+     * @param orderId 订单ID
+     * @param data 同步数据
+     */
+    public void syncOrderData(int orderId, Map<String, List<?>> data) {
+        List<Integer> coreEpIds = orderItemAccountMapper.selectCoreEpIdByOrder(orderId);
+        if (coreEpIds != null) {
+            Result<List<String>> accessKeyResult = coreEpAccessService.selectAccessList(coreEpIds);
+            if (accessKeyResult.hasError()) {
+                throw new ApiException(accessKeyResult.getError());
+            }
+            List<String> accessKeyList = accessKeyResult.get();
+            synchronizeDataManager.push(accessKeyList, data);
         }
     }
 }

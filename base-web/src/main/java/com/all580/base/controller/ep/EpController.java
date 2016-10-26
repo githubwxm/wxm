@@ -4,8 +4,9 @@ import com.all580.base.manager.PlatfromValidateManager;
 import com.all580.ep.api.service.EpService;
 import com.framework.common.BaseController;
 import com.framework.common.Result;
-import com.framework.common.exception.ApiException;
-import com.framework.common.exception.ParamsMapValidationException;
+
+import javax.lang.exception.ApiException;
+import javax.lang.exception.ParamsMapValidationException;
 import com.framework.common.util.CommonUtil;
 import com.framework.common.validate.ParamsMapValidate;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 
+import javax.lang.exception.ParamsMapValidationException;
 import java.util.Map;
 
 /**

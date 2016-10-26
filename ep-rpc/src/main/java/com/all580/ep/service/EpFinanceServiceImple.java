@@ -5,7 +5,7 @@ import com.all580.ep.api.service.EpService;
 import com.all580.ep.dao.EpMapper;
 import com.all580.payment.api.service.BalancePayService;
 import com.framework.common.Result;
-import com.framework.common.exception.ApiException;
+import javax.lang.exception.ApiException;
 import com.framework.common.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

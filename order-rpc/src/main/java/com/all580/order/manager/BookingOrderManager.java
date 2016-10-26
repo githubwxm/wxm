@@ -12,7 +12,6 @@ import com.all580.product.api.consts.ProductConstants;
 import com.all580.product.api.model.EpSalesInfo;
 import com.all580.product.api.model.ProductSalesInfo;
 import com.framework.common.Result;
-import com.framework.common.exception.ApiException;
 import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.lang.UUIDGenerator;
@@ -23,8 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import javax.lang.exception.ApiException;
 import java.util.*;
 
 /**
@@ -134,7 +132,7 @@ public class BookingOrderManager extends BaseOrderManager {
         order.setFromType(from);
         order.setRemark(remark);
         order.setPayeeEpId(coreEpId);
-        orderMapper.insert(order);
+        orderMapper.insertSelective(order);
         return order;
     }
 
@@ -153,9 +151,6 @@ public class BookingOrderManager extends BaseOrderManager {
         orderItem.setNumber(UUIDGenerator.generateUUID());
         orderItem.setStart(bookingDate);
         Date end = DateUtils.addDays(info.getEndTime(), days - 1);
-        end = DateUtils.setHours(end, DateFormatUtils.get(end, Calendar.HOUR_OF_DAY));
-        end = DateUtils.setMinutes(end, DateFormatUtils.get(end, Calendar.MINUTE));
-        end = DateUtils.setSeconds(end, DateFormatUtils.get(end, Calendar.SECOND));
         orderItem.setEnd(end);
         orderItem.setSaleAmount(saleAmount); // 进货价
         orderItem.setDays(days);
@@ -169,7 +164,7 @@ public class BookingOrderManager extends BaseOrderManager {
         orderItem.setStatus(OrderConstant.OrderItemStatus.AUDIT_SUCCESS);
         orderItem.setSupplierEpId(info.getEpId());
         orderItem.setEpMaId(info.getEpMaId());
-        orderItemMapper.insert(orderItem);
+        orderItemMapper.insertSelective(orderItem);
         return orderItem;
     }
 
@@ -191,7 +186,7 @@ public class BookingOrderManager extends BaseOrderManager {
         subtractAccount.setStatus(OrderConstant.AccountSplitStatus.NOT);
         subtractAccount.setData(dto.getSubtractData() == null ? null : JsonUtils.toJson(dto.getSubtractData()));
         accounts.add(subtractAccount);
-        orderItemAccountMapper.insert(subtractAccount);
+        orderItemAccountMapper.insertSelective(subtractAccount);
 
         OrderItemAccount addAccount = new OrderItemAccount();
         addAccount.setEpId(dto.getAddEpId());
@@ -203,7 +198,7 @@ public class BookingOrderManager extends BaseOrderManager {
         addAccount.setStatus(OrderConstant.AccountSplitStatus.NOT);
         addAccount.setData(dto.getAddData() == null ? null : JsonUtils.toJson(dto.getAddData()));
         accounts.add(addAccount);
-        orderItemAccountMapper.insert(addAccount);
+        orderItemAccountMapper.insertSelective(addAccount);
         return accounts;
     }
 
@@ -235,16 +230,22 @@ public class BookingOrderManager extends BaseOrderManager {
         }
         orderItemDetail.setEffectiveDate(effectiveDate);
         Date expiryDate = null;
-        if (info.getEffectiveType() == 1) {
+        if (info.getEffectiveType() == ProductConstants.EffectiveValidType.DAY) {
             // 这里目前只做了门票的,默认结束日期就是当天的,酒店应该是第二天
             expiryDate = DateUtils.addDays(orderItemDetail.getDay(), info.getEffectiveDay() - 1);
+            expiryDate = DateUtils.setHours(expiryDate, DateFormatUtils.get(info.getEndTime(), Calendar.HOUR_OF_DAY));
+            expiryDate = DateUtils.setMinutes(expiryDate, DateFormatUtils.get(info.getEndTime(), Calendar.MINUTE));
+            expiryDate = DateUtils.setSeconds(expiryDate, DateFormatUtils.get(info.getEndTime(), Calendar.SECOND));
         } else {
             expiryDate = info.getEffectiveEndDate();
+        }
+        if (effectiveDate.after(expiryDate)) {
+            throw new ApiException("该产品已过期");
         }
         orderItemDetail.setExpiryDate(expiryDate);
         orderItemDetail.setRefundQuantity(0);
         orderItemDetail.setUsedQuantity(0);
-        orderItemDetailMapper.insert(orderItemDetail);
+        orderItemDetailMapper.insertSelective(orderItemDetail);
         return orderItemDetail;
     }
 
@@ -262,7 +263,7 @@ public class BookingOrderManager extends BaseOrderManager {
         visitor.setPhone(CommonUtil.objectParseString(v.get("phone")));
         visitor.setSid(CommonUtil.objectParseString(v.get("sid")));
         visitor.setQuantity(CommonUtil.objectParseInteger(v.get("quantity")));
-        visitorMapper.insert(visitor);
+        visitorMapper.insertSelective(visitor);
         return visitor;
     }
 
@@ -279,7 +280,7 @@ public class BookingOrderManager extends BaseOrderManager {
         shipping.setName(CommonUtil.objectParseString(shippingMap.get("name")));
         shipping.setPhone(CommonUtil.objectParseString(shippingMap.get("phone")));
         shipping.setSid(CommonUtil.objectParseString(shippingMap.get("sid")));
-        shippingMapper.insert(shipping);
+        shippingMapper.insertSelective(shipping);
         return shipping;
     }
 
@@ -322,6 +323,8 @@ public class BookingOrderManager extends BaseOrderManager {
                 info.setCoreEpId(itemAccount.getCoreEpId());
                 info.setBalance(itemAccount.getMoney());
                 infoList.add(info);
+                itemAccount.setStatus(OrderConstant.AccountSplitStatus.HAS);
+                orderItemAccountMapper.updateByPrimaryKeySelective(itemAccount);
             }
         }
         // 调用分账
@@ -339,6 +342,7 @@ public class BookingOrderManager extends BaseOrderManager {
      * @param quantity 每天(时间段)票数
      * @return
      */
+    @Transactional
     public List<OrderItemAccount> preSplitAccount(List<List<EpSalesInfo>> daySalesList, int itemId, int quantity, int payType, Date bookingDate) {
         // 预分账记录
         List<OrderItemAccount> accounts = new ArrayList<>();
@@ -410,12 +414,10 @@ public class BookingOrderManager extends BaseOrderManager {
                         continue;
                     }
                     GenerateAccountDto accountDto = new GenerateAccountDto();
-                    int totalAddProfit = 0;
+
                     // 卖家平台商每天的利润
                     List<AccountDataDto> saleAccountDataDtoList = daysAccountDataMap.get(dto.getSaleCoreEpId());
-                    for (AccountDataDto dataDto : saleAccountDataDtoList) {
-                        totalAddProfit += dataDto.getProfit();
-                    }
+                    int totalAddProfit = getTotalProfit(saleAccountDataDtoList);
                     // 预付
                     if (payType == ProductConstants.PayType.PREPAY) {
                         accountDto.setSubtractEpId(epId); // 买家 扣钱
@@ -454,23 +456,24 @@ public class BookingOrderManager extends BaseOrderManager {
                 account.setData(JsonUtils.toJson(dataDtos));
                 account.setSettledMoney(0);
                 account.setStatus(OrderConstant.AccountSplitStatus.NOT);
-                orderItemAccountMapper.insert(account);
+                orderItemAccountMapper.insertSelective(account);
                 accounts.add(account);
                 Integer val = coreSubMap.get(coreEpId);
                 coreSubMap.put(coreEpId, val == null ? account.getMoney() : val + account.getMoney());
             }
         }
         for (Integer id : coreSubMap.keySet()) {
+            List<AccountDataDto> dataDtos = daysAccountDataMap.get(id);
             OrderItemAccount account = new OrderItemAccount();
             account.setEpId(id);
             account.setCoreEpId(id);
             account.setMoney(-coreSubMap.get(id));
-            account.setProfit(0);
+            account.setProfit(getTotalProfit(dataDtos) * quantity);
             account.setOrderItemId(itemId);
-            account.setData(JsonUtils.toJson(daysAccountDataMap.get(id)));
+            account.setData(JsonUtils.toJson(dataDtos));
             account.setSettledMoney(0);
             account.setStatus(OrderConstant.AccountSplitStatus.NOT);
-            orderItemAccountMapper.insert(account);
+            orderItemAccountMapper.insertSelective(account);
             accounts.add(account);
         }
         return accounts;
@@ -484,5 +487,47 @@ public class BookingOrderManager extends BaseOrderManager {
             dayAccountDataMap.put(epId, accountDataDto);
         }
         return accountDataDto;
+    }
+
+    private int getTotalProfit(List<AccountDataDto> dataDtos) {
+        int totalAddProfit = 0;
+        // 卖家平台商每天的利润
+        for (AccountDataDto dataDto : dataDtos) {
+            totalAddProfit += dataDto.getProfit();
+        }
+        return totalAddProfit;
+    }
+
+    /**
+     * 同步创建订单数据
+     * @param orderId 订单ID
+     */
+    public void syncCreateOrderData(final int orderId) {
+        Map<String, List<?>> data = new HashMap<>();
+
+        // 同步订单表
+        data.put("t_order", new ArrayList<Order>(){{
+            add(orderMapper.selectByPrimaryKey(orderId));
+        }});
+
+        // 同步子订单表
+        List<OrderItem> orderItems = orderItemMapper.selectByOrderId(orderId);
+        data.put("t_order_item", orderItems);
+
+        // 同步子订单明细表
+        data.put("t_order_item_detail", orderItemDetailMapper.selectByOrderId(orderId));
+
+        // 同步分账表
+        data.put("t_order_item_account", orderItemAccountMapper.selectByOrder(orderId));
+
+        // 同步联系人表
+        data.put("t_shipping", new ArrayList<Shipping>(){{
+            add(shippingMapper.selectByOrder(orderId));
+        }});
+
+        // 同步游客信息表
+        data.put("t_visitor", visitorMapper.selectByOrder(orderId));
+
+        syncOrderData(orderId, data);
     }
 }

@@ -6,7 +6,7 @@ import com.all580.ep.com.Common;
 import com.all580.ep.dao.CoreEpChannelMapper;
 import com.all580.payment.api.service.BalancePayService;
 import com.framework.common.Result;
-import com.framework.common.exception.ApiException;
+import javax.lang.exception.ApiException;
 import com.framework.common.util.CommonUtil;
 import com.framework.common.validate.ValidRule;
 import lombok.extern.slf4j.Slf4j;
