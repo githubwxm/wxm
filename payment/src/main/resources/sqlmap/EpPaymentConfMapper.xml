@@ -105,7 +105,7 @@
         where core_ep_id=#{coreEpId,jdbcType=INTEGER} and payment_type=#{paymentType,jdbcType=INTEGER}
     </select>
 
-    <select id="getByEpIdAndType" resultType="com.all580.payment.entity.EpPaymentConf">
+    <select id="getByEpIdAndType" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from t_core_ep_payment_conf

@@ -156,7 +156,7 @@
         </foreach>
     </insert>
 
-    <select id="listByCapitalId" parameterType="java.lang.Integer" resultMap="map">
+    <select id="listByCapitalId" parameterType="java.lang.Integer" resultType="map">
         select
         id, create_time as createTime,new_balance-old_balance as balanceAdd,new_can_cash-old_can_cash as canCashAdd
         from t_capital_serial

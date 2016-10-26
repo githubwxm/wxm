@@ -56,7 +56,7 @@ public interface BalancePayService {
      * @return 成功，返回{success:true,result:{id:x,epId:x,coreEpId:x,canCash:x,balance:x,
      * credit:x}}；失败，返回{success:false,error:错误信息}
      */
-    Result<Map<String, Object>> getBalanceAccountInfo(Integer epId, Integer coreEpId);
+    Result<Map<String, String>> getBalanceAccountInfo(Integer epId, Integer coreEpId);
 
     /**
      * 批量获取余额账户信息

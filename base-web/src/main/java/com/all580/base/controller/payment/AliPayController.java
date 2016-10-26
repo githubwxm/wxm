@@ -4,8 +4,6 @@ import com.all580.payment.api.conf.PaymentConstant;
 import com.all580.payment.api.service.ThirdPayService;
 import com.framework.common.BaseController;
 import com.framework.common.Result;
-import org.apache.commons.httpclient.util.DateUtil;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -14,7 +12,9 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * @author panyi on 2016/10/20.
@@ -132,16 +132,18 @@ public class AliPayController extends BaseController {
 
     @RequestMapping(value = "/reqPay")
     public void reqPayTest(HttpServletResponse rsp) throws Exception{
-        long ordCode = 1111111111;
-        int coreEpId = 2;
+        System.out.println("---------------------------->   /reqPay");
+        long ordCode = 1111111112;
+        int coreEpId = 1;
         int payType = PaymentConstant.PaymentType.ALI_PAY;
         Map<String, Object> params = new HashMap<>();
-        params.put("totalFee", 10);
+        params.put("totalFee", 0.01);
         params.put("prodId", 1010);
         params.put("prodName", "测试产品名称");
-        params.put("serialNum", "110110");
+        params.put("serialNum", "1111111112");
         Result<String> result = thirdPayService.reqPay(ordCode, coreEpId, payType, params);
         rsp.setContentType("text/html; charset=UTF-8");
+        logger.info(result.get());
         rsp.getWriter().print(result.get());
         rsp.getWriter().flush();
     }

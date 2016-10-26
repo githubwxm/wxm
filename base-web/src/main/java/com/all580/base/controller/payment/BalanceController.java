@@ -5,6 +5,7 @@ import com.framework.common.BaseController;
 import com.framework.common.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -22,10 +23,10 @@ public class BalanceController extends BaseController{
     @Autowired
     private BalancePayService balancePayService;
 
-    @RequestMapping(value = "info", method = RequestMethod.POST)
+    @RequestMapping(value = "info/{epId}", method = RequestMethod.GET)
     @ResponseBody
-    public Result getBalance(Integer epId,Integer coreEpId){
-        Result<Map<String, Object>> balanceAccountInfo = new Result<>();
+    public Result getBalance(@PathVariable("epId") Integer epId, Integer coreEpId) {
+        Result<Map<String, String>> balanceAccountInfo = new Result<>();
         try {
             balanceAccountInfo = balancePayService.getBalanceAccountInfo(epId, coreEpId);
         } catch (Exception e) {

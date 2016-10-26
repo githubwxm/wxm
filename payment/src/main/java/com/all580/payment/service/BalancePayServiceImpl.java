@@ -10,13 +10,12 @@ import com.all580.payment.dao.CapitalSerialMapper;
 import com.all580.payment.entity.Capital;
 import com.all580.payment.entity.CapitalSerial;
 import com.all580.payment.exception.BusinessException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.framework.common.Result;
 import com.framework.common.lang.JsonUtils;
-import org.apache.commons.beanutils.BeanMap;
+import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.beanutils.PropertyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -68,6 +67,15 @@ public class BalancePayServiceImpl implements BalancePayService {
                     @Override
                     public void run() {
                         paymentCallbackService.payCallback(Long.parseLong(serialNum), serialNum, null);
+                    }
+                }).start();
+            }
+            // 回调订单模块-余额退款
+            if (PaymentConstant.BalanceChangeType.BALANCE_REFUND.equals(type)) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        paymentCallbackService.refundCallback(Long.parseLong(serialNum), serialNum, null, true);
                     }
                 }).start();
             }
@@ -185,11 +193,19 @@ public class BalancePayServiceImpl implements BalancePayService {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public Result<Map<String, Object>> getBalanceAccountInfo(Integer epId, Integer coreEpId) {
-        Result result = new Result();
+    public Result<Map<String, String>> getBalanceAccountInfo(Integer epId, Integer coreEpId) {
+        Result<Map<String, String>> result = new Result<>();
         Capital capital = capitalMapper.selectByEpIdAndCoreEpId(epId, coreEpId);
-        result.put(new BeanMap(capital));
+        try {
+            Map<String, String> map = BeanUtils.describe(capital);
+            Map<String, Object> map1 = PropertyUtils.describe(capital);
+            System.out.println(JsonUtils.toJson(map1));
+            result.put(map);
+            result.setSuccess();
+        } catch (Exception e) {
+            result.setFail();
+            result.setError("转换出错：Capital -> Map");
+        }
         return result;
     }
 
