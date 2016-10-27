@@ -32,7 +32,7 @@ public interface ThirdPayService {
      * @param ordCode  订单编号
      * @param coreEpId 平台商企业ID    int totalFee, int refundFee, String serialNum,
      * @param payType  支付类型 @see PaymentConstant.PaymentType
-     * @param params   {totalFee:xx,refundFee:xx,serialNum:xx}
+     * @param params   {totalFee:xx,refundFee:xx,serialNum:xx,outTransId:xx}
      *                 totalFee - int - 支付总金额，单位分
      *                 refundFee - int - 退款金额，单位分
      *                 serialNum - String - 退款流水号（订退订单号）

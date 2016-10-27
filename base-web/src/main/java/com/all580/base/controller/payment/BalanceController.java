@@ -26,14 +26,19 @@ public class BalanceController extends BaseController{
     @RequestMapping(value = "info/{epId}", method = RequestMethod.GET)
     @ResponseBody
     public Result getBalance(@PathVariable("epId") Integer epId, Integer coreEpId) {
-        Result<Map<String, String>> balanceAccountInfo = new Result<>();
+        Result<Map<String, String>> result = new Result<>();
         try {
-            balanceAccountInfo = balancePayService.getBalanceAccountInfo(epId, coreEpId);
+            if (epId == null || coreEpId == null) {
+                result.setFail();
+                result.setError("缺少参数");
+            } else {
+                result = balancePayService.getBalanceAccountInfo(epId, coreEpId);
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(),e);
-            balanceAccountInfo.setFail();
+            result.setFail();
         }
-        return balanceAccountInfo;
+        return result;
     }
 
 }

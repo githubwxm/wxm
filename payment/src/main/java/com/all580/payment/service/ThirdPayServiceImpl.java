@@ -9,18 +9,13 @@ import com.all580.payment.entity.EpPaymentConf;
 import com.all580.payment.thirdpay.ali.service.AliPayService;
 import com.all580.payment.thirdpay.wx.model.RefundRsp;
 import com.all580.payment.thirdpay.wx.service.WxPayService;
-import com.all580.payment.vo.PayAttachVO;
 import com.framework.common.Result;
-import com.framework.common.lang.JsonUtils;
-import com.sun.jdi.LongValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -51,7 +46,7 @@ public class ThirdPayServiceImpl implements ThirdPayService {
         String confData = epPaymentConf.getConfData();
         if (PaymentConstant.PaymentType.WX_PAY == payType) {
             try {
-                String codeUrl = wxPayService.reqPay(ordCode,coreEpId, params, confData);
+                String codeUrl = wxPayService.reqPay(ordCode, coreEpId, params, confData);
                 logger.info(codeUrl);
                 result.setSuccess();
                 result.put(codeUrl);
@@ -59,7 +54,7 @@ public class ThirdPayServiceImpl implements ThirdPayService {
                 e.printStackTrace();
             }
         } else if (PaymentConstant.PaymentType.ALI_PAY == payType) {
-            String html = aliPayService.reqPay(ordCode,coreEpId, params, confData);
+            String html = aliPayService.reqPay(ordCode, coreEpId, params, confData);
             logger.info(html);
             result.put(html);
             result.setSuccess();
@@ -70,7 +65,7 @@ public class ThirdPayServiceImpl implements ThirdPayService {
     }
 
     @Override
-    public Result<String> reqRefund(long ordCode, int coreEpId, int payType, Map<String, Object> params) {
+    public Result<String> reqRefund(final long ordCode, int coreEpId, int payType, Map<String, Object> params) {
         Result<String> result = new Result<>();
         EpPaymentConf epPaymentConf = epPaymentConfMapper.getByEpIdAndType(coreEpId, payType);
         Assert.notNull(epPaymentConf);
@@ -79,10 +74,18 @@ public class ThirdPayServiceImpl implements ThirdPayService {
             // 微信退款，直接由后台发起，同步返回结果
             try {
                 RefundRsp refundRsp = wxPayService.reqRefund(ordCode, params, confData);
-                logger.info(refundRsp.getResult_code());
+                logger.info("微信退款结果：" + refundRsp.getResult_code());
                 result.setSuccess();
                 result.put(refundRsp.getTransaction_id());
-                // TODO panyi 异步回调订单
+                // TODO panyi 异步回调订单-> 记录任务
+                final String serialNum = String.valueOf(params.get("refundId"));
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        logger.info("微信退款->回调订单开始。。。");
+                        paymentCallbackService.refundCallback(ordCode, serialNum, null, true);
+                    }
+                }).start();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -100,30 +103,40 @@ public class ThirdPayServiceImpl implements ThirdPayService {
     }
 
     @Override
-    public Result<Map<String,String>> payCallback(String ordId,String trade_no,Map<String, String> params,int payType) {
+    public Result<Map<String, String>> payCallback(String ordId, String trade_no, Map<String, String> params, int payType) {
         // 根据企业获取配置信息
         if (PaymentConstant.PaymentType.WX_PAY == payType) {
             String attach = params.get("attach");
-            PayAttachVO payAttachVO = JsonUtils.fromJson(attach, PayAttachVO.class);
-            int coreEpId =Integer.parseInt(payAttachVO.getCoreEpId());
+            // PayAttachVO payAttachVO = JsonUtils.fromJson(attach, PayAttachVO.class);
+            int coreEpId = Integer.parseInt(attach);
             EpPaymentConf epPaymentConf = epPaymentConfMapper.getByEpIdAndType(coreEpId, payType);
-            wxPayService.payCallback(params,epPaymentConf);
-            paymentCallbackService.payCallback(Long.valueOf(ordId),null,payAttachVO.getSerialNum());
+            Result<Map<String, String>> payCallback = wxPayService.payCallback(params, epPaymentConf);
+            if (payCallback.isSuccess()) {
+                Result result = paymentCallbackService.payCallback(Long.valueOf(ordId), null, ordId);
+                if (result.isFault()) {
+                    logger.error("微信支付回调.回调订单失败");
+                }
+            }
+            return payCallback;
         } else if (PaymentConstant.PaymentType.ALI_PAY == payType) {
             String extraStr = params.get("extra_common_param");
-            PayAttachVO payAttachVO = JsonUtils.fromJson(extraStr, PayAttachVO.class);
-            int coreEpId =Integer.parseInt(payAttachVO.getCoreEpId());
+            int coreEpId = Integer.parseInt(extraStr);
             EpPaymentConf epPaymentConf = epPaymentConfMapper.getByEpIdAndType(coreEpId, payType);
-            aliPayService.payCallback(params, epPaymentConf);
-            paymentCallbackService.payCallback(Long.valueOf(ordId),null,payAttachVO.getSerialNum());
+            Result<Map<String, String>> result = aliPayService.payCallback(params, epPaymentConf);
+            if (result.isSuccess()) {
+                Result callResult = paymentCallbackService.payCallback(Long.valueOf(ordId), null, ordId);
+                if (callResult.isFault()) {
+                    logger.error("支付宝支付回调.回调订单失败");
+                }
+            }
+            return result;
         } else {
             throw new RuntimeException("不支持的支付类型:" + payType);
         }
-        return null;
     }
 
     @Override
-    public Result refundCallback(Map<String,String> params, int payType) {
+    public Result refundCallback(Map<String, String> params, int payType) {
         // 根据企业获取配置信息
         if (PaymentConstant.PaymentType.WX_PAY == payType) {
             throw new RuntimeException("微信没有退款回调");
@@ -139,7 +152,7 @@ public class ThirdPayServiceImpl implements ThirdPayService {
 
             String batchNo = params.get("batch_no");
             String serialNum = batchNo.substring(8);
-            paymentCallbackService.refundCallback(null,serialNum,outTransId,isSuccess);
+            paymentCallbackService.refundCallback(null, serialNum, outTransId, isSuccess);
         } else {
             throw new RuntimeException("不支持的支付类型:" + payType);
         }

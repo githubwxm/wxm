@@ -8,7 +8,7 @@ import com.all580.payment.thirdpay.wx.client.TenpayHttpClient;
 import com.all580.payment.thirdpay.wx.model.*;
 import com.all580.payment.thirdpay.wx.util.ConstantUtil;
 import com.all580.payment.thirdpay.wx.util.WXUtil;
-import com.all580.payment.vo.PayAttachVO;
+import com.framework.common.Result;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.net.IPUtils;
 import org.slf4j.Logger;
@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.lang.reflect.Field;
-import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -43,6 +42,8 @@ public class WxPayService {
 
     public String reqPay(long ordCode,int coreEpId, Map<String, Object> params, String confData) throws Exception {
         WxProperties wxProperties2 = JsonUtils.fromJson(confData, WxProperties.class);
+        domain = "";
+        notifyUrl = "http://core.py.ngrok.wendal.cn/api/callback/wx/payment";
         UnifiedOrderReq req = new UnifiedOrderReq();
         req.setAppid(wxProperties.getAPP_ID());
         req.setMch_id(wxProperties.getPARTNER());
@@ -50,8 +51,8 @@ public class WxPayService {
         req.setDevice_info("");
         req.setTotal_fee(String.valueOf(params.get("totalFee")));
         //透传参数
-        PayAttachVO attachVO = new PayAttachVO("" + coreEpId, String.valueOf(params.get("serialNum")));
-        req.setAttach(JsonUtils.toJson(attachVO));
+        // PayAttachVO attachVO = new PayAttachVO("" + coreEpId, String.valueOf(params.get("serialNum")));
+        req.setAttach("" + coreEpId);
         req.setTrade_type(ConstantUtil.NATIVE_TRADE_TYPE);
         req.setProduct_id(String.valueOf(params.get("prodId")));
         req.setSpbill_create_ip(IPUtils.getRealIp(true));
@@ -87,7 +88,8 @@ public class WxPayService {
         return this.request(ConstantUtil.REFUND, req, RefundRsp.class, true);
     }
 
-    public Map<String,String> payCallback(Map<String, String> params, EpPaymentConf epPaymentConf){
+    public Result<Map<String, String>> payCallback(Map<String, String> params, EpPaymentConf epPaymentConf) {
+        Result<Map<String, String>> result = new Result<>();
         WxProperties wxProperties = JsonUtils.fromJson(epPaymentConf.getConfData(), WxProperties.class);
         ResponseHandler resHandler = new ResponseHandler(params);
         resHandler.setKey(wxProperties.getPARTNER_KEY());
@@ -98,14 +100,17 @@ public class WxPayService {
                     getParameter(ConstantUtil.RETURN_CODE).equals(ConstantUtil.SUCCESS)) {
                 rsp.put("return_code","SUCCESS");
                 rsp.put("return_msg", "OK");
-
+                result.setSuccess();
             } else {
                 rsp.put("return_code", "FAIL");
+                result.setFail();
             }
         } else {
             rsp.put("return_code", "FAIL");
+            result.setFail();
         }
-        return rsp;
+        result.put(rsp);
+        return result;
     }
 
     /**

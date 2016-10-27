@@ -21,7 +21,7 @@ import java.util.Map;
  * @since V0.0.1
  */
 @Controller
-@RequestMapping("callback/ali")
+@RequestMapping("api/callback/ali")
 public class AliPayController extends BaseController {
     @Resource
     private ThirdPayService thirdPayService;
@@ -33,6 +33,7 @@ public class AliPayController extends BaseController {
      */
     @RequestMapping(value = "/refund", method = RequestMethod.POST)
     public void refund(HttpServletRequest request, HttpServletResponse rsp) throws IOException {
+        logger.info("支付宝退款回调开始");
         Map<String, String> params = new HashMap<String, String>();
         Map requestParams = request.getParameterMap();
         for (Iterator iter = requestParams.keySet().iterator(); iter.hasNext(); ) {
@@ -52,7 +53,7 @@ public class AliPayController extends BaseController {
         //批次号
 
         String batch_no = new String(request.getParameter("batch_no").getBytes("ISO-8859-1"), "UTF-8");
-
+        logger.info("batch_no:" + batch_no);
         //批量退款数据中转账成功的笔数
 
         String success_num = new String(request.getParameter("success_num").getBytes("ISO-8859-1"), "UTF-8");
@@ -130,18 +131,38 @@ public class AliPayController extends BaseController {
         logger.info("支付宝支付回调结束");
     }
 
-    @RequestMapping(value = "/reqPay")
+    /* 测试方法，不要调用 */
+    @RequestMapping(value = "/reqPayTest")
     public void reqPayTest(HttpServletResponse rsp) throws Exception{
         System.out.println("---------------------------->   /reqPay");
-        long ordCode = 1111111112;
+        long ordCode = 1111111113;
         int coreEpId = 1;
         int payType = PaymentConstant.PaymentType.ALI_PAY;
         Map<String, Object> params = new HashMap<>();
         params.put("totalFee", 0.01);
         params.put("prodId", 1010);
         params.put("prodName", "测试产品名称");
-        params.put("serialNum", "1111111112");
+        params.put("serialNum", "1111111113");
         Result<String> result = thirdPayService.reqPay(ordCode, coreEpId, payType, params);
+        rsp.setContentType("text/html; charset=UTF-8");
+        logger.info(result.get());
+        rsp.getWriter().print(result.get());
+        rsp.getWriter().flush();
+    }
+
+    /* 测试方法，不要调用 */
+    @RequestMapping(value = "/reqRefundTest")
+    public void reqRefundTest(HttpServletResponse rsp) throws Exception {
+        System.out.println("---------------------------->   /reqPay");
+        long ordCode = 1111111113;
+        int coreEpId = 1;
+        int payType = PaymentConstant.PaymentType.ALI_PAY;
+        Map<String, Object> params = new HashMap<>();
+        params.put("totalFee", 0.01);
+        params.put("refundFee", 0.01);
+        params.put("outTransId", "2016102621001004380237763577");
+        params.put("serialNum", "1111111113");
+        Result<String> result = thirdPayService.reqRefund(ordCode, coreEpId, payType, params);
         rsp.setContentType("text/html; charset=UTF-8");
         logger.info(result.get());
         rsp.getWriter().print(result.get());

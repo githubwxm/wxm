@@ -2,17 +2,21 @@ package com.all580.payment.thirdpay.ali.service;
 
 import com.all580.payment.entity.EpPaymentConf;
 import com.all580.payment.thirdpay.ali.config.AlipayConfig;
+import com.all580.payment.thirdpay.ali.util.AlipayCore;
 import com.all580.payment.thirdpay.ali.util.AlipayNotify;
 import com.all580.payment.thirdpay.ali.util.AlipaySubmit;
-import com.all580.payment.vo.PayAttachVO;
+import com.framework.common.Result;
 import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.JsonUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,6 +29,7 @@ import java.util.Map;
  */
 @Service("aliPayService")
 public class AliPayService {
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
     @Autowired
     private AlipayProperties alipayProperties;
 
@@ -63,7 +68,7 @@ public class AliPayService {
 
     public String reqPay(long ordCode, int coreEpId, Map<String, Object> params, String confData) {
         // AlipayProperties alipayProperties = JsonUtils.fromJson(confData, AlipayProperties.class);
-        String notify_url = "http://core.py.ngrok.wendal.cn/callback/ali/payment";// alipayProperties
+        String notify_url = "http://core.py.ngrok.wendal.cn/api/callback/ali/payment";// alipayProperties
         // .getPay_notify_url();
 
         // 把请求参数打包成数组
@@ -85,8 +90,8 @@ public class AliPayService {
         // sParaTemp.put("show_url", null);
         // sParaTemp.put("anti_phishing_key", "");
 //        sParaTemp.put("exter_invoke_ip", "");
-
-        PayAttachVO attachVO = new PayAttachVO("" + coreEpId, String.valueOf(params.get("serialNum")));
+        // 支付宝不支持json串
+        // PayAttachVO attachVO = new PayAttachVO("" + coreEpId, String.valueOf(params.get("serialNum")));
 //        sParaTemp.put("extra_common_param", JsonUtils.toJson(attachVO));
         sParaTemp.put("extra_common_param", "" + coreEpId);
 
@@ -97,20 +102,21 @@ public class AliPayService {
     }
 
     public String reqRefund(Map<String, Object> params, String confData) {
-        AlipayProperties alipayProperties = JsonUtils.fromJson(confData, AlipayProperties.class);
-        String notify_url = alipayProperties.getRecharge_notify_url();
-
+        // AlipayProperties alipayProperties = JsonUtils.fromJson(confData, AlipayProperties.class);
+        // String notify_url = alipayProperties.getRecharge_notify_url();
+        String notify_url = "http://core.py.ngrok.wendal.cn/api/callback/ali/refund";
         // 把请求参数打包成数组
         Map<String, String> sParaTemp = new HashMap<String, String>();
         sParaTemp.put("service", AlipayConfig.INF_NAME_REFUND);
         sParaTemp.put("partner", alipayProperties.getPartner());
         sParaTemp.put("_input_charset", AlipayConfig.input_charset);
-        sParaTemp.put("notify_url", alipayProperties.getRefund_notify_url());
+        sParaTemp.put("notify_url", notify_url);
         sParaTemp.put("seller_email", alipayProperties.getSeller_email());
-        sParaTemp.put("refund_date", DateFormatUtils.converToStringDate(new Date()));
-        sParaTemp.put("batch_no", DateFormatUtils.getToday()+params.get("serialNum"));
+        sParaTemp.put("refund_date", DateFormatUtils.parseDateToDatetimeString(new Date()));
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        sParaTemp.put("batch_no", sdf.format(new Date()) + params.get("serialNum"));
         sParaTemp.put("batch_num", "1");
-        String detail = params.get("outTransId")+"^"+params.get("")+"^"+"协议退款";
+        String detail = params.get("outTransId") + "^" + params.get("refundFee") + "^" + "协议退款";
         sParaTemp.put("detail_data", detail);
 
         // 建立请求
@@ -124,9 +130,26 @@ public class AliPayService {
 
     }
 
-    public boolean payCallback(Map<String, String> params, EpPaymentConf epPaymentConf) {
+    /**
+     * 支付回调
+     *
+     * @param params
+     * @param epPaymentConf
+     * @return
+     */
+    public Result<Map<String, String>> payCallback(Map<String, String> params, EpPaymentConf epPaymentConf) {
+        Result<Map<String, String>> result = new Result<>();
         AlipayProperties alipayProperties = JsonUtils.fromJson(epPaymentConf.getConfData(), AlipayProperties.class);
-        return AlipayNotify.verify(params, alipayProperties.getPartner(), alipayProperties.getKey());//验证成功
+        boolean isSuccess = AlipayNotify.verify(params, alipayProperties.getPartner(), alipayProperties.getKey());
+        if (isSuccess) {
+            result.setSuccess();
+        } else {
+            String linkString = AlipayCore.createLinkString(params);
+            logger.error("支付宝退款失败，信息：" + linkString);
+            result.setFail();
+            result.setError("支付宝退款失败，信息：" + linkString);
+        }
+        return result;//验证成功
 
     }
 }

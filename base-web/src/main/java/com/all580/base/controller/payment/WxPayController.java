@@ -12,55 +12,47 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.lang.reflect.Field;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author panyi on 2016/10/20.
  * @since V0.0.1
  */
 @Controller
-@RequestMapping("callback/wx")
+@RequestMapping("api/callback/wx")
 public class WxPayController extends BaseController{
     @Autowired
     private ThirdPayService thirdPayService;
 
-    @ResponseBody
     @RequestMapping(value = "/payment", method = {RequestMethod.POST})
     public void notify(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        logger.info("微信回调接口开始");
+        logger.info("微信支付回调->开始");
 
         InputStream inputStream = request.getInputStream();
 
         // 获取应答内容
         String resContent = new String(InputStreamTOByte(inputStream),"UTF-8");
-
+        logger.info("微信回调内容：" + resContent);
         //解析xml,得到map
         Map m = XMLUtil.doXMLParse(resContent);
-        String ordCode = String.valueOf(m.get("out_trade_no"));
-        String transactionId = String.valueOf(m.get("transaction_id"));
-        SortedMap parameters = new TreeMap();
-        //设置参数
-        Iterator it = m.keySet().iterator();
-        while(it.hasNext()) {
-            String k = (String) it.next();
-            String v = (String) m.get(k);
-            parameters.put(k, v);
+        if (m != null) {
+            String ordCode = String.valueOf(m.get("out_trade_no"));
+            String transactionId = String.valueOf(m.get("transaction_id"));
+
+            Result<Map<String, String>> result = thirdPayService.payCallback(ordCode, transactionId, m, PaymentConstant
+                    .PaymentType.WX_PAY);
+            response.getWriter().write(responseWx(result.get()));
+        } else {
+
         }
-
-
-        Result<Map<String,String>> result = thirdPayService.payCallback(ordCode, transactionId, m, PaymentConstant
-                .PaymentType.WX_PAY);
-
-
-
-        response.getWriter().write(responseWx(result.get()));
-        logger.info("微信回调结束");
+        logger.info("微信支付回调->结束");
     }
     private String responseWx(Map<String,String> rsp) throws UnsupportedEncodingException {
         StringBuffer sb = new StringBuffer();
@@ -94,6 +86,43 @@ public class WxPayController extends BaseController{
         outStream.close();
 
         return outByte;
+    }
+
+    /* 测试方法，不要调用 */
+    @RequestMapping(value = "/reqPayTest")
+    public void reqPayTest(HttpServletResponse rsp) throws Exception {
+        System.out.println("---------------------------->   /reqPayTest");
+        long ordCode = 1111111113;
+        int coreEpId = 1;
+        int payType = PaymentConstant.PaymentType.WX_PAY;
+        Map<String, Object> params = new HashMap<>();
+        params.put("totalFee", 1); // 单位分
+        params.put("prodId", 1010);
+        params.put("prodName", "测试产品名称");
+        params.put("serialNum", "1111111113");
+        Result<String> result = thirdPayService.reqPay(ordCode, coreEpId, payType, params);
+        rsp.setContentType("text/html; charset=UTF-8");
+        logger.info(result.get());
+        rsp.getWriter().print(result.get());
+        rsp.getWriter().flush();
+    }
+
+    /* 测试方法，不要调用 */
+    @RequestMapping(value = "/reqRefundTest")
+    public void reqRefundTest(HttpServletResponse rsp) throws Exception {
+        System.out.println("---------------------------->   /reqRefundTest");
+        long ordCode = 1111111113;
+        int coreEpId = 1;
+        int payType = PaymentConstant.PaymentType.WX_PAY;
+        Map<String, Object> params = new HashMap<>();
+        params.put("totalFee", 1);
+        params.put("refundFee", 1);
+        params.put("refundId", "1111111113");
+        Result<String> result = thirdPayService.reqRefund(ordCode, coreEpId, payType, params);
+        rsp.setContentType("text/html; charset=UTF-8");
+        logger.info(result.get());
+        rsp.getWriter().print(result.get());
+        rsp.getWriter().flush();
     }
 
     /**
