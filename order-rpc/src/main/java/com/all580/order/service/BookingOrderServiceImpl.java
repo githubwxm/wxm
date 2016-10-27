@@ -297,6 +297,8 @@ public class BookingOrderServiceImpl implements BookingOrderService {
                 }
                 orderMapper.updateByPrimaryKeySelective(order);
             }
+            // 同步数据
+            bookingOrderManager.syncOrderAuditAcceptData(order.getId(), orderItem.getId());
             return new Result<>(true);
         }
         orderItemMapper.updateByPrimaryKeySelective(orderItem);
@@ -350,6 +352,8 @@ public class BookingOrderServiceImpl implements BookingOrderService {
                 log.warn("余额支付失败:{}", result.get());
                 throw new ApiException(result.getError());
             }
+            // 同步数据
+            bookingOrderManager.syncOrderPaymentData(order.getId());
             return new Result<>(true);
         }
         // 第三方支付
@@ -369,6 +373,8 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             log.warn("第三方支付异常:{}", result);
             throw new ApiException(result.getError());
         }
+        // 同步数据
+        bookingOrderManager.syncOrderPaymentData(order.getId());
         return result;
     }
 

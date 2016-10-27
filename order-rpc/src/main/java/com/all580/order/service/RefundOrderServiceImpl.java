@@ -97,6 +97,9 @@ public class RefundOrderServiceImpl implements RefundOrderService {
 
         // 退订分账
         refundOrderManager.preRefundAccount(daysList, orderItem.getId(), refundOrder.getId(), detailList, refundDate);
+
+        // 同步数据
+        refundOrderManager.syncRefundOrderApplyData(refundOrder.getId());
         return new Result<>(true);
     }
 
@@ -152,10 +155,15 @@ public class RefundOrderServiceImpl implements RefundOrderService {
                 // 退款
                 refundOrderManager.refundMoney(order, refundOrder.getMoney(), String.valueOf(refundOrder.getNumber()));
             }
-        } else {
-            refundOrderManager.refundFail(refundOrder);
+            refundOrderMapper.updateByPrimaryKeySelective(refundOrder);
+
+            // 同步数据
+            refundOrderManager.syncRefundOrderAuditAcceptData(refundOrder.getId());
+            return new Result<>(true);
         }
-        refundOrderMapper.updateByPrimaryKeySelective(refundOrder);
+        refundOrderManager.refundFail(refundOrder);
+        // 同步数据
+        refundOrderManager.syncRefundOrderAuditRefuse(refundOrder.getId());
         return new Result<>(true);
     }
 }

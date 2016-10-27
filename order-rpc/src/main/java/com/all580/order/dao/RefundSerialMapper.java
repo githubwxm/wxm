@@ -1,6 +1,7 @@
 package com.all580.order.dao;
 
 import com.all580.order.entity.RefundSerial;
+import org.apache.ibatis.annotations.Param;
 
 public interface RefundSerialMapper {
     /**
@@ -57,4 +58,11 @@ public interface RefundSerialMapper {
      * @return
      */
     RefundSerial selectByLocalSn(Long localSn);
+
+    /**
+     * 根据退订订单ID获取退票流水
+     * @param refundId 退订订单ID
+     * @return
+     */
+    RefundSerial selectByRefundOrder(@Param("refundId") Integer refundId);
 }

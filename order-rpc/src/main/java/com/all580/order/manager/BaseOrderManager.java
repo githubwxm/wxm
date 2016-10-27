@@ -160,6 +160,15 @@ public class BaseOrderManager {
      * @param params 参数
      */
     public void addJob(String action, Map<String, String> params) {
+        addJob(action, params, false);
+    }
+
+    /**
+     * 添加任务
+     * @param action 任务执行器
+     * @param params 参数
+     */
+    public void addJob(String action, Map<String, String> params, boolean once) {
         if (action == null) {
             throw new RuntimeException("任务Action为空");
         }
@@ -168,7 +177,7 @@ public class BaseOrderManager {
         job.setExtParams(params);
         job.setParam("$ACTION$", action);
         job.setTaskTrackerNodeGroup(taskTracker);
-        if (maxRetryTimes != null) {
+        if (!once && maxRetryTimes != null) {
             job.setMaxRetryTimes(maxRetryTimes);
         }
         job.setNeedFeedback(true);
@@ -310,6 +319,20 @@ public class BaseOrderManager {
      */
     public void syncOrderData(int orderId, Map<String, List<?>> data) {
         List<Integer> coreEpIds = orderItemAccountMapper.selectCoreEpIdByOrder(orderId);
+        syncOrderData(data, coreEpIds);
+    }
+
+    /**
+     * 同步子订单数据
+     * @param itemId 子订单ID
+     * @param data 同步数据
+     */
+    public void syncOrderItemData(int itemId, Map<String, List<?>> data) {
+        List<Integer> coreEpIds = orderItemAccountMapper.selectCoreEpIdByOrderItem(itemId);
+        syncOrderData(data, coreEpIds);
+    }
+
+    private void syncOrderData(Map<String, List<?>> data, List<Integer> coreEpIds) {
         if (coreEpIds != null) {
             Result<List<String>> accessKeyResult = coreEpAccessService.selectAccessList(coreEpIds);
             if (accessKeyResult.hasError()) {
