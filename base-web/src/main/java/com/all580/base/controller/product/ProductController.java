@@ -9,6 +9,7 @@ import com.all580.product.api.service.ProductRPCService;
 import com.all580.product.api.service.ProductSalesPlanRPCService;
 import com.framework.common.BaseController;
 import com.framework.common.Result;
+import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.util.CommonUtil;
 import com.framework.common.vo.Paginator;
@@ -46,7 +47,7 @@ public class ProductController extends BaseController {
         switch (Integer.valueOf(params.get("type").toString())) {
             case ProductConstants.ProductType.SCENERY:
                 ProductSceneryInfo productSceneryInfo = initProductScenery((Map) params.get("props"));
-                productService.addSceneryProduct(params.get("name").toString(), Integer.valueOf(params.get("epId").toString()), productSceneryInfo);
+                productService.addSceneryProduct(params.get("name").toString(), Integer.valueOf(params.get("ep_id").toString()), productSceneryInfo);
                 break;
             default: return new Result<>(false, "产品类型不匹配");
         }
@@ -61,12 +62,12 @@ public class ProductController extends BaseController {
         productSceneryInfo.setPcastr(props.get("pcastr").toString());
         productSceneryInfo.setAddress(props.get("address").toString());
         productSceneryInfo.setBlurb(props.get("blurb").toString());
-        productSceneryInfo.setBusinessTime(props.get("businessTime").toString());
+        productSceneryInfo.setBusinessTime(props.get("business_time").toString());
         productSceneryInfo.setTel(props.get("tel").toString());
         productSceneryInfo.setMap(props.get("map").toString());
         productSceneryInfo.setImgs(JsonUtils.toJson(props.get("imgs")));
         productSceneryInfo.setLevel(Integer.valueOf(props.get("level").toString()));
-        productSceneryInfo.setTransitLine(props.get("transitLines").toString());
+        productSceneryInfo.setTransitLine(props.get("transit_lines").toString());
         productSceneryInfo.setType(JsonUtils.toJson(props.get("type")));
         return productSceneryInfo;
     }
@@ -74,55 +75,74 @@ public class ProductController extends BaseController {
     @RequestMapping(value = "sub/add", method = RequestMethod.POST)
     @ResponseBody
     public Result<?> addScenerySubProduct(@RequestBody Map params) {
-
-        return new Result<>(true);
+        return productService.addScenerySubProduct(intSubProduct(params));
     }
 
     private SubProductInfo intSubProduct(Map params) {
         SubProductInfo subProductInfo = new SubProductInfo();
+        subProductInfo.setEpId(CommonUtil.objectParseInteger(params.get("ep_id")));
         subProductInfo.setBookingDayLimit(CommonUtil.objectParseString(params.get("bookingDayLimit")));
         subProductInfo.setBookingNotes(CommonUtil.objectParseString(params.get("bookingNotes")));
-//        subProductInfo.setBookingLimit();
-//        subProductInfo.setBookingTimeLimit();
-//        subProductInfo.setBuyEndDate();
-//        subProductInfo.setDescription();
-//        subProductInfo.setDisableDate();
-//        subProductInfo.setDisableWeek();
-//        subProductInfo.setEffectiveDay();
-//        subProductInfo.setEffectiveEndDate();
-//        subProductInfo.setEffectiveStartDate();
-//        subProductInfo.setEffectiveType();
-//        subProductInfo.setEpId();
-//        subProductInfo.setImg();
-//        subProductInfo.setEpMaId();
-//        subProductInfo.setMaProductId();
-//        subProductInfo.setMarketPrice();
-//        subProductInfo.setMaxBuyQuantity();
-//        subProductInfo.setMinBuyQuantity();
-//        subProductInfo.setMinSellPrice();
-//        subProductInfo.setName();
-//        subProductInfo.setPayType();
-//        subProductInfo.setProductId();
-//        subProductInfo.setRealName();
-//        subProductInfo.setRequireSid();
-//        subProductInfo.setSaleQuantity();
-//        subProductInfo.setSalerRefundRule();
-//        subProductInfo.setSaleRuleType();
-//        subProductInfo.setSettlePrice();
-//        subProductInfo.setSidDayCount();
-//        subProductInfo.setSidDayQuantity();
-//        subProductInfo.setStatus();
-//        subProductInfo.setStockLimit();
-//        subProductInfo.setTicketDict();
-//        subProductInfo.setTicketFlag();
-//        subProductInfo.setTicketMsg();
-//        subProductInfo.setTicketFlag();
-//        subProductInfo.setTicketType();
-//        subProductInfo.setTotalStock();
-//        subProductInfo.setUseHoursLimit();
-//        subProductInfo.setUseNotes();
-//        subProductInfo.setVoucherMsg();
+        subProductInfo.setBookingLimit(CommonUtil.objectParseString(params.get("bookingLimit")));
+        subProductInfo.setBookingTimeLimit(CommonUtil.objectParseString(params.get("bookingTimeLimit")));
+        subProductInfo.setBuyEndDate(DateFormatUtils.converToDateTime(CommonUtil.objectParseString(params.get("buyEndDate"))));
+        subProductInfo.setDescription(CommonUtil.objectParseString(params.get("description")));
+        subProductInfo.setDisableDate(CommonUtil.objectParseString(params.get("disableDate")));
+        subProductInfo.setDisableWeek(CommonUtil.objectParseString(params.get("disableWeek")));
+        subProductInfo.setEffectiveDay(CommonUtil.objectParseInteger(params.get("effectiveDay")));
+        subProductInfo.setEffectiveEndDate(CommonUtil.objectParseString(params.get("effectiveEndDate")));
+        subProductInfo.setEffectiveStartDate(CommonUtil.objectParseString(params.get("effectiveStartDate")));
+        subProductInfo.setEffectiveType(CommonUtil.objectParseInteger(params.get("effectiveType")));
+        subProductInfo.setEpId(CommonUtil.objectParseInteger(params.get("epId")));
+        subProductInfo.setImg(CommonUtil.objectParseString(params.get("img")));
+        subProductInfo.setEpMaId(CommonUtil.objectParseInteger(params.get("epMaId")));
+        subProductInfo.setMaProductId(CommonUtil.objectParseString(params.get("maProductId")));
+        subProductInfo.setMarketPrice(CommonUtil.objectParseInteger(params.get("marketPrice")));
+        subProductInfo.setMaxBuyQuantity(CommonUtil.objectParseInteger(params.get("maxBuyQuantity")));
+        subProductInfo.setMinBuyQuantity(CommonUtil.objectParseInteger(params.get("minBuyQuantity")));
+        subProductInfo.setMinSellPrice(CommonUtil.objectParseInteger(params.get("minSellPrice")));
+        subProductInfo.setName(CommonUtil.objectParseString(params.get("name")));
+        subProductInfo.setPayType(CommonUtil.objectParseInteger(params.get("payType")));
+        subProductInfo.setProductId(CommonUtil.objectParseInteger(params.get("productId")));
+        subProductInfo.setRealName(CommonUtil.objectParseInteger(params.get("realName")));
+        subProductInfo.setRequireSid(CommonUtil.objectParseInteger(params.get("requireSid")));
+        subProductInfo.setSaleQuantity(CommonUtil.objectParseInteger(params.get("saleQuantity")));
+        subProductInfo.setSalerRefundRule(CommonUtil.objectParseString(params.get("salerRefundRule")));
+        subProductInfo.setSaleRuleType(CommonUtil.objectParseString(params.get("saleRuleType")));
+        subProductInfo.setSettlePrice(CommonUtil.objectParseInteger(params.get("settlePrice")));
+        subProductInfo.setSidDayCount(CommonUtil.objectParseInteger(params.get("sidDayCount")));
+        subProductInfo.setSidDayQuantity(CommonUtil.objectParseInteger(params.get("sidDayQuantity")));
+        subProductInfo.setStatus(CommonUtil.objectParseInteger(params.get("status")));
+        subProductInfo.setStockLimit(CommonUtil.objectParseInteger(params.get("stockLimit")));
+        subProductInfo.setTicketDict(CommonUtil.objectParseInteger(params.get("ticketDict")));
+        subProductInfo.setTicketFlag(CommonUtil.objectParseInteger(params.get("ticketFlag")));
+        subProductInfo.setTicketMsg(CommonUtil.objectParseString(params.get("ticketMsg")));
+        subProductInfo.setTicketFlag(CommonUtil.objectParseInteger(params.get("ticketFlag")));
+        subProductInfo.setTicketType(CommonUtil.objectParseInteger(params.get("ticketType")));
+        subProductInfo.setTotalStock(CommonUtil.objectParseInteger(params.get("totalStock")));
+        subProductInfo.setUseHoursLimit(CommonUtil.objectParseInteger(params.get("useHoursLimit")));
+        subProductInfo.setUseNotes(CommonUtil.objectParseString(params.get("useNotes")));
+        subProductInfo.setVoucherMsg(CommonUtil.objectParseString(params.get("voucherMsg")));
         return subProductInfo;
+    }
+
+    /**
+     * 产品分销列表
+     * @param epId
+     * @param productName
+     * @param order
+     * @return
+     */
+    @RequestMapping(value = "sale/list")
+    @ResponseBody
+    public Result<?> searchCanSaleList(@RequestParam("ep_id") Integer epId,
+                                       @RequestParam("productName") String productName,
+                                       @RequestParam("orderStr") Integer order,
+                                       @RequestParam("record_start") Integer start,
+                                       @RequestParam("record_count") Integer count) {
+
+        //String orderStr = OrderStrConst.get(order);
+        return productService.searchSubProductListByProductName(epId, productName, null, start, count);
     }
 
     @RequestMapping(value = "update", method = RequestMethod.POST)
@@ -144,9 +164,11 @@ public class ProductController extends BaseController {
      */
     @RequestMapping(value = "self/list")
     @ResponseBody
-    public Result<Paginator<ProductAndSubsInfo>> searchSelfProviderProduct(@RequestParam Integer epId, @RequestParam String productName,
-                                                                           @RequestParam String productSubName, @RequestParam Integer productType,
-                                                                           @RequestParam Integer recordStart, @RequestParam Integer recordCount) {
+    public Result<Paginator<ProductAndSubsInfo>> searchSelfProviderProduct(@RequestParam("ep_id") Integer epId,
+                                                                           @RequestParam("product_name") String productName,
+                                                                           @RequestParam("product_sub_name") String productSubName,
+                                                                           @RequestParam("record_start") Integer recordStart,
+                                                                           @RequestParam("record_count") Integer recordCount) {
        // TODO: 验证入参
        return productService.searchSelfProviderProductList(epId, productName, productSubName, recordStart, recordCount);
     }
@@ -158,22 +180,13 @@ public class ProductController extends BaseController {
      */
     @RequestMapping(value = "other/list")
     @ResponseBody
-    public Result<?> searchOtherProdiverProduct(@RequestParam Integer epId) {
+    public Result<?> searchOtherProdiverProduct(@RequestParam Integer epId,
+                                                @RequestParam String productName,
+                                                @RequestParam String supplierName,
+                                                @RequestParam Integer sale,
+                                                @RequestParam Integer recordStart,
+                                                @RequestParam Integer recordCount) {
         return null;
     }
-
-    /**
-     * 产品分销列表
-     * @param epId
-     * @param productName
-     * @param order
-     * @return
-     */
-    @RequestMapping(value = "sale/list")
-    @ResponseBody
-    public Result<?> searchProductOnSaleList(@RequestParam Integer epId, @RequestParam String productName, @RequestParam Integer order) {
-        return null;
-    }
-
 
 }
