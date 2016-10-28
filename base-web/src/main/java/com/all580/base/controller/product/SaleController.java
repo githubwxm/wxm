@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
-import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -31,7 +31,8 @@ public class SaleController extends BaseController {
      */
     @RequestMapping(value = "group/add")
     @ResponseBody
-    public Result<?> addSaleGroup(@RequestBody Map params) {
+    public Result addSaleGroup(@RequestBody Map params) {
+        //TODO 数据验证
         return planGroupService.addPlanGroup(
                 CommonUtil.objectParseString(params.get("name")),
                 CommonUtil.objectParseString(params.get("memo")),
@@ -56,10 +57,21 @@ public class SaleController extends BaseController {
      */
     @RequestMapping(value = "group/list")
     @ResponseBody
-    public Result<?> searchSalesGroupList(@RequestParam Integer epId, @RequestParam Integer productSubId, @RequestParam Integer recordStart, @RequestParam Integer recordCount) {
-        return null;
+    public Result<?> searchSalesGroupList(@RequestParam("ep_id") Integer epId,  @RequestParam("record_start") Integer start, @RequestParam("count") Integer count) {
+        //TODO 数据验证
+        return planGroupService.searchGroupList(epId, start, count);
     }
 
-
+    /**
+     * 添加企业到组
+     * @param params
+     * @return
+     */
+    @RequestMapping("group/ep/add")
+    @ResponseBody
+    public Result addEpsToGroup(@RequestBody Map params) {
+        //TODO 数据验证
+        return planGroupService.addEpsToGroup(CommonUtil.objectParseInteger(params.get("ep_id")), CommonUtil.objectParseInteger(params.get("id")), (List) params.get("ep_ids"));
+    }
 
 }
