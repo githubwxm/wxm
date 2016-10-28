@@ -11,6 +11,7 @@ import com.all580.order.entity.OrderItem;
 import com.all580.order.entity.OrderItemDetail;
 import com.all580.order.entity.RefundOrder;
 import com.all580.order.manager.RefundOrderManager;
+import com.all580.payment.api.conf.PaymentConstant;
 import com.framework.common.Result;
 import javax.lang.exception.ApiException;
 import com.framework.common.lang.JsonUtils;
@@ -152,8 +153,11 @@ public class RefundOrderServiceImpl implements RefundOrderService {
                 int quantity = refundOrderManager.nonSendTicketRefund(daysList, detailList);
                 orderItem.setRefundQuantity(orderItem.getRefundQuantity() + quantity);
                 orderItemMapper.updateByPrimaryKeySelective(orderItem);
-                // 退款
-                refundOrderManager.refundMoney(order, refundOrder.getMoney(), String.valueOf(refundOrder.getNumber()));
+                // 支付宝需要手动退款
+                if (order.getPaymentType() != PaymentConstant.PaymentType.ALI_PAY.intValue()) {
+                    // 退款
+                    refundOrderManager.refundMoney(order, refundOrder.getMoney(), String.valueOf(refundOrder.getNumber()));
+                }
             }
             refundOrderMapper.updateByPrimaryKeySelective(refundOrder);
 
@@ -164,6 +168,28 @@ public class RefundOrderServiceImpl implements RefundOrderService {
         refundOrderManager.refundFail(refundOrder);
         // 同步数据
         refundOrderManager.syncRefundOrderAuditRefuse(refundOrder.getId());
+        return new Result<>(true);
+    }
+
+    @Override
+    public Result<?> refundAliPayMoney(Map params) {
+        RefundOrder refundOrder = refundOrderMapper.selectBySN(Long.valueOf(params.get("refund_sn").toString()));
+        if (refundOrder == null) {
+            throw new ApiException("退订订单不存在");
+        }
+        if (refundOrder.getStatus() != OrderConstant.RefundOrderStatus.AUDIT_WAIT) {
+            throw new ApiException("退订订单不在待审核状态");
+        }
+        OrderItem orderItem = orderItemMapper.selectByPrimaryKey(refundOrder.getOrderItemId());
+        if (orderItem == null) {
+            throw new ApiException("订单不存在");
+        }
+        Order order = orderMapper.selectByPrimaryKey(orderItem.getOrderId());
+        if (order == null) {
+            throw new ApiException("订单不存在");
+        }
+        // 退款
+        refundOrderManager.refundMoney(order, refundOrder.getMoney(), String.valueOf(refundOrder.getNumber()));
         return new Result<>(true);
     }
 }
