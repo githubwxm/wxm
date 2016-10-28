@@ -1,9 +1,17 @@
 package com.all580.base.controller.product;
 
 import com.all580.base.manager.ProductValidateManager;
+import com.all580.product.api.consts.ProductConstants;
+import com.all580.product.api.model.ProductAndSubsInfo;
+import com.all580.product.api.model.ProductSceneryInfo;
+import com.all580.product.api.model.SubProductInfo;
+import com.all580.product.api.service.ProductRPCService;
 import com.all580.product.api.service.ProductSalesPlanRPCService;
 import com.framework.common.BaseController;
 import com.framework.common.Result;
+import com.framework.common.lang.JsonUtils;
+import com.framework.common.util.CommonUtil;
+import com.framework.common.vo.Paginator;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,26 +31,107 @@ public class ProductController extends BaseController {
     @Resource
     ProductSalesPlanRPCService productSalesPlanRPCService;
 
+    @Resource
+    ProductRPCService productService;
+
+    /**
+     * 添加景区主产品
+     * @param params
+     * @return
+     */
     @RequestMapping(value = "add", method = RequestMethod.POST)
     @ResponseBody
     public Result<?> addSceneryProduct(@RequestBody Map params) {
-
+        // TODO:验证入参
+        switch (Integer.valueOf(params.get("type").toString())) {
+            case ProductConstants.ProductType.SCENERY:
+                ProductSceneryInfo productSceneryInfo = initProductScenery((Map) params.get("props"));
+                productService.addSceneryProduct(params.get("name").toString(), Integer.valueOf(params.get("epId").toString()), productSceneryInfo);
+                break;
+            default: return new Result<>(false, "产品类型不匹配");
+        }
         return new Result<>(true);
     }
 
-    @RequestMapping(value = "sub/add")
+    private ProductSceneryInfo initProductScenery(Map props) {
+        ProductSceneryInfo productSceneryInfo = new ProductSceneryInfo();
+        productSceneryInfo.setProvince(Integer.valueOf(props.get("province").toString()));
+        productSceneryInfo.setCity(Integer.valueOf(props.get("city").toString()));
+        productSceneryInfo.setArea(Integer.valueOf(props.get("area").toString()));
+        productSceneryInfo.setPcastr(props.get("pcastr").toString());
+        productSceneryInfo.setAddress(props.get("address").toString());
+        productSceneryInfo.setBlurb(props.get("blurb").toString());
+        productSceneryInfo.setBusinessTime(props.get("businessTime").toString());
+        productSceneryInfo.setTel(props.get("tel").toString());
+        productSceneryInfo.setMap(props.get("map").toString());
+        productSceneryInfo.setImgs(JsonUtils.toJson(props.get("imgs")));
+        productSceneryInfo.setLevel(Integer.valueOf(props.get("level").toString()));
+        productSceneryInfo.setTransitLine(props.get("transitLines").toString());
+        productSceneryInfo.setType(JsonUtils.toJson(props.get("type")));
+        return productSceneryInfo;
+    }
+
+    @RequestMapping(value = "sub/add", method = RequestMethod.POST)
     @ResponseBody
     public Result<?> addScenerySubProduct(@RequestBody Map params) {
+
         return new Result<>(true);
     }
 
-    @RequestMapping(value = "update")
+    private SubProductInfo intSubProduct(Map params) {
+        SubProductInfo subProductInfo = new SubProductInfo();
+        subProductInfo.setBookingDayLimit(CommonUtil.objectParseString(params.get("bookingDayLimit")));
+        subProductInfo.setBookingNotes(CommonUtil.objectParseString(params.get("bookingNotes")));
+//        subProductInfo.setBookingLimit();
+//        subProductInfo.setBookingTimeLimit();
+//        subProductInfo.setBuyEndDate();
+//        subProductInfo.setDescription();
+//        subProductInfo.setDisableDate();
+//        subProductInfo.setDisableWeek();
+//        subProductInfo.setEffectiveDay();
+//        subProductInfo.setEffectiveEndDate();
+//        subProductInfo.setEffectiveStartDate();
+//        subProductInfo.setEffectiveType();
+//        subProductInfo.setEpId();
+//        subProductInfo.setImg();
+//        subProductInfo.setEpMaId();
+//        subProductInfo.setMaProductId();
+//        subProductInfo.setMarketPrice();
+//        subProductInfo.setMaxBuyQuantity();
+//        subProductInfo.setMinBuyQuantity();
+//        subProductInfo.setMinSellPrice();
+//        subProductInfo.setName();
+//        subProductInfo.setPayType();
+//        subProductInfo.setProductId();
+//        subProductInfo.setRealName();
+//        subProductInfo.setRequireSid();
+//        subProductInfo.setSaleQuantity();
+//        subProductInfo.setSalerRefundRule();
+//        subProductInfo.setSaleRuleType();
+//        subProductInfo.setSettlePrice();
+//        subProductInfo.setSidDayCount();
+//        subProductInfo.setSidDayQuantity();
+//        subProductInfo.setStatus();
+//        subProductInfo.setStockLimit();
+//        subProductInfo.setTicketDict();
+//        subProductInfo.setTicketFlag();
+//        subProductInfo.setTicketMsg();
+//        subProductInfo.setTicketFlag();
+//        subProductInfo.setTicketType();
+//        subProductInfo.setTotalStock();
+//        subProductInfo.setUseHoursLimit();
+//        subProductInfo.setUseNotes();
+//        subProductInfo.setVoucherMsg();
+        return subProductInfo;
+    }
+
+    @RequestMapping(value = "update", method = RequestMethod.POST)
     @ResponseBody
     public Result<?> updateSceneryProduct(@RequestBody Map params) {
         return null;
     }
 
-    @RequestMapping(value = "sub/update")
+    @RequestMapping(value = "sub/update", method = RequestMethod.POST)
     @ResponseBody
     public Result<?> updateScenerySubProduct(@RequestBody Map params) {
         return null;
@@ -55,8 +144,11 @@ public class ProductController extends BaseController {
      */
     @RequestMapping(value = "self/list")
     @ResponseBody
-    public Result<?> searchSelfProviderProduct(@RequestParam Integer epId) {
-        return null;
+    public Result<Paginator<ProductAndSubsInfo>> searchSelfProviderProduct(@RequestParam Integer epId, @RequestParam String productName,
+                                                                           @RequestParam String productSubName, @RequestParam Integer productType,
+                                                                           @RequestParam Integer recordStart, @RequestParam Integer recordCount) {
+       // TODO: 验证入参
+       return productService.searchSelfProviderProductList(epId, productName, productSubName, recordStart, recordCount);
     }
 
     /**
