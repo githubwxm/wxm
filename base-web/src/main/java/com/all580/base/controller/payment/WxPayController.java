@@ -22,12 +22,14 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * 微信回调网关
+ *
  * @author panyi on 2016/10/20.
  * @since V0.0.1
  */
 @Controller
 @RequestMapping("api/callback/wx")
-public class WxPayController extends BaseController{
+public class WxPayController extends BaseController {
     @Autowired
     private ThirdPayService thirdPayService;
 
@@ -38,7 +40,7 @@ public class WxPayController extends BaseController{
         InputStream inputStream = request.getInputStream();
 
         // 获取应答内容
-        String resContent = new String(InputStreamTOByte(inputStream),"UTF-8");
+        String resContent = new String(InputStreamTOByte(inputStream), "UTF-8");
         logger.info("微信回调内容：" + resContent);
         //解析xml,得到map
         Map m = XMLUtil.doXMLParse(resContent);
@@ -54,7 +56,8 @@ public class WxPayController extends BaseController{
         }
         logger.info("微信支付回调->结束");
     }
-    private String responseWx(Map<String,String> rsp) throws UnsupportedEncodingException {
+
+    private String responseWx(Map<String, String> rsp) throws UnsupportedEncodingException {
         StringBuffer sb = new StringBuffer();
         sb.append("<xml>");
         String enc = "UTF-8";
@@ -64,9 +67,11 @@ public class WxPayController extends BaseController{
         sb.append("</xml>");
         return new String(sb.toString().getBytes(), "ISO8859-1");
     }
+
     /**
      * InputStream转换成Byte
      * 注意:流关闭需要自行处理
+     *
      * @param in
      * @return byte
      * @throws Exception
@@ -78,7 +83,7 @@ public class WxPayController extends BaseController{
         byte[] data = new byte[BUFFER_SIZE];
         int count = -1;
 
-        while((count = in.read(data,0,BUFFER_SIZE)) != -1)
+        while ((count = in.read(data, 0, BUFFER_SIZE)) != -1)
             outStream.write(data, 0, count);
 
         data = null;
@@ -127,13 +132,14 @@ public class WxPayController extends BaseController{
 
     /**
      * xml工具类
-     * @author miklchen
      *
+     * @author miklchen
      */
     static class XMLUtil {
 
         /**
          * 解析xml,返回第一级元素键值对。如果第一级元素有子节点，则此节点的值是子节点的xml数据。
+         *
          * @param strxml
          * @return
          * @throws JDOMException
@@ -142,7 +148,7 @@ public class WxPayController extends BaseController{
         public static Map doXMLParse(String strxml) throws JDOMException, IOException {
             strxml = strxml.replaceFirst("encoding=\".*\"", "encoding=\"UTF-8\"");
 
-            if(null == strxml || "".equals(strxml)) {
+            if (null == strxml || "".equals(strxml)) {
                 return null;
             }
 
@@ -154,12 +160,12 @@ public class WxPayController extends BaseController{
             Element root = doc.getRootElement();
             List list = root.getChildren();
             Iterator it = list.iterator();
-            while(it.hasNext()) {
+            while (it.hasNext()) {
                 Element e = (Element) it.next();
                 String k = e.getName();
                 String v = "";
                 List children = e.getChildren();
-                if(children.isEmpty()) {
+                if (children.isEmpty()) {
                     v = e.getTextNormalize();
                 } else {
                     v = XMLUtil.getChildrenText(children);
@@ -176,20 +182,21 @@ public class WxPayController extends BaseController{
 
         /**
          * 获取子结点的xml
+         *
          * @param children
          * @return String
          */
         public static String getChildrenText(List children) {
             StringBuffer sb = new StringBuffer();
-            if(!children.isEmpty()) {
+            if (!children.isEmpty()) {
                 Iterator it = children.iterator();
-                while(it.hasNext()) {
+                while (it.hasNext()) {
                     Element e = (Element) it.next();
                     String name = e.getName();
                     String value = e.getTextNormalize();
                     List list = e.getChildren();
                     sb.append("<" + name + ">");
-                    if(!list.isEmpty()) {
+                    if (!list.isEmpty()) {
                         sb.append(XMLUtil.getChildrenText(list));
                     }
                     sb.append(value);

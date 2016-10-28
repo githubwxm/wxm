@@ -14,12 +14,13 @@ import java.util.Map;
 
 /**
  * 余额账户网关
+ *
  * @author panyi on 2016/10/25.
  * @since V0.0.1
  */
 @Controller
 @RequestMapping(value = "api/balance")
-public class BalanceController extends BaseController{
+public class BalanceController extends BaseController {
     @Autowired
     private BalancePayService balancePayService;
 
@@ -35,8 +36,10 @@ public class BalanceController extends BaseController{
                 result = balancePayService.getBalanceAccountInfo(epId, coreEpId);
             }
         } catch (Exception e) {
-            logger.error(e.getMessage(),e);
+            String msg = "获取余额账户信息出错，原因：" + e.getMessage();
+            logger.error(msg, e);
             result.setFail();
+            result.setError(msg);
         }
         return result;
     }

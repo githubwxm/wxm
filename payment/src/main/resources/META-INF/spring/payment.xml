@@ -8,6 +8,8 @@
     <bean id="thirdPayService" class="com.all580.payment.service.ThirdPayServiceImpl"/>
     <bean id="epPaymentConfService" class="com.all580.payment.service.EpPaymentConfServiceImpl"/>
 
+    <bean id="topicPushManager" class="com.framework.common.mns.TopicPushManager"/>
+
     <dubbo:service interface="com.all580.payment.api.service.BalancePayService" ref="balancePayService"/>
     <dubbo:service interface="com.all580.payment.api.service.ThirdPayService" ref="thirdPayService"/>
     <dubbo:service interface="com.all580.payment.api.service.EpPaymentConfService" ref="epPaymentConfService"/>

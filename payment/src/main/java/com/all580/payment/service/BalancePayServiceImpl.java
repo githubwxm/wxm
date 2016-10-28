@@ -11,21 +11,21 @@ import com.all580.payment.entity.Capital;
 import com.all580.payment.entity.CapitalSerial;
 import com.all580.payment.exception.BusinessException;
 import com.framework.common.Result;
+import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.JsonUtils;
+import com.framework.common.mns.TopicPushManager;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 余额支付的实现类
@@ -37,29 +37,37 @@ import java.util.Map;
 public class BalancePayServiceImpl implements BalancePayService {
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    @Value("${mns.topic.name}")
+    private String topicName;
     @Autowired
     private CapitalMapper capitalMapper;
     @Autowired
     private CapitalSerialMapper capitalSerialMapper;
     @Autowired
     private PaymentCallbackService paymentCallbackService;
+    @Autowired
+    private TopicPushManager topicPushManager;
 
     @Override
-    public Result<BalanceChangeRsp> changeBalances(List<BalanceChangeInfo> balanceChangeInfoList, Integer type, final String
-            serialNum) {
+    public Result<BalanceChangeRsp> changeBalances(List<BalanceChangeInfo> balanceChangeInfoList, Integer type,
+                                                   final String serialNum) {
+        Assert.notNull(balanceChangeInfoList, "参数【balanceChangeInfoList】不能为空");
+        Assert.notNull(type, "参数【type】不能为空");
+        Assert.notNull(serialNum, "参数【serialNum】不能为空");
         logger.info(MessageFormat.format("开始 -> 余额变更：type={0}|serialNum={1}", type.toString(), serialNum));
         Result<BalanceChangeRsp> result = new Result<>();
         try {
             // 批量锁定
             List<Capital> capitals = capitalMapper.selectForUpdateByEpList(balanceChangeInfoList);
-            // 检查余额账户
+            Assert.notNull(capitals, "余额账号为空");
+            // 检查余额账户，并生成流水记录
             List<CapitalSerial> capitalSerialList = checkBalanceAccount(balanceChangeInfoList, capitals, type, serialNum);
-            // 记录流水
+            // 保存流水记录
             recodeSerial(capitalSerialList);
             // 变更余额
             changeBalances(capitals);
             // 发布余额变更事件
-            fireBalanceChangedEvent();
+            fireBalanceChangedEvent(capitals);
 
             // 回调订单模块-余额支付
             if (PaymentConstant.BalanceChangeType.BALANCE_PAY.equals(type)) {
@@ -95,8 +103,6 @@ public class BalancePayServiceImpl implements BalancePayService {
      */
     private List<CapitalSerial> checkBalanceAccount(List<BalanceChangeInfo> balanceChangeInfoList,
                                                     List<Capital> capitals, Integer type, String serialNum) {
-        Assert.notNull(balanceChangeInfoList);
-        Assert.notNull(capitals);
         List<CapitalSerial> capitalSerials = new ArrayList<>();
         Map<String, Capital> capitalMap = convertCapitalList(capitals);
         for (BalanceChangeInfo balanceChangeInfo : balanceChangeInfoList) {
@@ -158,9 +164,15 @@ public class BalancePayServiceImpl implements BalancePayService {
     /**
      * 发布余额变更事件
      */
-    private void fireBalanceChangedEvent() {
-        // TODO panyi
-        logger.info("余额变更事件----->");
+    private void fireBalanceChangedEvent(List<Capital> capitals) {
+        logger.info("余额变更事件----->开始");
+        String tag = "core";
+        Map<String, Object> data = new HashMap<>();
+        data.put("action", PaymentConstant.EVENT_NAME_BALANCE_CHANGE);
+        data.put("createTime", DateFormatUtils.converToStringDate(new Date()));
+        data.put("content", capitals);
+        topicPushManager.pushAsync(topicName, tag, JsonUtils.toJson(data));
+        logger.info("余额变更事件----->成功");
     }
 
     @Override

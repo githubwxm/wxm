@@ -21,7 +21,7 @@ public interface SmsService {
      * @param params       短信参数
      * @return 发送是否成功
      */
-    boolean send(String destPhoneNum, Integer smsType, Integer epId, Map<String, String> params);
+    Result send(String destPhoneNum, Integer smsType, Integer epId, Map<String, String> params);
 
     /**
      * 创建企业短信通道配置
