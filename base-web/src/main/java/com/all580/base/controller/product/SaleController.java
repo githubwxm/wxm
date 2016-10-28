@@ -1,13 +1,17 @@
 package com.all580.base.controller.product;
 
+import com.all580.product.api.service.PlanGroupRPCService;
 import com.framework.common.BaseController;
 import com.framework.common.Result;
+import com.framework.common.util.CommonUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.annotation.Resource;
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -17,6 +21,9 @@ import java.util.Map;
 @RequestMapping(value = "api/sale")
 public class SaleController extends BaseController {
 
+    @Resource
+    PlanGroupRPCService planGroupService;
+
     /**
      * 新增商家分组
      * @param params
@@ -25,7 +32,11 @@ public class SaleController extends BaseController {
     @RequestMapping(value = "group/add")
     @ResponseBody
     public Result<?> addSaleGroup(@RequestBody Map params) {
-        return null;
+        return planGroupService.addPlanGroup(
+                CommonUtil.objectParseString(params.get("name")),
+                CommonUtil.objectParseString(params.get("memo")),
+                CommonUtil.objectParseInteger(params.get("ep_id"))
+        );
     }
 
     /**
