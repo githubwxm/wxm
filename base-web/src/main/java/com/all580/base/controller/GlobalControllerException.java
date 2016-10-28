@@ -57,6 +57,13 @@ public class GlobalControllerException {
         return new Result(false, Result.PARAMS_ERROR, e.getMessage());
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseBody
+    public Result processIllegalArgumentException(IllegalArgumentException e) {
+        log.error("参数验证异常", e);
+        return new Result(false, Result.PARAMS_ERROR, e.getMessage());
+    }
+
     @ExceptionHandler(DuplicateKeyException.class)
     @ResponseBody
     public Result processDuplicateKeyException(DuplicateKeyException e) {
