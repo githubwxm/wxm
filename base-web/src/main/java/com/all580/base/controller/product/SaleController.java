@@ -1,9 +1,11 @@
 package com.all580.base.controller.product;
 
+import com.all580.product.api.model.PlanGroupInfo;
 import com.all580.product.api.service.PlanGroupRPCService;
 import com.framework.common.BaseController;
 import com.framework.common.Result;
 import com.framework.common.util.CommonUtil;
+import com.framework.common.vo.Paginator;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -57,7 +59,7 @@ public class SaleController extends BaseController {
      */
     @RequestMapping(value = "group/list")
     @ResponseBody
-    public Result<?> searchSalesGroupList(@RequestParam("ep_id") Integer epId,  @RequestParam("record_start") Integer start, @RequestParam("count") Integer count) {
+    public Result<Paginator<PlanGroupInfo>> searchSalesGroupList(@RequestParam("ep_id") Integer epId, @RequestParam("record_start") Integer start, @RequestParam("count") Integer count) {
         //TODO 数据验证
         return planGroupService.searchGroupList(epId, start, count);
     }
