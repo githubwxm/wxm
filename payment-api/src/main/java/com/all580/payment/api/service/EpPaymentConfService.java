@@ -15,7 +15,9 @@ public interface EpPaymentConfService {
 
     /**
      * 创建支付方式配置
+     * ******************************* 微信 **************************************
      *
+     * ***************************************************************************
      * @param data {"coreEpId":xxx,"paymentType":7112,"confData":"..."}
      *             paymentType 取值来自于-> PaymentConstant.PaymentType
      * @return 成功，返回{success:true}；失败，返回{success:false,error:错误信息}
