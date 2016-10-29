@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 
 import javax.lang.exception.ParamsMapValidationException;
+import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
 /**
@@ -41,7 +42,8 @@ public class EpController extends BaseController {
      */
     @RequestMapping(value = "create", method = RequestMethod.POST)
     @ResponseBody
-    public Result<Map> create(@RequestBody Map map) {
+    public Result<Map> create(HttpServletRequest request, @RequestBody Map map) {
+            map.put("core_ep_id",request.getAttribute("core_ep_id")) ;
             ParamsMapValidate.validate(map, platfromValidateManager.generateCreateEpValidate());
             return epService.createEp(map);
     }
