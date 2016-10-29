@@ -59,7 +59,7 @@ public class SaleController extends BaseController {
      */
     @RequestMapping(value = "group/list")
     @ResponseBody
-    public Result<Paginator<PlanGroupInfo>> searchSalesGroupList(@RequestParam("ep_id") Integer epId, @RequestParam("record_start") Integer start, @RequestParam("count") Integer count) {
+    public Result<Paginator<PlanGroupInfo>> searchSalesGroupList(@RequestParam("ep_id") Integer epId, @RequestParam("record_start") Integer start, @RequestParam("record_count") Integer count) {
         //TODO 数据验证
         return planGroupService.searchGroupList(epId, start, count);
     }

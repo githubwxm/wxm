@@ -2,10 +2,8 @@ package com.all580.base.controller.product;
 
 import com.all580.base.manager.ProductValidateManager;
 import com.all580.product.api.consts.ProductConstants;
-import com.all580.product.api.model.ProductAndSubInfo;
-import com.all580.product.api.model.ProductAndSubsInfo;
-import com.all580.product.api.model.ProductSceneryInfo;
-import com.all580.product.api.model.SubProductInfo;
+import com.all580.product.api.model.*;
+import com.all580.product.api.service.ProductDistributionRPCService;
 import com.all580.product.api.service.ProductRPCService;
 import com.all580.product.api.service.ProductSalesPlanRPCService;
 import com.framework.common.BaseController;
@@ -18,6 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -35,6 +34,9 @@ public class ProductController extends BaseController {
 
     @Resource
     ProductRPCService productService;
+
+    @Resource
+    ProductDistributionRPCService productDistributionService;
 
     /**
      * 添加景区主产品
@@ -142,9 +144,32 @@ public class ProductController extends BaseController {
                                        @RequestParam("record_start") Integer start,
                                        @RequestParam("record_count") Integer count) {
 
-        //String orderStr = OrderStrConst.get(order);
-        Result<Paginator<ProductAndSubInfo>> result = productService.searchSubProductListByProductName(epId, productName, null, start, count);
+        String orderStr = null;
+        if (order != null) {
+            switch (CanSaleOrderState.getCanSaleOrderSate(order)) {
+                case CREATE_TIME_ASC: orderStr = CanSaleOrderState.CREATE_TIME_ASC.getValue(); break;
+                case CREATE_TIME_DESC: orderStr = CanSaleOrderState.CREATE_TIME_DESC.getValue(); break;
+                case PRODUCT_NAME_ASC: orderStr = CanSaleOrderState.PRODUCT_NAME_ASC.getValue(); break;
+                case PRODUCT_NAME_DESC: orderStr = CanSaleOrderState.PRODUCT_NAME_DESC.getValue(); break;
+            }
+        }
+        Result<Paginator<ProductAndSubInfo>> result = productService.searchSubProductListByProductName(epId, productName, orderStr, start, count);
         return result;
+    }
+
+    @RequestMapping("sale/ep/list")
+    @ResponseBody
+    public Result<List<DistributionEpInfo>> searchDistributionEpInfo(
+            @RequestParam("ep_id") Integer epId,
+            @RequestParam("productSubId") Integer productSubId,
+            @RequestParam("status") Integer distributionStatus) {
+        switch (CommonUtil.objectParseInteger(distributionStatus)) {
+            case ProductConstants.ProductDistributionState.HAD_DISTRIBUTE:
+                return productDistributionService.selectAlreadyDistributionEp(productSubId);
+            case ProductConstants.ProductDistributionState.NOT_DISTRIBUTE:
+                return productDistributionService.selectNoDistributionEp(epId, productSubId);
+        }
+        return new Result<>(false, "状态参数不对");
     }
 
     @RequestMapping(value = "update", method = RequestMethod.POST)
