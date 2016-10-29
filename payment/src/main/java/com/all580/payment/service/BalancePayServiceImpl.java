@@ -39,6 +39,13 @@ public class BalancePayServiceImpl implements BalancePayService {
 
     @Value("${mns.topic.name}")
     private String topicName;
+    @Value("${mns.accessId}")
+    private String mnsAccessId;
+    @Value("${mns.accessKey}")
+    private String mnsAccessKey;
+    @Value("${mns.accountEndpoint}")
+    private String mnsAccountEndpoint;
+
     @Autowired
     private CapitalMapper capitalMapper;
     @Autowired
@@ -171,6 +178,9 @@ public class BalancePayServiceImpl implements BalancePayService {
         data.put("action", PaymentConstant.EVENT_NAME_BALANCE_CHANGE);
         data.put("createTime", DateFormatUtils.converToStringDate(new Date()));
         data.put("content", capitals);
+        topicPushManager.setAccessId(mnsAccessId);
+        topicPushManager.setAccessKey(mnsAccessKey);
+        topicPushManager.setAccountEndpoint(mnsAccountEndpoint);
         topicPushManager.pushAsync(topicName, tag, JsonUtils.toJson(data));
         logger.info("余额变更事件----->成功");
     }

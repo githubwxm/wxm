@@ -42,6 +42,8 @@
 					 interface="com.all580.ep.api.service.EpBalanceThresholdService" />
 	<dubbo:reference id="logCreditService"
 					 interface="com.all580.ep.api.service.LogCreditService" />
+	<dubbo:reference id="smsService"
+					 interface="com.all580.notice.api.service.SmsService"/>
 
 	<dubbo:reference id="planGroupService" interface="com.all580.product.api.service.PlanGroupRPCService" />
 	<dubbo:reference id="productDistributionService" interface="com.all580.product.api.service.ProductDistributionService" />
