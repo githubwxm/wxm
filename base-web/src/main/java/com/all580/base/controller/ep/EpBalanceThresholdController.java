@@ -1,7 +1,9 @@
 package com.all580.base.controller.ep;
 
+import com.all580.ep.api.conf.EpConstant;
 import com.all580.ep.api.service.EpBalanceThresholdService;
 import com.all580.ep.api.service.EpService;
+import com.all580.notice.api.conf.SmsType;
 import com.all580.notice.api.service.SmsService;
 import com.framework.common.BaseController;
 import com.framework.common.Result;
@@ -53,12 +55,10 @@ public class EpBalanceThresholdController extends BaseController {
      */
     @RequestMapping(value = "select", method = RequestMethod.GET)
     @ResponseBody
-    public Result<Map> select( Integer ep_id
-                             ) {
-           Integer core_ep_id=1;//// TODO: 2016/10/20 0020   获取平台商id
+    public Result<Map> select(HttpServletRequest request, Integer ep_id) {
             Map map = new HashMap();
             map.put("ep_id",ep_id);
-            map.put("core_ep_id",core_ep_id) ;//epService.selectPlatformId(ep_id).get() 查询平台商
+            map.put("core_ep_id",getAttribute(EpConstant.EpKey.CORE_EP_ID)) ;//
          ParamsMapValidate.validate(map, generateEpBalanceThresholdValidate());
             return epBalanceThresholdService.select(map);
     }
@@ -70,17 +70,15 @@ public class EpBalanceThresholdController extends BaseController {
      */
     @RequestMapping(value = "balance/warn", method = RequestMethod.GET)
     @ResponseBody
-    public Result<Map> warn(Integer ep_id,
-                            Integer balance
-                           ) {
-        Integer core_ep_id=1;//// TODO: 2016/10/20 0020   获取平台商id
+    public Result<Map> warn(Integer ep_id,Integer core_ep_id,Integer balance ) {
+       //// TODO: 2016/10/20 0020   获取平台商id
             Map map = new HashMap();
              map.put("ep_id",ep_id);
-             map.put("core_ep_id",core_ep_id);
+             map.put("core_ep_id",core_ep_id) ;//
              map.put("balance",balance);
             ParamsMapValidate.validate(map, generateEpBalanceValidate());
 
-            boolean bool =epBalanceThresholdService.warn(map);
+            boolean bool =epBalanceThresholdService.warn(map);//是否发送成功
             if(bool){
 
             }

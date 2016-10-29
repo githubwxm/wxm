@@ -1,6 +1,7 @@
 package com.all580.ep.api.service;
 
 import com.framework.common.Result;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;

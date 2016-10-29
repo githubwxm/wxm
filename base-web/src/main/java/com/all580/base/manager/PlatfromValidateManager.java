@@ -27,11 +27,9 @@ public class PlatfromValidateManager {
                 "province", // 企业省
                 "city", // 市
                 "area", // 区
-                "province_name", // 企业省
-                "city_name", // 市
-                "area_name", // 区
                 "creator_ep_id",
                 "address", // 详细地址
+                "group_id",
         }, new ValidRule[]{new ValidRule.NotNull()});
 
 //        // 校验整数
@@ -40,6 +38,7 @@ public class PlatfromValidateManager {
                 "city", // 市
                 "area", // 区
                 "creator_ep_id",
+                "group_id",
         }, new ValidRule[]{new ValidRule.Digits()});
         rules.put(new String[]{
                 "link_phone", // 订单联系人手机号码
@@ -59,9 +58,7 @@ public class PlatfromValidateManager {
                 "province", // 企业省
                 "city", // 市
                 "area", // 区
-                "province_name", // 企业省
-                "city_name", // 市
-                "area_name", // 区
+                "pic_address", // 湖南省长沙市岳麓区
                 "address", // 详细地址
         }, new ValidRule[]{new ValidRule.NotNull()});
 

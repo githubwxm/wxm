@@ -1,10 +1,12 @@
 package com.all580.base.util;
 
+import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.framework.common.Result;
+import com.framework.common.util.CommonUtil;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -35,7 +37,11 @@ public class CustomJacksonConvert extends MappingJackson2HttpMessageConverter {
 			result.put("code", r.getCode() == null ? (r.isSuccess() ? Result.SUCCESS : Result.FAIL) : r.getCode());
 			result.put("message", r.getError());
 			result.put("data", r.get());
-			result.put("sign", "");
+			String key = CommonUtil.objectParseString(r.getExt("access_key"));
+			 key= key==null?"":key;
+			String data = JSON.toJSONString(result);
+			String sign=CommonUtil.signForData(key,data);
+			result.put("sign",sign);
 			super.writeInternal(result, outputMessage);
 			return;
 		}

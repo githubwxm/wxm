@@ -5,8 +5,6 @@ import com.all580.ep.api.service.EpService;
 import com.framework.common.BaseController;
 import com.framework.common.Result;
 
-import javax.lang.exception.ApiException;
-import javax.lang.exception.ParamsMapValidationException;
 import com.framework.common.validate.ParamsMapValidate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -43,7 +40,7 @@ public class PlatfromController extends BaseController {
     @ResponseBody
     public Result<Map> validate( String access_id
     ) {
-        Map map = new HashMap();
+        Map<String,Object> map = new HashMap<>();
         map.put("access_id", access_id);
         return epService.validate(map);
 
@@ -55,8 +52,8 @@ public class PlatfromController extends BaseController {
      */
     @RequestMapping(value = "selectPlatfromId", method = RequestMethod.GET)
     @ResponseBody
-    public Result<Map> selectPlatfromId(HttpServletRequest request,  Integer id) {
-        Map map = new HashMap();
+    public Result<Map> selectPlatfromId(Integer id) {
+        Map<String,Object> map = new HashMap();
         map.put("id", id);
         ParamsMapValidate.validate(map, platfromValidateManager.generateCreateStatusValidate());
         return epService.selectId(map);
@@ -124,7 +121,7 @@ public class PlatfromController extends BaseController {
                                       String epProvince,
                                       String epCity,
                                      String epPhone,Integer record_start,Integer record_count) {
-        Map map = new HashMap();
+        Map<String,Object> map = new HashMap<String,Object>();
         map.put("ep_id", ep_id);
         map.put("epName", epName);
         map.put("epProvince", epProvince);
@@ -149,7 +146,7 @@ public class PlatfromController extends BaseController {
                                         String epProvince,
                                          String epCity,
                                         String epPhone,Integer record_start,Integer record_count) {
-        Map map = new HashMap();
+        Map<String,Object> map = new HashMap<String,Object>();
         map.put("ep_id", ep_id);
         map.put("epName", epName);
         map.put("epProvince", epProvince);
@@ -171,15 +168,16 @@ public class PlatfromController extends BaseController {
      */
     @RequestMapping(value = "list", method = RequestMethod.GET)
     @ResponseBody
-    public Result<Map> platformList( Integer record_start,
+    public Result<Map> platformList(HttpServletRequest request, Integer record_start,
                                      Integer record_count,
                                      String name,
                                     Integer ep_type,
                                      Integer status,
                                     Integer province,
                                     Integer city,
-                                    Integer link_phone) {
-        Map map = new HashMap();
+                                    Integer link_phone,String testName) {
+        request.getAttribute("");
+        Map<String,Object> map = new HashMap<String,Object>();
         map.put("record_start", record_start);
         map.put("record_count", record_count);
         map.put("name", name);

@@ -4,6 +4,12 @@ package com.all580.ep.api.conf;
  * Created by Administrator on 2016/10/8 0008.
  */
 public class EpConstant {
+
+    public static class EpKey{
+        public static final String  CORE_EP_ID="core_ep_id";// 平台商id存放在request 中的key值
+        public static final String  ACCESS_KEY ="access_key";//平台商加密 key存放在request 中的key值
+    }
+
     public static class EpType{//企业类型
         public static final Integer  CHANGLV=10000;//畅旅
         public static final Integer   PLATFORM=10001;//平台商A
