@@ -5,7 +5,6 @@ import com.all580.ep.api.service.EpService;
 import com.framework.common.BaseController;
 import com.framework.common.Result;
 
-import javax.lang.exception.ApiException;
 import javax.lang.exception.ParamsMapValidationException;
 import com.framework.common.util.CommonUtil;
 import com.framework.common.validate.ParamsMapValidate;
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 
-import javax.lang.exception.ParamsMapValidationException;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
@@ -42,7 +40,7 @@ public class EpController extends BaseController {
      */
     @RequestMapping(value = "create", method = RequestMethod.POST)
     @ResponseBody
-    public Result<Map> create(HttpServletRequest request, @RequestBody Map map) {
+    public Result<Map> create(HttpServletRequest request, @RequestBody Map<String,Object> map) {
             map.put("core_ep_id",request.getAttribute("core_ep_id")) ;
             ParamsMapValidate.validate(map, platfromValidateManager.generateCreateEpValidate());
             return epService.createEp(map);
