@@ -83,6 +83,9 @@ public class PaymentCallbackAction implements JobRunner {
         Map<String, String> jobParams = new HashMap<>();
         jobParams.put("orderId", order.getId().toString());
         bookingOrderManager.addJob(OrderConstant.Actions.SEND_TICKET, jobParams);
+
+        // 同步数据
+        bookingOrderManager.syncPaymentSuccessData(orderId);
         return new Result(Action.EXECUTE_SUCCESS);
     }
 

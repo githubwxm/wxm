@@ -58,6 +58,9 @@ public class ReConsumeSplitAccountAction implements JobRunner {
         }
         OrderItem orderItem = orderItemMapper.selectByPrimaryKey(serial.getOrderItemId());
         bookingOrderManager.consumeOrReConsumeSplitAccount(orderItem, washedSerial.getDay(), washedSerial.getQuantity(), sn, false);
+
+        // 同步数据
+        bookingOrderManager.syncReConsumeSplitAccountData(orderItem.getId());
         return new Result(Action.EXECUTE_SUCCESS);
     }
 }
