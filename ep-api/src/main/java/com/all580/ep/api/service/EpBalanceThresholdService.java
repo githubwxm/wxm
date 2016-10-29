@@ -24,7 +24,7 @@ public interface EpBalanceThresholdService {
     Result<Map>  select(Map map);
 
     /**
-     *
+     * ep_id  core_ep_id  balance
      * @param mpa ｛balance：int 必填  余额｝
      * @return  余额小于阀值
      */

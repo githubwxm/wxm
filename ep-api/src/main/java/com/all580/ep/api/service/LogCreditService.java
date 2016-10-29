@@ -33,5 +33,11 @@ public interface LogCreditService {
      * @return t.id,name,linkman,link_phone,province,city,area,credit_after,credit_date
      */
     Result<Map> selectList(Map map);
+
+    /**
+     * 查询历史授信信息
+     * @param map
+     * @return
+     */
     Result<Map> hostoryCredit( Map map );
 }

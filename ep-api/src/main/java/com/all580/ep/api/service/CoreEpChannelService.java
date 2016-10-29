@@ -27,6 +27,9 @@ public interface CoreEpChannelService {
      * @param params  ｛supplier_name：非必填  供应侧平台商名字模糊查询，
      *                record_start 记录开始，record_count获取记录数｝
      * @return
+     * id  int 供销关系id,supplier_core_ep_id 供应商id,supplier_name  供应商名称,supplier_phone 电话
+     * seller_core_ep_id 销售商id,seller_name 名称,seller_phone 电话,rate  汇率  0.12
+     *
      */
     Result<Map> select(Map params);
 
