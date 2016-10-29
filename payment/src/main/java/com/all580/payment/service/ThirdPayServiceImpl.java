@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import java.text.MessageFormat;
 import java.util.Map;
 
 /**
@@ -42,7 +43,8 @@ public class ThirdPayServiceImpl implements ThirdPayService {
     public Result<String> reqPay(long ordCode, int coreEpId, int payType, Map<String, Object> params) {
         Result<String> result = new Result<>();
         EpPaymentConf epPaymentConf = epPaymentConfMapper.getByEpIdAndType(coreEpId, payType);
-        Assert.notNull(epPaymentConf);
+        Assert.notNull(epPaymentConf, MessageFormat.format("没有找到支付方式配置：coreEpId={0}|payType={1}",
+                coreEpId, payType));
         String confData = epPaymentConf.getConfData();
         if (PaymentConstant.PaymentType.WX_PAY == payType) {
             try {
@@ -68,7 +70,8 @@ public class ThirdPayServiceImpl implements ThirdPayService {
     public Result<String> reqRefund(final long ordCode, int coreEpId, int payType, Map<String, Object> params) {
         Result<String> result = new Result<>();
         EpPaymentConf epPaymentConf = epPaymentConfMapper.getByEpIdAndType(coreEpId, payType);
-        Assert.notNull(epPaymentConf);
+        Assert.notNull(epPaymentConf, MessageFormat.format("没有找到支付方式配置：coreEpId={0}|payType={1}",
+                coreEpId, payType));
         String confData = epPaymentConf.getConfData();
         if (PaymentConstant.PaymentType.WX_PAY == payType) {
             // 微信退款，直接由后台发起，同步返回结果

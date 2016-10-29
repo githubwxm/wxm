@@ -3,6 +3,7 @@ package com.all580.base.controller.payment;
 import com.all580.payment.api.service.BalancePayService;
 import com.framework.common.BaseController;
 import com.framework.common.Result;
+import com.framework.common.util.CommonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,9 +27,10 @@ public class BalanceController extends BaseController {
 
     @RequestMapping(value = "info/{epId}", method = RequestMethod.GET)
     @ResponseBody
-    public Result getBalance(@PathVariable("epId") Integer epId, Integer coreEpId) {
+    public Result getBalance(@PathVariable("epId") Integer epId) {
         Result<Map<String, String>> result = new Result<>();
         try {
+            Integer coreEpId = CommonUtil.objectParseInteger(getAttribute("core_ep_id"));
             if (epId == null || coreEpId == null) {
                 result.setFail();
                 result.setError("缺少参数");

@@ -2,6 +2,7 @@ package com.all580.base.controller.product;
 
 import com.all580.base.manager.ProductValidateManager;
 import com.all580.product.api.consts.ProductConstants;
+import com.all580.product.api.model.ProductAndSubInfo;
 import com.all580.product.api.model.ProductAndSubsInfo;
 import com.all580.product.api.model.ProductSceneryInfo;
 import com.all580.product.api.model.SubProductInfo;
@@ -135,14 +136,15 @@ public class ProductController extends BaseController {
      */
     @RequestMapping(value = "sale/list")
     @ResponseBody
-    public Result<?> searchCanSaleList(@RequestParam("ep_id") Integer epId,
+    public Result<Paginator<ProductAndSubInfo>> searchCanSaleList(@RequestParam("ep_id") Integer epId,
                                        @RequestParam("productName") String productName,
                                        @RequestParam("orderStr") Integer order,
                                        @RequestParam("record_start") Integer start,
                                        @RequestParam("record_count") Integer count) {
 
         //String orderStr = OrderStrConst.get(order);
-        return productService.searchSubProductListByProductName(epId, productName, null, start, count);
+        Result<Paginator<ProductAndSubInfo>> result = productService.searchSubProductListByProductName(epId, productName, null, start, count);
+        return result;
     }
 
     @RequestMapping(value = "update", method = RequestMethod.POST)

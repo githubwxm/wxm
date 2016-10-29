@@ -46,6 +46,14 @@ public class BookingOrderManager extends BaseOrderManager {
     private ShippingMapper shippingMapper;
     @Autowired
     private OrderItemAccountMapper orderItemAccountMapper;
+    @Autowired
+    private MaSendResponseMapper maSendResponseMapper;
+    @Autowired
+    private OrderClearanceSerialMapper orderClearanceSerialMapper;
+    @Autowired
+    private OrderClearanceDetailMapper orderClearanceDetailMapper;
+    @Autowired
+    private ClearanceWashedSerialMapper clearanceWashedSerialMapper;
 
     /**
      * 验证游客信息
@@ -502,13 +510,11 @@ public class BookingOrderManager extends BaseOrderManager {
      * 同步创建订单数据
      * @param orderId 订单ID
      */
-    public void syncCreateOrderData(final int orderId) {
+    public void syncCreateOrderData(int orderId) {
         Map<String, List<?>> data = new HashMap<>();
 
         // 同步订单表
-        data.put("t_order", new ArrayList<Order>(){{
-            add(orderMapper.selectByPrimaryKey(orderId));
-        }});
+        data.put("t_order", CommonUtil.oneToList(orderMapper.selectByPrimaryKey(orderId)));
 
         // 同步子订单表
         List<OrderItem> orderItems = orderItemMapper.selectByOrderId(orderId);
@@ -521,9 +527,7 @@ public class BookingOrderManager extends BaseOrderManager {
         data.put("t_order_item_account", orderItemAccountMapper.selectByOrder(orderId));
 
         // 同步联系人表
-        data.put("t_shipping", new ArrayList<Shipping>(){{
-            add(shippingMapper.selectByOrder(orderId));
-        }});
+        data.put("t_shipping", CommonUtil.oneToList(shippingMapper.selectByOrder(orderId)));
 
         // 同步游客信息表
         data.put("t_visitor", visitorMapper.selectByOrder(orderId));
@@ -535,18 +539,14 @@ public class BookingOrderManager extends BaseOrderManager {
      * 同步订单审核通过数据
      * @param orderId 订单ID
      */
-    public void syncOrderAuditAcceptData(final int orderId, final int orderItemId) {
+    public void syncOrderAuditAcceptData(int orderId, int orderItemId) {
         Map<String, List<?>> data = new HashMap<>();
 
         // 同步订单表
-        data.put("t_order", new ArrayList<Order>(){{
-            add(orderMapper.selectByPrimaryKey(orderId));
-        }});
+        data.put("t_order", CommonUtil.oneToList(orderMapper.selectByPrimaryKey(orderId)));
 
         // 同步子订单表
-        data.put("t_order_item", new ArrayList<OrderItem>(){{
-            add(orderItemMapper.selectByPrimaryKey(orderItemId));
-        }});
+        data.put("t_order_item", CommonUtil.oneToList(orderItemMapper.selectByPrimaryKey(orderItemId)));
 
         syncOrderData(orderId, data);
     }
@@ -555,13 +555,11 @@ public class BookingOrderManager extends BaseOrderManager {
      * 同步订单支付数据
      * @param orderId 订单ID
      */
-    public void syncOrderPaymentData(final int orderId) {
+    public void syncOrderPaymentData(int orderId) {
         Map<String, List<?>> data = new HashMap<>();
 
         // 同步订单表
-        data.put("t_order", new ArrayList<Order>(){{
-            add(orderMapper.selectByPrimaryKey(orderId));
-        }});
+        data.put("t_order", CommonUtil.oneToList(orderMapper.selectByPrimaryKey(orderId)));
 
         syncOrderData(orderId, data);
     }
@@ -575,6 +573,63 @@ public class BookingOrderManager extends BaseOrderManager {
 
         // 同步分账表
         data.put("t_order_item_account", orderItemAccountMapper.selectByOrderItem(itemId));
+
+        syncOrderItemData(itemId, data);
+    }
+
+    /**
+     * 同步发票数据
+     * @param itemId 子订单ID
+     */
+    public void syncSendTicketData(int itemId) {
+        Map<String, List<?>> data = new HashMap<>();
+
+        // 同步子订单表
+        data.put("t_order_item", CommonUtil.oneToList(orderItemMapper.selectByPrimaryKey(itemId)));
+
+        // 同步发码数据
+        data.put("t_ma_send_response", maSendResponseMapper.selectByOrderItemId(itemId));
+
+        syncOrderItemData(itemId, data);
+    }
+
+    /**
+     * 同步消费数据
+     * @param itemId 子订单ID
+     */
+    public void syncConsumeData(int itemId, String sn) {
+        Map<String, List<?>> data = new HashMap<>();
+
+        // 同步子订单明细表
+        data.put("t_order_item_detail", orderItemDetailMapper.selectByItemId(itemId));
+
+        // 同步核销表
+        data.put("t_order_clearance_serial", CommonUtil.oneToList(orderClearanceSerialMapper.selectBySn(sn)));
+
+        // 同步核销明细表
+        data.put("t_order_clearance_detail", CommonUtil.oneToList(orderClearanceDetailMapper.selectBySn(sn)));
+
+        // 同步游客数据
+        data.put("t_visitor", visitorMapper.selectByOrderItem(itemId));
+
+        syncOrderItemData(itemId, data);
+    }
+
+    /**
+     * 同步冲正数据
+     * @param itemId 子订单ID
+     */
+    public void syncReConsumeData(final int itemId, final String sn) {
+        Map<String, List<?>> data = new HashMap<>();
+
+        // 同步子订单明细表
+        data.put("t_order_item_detail", orderItemDetailMapper.selectByItemId(itemId));
+
+        // 同步冲正流水表
+        data.put("t_clearance_washed_serial", CommonUtil.oneToList(clearanceWashedSerialMapper.selectBySn(sn)));
+
+        // 同步游客数据
+        data.put("t_visitor", visitorMapper.selectByOrderItem(itemId));
 
         syncOrderItemData(itemId, data);
     }

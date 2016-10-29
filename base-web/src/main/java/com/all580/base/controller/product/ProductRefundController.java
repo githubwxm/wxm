@@ -40,4 +40,5 @@ public class ProductRefundController extends BaseController {
         productRefundRuleInfo.setType(CommonUtil.objectParseInteger(params.get("type")));
         return productRefundRuleInfo;
     }
+
 }

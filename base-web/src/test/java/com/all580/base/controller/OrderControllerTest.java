@@ -78,8 +78,8 @@ public class OrderControllerTest {
                             put("quantity", "1");
                         }});
                     }});
-                    put("product_sub_id", "1");
-                    put("start", "2016-10-27 00:00:00");
+                    put("product_sub_id", "2");
+                    put("start", "2016-10-29 00:00:00");
                     put("days", "1");
                     put("quantity", "1");
                 }});

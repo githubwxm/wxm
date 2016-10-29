@@ -5,6 +5,7 @@ import com.all580.payment.api.service.EpPaymentConfService;
 import com.all580.payment.dao.EpPaymentConfMapper;
 import com.all580.payment.entity.EpPaymentConf;
 import com.framework.common.Result;
+import com.framework.common.validate.ParamsMapValidate;
 import com.framework.common.validate.ValidRule;
 import org.apache.commons.beanutils.BeanUtils;
 import org.slf4j.Logger;
@@ -30,6 +31,7 @@ public class EpPaymentConfServiceImpl implements EpPaymentConfService {
         logger.info("开始 -> 创建企业收款方式配置");
         Result result = new Result();
         try {
+            ParamsMapValidate.validate(map, genValidateOfCreate());
             EpPaymentConf conf = new EpPaymentConf();
             BeanUtils.populate(conf, map);
             // 检查同一企业下是否已经存在相同支付类型的配置
@@ -66,7 +68,7 @@ public class EpPaymentConfServiceImpl implements EpPaymentConfService {
             result.setSuccess();
         } catch (Exception e) {
             result.setFail();
-            result.setError(Result.DB_FAIL, "修改失败:" + e.getMessage());
+            result.setError("修改失败:" + e.getMessage());
         }
         return result;
     }
@@ -84,21 +86,13 @@ public class EpPaymentConfServiceImpl implements EpPaymentConfService {
         return result;
     }
 
-    private Map<String[], ValidRule[]> generateCreatePaymentValidate() {
+    private Map<String[], ValidRule[]> genValidateOfCreate() {
         Map<String[], ValidRule[]> rules = new HashMap<>();
         // 校验不为空的参数
         rules.put(new String[]{
-                "access_id", //
-                "payment_type", //
-                "conf_data", //
-                "status",
+                "payment_type", // 支付类型
+                "conf_data", // 支付配置
         }, new ValidRule[]{new ValidRule.NotNull()});
-
-        // 校验整数
-        rules.put(new String[]{
-                "payment_type", // 订单子产品ID
-                "status",
-        }, new ValidRule[]{new ValidRule.Digits()});
         return rules;
     }
 
