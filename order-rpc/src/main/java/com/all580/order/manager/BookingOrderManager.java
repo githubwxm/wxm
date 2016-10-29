@@ -619,7 +619,7 @@ public class BookingOrderManager extends BaseOrderManager {
      * 同步冲正数据
      * @param itemId 子订单ID
      */
-    public void syncReConsumeData(final int itemId, final String sn) {
+    public void syncReConsumeData(int itemId, String sn) {
         Map<String, List<?>> data = new HashMap<>();
 
         // 同步子订单明细表
@@ -630,6 +630,39 @@ public class BookingOrderManager extends BaseOrderManager {
 
         // 同步游客数据
         data.put("t_visitor", visitorMapper.selectByOrderItem(itemId));
+
+        syncOrderItemData(itemId, data);
+    }
+
+    /**
+     * 同步支付成功数据
+     * @param orderId 订单ID
+     */
+    public void syncPaymentSuccessData(int orderId) {
+        Map<String, List<?>> data = new HashMap<>();
+
+        // 同步订单表
+        data.put("t_order", CommonUtil.oneToList(orderMapper.selectByPrimaryKey(orderId)));
+
+        // 同步子订单表
+        List<OrderItem> orderItems = orderItemMapper.selectByOrderId(orderId);
+        data.put("t_order_item", orderItems);
+
+        // 同步分账表
+        data.put("t_order_item_account", orderItemAccountMapper.selectByOrder(orderId));
+
+        syncOrderData(orderId, data);
+    }
+
+    /**
+     * 同步反核销分账数据
+     * @param itemId 子订单ID
+     */
+    public void syncReConsumeSplitAccountData(int itemId) {
+        Map<String, List<?>> data = new HashMap<>();
+
+        // 同步分账表
+        data.put("t_order_item_account", orderItemAccountMapper.selectByOrderItem(itemId));
 
         syncOrderItemData(itemId, data);
     }

@@ -1,6 +1,8 @@
 package com.all580.order.service;
 
 import com.all580.order.api.service.BookingOrderService;
+import com.all580.order.dao.OrderMapper;
+import com.all580.order.entity.Order;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -21,6 +23,9 @@ public class BookingOrderServiceTest {
     @Resource
     private BookingOrderService bookingOrderService;
 
+    @Resource
+    private OrderMapper orderMapper;
+
     @Test
     public void createTest() {
         System.out.println(bookingOrderService);
@@ -29,5 +34,11 @@ public class BookingOrderServiceTest {
             put("phone", "15019418143");
             put("sid", "15019418143");
         }});
+    }
+
+    @Test
+    public void test() {
+        Order order = orderMapper.selectByPrimaryKey(134);
+        System.out.println(order.getUpdateTime());
     }
 }

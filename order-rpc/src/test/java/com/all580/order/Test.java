@@ -16,10 +16,8 @@ import org.nustaq.serialization.FSTConfiguration;
 
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * @author zhouxianjun(Alone)
@@ -63,5 +61,9 @@ public class Test {
         Object object = configuration.asObject(TranscodeUtil.base64StrToByteArray(toBase64Str));
         System.out.println(object);
         System.out.println(JsonUtils.toJson(object));
+
+        Date date = new Date();
+        System.out.println(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSSSS").format(date));
+        System.out.println(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(date));
     }
 }
