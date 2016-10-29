@@ -1,6 +1,7 @@
 package com.all580.order.dao;
 
 import com.all580.order.entity.OrderClearanceDetail;
+import org.apache.ibatis.annotations.Param;
 
 public interface OrderClearanceDetailMapper {
     /**
@@ -50,4 +51,11 @@ public interface OrderClearanceDetailMapper {
      * @mbggenerated Wed Oct 26 16:03:36 CST 2016
      */
     int updateByPrimaryKey(OrderClearanceDetail record);
+
+    /**
+     * 根据验票流水获取核销明细
+     * @param sn 验票流水
+     * @return
+     */
+    OrderClearanceDetail selectBySn(@Param("sn") String sn);
 }

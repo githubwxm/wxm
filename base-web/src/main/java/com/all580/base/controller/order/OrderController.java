@@ -89,4 +89,12 @@ public class OrderController extends BaseController {
         ParamsMapValidate.validate(params, orderValidateManager.cancelValidate());
         return refundOrderService.cancelNoSplit(params);
     }
+
+    @RequestMapping(value = "refund/alipay", method = RequestMethod.POST)
+    @ResponseBody
+    public Result<?> refundAliPay(@RequestBody Map params) throws Exception {
+        // 验证参数
+        ParamsMapValidate.validate(params, orderValidateManager.cancelValidate());
+        return refundOrderService.refundAliPayMoney(params);
+    }
 }

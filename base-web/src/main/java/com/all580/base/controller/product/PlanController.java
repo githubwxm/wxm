@@ -81,7 +81,7 @@ public class PlanController extends BaseController {
      */
     @RequestMapping(value = "can_sale/sub/list")
     @ResponseBody
-    public Result<Paginator<CanSaleSubProductInfo>> canSaleSubProductList(
+    public Result<Paginator<Map<Integer, List<CanSaleSubProductInfo>>>> canSaleSubProductList(
             @RequestParam("ep_id") Integer epId,
             @RequestParam("productName") String productName,
             @RequestParam("productSubName") String productSubName,

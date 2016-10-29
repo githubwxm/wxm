@@ -8,7 +8,9 @@ import com.all580.order.api.model.SendTicketInfo;
 import com.all580.order.api.service.TicketCallbackService;
 import com.all580.order.dao.*;
 import com.all580.order.entity.*;
+import com.all580.order.manager.BookingOrderManager;
 import com.all580.order.manager.RefundOrderManager;
+import com.all580.payment.api.conf.PaymentConstant;
 import com.framework.common.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +53,8 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
 
     @Autowired
     private RefundOrderManager refundOrderManager;
+    @Autowired
+    private BookingOrderManager bookingOrderManager;
 
     @Override
     public Result sendTicket(Long orderSn, List<SendTicketInfo> infoList) {
@@ -79,6 +83,9 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
             response.setCreateTime(sendMaTime);
             maSendResponseMapper.insertSelective(response);
         }
+
+        // 同步数据
+        bookingOrderManager.syncSendTicketData(orderItem.getId());
         return new Result(true);
     }
 
@@ -131,6 +138,9 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         Map<String, String> jobParams = new HashMap<>();
         jobParams.put("sn", serial.getSerialNo());
         refundOrderManager.addJob(OrderConstant.Actions.CONSUME_SPLIT_ACCOUNT, jobParams);
+
+        // 同步数据
+        bookingOrderManager.syncConsumeData(orderItem.getId(), info.getValidateSn());
         return new Result(true);
     }
 
@@ -174,6 +184,9 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         Map<String, String> jobParams = new HashMap<>();
         jobParams.put("sn", serial.getSerialNo());
         refundOrderManager.addJob(OrderConstant.Actions.RE_CONSUME_SPLIT_ACCOUNT, jobParams);
+
+        // 同步数据
+        bookingOrderManager.syncReConsumeData(orderItem.getId(), info.getReValidateSn());
         return new Result(true);
     }
 
@@ -226,7 +239,13 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
 
         // 退款
         Order order = orderMapper.selectByPrimaryKey(orderItem.getOrderId());
-        refundOrderManager.refundMoney(order, refundOrder.getMoney(), String.valueOf(refundOrder.getNumber()));
+        // 支付宝退款走财务手动
+        if (order.getPaymentType() != PaymentConstant.PaymentType.ALI_PAY.intValue()) {
+            refundOrderManager.refundMoney(order, refundOrder.getMoney(), String.valueOf(refundOrder.getNumber()));
+        }
+
+        // 同步数据
+        refundOrderManager.syncRefundTicketData(refundOrder.getId());
         return new Result(true);
     }
 }

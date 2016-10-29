@@ -43,6 +43,9 @@
 	<dubbo:reference id="logCreditService"
 					 interface="com.all580.ep.api.service.LogCreditService" />
 
+	<dubbo:reference id="planGroupService" interface="com.all580.product.api.service.PlanGroupRPCService" />
+	<dubbo:reference id="productDistributionService" interface="com.all580.product.api.service.ProductDistributionService" />
+	<dubbo:reference id="productRefundRuleService" interface="com.all580.product.api.service.ProductRefundRuleRPCService" />
 	<dubbo:reference id="epFinanceService"
 					 interface="com.all580.ep.api.service.EpFinanceService" />
 	<dubbo:reference id="productSalesPlanService" interface="com.all580.product.api.service.ProductSalesPlanRPCService" />

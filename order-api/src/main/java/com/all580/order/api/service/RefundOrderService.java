@@ -38,4 +38,11 @@ public interface RefundOrderService {
      * @return
      */
     Result<?> audit(Map params) throws Exception;
+
+    /**
+     * 支付宝退款
+     * @param params
+     * @return
+     */
+    Result<?> refundAliPayMoney(Map params);
 }
