@@ -5,7 +5,6 @@ import com.all580.voucher.api.service.VoucherCallbackService;
 import com.framework.common.BaseController;
 import com.framework.common.Result;
 import com.framework.common.lang.DateFormatUtils;
-import com.framework.common.lang.codec.TranscodeUtil;
 import com.framework.common.validate.ParamsMapValidate;
 import com.framework.common.validate.ValidRule;
 import lombok.extern.slf4j.Slf4j;
@@ -18,9 +17,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -69,23 +65,6 @@ public class VoucherSubscribeController extends BaseController {
             log.error("MNS VOUCHER ERROR", e);
             response.setStatus(500);
         }
-    }
-
-    private String getReqParams(HttpServletRequest request) throws IOException {
-        InputStreamReader ir = new InputStreamReader(request.getInputStream());
-        BufferedReader br = new BufferedReader(ir);
-        StringBuilder sb = new StringBuilder();
-        String buffer = null;
-        //采用循环方式来逐行读取数据
-        while ((buffer = br.readLine()) != null) {
-            sb.append(buffer);
-        }
-        if (sb.length() != 0) {
-            // 使用base64解码
-            byte[] decode = TranscodeUtil.base64StrToByteArray(sb.toString());
-            return new String(decode, "UTF-8");
-        }
-        return null;
     }
 
     private void validate(Map params) {
