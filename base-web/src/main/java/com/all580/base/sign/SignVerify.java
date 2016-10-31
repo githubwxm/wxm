@@ -1,5 +1,8 @@
 package com.all580.base.sign;
 
+import com.framework.common.util.CommonUtil;
+import org.apache.commons.io.IOUtils;
+
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.security.MessageDigest;
@@ -31,11 +34,26 @@ public class SignVerify {
         }
         return params;
     }
+
+    /**
+     * 确认签名是否一致
+     * @param params
+     * @param sign
+     * @param key
+     * @return
+     */
     public static boolean verifyPost(String params, String sign, String key) {
-        String resultSign= toMD5(params,key);
+        String resultSign= CommonUtil.signForData(key,params);
         return sign.equals(resultSign);
     }
 
+//    /**
+//     * 加密
+//     * @return
+//     */
+//    public static Result  verify(){
+//
+//    }
 
     public static String toMD5(String plainText,String key) {
         try {
@@ -92,38 +110,12 @@ public class SignVerify {
         } catch (IOException e) {
             e.printStackTrace();
         }
+//        finally{
+//            IOUtils.closeQuietly(reader);
+//        }
+
         return body.toString();
     }
 
-    /**
-     * post 方法获取流中的数据
-     * @param stream
-     * @return
-     */
-    public static String getResponseBody(OutputStream stream) {
-        String line = "";
-        StringBuilder body = new StringBuilder();
-        int counter = 0;
-        String a =stream.toString();
-        // 读取POST提交的数据内容
-        BufferedReader reader = null;
-//        try {
-//           reader = new BufferedReader(new OutputStream(stream,charset));
-//        } catch (UnsupportedEncodingException e) {
-//            e.printStackTrace();
-//        }
-//        try {
-//            while ((line = reader.readLine()) != null) {
-//                if (counter > 0) {
-//                    body.append("rn");
-//                }
-//                body.append(line);
-//                counter++;
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-   // }
-        return body.toString();
-    }
 
 }
