@@ -137,8 +137,7 @@
     set `serial_no` = #{serialNo,jdbcType=VARCHAR},
       `sid` = #{sid,jdbcType=VARCHAR},
       `phone` = #{phone,jdbcType=VARCHAR},
-      `name` = #{name,jdbcType=VARCHAR},
-      `update_time` = #{updateTime,jdbcType=TIMESTAMP}
+      `name` = #{name,jdbcType=VARCHAR}
     where `id` = #{id,jdbcType=INTEGER}
   </update>
 

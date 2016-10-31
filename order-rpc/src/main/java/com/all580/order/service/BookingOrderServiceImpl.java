@@ -23,6 +23,9 @@ import com.all580.product.api.model.ProductSalesInfo;
 import com.all580.product.api.model.ProductSearchParams;
 import com.all580.product.api.service.ProductSalesPlanRPCService;
 import com.framework.common.Result;
+import com.framework.common.distributed.lock.Callback;
+import com.framework.common.distributed.lock.DistributedLockTemplate;
+import com.framework.common.distributed.lock.DistributedReentrantLock;
 import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.lang.UUIDGenerator;
@@ -31,6 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -65,6 +69,10 @@ public class BookingOrderServiceImpl implements BookingOrderService {
     private EpService epService;
     @Autowired
     private ThirdPayService thirdPayService;
+    @Autowired
+    private DistributedLockTemplate distributedLockTemplate;
+    @Value("${lock.timeout}")
+    private int lockTimeOut = 3;
 
     @Override
     public Result<?> create(Map params) throws Exception {
@@ -156,6 +164,9 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             for (List<EpSalesInfo> daySales : allDaysSales) {
                 // 获取销售商价格
                 EpSalesInfo info = bookingOrderManager.getBuyingPrice(daySales, buyEpId);
+                if (info == null) {
+                    throw new ApiException("非法购买:该销售商未销售本产品");
+                }
                 saleAmount += info.getPrice() * quantity;
                 // 只计算预付的,到付不计算在内
                 if (salesInfo.getPayType() == ProductConstants.PayType.PREPAY) {
@@ -259,123 +270,142 @@ public class BookingOrderServiceImpl implements BookingOrderService {
     }
 
     @Override
-    public Result<?> audit(Map params) {
-        long orderItemSn = Long.valueOf(params.get("order_item_id").toString());
-        OrderItem orderItem = orderItemMapper.selectBySN(orderItemSn);
-        if (orderItem == null) {
-            throw new ApiException("订单不存在");
-        }
-        if (orderItem.getStatus() != OrderConstant.OrderItemStatus.AUDIT_WAIT) {
-            throw new ApiException("订单不在待审状态");
-        }
+    public Result<?> audit(final Map params) {
+        String orderItemId = params.get("order_item_id").toString();
+        long orderItemSn = Long.valueOf(orderItemId);
+        // 分布式锁
+        DistributedReentrantLock lock = distributedLockTemplate.execute(orderItemId, lockTimeOut);
 
-        Order order = orderMapper.selectByPrimaryKey(orderItem.getOrderId());
-        if (order == null) {
-            throw new ApiException("订单不存在");
-        }
-        if (order.getStatus() != OrderConstant.OrderStatus.AUDIT_WAIT) {
-            throw new ApiException("订单不在待审状态");
-        }
-
-        orderItem.setAuditUserId(CommonUtil.objectParseInteger(params.get("operator_id")));
-        orderItem.setAuditUserName(CommonUtil.objectParseString(params.get("operator_name")));
-        boolean status = Boolean.parseBoolean(params.get("status").toString());
-        // 通过
-        if (status) {
-            orderItem.setStatus(OrderConstant.OrderItemStatus.AUDIT_SUCCESS);
-            orderItemMapper.updateByPrimaryKeySelective(orderItem);
-            boolean allAudit = bookingOrderManager.isOrderAllAudit(orderItem.getOrderId(), orderItem.getId());
-            if (allAudit) {
-                order.setStatus(OrderConstant.OrderStatus.PAY_WAIT);
-                // 判断是否需要支付
-                if (order.getPayAmount() <= 0) { // 不需要支付
-                    order.setStatus(OrderConstant.OrderStatus.PAID_HANDLING); // 已支付,处理中
-                    // 支付成功回调 记录任务
-                    Map<String, String> jobParams = new HashMap<>();
-                    jobParams.put("orderId", order.getId().toString());
-                    bookingOrderManager.addJob(OrderConstant.Actions.PAYMENT_CALLBACK, jobParams);
-                }
-                orderMapper.updateByPrimaryKeySelective(order);
+        // 锁成功
+        try {
+            final OrderItem orderItem = orderItemMapper.selectBySN(orderItemSn);
+            if (orderItem == null) {
+                throw new ApiException("订单不存在");
             }
-            // 同步数据
-            bookingOrderManager.syncOrderAuditAcceptData(order.getId(), orderItem.getId());
-            return new Result<>(true);
-        }
-        orderItemMapper.updateByPrimaryKeySelective(orderItem);
+            if (orderItem.getStatus() != OrderConstant.OrderItemStatus.AUDIT_WAIT) {
+                throw new ApiException("订单不在待审状态");
+            }
 
-        // 不通过
-        // 取消订单
-        return refundOrderManager.cancel(order.getNumber());
+            Order order = orderMapper.selectByPrimaryKey(orderItem.getOrderId());
+            if (order == null) {
+                throw new ApiException("订单不存在");
+            }
+            if (order.getStatus() != OrderConstant.OrderStatus.AUDIT_WAIT) {
+                throw new ApiException("订单不在待审状态");
+            }
+
+            orderItem.setAuditUserId(CommonUtil.objectParseInteger(params.get("operator_id")));
+            orderItem.setAuditUserName(CommonUtil.objectParseString(params.get("operator_name")));
+            boolean status = Boolean.parseBoolean(params.get("status").toString());
+            // 通过
+            if (status) {
+                orderItem.setStatus(OrderConstant.OrderItemStatus.AUDIT_SUCCESS);
+                orderItemMapper.updateByPrimaryKeySelective(orderItem);
+                boolean allAudit = bookingOrderManager.isOrderAllAudit(orderItem.getOrderId(), orderItem.getId());
+                if (allAudit) {
+                    order.setStatus(OrderConstant.OrderStatus.PAY_WAIT);
+                    // 判断是否需要支付
+                    if (order.getPayAmount() <= 0) { // 不需要支付
+                        order.setStatus(OrderConstant.OrderStatus.PAID_HANDLING); // 已支付,处理中
+                        // 支付成功回调 记录任务
+                        Map<String, String> jobParams = new HashMap<>();
+                        jobParams.put("orderId", order.getId().toString());
+                        bookingOrderManager.addJob(OrderConstant.Actions.PAYMENT_CALLBACK, jobParams);
+                    }
+                    orderMapper.updateByPrimaryKeySelective(order);
+                }
+                // 同步数据
+                bookingOrderManager.syncOrderAuditAcceptData(order.getId(), orderItem.getId());
+                return new Result<>(true);
+            }
+            orderItemMapper.updateByPrimaryKeySelective(orderItem);
+
+            // 不通过
+            // 取消订单 会自动同步数据
+            return refundOrderManager.cancel(order.getNumber());
+        } finally {
+            lock.unlock();
+        }
     }
 
     @Override
     public Result<?> payment(Map params) {
-        Long sn = Long.valueOf(params.get("order_sn").toString());
+        String orderSn = params.get("order_sn").toString();
+        Long sn = Long.valueOf(orderSn);
         Integer payType = CommonUtil.objectParseInteger(params.get("pay_type"));
 
-        Order order = orderMapper.selectBySN(sn);
-        if (order == null) {
-            throw new ApiException("订单不存在");
-        }
-        if (order.getStatus() != OrderConstant.OrderStatus.PAY_WAIT &&
-                order.getStatus() != OrderConstant.OrderStatus.PAY_FAIL) {
-            throw new ApiException("订单不在待支付状态");
-        }
-        if (order.getPayAmount() <= 0) {
-            throw new ApiException("该订单不需要支付");
-        }
+        // 分布式锁
+        DistributedReentrantLock lock = distributedLockTemplate.execute(orderSn, lockTimeOut);
 
-        order.setStatus(OrderConstant.OrderStatus.PAYING);
-        order.setLocalPaymentSerialNo(String.valueOf(UUIDGenerator.generateUUID()));
-        order.setPaymentType(payType);
-        order.setPayTime(new Date());
-        orderMapper.updateByPrimaryKeySelective(order);
+        // 锁成功
+        try {
+            Order order = orderMapper.selectBySN(sn);
+            if (order == null) {
+                throw new ApiException("订单不存在");
+            }
+            if (order.getStatus() != OrderConstant.OrderStatus.PAY_WAIT &&
+                    order.getStatus() != OrderConstant.OrderStatus.PAY_FAIL) {
+                throw new ApiException("订单不在待支付状态");
+            }
+            if (order.getPayAmount() <= 0) {
+                throw new ApiException("该订单不需要支付");
+            }
 
-        // 调用支付RPC
-        // 余额支付
-        if (payType == PaymentConstant.PaymentType.BALANCE.intValue()) {
-            BalanceChangeInfo payInfo = new BalanceChangeInfo();
-            payInfo.setEpId(order.getBuyEpId());
-            payInfo.setCoreEpId(bookingOrderManager.getCoreEpId(bookingOrderManager.getCoreEpId(order.getBuyEpId())));
-            payInfo.setBalance(-order.getPayAmount());
-            payInfo.setCanCash(-order.getPayAmount());
 
-            BalanceChangeInfo saveInfo = new BalanceChangeInfo();
-            saveInfo.setEpId(payInfo.getCoreEpId());
-            saveInfo.setCoreEpId(payInfo.getCoreEpId());
-            saveInfo.setBalance(order.getPayAmount());
-            // 支付
-            Result result = bookingOrderManager.changeBalances(
-                    PaymentConstant.BalanceChangeType.BALANCE_PAY,
-                    order.getNumber().toString(), payInfo, saveInfo);
+            order.setStatus(OrderConstant.OrderStatus.PAYING);
+            order.setLocalPaymentSerialNo(String.valueOf(UUIDGenerator.generateUUID()));
+            order.setPaymentType(payType);
+            order.setPayTime(new Date());
+            orderMapper.updateByPrimaryKeySelective(order);
+
+            // 调用支付RPC
+            // 余额支付
+            if (payType == PaymentConstant.PaymentType.BALANCE.intValue()) {
+                BalanceChangeInfo payInfo = new BalanceChangeInfo();
+                payInfo.setEpId(order.getBuyEpId());
+                payInfo.setCoreEpId(bookingOrderManager.getCoreEpId(bookingOrderManager.getCoreEpId(order.getBuyEpId())));
+                payInfo.setBalance(-order.getPayAmount());
+                payInfo.setCanCash(-order.getPayAmount());
+
+                BalanceChangeInfo saveInfo = new BalanceChangeInfo();
+                saveInfo.setEpId(payInfo.getCoreEpId());
+                saveInfo.setCoreEpId(payInfo.getCoreEpId());
+                saveInfo.setBalance(order.getPayAmount());
+                // 支付
+                Result result = bookingOrderManager.changeBalances(
+                        PaymentConstant.BalanceChangeType.BALANCE_PAY,
+                        order.getNumber().toString(), payInfo, saveInfo);
+                if (result.hasError()) {
+                    log.warn("余额支付失败:{}", result.get());
+                    throw new ApiException(result.getError());
+                }
+                // 同步数据
+                bookingOrderManager.syncOrderPaymentData(order.getId());
+                return new Result<>(true);
+            }
+            // 第三方支付
+            // 获取商品名称
+            List<String> names = orderItemMapper.getProductNamesByOrderId(order.getId());
+            List<Integer> ids = orderItemMapper.getProductIdsByOrderId(order.getId());
+            Map<String, Object> payParams = new HashMap<>();
+            payParams.put("prodName", StringUtils.join(names, ","));
+            payParams.put("totalFee", order.getPayAmount());
+            payParams.put("serialNum", order.getNumber().toString());
+            payParams.put("prodId", StringUtils.join(ids, ","));
+
+            Result result = thirdPayService.reqPay(order.getNumber(),
+                    bookingOrderManager.getCoreEpId(epService.selectPlatformId(order.getBuyEpId())),
+                    payType, payParams);
             if (result.hasError()) {
-                log.warn("余额支付失败:{}", result.get());
+                log.warn("第三方支付异常:{}", result);
                 throw new ApiException(result.getError());
             }
             // 同步数据
             bookingOrderManager.syncOrderPaymentData(order.getId());
-            return new Result<>(true);
+            return result;
+        } finally {
+            lock.unlock();
         }
-        // 第三方支付
-        // 获取商品名称
-        List<String> names = orderItemMapper.getProductNamesByOrderId(order.getId());
-        List<Integer> ids = orderItemMapper.getProductIdsByOrderId(order.getId());
-        Map<String, Object> payParams = new HashMap<>();
-        payParams.put("prodName", StringUtils.join(names, ","));
-        payParams.put("totalFee", order.getPayAmount());
-        payParams.put("serialNum", order.getNumber().toString());
-        payParams.put("prodId", StringUtils.join(ids, ","));
-
-        Result result = thirdPayService.reqPay(order.getNumber(),
-                bookingOrderManager.getCoreEpId(epService.selectPlatformId(order.getBuyEpId())),
-                payType, payParams);
-        if (result.hasError()) {
-            log.warn("第三方支付异常:{}", result);
-            throw new ApiException(result.getError());
-        }
-        // 同步数据
-        bookingOrderManager.syncOrderPaymentData(order.getId());
-        return result;
     }
 
     @Override

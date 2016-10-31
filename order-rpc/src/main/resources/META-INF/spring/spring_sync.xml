@@ -8,9 +8,9 @@
         http://www.springframework.org/schema/task/spring-task-3.0.xsd">
 
 	<bean id="topicPushManager" class="com.framework.common.mns.TopicPushManager">
-		<property name="accessId" value="dDC0LZdqDRje0YJC"/>
-		<property name="accessKey" value="TR1BkfTY6IuajALJqHYxSTWwpSPGwl"/>
-		<property name="accountEndpoint" value="http://1356025265125084.mns.cn-shenzhen.aliyuncs.com"/>
+		<property name="accessId" value="${mns.access.id}"/>
+		<property name="accessKey" value="${mns.access.key}"/>
+		<property name="accountEndpoint" value="${mns.endpoint}"/>
 	</bean>
 
 	<!-- 同步数据提交管理器 -->

@@ -161,8 +161,7 @@
       `phone` = #{phone,jdbcType=VARCHAR},
       `sid` = #{sid,jdbcType=VARCHAR},
       `address` = #{address,jdbcType=VARCHAR},
-      `zip` = #{zip,jdbcType=VARCHAR},
-      `update_time` = #{updateTime,jdbcType=TIMESTAMP}
+      `zip` = #{zip,jdbcType=VARCHAR}
     where `id` = #{id,jdbcType=INTEGER}
   </update>
 

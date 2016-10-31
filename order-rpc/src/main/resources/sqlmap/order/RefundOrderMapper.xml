@@ -268,8 +268,7 @@
       `local_refund_serial_no` = #{localRefundSerialNo,jdbcType=BIGINT},
       `cause` = #{cause,jdbcType=VARCHAR},
       `audit_user_id` = #{auditUserId,jdbcType=INTEGER},
-      `audit_user_name` = #{auditUserName,jdbcType=VARCHAR},
-      `update_time` = #{updateTime,jdbcType=TIMESTAMP}
+      `audit_user_name` = #{auditUserName,jdbcType=VARCHAR}
     where `id` = #{id,jdbcType=INTEGER}
   </update>
 

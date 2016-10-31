@@ -42,6 +42,7 @@ public class PaymentCallbackServiceImpl implements PaymentCallbackService {
 
     @Override
     public Result payCallback(long ordCode, String serialNum, String outTransId) {
+        log.debug("支付回调:订单号:{};流水:{};交易号:{}", new Object[]{ordCode, serialNum, outTransId});
         Order order = orderMapper.selectBySN(ordCode);
         if (order == null) {
             return new Result(false, "订单不存在");
@@ -69,53 +70,43 @@ public class PaymentCallbackServiceImpl implements PaymentCallbackService {
 
     @Override
     public Result refundCallback(Long ordCode, String serialNum, String outTransId, boolean success) {
-        Order order = null;
-        if (ordCode == null) {
-            order = orderMapper.selectByThirdSn(outTransId);
-        } else {
-            order = orderMapper.selectBySN(ordCode);
-        }
-        if (order == null) {
-            return new Result(false, "订单不存在");
-        }
-        RefundOrder refundOrder = null;
-        if (order.getStatus() != OrderConstant.OrderStatus.PAID_HANDLING) {
-            refundOrder = refundOrderMapper.selectBySN(Long.valueOf(serialNum));
-            if (refundOrder == null) {
+        log.debug("退款回调-{}:退订订单号:{};流水:{};交易号:{}", new Object[]{success, ordCode, serialNum, outTransId});
+        RefundOrder refundOrder = refundOrderMapper.selectBySN(ordCode);
+
+        if (refundOrder == null) {
+            Order order = orderMapper.selectBySN(ordCode);
+            if (order == null || order.getStatus() != OrderConstant.OrderStatus.PAID_HANDLING) {
+                log.warn("退款回调:退订订单不存在");
                 return new Result(false, "退订订单不存在");
             }
-            refundOrder.setRefundMoneyTime(new Date());
-            refundOrder.setStatus(success ? OrderConstant.RefundOrderStatus.REFUND_SUCCESS : OrderConstant.RefundOrderStatus.REFUND_MONEY_FAIL);
-            refundOrderMapper.updateByPrimaryKeySelective(refundOrder);
-        }
-
-        if (!success) {
-            log.info("退款失败 加入任务处理...");
-            // 退款失败回调 记录任务
-            Map<String, String> jobParams = new HashMap<>();
-            jobParams.put("ordCode", String.valueOf(ordCode));
-            jobParams.put("serialNum", serialNum);
-            bookingOrderManager.addJob(OrderConstant.Actions.REFUND_MONEY, jobParams, true);
-
-            // 同步数据
-            if (refundOrder != null) {
-                refundOrderManager.syncRefundOrderMoney(refundOrder.getId());
+            if (!success) {
+                addRefundMoneyJob(ordCode, serialNum);
+                return new Result(true);
             }
-            return new Result(true);
-        }
-        // 已支付,处理中(分账失败)退订 直接取消
-        if (order.getStatus() == OrderConstant.OrderStatus.PAID_HANDLING) {
+            // 已支付,处理中(分账失败)退订 直接取消
             // 记录任务
             Map<String, String> jobParams = new HashMap<>();
             jobParams.put("orderId", order.getId().toString());
             bookingOrderManager.addJob(OrderConstant.Actions.CANCEL_CALLBACK, jobParams);
             return new Result(true);
         }
-
+        refundOrder.setRefundMoneyTime(new Date());
+        refundOrder.setStatus(success ? OrderConstant.RefundOrderStatus.REFUND_SUCCESS : OrderConstant.RefundOrderStatus.REFUND_MONEY_FAIL);
+        refundOrderMapper.updateByPrimaryKeySelective(refundOrder);
         // 同步数据
-        if (refundOrder != null) {
-            refundOrderManager.syncRefundOrderMoney(refundOrder.getId());
+        refundOrderManager.syncRefundOrderMoney(refundOrder.getId());
+        if (!success) {
+            addRefundMoneyJob(ordCode, serialNum);
         }
         return new Result(true);
+    }
+
+    private void addRefundMoneyJob(Long ordCode, String serialNum) {
+        log.info("退款失败 加入任务处理...");
+        // 退款失败回调 记录任务
+        Map<String, String> jobParams = new HashMap<>();
+        jobParams.put("ordCode", String.valueOf(ordCode));
+        jobParams.put("serialNum", serialNum);
+        bookingOrderManager.addJob(OrderConstant.Actions.REFUND_MONEY, jobParams, true);
     }
 }
