@@ -40,7 +40,7 @@ public class EpController extends BaseController {
      */
     @RequestMapping(value = "create", method = RequestMethod.POST)
     @ResponseBody
-    public Result<Map> create(HttpServletRequest request, @RequestBody Map<String,Object> map) {
+    public Result<Map<String,Object>> create(HttpServletRequest request, @RequestBody Map<String,Object> map) {
             map.put("core_ep_id",request.getAttribute("core_ep_id")) ;
             ParamsMapValidate.validate(map, platfromValidateManager.generateCreateEpValidate());
             return epService.createEp(map);
@@ -54,7 +54,7 @@ public class EpController extends BaseController {
      */
     @RequestMapping(value = "update", method = RequestMethod.POST)
     @ResponseBody
-    public Result<Map> update(@RequestBody Map map) {
+    public Result<Map<String,Object>> update(@RequestBody Map<String,Object> map) {
         // 验证参数
 
             ParamsMapValidate.validate(map, platfromValidateManager.generateCreateEpValidate());
@@ -76,7 +76,7 @@ public class EpController extends BaseController {
      */
     @RequestMapping(value = "status/freeze", method = RequestMethod.POST)
     @ResponseBody
-    public Result<Integer> statusFreeze(@RequestBody Map map) {
+    public Result<Integer> statusFreeze(@RequestBody Map<String,Object> map) {
         // 验证参数
 
             ParamsMapValidate.validate(map, platfromValidateManager.generateCreateStatusValidate());
@@ -91,7 +91,7 @@ public class EpController extends BaseController {
      */
     @RequestMapping(value = "status/disable", method = RequestMethod.POST)
     @ResponseBody
-    public Result<Integer> statusDisable(@RequestBody Map map) {
+    public Result<Integer> statusDisable(@RequestBody Map<String,Object> map) {
         // 验证参数D
 
             ParamsMapValidate.validate(map, platfromValidateManager.generateCreateStatusValidate());
@@ -104,7 +104,7 @@ public class EpController extends BaseController {
      */
     @RequestMapping(value = "status/enable", method = RequestMethod.POST)
     @ResponseBody
-    public Result<Integer> statusEnable(@RequestBody Map map) {
+    public Result<Integer> statusEnable(@RequestBody Map<String,Object> map) {
         // 验证参数D
 
             ParamsMapValidate.validate(map, platfromValidateManager.generateCreateStatusValidate());
