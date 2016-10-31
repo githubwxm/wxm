@@ -32,8 +32,8 @@ public class CoreEpChannelServiceImple implements CoreEpChannelService {
     private EpBalanceThresholdService epBalanceThresholdService;
 
     @Override   //// TODO: 2016/10/11 0011   上游下游供销关系同步 数据
-    public Result<Integer> create(Map params) {
-        Result<Integer> result = new Result<Integer>();
+    public Result<Integer> create(Map<String,Object> params) {
+        Result<Integer> result = new Result<>();
 
         try {
             //     销售
@@ -57,7 +57,7 @@ public class CoreEpChannelServiceImple implements CoreEpChannelService {
 
     @Override
     public Result<Integer> update(Map params) {
-        Result<Integer> result = new Result<Integer>();
+        Result<Integer> result = new Result<>();
         try {
             result.put(coreEpChannelMapper.update(params));
             result.setSuccess();
@@ -70,7 +70,7 @@ public class CoreEpChannelServiceImple implements CoreEpChannelService {
 
     @Override
     public Result<Integer> cancel(Integer id) {
-        Result<Integer> result = new Result<Integer>();
+        Result<Integer> result = new Result<>();
         try {
             result.put(coreEpChannelMapper.cancel(id));
             result.setSuccess();
@@ -83,7 +83,7 @@ public class CoreEpChannelServiceImple implements CoreEpChannelService {
 
     @Override  //EpChannelRep
     public Result<Map> select(Map params) {
-        Map resultMap = new HashMap();
+        Map<String,Object> resultMap = new HashMap<>();
         Result<Map> result = new Result<>();
         try {
             CommonUtil.checkPage(params);
@@ -92,42 +92,42 @@ public class CoreEpChannelServiceImple implements CoreEpChannelService {
             result.put(resultMap);
             result.setSuccess();
         } catch (Exception e) {
-           // log.error("数据库查询出错", e);
+           log.error("数据库查询出错", e);
             throw new ApiException("数据库查询出错", e);
         }
         return result;
     }
 
 
-    private Map<String[], ValidRule[]> generateCreateEpChannelValidate() {
-        Map<String[], ValidRule[]> rules = new HashMap<>();
-        // 校验不为空的参数
-        rules.put(new String[]{
-                "supplier_core_ep_id", // '供应商id
-                "seller_core_ep_id", // '销售商id
-                "rate", // 费率
-        }, new ValidRule[]{new ValidRule.NotNull()});
-
-        // 校验整数
-        rules.put(new String[]{
-                "supplier_core_ep_id", //
-                "seller_core_ep_id", //
-        }, new ValidRule[]{new ValidRule.Digits()});
-        return rules;
-    }
-
-    private Map<String[], ValidRule[]> generateUpdateEpChannelValidate() {
-        Map<String[], ValidRule[]> rules = new HashMap<>();
-        // 校验不为空的参数
-        rules.put(new String[]{
-                "id", //
-                "rate", // 费率
-        }, new ValidRule[]{new ValidRule.NotNull()});
-
-        // 校验整数
-        rules.put(new String[]{
-                "id", //
-        }, new ValidRule[]{new ValidRule.Digits()});
-        return rules;
-    }
+//    private Map<String[], ValidRule[]> generateCreateEpChannelValidate() {
+//        Map<String[], ValidRule[]> rules = new HashMap<>();
+//        // 校验不为空的参数
+//        rules.put(new String[]{
+//                "supplier_core_ep_id", // '供应商id
+//                "seller_core_ep_id", // '销售商id
+//                "rate", // 费率
+//        }, new ValidRule[]{new ValidRule.NotNull()});
+//
+//        // 校验整数
+//        rules.put(new String[]{
+//                "supplier_core_ep_id", //
+//                "seller_core_ep_id", //
+//        }, new ValidRule[]{new ValidRule.Digits()});
+//        return rules;
+//    }
+//
+//    private Map<String[], ValidRule[]> generateUpdateEpChannelValidate() {
+//        Map<String[], ValidRule[]> rules = new HashMap<>();
+//        // 校验不为空的参数
+//        rules.put(new String[]{
+//                "id", //
+//                "rate", // 费率
+//        }, new ValidRule[]{new ValidRule.NotNull()});
+//
+//        // 校验整数
+//        rules.put(new String[]{
+//                "id", //
+//        }, new ValidRule[]{new ValidRule.Digits()});
+//        return rules;
+//    }
 }

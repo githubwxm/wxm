@@ -32,7 +32,7 @@ public class LogCreditServiceImple implements LogCreditService{
 
     @Override
     public Result<Integer> select(Integer ep_id,Integer core_ep_id) {
-        Result<Integer> result = new Result<Integer>();
+        Result<Integer> result = new Result<>();
         try {
 
             result.put( logCreditMapper.select(ep_id,core_ep_id));
@@ -45,7 +45,7 @@ public class LogCreditServiceImple implements LogCreditService{
     }
 
     @Override
-    public Result<Integer> create(Map map) {
+    public Result<Integer> create(Map<String,Object> map) {
         Result<Integer> result = new Result<Integer>();
         try {
             Integer ep_id = CommonUtil.objectParseInteger(map.get("ep_id")) ;
@@ -65,12 +65,12 @@ public class LogCreditServiceImple implements LogCreditService{
     }
 
     @Override
-    public Result<Map> selectList(Map map) {
-        Result<Map> result = new Result<>(true);
-        Map resultMap = new HashMap();
+    public Result<Map<String,Object>> selectList(Map<String,Object> map) {
+        Result<Map<String,Object>> result = new Result<>(true);
+       Map<String,Object>resultMap = new HashMap();
         try {
             CommonUtil.checkPage(map);
-            List<Map> list=  logCreditMapper.selectList(map);
+            List<Map<String,Object>> list=  logCreditMapper.selectList(map);
             int count=     logCreditMapper.selectListCount(map);
             resultMap.put("list",list);
             resultMap.put("totalCount",count);
@@ -84,10 +84,10 @@ public class LogCreditServiceImple implements LogCreditService{
     }
 
     @Override
-    public Result<Map> hostoryCredit(Map params) {
-        Result<Map> result = new Result<>(true);
+    public Result<Map<String,Object>> hostoryCredit(Map<String,Object> params) {
+        Result<Map<String,Object>> result = new Result<>(true);
         try {
-            Map map =new HashMap();
+           Map<String,Object>map =new HashMap();
             map.put("list",logCreditMapper.hostoryCredit(params));
             result.put(map);
         } catch (Exception e) {
