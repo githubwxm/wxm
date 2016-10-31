@@ -27,7 +27,7 @@
 	</filter>
 	<filter-mapping>
 		<filter-name>sessionFilter</filter-name>
-		<url-pattern>/*</url-pattern>
+		<url-pattern>/api/*</url-pattern>
 	</filter-mapping>
 	<servlet>
 		<servlet-name>mvc</servlet-name>
