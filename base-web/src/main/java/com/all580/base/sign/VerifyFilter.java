@@ -62,6 +62,9 @@ public class VerifyFilter implements  Filter{
 
         }
         currenttSing =CommonUtil.objectParseString( map.remove("sign"));//获取当前传来的加密// 去掉sing
+        if(null==map.get("access_id")){
+            renderingByJsonPData(httpResponse, JSON.toJSONString(getOutPutMap(false,"access_id不能为空", Result.SIGN_FAIL,null)));
+        }
         Map access = coreEpAccessService.selectAccess(map).get();
         if (access.isEmpty()) {
             throw new ApiException("数据校验失败");
