@@ -169,7 +169,25 @@ public class ProductController extends BaseController {
             case ProductConstants.ProductDistributionState.NOT_DISTRIBUTE:
                 return productDistributionService.selectNoDistributionEp(epId, productSubId);
         }
-        return new Result<>(false, "状态参数不对");
+        return new Result<>(false, "状态参数错误");
+    }
+
+    @RequestMapping("sale/group/list")
+    @ResponseBody
+    public Result<Paginator<DistributionGroupInfo>> searchDistributionGroupInfo(
+        @RequestParam("ep_id") Integer epId,
+        @RequestParam("productSubId") Integer productSubId,
+        @RequestParam("status") Integer distributionStatus,
+        @RequestParam("record_start") Integer start,
+        @RequestParam("record_count") Integer count
+    ) {
+        switch (CommonUtil.objectParseInteger(distributionStatus)) {
+            case ProductConstants.ProductDistributionState.HAD_DISTRIBUTE:
+                return productDistributionService.searchAlreadyDistributionGroup(epId, productSubId, start, count);
+            case ProductConstants.ProductDistributionState.NOT_DISTRIBUTE:
+                return productDistributionService.searchNoDistributionGroup(epId, productSubId, start, count);
+        }
+        return new Result<>(false, "状态参数错误");
     }
 
     @RequestMapping(value = "update", method = RequestMethod.POST)
