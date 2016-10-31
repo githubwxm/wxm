@@ -201,6 +201,12 @@ public class ProductController extends BaseController {
         return null;
     }
 
+    @RequestMapping(value = "booking/view")
+    @ResponseBody
+    public Result<Map> searchProductBookingView(@RequestParam("ep_id") Integer epId, @RequestParam("id") Integer productSubId) {
+        return productService.searchProductBookingView(epId, productSubId);
+    }
+
     /**
      * 自供产品
      * @param epId
