@@ -22,7 +22,7 @@ public interface LogCreditMapper {
      *           credit_before:int  修改之前的额度，credit_after：int 修改之后的额度}
      * @return  Integer
      */
-     Integer create(Map map);
+     Integer create(Map<String,Object> map);
 
     /**
      * @param map {core_ep_id 平台商id必填,name 企业名字,link_phone 联系人电话,
@@ -30,15 +30,15 @@ public interface LogCreditMapper {
      *             province ,city,area 地区}
      * @return t.id,name,linkman,link_phone,province,city,area,credit_after,credit_date
      */
-     List<Map> selectList(Map map);
+     List<Map<String,Object>> selectList(Map<String,Object> map);
 
-     Integer selectListCount(Map map);
+     Integer selectListCount(Map<String,Object> map);
 
     /**
      *
      * @param params ep_id core_ep_id
      * @return name 名称,credit_before 修改前额度,credit_after 修改前额度,credit_date 修改时间
      */
-     List<Map> hostoryCredit(Map params );
+     List<Map<String,Object>> hostoryCredit(Map<String,Object> params );
 
 }

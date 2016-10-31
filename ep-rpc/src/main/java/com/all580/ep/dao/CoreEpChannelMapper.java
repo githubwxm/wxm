@@ -10,10 +10,10 @@ import java.util.Map;
  * Created by Administrator on 2016/9/28 0028.
  */
 public interface CoreEpChannelMapper {
-   int selectChannel(Map params);
-   int create(Map params);
-   int update(Map params);
-   List<Map> select(Map params);
+   int selectChannel(Map<String,Object> params);
+   int create(Map<String,Object> params);
+   int update(Map<String,Object> params);
+   List<Map<String,Object>> select(Map<String,Object> params);
    int cancel(@Param("id") Integer id);
-   int selectCount(Map map);
+   int selectCount(Map<String,Object> map);
 }
