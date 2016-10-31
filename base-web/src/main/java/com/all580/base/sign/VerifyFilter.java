@@ -7,6 +7,7 @@ import com.all580.ep.api.service.CoreEpAccessService;
 import com.framework.common.Result;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.util.CommonUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.map.HashedMap;
 
 import javax.lang.exception.ApiException;
@@ -21,6 +22,7 @@ import java.util.TreeMap;
 /**
  * Created by wxming on 2016/10/13 0013.
  */
+@Slf4j
 public class VerifyFilter implements  Filter{
 //    @Autowired
 //    private CoreEpAccessService coreEpAccessService;
@@ -40,15 +42,9 @@ public class VerifyFilter implements  Filter{
         ServletRequest requestWrapper = null;
         String postParams="";
         String currenttSing="";
-        String url =httpRequest.getRequestURI();
+       // String url =httpRequest.getRequestURI();
         CoreEpAccessService coreEpAccessService= BeanUtil.getBean("coreEpAccessService", CoreEpAccessService.class);
 
-//        String a = httpRequest.getParameter("access_id");
-//        String url =httpRequest.getRequestURI();
-//        Enumeration<?> names = request.getParameterNames();
-//        while(names.hasMoreElements()){
-//            System.out.println(names.nextElement());
-//        }
         if ("POST".equals(method)) {
             if(request instanceof HttpServletRequest) {
                 requestWrapper = new MyHttpServletRequest((HttpServletRequest) request);
@@ -63,10 +59,12 @@ public class VerifyFilter implements  Filter{
         }
         currenttSing =CommonUtil.objectParseString( map.remove("sign"));//获取当前传来的加密// 去掉sing
         if(null==map.get("access_id")){
+            log.error("access_id不能为空");
             renderingByJsonPData(httpResponse, JSON.toJSONString(getOutPutMap(false,"access_id不能为空", Result.SIGN_FAIL,null)));
         }
         Map access = coreEpAccessService.selectAccess(map).get();
         if (access.isEmpty()) {
+            log.error("数据校验失败");
             throw new ApiException("数据校验失败");
             //return false;
         } else {
@@ -77,6 +75,7 @@ public class VerifyFilter implements  Filter{
         postParams = JsonUtils.toJson(tree);
             boolean ref = SignVerify.verifyPost(postParams, currenttSing, key);
             if (!ref) {
+                log.error("签名校验失败");
                 renderingByJsonPData(httpResponse, JSON.toJSONString(getOutPutMap(false,"签名校验失败", Result.SIGN_FAIL,null)));
             }else{
                 if(null == requestWrapper) {
@@ -90,7 +89,7 @@ public class VerifyFilter implements  Filter{
     }
 
     public Map getOutPutMap(boolean success,String message,Integer code,String result) {
-        Map map = new HashMap();
+        Map<String,Object> map = new HashMap<>();
         map.put("success", success);
         map.put("message", message);
         map.put("code", code);
