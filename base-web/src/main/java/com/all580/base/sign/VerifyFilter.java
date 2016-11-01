@@ -95,7 +95,6 @@ public class VerifyFilter implements  Filter{
                     }
                 }
             }catch(Exception e){
-                e.printStackTrace();
                 renderingByJsonPData(httpResponse, JSON.toJSONString(getOutPutMap(false,"过滤异常未被捕获", Result.SIGN_FAIL,null)));
                 log.error(e.getMessage());
                 return;
