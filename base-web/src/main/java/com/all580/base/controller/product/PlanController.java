@@ -3,6 +3,7 @@ package com.all580.base.controller.product;
 import com.all580.product.api.model.AddProductPlanParams;
 import com.all580.product.api.model.CanSaleSubProductInfo;
 import com.all580.product.api.model.OnSalesParams;
+import com.all580.product.api.model.ProductPlanInfo;
 import com.all580.product.api.service.ProductRPCService;
 import com.all580.product.api.service.ProductSalesPlanRPCService;
 import com.framework.common.BaseController;
@@ -142,4 +143,20 @@ public class PlanController extends BaseController {
         }
         return onSalesParamses;
     }
+
+    /**
+     * 查询产品销售日历
+     * @param productSubId
+     * @param startDate
+     * @param endDate
+     * @param recordStart
+     * @param recordCount
+     * @return
+     */
+    @RequestMapping(value = "sale/calendar/list")
+    @ResponseBody
+    public Result<Paginator<ProductPlanInfo>> searchPlanCalendar (@RequestParam("product_sub_id") Integer productSubId, @RequestParam("start_date") String startDate, @RequestParam("end_date") String endDate, @RequestParam("record_start") Integer recordStart, @RequestParam("record_count") Integer recordCount ) {
+        return productSalesPlanService.searchPlanCalendar(DateFormatUtils.converToDate(startDate), DateFormatUtils.converToDate(endDate), productSubId, recordStart, recordCount);
+    }
+
 }

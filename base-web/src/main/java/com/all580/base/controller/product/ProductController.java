@@ -84,10 +84,11 @@ public class ProductController extends BaseController {
     private SubProductInfo intSubProduct(Map params) {
         SubProductInfo subProductInfo = new SubProductInfo();
         subProductInfo.setEpId(CommonUtil.objectParseInteger(params.get("ep_id")));
-        subProductInfo.setBookingDayLimit(CommonUtil.objectParseString(params.get("bookingDayLimit")));
+        subProductInfo.setBookingDayLimit(CommonUtil.objectParseInteger(params.get("bookingDayLimit")));
         subProductInfo.setBookingNotes(CommonUtil.objectParseString(params.get("bookingNotes")));
-        subProductInfo.setBookingLimit(CommonUtil.objectParseString(params.get("bookingLimit")));
-        subProductInfo.setBookingTimeLimit(CommonUtil.objectParseString(params.get("bookingTimeLimit")));
+        subProductInfo.setBookingLimit(CommonUtil.objectParseInteger(params.get("bookingLimit")));
+        subProductInfo.setBookingTimeLimit(CommonUtil.objectParseInteger(params.get("bookingTimeLimit")));
+        subProductInfo.setBuyStartDate(DateFormatUtils.converToDateTime(CommonUtil.objectParseString(params.get("buyStartDate"))));
         subProductInfo.setBuyEndDate(DateFormatUtils.converToDateTime(CommonUtil.objectParseString(params.get("buyEndDate"))));
         subProductInfo.setDescription(CommonUtil.objectParseString(params.get("description")));
         subProductInfo.setDisableDate(CommonUtil.objectParseString(params.get("disableDate")));
@@ -96,7 +97,7 @@ public class ProductController extends BaseController {
         subProductInfo.setEffectiveEndDate(CommonUtil.objectParseString(params.get("effectiveEndDate")));
         subProductInfo.setEffectiveStartDate(CommonUtil.objectParseString(params.get("effectiveStartDate")));
         subProductInfo.setEffectiveType(CommonUtil.objectParseInteger(params.get("effectiveType")));
-        subProductInfo.setImg(CommonUtil.objectParseString(params.get("img")));
+        subProductInfo.setImg(JsonUtils.toJson(CommonUtil.objectParseString(params.get("img"))));
         subProductInfo.setEpMaId(CommonUtil.objectParseInteger(params.get("epMaId")));
         subProductInfo.setMaProductId(CommonUtil.objectParseString(params.get("maProductId")));
         subProductInfo.setMarketPrice(CommonUtil.objectParseInteger(params.get("marketPrice")));
@@ -106,11 +107,13 @@ public class ProductController extends BaseController {
         subProductInfo.setName(CommonUtil.objectParseString(params.get("name")));
         subProductInfo.setPayType(CommonUtil.objectParseInteger(params.get("payType")));
         subProductInfo.setProductId(CommonUtil.objectParseInteger(params.get("productId")));
+        subProductInfo.setProductName(CommonUtil.objectParseString(params.get("productName")));
         subProductInfo.setRealName(CommonUtil.objectParseInteger(params.get("realName")));
         subProductInfo.setRequireSid(CommonUtil.objectParseInteger(params.get("requireSid")));
         subProductInfo.setSaleQuantity(CommonUtil.objectParseInteger(params.get("saleQuantity")));
-        subProductInfo.setSalerRefundRule(CommonUtil.objectParseString(params.get("salerRefundRule")));
-        subProductInfo.setSaleRuleType(CommonUtil.objectParseString(params.get("saleRuleType")));
+//        subProductInfo.setSalerRefundRule(CommonUtil.objectParseInteger(params.get("salerRefundRule")));
+        subProductInfo.setCustRefundRule(CommonUtil.objectParseInteger(params.get("salerRefundRule")));
+        subProductInfo.setSaleRuleType(CommonUtil.objectParseInteger(params.get("saleRuleType")));
         subProductInfo.setSettlePrice(CommonUtil.objectParseInteger(params.get("settlePrice")));
         subProductInfo.setSidDayCount(CommonUtil.objectParseInteger(params.get("sidDayCount")));
         subProductInfo.setSidDayQuantity(CommonUtil.objectParseInteger(params.get("sidDayQuantity")));
