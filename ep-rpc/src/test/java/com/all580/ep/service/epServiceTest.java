@@ -16,7 +16,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -38,18 +40,21 @@ public class epServiceTest {
     @Resource
     private EpFinanceService epFinanceService;
 
-//    @Resource
-//    private CoreEpAccessService coreEpAccessService;
-//
+    @Resource
+    private CoreEpAccessService coreEpAccessService;
+
 //    @Resource
 //    private EpBalanceThresholdService cpBalanceThresholdService;
 //    @Resource
 //    private CoreEpChannelService coreEpChannelService;
    @Test
     public void EpFinanceServiceImple(){
-       Map map = new HashMap();
-       map.put("core_ep_id","1");
-       epFinanceService.getAccountInfoList(map);
+       List ids = new ArrayList<Integer>();
+       ids.add(-1);
+       print(coreEpAccessService.selectAccessList(ids).get()+"ssss");
+//       Map map = new HashMap();
+//       map.put("core_ep_id","1");
+//       epFinanceService.getAccountInfoList(map);
     }
 
     @Test
@@ -111,7 +116,8 @@ public class epServiceTest {
         map.put("logo_pic", "logopic");
        // epService.createEp(map);
         map.put("id","1");
-        epService.platformFreeze(map);
+      //  epService.platformFreeze(map);
+        print(epService.selectSeller(30));
         //epService.createPlatform(map);
         Integer [] ids=new Integer []{1,3};
         String [] fields = new String []{"id","ep_type"};

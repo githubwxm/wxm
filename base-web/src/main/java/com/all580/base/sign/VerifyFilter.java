@@ -71,7 +71,7 @@ public class VerifyFilter implements  Filter{
             renderingByJsonPData(httpResponse, JSON.toJSONString(getOutPutMap(false,"获取access_key错误", Result.SIGN_FAIL,null)));
             return;
         }
-        if (access.isEmpty()) {
+        if (null==access||access.isEmpty()) {
             log.error("获取access_key失败");
             renderingByJsonPData(httpResponse, JSON.toJSONString(getOutPutMap(false,"获取access_key失败", Result.SIGN_FAIL,null)));
             return;

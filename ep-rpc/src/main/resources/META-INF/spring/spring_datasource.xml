@@ -41,6 +41,11 @@
 	<bean id="baseSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
 		<property name="dataSource" ref="baseBaseDS" />
 		<property name="mapperLocations" value="classpath*:sqlmap/*.xml" />
+		<property name="plugins">
+			<array>
+				<bean class="com.framework.common.mybatis.UpdateTimePlugin"/>
+			</array>
+		</property>
 	</bean>
 
 	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">

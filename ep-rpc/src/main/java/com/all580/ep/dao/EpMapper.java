@@ -34,4 +34,11 @@ public interface EpMapper {
     List<Map<String,Object>> getAccountInfoListCount(Map<String,Object> map);
 
     List<Map<String,Object>> checkNamePhone(Map<String,Object> map);
+
+    /**
+     * 只查询了ep单表的数据
+     * @param map
+     * @return
+     */
+    List<Map<String,String>> selectSingleTable(Map<String,Object> map);
 }

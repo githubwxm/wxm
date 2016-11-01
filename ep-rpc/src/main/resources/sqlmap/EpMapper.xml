@@ -42,7 +42,7 @@
     </select>
 
     <select id="getAccountInfoList" resultType="java.util.HashMap">
-        select  ep.id ,ep.name,ep.linkman,ep.link_phone,ep.province,ep.city,ep.area,ep.address,ep.status,
+        select  pic_address,ep.id ,ep.name,ep.linkman,ep.link_phone,ep.province,ep.city,ep.area,ep.address,ep.status,
         date_format(ep.add_time,'%Y-%m-%d') add_time,param.`name` as ep_type_name  from
         t_ep  ep left JOIN t_ep_param param on ep.`ep_type` = param.id
         where
@@ -60,7 +60,7 @@
     </select>
 
     <select id="select" resultType="java.util.HashMap">
-        select  ep.id,ep.name,ep.en_name,ep.ep_type,ep.linkman,ep.link_phone,ep.address,ep.code,ep.license,ep.logo_pic,ep.status,ep.access_id,
+        select  pic_address,ep.id,ep.name,ep.en_name,ep.ep_type,ep.linkman,ep.link_phone,ep.address,ep.code,ep.license,ep.logo_pic,ep.status,ep.access_id,
         ep.access_key,ep.creator_ep_id,ep.core_ep_id,ep.status_bak,ep.province,
         ep.city,ep.area,ep.group_id,ep.group_name,ep.ep_class,
         date_format(ep.add_time,'%Y-%m-%d') add_time,param.`name` as status_name  from
@@ -94,7 +94,7 @@
     </select>
 <!-- platform/list/down   下游平台商-->
     <select id="platformListDown" resultType="java.util.HashMap">
-    select name,linkman,link_phone,province,city,area,address,truncate(rate/100,2) as rate from t_core_ep_channel c
+    select pic_address,name,linkman,link_phone,province,city,area,address,truncate(rate/100,2) as rate from t_core_ep_channel c
        join t_ep e on e.id=c.seller_core_ep_id
         where  1=1 and supplier_core_ep_id= #{ep_id} and ep_type=#{ep_type}
                <include refid="platformListUpDown"/>
@@ -123,7 +123,7 @@
 
     <!-- platform/list/up   上游平台商-->
     <select id="platformListUp" resultType="java.util.HashMap">
-        select name,linkman,link_phone,province,city,area,address,truncate(rate/100,2) as rate from t_core_ep_channel c
+        select pic_address,name,linkman,link_phone,province,city,area,address,truncate(rate/100,2) as rate from t_core_ep_channel c
         join t_ep e on e.id=c.supplier_core_ep_id
         where  1=1 and seller_core_ep_id= #{ep_id} and ep_type=#{ep_type}
         <include refid="platformListUpDown"/>
@@ -149,9 +149,14 @@
     <!-- 激活平台商-->
    <update id="platformEnable">
       update t_ep
-     set `status`=status_bak
-     where core_ep_id=#{id}
+     set `status`=#{status}
+     where id=#{id}
    </update>
+    <update id="epEnable">
+      update t_ep
+     set `status`=status_bak
+     where core_ep_id=#{id} and id!=#{id}
+    </update>
     <update id="updateStatus">
         update t_ep set status_bak=#{status},status=#{status} where id=#{id}
         <if test="statusActive != null">
@@ -160,17 +165,17 @@
     </update>
     <update id="update">
         update t_ep
-         set name=#{name},en_name=#{en_name},linkman=#{linkman},link_phone=#{link_phone},address=#{address},
+         set pic_address=#{pic_address},name=#{name},en_name=#{en_name},linkman=#{linkman},link_phone=#{link_phone},address=#{address},
          code=#{code},license=#{license},logo_pic=#{logo_pic},province=#{province},city=#{city},area=#{area}
-         ,ep_class=#{ep_class}
+         ,ep_class=#{ep_class}, pic_address=#{pic_address},group_name=#{group_name},group_id=#{group_id}
         where id =#{id}
     </update>
     <insert id="create">
         INSERT INTO `t_ep`(name,en_name,ep_type,linkman,link_phone,address,code,license,logo_pic,status,access_id,
-       access_key,creator_ep_id,core_ep_id,status_bak,province,city,area,group_id,group_name,ep_class)
+       access_key,creator_ep_id,core_ep_id,status_bak,province,city,area,group_id,group_name,ep_class,pic_address)
        VALUES (#{name}, #{en_name}, #{ep_type}, #{linkman}, #{link_phone}, #{address}, #{code}, #{license},
       #{logo_pic}, #{status}, #{access_id}, #{access_key}, #{creator_ep_id}, #{core_ep_id}, #{status_bak},
-      #{province}, #{city}, #{area}, #{group_id}, #{group_name}, #{ep_class});
+      #{province}, #{city}, #{area}, #{group_id}, #{group_name}, #{ep_class},#{pic_address});
         <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
             SELECT LAST_INSERT_ID();
         </selectKey>   <!-- 添加到map里面key id  -->
@@ -187,4 +192,10 @@
         select name,link_phone from t_ep
          where name =#{name} or link_phone=#{link_phone}
     </select>
+
+    <select id="selectSingleTable" resultType="java.util.Map">
+        select * from t_ep ep
+        where 1=1<include refid="ep_list_where"/>
+    </select>
+
 </mapper>
