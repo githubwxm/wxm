@@ -61,6 +61,7 @@ public class VerifyFilter implements  Filter{
         if(null==map.get("access_id")){
             log.error("access_id不能为空");
             renderingByJsonPData(httpResponse, JSON.toJSONString(getOutPutMap(false,"access_id不能为空", Result.SIGN_FAIL,null)));
+            return;
         }
         Map access=null;
         try {
@@ -68,24 +69,24 @@ public class VerifyFilter implements  Filter{
         }catch (Exception e){
             log.error(e.getMessage());
             renderingByJsonPData(httpResponse, JSON.toJSONString(getOutPutMap(false,"获取access_key错误", Result.SIGN_FAIL,null)));
+            return;
         }
         if (access.isEmpty()) {
             log.error("获取access_key失败");
             renderingByJsonPData(httpResponse, JSON.toJSONString(getOutPutMap(false,"获取access_key失败", Result.SIGN_FAIL,null)));
-            //return false;
+            return;
         } else {
             try{
                 request.setAttribute(EpConstant.EpKey.CORE_EP_ID, access.get("id"));
                 String key = access.get("access_key").toString();
                 request.setAttribute(EpConstant.EpKey.ACCESS_KEY,key);
-                request.setAttribute("core_ep_id_request", access.get("id"));
-
                 TreeMap tree=new TreeMap(map);
                 postParams = JsonUtils.toJson(tree);
                 boolean ref = SignVerify.verifyPost(postParams, currenttSing, key);
                 if (!ref) {
                     log.error("签名校验失败");
                     renderingByJsonPData(httpResponse, JSON.toJSONString(getOutPutMap(false,"签名校验失败", Result.SIGN_FAIL,null)));
+                    return;
                 }else{
                     if(null == requestWrapper) {
                         chain.doFilter(request, response);
@@ -95,7 +96,9 @@ public class VerifyFilter implements  Filter{
                 }
             }catch(Exception e){
                 e.printStackTrace();
+                renderingByJsonPData(httpResponse, JSON.toJSONString(getOutPutMap(false,"过滤异常未被捕获", Result.SIGN_FAIL,null)));
                 log.error(e.getMessage());
+                return;
             }
         }
 
