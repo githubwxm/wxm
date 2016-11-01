@@ -96,7 +96,6 @@ public class ProductController extends BaseController {
         subProductInfo.setEffectiveEndDate(CommonUtil.objectParseString(params.get("effectiveEndDate")));
         subProductInfo.setEffectiveStartDate(CommonUtil.objectParseString(params.get("effectiveStartDate")));
         subProductInfo.setEffectiveType(CommonUtil.objectParseInteger(params.get("effectiveType")));
-        subProductInfo.setEpId(CommonUtil.objectParseInteger(params.get("epId")));
         subProductInfo.setImg(CommonUtil.objectParseString(params.get("img")));
         subProductInfo.setEpMaId(CommonUtil.objectParseInteger(params.get("epMaId")));
         subProductInfo.setMaProductId(CommonUtil.objectParseString(params.get("maProductId")));
@@ -200,6 +199,12 @@ public class ProductController extends BaseController {
     @ResponseBody
     public Result<?> updateScenerySubProduct(@RequestBody Map params) {
         return null;
+    }
+
+    @RequestMapping(value = "booking/view")
+    @ResponseBody
+    public Result<Map> searchProductBookingView(@RequestParam("ep_id") Integer epId, @RequestParam("id") Integer productSubId) {
+        return productService.searchProductBookingView(epId, productSubId);
     }
 
     /**

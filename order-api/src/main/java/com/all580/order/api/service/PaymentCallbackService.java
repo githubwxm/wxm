@@ -21,7 +21,7 @@ public interface PaymentCallbackService {
 
     /**
      * 退款回调
-     * @param ordCode 订单编号
+     * @param ordCode 退订订单编号
      * @param serialNum 退款流水号
      * @param outTransId 第三方交易号
      * @param success 是否成功

@@ -76,7 +76,7 @@ public class PaymentCallbackAction implements JobRunner {
             bookingOrderManager.paySplitAccount(orderId, orderItems);
         }
         order.setStatus(OrderConstant.OrderStatus.PAID);
-        orderMapper.updateByPrimaryKey(order);
+        orderMapper.updateByPrimaryKeySelective(order);
 
         // 出票
         // 记录任务

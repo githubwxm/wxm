@@ -186,8 +186,7 @@
       `quantity` = #{quantity,jdbcType=INTEGER},
       `pre_return` = #{preReturn,jdbcType=INTEGER},
       `return_quantity` = #{returnQuantity,jdbcType=INTEGER},
-      `use_quantity` = #{useQuantity,jdbcType=INTEGER},
-      `update_time` = #{updateTime,jdbcType=TIMESTAMP}
+      `use_quantity` = #{useQuantity,jdbcType=INTEGER}
     where `id` = #{id,jdbcType=INTEGER}
   </update>
 

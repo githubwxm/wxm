@@ -511,28 +511,22 @@ public class BookingOrderManager extends BaseOrderManager {
      * @param orderId 订单ID
      */
     public void syncCreateOrderData(int orderId) {
-        Map<String, List<?>> data = new HashMap<>();
 
-        // 同步订单表
-        data.put("t_order", CommonUtil.oneToList(orderMapper.selectByPrimaryKey(orderId)));
-
-        // 同步子订单表
-        List<OrderItem> orderItems = orderItemMapper.selectByOrderId(orderId);
-        data.put("t_order_item", orderItems);
-
-        // 同步子订单明细表
-        data.put("t_order_item_detail", orderItemDetailMapper.selectByOrderId(orderId));
-
-        // 同步分账表
-        data.put("t_order_item_account", orderItemAccountMapper.selectByOrder(orderId));
-
-        // 同步联系人表
-        data.put("t_shipping", CommonUtil.oneToList(shippingMapper.selectByOrder(orderId)));
-
-        // 同步游客信息表
-        data.put("t_visitor", visitorMapper.selectByOrder(orderId));
-
-        syncOrderData(orderId, data);
+        generateSyncByOrder(orderId)
+                // 同步订单表
+                .put("t_order", CommonUtil.oneToList(orderMapper.selectByPrimaryKey(orderId)))
+                // 同步子订单表
+                .put("t_order_item", orderItemMapper.selectByOrderId(orderId))
+                // 同步子订单明细表
+                .put("t_order_item_detail", orderItemDetailMapper.selectByOrderId(orderId))
+                // 同步分账表
+                .put("t_order_item_account", orderItemAccountMapper.selectByOrder(orderId))
+                // 同步联系人表
+                .put("t_shipping", CommonUtil.oneToList(shippingMapper.selectByOrder(orderId)))
+                // 同步游客信息表
+                .put("t_visitor", visitorMapper.selectByOrder(orderId))
+                // 同步
+                .sync();
     }
 
     /**
@@ -540,15 +534,10 @@ public class BookingOrderManager extends BaseOrderManager {
      * @param orderId 订单ID
      */
     public void syncOrderAuditAcceptData(int orderId, int orderItemId) {
-        Map<String, List<?>> data = new HashMap<>();
-
-        // 同步订单表
-        data.put("t_order", CommonUtil.oneToList(orderMapper.selectByPrimaryKey(orderId)));
-
-        // 同步子订单表
-        data.put("t_order_item", CommonUtil.oneToList(orderItemMapper.selectByPrimaryKey(orderItemId)));
-
-        syncOrderData(orderId, data);
+        generateSyncByOrder(orderId)
+                .put("t_order", CommonUtil.oneToList(orderMapper.selectByPrimaryKey(orderId)))
+                .put("t_order_item", CommonUtil.oneToList(orderItemMapper.selectByPrimaryKey(orderItemId)))
+                .sync();
     }
 
     /**
@@ -556,12 +545,9 @@ public class BookingOrderManager extends BaseOrderManager {
      * @param orderId 订单ID
      */
     public void syncOrderPaymentData(int orderId) {
-        Map<String, List<?>> data = new HashMap<>();
-
-        // 同步订单表
-        data.put("t_order", CommonUtil.oneToList(orderMapper.selectByPrimaryKey(orderId)));
-
-        syncOrderData(orderId, data);
+        generateSyncByOrder(orderId)
+                .put("t_order", CommonUtil.oneToList(orderMapper.selectByPrimaryKey(orderId)))
+                .sync();
     }
 
     /**
@@ -569,12 +555,9 @@ public class BookingOrderManager extends BaseOrderManager {
      * @param itemId 子订单ID
      */
     public void syncOrderAccountData(int itemId) {
-        Map<String, List<?>> data = new HashMap<>();
-
-        // 同步分账表
-        data.put("t_order_item_account", orderItemAccountMapper.selectByOrderItem(itemId));
-
-        syncOrderItemData(itemId, data);
+        generateSyncByItem(itemId)
+                .put("t_order_item_account", orderItemAccountMapper.selectByOrderItem(itemId))
+                .sync();
     }
 
     /**
@@ -582,15 +565,10 @@ public class BookingOrderManager extends BaseOrderManager {
      * @param itemId 子订单ID
      */
     public void syncSendTicketData(int itemId) {
-        Map<String, List<?>> data = new HashMap<>();
-
-        // 同步子订单表
-        data.put("t_order_item", CommonUtil.oneToList(orderItemMapper.selectByPrimaryKey(itemId)));
-
-        // 同步发码数据
-        data.put("t_ma_send_response", maSendResponseMapper.selectByOrderItemId(itemId));
-
-        syncOrderItemData(itemId, data);
+        generateSyncByItem(itemId)
+                .put("t_order_item", CommonUtil.oneToList(orderItemMapper.selectByPrimaryKey(itemId)))
+                .put("t_ma_send_response", maSendResponseMapper.selectByOrderItemId(itemId))
+                .sync();
     }
 
     /**
@@ -598,21 +576,12 @@ public class BookingOrderManager extends BaseOrderManager {
      * @param itemId 子订单ID
      */
     public void syncConsumeData(int itemId, String sn) {
-        Map<String, List<?>> data = new HashMap<>();
-
-        // 同步子订单明细表
-        data.put("t_order_item_detail", orderItemDetailMapper.selectByItemId(itemId));
-
-        // 同步核销表
-        data.put("t_order_clearance_serial", CommonUtil.oneToList(orderClearanceSerialMapper.selectBySn(sn)));
-
-        // 同步核销明细表
-        data.put("t_order_clearance_detail", CommonUtil.oneToList(orderClearanceDetailMapper.selectBySn(sn)));
-
-        // 同步游客数据
-        data.put("t_visitor", visitorMapper.selectByOrderItem(itemId));
-
-        syncOrderItemData(itemId, data);
+        generateSyncByItem(itemId)
+                .put("t_order_item_detail", orderItemDetailMapper.selectByItemId(itemId))
+                .put("t_order_clearance_serial", CommonUtil.oneToList(orderClearanceSerialMapper.selectBySn(sn)))
+                .put("t_order_clearance_detail", CommonUtil.oneToList(orderClearanceDetailMapper.selectBySn(sn)))
+                .put("t_visitor", visitorMapper.selectByOrderItem(itemId))
+                .sync();
     }
 
     /**
@@ -620,18 +589,11 @@ public class BookingOrderManager extends BaseOrderManager {
      * @param itemId 子订单ID
      */
     public void syncReConsumeData(int itemId, String sn) {
-        Map<String, List<?>> data = new HashMap<>();
-
-        // 同步子订单明细表
-        data.put("t_order_item_detail", orderItemDetailMapper.selectByItemId(itemId));
-
-        // 同步冲正流水表
-        data.put("t_clearance_washed_serial", CommonUtil.oneToList(clearanceWashedSerialMapper.selectBySn(sn)));
-
-        // 同步游客数据
-        data.put("t_visitor", visitorMapper.selectByOrderItem(itemId));
-
-        syncOrderItemData(itemId, data);
+        generateSyncByItem(itemId)
+                .put("t_order_item_detail", orderItemDetailMapper.selectByItemId(itemId))
+                .put("t_clearance_washed_serial", CommonUtil.oneToList(clearanceWashedSerialMapper.selectBySn(sn)))
+                .put("t_visitor", visitorMapper.selectByOrderItem(itemId))
+                .sync();
     }
 
     /**
@@ -639,19 +601,11 @@ public class BookingOrderManager extends BaseOrderManager {
      * @param orderId 订单ID
      */
     public void syncPaymentSuccessData(int orderId) {
-        Map<String, List<?>> data = new HashMap<>();
-
-        // 同步订单表
-        data.put("t_order", CommonUtil.oneToList(orderMapper.selectByPrimaryKey(orderId)));
-
-        // 同步子订单表
-        List<OrderItem> orderItems = orderItemMapper.selectByOrderId(orderId);
-        data.put("t_order_item", orderItems);
-
-        // 同步分账表
-        data.put("t_order_item_account", orderItemAccountMapper.selectByOrder(orderId));
-
-        syncOrderData(orderId, data);
+        generateSyncByOrder(orderId)
+                .put("t_order", CommonUtil.oneToList(orderMapper.selectByPrimaryKey(orderId)))
+                .put("t_order_item", orderItemMapper.selectByOrderId(orderId))
+                .put("t_order_item_account", orderItemAccountMapper.selectByOrder(orderId))
+                .sync();
     }
 
     /**
@@ -659,11 +613,8 @@ public class BookingOrderManager extends BaseOrderManager {
      * @param itemId 子订单ID
      */
     public void syncReConsumeSplitAccountData(int itemId) {
-        Map<String, List<?>> data = new HashMap<>();
-
-        // 同步分账表
-        data.put("t_order_item_account", orderItemAccountMapper.selectByOrderItem(itemId));
-
-        syncOrderItemData(itemId, data);
+        generateSyncByItem(itemId)
+                .put("t_order_item_account", orderItemAccountMapper.selectByOrderItem(itemId))
+                .sync();
     }
 }
