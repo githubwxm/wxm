@@ -11,7 +11,7 @@
 	<bean id="jobClient" class="com.github.ltsopensource.spring.JobClientFactoryBean" init-method="start">
 		<property name="clusterName" value="${task.cluster}"/>
 		<property name="registryAddress" value="${task.registry}"/>
-		<property name="nodeGroup" value="order_jobClient"/>
+		<property name="nodeGroup" value="${task.client}"/>
 		<property name="configs">
 			<props>
 				<!-- 参数 -->
@@ -25,7 +25,7 @@
 		<property name="bizLoggerLevel" value="INFO"/>
 		<property name="clusterName" value="${task.cluster}"/>
 		<property name="registryAddress" value="${task.registry}"/>
-		<property name="nodeGroup" value="order_TaskTracker"/>
+		<property name="nodeGroup" value="${task.tracker}"/>
 		<property name="workThreads" value="20"/>
 		<property name="configs">
 			<props>
