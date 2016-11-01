@@ -8,7 +8,7 @@ public class EpConstant {
         public static final String T_EP="t_ep";//企业信息表
     }
     public static class EpKey{
-        public static final String  EP_ID ="ep_id";//企业类型
+        public static final String  EP_ID ="ep_id";//企业类型//
         public static final String  CORE_EP_ID="core_ep_id";// 平台商id存放在request 中的key值
         public static final String  ACCESS_ID ="access_id";//平台商加密 key存放在request 中的key值
         public static final String  ACCESS_KEY ="access_key";//平台商加密 key存放在request 中的key值
