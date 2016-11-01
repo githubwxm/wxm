@@ -44,7 +44,8 @@ public class EpBalanceThresholdController extends BaseController {
             //core_ep_id
             ParamsMapValidate.validate(map, generateEpBalanceThresholdUpdateValidate());
             //   Integer core_ep_id = Integer.parseInt(map.get("id").toString());
-             //  map.put("core_ep_id",epService.selectPlatformId(core_ep_id)) ;
+               map.put(EpConstant.EpKey.CORE_EP_ID,getAttribute(EpConstant.EpKey.CORE_EP_ID)) ;
+                map.put("ep_id",map.get("balance_id"));
             return epBalanceThresholdService.createOrUpdate(map);
 
     }
@@ -55,10 +56,11 @@ public class EpBalanceThresholdController extends BaseController {
      */
     @RequestMapping(value = "select", method = RequestMethod.GET)
     @ResponseBody
-    public Result<Map> select(HttpServletRequest request, Integer ep_id) {
+    public Result<Map> select(HttpServletRequest request, Integer balance_id
+    ) {
             Map map = new HashMap();
-            map.put("ep_id",ep_id);
-            map.put("core_ep_id",getAttribute(EpConstant.EpKey.CORE_EP_ID)) ;//
+            map.put(EpConstant.EpKey.EP_ID,balance_id);
+            map.put(EpConstant.EpKey.CORE_EP_ID,getAttribute(EpConstant.EpKey.CORE_EP_ID)) ;//
          ParamsMapValidate.validate(map, generateEpBalanceThresholdValidate());
             return epBalanceThresholdService.select(map);
     }
@@ -70,14 +72,12 @@ public class EpBalanceThresholdController extends BaseController {
      */
     @RequestMapping(value = "balance/warn", method = RequestMethod.GET)
     @ResponseBody
-    public Result<Map> warn(Integer ep_id,Integer core_ep_id,Integer balance ) {
-       //// TODO: 2016/10/20 0020   获取平台商id
+    public Result<Map> warn(Integer balance_id,Integer balance ) {
             Map map = new HashMap();
-             map.put("ep_id",ep_id);
-             map.put("core_ep_id",core_ep_id) ;//
+             map.put("ep_id",balance_id);
+             map.put(EpConstant.EpKey.CORE_EP_ID,getAttribute(EpConstant.EpKey.CORE_EP_ID)) ;//
              map.put("balance",balance);
             ParamsMapValidate.validate(map, generateEpBalanceValidate());
-
             boolean bool =epBalanceThresholdService.warn(map);//是否发送成功
             if(bool){
 

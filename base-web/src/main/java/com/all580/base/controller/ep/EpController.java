@@ -1,6 +1,7 @@
 package com.all580.base.controller.ep;
 
 import com.all580.base.manager.PlatfromValidateManager;
+import com.all580.ep.api.conf.EpConstant;
 import com.all580.ep.api.service.EpService;
 import com.framework.common.BaseController;
 import com.framework.common.Result;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -78,8 +80,8 @@ public class EpController extends BaseController {
     @ResponseBody
     public Result<Integer> statusFreeze(@RequestBody Map<String,Object> map) {
         // 验证参数
-
             ParamsMapValidate.validate(map, platfromValidateManager.generateCreateStatusValidate());
+           // //map.put(EpConstant.EpKey.ACCESS_KEY,getAttribute(EpConstant.EpKey.ACCESS_KEY));
             return epService.freeze(map);
 
 
@@ -93,8 +95,8 @@ public class EpController extends BaseController {
     @ResponseBody
     public Result<Integer> statusDisable(@RequestBody Map<String,Object> map) {
         // 验证参数D
-
             ParamsMapValidate.validate(map, platfromValidateManager.generateCreateStatusValidate());
+        //map.put(EpConstant.EpKey.ACCESS_KEY,getAttribute(EpConstant.EpKey.ACCESS_KEY));
             return epService.disable(map);
     }
     /**
@@ -106,9 +108,34 @@ public class EpController extends BaseController {
     @ResponseBody
     public Result<Integer> statusEnable(@RequestBody Map<String,Object> map) {
         // 验证参数D
-
             ParamsMapValidate.validate(map, platfromValidateManager.generateCreateStatusValidate());
+        //map.put(EpConstant.EpKey.ACCESS_KEY,getAttribute(EpConstant.EpKey.ACCESS_KEY));
             return epService.enable(map);
+
+    }
+
+    /**
+     * 查询企业列表
+     * @param
+     * @return
+     */
+    @RequestMapping(value = "selectEpList", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<Map<String,Object>> selectEpList(HttpServletRequest request,String name,String link_phone,
+                                        Integer province,Integer city,Integer ep_type,Integer record_start,
+                                                   Integer record_count) {
+        // 验证参数D
+        Map<String,Object> map = new HashMap<>();
+        map.put(EpConstant.EpKey.CORE_EP_ID, request.getAttribute(EpConstant.EpKey.CORE_EP_ID));
+        map.put(EpConstant.EpKey.NAME,name);
+        map.put(EpConstant.EpKey.LINK_PHONE,link_phone);
+        map.put(EpConstant.EpKey.PROVINCE,province);
+        map.put(EpConstant.EpKey.CITY,city);
+        map.put(EpConstant.EpKey.EP_TYPE,ep_type);
+        map.put("record_start", record_start);
+        map.put("record_count", record_count);
+
+        return epService.select(map);
 
     }
 }
