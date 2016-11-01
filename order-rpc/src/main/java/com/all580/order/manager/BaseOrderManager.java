@@ -180,7 +180,7 @@ public class BaseOrderManager {
         if (!once && maxRetryTimes != null) {
             job.setMaxRetryTimes(maxRetryTimes);
         }
-        job.setNeedFeedback(true);
+        job.setNeedFeedback(false);
         jobClient.submitJob(job);
     }
 

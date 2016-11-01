@@ -30,7 +30,6 @@
 			<props>
 				<!-- 参数 -->
 				<prop key="job.fail.store">leveldb</prop>
-				<prop key="jobtracker.job.retry.interval.millis">180</prop>
 			</props>
 		</property>
 	</bean>
