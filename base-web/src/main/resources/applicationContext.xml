@@ -41,4 +41,5 @@
 			<!--&lt;!&ndash;<bean class="com.host.app.web.interceptor.LoginInterceptor"/>&ndash;&gt;-->
 		<!--&lt;!&ndash;</mvc:interceptor>&ndash;&gt;-->
 	<!--</mvc:interceptors>-->
+	<aop:aspectj-autoproxy/>
 </beans>  
