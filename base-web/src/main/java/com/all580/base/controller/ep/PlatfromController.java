@@ -30,7 +30,7 @@ public class PlatfromController extends BaseController {
 
     @RequestMapping(value = "create", method = RequestMethod.POST)
     @ResponseBody
-    public Result<Map> create(@RequestBody Map map) {
+    public Result<Map<String,Object>> create(@RequestBody Map<String,Object> map) {
         ParamsMapValidate.validate(map, platfromValidateManager.generateCreateEpPlatfromValidate());
         return epService.createPlatform(map);
 
@@ -38,7 +38,7 @@ public class PlatfromController extends BaseController {
 
     @RequestMapping(value = "validate", method = RequestMethod.GET)
     @ResponseBody
-    public Result<Map> validate( String access_id
+    public Result<Map<String,Object>> validate( String access_id
     ) {
         Map<String,Object> map = new HashMap<>();
         map.put("access_id", access_id);
@@ -52,7 +52,7 @@ public class PlatfromController extends BaseController {
      */
     @RequestMapping(value = "selectPlatfromId", method = RequestMethod.GET)
     @ResponseBody
-    public Result<Map> selectPlatfromId(Integer id) {
+    public Result<Map<String,Object>> selectPlatfromId(Integer id) {
         Map<String,Object> map = new HashMap();
         map.put("id", id);
         ParamsMapValidate.validate(map, platfromValidateManager.generateCreateStatusValidate());
@@ -67,7 +67,7 @@ public class PlatfromController extends BaseController {
      */
     @RequestMapping(value = "status/disable", method = RequestMethod.POST)
     @ResponseBody
-    public Result<Integer> disable(@RequestBody Map map) {
+    public Result<Integer> disable(@RequestBody Map<String,Object> map) {
      // Map map = new HashMap();
       //  map.put("id",id);
         ParamsMapValidate.validate(map, platfromValidateManager.generateCreateStatusValidate());
@@ -115,7 +115,7 @@ public class PlatfromController extends BaseController {
      */
     @RequestMapping(value = "list/up", method = RequestMethod.GET)
     @ResponseBody
-    public Result<Map> platformListUp(
+    public Result<Map<String,Object>> platformListUp(
                                        String ep_id,
                                        String epName,
                                       String epProvince,
@@ -141,7 +141,7 @@ public class PlatfromController extends BaseController {
      */
     @RequestMapping(value = "list/down", method = RequestMethod.GET)
     @ResponseBody
-    public Result<Map> platformListDown( String ep_id,
+    public Result<Map<String,Object>> platformListDown( String ep_id,
                                         String epName,
                                         String epProvince,
                                          String epCity,
@@ -168,7 +168,7 @@ public class PlatfromController extends BaseController {
      */
     @RequestMapping(value = "list", method = RequestMethod.GET)
     @ResponseBody
-    public Result<Map> platformList(HttpServletRequest request, Integer record_start,
+    public Result<Map<String,Object>> platformList(HttpServletRequest request, Integer record_start,
                                      Integer record_count,
                                      String name,
                                     Integer ep_type,
@@ -196,7 +196,7 @@ public class PlatfromController extends BaseController {
      */
     @RequestMapping(value = "selectPlatform", method = RequestMethod.GET)
     @ResponseBody
-    public Result<Map> selectPlatform() {
+    public Result<Map<String,Object>> selectPlatform() {
         return epService.selectPlatform();
     }
 }

@@ -2,7 +2,6 @@ package com.all580.ep.api.service;
 
 import com.framework.common.Result;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -14,13 +13,13 @@ public interface CoreEpChannelService {
      * @param params
      * @return
      */
-    Result<Integer> create(Map params);
+    Result<Integer> create(Map<String,Object> params);
     /**
      * 只能修改汇率
      * @param params  ｛id:int 必填，rate:int  必填 费率｝
      * @return
      */
-    Result<Integer> update(Map params);
+    Result<Integer> update(Map<String,Object> params);
 
     /**
      *
@@ -31,7 +30,7 @@ public interface CoreEpChannelService {
      * seller_core_ep_id 销售商id,seller_name 名称,seller_phone 电话,rate  汇率  0.12
      *
      */
-    Result<Map> select(Map params);
+    Result<Map<String,Object>> select(Map<String,Object> params);
 
     /**
      * 取消平台供应关系

@@ -96,7 +96,6 @@ public class ProductController extends BaseController {
         subProductInfo.setEffectiveEndDate(CommonUtil.objectParseString(params.get("effectiveEndDate")));
         subProductInfo.setEffectiveStartDate(CommonUtil.objectParseString(params.get("effectiveStartDate")));
         subProductInfo.setEffectiveType(CommonUtil.objectParseInteger(params.get("effectiveType")));
-        subProductInfo.setEpId(CommonUtil.objectParseInteger(params.get("epId")));
         subProductInfo.setImg(CommonUtil.objectParseString(params.get("img")));
         subProductInfo.setEpMaId(CommonUtil.objectParseInteger(params.get("epMaId")));
         subProductInfo.setMaProductId(CommonUtil.objectParseString(params.get("maProductId")));
@@ -169,7 +168,25 @@ public class ProductController extends BaseController {
             case ProductConstants.ProductDistributionState.NOT_DISTRIBUTE:
                 return productDistributionService.selectNoDistributionEp(epId, productSubId);
         }
-        return new Result<>(false, "状态参数不对");
+        return new Result<>(false, "状态参数错误");
+    }
+
+    @RequestMapping("sale/group/list")
+    @ResponseBody
+    public Result<Paginator<DistributionGroupInfo>> searchDistributionGroupInfo(
+        @RequestParam("ep_id") Integer epId,
+        @RequestParam("productSubId") Integer productSubId,
+        @RequestParam("status") Integer distributionStatus,
+        @RequestParam("record_start") Integer start,
+        @RequestParam("record_count") Integer count
+    ) {
+        switch (CommonUtil.objectParseInteger(distributionStatus)) {
+            case ProductConstants.ProductDistributionState.HAD_DISTRIBUTE:
+                return productDistributionService.searchAlreadyDistributionGroup(epId, productSubId, start, count);
+            case ProductConstants.ProductDistributionState.NOT_DISTRIBUTE:
+                return productDistributionService.searchNoDistributionGroup(epId, productSubId, start, count);
+        }
+        return new Result<>(false, "状态参数错误");
     }
 
     @RequestMapping(value = "update", method = RequestMethod.POST)
@@ -182,6 +199,12 @@ public class ProductController extends BaseController {
     @ResponseBody
     public Result<?> updateScenerySubProduct(@RequestBody Map params) {
         return null;
+    }
+
+    @RequestMapping(value = "booking/view")
+    @ResponseBody
+    public Result<Map> searchProductBookingView(@RequestParam("ep_id") Integer epId, @RequestParam("id") Integer productSubId) {
+        return productService.searchProductBookingView(epId, productSubId);
     }
 
     /**

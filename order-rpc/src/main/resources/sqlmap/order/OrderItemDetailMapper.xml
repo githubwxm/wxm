@@ -268,8 +268,7 @@
       `disable_week` = #{disableWeek,jdbcType=VARCHAR},
       `disable_day` = #{disableDay,jdbcType=VARCHAR},
       `effective_date` = #{effectiveDate,jdbcType=TIMESTAMP},
-      `create_time` = #{createTime,jdbcType=TIMESTAMP},
-      `update_time` = #{updateTime,jdbcType=TIMESTAMP}
+      `create_time` = #{createTime,jdbcType=TIMESTAMP}
     where `id` = #{id,jdbcType=INTEGER}
   </update>
 

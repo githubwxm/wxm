@@ -1,5 +1,7 @@
 package com.all580.ep.com;
 
+import com.framework.common.Result;
+
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
@@ -7,6 +9,7 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -91,7 +94,7 @@ public class Common {
      * @throws IllegalAccessException
      * @throws InvocationTargetException
      */
-    public static Map convertBean(Object bean) throws IntrospectionException,
+    public static Map<String,Object> convertBean(Object bean) throws IntrospectionException,
             IllegalAccessException, InvocationTargetException {
         Class type = bean.getClass();
         Map returnMap = new HashMap();
@@ -164,9 +167,24 @@ public class Common {
      * 检查分页参数  起始 余总数  record_start  record_count
      * @param map
      */
-    public static void checkPage(Map map){
+    public static void checkPage(Map<String,Object> map){
         if(objectIsNumber(map.get("record_start"))&&objectIsNumber(map.get("record_count"))){
             map.put("limit","limit");
+        }
+    }
+
+    /**
+     * 判断查询结果统一处理
+     *
+     * @param result
+     * @param list
+     */
+    public static void isEmpty(Result<List<Map<String,Object>>> result, List<Map<String,Object>> list) {
+        if (list.isEmpty()) {
+            result.setError("未查询到数据");
+        } else {
+            result.put(list);
+            result.setSuccess();
         }
     }
 }

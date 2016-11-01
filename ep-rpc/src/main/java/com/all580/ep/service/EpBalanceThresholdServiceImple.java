@@ -4,6 +4,7 @@ import com.all580.ep.api.service.EpBalanceThresholdService;
 import com.all580.ep.com.Common;
 import com.all580.ep.dao.EpBalanceThresholdMapper;
 import com.all580.ep.dao.EpMapper;
+import com.all580.notice.api.conf.SmsType;
 import com.all580.notice.api.service.SmsService;
 import com.framework.common.Result;
 import javax.lang.exception.ApiException;
@@ -79,7 +80,9 @@ public class EpBalanceThresholdServiceImple implements EpBalanceThresholdService
                      if(!list.isEmpty()){
                          Map mapResult = list.get(0);
                         String destPhoneNum=  mapResult.get("link_phone").toString();
-                         return smsService.send(destPhoneNum,-1,ep_id,null);//发送短信
+                         Map<String, String>  params = new HashMap<>();
+                         params.put("name",mapResult.get("name").toString());
+                          smsService.send(destPhoneNum, SmsType.Ep.BALANCE_SHORTAGE,ep_id,params).get();//发送短信
                      }
                  }
                 //TODO  发送之后操作

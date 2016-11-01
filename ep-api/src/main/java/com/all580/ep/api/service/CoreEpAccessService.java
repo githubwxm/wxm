@@ -17,7 +17,7 @@ public interface CoreEpAccessService {
      * @param map
      * @return
      */
-    Result<Integer> create(Map map);
+    Result<Integer> create(Map<String,Object> map);
 
     /**
      *
@@ -26,7 +26,7 @@ public interface CoreEpAccessService {
      * @return  {  id :企业id ,access_id:中心平台借口标识,access_key:中心平台接口访问密钥,link:link}
      *              id - int    access_id- String  access_key-String ,link-String
      */
-    Result<List<Map>> select(Map params);
+    Result<List<Map<String,Object>>> select(Map<String,Object> params);
 
     /**
      * 校验access_id 是否存在
@@ -36,7 +36,7 @@ public interface CoreEpAccessService {
     Result<Integer> checkAccessId(Object access_id);
 
 
-    Result<Map>  selectAccess(Map map);
+    Result<Map<String,Object>>  selectAccess(Map<String,Object> map);
 
     /**
      *

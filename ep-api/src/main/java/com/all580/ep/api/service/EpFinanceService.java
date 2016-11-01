@@ -15,5 +15,5 @@ public interface EpFinanceService {
      * ep.id ,ep.name,ep.linkman,ep.link_phone,ep.province,ep.city,ep.area,ep.address,ep.status,
     date_format(ep.add_time,'%Y-%m-%d') add_time,param.`name` as ep_type_name
      */
-      Result<Map> getAccountInfoList(Map map);
+      Result<Map<String,Object>> getAccountInfoList(Map<String,Object> map);
 }

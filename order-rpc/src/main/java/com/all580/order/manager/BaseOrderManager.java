@@ -18,8 +18,8 @@ import com.all580.product.api.model.EpSalesInfo;
 import com.all580.product.api.model.ProductSearchParams;
 import com.framework.common.Result;
 import com.framework.common.lang.DateFormatUtils;
-import com.framework.common.lang.JsonUtils;
 import com.framework.common.lang.UUIDGenerator;
+import com.framework.common.synchronize.SynchronizeAction;
 import com.framework.common.synchronize.SynchronizeDataManager;
 import com.github.ltsopensource.core.domain.Job;
 import com.github.ltsopensource.jobclient.JobClient;
@@ -313,33 +313,32 @@ public class BaseOrderManager {
     }
 
     /**
-     * 同步订单数据
+     * 开始同步数据
      * @param orderId 订单ID
-     * @param data 同步数据
+     * @return
      */
-    public void syncOrderData(int orderId, Map<String, List<?>> data) {
-        List<Integer> coreEpIds = orderItemAccountMapper.selectCoreEpIdByOrder(orderId);
-        syncOrderData(data, coreEpIds);
+    public SynchronizeAction generateSyncByOrder(int orderId) {
+        return generateSync(orderItemAccountMapper.selectCoreEpIdByOrder(orderId));
     }
 
     /**
-     * 同步子订单数据
+     * 开始同步数据
      * @param itemId 子订单ID
-     * @param data 同步数据
+     * @return
      */
-    public void syncOrderItemData(int itemId, Map<String, List<?>> data) {
-        List<Integer> coreEpIds = orderItemAccountMapper.selectCoreEpIdByOrderItem(itemId);
-        syncOrderData(data, coreEpIds);
+    public SynchronizeAction generateSyncByItem(int itemId) {
+        return generateSync(orderItemAccountMapper.selectCoreEpIdByOrderItem(itemId));
     }
 
-    private void syncOrderData(Map<String, List<?>> data, List<Integer> coreEpIds) {
-        if (coreEpIds != null) {
-            Result<List<String>> accessKeyResult = coreEpAccessService.selectAccessList(coreEpIds);
-            if (accessKeyResult.hasError()) {
-                throw new ApiException(accessKeyResult.getError());
-            }
-            List<String> accessKeyList = accessKeyResult.get();
-            synchronizeDataManager.push(accessKeyList, data);
+    private SynchronizeAction generateSync(List<Integer> coreEpIds) {
+        if (coreEpIds == null) {
+            throw new ApiException("sync core ep ids is not null.");
         }
+        Result<List<String>> accessKeyResult = coreEpAccessService.selectAccessList(coreEpIds);
+        if (accessKeyResult.hasError()) {
+            throw new ApiException(accessKeyResult.getError());
+        }
+        List<String> accessKeyList = accessKeyResult.get();
+        return synchronizeDataManager.generate(accessKeyList.toArray(new String[accessKeyList.size()]));
     }
 }

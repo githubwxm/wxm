@@ -7,6 +7,6 @@ import java.util.Map;
  * Created by Administrator on 2016/9/28 0028.
  */
 public interface EpBalanceThresholdMapper {
-   int createOrUpdate(Map map);
-    Map select(Map map);
+   int createOrUpdate(Map<String,Object> map);
+    Map select(Map<String,Object> map);
 }

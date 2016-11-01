@@ -21,19 +21,19 @@ public interface EpService {
      * group_id 组id,group_name 组名称,ep_class 景区酒店等,pic_address   省市区 合并地址
      * @return  id  access_id  access_key  link
      */
-    Result<Map> createPlatform(Map ep);
+    Result<Map<String,Object>> createPlatform(Map<String,Object> ep);
 
     /**
      *查询平台商通道
      * @return   ｛list:{id:1 平台商id,name:String 平台商名称}｝
      */
-    Result<Map> selectPlatform();
+    Result<Map<String,Object>> selectPlatform();
     /**
      * 创建企业
      * @param map   企业信息
      * @return  ep_info 企业信息map  capital  余额信息map
      */
-    Result<Map> createEp(Map map);
+    Result<Map<String,Object>> createEp(Map<String,Object> map);
 
     /**
      *
@@ -43,7 +43,7 @@ public interface EpService {
     link_phone  电话  core_ep_id  creator_ep_id 创建企业id
      * @return    list  企业信息listMap totalCount  总数
      */
-    Result<Map> select (Map map);
+    Result<Map<String,Object>> select (Map<String,Object> map);
 
 
     /**
@@ -51,7 +51,7 @@ public interface EpService {
      * @param map   id，
      * @return  返回一条企业信息  map 列 getEp 借口 field 对应
      */
-    Result<Map> selectId (Map map);
+    Result<Map<String,Object>> selectId (Map<String,Object> map);
     /**
      * 获取企业基本信息接口
      *
@@ -59,16 +59,16 @@ public interface EpService {
      * @param field    企业列    所传的值必须在一下列里面
      * @return  map 的key  为 field    key对应在最下面 Map
      */
-    Result<List<Map>>  getEp(Integer [] epids, String[] field);
+    Result<List<Map<String,Object>>>  getEp(Integer [] epids, String[] field);
 
-    Result<List<Map>> all(Map params);
+    Result<List<Map<String,Object>>> all(Map<String,Object> params);
 
     /**
      * 验证平台商
      * @param params
      * @return
      */
-    Result<Map> validate(Map params);
+    Result<Map<String,Object>> validate(Map<String,Object> params);
     /**
      * 获取企业状态（包括上级企业）
      *100-未初始化101-正常\n102-已冻结\n103-已停用
@@ -93,36 +93,36 @@ public interface EpService {
      * @param params
      * @return
      */
-    Result<Integer> freeze(Map params);
-    Result<Integer> disable(Map params);
-    Result<Integer> enable(Map params);
+    Result<Integer> freeze(Map<String,Object> params);
+    Result<Integer> disable(Map<String,Object> params);
+    Result<Integer> enable(Map<String,Object> params);
 
-    Result<Integer> platformFreeze(Map params);
-    Result<Integer> platformDisable(Map params);
-    Result<Integer> platformEnable(Map params);
+    Result<Integer> platformFreeze(Map<String,Object> params);
+    Result<Integer> platformDisable(Map<String,Object> params);
+    Result<Integer> platformEnable(Map<String,Object> params);
     //    Result<List<Ep>> selectEp(Map map);
-    Result<Map> updateEp(Map map);
+    Result<Map<String,Object>> updateEp(Map<String,Object> map);
 
     /**
      * 下游平台商列表接口
      * @param map
      * @return
      */
-    Result<Map> platformListDown(Map map);
+    Result<Map<String,Object>> platformListDown(Map<String,Object> map);
 
     /**
      * 下游
      * @param map
      * @return
      */
-    Result<Map> platformListUp(Map map);
+    Result<Map<String,Object>> platformListUp(Map<String,Object> map);
 
     /**
      * 查询企业下的下级销售商
      * @param id  企业id
      * @return  id, name,
      */
-    Result<List<Map>> selectSeller(Integer id);
+    Result<List<Map<String,Object>>> selectSeller(Integer id);
     /**
      * 查找创建企业id
      * @param id
@@ -135,7 +135,7 @@ public interface EpService {
      * @param map
      * @return
      */
-    Result<Boolean>  checkNamePhone(Map map);
+    Result<Boolean>  checkNamePhone(Map<String,Object> map);
 
 
     /**

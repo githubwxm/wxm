@@ -1,9 +1,7 @@
 package com.all580.ep.api.service;
 
 import com.framework.common.Result;
-import org.apache.ibatis.annotations.Param;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -24,7 +22,7 @@ public interface LogCreditService {
      *           credit_after：int 修改之后的额度}
      * @return  Integer credit_before:int  修改之前的额度，
      */
-    Result<Integer> create(Map map);
+    Result<Integer> create(Map<String,Object> map);
 
     /**
      * @param map {core_ep_id 平台商id必填,name 企业名字,link_phone 联系人电话,
@@ -32,12 +30,12 @@ public interface LogCreditService {
      *             province ,city,area 地区}
      * @return t.id,name,linkman,link_phone,province,city,area,credit_after,credit_date
      */
-    Result<Map> selectList(Map map);
+    Result<Map<String,Object>> selectList(Map<String,Object> map);
 
     /**
      * 查询历史授信信息
      * @param map
      * @return
      */
-    Result<Map> hostoryCredit( Map map );
+    Result<Map<String,Object>> hostoryCredit( Map<String,Object> map );
 }

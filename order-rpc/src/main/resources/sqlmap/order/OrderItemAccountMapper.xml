@@ -186,8 +186,7 @@
       `ep_id` = #{epId,jdbcType=INTEGER},
       `status` = #{status,jdbcType=INTEGER},
       `core_ep_id` = #{coreEpId,jdbcType=INTEGER},
-      `data` = #{data,jdbcType=VARCHAR},
-      `update_time` = #{updateTime,jdbcType=TIMESTAMP}
+      `data` = #{data,jdbcType=VARCHAR}
     where `id` = #{id,jdbcType=INTEGER}
   </update>
 

@@ -197,8 +197,7 @@
       `voucher_value` = #{voucherValue,jdbcType=VARCHAR},
       `sid` = #{sid,jdbcType=VARCHAR},
       `phone` = #{phone,jdbcType=VARCHAR},
-      `create_time` = #{createTime,jdbcType=TIMESTAMP},
-      `update_time` = #{updateTime,jdbcType=TIMESTAMP}
+      `create_time` = #{createTime,jdbcType=TIMESTAMP}
     where `id` = #{id,jdbcType=INTEGER}
   </update>
 
