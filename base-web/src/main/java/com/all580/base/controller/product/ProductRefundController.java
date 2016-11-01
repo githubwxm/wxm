@@ -5,6 +5,7 @@ import com.all580.product.api.model.ProductRefundRuleParams;
 import com.all580.product.api.service.ProductRefundRuleRPCService;
 import com.framework.common.BaseController;
 import com.framework.common.Result;
+import com.framework.common.lang.JsonUtils;
 import com.framework.common.util.CommonUtil;
 import com.framework.common.vo.Paginator;
 import org.springframework.stereotype.Controller;
@@ -63,7 +64,7 @@ public class ProductRefundController extends BaseController {
         productRefundRuleInfo.setAll(CommonUtil.objectParseInteger(params.get("all")));
         productRefundRuleInfo.setName(CommonUtil.objectParseString(params.get("name")));
         productRefundRuleInfo.setProductType(CommonUtil.objectParseInteger(params.get("productType")));
-        productRefundRuleInfo.setRule(CommonUtil.objectParseString(params.get("rule")));
+        productRefundRuleInfo.setRule(JsonUtils.toJson(CommonUtil.objectParseString(params.get("rule"))));
 //        productRefundRuleInfo.setStatus(CommonUtil.objectParseInteger(params.get("status")));
         productRefundRuleInfo.setType(CommonUtil.objectParseInteger(params.get("type")));
         return productRefundRuleInfo;
