@@ -90,7 +90,9 @@ public class BalancePayServiceImpl implements BalancePayService {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        paymentCallbackService.refundCallback(Long.parseLong(serialNum), serialNum, null, true);
+                        Result rst = paymentCallbackService.refundCallback(Long.parseLong(serialNum), serialNum, null,
+                                true);
+                        logger.debug("余额退款回调成功：" + rst.isSuccess());
                     }
                 }).start();
             }

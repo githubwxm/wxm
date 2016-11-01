@@ -45,7 +45,7 @@ public class EpPaymentConfServiceTest implements ApplicationContextAware {
 
     @Test
     public void listByEpIdTest() {
-        Result<List<Map<String, Object>>> result = epPaymentConfService.listByEpId(2);
+        Result<List<Map<String, String>>> result = epPaymentConfService.listByEpId(2);
 
         Assert.isTrue(result.isSuccess());
     }

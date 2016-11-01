@@ -23,9 +23,9 @@ public interface EpPaymentConfMapper {
      * 通过企业ID获取配置信息
      *
      * @param epId 企业ID
-     * @return List<Map<String, Object>>
+     * @return List<Map<String, String>>
      */
-    List<Map<String, Object>> listByEpId(Integer epId);
+    List<Map<String, String>> listByEpId(Integer epId);
 
     /**
      * 根据企业ID和支付类型统计记录数

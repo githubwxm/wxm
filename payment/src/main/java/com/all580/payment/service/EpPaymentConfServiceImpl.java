@@ -74,10 +74,10 @@ public class EpPaymentConfServiceImpl implements EpPaymentConfService {
     }
 
     @Override
-    public Result<List<Map<String, Object>>> listByEpId(Integer core_ep_id) {
-        Result<List<Map<String, Object>>> result = new Result<>();
+    public Result<List<Map<String, String>>> listByEpId(Integer core_ep_id) {
+        Result<List<Map<String, String>>> result = new Result<>();
         try {
-            List<Map<String, Object>> conf = epPaymentConfMapper.listByEpId(core_ep_id);
+            List<Map<String, String>> conf = epPaymentConfMapper.listByEpId(core_ep_id);
             result.setSuccess();
             result.put(conf);
         } catch (Exception e) {
