@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 
 @Service("epPaymentConfService")
-@Transactional(rollbackFor = {Exception.class, RuntimeException.class})
 public class EpPaymentConfServiceImpl implements EpPaymentConfService {
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -27,6 +26,7 @@ public class EpPaymentConfServiceImpl implements EpPaymentConfService {
     private EpPaymentConfMapper epPaymentConfMapper;
 
     @Override
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public Result create(Map<String, Object> map) {
         logger.info("开始 -> 创建企业收款方式配置");
         Result result = new Result();
@@ -57,6 +57,7 @@ public class EpPaymentConfServiceImpl implements EpPaymentConfService {
 
 
     @Override
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public Result update(Map<String, Object> map) {
         Result result = new Result();
         try {

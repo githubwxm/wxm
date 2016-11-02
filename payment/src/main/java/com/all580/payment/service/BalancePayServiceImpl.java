@@ -237,6 +237,7 @@ public class BalancePayServiceImpl implements BalancePayService {
 
     @Override
     public Result<List<Map<String, String>>> getBalanceList(List<Integer> epIdList, Integer coreEpId) {
+        logger.debug("批量获取余额账户");
         Result<List<Map<String, String>>> result = new Result<>();
         if (epIdList.size() > 100) {
             epIdList = epIdList.subList(0, 100);
