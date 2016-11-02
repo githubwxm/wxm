@@ -140,6 +140,35 @@
 						<version>2.2</version>
 						<configuration>
 							<path>/</path>
+							<port>10001</port>
+							<uriEncoding>UTF-8</uriEncoding>
+						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-compiler-plugin</artifactId>
+						<version>3.3</version>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>test</id>
+			<properties>
+				<active.profilename>test</active.profilename>
+				<active.driverClass>com.mysql.jdbc.Driver</active.driverClass>
+				<active.name>root</active.name>
+				<active.pwd>abcd1234</active.pwd>
+				<active.url>jdbc:mysql://192.168.1.250:3306/config?characterEncoding=utf8</active.url>
+			</properties>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.tomcat.maven</groupId>
+						<artifactId>tomcat7-maven-plugin</artifactId>
+						<version>2.2</version>
+						<configuration>
+							<path>/</path>
 							<port>8080</port>
 							<uriEncoding>UTF-8</uriEncoding>
 						</configuration>
