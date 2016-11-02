@@ -3,19 +3,18 @@ package com.all580.base.controller.ep;
 import com.all580.ep.api.conf.EpConstant;
 import com.all580.ep.api.service.EpBalanceThresholdService;
 import com.all580.ep.api.service.EpService;
-import com.all580.notice.api.conf.SmsType;
-import com.all580.notice.api.service.SmsService;
 import com.framework.common.BaseController;
 import com.framework.common.Result;
-import com.framework.common.util.CommonUtil;
 import com.framework.common.validate.ParamsMapValidate;
 import com.framework.common.validate.ValidRule;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,7 +39,7 @@ public class EpBalanceThresholdController extends BaseController {
      */
     @RequestMapping(value = "update", method = RequestMethod.POST)
     @ResponseBody
-    public Result<Integer> update(@RequestBody Map map) {
+    public Result<Integer> update(@RequestBody Map<String,Object> map) {
             //core_ep_id
              map.put(EpConstant.EpKey.CORE_EP_ID,getAttribute(EpConstant.EpKey.CORE_EP_ID)) ;
             // map.put("id",map.get("id"));
@@ -57,9 +56,9 @@ public class EpBalanceThresholdController extends BaseController {
      */
     @RequestMapping(value = "select", method = RequestMethod.GET)
     @ResponseBody
-    public Result<Map> select( Integer id
+    public Result<?> select( Integer id
     ) {
-            Map map = new HashMap();
+            Map<String,Object> map = new HashMap<>();
             map.put("id",id);
             map.put(EpConstant.EpKey.CORE_EP_ID,getAttribute(EpConstant.EpKey.CORE_EP_ID)) ;//
          ParamsMapValidate.validate(map, generateEpBalanceThresholdValidate());
@@ -73,8 +72,8 @@ public class EpBalanceThresholdController extends BaseController {
      */
     @RequestMapping(value = "balance/warn", method = RequestMethod.GET)
     @ResponseBody
-    public Result<Map> warn(Integer id,Integer balance ) {
-            Map map = new HashMap();
+    public Result<?> warn(Integer id,Integer balance ) {
+            Map<String,Object> map = new HashMap<>();
              map.put("id",id);
              map.put(EpConstant.EpKey.CORE_EP_ID,getAttribute(EpConstant.EpKey.CORE_EP_ID)) ;//
              map.put("balance",balance);
