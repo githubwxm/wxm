@@ -150,5 +150,53 @@
         </plugins>
     </build>
 
-
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <active.profilename>dev</active.profilename>
+                <active.driverClass>com.mysql.jdbc.Driver</active.driverClass>
+                <active.name>root</active.name>
+                <active.pwd>abcd1234</active.pwd>
+                <active.url>jdbc:mysql://192.168.1.250:3306/config?characterEncoding=utf8</active.url>
+            </properties>
+            <build>
+                <resources>
+                    <resource>
+                        <directory>src/main/resources/</directory>
+                        <filtering>true</filtering>
+                        <includes>
+                            <include>**/spring.xml</include>
+                            <include>**</include>
+                        </includes>
+                    </resource>
+                </resources>
+            </build>
+        </profile>
+        <profile>
+            <id>test</id>
+            <properties>
+                <active.profilename>test</active.profilename>
+                <active.driverClass>com.mysql.jdbc.Driver</active.driverClass>
+                <active.name>root</active.name>
+                <active.pwd>abcd1234</active.pwd>
+                <active.url>jdbc:mysql://192.168.1.250:3306/config?characterEncoding=utf8</active.url>
+            </properties>
+            <build>
+                <resources>
+                    <resource>
+                        <directory>src/main/resources/</directory>
+                        <filtering>true</filtering>
+                        <includes>
+                            <include>**/spring.xml</include>
+                            <include>**</include>
+                        </includes>
+                    </resource>
+                </resources>
+            </build>
+        </profile>
+    </profiles>
 </project>
