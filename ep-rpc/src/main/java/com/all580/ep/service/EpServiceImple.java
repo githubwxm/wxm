@@ -1,28 +1,27 @@
 package com.all580.ep.service;
 
 import com.all580.ep.api.conf.EpConstant;
-
-import com.all580.ep.api.service.EpBalanceThresholdService;
-import com.all580.ep.dao.EpMapper;
 import com.all580.ep.api.service.CoreEpAccessService;
+import com.all580.ep.api.service.EpBalanceThresholdService;
 import com.all580.ep.api.service.EpService;
 import com.all580.ep.com.Common;
-
+import com.all580.ep.dao.CoreEpAccessMapper;
+import com.all580.ep.dao.EpMapper;
 import com.all580.payment.api.conf.PaymentConstant;
 import com.all580.payment.api.service.BalancePayService;
 import com.all580.payment.api.service.EpPaymentConfService;
 import com.all580.product.api.service.PlanGroupRPCService;
 import com.framework.common.Result;
-
-import javax.lang.exception.ApiException;
-import javax.lang.exception.ParamsMapValidationException;
-
+import com.framework.common.synchronize.SynchronizeDataManager;
 import com.framework.common.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.lang.exception.ApiException;
+import javax.lang.exception.ParamsMapValidationException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,6 +50,12 @@ public class EpServiceImple implements EpService {
     @Autowired
     private EpBalanceThresholdService epBalanceThresholdService;
 
+    @Autowired
+    private SynchronizeDataManager synchronizeDataManager;
+
+    @Autowired
+    private CoreEpAccessMapper coreEpAccessMapper;//ddd
+
     /**
      * // 创建平台商
      *
@@ -65,8 +70,8 @@ public class EpServiceImple implements EpService {
             log.error(e.getMessage(), e);
             throw new ApiException(e.getMessage(), e);
         }
-        map.put("status", EpConstant.EpStatus.UNINITIAL);// 状态默认未初始化
-        map.put("status_bak", EpConstant.EpStatus.UNINITIAL);// 状态默认未初始化
+        map.put("status", EpConstant.EpStatus.ACTIVE);// 状态默认未初始化
+        map.put("status_bak", EpConstant.EpStatus.ACTIVE);// 状态默认未初始化
         map.put("ep_type", EpConstant.EpType.PLATFORM);
         map.put("access_id", Common.getAccessId());
         // CommonUtil.formtAddress(map);
@@ -74,7 +79,7 @@ public class EpServiceImple implements EpService {
         try {
             epId = epMapper.create(map);//添加成功
         } catch (Exception e) {
-            // log.error("添加平台商异常", e);
+            log.error("添加平台商异常", e);
             throw new ApiException("添加平台商异常", e);
         }
         map.put("access_key", Common.getAccessKey());
@@ -97,16 +102,16 @@ public class EpServiceImple implements EpService {
             try {
                 epMapper.updateCoreEpId(map);//TODO  所属平台商企业id为平台商时是否指定
                 coreEpAccessService.create(accessMap);
-                epPaymentConfService.create(map);//添加支付方式
+                //epPaymentConfService.create(map);//添加支付方式
                 balancePayService.createBalanceAccount(coreEpId, coreEpId);//添加余额d
                 result.put(accessMap);
                 result.setSuccess();
             } catch (Exception e) {
-                // log.error("添加平台商未成功", e);
+                 log.error("添加平台商未成功", e);
                 throw new ApiException("添加平台商异常", e);
             }
         } else {
-            // log.warn("添加平台商未成功");
+            log.warn("添加平台商未成功");
             throw new ApiException("添加平台商未成功");
         }
         return result;
@@ -140,7 +145,7 @@ public class EpServiceImple implements EpService {
         try {
             access = coreEpAccessService.select(params).get().get(0);
         } catch (Exception e) {
-            // log.error("查询数据库异常", e);
+             log.error("查询数据库异常", e);
             throw new ApiException("查询数据库异常", e);
         }
 
@@ -152,17 +157,21 @@ public class EpServiceImple implements EpService {
             try {
                 map.put("ep_info", epMapper.select(params).get(0));
                 // 查询支付方式，刚添加的应只有个余额支付的方式
-                map.put("payment", epPaymentConfService.listByEpId(coreEpId).get().get(0));
+               // List<Map<String, String>> listPayment =epPaymentConfService.listByEpId(coreEpId).get();
+                //map.put("payment", listPayment.get(0));//校验成功同步数据
                 map.put("capital", balancePayService.getBalanceAccountInfo(coreEpId, coreEpId).get());
                 result.put(map);
                 result.setSuccess();
+
+
+                //syncEpData(coreEpId,"t_core_ep_payment_conf",listPayment);//同步支付方式 默认余额
             } catch (Exception e) {
-                // log.error("添加平台商未成功", e);
+                 log.error("添加平台商未成功", e);
                 throw new ApiException("添加平台商异常", e);
             }
             return result;
         } else {
-            // log.error("授权ID校验失败未找到");
+             log.error("授权ID校验失败未找到");
             throw new ApiException("授权ID校验失败未找到");
         }
     }
@@ -176,8 +185,8 @@ public class EpServiceImple implements EpService {
             throw new ApiException(e.getMessage(), e);
         }
         boolean flag = false;//是否添加余额阀值标识
-        map.put("status", EpConstant.EpStatus.UNINITIAL);// 状态默认未初始化
-        map.put("status_bak", EpConstant.EpStatus.UNINITIAL);// 状态默认未初始化
+        map.put("status", EpConstant.EpStatus.ACTIVE);// 状态默认未初始化
+        map.put("status_bak", EpConstant.EpStatus.ACTIVE);// 状态默认未初始化
         map.put("access_id", Common.getAccessId());
         map.put("access_key", Common.getAccessKey());
         // CommonUtil.formtAddress(map);
@@ -187,7 +196,7 @@ public class EpServiceImple implements EpService {
         Integer group_id = CommonUtil.objectParseInteger(map.get("group_id"));
         String ep_class = (String) map.get("ep_class");//企业分类
         try {
-            String groupName = planGroupRPCService.searchPlanGroupById(group_id).get();
+            Object groupName = planGroupRPCService.searchPlanGroupById(group_id).get().get("name");
             // String groupName="固定分组";
             if (null == groupName) {
                 throw new ParamsMapValidationException("企业分组错误");
@@ -231,11 +240,16 @@ public class EpServiceImple implements EpService {
             epMapper.create(map);//添加企业信息
             Integer epId = Common.objectParseInteger(map.get("id"));
             Integer core_ep_id = selectPlatformId(Integer.parseInt(creator_ep_id)).get();
-            balancePayService.createBalanceAccount(epId, core_ep_id); //
+            balancePayService.createBalanceAccount(epId, core_ep_id); //创建余额账户
             if (flag) {//如果是分销商默认加载余额阀值为1000
                 Map<String,Object> epBalanceThresholdMap = new HashMap();
                 epBalanceThresholdMap.put("ep_id", epId);
                 epBalanceThresholdMap.put("core_ep_id", core_ep_id);
+                Object threshold= map.get("threshold");
+                if(null==threshold){
+                    threshold=1000;
+                    epBalanceThresholdMap.put("threshold",threshold);
+                }
                 epBalanceThresholdService.createOrUpdate(epBalanceThresholdMap);
             }
             resultMap.put("ep_info", map);
@@ -244,7 +258,7 @@ public class EpServiceImple implements EpService {
             result.setSuccess();
             result.setCode(200);
         } catch (Exception e) {
-            // log.error("添加企业出错", e);
+             log.error("添加企业出错", e);
             throw new ApiException("添加企业出错", e);
         }
 
@@ -260,7 +274,7 @@ public class EpServiceImple implements EpService {
             result.setError(Result.PARAMS_ERROR, "参数错误");
         }
         Integer core_ep_id ;
-        Map<String,Object> map = new HashMap();
+        Map<String,Object> map = new HashMap<>();
         map.put("id", epId);
         try {
             List<Map<String,Object>> list = epMapper.select(map);
@@ -275,93 +289,160 @@ public class EpServiceImple implements EpService {
                 }
             }
         } catch (Exception e) {
-            // log.error("查询平台商出错", e);
+             log.error("查询平台商出错", e);
             throw new ApiException("查询平台商出错", e);
         }
         return result;
     }
 
+    /**
+     * 冻结停用企业
+     * @param params
+     * @return
+     */
     public Result<Integer> updateStatus(Map<String,Object> params) {
-
+        Object nextStatus = params.remove("status");//查询时先移除掉状态
         Result<Integer> result = new Result<Integer>();
         try {
-            result.put(epMapper.updateStatus(params));
-            result.setSuccess();
+            List<Map<String,Object>> list=  epMapper.select(params);
+            if(list.isEmpty()){
+                log.warn("未找到该企业");
+                throw new ApiException("未找到该企业");
+            }else{
+                Integer currentStatus = CommonUtil.objectParseInteger(list.get(0).get("status"));
+                if(EpConstant.EpStatus.ACTIVE.equals(nextStatus)){
+                     if(EpConstant.EpStatus.ACTIVE.equals(currentStatus)){
+                         log.warn("企业本身就是激活状态不用激活");
+                         throw new ApiException("企业本身就是激活状态不用激活");
+                     }  //这里的话是激活，激活不用判断状态
+                }else {
+                    if (!EpConstant.EpStatus.ACTIVE.equals(currentStatus)) {
+                        log.warn("企业在未激活状态不能执行该操作");
+                        throw new ApiException("企业在未激活状态不能执行该操作");
+                    }
+                }
+                params.put("status",nextStatus);
+            }
+            int ref= epMapper.updateStatus(params);
+           if(ref>0){
+               List<Map<String,String>>  listMap =   epMapper.selectSingleTable(params);
+               syncEpData(params.get("ep_id"),EpConstant.Table.T_EP,listMap);
+               result.put(ref);
+               result.setSuccess();
+           }else{
+               result.setError("数据不用更新");
+           }
         } catch (Exception e) {
-            // log.error("更新异常", e);
-            throw new ApiException("更新异常", e);
+             log.error("冻结停用企业异常", e);
+            throw new ApiException("冻结停用企业异常", e);
         }
         return result;
     }
 
     @Override
-    public Result<Integer> freeze(Map<String,Object> params) {
+    public Result<Integer> freeze(Map<String,Object> map) {
+        Map<String,Object> params= new HashMap();//  同一个查询方法，按map参数查找，所以重构
+        params.put("id",map.get("id"));
+        params.put(EpConstant.EpKey.CORE_EP_ID,map.get("ep_id"));
         params.put("status", EpConstant.EpStatus.FREEZE);
         params.put("statusActive", EpConstant.EpStatus.ACTIVE);
         try {
             return updateStatus(params);
         } catch (ApiException e) {
-            // log.error("更新异常", e);
+             log.error("更新异常", e);
             throw new ApiException("更新异常", e);
         }
     }
 
     @Override
-    public Result<Integer> disable(Map<String,Object> params) {
+    public Result<Integer> disable(Map<String,Object> map) {
+        Map<String,Object> params= new HashMap();//  同一个查询方法，按map参数查找，所以重构
+        params.put("id",map.get("id"));
+        params.put(EpConstant.EpKey.CORE_EP_ID,map.get("ep_id"));
         params.put("status", EpConstant.EpStatus.STOP);
         params.put("statusActive", EpConstant.EpStatus.ACTIVE);
         try {
             return updateStatus(params);
         } catch (ApiException e) {
-            // log.error("更新异常", e);
+            log.error("更新异常", e);
             throw new ApiException("更新异常", e);
         }
     }
 
+    /**
+     * 激活企业
+     * @param map
+     * @return
+     */
     @Override
-    public Result<Integer> enable(Map<String,Object> params) {
+    public Result<Integer> enable(Map<String,Object> map) {
+        Map<String,Object> params= new HashMap<>();//  同一个查询方法，按map参数查找，所以重构
+        params.put("id",map.get("id"));
+        params.put(EpConstant.EpKey.CORE_EP_ID,map.get("ep_id"));
         params.put("status", EpConstant.EpStatus.ACTIVE);
         try {
-            return updateStatus(params);
+            Result<Integer> result = new Result<Integer>(true);
+            Integer ref =updateStatus(params).get();
+            if(ref>0){//是否有更新
+                List<Map<String,String>>  listMap =   epMapper.selectSingleTable(params);
+                syncEpData(map.get("ep_id"),EpConstant.Table.T_EP,listMap);
+                result.setSuccess();
+            }else{
+                result.setError("企业已经激活");
+            }
+            return result;
         } catch (ApiException e) {
-            // log.error("更新异常", e);
-            throw new ApiException("更新异常", e);
+             log.error("激活企业更新异常", e);
+            throw new ApiException("激活企业更新异常", e);
         }
 
     }
 
     @Override
-    public Result<Integer> platformFreeze(Map<String,Object> params) {
+    public Result<Integer> platformFreeze(Map<String,Object> map) {
+        Map<String,Object> params= new HashMap();//  同一个查询方法，按map参数查找，所以重构
+        params.put("id",map.get("id"));
+        //params.put(EpConstant.EpKey.CORE_EP_ID,map.get("ep_id"));
         params.put("statusActive", EpConstant.EpStatus.ACTIVE);
         params.put("status", EpConstant.EpStatus.FREEZE);
         try {
             return updatePlatfrom(params);
         } catch (ApiException e) {
-            // log.error("更新异常", e);
-            throw new ApiException("更新异常", e);
+             log.error(e.getMessage(), e);
+            throw new ApiException(e.getMessage(), e);
         }
     }
 
     @Override
-    public Result<Integer> platformDisable(Map<String,Object> params) {
+    public Result<Integer> platformDisable(Map<String,Object> map) {
+        Map<String,Object> params= new HashMap();
+        params.put("id",map.get("id"));
+       // params.put(EpConstant.EpKey.CORE_EP_ID,map.get("ep_id"));
         params.put("statusActive", EpConstant.EpStatus.ACTIVE);
         params.put("status", EpConstant.EpStatus.STOP);
         try {
             return updatePlatfrom(params);
         } catch (ApiException e) {
-            // log.error("更新异常", e);
-            throw new ApiException("更新异常", e);
+             log.error(e.getMessage(), e);
+            throw new ApiException(e.getMessage(), e);
         }
     }
 
     @Override
-    public Result<Integer> platformEnable(Map<String,Object> params) {
+    public Result<Integer> platformEnable(Map<String,Object> map) {
+        Map<String,Object> params= new HashMap();
+        params.put("id",map.get("id"));
+        //params.put(EpConstant.EpKey.CORE_EP_ID,map.get("ep_id"));
         params.put("status", EpConstant.EpStatus.ACTIVE);
         Result<Integer> result = new Result<>();
         try {
             result.put(epMapper.platformEnable(params));//更新平台商的状态激活
             epMapper.epEnable(params);       //更新平台商企业下的状态为  之前状态
             result.setSuccess();
+            Map<String,Object> paramsMap = new HashMap<>();//数据同步条件
+            paramsMap.put("core_ep_id",map.get("id"));
+            List<Map<String,String>>  listMap =   epMapper.selectSingleTable(paramsMap);
+            syncEpData(map.get("id"),EpConstant.Table.T_EP,listMap);
         } catch (Exception e) {
             log.error("更新平台商状态异常", e);
             throw new ApiException("更新平台商状态异常", e);
@@ -370,19 +451,38 @@ public class EpServiceImple implements EpService {
     }
 
     /**
-     * 平台商停用冻结激活
+     * 平台商停用冻结
      *
      * @param map
      * @return
      */
     private Result<Integer> updatePlatfrom(Map<String,Object> map) {
         Result<Integer> result = new Result<>();
+        Object nextStatus=map.remove("status");//同一个查询方法这个状态是非激活的 所以先移除掉不然查不到数据
         try {
+            List<Map<String,Object>> list= epMapper.select(map);
+            if(list.isEmpty()){
+                throw new ApiException("未找到该平台商");
+            }else{
+                 Integer currentStatus=CommonUtil.objectParseInteger(list.get(0).get("status")) ;
+                if(!EpConstant.EpStatus.ACTIVE.equals(currentStatus)){
+                    throw new ApiException("平台商在未激活状态不能执行该操作");
+                }else{
+                    map.put("status",nextStatus);
+                }
+            }
             result.put(epMapper.updatePlatfromStatus(map));
             result.setSuccess();
-        } catch (Exception e) {
-            // log.error("更新异常", e);
-            throw new ApiException("更新异常", e);
+            Map<String,Object> paramsMap = new HashMap<>();
+            paramsMap.put("core_ep_id",map.get("id"));
+            List<Map<String,String>>  listMap =   epMapper.selectSingleTable(paramsMap);
+            syncEpData(map.get("id"),EpConstant.Table.T_EP,listMap);
+        } catch(ApiException e){
+            log.error(e.getMessage(), e);
+            throw new ApiException(e.getMessage(), e);
+        }catch (Exception e) {
+             log.error("平台商停用冻结平台商停用冻结", e);
+            throw new ApiException("平台商停用冻结平台商停用冻结", e);
         }
         return result;
     }
@@ -395,13 +495,19 @@ public class EpServiceImple implements EpService {
             //CommonUtil.formtAddress(map);
             Integer group_id = CommonUtil.objectParseInteger(map.get("group_id"));
             if (null != group_id) {
-                String groupName = planGroupRPCService.searchPlanGroupById(group_id).get();
+                Object groupName = planGroupRPCService.searchPlanGroupById(group_id).get().get("name");
                 map.put("group_name", groupName);
+                log.error("查询企业分组错误");
             }
             // String groupName="固定分组";
-            epMapper.update(map);
-            result.put(map);
-            result.setSuccess();
+          int ref=  epMapper.update(map);
+            if(ref>0){
+                List<Map<String,String>>  listMap =   epMapper.selectSingleTable(map);
+                syncEpData(map.get(EpConstant.EpKey.CORE_EP_ID),EpConstant.Table.T_EP,listMap);
+                result.put(map);
+                result.setSuccess();
+            }
+
         } catch (Exception e) {
             log.error("数据库更新错误", e);
             throw new ApiException("数据库更新错误", e);
@@ -413,7 +519,7 @@ public class EpServiceImple implements EpService {
     public Result<Map<String,Object>> platformListDown(Map<String,Object> map) {
         map.put("ep_type", EpConstant.EpType.PLATFORM);
         Result<Map<String,Object>> result = new Result<>();
-        Map<String,Object> resultMap = new HashMap();
+        Map<String,Object> resultMap = new HashMap<>();
         try {
             Common.checkPage(map);
             resultMap.put("list", epMapper.platformListDown(map));
@@ -654,5 +760,31 @@ public class EpServiceImple implements EpService {
         }
         return result;
 
+    }
+    /**
+     * 同步数据
+     * @param
+     */
+    public void syncEpData(Object coreEpId,String table,List<Map<String,String>> data) {
+        if(!CommonUtil.objectIsNumber(coreEpId)){
+            log.error("同步数据平台商错误 {} {}",table,data );
+        }
+        if(data.isEmpty()){
+            log.error("没有要同步的数据");
+        }
+        Map<String,Object> tempMap = new HashMap<>();
+        tempMap.put("id",coreEpId);
+        List<Map<String,Object>> keyList =coreEpAccessMapper.select(tempMap);
+        String key ="";
+        if(keyList.isEmpty()){
+            log.error("查询平台商key数据错误" );
+            throw new ApiException("查询平台商key数据错误");
+        }else{
+            key=CommonUtil.objectParseString( keyList.get(0).get(EpConstant.EpKey.ACCESS_KEY));
+        }
+
+        synchronizeDataManager.generate(key)
+                .put(table,data)
+                .sync();
     }
 }

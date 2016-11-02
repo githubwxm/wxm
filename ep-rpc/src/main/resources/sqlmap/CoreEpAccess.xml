@@ -33,5 +33,12 @@
             and `access_id`=#{access_id}
         </if>
     </select>
-
+   <select id="selectAccessList" resultType="java.lang.String">
+       select access_key from t_core_ep_access
+       where
+        `id`  in
+       <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">
+           #{item}
+       </foreach>
+   </select>
 </mapper>

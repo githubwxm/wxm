@@ -7,10 +7,7 @@ import com.framework.common.Result;
 import com.framework.common.util.CommonUtil;
 import com.framework.common.vo.Paginator;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -31,7 +28,7 @@ public class SaleController extends BaseController {
      * @param params
      * @return
      */
-    @RequestMapping(value = "group/add")
+    @RequestMapping(value = "group/add", method = RequestMethod.POST)
     @ResponseBody
     public Result addSaleGroup(@RequestBody Map params) {
         //TODO 数据验证
@@ -47,10 +44,15 @@ public class SaleController extends BaseController {
      * @param params
      * @return
      */
-    @RequestMapping(value = "group/update")
+    @RequestMapping(value = "group/update", method = RequestMethod.POST)
     @ResponseBody
     public Result<?> updateSaleGroup(@RequestBody Map params) {
-        return null;
+        return planGroupService.updatePlanGroup(
+                CommonUtil.objectParseInteger(params.get("id")),
+                CommonUtil.objectParseString(params.get("name")),
+                CommonUtil.objectParseString(params.get("memo")),
+                CommonUtil.objectParseInteger(params.get("ep_id"))
+        );
     }
 
     /**
@@ -65,15 +67,32 @@ public class SaleController extends BaseController {
     }
 
     /**
+     * 查询组信息
+     * @param id
+     * @return
+     */
+    @RequestMapping(value = "group/info")
+    @ResponseBody
+    public Result<Map> searchSalesGroupInfo(@RequestParam("id") Integer id) {
+        return planGroupService.searchPlanGroupById(id);
+    }
+
+    /**
      * 添加企业到组
      * @param params
      * @return
      */
-    @RequestMapping("group/ep/add")
+    @RequestMapping(value = "group/ep/add", method = RequestMethod.POST)
     @ResponseBody
     public Result addEpsToGroup(@RequestBody Map params) {
         //TODO 数据验证
         return planGroupService.addEpsToGroup(CommonUtil.objectParseInteger(params.get("ep_id")), CommonUtil.objectParseInteger(params.get("id")), (List) params.get("ep_ids"));
     }
 
+    @RequestMapping(value = "group/ep/mv", method = RequestMethod.POST)
+    @ResponseBody
+    public Result mvEpsToGroup(@RequestBody Map params) {
+        //TODO 数据验证
+        return planGroupService.addEpsToGroup(CommonUtil.objectParseInteger(params.get("ep_id")), CommonUtil.objectParseInteger(params.get("id")), (List) params.get("ep_ids"));
+    }
 }

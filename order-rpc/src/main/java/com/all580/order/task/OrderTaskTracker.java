@@ -39,9 +39,9 @@ public class OrderTaskTracker implements JobRunner, ApplicationContextAware {
             Result result = actionRunner.run(jobContext);
             log.info("任务ID:{} 执行结果:{}", job.getTaskId(), result);
             return result;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.error("任务执行异常", e);
-            return new Result(Action.EXECUTE_EXCEPTION, e.getMessage());
+            throw e;
         }
     }
 }

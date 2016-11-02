@@ -1,6 +1,7 @@
 package com.all580.base.controller.ep;
 
 import com.all580.base.manager.PlatfromValidateManager;
+import com.all580.ep.api.conf.EpConstant;
 import com.all580.ep.api.service.EpService;
 import com.framework.common.BaseController;
 import com.framework.common.Result;
@@ -41,14 +42,15 @@ public class PlatfromController extends BaseController {
     public Result<Map<String,Object>> validate( String access_id
     ) {
         Map<String,Object> map = new HashMap<>();
-        map.put("access_id", access_id);
+        map.put(EpConstant.EpKey.ACCESS_ID, access_id);
+        //map.put(EpConstant.EpKey.ACCESS_KEY,getAttribute(EpConstant.EpKey.ACCESS_KEY));
         return epService.validate(map);
 
     }
 
 
     /**
-     *查询平台上id
+     *查询平台商id
      */
     @RequestMapping(value = "selectPlatfromId", method = RequestMethod.GET)
     @ResponseBody
@@ -68,10 +70,8 @@ public class PlatfromController extends BaseController {
     @RequestMapping(value = "status/disable", method = RequestMethod.POST)
     @ResponseBody
     public Result<Integer> disable(@RequestBody Map<String,Object> map) {
-     // Map map = new HashMap();
-      //  map.put("id",id);
         ParamsMapValidate.validate(map, platfromValidateManager.generateCreateStatusValidate());
-
+        //map.put(EpConstant.EpKey.ACCESS_KEY,getAttribute(EpConstant.EpKey.ACCESS_KEY));
         return epService.platformDisable(map);
 
 
@@ -87,6 +87,7 @@ public class PlatfromController extends BaseController {
     @ResponseBody
     public Result<Integer> freeze(@RequestBody Map map) {
         ParamsMapValidate.validate(map, platfromValidateManager.generateCreateStatusValidate());
+        //map.put(EpConstant.EpKey.ACCESS_KEY,getAttribute(EpConstant.EpKey.ACCESS_KEY));
         return epService.platformFreeze(map);
 
 
@@ -102,7 +103,7 @@ public class PlatfromController extends BaseController {
     @ResponseBody
     public Result<Integer> enable(@RequestBody Map map) {
         ParamsMapValidate.validate(map, platfromValidateManager.generateCreateStatusValidate());
-
+        //map.put(EpConstant.EpKey.ACCESS_KEY,getAttribute(EpConstant.EpKey.ACCESS_KEY));
         return epService.platformEnable(map);
 
     }//
@@ -175,13 +176,13 @@ public class PlatfromController extends BaseController {
                                      Integer status,
                                     Integer province,
                                     Integer city,
-                                    Integer link_phone,String testName) {
-        request.getAttribute("");
-        Map<String,Object> map = new HashMap<String,Object>();
+                                    Integer link_phone) {
+
+        Map<String,Object> map = new HashMap<>();
         map.put("record_start", record_start);
         map.put("record_count", record_count);
         map.put("name", name);
-        map.put("ep_type", ep_type);
+        map.put("ep_type", EpConstant.EpType.PLATFORM);//查询所有平台商
         map.put("status", status);
         map.put("province", province);
         map.put("city", city);

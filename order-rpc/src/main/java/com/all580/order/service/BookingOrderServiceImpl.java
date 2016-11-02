@@ -256,6 +256,15 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         // 更新订单金额
         order.setPayAmount(from == OrderConstant.FromType.TRUST ? totalPayShopPrice : totalPayPrice);
         order.setSaleAmount(totalPrice);
+
+        // 到付
+        if (order.getStatus() != OrderConstant.OrderStatus.AUDIT_WAIT && order.getPayAmount() <= 0) {
+            order.setStatus(OrderConstant.OrderStatus.PAID_HANDLING); // 已支付,处理中
+            // 支付成功回调 记录任务
+            Map<String, String> jobParams = new HashMap<>();
+            jobParams.put("orderId", order.getId().toString());
+            bookingOrderManager.addJob(OrderConstant.Actions.PAYMENT_CALLBACK, jobParams);
+        }
         orderMapper.updateByPrimaryKeySelective(order);
 
         Map<String, Object> resultMap = new HashMap<>();

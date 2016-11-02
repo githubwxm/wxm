@@ -34,13 +34,18 @@
 	<!-- example 数据源配置 -->
 	<bean id="baseBaseDS" class="com.alibaba.druid.pool.DruidDataSource"
 		parent="baseDS">
-		<property name="url" value="${jdbc.url_order}" />
-		<property name="username" value="${jdbc.username_order}" />
-		<property name="password" value="${jdbc.pwd_order}" />
+		<property name="url" value="${jdbc.url_ep}" />
+		<property name="username" value="${jdbc.username_ep}" />
+		<property name="password" value="${jdbc.pwd_ep}" />
 	</bean>
 	<bean id="baseSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
 		<property name="dataSource" ref="baseBaseDS" />
 		<property name="mapperLocations" value="classpath*:sqlmap/*.xml" />
+		<property name="plugins">
+			<array>
+				<bean class="com.framework.common.mybatis.UpdateTimePlugin"/>
+			</array>
+		</property>
 	</bean>
 
 	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">

@@ -25,12 +25,11 @@
 	<bean id="syncJobClient" class="com.github.ltsopensource.spring.JobClientFactoryBean" init-method="start">
 		<property name="clusterName" value="${task.cluster}"/>
 		<property name="registryAddress" value="${task.registry}"/>
-		<property name="nodeGroup" value="sync_jobClient"/>
+		<property name="nodeGroup" value="${task.sync.client}"/>
 		<property name="configs">
 			<props>
 				<!-- 参数 -->
 				<prop key="job.fail.store">leveldb</prop>
-				<prop key="jobtracker.job.retry.interval.millis">180</prop>
 			</props>
 		</property>
 	</bean>

@@ -3,14 +3,15 @@
 <mapper namespace="com.all580.ep.dao.EpBalanceThresholdMapper">
 
     <insert id="createOrUpdate">
-      insert into t_ep_balance_threshold(ep_id,core_ep_id) values
-       (#{ep_id},#{core_ep_id}) ON DUPLICATE KEY UPDATE
+      insert into t_ep_balance_threshold(ep_id,core_ep_id,threshold) values
+       (#{id},#{core_ep_id},#{threshold}) ON DUPLICATE KEY UPDATE
        threshold = case  when #{threshold} is null then threshold else #{threshold} end;
     </insert>
 
     <select id="select" resultType="java.util.HashMap">
-       select * from t_ep_balance_threshold
-       where ep_id=#{ep_id} and core_ep_id=#{core_ep_id}
+       select t.id,t.name,tb.threshold from t_ep t left join (
+       select * from t_ep_balance_threshold where ep_id=#{id} and core_ep_id=#{core_ep_id}) tb
+        on t.id=tb.ep_id where t.id=#{id};
     </select>
 
 </mapper>

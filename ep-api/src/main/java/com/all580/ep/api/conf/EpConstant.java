@@ -4,10 +4,20 @@ package com.all580.ep.api.conf;
  * Created by Administrator on 2016/10/8 0008.
  */
 public class EpConstant {
-
+    public static class Table{
+        public static final String T_EP="t_ep";//企业信息表
+    }
     public static class EpKey{
+        public static final String  EP_ID ="ep_id";//企业类型//
         public static final String  CORE_EP_ID="core_ep_id";// 平台商id存放在request 中的key值
+        public static final String  ACCESS_ID ="access_id";//平台商加密 key存放在request 中的key值
         public static final String  ACCESS_KEY ="access_key";//平台商加密 key存放在request 中的key值
+        public static final String  NAME ="name";//企业名称
+        public static final String  LINK_PHONE ="link_phone";//联系人电话
+        public static final String  PROVINCE ="province";//省id
+        public static final String  CITY ="city";//市id
+        public static final String  EP_TYPE ="ep_type";//企业类型
+
     }
 
     public static class EpType{//企业类型

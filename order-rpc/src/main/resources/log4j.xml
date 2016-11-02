@@ -27,19 +27,21 @@
 	<!-- 3rdparty Loggers -->
 	<logger name="JobPullMachine" additivity="false">
 		<level value="INFO" />
-		<appender-ref ref="console"/>
 	</logger>
 	<logger name="HeartBeatMonitor" additivity="false">
 		<level value="INFO" />
-		<appender-ref ref="console"/>
 	</logger>
 	<logger name="com.github.ltsopensource.core.monitor.MStatReportWorker" additivity="false">
 		<level value="INFO" />
-		<appender-ref ref="console"/>
 	</logger>
 	<logger name="org.apache.zookeeper" additivity="false">
 		<level value="INFO" />
-		<appender-ref ref="console"/>
+	</logger>
+	<logger name="org.apache.http.impl.nio.conn.PoolingNHttpClientConnectionManager" additivity="false">
+		<level value="INFO" />
+	</logger>
+	<logger name="com.alibaba.dubbo">
+		<level value="INFO" />
 	</logger>
 
 	<root>

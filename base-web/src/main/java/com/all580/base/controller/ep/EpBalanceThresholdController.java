@@ -42,9 +42,11 @@ public class EpBalanceThresholdController extends BaseController {
     @ResponseBody
     public Result<Integer> update(@RequestBody Map map) {
             //core_ep_id
+             map.put(EpConstant.EpKey.CORE_EP_ID,getAttribute(EpConstant.EpKey.CORE_EP_ID)) ;
+            // map.put("id",map.get("id"));
             ParamsMapValidate.validate(map, generateEpBalanceThresholdUpdateValidate());
             //   Integer core_ep_id = Integer.parseInt(map.get("id").toString());
-             //  map.put("core_ep_id",epService.selectPlatformId(core_ep_id)) ;
+
             return epBalanceThresholdService.createOrUpdate(map);
 
     }
@@ -55,10 +57,11 @@ public class EpBalanceThresholdController extends BaseController {
      */
     @RequestMapping(value = "select", method = RequestMethod.GET)
     @ResponseBody
-    public Result<Map> select(HttpServletRequest request, Integer ep_id) {
+    public Result<Map> select( Integer id
+    ) {
             Map map = new HashMap();
-            map.put("ep_id",ep_id);
-            map.put("core_ep_id",getAttribute(EpConstant.EpKey.CORE_EP_ID)) ;//
+            map.put("id",id);
+            map.put(EpConstant.EpKey.CORE_EP_ID,getAttribute(EpConstant.EpKey.CORE_EP_ID)) ;//
          ParamsMapValidate.validate(map, generateEpBalanceThresholdValidate());
             return epBalanceThresholdService.select(map);
     }
@@ -70,14 +73,12 @@ public class EpBalanceThresholdController extends BaseController {
      */
     @RequestMapping(value = "balance/warn", method = RequestMethod.GET)
     @ResponseBody
-    public Result<Map> warn(Integer ep_id,Integer core_ep_id,Integer balance ) {
-       //// TODO: 2016/10/20 0020   获取平台商id
+    public Result<Map> warn(Integer id,Integer balance ) {
             Map map = new HashMap();
-             map.put("ep_id",ep_id);
-             map.put("core_ep_id",core_ep_id) ;//
+             map.put("id",id);
+             map.put(EpConstant.EpKey.CORE_EP_ID,getAttribute(EpConstant.EpKey.CORE_EP_ID)) ;//
              map.put("balance",balance);
             ParamsMapValidate.validate(map, generateEpBalanceValidate());
-
             boolean bool =epBalanceThresholdService.warn(map);//是否发送成功
             if(bool){
 
@@ -89,13 +90,13 @@ public class EpBalanceThresholdController extends BaseController {
         Map<String[], ValidRule[]> rules = new HashMap<>();
         // 校验不为空的参数
         rules.put(new String[]{
-                "ep_id", //
+                "id", //
                 "core_ep_id",
         }, new ValidRule[]{new ValidRule.NotNull()});
 
         // 校验整数
         rules.put(new String[]{
-                "ep_id", //
+                "id", //
                 "core_ep_id",
         }, new ValidRule[]{new ValidRule.Digits()});
         return rules;
@@ -104,14 +105,14 @@ public class EpBalanceThresholdController extends BaseController {
         Map<String[], ValidRule[]> rules = new HashMap<>();
         // 校验不为空的参数
         rules.put(new String[]{
-                "ep_id", //
+                "id", //
                 "core_ep_id", //
                 "threshold",
         }, new ValidRule[]{new ValidRule.NotNull()});
 
         // 校验整数
         rules.put(new String[]{
-                "ep_id", //
+                "id", //
                 "core_ep_id", //
                 "threshold",
         }, new ValidRule[]{new ValidRule.Digits()});
@@ -122,13 +123,13 @@ public class EpBalanceThresholdController extends BaseController {
         Map<String[], ValidRule[]> rules = new HashMap<>();
         // 校验不为空的参数
         rules.put(new String[]{
-                "ep_id", //
+                "id", //
                 "balance",
         }, new ValidRule[]{new ValidRule.NotNull()});
 
         // 校验整数
         rules.put(new String[]{
-                "ep_id", //
+                "id", //
                 "balance",
         }, new ValidRule[]{new ValidRule.Digits()});
         return rules;
@@ -138,14 +139,14 @@ public class EpBalanceThresholdController extends BaseController {
         Map<String[], ValidRule[]> rules = new HashMap<>();
         // 校验不为空的参数
         rules.put(new String[]{
-                "ep_id", //
+                "id", //
                 "core_ep_id", //
                 "balance",
         }, new ValidRule[]{new ValidRule.NotNull()});
 
         // 校验整数
         rules.put(new String[]{
-                "ep_id", //
+                "id", //
                 "core_ep_id", //
                 "balance",
         }, new ValidRule[]{new ValidRule.Digits()});
