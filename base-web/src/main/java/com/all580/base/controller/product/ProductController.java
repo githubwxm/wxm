@@ -176,7 +176,7 @@ public class ProductController extends BaseController {
 
     @RequestMapping("sale/group/list")
     @ResponseBody
-    public Result<Paginator<DistributionGroupInfo>> searchDistributionGroupInfo(
+    public Result<Paginator<DistributionGroupInfo>> searchDistributionGroupInfo (
         @RequestParam("ep_id") Integer epId,
         @RequestParam("productSubId") Integer productSubId,
         @RequestParam("status") Integer distributionStatus,
