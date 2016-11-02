@@ -57,13 +57,13 @@ public interface VisitorMapper {
 
     /**
      * 根据子产品和身份证获取该身份证在指定时间内订购张数
-     * @param productSubId 子产品ID
+     * @param productSubCode 子产品CODE
      * @param sid 身份证
      * @param start 开始时间
      * @param end 结束时间
      * @return
      */
-    int quantityBySidAndProductForDate(@Param("productSubId") Integer productSubId, @Param("sid") String sid,
+    int quantityBySidAndProductForDate(@Param("productSubCode") Long productSubCode, @Param("sid") String sid,
                                        @Param("start") Date start, @Param("end") Date end);
 
     /**

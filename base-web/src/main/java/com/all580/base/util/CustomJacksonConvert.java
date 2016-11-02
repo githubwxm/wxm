@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.framework.common.Result;
+import com.framework.common.lang.JsonUtils;
 import com.framework.common.util.CommonUtil;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.converter.HttpMessageNotWritableException;
@@ -15,6 +16,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 public class CustomJacksonConvert extends MappingJackson2HttpMessageConverter {
 	public CustomJacksonConvert() {
@@ -39,7 +41,9 @@ public class CustomJacksonConvert extends MappingJackson2HttpMessageConverter {
 			result.put("data", r.get());
 			String key = CommonUtil.objectParseString(r.getExt("access_key"));
 			 key= key==null?"":key;
-			String data = JSON.toJSONString(result);
+			TreeMap tree=new TreeMap(result);//排序  不确定是否需要加
+			String data = JsonUtils.toJson(tree);//替换转String 那行
+			//String data = JSON.toJSONString(result);
 			String sign=CommonUtil.signForData(key,data);
 			result.put("sign",sign);
 			super.writeInternal(result, outputMessage);

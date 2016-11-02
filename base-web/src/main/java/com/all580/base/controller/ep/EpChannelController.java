@@ -3,20 +3,18 @@ package com.all580.base.controller.ep;
 import com.all580.ep.api.service.CoreEpChannelService;
 import com.framework.common.BaseController;
 import com.framework.common.Result;
-
-import javax.lang.exception.ApiException;
-import javax.lang.exception.ParamsMapValidationException;
 import com.framework.common.util.CommonUtil;
 import com.framework.common.validate.ParamsMapValidate;
 import com.framework.common.validate.ValidRule;
-import com.sun.org.apache.bcel.internal.classfile.ExceptionTable;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.lang.exception.ParamsMapValidationException;
-import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,7 +38,7 @@ public class EpChannelController extends BaseController {
      */
     @RequestMapping(value = "update", method = RequestMethod.POST)
     @ResponseBody
-    public Result<Integer> update(@RequestBody Map params) {
+    public Result<Integer> update(@RequestBody Map<String,Object> params) {
             ParamsMapValidate.validate(params, generateUpdateEpChannelValidate());
             String rate = params.get("rate").toString();
             if (CommonUtil.isTrue(rate, "\\d{1}\\.\\d{1,2}$|\\d{1}")) {//校验汇率在0 - 9.99之间 乘100 取整
@@ -60,7 +58,7 @@ public class EpChannelController extends BaseController {
      */
     @RequestMapping(value = "add", method = RequestMethod.POST)
     @ResponseBody
-    public Result<Integer> create(@RequestBody Map params) {
+    public Result<Integer> create(@RequestBody Map<String,Object> params) {
 
             ParamsMapValidate.validate(params, generateCreateEpChannelValidate());
             String rate = params.get("rate").toString();
@@ -98,11 +96,11 @@ public class EpChannelController extends BaseController {
      */
     @RequestMapping(value = "list", method = RequestMethod.GET)
     @ResponseBody
-    public Result<Map> list( String supplier_name,
+    public Result<?> list( String supplier_name,
                              Integer record_start,
                             Integer record_count
                          ) {
-          Map map = new HashMap();
+          Map<String,Object> map = new HashMap<>();
           map.put("supplier_name",supplier_name);
           map.put("record_start",record_start);
           map.put("record_count",record_count);

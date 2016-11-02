@@ -58,24 +58,24 @@ public class BookingOrderManager extends BaseOrderManager {
     /**
      * 验证游客信息
      * @param visitors 游客信息
-     * @param productSubId 子产品ID
+     * @param productSubCode 子产品CODE
      * @param bookingDate 预定时间
      * @param maxCount 最大次数
      * @param maxQuantity 最大张数
      * @return
      */
-    public Result validateVisitor(List<Map> visitors, Integer productSubId, Date bookingDate, Integer maxCount, Integer maxQuantity) {
+    public Result validateVisitor(List<Map> visitors, Long productSubCode, Date bookingDate, Integer maxCount, Integer maxQuantity) {
         Set<String> sids = new HashSet<>();
         for (Map visitorMap : visitors) {
             String sid = CommonUtil.objectParseString(visitorMap.get("sid"));
             if (sids.contains(sid)) {
                 return new Result<>(false, Result.PARAMS_ERROR, "身份证:" + sid + "重复");
             }
-            if (!canOrderByCount(productSubId, sid, bookingDate, maxCount)) {
+            if (!canOrderByCount(productSubCode, sid, bookingDate, maxCount)) {
                 return new Result<>(false, Result.PARAMS_ERROR, "身份证:" + sid + "超出该产品当天最大订单数");
             }
             Integer qty = CommonUtil.objectParseInteger(visitorMap.get("quantity"));
-            if (!canOrderByQuantity(productSubId, sid, bookingDate, maxQuantity, qty)) {
+            if (!canOrderByQuantity(productSubCode, sid, bookingDate, maxQuantity, qty)) {
                 return new Result<>(false, Result.PARAMS_ERROR,
                         "身份证:" + sid + "超出该产品当天最大购票数,现已定" + qty + "张,最大购票" + maxQuantity + "张");
             }
@@ -92,30 +92,30 @@ public class BookingOrderManager extends BaseOrderManager {
      * @param max 最大次数
      * @return
      */
-    private boolean canOrderByCount(Integer productSubId, String sid, Date date, Integer max) {
+    private boolean canOrderByCount(Long productSubCode, String sid, Date date, Integer max) {
         if (max == null || max <= 0)
             return true;
         Date start = DateFormatUtils.dayBegin(date);
         Date end = DateFormatUtils.dayEnd(date);
-        int count = orderItemMapper.countBySidAndProductForDate(productSubId, sid, start, end);
+        int count = orderItemMapper.countBySidAndProductForDate(productSubCode, sid, start, end);
         return count < max;
     }
 
     /**
      * 判断身份证订票张数是否超过最大张数
-     * @param productSubId 子产品ID
+     * @param productSubCode 子产品CODE
      * @param sid 身份证
      * @param date 预定日期
      * @param max 最大张数
      * @param cur 当前需要订购张数
      * @return
      */
-    private boolean canOrderByQuantity(Integer productSubId, String sid, Date date, Integer max, Integer cur) {
+    private boolean canOrderByQuantity(Long productSubCode, String sid, Date date, Integer max, Integer cur) {
         if (max == null || max <= 0)
             return true;
         Date start = DateFormatUtils.dayBegin(date);
         Date end = DateFormatUtils.dayEnd(date);
-        int quantity = visitorMapper.quantityBySidAndProductForDate(productSubId, sid, start, end);
+        int quantity = visitorMapper.quantityBySidAndProductForDate(productSubCode, sid, start, end);
         return quantity + cur <= max;
     }
 
@@ -154,7 +154,7 @@ public class BookingOrderManager extends BaseOrderManager {
      * @return
      */
     @Transactional
-    public OrderItem generateItem(ProductSalesInfo info, int saleAmount, Date bookingDate, int days, int orderId, int quantity) {
+    public OrderItem generateItem(ProductSalesInfo info, int saleAmount, Date bookingDate, int days, int orderId, int quantity, Integer proSubId) {
         OrderItem orderItem = new OrderItem();
         orderItem.setNumber(UUIDGenerator.generateUUID());
         orderItem.setStart(bookingDate);
@@ -166,7 +166,8 @@ public class BookingOrderManager extends BaseOrderManager {
         orderItem.setOrderId(orderId);
         orderItem.setProName(info.getProductName());
         orderItem.setProSubName(info.getProductSubName());
-        orderItem.setProSubId(info.getProductSubId());
+        orderItem.setProSubNumber(info.getProductSubCode());
+        orderItem.setProSubId(proSubId);
         orderItem.setQuantity(quantity);
         orderItem.setPaymentFlag(info.getPayType());
         orderItem.setStatus(OrderConstant.OrderItemStatus.AUDIT_SUCCESS);

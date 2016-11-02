@@ -14,12 +14,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RefundTicketInfo {
-    /** 票ID */
-    private String ticketId;
+    /** 游客ID */
+    private int visitorSeqId;
 
-    /** 电子凭证号 */
-    private String voucherNumber;
+    /** 退票流水 */
+    private String refId;
 
-    /** 退票张数 */
-    private Integer refundQuantity;
+    /** 退票是否处理成功 */
+    private boolean success;
 }

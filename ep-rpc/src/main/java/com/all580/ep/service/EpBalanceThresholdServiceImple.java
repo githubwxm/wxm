@@ -33,7 +33,7 @@ public class EpBalanceThresholdServiceImple implements EpBalanceThresholdService
     private SmsService smsService;
 
     @Override
-    public  Result<Integer> createOrUpdate(Map map) {
+    public  Result<Integer> createOrUpdate(Map<String,Object> map) {
         Result<Integer> result = new Result<>();
         try {
             result.put(epBalanceThresholdMapper.createOrUpdate(map));
@@ -48,8 +48,8 @@ public class EpBalanceThresholdServiceImple implements EpBalanceThresholdService
 
 
     @Override
-    public  Result<Map> select(Map map) {
-        Result<Map> result = new Result<>();
+    public  Result<Map<String,Object>> select(Map<String,Object> map) {
+        Result<Map<String,Object>> result = new Result<>();
         try {
             result.put(epBalanceThresholdMapper.select(map));
             result.setSuccess();
@@ -61,9 +61,9 @@ public class EpBalanceThresholdServiceImple implements EpBalanceThresholdService
     }
 
     @Override
-    public boolean warn(Map map) {
+    public boolean warn(Map<String,Object> map) {
         try {
-            Result<Map> result = select(map);
+            Result<Map<String,Object>> result = select(map);
             Integer balance=Common.objectParseInteger(map.get("balance"));//传来的余额
             Integer threshold = Common.objectParseInteger(result.get("threshold"));//阀值
             if(null==result.get()){
@@ -72,13 +72,13 @@ public class EpBalanceThresholdServiceImple implements EpBalanceThresholdService
             }
             if(balance<threshold){
                 //Todo  发送余额短信
-                Map epMap = new HashMap();
+                Map<String,Object> epMap = new HashMap<>();
                 Integer ep_id= CommonUtil.objectParseInteger(map.get("ep_id"));
                 epMap.put("id",ep_id);//再看发送短信所需要的参数
-                 List<Map> list= epMapper.select(epMap);//   获取企业信息
+                 List<Map<String,Object>> list= epMapper.select(epMap);//   获取企业信息
                  if(null==list){
                      if(!list.isEmpty()){
-                         Map mapResult = list.get(0);
+                         Map<String,Object> mapResult = list.get(0);
                         String destPhoneNum=  mapResult.get("link_phone").toString();
                          Map<String, String>  params = new HashMap<>();
                          params.put("name",mapResult.get("name").toString());

@@ -56,7 +56,7 @@ public class CoreEpChannelServiceImple implements CoreEpChannelService {
     }
 
     @Override
-    public Result<Integer> update(Map params) {
+    public Result<Integer> update(Map<String,Object> params) {
         Result<Integer> result = new Result<>();
         try {
             result.put(coreEpChannelMapper.update(params));
@@ -82,9 +82,9 @@ public class CoreEpChannelServiceImple implements CoreEpChannelService {
     }
 
     @Override  //EpChannelRep
-    public Result<Map> select(Map params) {
+    public Result<Map<String,Object>> select(Map<String,Object> params) {
         Map<String,Object> resultMap = new HashMap<>();
-        Result<Map> result = new Result<>();
+        Result<Map<String,Object>> result = new Result<>();
         try {
             CommonUtil.checkPage(params);
             resultMap.put("list",coreEpChannelMapper.select(params));

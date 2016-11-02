@@ -1,21 +1,19 @@
 package com.all580.base.controller.ep;
 
 
-import com.all580.base.manager.PlatfromValidateManager;
 import com.all580.ep.api.service.EpFinanceService;
 import com.all580.ep.api.service.LogCreditService;
 import com.framework.common.BaseController;
 import com.framework.common.Result;
-
-import javax.lang.exception.ApiException;
-import javax.lang.exception.ParamsMapValidationException;
-import com.framework.common.util.CommonUtil;
 import com.framework.common.validate.ParamsMapValidate;
 import com.framework.common.validate.ValidRule;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
@@ -41,7 +39,7 @@ public class EpFinanceController extends BaseController {
      */
     @RequestMapping(value = "platform/list", method = RequestMethod.GET)
     @ResponseBody
-    public Result<Map> getList(HttpServletRequest request,
+    public Result<?> getList(HttpServletRequest request,
                                 String name,
                               String link_phone,
                                Integer province,
@@ -53,7 +51,7 @@ public class EpFinanceController extends BaseController {
                                Integer record_start,
                                Integer record_count
                              ) {
-        Map map = new HashMap();
+        Map<String,Object> map = new HashMap<>();
         map.put("name", name);
         map.put("link_phone", link_phone);
         map.put("province", province);
@@ -78,8 +76,8 @@ public class EpFinanceController extends BaseController {
      */
     @RequestMapping(value = "hostoryCredit", method = RequestMethod.GET)
     @ResponseBody
-    public Result<Map> hostoryCredit(HttpServletRequest request,Integer ep_id) {
-        Map map = new HashMap();
+    public Result<?> hostoryCredit(HttpServletRequest request,Integer ep_id) {
+        Map<String,Object> map = new HashMap<>();
         map.put("ep_id", ep_id);
         map.put("croe_ep_id", request.getAttribute("croe_ep_id"));
         ParamsMapValidate.validate(map, generateCreateSelectValidate());
@@ -106,9 +104,9 @@ public class EpFinanceController extends BaseController {
      */
     @RequestMapping(value = "getAccountInfoList", method = RequestMethod.GET)
     @ResponseBody
-    public Result<Map> getAccountInfoList(Integer croe_ep_id,String name,String link_phone,Integer ep_type,
+    public Result<?> getAccountInfoList(Integer croe_ep_id,String name,String link_phone,Integer ep_type,
     Integer province,Integer city){
-        Map map = new HashMap();
+        Map<String,Object> map = new HashMap<>();
        // map.put("ep_id",ep_id);  //todo 获取平台商id
         map.put("croe_ep_id",croe_ep_id);
         map.put("name",name);
