@@ -33,14 +33,14 @@ public class EpFinanceServiceImple implements EpFinanceService {
     @Autowired
     private BalancePayService balancePayService;
     @Override
-    public Result<Map> getAccountInfoList(Map map) {
-        Result<Map> result = new Result<>();
+    public Result<Map<String,Object>> getAccountInfoList(Map<String,Object> map) {
+        Result<Map<String,Object>> result = new Result<>();
         try {
-            List<Map> epList= epMapper.getAccountInfoList(map);//企业信息
+            List<Map<String,Object>> epList= epMapper.getAccountInfoList(map);//企业信息
             List<Integer> listEpId = new ArrayList<Integer>();//企业id
             Map<String,Map> tempEpMap=new HashMap<String,Map>();//把企业信息以 epId 为key存入用于与余额合并
             Integer core_ep_id = CommonUtil.objectParseInteger(map.get("core_ep_id"));
-            for(Map tempMap:epList){
+            for(Map<String,Object> tempMap:epList){
                 String epid=tempMap.get("id").toString();
                 tempEpMap.put(epid,tempMap);
                 listEpId.add(CommonUtil.objectParseInteger(epid));
@@ -49,10 +49,10 @@ public class EpFinanceServiceImple implements EpFinanceService {
             for(Map<String, String> balance:balanceList){
                 balance.putAll(tempEpMap.get(balance.get("ep_id")));//把企业信息合并到余额信息里面
             }
-            Map resultMap= new HashMap();
+            Map<String,Object> resultMap= new HashMap<>();
             resultMap.put("list",balanceList);
             resultMap.put("totalCount",epMapper.getAccountInfoListCount(map));
-            result.put(map);
+            result.put(resultMap);
             result.setSuccess();
         } catch (Exception e) {
             log.error("数据库查询错误", e);
