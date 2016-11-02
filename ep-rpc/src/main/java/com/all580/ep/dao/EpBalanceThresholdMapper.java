@@ -8,5 +8,5 @@ import java.util.Map;
  */
 public interface EpBalanceThresholdMapper {
    int createOrUpdate(Map<String,Object> map);
-    Map select(Map<String,Object> map);
+    Map<String,Object> select(Map<String,Object> map);
 }

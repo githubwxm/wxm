@@ -141,7 +141,7 @@ public class EpServiceImple implements EpService {
     @Override
     public Result<Map<String,Object>> validate(Map<String,Object> params) {
         Result<Map<String,Object>> result = new Result<>();
-        Map access;
+        Map<String,Object> access;
         try {
             access = coreEpAccessService.select(params).get().get(0);
         } catch (Exception e) {
@@ -537,7 +537,7 @@ public class EpServiceImple implements EpService {
     public Result<Map<String,Object>> platformListUp(Map<String,Object> map) {
         map.put("ep_type", EpConstant.EpType.PLATFORM);
         Result<Map<String,Object>> result = new Result<>();
-        Map resultMap = new HashMap();
+        Map<String,Object> resultMap = new HashMap<>();
         try {
             Common.checkPage(map);
             List<Map<String,Object>> list = epMapper.platformListUp(map);
@@ -614,7 +614,7 @@ public class EpServiceImple implements EpService {
                 message = "企业名字与电话重复";
                 throw new ApiException(message);
             } else if (list.size() == 1) {
-                Map mapResult = list.get(0);
+                Map<String,Object> mapResult = list.get(0);
                 String name = mapResult.get("name").toString();
                 String link_phone = mapResult.get("link_phone").toString();
                 if (name.equals(map.get("name"))) {
@@ -639,7 +639,7 @@ public class EpServiceImple implements EpService {
      * @return Ep  Map
      */
     @Override
-    public Result<Map<String,Object>> select(Map map) {
+    public Result<Map<String,Object>> select(Map<String,Object> map) {
         Result<Map<String,Object>> result = new Result<>(true);
         try {
             Map<String,Object> resultMap = new HashMap<>();
