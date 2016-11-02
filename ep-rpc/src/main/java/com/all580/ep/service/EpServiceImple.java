@@ -234,7 +234,7 @@ public class EpServiceImple implements EpService {
             log.error("企业商参数错误", e);
             throw new ApiException("企业商参数错误", e);
         }
-        Map<String,Object> resultMap = new HashMap();
+        Map<String,Object> resultMap = new HashMap<>();
         Result<Map<String,Object>> result = new Result<>();
         try {
             epMapper.create(map);//添加企业信息
@@ -242,7 +242,7 @@ public class EpServiceImple implements EpService {
             Integer core_ep_id = selectPlatformId(Integer.parseInt(creator_ep_id)).get();
             balancePayService.createBalanceAccount(epId, core_ep_id); //创建余额账户
             if (flag) {//如果是分销商默认加载余额阀值为1000
-                Map<String,Object> epBalanceThresholdMap = new HashMap();
+                Map<String,Object> epBalanceThresholdMap = new HashMap<>();
                 epBalanceThresholdMap.put("ep_id", epId);
                 epBalanceThresholdMap.put("core_ep_id", core_ep_id);
                 Object threshold= map.get("threshold");
@@ -253,15 +253,21 @@ public class EpServiceImple implements EpService {
                 epBalanceThresholdService.createOrUpdate(epBalanceThresholdMap);
             }
             resultMap.put("ep_info", map);
-            resultMap.put("capital", balancePayService.getBalanceAccountInfo(epId, core_ep_id).get());
+            Map<String, String> capital =balancePayService.getBalanceAccountInfo(epId, core_ep_id).get();
+            if(null==capital||capital.isEmpty()){
+                throw new ApiException("查询余额结果为空");
+            }
+            resultMap.put("capital",capital );
             result.put(resultMap);// 添加企业信息map
             result.setSuccess();
             result.setCode(200);
-        } catch (Exception e) {
+        }  catch (ApiException e) {
+            log.error(e.getMessage(), e);
+            throw new ApiException(e.getMessage(), e);
+        }catch (Exception e) {
              log.error("添加企业出错", e);
             throw new ApiException("添加企业出错", e);
         }
-
         return result;
 
     }
