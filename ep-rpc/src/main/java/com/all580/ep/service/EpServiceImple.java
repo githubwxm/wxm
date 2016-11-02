@@ -240,7 +240,10 @@ public class EpServiceImple implements EpService {
             epMapper.create(map);//添加企业信息
             Integer epId = Common.objectParseInteger(map.get("id"));
             Integer core_ep_id = selectPlatformId(Integer.parseInt(creator_ep_id)).get();
-            balancePayService.createBalanceAccount(epId, core_ep_id); //创建余额账户
+            Result r= balancePayService.createBalanceAccount(epId, core_ep_id); //创建余额账户
+            if(!r.isSuccess()){
+                throw new ApiException("添加企业余额失败");
+            }
             if (flag) {//如果是分销商默认加载余额阀值为1000
                 Map<String,Object> epBalanceThresholdMap = new HashMap<>();
                 epBalanceThresholdMap.put("ep_id", epId);
@@ -264,7 +267,8 @@ public class EpServiceImple implements EpService {
         }  catch (ApiException e) {
             log.error(e.getMessage(), e);
             throw new ApiException(e.getMessage(), e);
-        }catch (Exception e) {
+        }
+        catch (Exception e) {
              log.error("添加企业出错", e);
             throw new ApiException("添加企业出错", e);
         }
