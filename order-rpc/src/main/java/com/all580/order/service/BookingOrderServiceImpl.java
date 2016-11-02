@@ -184,7 +184,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             totalPrice += saleAmount;
 
             // 创建子订单
-            OrderItem orderItem = bookingOrderManager.generateItem(salesInfo, saleAmount, bookingDate, days, order.getId(), quantity);
+            OrderItem orderItem = bookingOrderManager.generateItem(salesInfo, saleAmount, bookingDate, days, order.getId(), quantity, productSubId);
 
             List<OrderItemDetail> detailList = new ArrayList<>();
             // 创建子订单详情

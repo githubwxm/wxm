@@ -154,7 +154,7 @@ public class BookingOrderManager extends BaseOrderManager {
      * @return
      */
     @Transactional
-    public OrderItem generateItem(ProductSalesInfo info, int saleAmount, Date bookingDate, int days, int orderId, int quantity) {
+    public OrderItem generateItem(ProductSalesInfo info, int saleAmount, Date bookingDate, int days, int orderId, int quantity, Integer proSubId) {
         OrderItem orderItem = new OrderItem();
         orderItem.setNumber(UUIDGenerator.generateUUID());
         orderItem.setStart(bookingDate);
@@ -167,6 +167,7 @@ public class BookingOrderManager extends BaseOrderManager {
         orderItem.setProName(info.getProductName());
         orderItem.setProSubName(info.getProductSubName());
         orderItem.setProSubNumber(info.getProductSubCode());
+        orderItem.setProSubId(proSubId);
         orderItem.setQuantity(quantity);
         orderItem.setPaymentFlag(info.getPayType());
         orderItem.setStatus(OrderConstant.OrderItemStatus.AUDIT_SUCCESS);
