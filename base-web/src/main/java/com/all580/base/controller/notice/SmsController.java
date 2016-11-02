@@ -8,6 +8,7 @@ import com.framework.common.util.CommonUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
 import java.util.Map;
@@ -27,14 +28,18 @@ public class SmsController extends BaseController {
     /**
      * 发送短信
      *
-     * @param destPhoneNum 目标手机号码
-     * @param smsType      短信类型
-     * @param params       短信参数
+     * @param data     请求数据
+     *          ｛destPhoneNum： 目标手机号码
+     *          smsType：      短信类型
+     *          params：       短信参数 ｝
      * @return 成功{code:200}；失败{code:xx,error:错误信息}
      */
+    @ResponseBody
     @RequestMapping(value = "send", method = RequestMethod.POST)
-    public Result send(String destPhoneNum, Integer smsType, Map<String, String> params) {
+    public Result send(Map<String, String> data) {
+        String destPhoneNum=data.remove("destPhoneNum");
+        Integer smsType=CommonUtil.objectParseInteger( data.remove("smsType"));
         Integer coreEpId = CommonUtil.objectParseInteger(getAttribute(EpConstant.EpKey.CORE_EP_ID));
-        return smsService.send(destPhoneNum, smsType, coreEpId, params);
+        return smsService.send(destPhoneNum, smsType, coreEpId, data);
     }
 }
