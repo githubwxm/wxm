@@ -58,6 +58,11 @@ public class VerifyFilter implements  Filter{
 
         }
         currenttSing =CommonUtil.objectParseString( map.remove("sign"));//获取当前传来的加密// 去掉sing
+        if(null==currenttSing){
+            log.error("数据未加密");
+            renderingByJsonPData(httpResponse, JSON.toJSONString(getOutPutMap(false,"数据未加密", Result.SIGN_FAIL,null)));
+            return;
+        }
         if(null==map.get("access_id")){
             log.error("access_id不能为空");
             renderingByJsonPData(httpResponse, JSON.toJSONString(getOutPutMap(false,"access_id不能为空", Result.SIGN_FAIL,null)));
@@ -95,6 +100,7 @@ public class VerifyFilter implements  Filter{
                     }
                 }
             }catch(Exception e){
+                e.printStackTrace();
                 renderingByJsonPData(httpResponse, JSON.toJSONString(getOutPutMap(false,"过滤异常未被捕获", Result.SIGN_FAIL,null)));
                 log.error(e.getMessage());
                 return;
