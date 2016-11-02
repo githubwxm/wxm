@@ -136,6 +136,7 @@
                     <source>1.7</source>
                     <target>1.7</target>
                 </configuration>
+                <version>3.3</version>
             </plugin>
             <plugin>
                 <groupId>org.mybatis.generator</groupId>
