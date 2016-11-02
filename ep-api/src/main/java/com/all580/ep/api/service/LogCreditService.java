@@ -12,7 +12,7 @@ public interface LogCreditService {
     /**
      *   查询企业id最后一次修改的授信额度
      * @param ep_id  ep_id 必填
-     * @return   credit_after
+     * @return   credit_after  s
      */
     Result<Integer> select ( Integer ep_id ,Integer core_ep_id );
 
