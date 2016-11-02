@@ -37,13 +37,13 @@ import java.util.*;
 public class BalancePayServiceImpl implements BalancePayService {
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    @Value("${mns.topic.name}")
+    @Value("${mns.topic}")
     private String topicName;
-    @Value("${mns.accessId}")
+    @Value("${mns.access.id}")
     private String mnsAccessId;
-    @Value("${mns.accessKey}")
+    @Value("${mns.access.key}")
     private String mnsAccessKey;
-    @Value("${mns.accountEndpoint}")
+    @Value("${mns.endpoint}")
     private String mnsAccountEndpoint;
 
     @Autowired

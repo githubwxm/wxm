@@ -3,6 +3,14 @@
        xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
 	http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+    <!-- 远程rpc类声明 -->
+    <!-- 提供方应用信息，用于计算依赖关系 -->
+    <dubbo:application name="payment-provider"/>
+
+    <!---->
+    <!-- 使用zookeeper广播注册中心暴露服务地址 -->
+    <dubbo:registry address="${dubbo.registry.zk}"/>
+    <dubbo:protocol name="dubbo" port="${dubbo.port}"/>
 
     <bean id="balancePayService" class="com.all580.payment.service.BalancePayServiceImpl"/>
     <bean id="thirdPayService" class="com.all580.payment.service.ThirdPayServiceImpl"/>
