@@ -4,12 +4,10 @@ import com.all580.payment.api.model.BalanceChangeInfo;
 import com.all580.payment.api.model.BalanceChangeRsp;
 import com.all580.payment.api.service.BalancePayService;
 import com.framework.common.Result;
-import org.apache.commons.lang.ArrayUtils;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -40,7 +38,7 @@ public class BalancePayServiceTest extends BaseTest {
         changeInfo2.setCanCash(10);
         balanceChangeInfoList.add(changeInfo2);
         Integer type = 7001;
-        String serialNum = "ord-123";
+        String serialNum = "ord-456";
         Result<BalanceChangeRsp> result = balancePayService.changeBalances(balanceChangeInfoList, type, serialNum);
         Assert.isTrue(result.isSuccess());
     }

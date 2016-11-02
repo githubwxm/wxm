@@ -33,7 +33,6 @@ import java.util.*;
  * @author Created by panyi on 2016/9/28.
  */
 @Service("balancePayService")
-@Transactional(rollbackFor = {Exception.class, RuntimeException.class})
 public class BalancePayServiceImpl implements BalancePayService {
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -56,6 +55,7 @@ public class BalancePayServiceImpl implements BalancePayService {
     private TopicPushManager topicPushManager;
 
     @Override
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public Result<BalanceChangeRsp> changeBalances(List<BalanceChangeInfo> balanceChangeInfoList, Integer type,
                                                    final String serialNum) {
         Assert.notNull(balanceChangeInfoList, "参数【balanceChangeInfoList】不能为空");
@@ -188,6 +188,7 @@ public class BalancePayServiceImpl implements BalancePayService {
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public Result createBalanceAccount(Integer epId, Integer coreEpId) {
         Result result = new Result();
         Capital capital = new Capital();
@@ -199,6 +200,7 @@ public class BalancePayServiceImpl implements BalancePayService {
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public Result setCredit(Integer epId, Integer coreEpId, Integer credit) {
         Result result = new Result();
         try {
