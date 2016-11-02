@@ -11,7 +11,7 @@ import java.util.Map;
 public interface CoreEpAccessMapper {
    int create(Map<String,Object> map);
    List<Map<String,Object>> select(Map<String,Object> params);
-   Map selectAccess(Map<String,Object> params);
+   Map<String,Object> selectAccess(Map<String,Object> params);
 
    List<String> selectAccessList(@Param("ids") List<Integer> ids);
 }
