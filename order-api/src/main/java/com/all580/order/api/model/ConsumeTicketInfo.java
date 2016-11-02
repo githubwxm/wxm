@@ -4,8 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
-
 /**
  * @author zhouxianjun(Alone)
  * @ClassName:
@@ -19,6 +17,9 @@ public class ConsumeTicketInfo {
     /** 验票流水 */
     private String validateSn;
 
+    /** 游客ID */
+    private Integer visitorSeqId;
+
     /** 电子凭证号 */
     private String voucherNumber;
 
@@ -27,7 +28,4 @@ public class ConsumeTicketInfo {
 
     /** 消费张数 */
     private Integer consumeQuantity;
-
-    /** 消费时间 */
-    private Date consumeDate;
 }

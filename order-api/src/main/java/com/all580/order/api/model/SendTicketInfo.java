@@ -14,6 +14,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SendTicketInfo {
+    /** 游客ID */
+    private int visitorSeqId;
     /** 二维码图像链接 */
     private String imgUrl;
 

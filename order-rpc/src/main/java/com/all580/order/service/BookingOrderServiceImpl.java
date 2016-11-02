@@ -23,7 +23,6 @@ import com.all580.product.api.model.ProductSalesInfo;
 import com.all580.product.api.model.ProductSearchParams;
 import com.all580.product.api.service.ProductSalesPlanRPCService;
 import com.framework.common.Result;
-import com.framework.common.distributed.lock.Callback;
 import com.framework.common.distributed.lock.DistributedLockTemplate;
 import com.framework.common.distributed.lock.DistributedReentrantLock;
 import com.framework.common.lang.DateFormatUtils;
@@ -101,6 +100,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         // 获取子订单
         List<Map> items = (List<Map>) params.get("items");
         for (Map item : items) {
+            // TODO: 2016/11/2 这里应该是productSubCode
             Integer productSubId = CommonUtil.objectParseInteger(item.get("product_sub_id"));
             Integer quantity = CommonUtil.objectParseInteger(item.get("quantity"));
             Integer days = CommonUtil.objectParseInteger(item.get("days"));
@@ -147,7 +147,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             List<Map> visitors = (List<Map>) item.get("visitor");
             if (salesInfo.isRequireSid()) {
                 Result visitorResult = bookingOrderManager.validateVisitor(
-                        visitors, productSubId, bookingDate, salesInfo.getSidDayCount(), salesInfo.getSidDayQuantity());
+                        visitors, salesInfo.getProductSubCode(), bookingDate, salesInfo.getSidDayCount(), salesInfo.getSidDayQuantity());
                 if (visitorResult.hasError()) {
                     throw new ApiException(visitorResult.getError());
                 }
@@ -395,7 +395,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             // 第三方支付
             // 获取商品名称
             List<String> names = orderItemMapper.getProductNamesByOrderId(order.getId());
-            List<Integer> ids = orderItemMapper.getProductIdsByOrderId(order.getId());
+            List<Long> ids = orderItemMapper.getProductIdsByOrderId(order.getId());
             Map<String, Object> payParams = new HashMap<>();
             payParams.put("prodName", StringUtils.join(names, ","));
             payParams.put("totalFee", order.getPayAmount());

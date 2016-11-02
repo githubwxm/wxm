@@ -198,7 +198,7 @@
         LEFT JOIN t_order_item_detail toid ON toid.id = v.ref_id
         LEFT JOIN t_order_item oi ON toid.order_item_id = oi.id
         WHERE
-        oi.pro_sub_id = #{productSubId}
+        oi.pro_sub_number = #{productSubCode}
         AND v.sid = #{sid}
         AND oi.status not in(326)
         AND (<![CDATA[ oi.refund_quantity <= 0 ]]> OR oi.refund_quantity IS NULL)

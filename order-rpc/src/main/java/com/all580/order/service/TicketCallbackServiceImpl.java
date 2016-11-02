@@ -57,7 +57,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
     private BookingOrderManager bookingOrderManager;
 
     @Override
-    public Result sendTicket(Long orderSn, List<SendTicketInfo> infoList) {
+    public Result sendTicket(Long orderSn, List<SendTicketInfo> infoList, Date procTime) {
         OrderItem orderItem = orderItemMapper.selectBySN(orderSn);
         if (orderItem == null) {
             return new Result(false, "订单不存在");
@@ -66,12 +66,12 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
             return new Result(false, "订单状态不在出票中");
         }
         orderItem.setStatus(OrderConstant.OrderItemStatus.SEND);
-        Date sendMaTime = new Date();
-        orderItem.setSendMaTime(sendMaTime);
+        orderItem.setSendMaTime(procTime);
         orderItemMapper.updateByPrimaryKeySelective(orderItem);
 
         for (SendTicketInfo ticketInfo : infoList) {
             MaSendResponse response = new MaSendResponse();
+            response.setVisitorId(ticketInfo.getVisitorSeqId()); // 游客ID
             response.setEpMaId(orderItem.getEpMaId()); // 哪个凭证的商户ID
             response.setMaOrderId(ticketInfo.getTicketId()); // 凭证号对应的凭证ID
             response.setSid(ticketInfo.getSid()); // 身份证
@@ -80,7 +80,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
             response.setVoucherValue(ticketInfo.getVoucherNumber()); // 凭证号
             response.setMaProductId(ticketInfo.getMaProductId()); // 凭证产品ID
             response.setOrderItemId(orderItem.getId()); // 子订单ID
-            response.setCreateTime(sendMaTime);
+            response.setCreateTime(procTime);
             maSendResponseMapper.insertSelective(response);
         }
 
@@ -90,7 +90,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
     }
 
     @Override
-    public Result consumeTicket(Long orderSn, ConsumeTicketInfo info) {
+    public Result consumeTicket(Long orderSn, ConsumeTicketInfo info, Date procTime) {
         OrderItem orderItem = orderItemMapper.selectBySN(orderSn);
         if (orderItem == null) {
             return new Result(false, "订单不存在");
@@ -110,23 +110,21 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         // 保存核销流水
         OrderClearanceSerial serial = new OrderClearanceSerial();
         serial.setOrderItemId(orderItem.getId());
-        serial.setClearanceTime(info.getConsumeDate());
+        serial.setClearanceTime(procTime);
         serial.setCreateTime(new Date());
         serial.setDay(orderItem.getStart());
         serial.setQuantity(info.getConsumeQuantity());
         serial.setSerialNo(info.getValidateSn());
         orderClearanceSerialMapper.insertSelective(serial);
 
-        // 获取已出票的凭证
-        MaSendResponse response = maSendResponseMapper.selectByOrderItemIdAndMaId(orderItem.getId(), info.getTicketId(), orderItem.getEpMaId());
         // 获取核销人信息
-        Visitor visitor = visitorMapper.selectByMa(itemDetail.getId(), response.getSid(), response.getPhone());
+        Visitor visitor = visitorMapper.selectByPrimaryKey(info.getVisitorSeqId());
         // 保存核销明细
         OrderClearanceDetail detail = new OrderClearanceDetail();
         detail.setSerialNo(info.getValidateSn());
         detail.setName(visitor.getName());
-        detail.setSid(response.getSid());
-        detail.setPhone(response.getPhone());
+        detail.setSid(visitor.getSid());
+        detail.setPhone(visitor.getPhone());
         orderClearanceDetailMapper.insertSelective(detail);
 
         // 设置核销人核销数量
@@ -145,10 +143,15 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
     }
 
     @Override
-    public Result reConsumeTicket(Long orderSn, ReConsumeTicketInfo info) {
+    public Result reConsumeTicket(Long orderSn, ReConsumeTicketInfo info, Date procTime) {
         OrderItem orderItem = orderItemMapper.selectBySN(orderSn);
         if (orderItem == null) {
             return new Result(false, "订单不存在");
+        }
+
+        OrderClearanceSerial orderClearanceSerial = orderClearanceSerialMapper.selectBySn(info.getValidateSn());
+        if (orderClearanceSerial == null) {
+            return new Result(false, "核销流水不存在");
         }
 
         // 获取订单详情 设置核销数量
@@ -159,24 +162,22 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
 
         // 目前景点只有一天
         OrderItemDetail itemDetail = detailList.get(0);
-        itemDetail.setUsedQuantity(itemDetail.getUsedQuantity() - info.getConsumeQuantity());
+        itemDetail.setUsedQuantity(itemDetail.getUsedQuantity() - orderClearanceSerial.getQuantity());
         orderItemDetailMapper.updateByPrimaryKeySelective(itemDetail);
 
         // 保存冲正流水
         ClearanceWashedSerial serial = new ClearanceWashedSerial();
         serial.setSerialNo(info.getReValidateSn());
         serial.setClearanceSerialNo(info.getValidateSn());
-        serial.setClearanceWashedTime(info.getReValidateTime());
+        serial.setClearanceWashedTime(procTime);
         serial.setCreateTime(new Date());
         serial.setDay(orderItem.getStart());
-        serial.setQuantity(info.getConsumeQuantity());
+        serial.setQuantity(orderClearanceSerial.getQuantity());
 
-        // 获取已出票的凭证
-        MaSendResponse response = maSendResponseMapper.selectByOrderItemIdAndMaId(orderItem.getId(), info.getTicketId(), orderItem.getEpMaId());
         // 获取核销人信息
-        Visitor visitor = visitorMapper.selectByMa(itemDetail.getId(), response.getSid(), response.getPhone());
+        Visitor visitor = visitorMapper.selectByPrimaryKey(info.getVisitorSeqId());
         // 设置核销人核销数量
-        visitor.setUseQuantity(visitor.getUseQuantity() - info.getConsumeQuantity());
+        visitor.setUseQuantity(visitor.getUseQuantity() - orderClearanceSerial.getQuantity());
         visitorMapper.updateByPrimaryKeySelective(visitor);
 
         // 分账
@@ -191,48 +192,34 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
     }
 
     @Override
-    public Result refundTicket(Long orderSn, String localSn, String refundSn, Date refundDate, List<RefundTicketInfo> infoList) {
+    public Result refundTicket(Long orderSn, RefundTicketInfo info, Date procTime) {
         OrderItem orderItem = orderItemMapper.selectBySN(orderSn);
         if (orderItem == null) {
             return new Result(false, "订单不存在");
         }
 
-        List<OrderItemDetail> detailList = orderItemDetailMapper.selectByItemId(orderItem.getId());
-        if (detailList == null || detailList.size() < 1) {
-            return new Result(false, "订单详情不存在");
+        RefundSerial refundSerial = refundSerialMapper.selectByLocalSn(Long.valueOf(info.getRefId()));
+        if (refundSerial == null) {
+            return new Result(false, "退票流水错误");
         }
-        OrderItemDetail detail = detailList.get(0);
 
-        RefundOrder refundOrder = refundOrderMapper.selectByItemIdAndRefundSn(orderItem.getId(), Long.valueOf(localSn));
+        RefundOrder refundOrder = refundOrderMapper.selectByItemIdAndRefundSn(orderItem.getId(), Long.valueOf(info.getRefId()));
         if (refundOrder == null) {
             return new Result(false, "退订订单不存在");
         }
 
         refundOrder.setStatus(OrderConstant.RefundOrderStatus.REFUND_MONEY); // 退款中
-        refundOrder.setRefundTicketTime(refundDate);
+        refundOrder.setRefundTicketTime(procTime);
 
-        RefundSerial refundSerial = refundSerialMapper.selectByLocalSn(Long.valueOf(localSn));
-        if (refundSerial == null) {
-            return new Result(false, "退票流水错误");
-        }
-        refundSerial.setRemoteSerialNo(refundSn);
-        refundSerial.setRefundTime(refundDate);
+        //refundSerial.setRemoteSerialNo(refundSn);
+        refundSerial.setRefundTime(procTime);
 
-        int quantity = 0;
-        for (RefundTicketInfo ticketInfo : infoList) {
-            // 获取已出票的凭证
-            MaSendResponse response = maSendResponseMapper.selectByOrderItemIdAndMaId(orderItem.getId(), ticketInfo.getTicketId(), orderItem.getEpMaId());
-            // 获取核销人信息
-            Visitor visitor = visitorMapper.selectByMa(detail.getId(), response.getSid(), response.getPhone());
-            if (ticketInfo.getRefundQuantity() != visitor.getPreReturn().intValue()) {
-                return new Result(false, "退票数据异常,实际退票数与申请退票数不匹配");
-            }
-            visitor.setReturnQuantity(visitor.getReturnQuantity() + visitor.getPreReturn());
-            visitor.setPreReturn(0);
-            visitorMapper.updateByPrimaryKeySelective(visitor);
-            quantity += ticketInfo.getRefundQuantity();
-        }
-        orderItem.setRefundQuantity(orderItem.getRefundQuantity() + quantity);
+        // 获取核销人信息
+        Visitor visitor = visitorMapper.selectByPrimaryKey(info.getVisitorSeqId());
+        visitor.setReturnQuantity(visitor.getReturnQuantity() + refundSerial.getQuantity());
+        visitor.setPreReturn(0);
+        visitorMapper.updateByPrimaryKeySelective(visitor);
+        orderItem.setRefundQuantity(orderItem.getRefundQuantity() + refundSerial.getQuantity());
         orderItemMapper.updateByPrimaryKeySelective(orderItem);
         refundOrderMapper.updateByPrimaryKeySelective(refundOrder);
         refundSerialMapper.updateByPrimaryKeySelective(refundSerial);
