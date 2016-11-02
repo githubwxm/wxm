@@ -72,7 +72,7 @@ public class EpBalanceThresholdServiceImple implements EpBalanceThresholdService
             }
             if(balance<threshold){
                 //Todo  发送余额短信
-                Map epMap = new HashMap();
+                Map<String,Object> epMap = new HashMap<>();
                 Integer ep_id= CommonUtil.objectParseInteger(map.get("ep_id"));
                 epMap.put("id",ep_id);//再看发送短信所需要的参数
                  List<Map<String,Object>> list= epMapper.select(epMap);//   获取企业信息
