@@ -1,14 +1,13 @@
 package com.all580.base.controller.voucher;
 
 import com.all580.base.manager.VoucherValidateManager;
+import com.all580.ep.api.conf.EpConstant;
 import com.all580.voucher.api.service.VoucherRPCService;
 import com.framework.common.BaseController;
 import com.framework.common.Result;
-import javax.lang.exception.ApiException;
-import javax.lang.exception.ParamsMapValidationException;
+import com.framework.common.util.CommonUtil;
 import com.framework.common.validate.ParamsMapValidate;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -59,12 +58,7 @@ public class VoucherController extends BaseController {
     public Result addMerchantToVoucher(@RequestBody Map params) {
         // 验证参数
         ParamsMapValidate.validate(params, voucherValidateManager.merchantValidate());
-        int epId = Integer.parseInt(params.get("ep_id").toString());
-        int voucherId = Integer.parseInt(params.get("voucher_id").toString());
-        String accessId = params.get("access_id").toString();
-        String accessKey = params.get("access_key").toString();
-        String accessName = params.get("access_name").toString();
-        return voucherRPCService.addMerchantToVoucher(epId, 0, voucherId, accessId, accessKey, accessName);
+        return voucherRPCService.bindMerchant(CommonUtil.objectParseInteger(getAttribute(EpConstant.EpKey.CORE_EP_ID)), params);
     }
 
     @RequestMapping(value = "list")
