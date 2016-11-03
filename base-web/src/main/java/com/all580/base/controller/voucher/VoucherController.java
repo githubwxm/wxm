@@ -1,18 +1,18 @@
 package com.all580.base.controller.voucher;
 
 import com.all580.base.manager.VoucherValidateManager;
+import com.all580.ep.api.conf.EpConstant;
 import com.all580.voucher.api.service.VoucherRPCService;
 import com.framework.common.BaseController;
 import com.framework.common.Result;
-import javax.lang.exception.ApiException;
-import javax.lang.exception.ParamsMapValidationException;
+import com.framework.common.util.CommonUtil;
 import com.framework.common.validate.ParamsMapValidate;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -59,23 +59,30 @@ public class VoucherController extends BaseController {
     public Result addMerchantToVoucher(@RequestBody Map params) {
         // 验证参数
         ParamsMapValidate.validate(params, voucherValidateManager.merchantValidate());
-        int epId = Integer.parseInt(params.get("ep_id").toString());
-        int voucherId = Integer.parseInt(params.get("voucher_id").toString());
-        String accessId = params.get("access_id").toString();
-        String accessKey = params.get("access_key").toString();
-        String accessName = params.get("access_name").toString();
-        return voucherRPCService.addMerchantToVoucher(epId, 0, voucherId, accessId, accessKey, accessName);
+        return voucherRPCService.bindMerchant(CommonUtil.objectParseInteger(getAttribute(EpConstant.EpKey.CORE_EP_ID)), params);
     }
 
     @RequestMapping(value = "list")
     @ResponseBody
-    public Result list(Integer record_start, Integer record_count) {
+    public Result list(@RequestParam(defaultValue = "0") Integer record_start, @RequestParam(defaultValue = "20") Integer record_count) {
         return voucherRPCService.selectVoucherForList(record_start, record_count);
     }
 
     @RequestMapping(value = "merchant/list")
     @ResponseBody
-    public Result merchantList(Integer target_ep_id, Integer record_start, Integer record_count) {
+    public Result merchantList(@RequestParam Integer target_ep_id, Integer record_start, Integer record_count) {
         return voucherRPCService.selectVoucherOfMerchantForList(target_ep_id, record_start, record_count);
+    }
+
+    @RequestMapping(value = "product/list")
+    @ResponseBody
+    public Result productList(@RequestParam Integer ep_ma_id) {
+        Result result = voucherRPCService.selectTicketProduct(ep_ma_id);
+        if (!result.isSuccess()) {
+            return result;
+        }
+        List list = (List) result.getExt("data");
+        result.put(list);
+        return result;
     }
 }

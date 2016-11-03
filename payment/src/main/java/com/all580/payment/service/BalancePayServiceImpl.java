@@ -15,7 +15,6 @@ import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.mns.TopicPushManager;
 import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.beanutils.PropertyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -190,6 +189,8 @@ public class BalancePayServiceImpl implements BalancePayService {
     @Override
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public Result createBalanceAccount(Integer epId, Integer coreEpId) {
+        Assert.notNull(epId, "参数【epId】不能为空");
+        Assert.notNull(coreEpId, "参数【coreEpId】不能为空");
         Result result = new Result();
         Capital capital = new Capital();
         capital.setEpId(epId);
@@ -202,6 +203,9 @@ public class BalancePayServiceImpl implements BalancePayService {
     @Override
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public Result setCredit(Integer epId, Integer coreEpId, Integer credit) {
+        Assert.notNull(epId, "参数【epId】不能为空");
+        Assert.notNull(coreEpId, "参数【coreEpId】不能为空");
+        Assert.notNull(credit, "参数【credit】不能为空");
         Result result = new Result();
         try {
             Capital capital = new Capital();
@@ -222,13 +226,13 @@ public class BalancePayServiceImpl implements BalancePayService {
     public Result<Map<String, String>> getBalanceAccountInfo(Integer epId, Integer coreEpId) {
         Result<Map<String, String>> result = new Result<>();
         Capital capital = capitalMapper.selectByEpIdAndCoreEpId(epId, coreEpId);
+        Assert.notNull(capital, MessageFormat.format("没有找到余额账户:epId={0}|coreEpId={1}", epId, coreEpId));
         try {
             Map<String, String> map = BeanUtils.describe(capital);
-            Map<String, Object> map1 = PropertyUtils.describe(capital);
-            System.out.println(JsonUtils.toJson(map1));
             result.put(map);
             result.setSuccess();
         } catch (Exception e) {
+            logger.error(e.getMessage(), e);
             result.setFail();
             result.setError("转换出错：Capital -> Map");
         }
@@ -237,6 +241,7 @@ public class BalancePayServiceImpl implements BalancePayService {
 
     @Override
     public Result<List<Map<String, String>>> getBalanceList(List<Integer> epIdList, Integer coreEpId) {
+        logger.debug("开始 -> 批量获取余额账户");
         Result<List<Map<String, String>>> result = new Result<>();
         if (epIdList.size() > 100) {
             epIdList = epIdList.subList(0, 100);
@@ -251,16 +256,12 @@ public class BalancePayServiceImpl implements BalancePayService {
     public Result<List<Map<String, String>>> getBalanceSerialList(Integer epId, Integer coreEpId, int startRecord, int maxRecords) {
         Result<List<Map<String, String>>> result = new Result<>();
         Capital capital = capitalMapper.selectByEpIdAndCoreEpId(epId, coreEpId);
-        if (capital == null) {
-            result.setFail();
-            result.setError("余额账户不存在。");
-            logger.error(MessageFormat.format("余额账户不存在，epId={0},coreEpId={1}", epId, coreEpId));
-        } else {
-            List<Map<String, String>> capitalSerials = capitalSerialMapper.listByCapitalId(capital.getId(),
-                    startRecord, maxRecords);
-            result.setSuccess();
-            result.put(capitalSerials);
-        }
+        Assert.notNull(capital, MessageFormat.format("没有找到余额账户:epId={0}|coreEpId={1}", epId, coreEpId));
+
+        List<Map<String, String>> capitalSerials = capitalSerialMapper.listByCapitalId(capital.getId(),
+                startRecord, maxRecords);
+        result.setSuccess();
+        result.put(capitalSerials);
         return result;
     }
 }
