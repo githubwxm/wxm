@@ -246,7 +246,7 @@ public class EpServiceImple implements EpService {
             }
             if (flag) {//如果是分销商默认加载余额阀值为1000
                 Map<String,Object> epBalanceThresholdMap = new HashMap<>();
-                epBalanceThresholdMap.put("ep_id", epId);
+                epBalanceThresholdMap.put("id", epId);
                 epBalanceThresholdMap.put("core_ep_id", core_ep_id);
                 Object threshold= map.get("threshold");
                 if(null==threshold){
