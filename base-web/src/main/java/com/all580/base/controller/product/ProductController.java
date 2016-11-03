@@ -48,6 +48,17 @@ public class ProductController extends BaseController {
     public Result<?> selectSceneryProduct(@RequestParam("productId") Integer productId){
         return productService.findByProductId(productId);
     }
+
+    /**
+     * 修改主产品信息
+     * @param params
+     * @return
+     */
+    @RequestMapping(value = "update", method = RequestMethod.POST)
+    @ResponseBody
+    public Result<?> updateSceneryProduct(@RequestBody Map params) {
+        return productService.updateProductScenery(params);
+    }
     /**
      * 添加景区主产品
      * @param params
@@ -202,11 +213,7 @@ public class ProductController extends BaseController {
         return new Result<>(false, "状态参数错误");
     }
 
-    @RequestMapping(value = "update", method = RequestMethod.POST)
-    @ResponseBody
-    public Result<?> updateSceneryProduct(@RequestBody Map params) {
-        return null;
-    }
+
 
     @RequestMapping(value = "sub/update", method = RequestMethod.POST)
     @ResponseBody
