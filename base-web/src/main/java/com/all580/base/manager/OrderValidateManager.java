@@ -160,4 +160,22 @@ public class OrderValidateManager {
 
         return rules;
     }
+
+    /**
+     * 订单重新发票验证
+     * @return
+     */
+    public Map<String[], ValidRule[]> resendTicketValidate() {
+        Map<String[], ValidRule[]> rules = new HashMap<>();
+        rules.put(new String[]{
+                "order_item_sn", // 子订单编号(流水)
+                "visitor_id" // 游客ID
+        }, new ValidRule[]{new ValidRule.NotNull(), new ValidRule.Digits()});
+
+        rules.put(new String[]{
+                "phone" // 游客手机号码
+        }, new ValidRule[]{new ValidRule.NotNull(), new ValidRule.Pattern(ValidRule.MOBILE_PHONE)});
+
+        return rules;
+    }
 }
