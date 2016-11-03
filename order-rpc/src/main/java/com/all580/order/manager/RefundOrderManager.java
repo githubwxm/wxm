@@ -13,7 +13,6 @@ import com.all580.product.api.consts.ProductRules;
 import com.all580.product.api.model.ProductSearchParams;
 import com.all580.product.api.service.ProductSalesPlanRPCService;
 import com.all580.voucher.api.model.RefundTicketParams;
-import com.all580.voucher.api.model.RefundTicketPersonInfo;
 import com.all580.voucher.api.service.VoucherRPCService;
 import com.framework.common.Result;
 import com.framework.common.lang.DateFormatUtils;
@@ -124,7 +123,7 @@ public class RefundOrderManager extends BaseOrderManager {
         // 还库存
         if (!lockParams.isEmpty()) {
             Result result = productSalesPlanRPCService.addProductStocks(lockParams);
-            if (result.hasError()) {
+            if (!result.isSuccess()) {
                 throw new ApiException(result.getError());
             }
         }
@@ -188,17 +187,16 @@ public class RefundOrderManager extends BaseOrderManager {
             }
             for (Object v : visitors) {
                 Map vMap = (Map) v;
-                String sid = CommonUtil.objectParseString(vMap.get("sid"));
-                String phone = CommonUtil.objectParseString(vMap.get("phone"));
-                Visitor visitor = getVisitorBySid(visitorList, sid, phone);
+                Integer id = CommonUtil.objectParseInteger(vMap.get("id"));
+                Visitor visitor = getVisitorById(visitorList, id);
                 if (visitor == null) {
-                    throw new ApiException(String.format("日期:%s缺少游客:%s", day, sid));
+                    throw new ApiException(String.format("日期:%s缺少游客:%s", day, id));
                 }
                 Integer vqty = CommonUtil.objectParseInteger(vMap.get("quantity"));
                 if (visitor.getQuantity() - visitor.getReturnQuantity() < vqty) {
                     throw new ApiException(
                             String.format("日期:%s游客:%s余票不足",
-                                    new Object[]{day, sid}));
+                                    new Object[]{day, id}));
                 }
                 visitor.setPreReturn(vqty);
                 visitorMapper.updateByPrimaryKeySelective(visitor);
@@ -220,6 +218,24 @@ public class RefundOrderManager extends BaseOrderManager {
         }
         for (Visitor visitor : visitorList) {
             if (phone.equals(visitor.getPhone()) && (visitor.getSid().equals(sid) || (visitor.getSid() == null && sid == null))) {
+                return visitor;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 获取游客信息
+     * @param visitorList 游客数据
+     * @param id 游客ID
+     * @return
+     */
+    public Visitor getVisitorById(List<Visitor> visitorList, Integer id) {
+        if (visitorList == null || id == null) {
+            return null;
+        }
+        for (Visitor visitor : visitorList) {
+            if (visitor.getId().intValue() == id) {
                 return visitor;
             }
         }
@@ -396,11 +412,10 @@ public class RefundOrderManager extends BaseOrderManager {
         if (visitorList != null) {
             for (Object v : visitors) {
                 Map vMap = (Map) v;
-                String sid = CommonUtil.objectParseString(vMap.get("sid"));
-                String phone = CommonUtil.objectParseString(vMap.get("phone"));
-                Visitor visitor = getVisitorBySid(visitorList, sid, phone);
+                Integer id = CommonUtil.objectParseInteger(vMap.get("id"));
+                Visitor visitor = getVisitorById(visitorList, id);
                 if (visitor == null) {
-                    throw new ApiException(String.format("缺少游客:%s", sid));
+                    throw new ApiException(String.format("缺少游客:%s", id));
                 }
                 visitor.setPreReturn(0);
                 visitorMapper.updateByPrimaryKeySelective(visitor);
@@ -435,11 +450,10 @@ public class RefundOrderManager extends BaseOrderManager {
                 int vqty = 0;
                 for (Object v : visitors) {
                     Map vMap = (Map) v;
-                    String sid = CommonUtil.objectParseString(vMap.get("sid"));
-                    String phone = CommonUtil.objectParseString(vMap.get("phone"));
-                    Visitor visitor = getVisitorBySid(visitorList, sid, phone);
+                    Integer id = CommonUtil.objectParseInteger(vMap.get("id"));
+                    Visitor visitor = getVisitorById(visitorList, id);
                     if (visitor == null) {
-                        throw new ApiException(String.format("缺少游客:%s", sid));
+                        throw new ApiException(String.format("缺少游客:%s", id));
                     }
                     vqty += visitor.getPreReturn();
                     visitor.setReturnQuantity(visitor.getReturnQuantity() + visitor.getPreReturn());
@@ -487,57 +501,43 @@ public class RefundOrderManager extends BaseOrderManager {
         refundOrder.setStatus(OrderConstant.RefundOrderStatus.REFUNDING);
         refundOrder.setLocalRefundSerialNo(refundSerial.getLocalSerialNo());
 
-        List<MaSendResponse> maList = maSendResponseMapper.selectByOrderItemId(refundOrder.getOrderItemId());
         List daysList = JsonUtils.json2List(refundOrder.getData());
-        Map<String, Integer> sidMap = new HashMap<>();
+        Map<Integer, Integer> visitorMap = new HashMap<>();
         for (Object item : daysList) {
             Map dayMap = (Map) item;
             List visitors = (List) dayMap.get("visitors");
             for (Object v : visitors) {
                 Map vMap = (Map) v;
-                String sid = CommonUtil.objectParseString(vMap.get("sid"));
-                String phone = CommonUtil.objectParseString(vMap.get("phone"));
-                String key = sid + "|" + phone;
-                Integer q = sidMap.get(key);
+                Integer id = CommonUtil.objectParseInteger(vMap.get("id"));
+                Integer q = visitorMap.get(id);
                 int quantity = CommonUtil.objectParseInteger(vMap.get("quantity"));
-                sidMap.put(key, q == null ? quantity : q + quantity);
+                visitorMap.put(id, q == null ? quantity : q + quantity);
             }
         }
 
-        Integer epMaId = null;
-        List<RefundTicketPersonInfo> personInfos = new ArrayList<>();
-        for (String key : sidMap.keySet()) {
-            for (MaSendResponse maSendResponse : maList) {
-                String[] split = key.split("|");
-                String sid = split[0];
-                String phone = split[1];
-                if (phone.equals(maSendResponse.getPhone()) &&
-                        (maSendResponse.getSid() == null && (sid == null || sid.equals("") || sid.equals("null"))||
-                                (maSendResponse.getSid() != null && maSendResponse.getSid().equals(sid)))) {
-                    epMaId = epMaId == null ? maSendResponse.getEpMaId() : epMaId;
-                    RefundTicketPersonInfo info = new RefundTicketPersonInfo();
-                    info.setSid(sid);
-                    info.setPhone(phone);
-                    info.setMaOrderId(maSendResponse.getMaOrderId());
-                    info.setQuantity(sidMap.get(key));
-                    personInfos.add(info);
-                }
-            }
-        }
-
-        if (epMaId == null) {
-            throw new ApiException("缺少凭证ID");
-        }
         OrderItem orderItem = orderItemMapper.selectByPrimaryKey(refundOrder.getOrderItemId());
-        RefundTicketParams ticketParams = new RefundTicketParams();
-        ticketParams.setReFundId(refundOrder.getLocalRefundSerialNo().toString());
-        ticketParams.setSn(orderItem.getNumber());
-        ticketParams.setCause(refundOrder.getCause());
-        ticketParams.setEpMaId(epMaId);
-        ticketParams.setVisitor(personInfos);
-        Result result = voucherRPCService.invokeVoucherRefundTicket(ticketParams);
-        if (result.hasError()) {
-            throw new ApiException(result.getError());
+        int i = 0;
+        for (Integer key : visitorMap.keySet()) {
+            RefundTicketParams ticketParams = new RefundTicketParams();
+            ticketParams.setApplyTime(refundOrder.getAuditTime());
+            ticketParams.setOrderSn(orderItem.getId());
+            ticketParams.setQuantity(visitorMap.get(key));
+            ticketParams.setVisitorId(key);
+            ticketParams.setRefundSn(String.valueOf(refundSerial.getLocalSerialNo()));
+            ticketParams.setReason(refundOrder.getCause());
+            try {
+                // TODO: 2016/11/3 讲道理这里要一起提交或者只能一个人退票
+                Result result = voucherRPCService.refundTicket(orderItem.getEpMaId(), ticketParams);
+                if (!result.isSuccess()) {
+                    throw new ApiException(result.getError());
+                }
+                i++;
+            } catch (Exception e) {
+                log.warn("退票请求部分失败", e);
+            }
+        }
+        if (i != visitorMap.size()) {
+            log.warn("*****退票发起部分成功*****");
         }
     }
 
@@ -564,7 +564,7 @@ public class RefundOrderManager extends BaseOrderManager {
             Result result = changeBalances(
                     PaymentConstant.BalanceChangeType.BALANCE_REFUND,
                     sn == null ? order.getNumber().toString() : sn, payInfo, saveInfo);
-            if (result.hasError()) {
+            if (!result.isSuccess()) {
                 log.warn("余额退款失败:{}", result.get());
                 throw new ApiException(result.getError());
             }
@@ -577,7 +577,7 @@ public class RefundOrderManager extends BaseOrderManager {
         payParams.put("serialNum", sn == null ? order.getLocalPaymentSerialNo() : sn);
         payParams.put("outTransId", order.getThirdSerialNo());
         Result result = thirdPayService.reqRefund(order.getNumber(), coreEpId, order.getPaymentType(), payParams);
-        if (result.hasError()) {
+        if (!result.isSuccess()) {
             log.warn("第三方退款异常:{}", result);
             throw new ApiException(result.getError());
         }

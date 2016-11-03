@@ -39,7 +39,6 @@ import java.util.*;
  * @date 2016/10/8 19:07
  */
 @Component
-@Transactional(rollbackFor = {Exception.class, RuntimeException.class}, readOnly = true)
 @Slf4j
 public class BaseOrderManager {
     @Autowired
@@ -91,7 +90,7 @@ public class BaseOrderManager {
      */
     public EpSalesInfo getBuyingPrice(List<EpSalesInfo> epSalesInfos, Integer buyEpId) {
         for (EpSalesInfo info : epSalesInfos) {
-            if (info.getBuyEpId() == buyEpId) {
+            if (info.getBuyEpId() == buyEpId.intValue()) {
                 return info;
             }
         }
@@ -164,14 +163,19 @@ public class BaseOrderManager {
     }
 
     /**
-     * 添加任务
+     * 批量添加任务
      * @param action 任务执行器
      * @param params 参数
      */
-    public void addJob(String action, Map<String, String> params, boolean once) {
-        if (action == null) {
-            throw new RuntimeException("任务Action为空");
+    public void addJobs(String action, List<Map<String, String>> params) {
+        List<Job> jobs = new ArrayList<>();
+        for (Map<String, String> param : params) {
+            jobs.add(createJob(action, param, false));
         }
+        jobClient.submitJob(jobs);
+    }
+
+    private Job createJob(String action, Map<String, String> params, boolean once) {
         Job job = new Job();
         job.setTaskId("ORDER-JOB-" + UUIDGenerator.generateUUID());
         job.setExtParams(params);
@@ -181,7 +185,19 @@ public class BaseOrderManager {
             job.setMaxRetryTimes(maxRetryTimes);
         }
         job.setNeedFeedback(false);
-        jobClient.submitJob(job);
+        return job;
+    }
+
+    /**
+     * 添加任务
+     * @param action 任务执行器
+     * @param params 参数
+     */
+    public void addJob(String action, Map<String, String> params, boolean once) {
+        if (action == null) {
+            throw new RuntimeException("任务Action为空");
+        }
+        jobClient.submitJob(createJob(action, params, once));
     }
 
     /**
@@ -306,7 +322,7 @@ public class BaseOrderManager {
         }
         // 调用分账
         Result<BalanceChangeRsp> result = changeBalances(PaymentConstant.BalanceChangeType.CONSUME_SPLIT, sn, balanceChangeInfoList);
-        if (result.hasError()) {
+        if (!result.isSuccess()) {
             log.warn("核销OR反核销:{},分账失败:{}", consume, result.get());
             throw new ApiException(result.getError());
         }
@@ -335,7 +351,7 @@ public class BaseOrderManager {
             throw new ApiException("sync core ep ids is not null.");
         }
         Result<List<String>> accessKeyResult = coreEpAccessService.selectAccessList(coreEpIds);
-        if (accessKeyResult.hasError()) {
+        if (!accessKeyResult.isSuccess()) {
             throw new ApiException(accessKeyResult.getError());
         }
         List<String> accessKeyList = accessKeyResult.get();
