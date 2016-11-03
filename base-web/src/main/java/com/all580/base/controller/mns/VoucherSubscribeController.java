@@ -57,7 +57,7 @@ public class VoucherSubscribeController extends BaseController {
                 Object time = map.get("createTime");
                 Date createTime = time == null ? null : DateFormatUtils.converToDateTime(time.toString());
                 Result result = service.process(mnsMsgId, content, createTime);
-                if (result.hasError()) {
+                if (!result.isSuccess()) {
                     throw new Exception(result.getError());
                 }
             }
