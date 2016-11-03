@@ -38,6 +38,27 @@ public class ProductController extends BaseController {
     @Resource
     ProductDistributionRPCService productDistributionService;
 
+
+    /**
+     * 查询景区子主产品
+     * @param  map  主产品id
+     * @return
+     */
+    @RequestMapping(value = "updateProductSubBatch", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<?> updateProductSubBatch(Map<String,Object> map){
+        return productService.updateProductSubBatch(map);
+    }
+    /**
+     * 查询景区子主产品
+     * @param  productSubId  主产品id
+     * @return
+     */
+    @RequestMapping(value = "selectProductSubBatch", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<?> selectProductSubBatch(@RequestParam("productSubId") Integer productSubId){
+        return productService.selectProductSubBatch(productSubId);
+    }
     /**
      * 查询景区主产品
      * @param  productId  主产品id
