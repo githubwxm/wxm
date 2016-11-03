@@ -45,7 +45,7 @@ public class CoreEpChannelServiceImple implements CoreEpChannelService {
             result.put(coreEpChannelMapper.create(params));
             result.setSuccess();
             balancePayService.createBalanceAccount(epId,coreEpId);//添加钱包
-            params.put("ep_id",epId);
+            params.put("id",epId);
             params.put("core_ep_id",coreEpId);
             epBalanceThresholdService.createOrUpdate(params);//添加余额阀值
         } catch (Exception e) {

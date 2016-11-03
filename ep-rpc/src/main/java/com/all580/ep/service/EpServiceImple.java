@@ -210,7 +210,7 @@ public class EpServiceImple implements EpService {
             }
 
             if (!Common.isTrue(ep_type, "\\d+")) {//供应商添加企业    销售商自营商与OTA创建的都是销售商
-                Map<String,Object> tempMap = new HashMap();
+                Map<String,Object> tempMap = new HashMap<>();
                 tempMap.put("id", creator_ep_id);
                 Integer epType = Common.objectParseInteger(epMapper.select(tempMap).get(0).get("ep_type"));// 没有传企业类型获取创建企业类型
 
@@ -246,7 +246,7 @@ public class EpServiceImple implements EpService {
             }
             if (flag) {//如果是分销商默认加载余额阀值为1000
                 Map<String,Object> epBalanceThresholdMap = new HashMap<>();
-                epBalanceThresholdMap.put("ep_id", epId);
+                epBalanceThresholdMap.put("id", epId);
                 epBalanceThresholdMap.put("core_ep_id", core_ep_id);
                 Object threshold= map.get("threshold");
                 if(null==threshold){

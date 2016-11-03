@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.framework.common.Result;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.util.CommonUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -18,6 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
+@Slf4j
 public class CustomJacksonConvert extends MappingJackson2HttpMessageConverter {
 	public CustomJacksonConvert() {
 		ObjectMapper mapper = new ObjectMapper();
@@ -37,14 +39,16 @@ public class CustomJacksonConvert extends MappingJackson2HttpMessageConverter {
 			Result r = (Result) object;
 			Map<String, Object> result = new HashMap<>();
 			result.put("code", r.getCode() == null ? (r.isSuccess() ? Result.SUCCESS : Result.FAIL) : r.getCode());
-			result.put("message", r.getError());
+			result.put("message", r.getError()== null ? (r.isSuccess() ? "操作成功" : "操作失败") :r.getError());
 			result.put("data", r.get());
 			String key = CommonUtil.objectParseString(r.getExt("access_key"));
 			 key= key==null?"":key;
-			TreeMap tree=new TreeMap(result);//排序  不确定是否需要加
-			String data = JsonUtils.toJson(tree);//替换转String 那行
-			//String data = JSON.toJSONString(result);
-			String sign=CommonUtil.signForData(key,data);
+		//	TreeMap tree=new TreeMap(result);//排序  不确定是否需要加
+			//String data = JsonUtils.toJson(tree);//替换转String 那行
+			String data1 = JSON.toJSONString(result);
+			String sign=CommonUtil.signForData(key,data1);
+			System.out.println("key: "+key);
+			System.out.println("data: "+data1);
 			result.put("sign",sign);
 			super.writeInternal(result, outputMessage);
 			return;

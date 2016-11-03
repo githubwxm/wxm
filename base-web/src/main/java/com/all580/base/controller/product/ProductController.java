@@ -39,6 +39,27 @@ public class ProductController extends BaseController {
     ProductDistributionRPCService productDistributionService;
 
     /**
+     * 查询景区主产品
+     * @param  productId  主产品id
+     * @return
+     */
+    @RequestMapping(value = "findByProductId", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<?> selectSceneryProduct(@RequestParam("productId") Integer productId){
+        return productService.findByProductId(productId);
+    }
+
+    /**
+     * 修改主产品信息
+     * @param params
+     * @return
+     */
+    @RequestMapping(value = "update", method = RequestMethod.POST)
+    @ResponseBody
+    public Result<?> updateSceneryProduct(@RequestBody Map params) {
+        return productService.updateProductScenery(params);
+    }
+    /**
      * 添加景区主产品
      * @param params
      * @return
@@ -97,7 +118,7 @@ public class ProductController extends BaseController {
         subProductInfo.setEffectiveEndDate(CommonUtil.objectParseString(params.get("effectiveEndDate")));
         subProductInfo.setEffectiveStartDate(CommonUtil.objectParseString(params.get("effectiveStartDate")));
         subProductInfo.setEffectiveType(CommonUtil.objectParseInteger(params.get("effectiveType")));
-        subProductInfo.setImg(JsonUtils.toJson(CommonUtil.objectParseString(params.get("img"))));
+        subProductInfo.setImg(JsonUtils.toJson(params.get("img")));
         subProductInfo.setEpMaId(CommonUtil.objectParseInteger(params.get("epMaId")));
         subProductInfo.setMaProductId(CommonUtil.objectParseString(params.get("maProductId")));
         subProductInfo.setMarketPrice(CommonUtil.objectParseInteger(params.get("marketPrice")));
@@ -192,11 +213,7 @@ public class ProductController extends BaseController {
         return new Result<>(false, "状态参数错误");
     }
 
-    @RequestMapping(value = "update", method = RequestMethod.POST)
-    @ResponseBody
-    public Result<?> updateSceneryProduct(@RequestBody Map params) {
-        return null;
-    }
+
 
     @RequestMapping(value = "sub/update", method = RequestMethod.POST)
     @ResponseBody
