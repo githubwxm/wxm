@@ -133,8 +133,8 @@ public class ProductController extends BaseController {
         subProductInfo.setBuyStartDate(DateFormatUtils.converToDateTime(CommonUtil.objectParseString(params.get("buyStartDate"))));
         subProductInfo.setBuyEndDate(DateFormatUtils.converToDateTime(CommonUtil.objectParseString(params.get("buyEndDate"))));
         subProductInfo.setDescription(CommonUtil.objectParseString(params.get("description")));
-        subProductInfo.setDisableDate(CommonUtil.objectParseString(params.get("disableDate")));
-        subProductInfo.setDisableWeek(CommonUtil.objectParseString(params.get("disableWeek")));
+        subProductInfo.setDisableDate(JsonUtils.toJson(params.get("disableDate")));
+        subProductInfo.setDisableWeek(JsonUtils.toJson(params.get("disableWeek")));
         subProductInfo.setEffectiveDay(CommonUtil.objectParseInteger(params.get("effectiveDay")));
         subProductInfo.setEffectiveEndDate(CommonUtil.objectParseString(params.get("effectiveEndDate")));
         subProductInfo.setEffectiveStartDate(CommonUtil.objectParseString(params.get("effectiveStartDate")));
