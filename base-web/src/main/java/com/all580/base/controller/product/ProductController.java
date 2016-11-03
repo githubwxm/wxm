@@ -44,7 +44,7 @@ public class ProductController extends BaseController {
      * @param  map  主产品id
      * @return
      */
-    @RequestMapping(value = "updateProductSubBatch", method = RequestMethod.GET)
+    @RequestMapping(value = "updateProductSubBatch", method = RequestMethod.POST)
     @ResponseBody
     public Result<?> updateProductSubBatch(Map<String,Object> map){
         return productService.updateProductSubBatch(map);
