@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -63,13 +64,25 @@ public class VoucherController extends BaseController {
 
     @RequestMapping(value = "list")
     @ResponseBody
-    public Result list(Integer record_start, Integer record_count) {
+    public Result list(@RequestParam(defaultValue = "0") Integer record_start, @RequestParam(defaultValue = "20") Integer record_count) {
         return voucherRPCService.selectVoucherForList(record_start, record_count);
     }
 
     @RequestMapping(value = "merchant/list")
     @ResponseBody
-    public Result merchantList(Integer target_ep_id, Integer record_start, Integer record_count) {
+    public Result merchantList(@RequestParam Integer target_ep_id, Integer record_start, Integer record_count) {
         return voucherRPCService.selectVoucherOfMerchantForList(target_ep_id, record_start, record_count);
+    }
+
+    @RequestMapping(value = "product/list")
+    @ResponseBody
+    public Result productList(@RequestParam Integer ep_ma_id) {
+        Result result = voucherRPCService.selectTicketProduct(ep_ma_id);
+        if (!result.isSuccess()) {
+            return result;
+        }
+        List list = (List) result.getExt("data");
+        result.put(list);
+        return result;
     }
 }
