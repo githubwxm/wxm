@@ -89,7 +89,7 @@ public class VerifyFilter implements  Filter{
                 postParams = JsonUtils.toJson(tree);
                 boolean ref = SignVerify.verifyPost(postParams, currenttSing, key);
                 if (!ref) {
-                    log.error("签名校验失败");
+                    log.error("签名校验失败postParams{},currenttSing:{}",postParams,currenttSing);
                     renderingByJsonPData(httpResponse, JSON.toJSONString(getOutPutMap(false,"签名校验失败", Result.SIGN_FAIL,null)));
                     return;
                 }else{

@@ -210,7 +210,7 @@ public class EpServiceImple implements EpService {
             }
 
             if (!Common.isTrue(ep_type, "\\d+")) {//供应商添加企业    销售商自营商与OTA创建的都是销售商
-                Map<String,Object> tempMap = new HashMap();
+                Map<String,Object> tempMap = new HashMap<>();
                 tempMap.put("id", creator_ep_id);
                 Integer epType = Common.objectParseInteger(epMapper.select(tempMap).get(0).get("ep_type"));// 没有传企业类型获取创建企业类型
 

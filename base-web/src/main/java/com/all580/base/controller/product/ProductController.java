@@ -39,6 +39,16 @@ public class ProductController extends BaseController {
     ProductDistributionRPCService productDistributionService;
 
     /**
+     * 查询景区主产品
+     * @param  productId  主产品id
+     * @return
+     */
+    @RequestMapping(value = "findByProductId", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<?> selectSceneryProduct(@RequestParam("productId") Integer productId){
+        return productService.findByProductId(productId);
+    }
+    /**
      * 添加景区主产品
      * @param params
      * @return
