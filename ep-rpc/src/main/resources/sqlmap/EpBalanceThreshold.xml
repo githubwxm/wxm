@@ -3,8 +3,16 @@
 <mapper namespace="com.all580.ep.dao.EpBalanceThresholdMapper">
 
     <insert id="createOrUpdate">
-      insert into t_ep_balance_threshold(ep_id,core_ep_id,threshold) values
-       (#{id},#{core_ep_id},#{threshold}) ON DUPLICATE KEY UPDATE
+      insert into t_ep_balance_threshold(ep_id,core_ep_id
+        <if test="threshold != null" >
+            ,threshold
+        </if>
+      ) values
+       (#{id},#{core_ep_id}
+        <if test="threshold != null" >
+            ,#{threshold}
+        </if>
+       ) ON DUPLICATE KEY UPDATE
        threshold = case  when #{threshold} is null then threshold else #{threshold} end;
     </insert>
 
