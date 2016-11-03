@@ -15,7 +15,6 @@ import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.mns.TopicPushManager;
 import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.beanutils.PropertyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -222,13 +221,13 @@ public class BalancePayServiceImpl implements BalancePayService {
     public Result<Map<String, String>> getBalanceAccountInfo(Integer epId, Integer coreEpId) {
         Result<Map<String, String>> result = new Result<>();
         Capital capital = capitalMapper.selectByEpIdAndCoreEpId(epId, coreEpId);
+        Assert.notNull(capital, "没有找到余额账户");
         try {
             Map<String, String> map = BeanUtils.describe(capital);
-            Map<String, Object> map1 = PropertyUtils.describe(capital);
-            System.out.println(JsonUtils.toJson(map1));
             result.put(map);
             result.setSuccess();
         } catch (Exception e) {
+            logger.error(e.getMessage(), e);
             result.setFail();
             result.setError("转换出错：Capital -> Map");
         }
