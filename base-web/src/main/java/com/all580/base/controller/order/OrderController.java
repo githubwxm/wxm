@@ -97,4 +97,12 @@ public class OrderController extends BaseController {
         ParamsMapValidate.validate(params, orderValidateManager.cancelValidate());
         return refundOrderService.refundAliPayMoney(params);
     }
+
+    @RequestMapping(value = "resend/ticket", method = RequestMethod.POST)
+    @ResponseBody
+    public Result<?> resendTicket(@RequestBody Map params) throws Exception {
+        // 验证参数
+        ParamsMapValidate.validate(params, orderValidateManager.resendTicketValidate());
+        return bookingOrderService.resendTicket(params);
+    }
 }

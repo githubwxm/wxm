@@ -338,7 +338,7 @@ public class BookingOrderManager extends BaseOrderManager {
         }
         // 调用分账
         Result<BalanceChangeRsp> result = changeBalances(PaymentConstant.BalanceChangeType.PAY_SPLIT, String.valueOf(orderId), infoList);
-        if (result.hasError()) {
+        if (!result.isSuccess()) {
             log.warn("支付分账失败:{}", result.get());
             throw new ApiException(result.getError());
         }
@@ -378,7 +378,7 @@ public class BookingOrderManager extends BaseOrderManager {
                 }
                 Integer saleCoreEpId = getCoreEp(coreEpMap, info.getSaleEpId());
                 // 卖家 == 平台商 && 买家 == 平台商
-                if (info.getBuyEpId() == buyCoreEpId && saleCoreEpId == info.getSaleEpId()) {
+                if (info.getBuyEpId() == buyCoreEpId.intValue() && saleCoreEpId.intValue() == info.getSaleEpId()) {
                     AccountDataDto dto = addDayAccount(dayAccountDataMap, infoList, buyCoreEpId, day);
                     dto.setSaleCoreEpId(saleCoreEpId);
                     addDayAccount(dayAccountDataMap, infoList, saleCoreEpId, day);

@@ -38,6 +38,27 @@ public class ProductController extends BaseController {
     @Resource
     ProductDistributionRPCService productDistributionService;
 
+
+    /**
+     * 查询景区子主产品
+     * @param  map  主产品id
+     * @return
+     */
+    @RequestMapping(value = "updateProductSubBatch", method = RequestMethod.POST)
+    @ResponseBody
+    public Result<?> updateProductSubBatch(Map<String,Object> map){
+        return productService.updateProductSubBatch(map);
+    }
+    /**
+     * 查询景区子主产品
+     * @param  productSubId  主产品id
+     * @return
+     */
+    @RequestMapping(value = "selectProductSubBatch", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<?> selectProductSubBatch(@RequestParam("productSubId") Integer productSubId){
+        return productService.selectProductSubBatch(productSubId);
+    }
     /**
      * 查询景区主产品
      * @param  productId  主产品id
@@ -112,8 +133,8 @@ public class ProductController extends BaseController {
         subProductInfo.setBuyStartDate(DateFormatUtils.converToDateTime(CommonUtil.objectParseString(params.get("buyStartDate"))));
         subProductInfo.setBuyEndDate(DateFormatUtils.converToDateTime(CommonUtil.objectParseString(params.get("buyEndDate"))));
         subProductInfo.setDescription(CommonUtil.objectParseString(params.get("description")));
-        subProductInfo.setDisableDate(CommonUtil.objectParseString(params.get("disableDate")));
-        subProductInfo.setDisableWeek(CommonUtil.objectParseString(params.get("disableWeek")));
+        subProductInfo.setDisableDate(JsonUtils.toJson(params.get("disableDate")));
+        subProductInfo.setDisableWeek(JsonUtils.toJson(params.get("disableWeek")));
         subProductInfo.setEffectiveDay(CommonUtil.objectParseInteger(params.get("effectiveDay")));
         subProductInfo.setEffectiveEndDate(CommonUtil.objectParseString(params.get("effectiveEndDate")));
         subProductInfo.setEffectiveStartDate(CommonUtil.objectParseString(params.get("effectiveStartDate")));

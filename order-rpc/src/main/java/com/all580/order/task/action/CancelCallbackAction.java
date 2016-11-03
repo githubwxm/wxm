@@ -46,7 +46,7 @@ public class CancelCallbackAction implements JobRunner {
         }
 
         com.framework.common.Result result = refundOrderManager.cancel(order);
-        if (result.hasError()) {
+        if (!result.isSuccess()) {
             log.warn("支付成功分账失败取消回调,取消订单异常");
             throw new Exception(result.getError());
         }

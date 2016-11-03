@@ -108,20 +108,13 @@ public class OrderValidateManager {
                 "order_item_sn", // 订单编号(流水)
                 "days.quantity", // 退票数量
                 "days.visitors.quantity", // 退票数量
+                "days.visitors.id", // 游客ID
                 "quantity", // 退票数量
         }, new ValidRule[]{new ValidRule.NotNull(), new ValidRule.Digits()});
 
         rules.put(new String[]{
                 "days.day" // 日期
         }, new ValidRule[]{new ValidRule.NotNull(), new ValidRule.Date()});
-
-        rules.put(new String[]{
-                "days.visitors.sid" // 身份证
-        }, new ValidRule[]{new ValidRule.NotNull(), new ValidRule.IdCard()});
-
-        rules.put(new String[]{
-                "days.visitors.phone" // 身份证
-        }, new ValidRule[]{new ValidRule.NotNull()});
 
         rules.put(new String[]{"cause"}, new ValidRule[]{new ValidRule.NotNull()});
         return rules;
@@ -157,6 +150,24 @@ public class OrderValidateManager {
         rules.put(new String[]{
                 "order_sn" // 订单编号(流水)
         }, new ValidRule[]{new ValidRule.NotNull(), new ValidRule.Digits()});
+
+        return rules;
+    }
+
+    /**
+     * 订单重新发票验证
+     * @return
+     */
+    public Map<String[], ValidRule[]> resendTicketValidate() {
+        Map<String[], ValidRule[]> rules = new HashMap<>();
+        rules.put(new String[]{
+                "order_item_sn", // 子订单编号(流水)
+                "visitor_id" // 游客ID
+        }, new ValidRule[]{new ValidRule.NotNull(), new ValidRule.Digits()});
+
+        rules.put(new String[]{
+                "phone" // 游客手机号码
+        }, new ValidRule[]{new ValidRule.NotNull(), new ValidRule.Pattern(ValidRule.MOBILE_PHONE)});
 
         return rules;
     }

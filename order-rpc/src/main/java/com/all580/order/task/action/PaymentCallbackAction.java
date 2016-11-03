@@ -63,7 +63,7 @@ public class PaymentCallbackAction implements JobRunner {
 
         // 加已售
         com.framework.common.Result result = productSalesPlanRPCService.addSoldProductStocks(lockParams);
-        if (result.hasError()) {
+        if (!result.isSuccess()) {
             log.warn("支付成功加已售失败");
             throw new Exception(result.getError());
         }
@@ -80,9 +80,13 @@ public class PaymentCallbackAction implements JobRunner {
 
         // 出票
         // 记录任务
-        Map<String, String> jobParams = new HashMap<>();
-        jobParams.put("orderId", order.getId().toString());
-        bookingOrderManager.addJob(OrderConstant.Actions.SEND_TICKET, jobParams);
+        List<Map<String, String>> jobParams = new ArrayList<>();
+        for (OrderItem orderItem : orderItems) {
+            Map<String, String> jobParam = new HashMap<>();
+            jobParam.put("orderItemId", orderItem.getId().toString());
+            jobParams.add(jobParam);
+        }
+        bookingOrderManager.addJobs(OrderConstant.Actions.SEND_TICKET, jobParams);
 
         // 同步数据
         bookingOrderManager.syncPaymentSuccessData(orderId);

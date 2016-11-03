@@ -22,6 +22,8 @@ import com.all580.product.api.model.EpSalesInfo;
 import com.all580.product.api.model.ProductSalesInfo;
 import com.all580.product.api.model.ProductSearchParams;
 import com.all580.product.api.service.ProductSalesPlanRPCService;
+import com.all580.voucher.api.model.ReSendTicketParams;
+import com.all580.voucher.api.service.VoucherRPCService;
 import com.framework.common.Result;
 import com.framework.common.distributed.lock.DistributedLockTemplate;
 import com.framework.common.distributed.lock.DistributedReentrantLock;
@@ -69,6 +71,8 @@ public class BookingOrderServiceImpl implements BookingOrderService {
     @Autowired
     private ThirdPayService thirdPayService;
     @Autowired
+    private VoucherRPCService voucherRPCService;
+    @Autowired
     private DistributedLockTemplate distributedLockTemplate;
     @Value("${lock.timeout}")
     private int lockTimeOut = 3;
@@ -115,7 +119,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             searchParams.setDays(days);
             searchParams.setQuantity(quantity);
             Result<ProductSalesInfo> salesInfoResult = productSalesPlanRPCService.validateProductSalesInfo(searchParams);
-            if (salesInfoResult.hasError()) {
+            if (!salesInfoResult.isSuccess()) {
                 throw new ApiException(salesInfoResult.getError());
             }
             ProductSalesInfo salesInfo = salesInfoResult.get();
@@ -148,7 +152,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             if (salesInfo.isRequireSid()) {
                 Result visitorResult = bookingOrderManager.validateVisitor(
                         visitors, salesInfo.getProductSubCode(), bookingDate, salesInfo.getSidDayCount(), salesInfo.getSidDayQuantity());
-                if (visitorResult.hasError()) {
+                if (!visitorResult.isSuccess()) {
                     throw new ApiException(visitorResult.getError());
                 }
             }
@@ -171,7 +175,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
                 // 只计算预付的,到付不计算在内
                 if (salesInfo.getPayType() == ProductConstants.PayType.PREPAY) {
                     totalPayPrice += info.getPrice() * quantity; // 计算进货价
-                    totalPayShopPrice += info.getShopPrice() * quantity; // 计算门市价
+                    totalPayShopPrice += (info.getShopPrice() == null ? 0 : info.getShopPrice()) * quantity; // 计算门市价
                 }
 
                 EpSalesInfo self = new EpSalesInfo();
@@ -179,6 +183,9 @@ public class BookingOrderServiceImpl implements BookingOrderService {
                 self.setBuyEpId(-1);
                 // 代收:叶子销售商以门市价卖出
                 self.setPrice(from == OrderConstant.FromType.TRUST ? info.getShopPrice() : info.getPrice());
+                if (self.getPrice() == null) {
+                    self.setPrice(0);
+                }
                 daySales.add(self);
             }
             totalPrice += saleAmount;
@@ -215,7 +222,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
 
         // 锁定库存
         Result<Map<Integer, List<Boolean>>> lockResult = productSalesPlanRPCService.lockProductStocks(lockParams);
-        if (lockResult.hasError()) {
+        if (!lockResult.isSuccess()) {
             throw new ApiException(lockResult.getError());
         }
 
@@ -384,7 +391,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
                 Result result = bookingOrderManager.changeBalances(
                         PaymentConstant.BalanceChangeType.BALANCE_PAY,
                         order.getNumber().toString(), payInfo, saveInfo);
-                if (result.hasError()) {
+                if (!result.isSuccess()) {
                     log.warn("余额支付失败:{}", result.get());
                     throw new ApiException(result.getError());
                 }
@@ -405,7 +412,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             Result result = thirdPayService.reqPay(order.getNumber(),
                     bookingOrderManager.getCoreEpId(epService.selectPlatformId(order.getBuyEpId())),
                     payType, payParams);
-            if (result.hasError()) {
+            if (!result.isSuccess()) {
                 log.warn("第三方支付异常:{}", result);
                 throw new ApiException(result.getError());
             }
@@ -419,6 +426,14 @@ public class BookingOrderServiceImpl implements BookingOrderService {
 
     @Override
     public Result<?> resendTicket(Map params) {
-        return null;
+        OrderItem orderItem = orderItemMapper.selectBySN(Long.valueOf(params.get("order_item_sn").toString()));
+        if (orderItem == null) {
+            throw new ApiException("子订单不存在");
+        }
+        ReSendTicketParams reSendTicketParams = new ReSendTicketParams();
+        reSendTicketParams.setOrderSn(orderItem.getNumber());
+        reSendTicketParams.setVisitorId(CommonUtil.objectParseInteger(params.get("visitor_id")));
+        reSendTicketParams.setMobile(params.get("phone").toString());
+        return voucherRPCService.resendTicket(orderItem.getEpMaId(), reSendTicketParams);
     }
 }
