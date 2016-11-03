@@ -118,7 +118,7 @@ public class ProductController extends BaseController {
         subProductInfo.setEffectiveEndDate(CommonUtil.objectParseString(params.get("effectiveEndDate")));
         subProductInfo.setEffectiveStartDate(CommonUtil.objectParseString(params.get("effectiveStartDate")));
         subProductInfo.setEffectiveType(CommonUtil.objectParseInteger(params.get("effectiveType")));
-        subProductInfo.setImg(JsonUtils.toJson(CommonUtil.objectParseString(params.get("img"))));
+        subProductInfo.setImg(JsonUtils.toJson(params.get("img")));
         subProductInfo.setEpMaId(CommonUtil.objectParseInteger(params.get("epMaId")));
         subProductInfo.setMaProductId(CommonUtil.objectParseString(params.get("maProductId")));
         subProductInfo.setMarketPrice(CommonUtil.objectParseInteger(params.get("marketPrice")));
