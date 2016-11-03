@@ -14,6 +14,7 @@ import com.framework.common.Result;
 import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.mns.TopicPushManager;
+import com.framework.common.vo.PageRecord;
 import org.apache.commons.beanutils.BeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,7 +81,8 @@ public class BalancePayServiceImpl implements BalancePayService {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        paymentCallbackService.payCallback(Long.parseLong(serialNum), serialNum, null);
+                        Result rst = paymentCallbackService.payCallback(Long.parseLong(serialNum), serialNum, null);
+                        logger.debug("余额支付回调成功：" + rst.isSuccess());
                     }
                 }).start();
             }
@@ -253,15 +255,18 @@ public class BalancePayServiceImpl implements BalancePayService {
     }
 
     @Override
-    public Result<List<Map<String, String>>> getBalanceSerialList(Integer epId, Integer coreEpId, int startRecord, int maxRecords) {
-        Result<List<Map<String, String>>> result = new Result<>();
+    public Result<PageRecord<Map<String, String>>> getBalanceSerialList(Integer epId, Integer coreEpId, Integer startRecord, Integer
+            maxRecords) {
+        Result<PageRecord<Map<String, String>>> result = new Result<>();
         Capital capital = capitalMapper.selectByEpIdAndCoreEpId(epId, coreEpId);
         Assert.notNull(capital, MessageFormat.format("没有找到余额账户:epId={0}|coreEpId={1}", epId, coreEpId));
 
         List<Map<String, String>> capitalSerials = capitalSerialMapper.listByCapitalId(capital.getId(),
                 startRecord, maxRecords);
+        int count = capitalSerialMapper.countByCapitalId(capital.getId());
+        PageRecord<Map<String, String>> record = new PageRecord<>(count, capitalSerials);
         result.setSuccess();
-        result.put(capitalSerials);
+        result.put(record);
         return result;
     }
 }
