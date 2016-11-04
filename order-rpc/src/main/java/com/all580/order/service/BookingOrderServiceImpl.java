@@ -49,7 +49,6 @@ import java.util.*;
  * @date 2016/9/28 9:23
  */
 @Service
-@Transactional(rollbackFor = {Exception.class, RuntimeException.class})
 @Slf4j
 public class BookingOrderServiceImpl implements BookingOrderService {
     @Autowired
@@ -78,6 +77,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
     private int lockTimeOut = 3;
 
     @Override
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public Result<?> create(Map params) throws Exception {
         Integer buyEpId = CommonUtil.objectParseInteger(params.get("ep_id"));
         Integer from = CommonUtil.objectParseInteger(params.get("from"));
@@ -118,6 +118,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             searchParams.setStartDate(bookingDate);
             searchParams.setDays(days);
             searchParams.setQuantity(quantity);
+            searchParams.setBuyEpId(buyEpId);
             Result<ProductSalesInfo> salesInfoResult = productSalesPlanRPCService.validateProductSalesInfo(searchParams);
             if (!salesInfoResult.isSuccess()) {
                 throw new ApiException(salesInfoResult.getError());
@@ -286,6 +287,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public Result<?> audit(final Map params) {
         String orderItemId = params.get("order_item_id").toString();
         long orderItemSn = Long.valueOf(orderItemId);
@@ -345,6 +347,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public Result<?> payment(Map params) {
         String orderSn = params.get("order_sn").toString();
         Long sn = Long.valueOf(orderSn);

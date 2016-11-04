@@ -27,7 +27,6 @@ import java.util.Map;
  * @date 2016/10/20 20:51
  */
 @Component(OrderConstant.Actions.REFUND_MONEY)
-@Transactional(rollbackFor = {Exception.class, RuntimeException.class})
 @Slf4j
 public class RefundMoneyAction implements JobRunner {
     @Autowired

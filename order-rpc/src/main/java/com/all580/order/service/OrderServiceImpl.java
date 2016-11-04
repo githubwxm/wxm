@@ -7,7 +7,6 @@ import com.framework.common.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author zhouxianjun(Alone)
@@ -16,13 +15,11 @@ import org.springframework.transaction.annotation.Transactional;
  * @date 2016/10/22 17:32
  */
 @Service
-@Transactional(rollbackFor = {Exception.class, RuntimeException.class})
 @Slf4j
 public class OrderServiceImpl implements OrderService {
     @Autowired
     private OrderMapper orderMapper;
 
-    @Transactional(readOnly = true)
     @Override
     public Result<Integer> getPayeeEpIdByOutTransId(String outTranId) {
         Order order = orderMapper.selectByThirdSn(outTranId);

@@ -29,7 +29,6 @@ import java.util.Map;
  * @date 2016/10/15 9:50
  */
 @Service
-@Transactional(rollbackFor = {Exception.class, RuntimeException.class})
 @Slf4j
 public class TicketCallbackServiceImpl implements TicketCallbackService {
     @Autowired

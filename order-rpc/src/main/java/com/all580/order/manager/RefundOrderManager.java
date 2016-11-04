@@ -68,7 +68,7 @@ public class RefundOrderManager extends BaseOrderManager {
      * @param sn 订单编号
      * @return
      */
-    @Transactional
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public Result cancel(long sn) {
         return cancel(orderMapper.selectBySN(sn));
     }
@@ -78,7 +78,7 @@ public class RefundOrderManager extends BaseOrderManager {
      * @param order 订单
      * @return
      */
-    @Transactional
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public Result cancel(Order order) {
         if (order == null) {
             throw new ApiException("订单不存在");
@@ -138,7 +138,7 @@ public class RefundOrderManager extends BaseOrderManager {
      * @param detailList 订单详情
      * @throws Exception
      */
-    @Transactional
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public int canRefundForDays(List daysList, List<OrderItemDetail> detailList) throws Exception {
         int total = 0;
         for (Object item : daysList) {
@@ -177,7 +177,7 @@ public class RefundOrderManager extends BaseOrderManager {
      * @param day 日期
      * @param detail 订单详情
      */
-    @Transactional
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public int canVisitorRefund(List visitors, String day, OrderItemDetail detail) {
         int total = 0;
         List<Visitor> visitorList = visitorMapper.selectByOrderDetailId(detail.getId());
@@ -297,7 +297,7 @@ public class RefundOrderManager extends BaseOrderManager {
      * @param money 退支付金额
      * @return
      */
-    @Transactional
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public RefundOrder generateRefundOrder(int itemId, List daysList, int quantity, int money, String cause) {
         RefundOrder refundOrder = new RefundOrder();
         refundOrder.setOrderItemId(itemId);
@@ -319,7 +319,7 @@ public class RefundOrderManager extends BaseOrderManager {
      * @param detailList 每天详情
      * @param refundDate 退订时间
      */
-    @Transactional
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public void preRefundAccount(List daysList, int itemId, int refundOrderId, List<OrderItemDetail> detailList, Date refundDate) throws Exception {
         Map<Integer, Integer> coreEpIdMap = new HashMap<>();
         List<OrderItemAccount> accounts = orderItemAccountMapper.selectByOrderItem(itemId);
@@ -380,7 +380,7 @@ public class RefundOrderManager extends BaseOrderManager {
      * @return
      * @throws Exception
      */
-    @Transactional
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public void returnRefundForDays(List daysList, List<OrderItemDetail> detailList) throws Exception {
         for (Object item : daysList) {
             Map dayMap = (Map) item;
@@ -390,7 +390,7 @@ public class RefundOrderManager extends BaseOrderManager {
             if (detail == null) {
                 throw new ApiException(String.format("日期:%s没有订单数据,数据异常", day));
             }
-            Integer quantity = Integer.parseInt(dayMap.get(day).toString());
+            Integer quantity = CommonUtil.objectParseInteger(dayMap.get("quantity"));
             // 修改退票数
             detail.setRefundQuantity(detail.getRefundQuantity() - quantity);
             orderItemDetailMapper.updateByPrimaryKeySelective(detail);
@@ -406,7 +406,7 @@ public class RefundOrderManager extends BaseOrderManager {
      * @param visitors 游客信息
      * @param detail 订单详情
      */
-    @Transactional
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public void returnVisitorRefund(List visitors, OrderItemDetail detail) {
         List<Visitor> visitorList = visitorMapper.selectByOrderDetailId(detail.getId());
         if (visitorList != null) {
@@ -430,7 +430,7 @@ public class RefundOrderManager extends BaseOrderManager {
      * @return
      * @throws Exception
      */
-    @Transactional
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public int nonSendTicketRefund(List daysList, List<OrderItemDetail> detailList) throws Exception {
         int total = 0;
         for (Object item : daysList) {
@@ -474,7 +474,7 @@ public class RefundOrderManager extends BaseOrderManager {
      * @param refundOrder
      * @throws Exception
      */
-    @Transactional
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public void refundFail(RefundOrder refundOrder) throws Exception {
         refundOrder.setStatus(OrderConstant.RefundOrderStatus.FAIL);
         List daysList = JsonUtils.json2List(refundOrder.getData());
@@ -487,7 +487,7 @@ public class RefundOrderManager extends BaseOrderManager {
      * 退票
      * @param refundOrder
      */
-    @Transactional
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public void refundTicket(RefundOrder refundOrder) {
         // 生成退票流水
         RefundSerial refundSerial = new RefundSerial();
@@ -546,6 +546,7 @@ public class RefundOrderManager extends BaseOrderManager {
      * @param order 订单
      */
     public void refundMoney(Order order, int money, String sn) {
+        log.debug("订单:{} 发起退款:{}", order.getNumber(), money);
         Integer coreEpId = getCoreEpId(getCoreEpId(order.getBuyEpId()));
         // 退款
         // 余额退款

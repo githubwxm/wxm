@@ -24,7 +24,6 @@ import java.util.Map;
  * @date 2016/10/21 15:11
  */
 @Component(OrderConstant.Actions.CONSUME_SPLIT_ACCOUNT)
-@Transactional(rollbackFor = {Exception.class, RuntimeException.class})
 @Slf4j
 public class ConsumeSplitAccountAction implements JobRunner {
     @Autowired
@@ -35,6 +34,7 @@ public class ConsumeSplitAccountAction implements JobRunner {
     private BookingOrderManager bookingOrderManager;
 
     @Override
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public Result run(JobContext jobContext) throws Throwable {
         Map<String, String> params = jobContext.getJob().getExtParams();
         String sn = params.get("sn");

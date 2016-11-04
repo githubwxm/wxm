@@ -27,7 +27,6 @@ import java.util.Map;
  * @date 2016/10/11 20:01
  */
 @Service
-@Transactional(rollbackFor = {Exception.class, RuntimeException.class})
 @Slf4j
 public class PaymentCallbackServiceImpl implements PaymentCallbackService {
     @Autowired
@@ -41,6 +40,7 @@ public class PaymentCallbackServiceImpl implements PaymentCallbackService {
     private RefundOrderMapper refundOrderMapper;
 
     @Override
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public Result payCallback(long ordCode, String serialNum, String outTransId) {
         log.debug("支付回调:订单号:{};流水:{};交易号:{}", new Object[]{ordCode, serialNum, outTransId});
         Order order = orderMapper.selectBySN(ordCode);
@@ -69,6 +69,7 @@ public class PaymentCallbackServiceImpl implements PaymentCallbackService {
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public Result refundCallback(Long ordCode, String serialNum, String outTransId, boolean success) {
         log.debug("退款回调-{}:退订订单号:{};流水:{};交易号:{}", new Object[]{success, ordCode, serialNum, outTransId});
         RefundOrder refundOrder = refundOrderMapper.selectBySN(ordCode);
