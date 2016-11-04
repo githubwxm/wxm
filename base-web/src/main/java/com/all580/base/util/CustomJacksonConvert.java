@@ -47,8 +47,6 @@ public class CustomJacksonConvert extends MappingJackson2HttpMessageConverter {
 			//String data = JsonUtils.toJson(tree);//替换转String 那行
 			String data1 = JSON.toJSONString(result);
 			String sign=CommonUtil.signForData(key,data1);
-			System.out.println("key: "+key);
-			System.out.println("data: "+data1);
 			result.put("sign",sign);
 			super.writeInternal(result, outputMessage);
 			return;
