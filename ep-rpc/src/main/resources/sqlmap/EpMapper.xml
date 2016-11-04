@@ -79,8 +79,8 @@
         <include refid="ep_list_where"/>
     </select>
     <select id="getEp" resultType="java.util.HashMap">
-        select    <foreach item="name" index="index" collection="field" open="" separator="," close="">
-        ${name}
+        select    <foreach item="xxoo" index="index" collection="field" open="" separator="," close="">
+        ${xxoo}
     </foreach> from t_ep
         where
         1=1 and `id`  in
