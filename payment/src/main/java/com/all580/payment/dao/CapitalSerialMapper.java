@@ -21,6 +21,8 @@ public interface CapitalSerialMapper {
                                              @Param("startRecord")int startRecord,
                                              @Param("maxRecords")int maxRecords);
 
+    int countByCapitalId(@Param("capitalId") Integer capitalId);
+
     int updateByPrimaryKeySelective(CapitalSerial record);
 
     int updateByPrimaryKey(CapitalSerial record);

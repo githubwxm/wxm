@@ -158,9 +158,17 @@
 
     <select id="listByCapitalId" parameterType="java.lang.Integer" resultType="map">
         select
-        id, create_time as createTime,new_balance-old_balance as balanceAdd,new_can_cash-old_can_cash as canCashAdd
-        from t_capital_serial
+        c.id, c.create_time as createTime,c.new_balance-c.old_balance as balanceAdd,c.new_can_cash-c.old_can_cash as
+        canCashAdd,p.name as changeType
+        from t_capital_serial c
+        LEFT JOIN t_payment_param p on c.ref_type=p.id
         where capital_id = #{capitalId,jdbcType=INTEGER}
         limit #{startRecord}, #{maxRecords}
+    </select>
+    <select id="countByCapitalId" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        select
+        count(*)
+        from t_capital_serial
+        where capital_id = #{capitalId,jdbcType=INTEGER}
     </select>
 </mapper>
