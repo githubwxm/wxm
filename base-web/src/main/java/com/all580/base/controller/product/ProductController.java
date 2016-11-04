@@ -39,12 +39,13 @@ public class ProductController extends BaseController {
     ProductDistributionRPCService productDistributionService;
 
 
+
     /**
-     * 查询景区子主产品
+     * 修改景区子主产品
      * @param  map  主产品id
      * @return
      */
-    @RequestMapping(value = "updateProductSubBatch", method = RequestMethod.POST)
+    @RequestMapping(value = "sub/update", method = RequestMethod.POST)
     @ResponseBody
     public Result<?> updateProductSubBatch(Map<String,Object> map){
         return productService.updateProductSubBatch(map);
@@ -236,11 +237,7 @@ public class ProductController extends BaseController {
 
 
 
-    @RequestMapping(value = "sub/update", method = RequestMethod.POST)
-    @ResponseBody
-    public Result<?> updateScenerySubProduct(@RequestBody Map params) {
-        return null;
-    }
+
 
     @RequestMapping(value = "booking/view")
     @ResponseBody
