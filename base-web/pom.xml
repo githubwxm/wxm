@@ -133,6 +133,16 @@
 				<active.url>jdbc:mysql://192.168.1.250:3306/config?characterEncoding=utf8</active.url>
 			</properties>
 			<build>
+                <resources>
+					<resource>
+						<directory>src/main/resources</directory>
+                        <filtering>true</filtering>
+						<includes>
+							<include>**/applicationContext.xml</include>
+							<include>**</include>
+						</includes>
+					</resource>
+				</resources>
 				<plugins>
 					<plugin>
 						<groupId>org.apache.tomcat.maven</groupId>
@@ -162,6 +172,16 @@
 				<active.url>jdbc:mysql://192.168.1.250:3306/config?characterEncoding=utf8</active.url>
 			</properties>
 			<build>
+				<resources>
+					<resource>
+						<directory>src/main/resources</directory>
+						<filtering>true</filtering>
+						<includes>
+							<include>**/applicationContext.xml</include>
+							<include>**</include>
+						</includes>
+					</resource>
+				</resources>
 				<plugins>
 					<plugin>
 						<groupId>org.apache.tomcat.maven</groupId>
