@@ -98,9 +98,10 @@ public class PlanController extends BaseController {
             @RequestParam("area") Integer area,
             @RequestParam("ticketFlag") Integer ticketFlag,
             @RequestParam("payType") Integer payType,
+            @RequestParam("ticketDict") Integer ticketDict,
             @RequestParam("record_start") Integer start,
             @RequestParam("record_count") Integer count) {
-        return productSalesPlanService.selectCanSaleSubProduct(epId,productName,productSubName,province,city,area,ticketFlag,payType,start,count);
+        return productSalesPlanService.selectCanSaleSubProduct(epId,productName,productSubName,province,city,area,ticketFlag,payType,ticketDict,start,count);
     }
 
     @RequestMapping(value = "sale/group")
