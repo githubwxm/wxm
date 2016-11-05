@@ -77,11 +77,12 @@ public class EpBalanceThresholdServiceImple implements EpBalanceThresholdService
                 epMap.put("id",ep_id);//再看发送短信所需要的参数
                  List<Map<String,Object>> list= epMapper.select(epMap);//   获取企业信息
                  if(null==list){
-                     if(!list.isEmpty()){
+                     if(!list.isEmpty()){//threshold   jinqian
                          Map<String,Object> mapResult = list.get(0);
                         String destPhoneNum=  mapResult.get("link_phone").toString();
                          Map<String, String>  params = new HashMap<>();
-                         params.put("name",mapResult.get("name").toString());
+                         params.put("qiye",mapResult.get("name").toString());
+                         params.put("jinqian",threshold+"");
                           smsService.send(destPhoneNum, SmsType.Ep.BALANCE_SHORTAGE,ep_id,params).get();//发送短信
                      }
                  }
