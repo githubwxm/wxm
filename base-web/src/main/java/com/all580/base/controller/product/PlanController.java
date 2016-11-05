@@ -106,7 +106,7 @@ public class PlanController extends BaseController {
 
     @RequestMapping(value = "sale/group")
     @ResponseBody
-    public Result ProductSubDistributionGroup(@RequestBody Map params) {
+    public Result productSubDistributionGroup(@RequestBody Map params) {
         for (OnSalesParams param : initGroupOnsalesParams(params)) {
             productService.productOnSale(param);
         }
@@ -115,7 +115,7 @@ public class PlanController extends BaseController {
 
     @RequestMapping(value = "sale/ep")
     @ResponseBody
-    public Result ProductSubDistributionEp(@RequestBody Map params) {
+    public Result productSubDistributionEp(@RequestBody Map params) {
         productService.productOnSaleBatch(initEpOnsalesParams(params));
         return new Result(true);
     }
@@ -143,6 +143,22 @@ public class PlanController extends BaseController {
             onSalesParamses.add(onSalesParams);
         }
         return onSalesParamses;
+    }
+
+    @RequestMapping(value = "off_sale/ep")
+    @ResponseBody
+    public Result productSubOffSaleEp(@RequestBody Map params) {
+        List<Map> paramList = (List<Map>) params.get("offSaleArray");
+        if (paramList == null || paramList.isEmpty()) return new Result(false, "参数错误");
+        return productService.productOffSaleBatch(paramList);
+    }
+
+    @RequestMapping(value = "off_sale/group")
+    @ResponseBody
+    public Result productSubOffSaleGroup(@RequestBody Map params) {
+        List<Map> paramList = (List<Map>) params.get("offSaleArray");
+        if (paramList == null || paramList.isEmpty()) return new Result(false, "参数错误");
+        return productService.productOffSaleBatch(paramList);
     }
 
     /**
