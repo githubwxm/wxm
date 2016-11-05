@@ -94,9 +94,7 @@ public class RefundOrderManager extends BaseOrderManager {
             default:
                 order.setStatus(OrderConstant.OrderStatus.CANCEL);
         }
-
         List<OrderItem> orderItems = orderItemMapper.selectByOrderId(order.getId());
-        List<ProductSearchParams> lockParams = new ArrayList<>();
         for (OrderItem orderItem : orderItems) {
             if (orderItem.getStatus() == OrderConstant.OrderItemStatus.SEND ||
                     orderItem.getStatus() == OrderConstant.OrderItemStatus.TICKETING) {
@@ -105,28 +103,11 @@ public class RefundOrderManager extends BaseOrderManager {
 
             orderItem.setStatus(OrderConstant.OrderItemStatus.CANCEL);
             orderItemMapper.updateByPrimaryKeySelective(orderItem);
-            List<OrderItemDetail> detailList = orderItemDetailMapper.selectByItemId(orderItem.getId());
-            for (OrderItemDetail detail : detailList) {
-                if (!detail.getOversell()) {
-                    ProductSearchParams params = new ProductSearchParams();
-                    params.setSubProductId(orderItem.getProSubId());
-                    params.setStartDate(detail.getDay());
-                    params.setDays(1);
-                    params.setQuantity(detail.getQuantity());
-                    params.setSubOrderId(orderItem.getId());
-                    lockParams.add(params);
-                }
-            }
         }
         // 更新主订单为已取消
         orderMapper.updateByPrimaryKeySelective(order);
         // 还库存
-        if (!lockParams.isEmpty()) {
-            Result result = productSalesPlanRPCService.addProductStocks(lockParams);
-            if (!result.isSuccess()) {
-                throw new ApiException(result.getError());
-            }
-        }
+        refundStock(orderItems);
         // 同步数据
         syncOrderCancelData(order.getId());
         return new Result(true);
@@ -582,6 +563,45 @@ public class RefundOrderManager extends BaseOrderManager {
             log.warn("第三方退款异常:{}", result);
             throw new ApiException(result.getError());
         }
+    }
+
+    /**
+     * 还可售库存
+     * @param orderItemList
+     */
+    public void refundStock(List<OrderItem> orderItemList) {
+        if (orderItemList != null) {
+            List<ProductSearchParams> lockParams = new ArrayList<>();
+            for (OrderItem orderItem : orderItemList) {
+                List<OrderItemDetail> detailList = orderItemDetailMapper.selectByItemId(orderItem.getId());
+                for (OrderItemDetail detail : detailList) {
+                    if (!detail.getOversell()) {
+                        ProductSearchParams p = new ProductSearchParams();
+                        p.setSubProductId(orderItem.getProSubId());
+                        p.setStartDate(detail.getDay());
+                        p.setDays(1);
+                        p.setQuantity(detail.getQuantity());
+                        p.setSubOrderId(orderItem.getId());
+                        lockParams.add(p);
+                    }
+                }
+            }
+            // 还库存
+            if (!lockParams.isEmpty()) {
+                com.framework.common.Result result = productSalesPlanRPCService.addProductStocks(lockParams);
+                if (!result.isSuccess()) {
+                    throw new ApiException(result.getError());
+                }
+            }
+        }
+    }
+
+    /**
+     * 还可售库存
+     * @param orderItem
+     */
+    public void refundStock(OrderItem orderItem) {
+        refundStock(CommonUtil.oneToList(orderItem));
     }
 
     /**

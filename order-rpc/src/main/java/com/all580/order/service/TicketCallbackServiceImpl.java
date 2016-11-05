@@ -230,6 +230,12 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
             refundOrderManager.refundMoney(order, refundOrder.getMoney(), String.valueOf(refundOrder.getNumber()));
         }
 
+        // 还库存 记录任务
+        Map<String, String> jobParams = new HashMap<>();
+        jobParams.put("orderItemId", String.valueOf(refundOrder.getOrderItemId()));
+        jobParams.put("check", "false");
+        bookingOrderManager.addJob(OrderConstant.Actions.REFUND_STOCK, jobParams);
+
         // 同步数据
         refundOrderManager.syncRefundTicketData(refundOrder.getId());
         return new Result(true);
