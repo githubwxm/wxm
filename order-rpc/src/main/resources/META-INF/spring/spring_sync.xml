@@ -11,6 +11,7 @@
 		<property name="accessId" value="${mns.access.id}"/>
 		<property name="accessKey" value="${mns.access.key}"/>
 		<property name="accountEndpoint" value="${mns.endpoint}"/>
+		<property name="tagPrefix" value="${mns.tag.prefix}"/>
 	</bean>
 
 	<!-- 同步数据提交管理器 -->

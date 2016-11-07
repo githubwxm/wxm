@@ -221,8 +221,8 @@ public class RefundOrderServiceImpl implements RefundOrderService {
         if (refundOrder == null) {
             throw new ApiException("退订订单不存在");
         }
-        if (refundOrder.getStatus() != OrderConstant.RefundOrderStatus.AUDIT_WAIT) {
-            throw new ApiException("退订订单不在待审核状态");
+        if (refundOrder.getStatus() != OrderConstant.RefundOrderStatus.REFUND_MONEY) {
+            throw new ApiException("退订订单不在退款中状态");
         }
         OrderItem orderItem = orderItemMapper.selectByPrimaryKey(refundOrder.getOrderItemId());
         if (orderItem == null) {
