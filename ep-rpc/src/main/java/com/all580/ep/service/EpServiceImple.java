@@ -108,6 +108,9 @@ public class EpServiceImple implements EpService {
                 balancePayService.createBalanceAccount(coreEpId, coreEpId);//添加余额d
                 result.put(accessMap);
                 result.setSuccess();
+                List<Map<String,Object>>  listMap =   new ArrayList<>();
+                listMap.add(accessMap);
+                syncEpData(coreEpId,EpConstant.Table.T_CORE_EP_ACCESS,listMap);
 //                smsService.send( CommonUtil.objectParseString(map.get("link_phone")), SmsType.Ep.CORE_EP_ADD,
 //                        coreEpId,null).get();//发送短信
             } catch (Exception e) {
@@ -340,6 +343,7 @@ public class EpServiceImple implements EpService {
             int ref= epMapper.updateStatus(params);
            if(ref>0){
                List<Map<String,String>>  listMap =   epMapper.selectSingleTable(params);
+
                syncEpData(params.get("ep_id"),EpConstant.Table.T_EP,listMap);
                result.put(ref);
                result.setSuccess();
@@ -347,8 +351,8 @@ public class EpServiceImple implements EpService {
                result.setError("数据不用更新");
            }
         } catch (Exception e) {
-             log.error("冻结停用企业异常", e);
-            throw new ApiException("冻结停用企业异常", e);
+             log.error(e.getMessage(), e);
+            throw new ApiException(e.getMessage(), e);
         }
         return result;
     }
@@ -363,8 +367,8 @@ public class EpServiceImple implements EpService {
         try {
             return updateStatus(params);
         } catch (ApiException e) {
-             log.error("更新异常", e);
-            throw new ApiException("更新异常", e);
+             log.error(e.getMessage(), e);
+            throw new ApiException(e.getMessage(), e);
         }
     }
 
@@ -797,7 +801,8 @@ public class EpServiceImple implements EpService {
      * 同步数据
      * @param
      */
-    public void syncEpData(Object coreEpId,String table,List<Map<String,String>> data) {
+    public void syncEpData(Object coreEpId,String table,List<?> data) {
+        try{
         if(!CommonUtil.objectIsNumber(coreEpId)){
             log.error("同步数据平台商错误 {} {}",table,data );
         }
@@ -814,9 +819,16 @@ public class EpServiceImple implements EpService {
         }else{
             key=CommonUtil.objectParseString( keyList.get(0).get(EpConstant.EpKey.ACCESS_KEY));
         }
-
         synchronizeDataManager.generate(key)
                 .put(table,data)
                 .sync();
+        }catch(ApiException e){
+            log.error(e.getMessage());
+            throw new ApiException(e.getMessage());
+        }
+        catch(Exception e){
+        log.error(e.getMessage());
+            throw new ApiException("同步数据异常");
+        }
     }
 }
