@@ -36,6 +36,7 @@ public class EpBalanceThresholdServiceImple implements EpBalanceThresholdService
     public  Result<Integer> createOrUpdate(Map<String,Object> map) {
         Result<Integer> result = new Result<>();
         try {
+            map.put("threshold",CommonUtil.objectParseInteger(map.get("threshold")));
             result.put(epBalanceThresholdMapper.createOrUpdate(map));
             result.setSuccess();
         } catch (Exception e) {
