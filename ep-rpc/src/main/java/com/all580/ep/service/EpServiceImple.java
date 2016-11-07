@@ -125,6 +125,20 @@ public class EpServiceImple implements EpService {
     }
 
     @Override
+    public Result<List<Map<String, Object>>> selectDownSupplier(Map<String, Object> map) {
+        Result<List<Map<String, Object>>> result = new Result<>();
+        try {
+            result.put(epMapper.select(map));
+            result.setSuccess();
+            result.setCode(200);
+            return result;
+        } catch (Exception e) {
+            log.error("查询下级供应商错误", e);
+            throw new ApiException("查询下级供应商错误", e);
+        }
+    }
+
+    @Override
     public Result<Map<String,Object>> selectPlatform() {
         Result<Map<String,Object>> result = new Result<>(true);
         try {
@@ -343,8 +357,17 @@ public class EpServiceImple implements EpService {
             int ref= epMapper.updateStatus(params);
            if(ref>0){
                List<Map<String,String>>  listMap =   epMapper.selectSingleTable(params);
-
-               syncEpData(params.get("ep_id"),EpConstant.Table.T_EP,listMap);
+               int id = CommonUtil.objectParseInteger(params.get("id"));
+               syncEpData(id,EpConstant.Table.T_EP,listMap);//同步数据
+               String destPhoneNum=selectPhone(id).get();
+               int ep_id=CommonUtil.objectParseInteger(params.get(EpConstant.EpKey.CORE_EP_ID));
+               Map<String,String> smsParams = new HashMap<>();
+               smsParams.put("dianhuahaoma",selectPhone(ep_id).get());
+               Result r= smsService.send(destPhoneNum, SmsType.Ep.SUPPLIER_SELLER_FREEZE,ep_id,smsParams);//发送短信
+               if(!r.isSuccess()){
+                   log.warn("发送");
+                   throw new ApiException("企业在未激活状态不能执行该操作");
+               }
                result.put(ref);
                result.setSuccess();
            }else{
@@ -513,8 +536,14 @@ public class EpServiceImple implements EpService {
             //CommonUtil.formtAddress(map);
             Integer group_id = CommonUtil.objectParseInteger(map.get("group_id"));
             if (null != group_id) {
-                Object groupName = planGroupRPCService.searchPlanGroupById(group_id).get().get("name");
-                map.put("group_name", groupName);
+                Result<Map> tempResult=planGroupRPCService.searchPlanGroupById(group_id);
+                 if(tempResult.isSuccess()){
+                     Map<String,Object> temp=tempResult.get();
+                     if(null!=temp&&(!temp.isEmpty())){
+                         Object groupName = temp.get("name");
+                         map.put("group_name", groupName);
+                     }
+                 }
                 log.error("查询企业分组错误");
             }
             // String groupName="固定分组";
