@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -152,5 +153,20 @@ public class EpController extends BaseController {
        map.put("name",name);
        map.put("link_phone",link_phone);
        return epService.checkNamePhone(map);
+   }
+
+    /**
+     * 查询下级供应商
+     * @param ep_id
+     * @return
+     */
+    @RequestMapping(value = "checkNamePhone", method = RequestMethod.GET)
+    @ResponseBody
+   public Result<List<Map<String,Object>>> selectDownSupplier(String ep_id){
+       Map<String,Object> map = new HashMap<>();
+       map.put("ep_id",ep_id);
+       map.put("ep_type",EpConstant.EpType.SUPPLIER);
+       ParamsMapValidate.validate(map, platfromValidateManager.generateCreateDownUpValidate());
+       return epService.selectDownSupplier(map);
    }
 }
