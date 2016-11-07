@@ -81,7 +81,7 @@ public class ThirdPayServiceImpl implements ThirdPayService {
                 result.setSuccess();
                 result.put(refundRsp.getTransaction_id());
                 // TODO panyi 异步回调订单-> 记录任务
-                final String serialNum = String.valueOf(params.get("refundId"));
+                final String serialNum = String.valueOf(params.get("serialNum"));
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -115,7 +115,7 @@ public class ThirdPayServiceImpl implements ThirdPayService {
             EpPaymentConf epPaymentConf = epPaymentConfMapper.getByEpIdAndType(coreEpId, payType);
             Result<Map<String, String>> payCallback = wxPayService.payCallback(params, epPaymentConf);
             if (payCallback.isSuccess()) {
-                Result result = paymentCallbackService.payCallback(Long.valueOf(ordId), null, ordId);
+                Result result = paymentCallbackService.payCallback(Long.valueOf(ordId), ordId, trade_no);
                 if (result.isFault()) {
                     logger.error("微信支付回调.回调订单失败");
                 }
@@ -127,7 +127,7 @@ public class ThirdPayServiceImpl implements ThirdPayService {
             EpPaymentConf epPaymentConf = epPaymentConfMapper.getByEpIdAndType(coreEpId, payType);
             Result<Map<String, String>> result = aliPayService.payCallback(params, epPaymentConf);
             if (result.isSuccess()) {
-                Result callResult = paymentCallbackService.payCallback(Long.valueOf(ordId), null, ordId);
+                Result callResult = paymentCallbackService.payCallback(Long.valueOf(ordId), ordId, trade_no);
                 if (callResult.isFault()) {
                     logger.error("支付宝支付回调.回调订单失败");
                 }

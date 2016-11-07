@@ -68,7 +68,7 @@ public class AliPayService {
 
     public String reqPay(long ordCode, int coreEpId, Map<String, Object> params, String confData) {
         // AlipayProperties alipayProperties = JsonUtils.fromJson(confData, AlipayProperties.class);
-        String notify_url = "http://core.py.ngrok.wendal.cn/api/callback/ali/payment";// alipayProperties
+        String notify_url = "http://core.py.ngrok.wendal.cn/no_auth_api/callback/ali/payment";// alipayProperties
         // .getPay_notify_url();
 
         // 把请求参数打包成数组
@@ -104,7 +104,7 @@ public class AliPayService {
     public String reqRefund(Map<String, Object> params, String confData) {
         // AlipayProperties alipayProperties = JsonUtils.fromJson(confData, AlipayProperties.class);
         // String notify_url = alipayProperties.getRecharge_notify_url();
-        String notify_url = "http://core.py.ngrok.wendal.cn/api/callback/ali/refund";
+        String notify_url = "http://core.py.ngrok.wendal.cn/no_auth_api/callback/ali/refund";
         // 把请求参数打包成数组
         Map<String, String> sParaTemp = new HashMap<String, String>();
         sParaTemp.put("service", AlipayConfig.INF_NAME_REFUND);
@@ -125,7 +125,7 @@ public class AliPayService {
     }
 
     public boolean refundCallback(Map<String, String> params, EpPaymentConf epPaymentConf) {
-        AlipayProperties alipayProperties = JsonUtils.fromJson(epPaymentConf.getConfData(), AlipayProperties.class);
+        AlipayProperties alipayProperties2 = JsonUtils.fromJson(epPaymentConf.getConfData(), AlipayProperties.class);
         return AlipayNotify.verify(params, alipayProperties.getPartner(), alipayProperties.getKey());//验证成功
 
     }
@@ -139,7 +139,7 @@ public class AliPayService {
      */
     public Result<Map<String, String>> payCallback(Map<String, String> params, EpPaymentConf epPaymentConf) {
         Result<Map<String, String>> result = new Result<>();
-        AlipayProperties alipayProperties = JsonUtils.fromJson(epPaymentConf.getConfData(), AlipayProperties.class);
+        AlipayProperties alipayProperties2 = JsonUtils.fromJson(epPaymentConf.getConfData(), AlipayProperties.class);
         boolean isSuccess = AlipayNotify.verify(params, alipayProperties.getPartner(), alipayProperties.getKey());
         if (isSuccess) {
             result.setSuccess();

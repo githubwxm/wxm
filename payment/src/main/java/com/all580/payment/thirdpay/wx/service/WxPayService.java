@@ -43,7 +43,7 @@ public class WxPayService {
     public String reqPay(long ordCode,int coreEpId, Map<String, Object> params, String confData) throws Exception {
         WxProperties wxProperties2 = JsonUtils.fromJson(confData, WxProperties.class);
         domain = "";
-        notifyUrl = "http://core.py.ngrok.wendal.cn/api/callback/wx/payment";
+        notifyUrl = "http://core.py.ngrok.wendal.cn/no_auth_api/callback/wx/payment";
         UnifiedOrderReq req = new UnifiedOrderReq();
         req.setAppid(wxProperties.getAPP_ID());
         req.setMch_id(wxProperties.getPARTNER());
@@ -75,7 +75,7 @@ public class WxPayService {
         RefundReq req = new RefundReq();
         req.setTransaction_id("");
         req.setOut_trade_no(String.valueOf(ordCode));
-        req.setOut_refund_no(String.valueOf(params.get("refundId")));
+        req.setOut_refund_no(String.valueOf(params.get("serialNum")));
         req.setTotal_fee((Integer) params.get("totalFee"));
         req.setRefund_fee((Integer) params.get("refundFee"));
         req.setRefund_fee_type("CNY");
@@ -90,7 +90,7 @@ public class WxPayService {
 
     public Result<Map<String, String>> payCallback(Map<String, String> params, EpPaymentConf epPaymentConf) {
         Result<Map<String, String>> result = new Result<>();
-        WxProperties wxProperties = JsonUtils.fromJson(epPaymentConf.getConfData(), WxProperties.class);
+        WxProperties wxProperties2 = JsonUtils.fromJson(epPaymentConf.getConfData(), WxProperties.class);
         ResponseHandler resHandler = new ResponseHandler(params);
         resHandler.setKey(wxProperties.getPARTNER_KEY());
         Map<String,String> rsp = new HashMap<>();

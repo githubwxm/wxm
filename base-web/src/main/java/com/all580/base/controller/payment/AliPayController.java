@@ -24,7 +24,7 @@ import java.util.Map;
  * @since V0.0.1
  */
 @Controller
-@RequestMapping("api/callback/ali")
+@RequestMapping("no_auth_api/callback/ali")
 public class AliPayController extends BaseController {
     @Resource
     private ThirdPayService thirdPayService;

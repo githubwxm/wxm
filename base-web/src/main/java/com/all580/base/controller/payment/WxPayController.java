@@ -28,7 +28,7 @@ import java.util.Map;
  * @since V0.0.1
  */
 @Controller
-@RequestMapping("api/callback/wx")
+@RequestMapping("no_auth_api/callback/wx")
 public class WxPayController extends BaseController {
     @Autowired
     private ThirdPayService thirdPayService;
@@ -50,7 +50,9 @@ public class WxPayController extends BaseController {
 
             Result<Map<String, String>> result = thirdPayService.payCallback(ordCode, transactionId, m, PaymentConstant
                     .PaymentType.WX_PAY);
-            response.getWriter().write(responseWx(result.get()));
+            String rspXml = responseWx(result.get());
+            logger.debug("微信回调 -> 返回：" + rspXml);
+            response.getWriter().write(rspXml);
         } else {
 
         }
