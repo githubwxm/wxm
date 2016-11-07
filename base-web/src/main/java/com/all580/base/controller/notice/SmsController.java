@@ -7,6 +7,7 @@ import com.framework.common.Result;
 import com.framework.common.util.CommonUtil;
 import org.apache.commons.collections.map.HashedMap;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -37,7 +38,7 @@ public class SmsController extends BaseController {
      */
     @ResponseBody
     @RequestMapping(value = "send", method = RequestMethod.POST)
-    public Result send(Map<String, Object> data) {
+    public Result send(@RequestBody Map<String, Object> data) {
         String destPhoneNum=CommonUtil.objectParseString(data.remove("destPhoneNum"));
         Integer smsType=CommonUtil.objectParseInteger( data.remove("smsType"));
         Integer coreEpId = CommonUtil.objectParseInteger(getAttribute(EpConstant.EpKey.CORE_EP_ID));
