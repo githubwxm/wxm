@@ -7,6 +7,8 @@ import com.all580.ep.api.service.EpService;
 import com.all580.ep.com.Common;
 import com.all580.ep.dao.CoreEpAccessMapper;
 import com.all580.ep.dao.EpMapper;
+import com.all580.notice.api.conf.SmsType;
+import com.all580.notice.api.service.SmsService;
 import com.all580.payment.api.conf.PaymentConstant;
 import com.all580.payment.api.service.BalancePayService;
 import com.all580.payment.api.service.EpPaymentConfService;
@@ -39,9 +41,6 @@ public class EpServiceImple implements EpService {
     private CoreEpAccessService coreEpAccessService;
 
     @Autowired
-    private EpPaymentConfService epPaymentConfService;
-
-    @Autowired
     private BalancePayService balancePayService;
 
     @Autowired
@@ -55,6 +54,9 @@ public class EpServiceImple implements EpService {
 
     @Autowired
     private CoreEpAccessMapper coreEpAccessMapper;//ddd
+
+    @Autowired
+    private SmsService smsService;
 
     /**
      * // 创建平台商
@@ -106,6 +108,8 @@ public class EpServiceImple implements EpService {
                 balancePayService.createBalanceAccount(coreEpId, coreEpId);//添加余额d
                 result.put(accessMap);
                 result.setSuccess();
+//                smsService.send( CommonUtil.objectParseString(map.get("link_phone")), SmsType.Ep.CORE_EP_ADD,
+//                        coreEpId,null).get();//发送短信
             } catch (Exception e) {
                  log.error("添加平台商未成功", e);
                 throw new ApiException("添加平台商异常", e);
@@ -745,6 +749,24 @@ public class EpServiceImple implements EpService {
         } catch (Exception e) {
             log.error("查询数据库异常", e);
             throw new ApiException("查询数据库异常", e);
+        }
+        return result;
+    }
+
+
+    @Override
+    public Result<String > selectPhone(int id){
+        Result<String> result = new Result<>();
+        try {
+            String phone= epMapper.selectPhone(id);
+            if(null==phone){
+                result.setError("未找到手机号");
+            }else{
+            result.put(phone);
+            result.setSuccess();}
+        } catch (Exception e) {
+            log.error("查询手机号码异常", e);
+            throw new ApiException("查询手机号码异常", e);
         }
         return result;
     }
