@@ -297,6 +297,56 @@ public class TenpayHttpClient {
 
     }
 
+    /**
+     * 更换SSLContext的创建方式，不使用jks文件
+     */
+    protected void callHttps2() throws IOException, CertificateException,
+            KeyStoreException, NoSuchAlgorithmException,
+            UnrecoverableKeyException, KeyManagementException {
+
+        // ca目录
+        String caPath = this.caFile.getParent();
+
+        File jksCAFile = new File(caPath + "/"
+                + TenpayHttpClient.JKS_CA_FILENAME);
+        if (!jksCAFile.isFile()) {
+            X509Certificate cert = (X509Certificate) HttpClientUtil
+                    .getCertificate(this.caFile);
+
+            FileOutputStream out = new FileOutputStream(jksCAFile);
+
+            // store jks file
+            HttpClientUtil.storeCACert(cert, TenpayHttpClient.JKS_CA_ALIAS,
+                    TenpayHttpClient.JKS_CA_PASSWORD, out);
+
+            out.close();
+
+        }
+
+        FileInputStream trustStream = new FileInputStream(jksCAFile);
+        FileInputStream keyStream = new FileInputStream(this.certFile);
+
+        SSLContext sslContext = HttpClientUtil.getSSLContext(trustStream,
+                TenpayHttpClient.JKS_CA_PASSWORD, keyStream, this.certPasswd);
+
+        // 关闭流
+        keyStream.close();
+        trustStream.close();
+
+        if ("POST".equals(this.method.toUpperCase())) {
+            String url = HttpClientUtil.getURL(this.reqContent);
+            String queryString = HttpClientUtil.getQueryString(this.reqContent);
+            byte[] postData = queryString.getBytes(this.charset);
+
+            this.httpsPostMethod(url, postData, sslContext);
+
+            return;
+        }
+
+        this.httpsGetMethod(this.reqContent, sslContext);
+
+    }
+
     public boolean callHttpPost(String url, String postdata) {
         boolean flag = false;
         byte[] postData;
