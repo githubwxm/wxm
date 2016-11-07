@@ -31,7 +31,6 @@ import java.util.Map;
  * @date 2016/10/10 20:41
  */
 @Component(OrderConstant.Actions.PAYMENT_CALLBACK)
-@Transactional(rollbackFor = {Exception.class, RuntimeException.class})
 @Slf4j
 public class PaymentCallbackAction implements JobRunner {
     @Autowired
@@ -44,6 +43,7 @@ public class PaymentCallbackAction implements JobRunner {
     @Autowired
     private ProductSalesPlanRPCService productSalesPlanRPCService;
     @Override
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public Result run(JobContext jobContext) throws Throwable {
         Map<String, String> params = jobContext.getJob().getExtParams();
         validateParams(params);

@@ -128,7 +128,7 @@ public class BookingOrderManager extends BaseOrderManager {
      * @param from 来源
      * @return
      */
-    @Transactional
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public Order generateOrder(Integer coreEpId, Integer buyEpId, Integer userId, String userName, Integer from, String remark) {
         Order order = new Order();
         order.setNumber(UUIDGenerator.generateUUID());
@@ -153,7 +153,7 @@ public class BookingOrderManager extends BaseOrderManager {
      * @param quantity 张数
      * @return
      */
-    @Transactional
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public OrderItem generateItem(ProductSalesInfo info, int saleAmount, Date bookingDate, int days, int orderId, int quantity, Integer proSubId) {
         OrderItem orderItem = new OrderItem();
         orderItem.setNumber(UUIDGenerator.generateUUID());
@@ -182,7 +182,7 @@ public class BookingOrderManager extends BaseOrderManager {
      * @param dto
      * @return
      */
-    @Transactional
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public List<OrderItemAccount> generateAccount(GenerateAccountDto dto) {
         List<OrderItemAccount> accounts = new ArrayList<>();
         OrderItemAccount subtractAccount = new OrderItemAccount();
@@ -219,7 +219,7 @@ public class BookingOrderManager extends BaseOrderManager {
      * @param quantity 张数
      * @return
      */
-    @Transactional
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public OrderItemDetail generateDetail(ProductSalesInfo info, int itemId, Date day, int quantity) {
         OrderItemDetail orderItemDetail = new OrderItemDetail();
         orderItemDetail.setDay(day);
@@ -264,7 +264,7 @@ public class BookingOrderManager extends BaseOrderManager {
      * @param itemDetailId 子订单详情ID
      * @return
      */
-    @Transactional
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public Visitor generateVisitor(Map v, int itemDetailId) {
         Visitor visitor = new Visitor();
         visitor.setRefId(itemDetailId);
@@ -282,7 +282,7 @@ public class BookingOrderManager extends BaseOrderManager {
      * @param orderId 订单ID
      * @return
      */
-    @Transactional
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public Shipping generateShipping(Map shippingMap, int orderId) {
         Shipping shipping = new Shipping();
         shipping.setOrderId(orderId);
@@ -317,7 +317,7 @@ public class BookingOrderManager extends BaseOrderManager {
      * @param orderItems 子订单
      * @return
      */
-    @Transactional
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public void paySplitAccount(int orderId, List<OrderItem> orderItems) {
         if (orderItems == null) {
             orderItems = orderItemMapper.selectByOrderId(orderId);
@@ -351,7 +351,7 @@ public class BookingOrderManager extends BaseOrderManager {
      * @param quantity 每天(时间段)票数
      * @return
      */
-    @Transactional
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public List<OrderItemAccount> preSplitAccount(List<List<EpSalesInfo>> daySalesList, int itemId, int quantity, int payType, Date bookingDate) {
         // 预分账记录
         List<OrderItemAccount> accounts = new ArrayList<>();

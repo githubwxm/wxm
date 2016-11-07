@@ -20,7 +20,7 @@ public class PlatfromValidateManager {
         rules.put(new String[]{
                 "name", // 企业中文名
                 "code", // '企业组织机构代码',
-                "logo_pic", // '企业组织机构代码',
+               // "logo_pic", // '企业组织机构代码',
                 "license", // 营业证编号
                 "linkman", // 企业联系人姓名
                 "link_phone", // 企业联系人电话
@@ -51,7 +51,7 @@ public class PlatfromValidateManager {
         rules.put(new String[]{
                 "name", // 企业中文名
                 "code", // '企业组织机构代码',
-                "logo_pic", // '企业组织机构代码',
+               // "logo_pic", // '企业组织机构代码',
                 "license", // 营业证编号
                 "linkman", // 企业联系人姓名
                 "link_phone", // 企业联系人电话

@@ -2,23 +2,28 @@ package com.all580.order.service;
 
 import com.all580.order.api.OrderConstant;
 import com.all580.order.api.service.PaymentCallbackService;
+import com.all580.order.dao.OrderItemDetailMapper;
+import com.all580.order.dao.OrderItemMapper;
 import com.all580.order.dao.OrderMapper;
 import com.all580.order.dao.RefundOrderMapper;
 import com.all580.order.entity.Order;
+import com.all580.order.entity.OrderItem;
+import com.all580.order.entity.OrderItemDetail;
 import com.all580.order.entity.RefundOrder;
 import com.all580.order.manager.BookingOrderManager;
 import com.all580.order.manager.RefundOrderManager;
 import com.all580.payment.api.conf.PaymentConstant;
 import com.all580.payment.api.model.BalanceChangeInfo;
+import com.all580.product.api.model.ProductSearchParams;
+import com.all580.product.api.service.ProductSalesPlanRPCService;
 import com.framework.common.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import javax.lang.exception.ApiException;
+import java.util.*;
 
 /**
  * @author zhouxianjun(Alone)
@@ -27,7 +32,6 @@ import java.util.Map;
  * @date 2016/10/11 20:01
  */
 @Service
-@Transactional(rollbackFor = {Exception.class, RuntimeException.class})
 @Slf4j
 public class PaymentCallbackServiceImpl implements PaymentCallbackService {
     @Autowired
@@ -36,11 +40,19 @@ public class PaymentCallbackServiceImpl implements PaymentCallbackService {
     private RefundOrderManager refundOrderManager;
 
     @Autowired
+    private ProductSalesPlanRPCService productSalesPlanRPCService;
+
+    @Autowired
     private OrderMapper orderMapper;
     @Autowired
     private RefundOrderMapper refundOrderMapper;
+    @Autowired
+    private OrderItemMapper orderItemMapper;
+    @Autowired
+    private OrderItemDetailMapper orderItemDetailMapper;
 
     @Override
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public Result payCallback(long ordCode, String serialNum, String outTransId) {
         log.debug("支付回调:订单号:{};流水:{};交易号:{}", new Object[]{ordCode, serialNum, outTransId});
         Order order = orderMapper.selectBySN(ordCode);
@@ -69,6 +81,7 @@ public class PaymentCallbackServiceImpl implements PaymentCallbackService {
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public Result refundCallback(Long ordCode, String serialNum, String outTransId, boolean success) {
         log.debug("退款回调-{}:退订订单号:{};流水:{};交易号:{}", new Object[]{success, ordCode, serialNum, outTransId});
         RefundOrder refundOrder = refundOrderMapper.selectBySN(ordCode);
@@ -97,6 +110,12 @@ public class PaymentCallbackServiceImpl implements PaymentCallbackService {
         refundOrderManager.syncRefundOrderMoney(refundOrder.getId());
         if (!success) {
             addRefundMoneyJob(ordCode, serialNum);
+        } else {
+            // 还库存 记录任务
+            Map<String, String> jobParams = new HashMap<>();
+            jobParams.put("orderItemId", String.valueOf(refundOrder.getOrderItemId()));
+            jobParams.put("check", "true");
+            bookingOrderManager.addJob(OrderConstant.Actions.REFUND_STOCK, jobParams);
         }
         return new Result(true);
     }

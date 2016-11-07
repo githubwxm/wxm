@@ -137,5 +137,20 @@ public class EpController extends BaseController {
 
         return epService.select(map);
 
-    }
+   }
+
+    /**
+     * 检查名字与电话是否存在
+     * @param
+     * @return
+     */
+    @RequestMapping(value = "checkNamePhone", method = RequestMethod.GET)
+    @ResponseBody
+   public Result<Boolean> checkNamePhone(String name,String link_phone){
+       //where name =#{name} or link_phone=#{link_phone}
+       Map<String,Object> map = new HashMap<>();
+       map.put("name",name);
+       map.put("link_phone",link_phone);
+       return epService.checkNamePhone(map);
+   }
 }

@@ -139,6 +139,12 @@ public interface EpService {
 
 
     /**
+     *
+     * @param id   企业id
+     * @return  String 电话号码
+     */
+    Result<String>selectPhone(int id);
+    /**
      Map {id  企业id
      name  企业名称
      en_name  企业英文名

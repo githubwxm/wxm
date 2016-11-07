@@ -13,8 +13,6 @@ import com.all580.order.entity.RefundOrder;
 import com.all580.order.manager.RefundOrderManager;
 import com.all580.payment.api.conf.PaymentConstant;
 import com.framework.common.Result;
-import javax.lang.exception.ApiException;
-
 import com.framework.common.distributed.lock.DistributedLockTemplate;
 import com.framework.common.distributed.lock.DistributedReentrantLock;
 import com.framework.common.lang.JsonUtils;
@@ -25,6 +23,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.lang.exception.ApiException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -37,7 +36,6 @@ import java.util.Map;
  * @date 2016/10/11 10:49
  */
 @Service
-@Transactional(rollbackFor = {Exception.class, RuntimeException.class})
 @Slf4j
 public class RefundOrderServiceImpl implements RefundOrderService {
     @Autowired
@@ -58,11 +56,13 @@ public class RefundOrderServiceImpl implements RefundOrderService {
     private int lockTimeOut = 3;
 
     @Override
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public Result<?> cancel(Map params) {
         return refundOrderManager.cancel(Long.valueOf(params.get("order_sn").toString()));
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public Result<?> apply(Map params) throws Exception {
         String orderItemSn = params.get("order_item_sn").toString();
         OrderItem orderItem = orderItemMapper.selectBySN(Long.valueOf(orderItemSn));
@@ -109,6 +109,9 @@ public class RefundOrderServiceImpl implements RefundOrderService {
             // 计算退款金额
             int money = refundOrderManager.calcRefundMoney(daysList, detailList, orderItem.getId(), order.getBuyEpId(),
                     refundOrderManager.getCoreEpId(refundOrderManager.getCoreEpId(order.getBuyEpId())), refundDate);
+            if (money < 0) {
+                throw new ApiException("销售价小于退货手续费");
+            }
             // 创建退订订单
             RefundOrder refundOrder = refundOrderManager.generateRefundOrder(orderItem.getId(), daysList, quantity, money, cause);
 
@@ -124,6 +127,7 @@ public class RefundOrderServiceImpl implements RefundOrderService {
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public Result<?> cancelNoSplit(Map params) {
         String orderSn = params.get("order_sn").toString();
         // 分布式锁
@@ -147,6 +151,7 @@ public class RefundOrderServiceImpl implements RefundOrderService {
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public Result<?> audit(Map params) throws Exception {
         // 分布式锁
         String refundSn = params.get("refund_sn").toString();
@@ -178,9 +183,11 @@ public class RefundOrderServiceImpl implements RefundOrderService {
                 if (orderItem.getStatus() == OrderConstant.OrderItemStatus.SEND) {
                     // 调用退票
                     refundOrderManager.refundTicket(refundOrder);
+                    refundOrderMapper.updateByPrimaryKeySelective(refundOrder);
                 } else {
                     // 没有出票直接退款
                     refundOrder.setStatus(OrderConstant.RefundOrderStatus.REFUND_MONEY); // 退款中
+                    refundOrderMapper.updateByPrimaryKeySelective(refundOrder);
                     List daysList = JsonUtils.json2List(refundOrder.getData());
                     // 每日订单详情
                     List<OrderItemDetail> detailList = orderItemDetailMapper.selectByItemId(orderItem.getId());
@@ -193,7 +200,6 @@ public class RefundOrderServiceImpl implements RefundOrderService {
                         refundOrderManager.refundMoney(order, refundOrder.getMoney(), String.valueOf(refundOrder.getNumber()));
                     }
                 }
-                refundOrderMapper.updateByPrimaryKeySelective(refundOrder);
 
                 // 同步数据
                 refundOrderManager.syncRefundOrderAuditAcceptData(refundOrder.getId());
@@ -209,6 +215,7 @@ public class RefundOrderServiceImpl implements RefundOrderService {
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public Result<?> refundAliPayMoney(Map params) {
         RefundOrder refundOrder = refundOrderMapper.selectBySN(Long.valueOf(params.get("refund_sn").toString()));
         if (refundOrder == null) {

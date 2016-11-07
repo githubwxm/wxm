@@ -1,9 +1,10 @@
 package com.all580.order.task.action;
 
 import com.all580.order.api.OrderConstant;
-import com.all580.order.dao.OrderMapper;
-import com.all580.order.entity.Order;
+import com.all580.order.dao.OrderItemMapper;
+import com.all580.order.entity.OrderItem;
 import com.all580.order.manager.RefundOrderManager;
+import com.framework.common.util.CommonUtil;
 import com.framework.common.validate.ParamsMapValidate;
 import com.framework.common.validate.ValidRule;
 import com.github.ltsopensource.core.domain.Action;
@@ -21,16 +22,19 @@ import java.util.Map;
 /**
  * @author zhouxianjun(Alone)
  * @ClassName:
- * @Description: 支付成功分账失败取消任务
+ * @Description: 退票成功/退款成功还库存
  * @date 2016/10/10 20:41
  */
-@Component(OrderConstant.Actions.CANCEL_CALLBACK)
+@Component(OrderConstant.Actions.REFUND_STOCK)
 @Slf4j
-public class CancelCallbackAction implements JobRunner {
+public class RefundStockAction implements JobRunner {
     @Autowired
-    private OrderMapper orderMapper;
+    private OrderItemMapper orderItemMapper;
     @Autowired
     private RefundOrderManager refundOrderManager;
+
+    public RefundStockAction() {
+    }
 
     @Override
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
@@ -38,18 +42,23 @@ public class CancelCallbackAction implements JobRunner {
         Map<String, String> params = jobContext.getJob().getExtParams();
         validateParams(params);
 
-        int orderId = Integer.parseInt(params.get("orderId"));
-        Order order = orderMapper.selectByPrimaryKey(orderId);
-        if (order == null) {
-            log.warn("支付成功分账失败取消回调,订单不存在");
-            throw new Exception("订单不存在");
+        Integer orderItemId = CommonUtil.objectParseInteger(params.get("orderItemId"));
+        boolean check = Boolean.parseBoolean(params.get("check"));
+        if (orderItemId == null) {
+            throw new Exception("还库存ID为空");
+        }
+        OrderItem orderItem = orderItemMapper.selectByPrimaryKey(orderItemId);
+        if (orderItem == null) {
+            throw new Exception("还库存:子订单不存在");
+        }
+        if (check) {
+            if (orderItem.getStatus() != OrderConstant.OrderItemStatus.NON_SEND &&
+                    orderItem.getStatus() != OrderConstant.OrderItemStatus.TICKET_FAIL) {
+                return new Result(Action.EXECUTE_SUCCESS, "还库存:需要检查,检查结果为不需要还库存");
+            }
         }
 
-        com.framework.common.Result result = refundOrderManager.cancel(order);
-        if (!result.isSuccess()) {
-            log.warn("支付成功分账失败取消回调,取消订单异常");
-            throw new Exception(result.getError());
-        }
+        refundOrderManager.refundStock(orderItem);
         return new Result(Action.EXECUTE_SUCCESS);
     }
 
@@ -59,12 +68,15 @@ public class CancelCallbackAction implements JobRunner {
      */
     private void validateParams(Map<String, String> params) {
         if (params == null) {
-            throw new RuntimeException("支付成功任务参数为空");
+            throw new RuntimeException("还库存任务参数为空");
         }
         Map<String[], ValidRule[]> rules = new HashMap<>();
         rules.put(new String[]{
-                "orderId" // 订单ID
+                "orderItemId" // 子订单ID
         }, new ValidRule[]{new ValidRule.NotNull(), new ValidRule.Digits()});
+        rules.put(new String[]{
+                "check" // 是否检查未出票
+        }, new ValidRule[]{new ValidRule.NotNull(), new ValidRule.Boolean()});
 
         ParamsMapValidate.validate(params, rules);
     }

@@ -290,7 +290,7 @@ public class BaseOrderManager {
      * @param sn 流水
      * @param consume 是否核销
      */
-    @Transactional
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public void consumeOrReConsumeSplitAccount(OrderItem orderItem, Date day, int consumeQuantity, String sn, boolean consume) {
         // 获取子订单的分账记录
         List<OrderItemAccount> accounts = orderItemAccountMapper.selectByOrderItem(orderItem.getId());

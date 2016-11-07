@@ -35,7 +35,6 @@ import java.util.Map;
  * @date 2016/10/25 11:30
  */
 @Component(OrderConstant.Actions.SEND_TICKET)
-@Transactional(rollbackFor = {Exception.class, RuntimeException.class})
 @Slf4j
 public class SendTicketAction implements JobRunner {
     @Autowired
@@ -49,6 +48,7 @@ public class SendTicketAction implements JobRunner {
     private VoucherRPCService voucherRPCService;
 
     @Override
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public Result run(JobContext jobContext) throws Throwable {
         Map<String, String> params = jobContext.getJob().getExtParams();
         validateParams(params);

@@ -29,7 +29,6 @@ import java.util.Map;
  * @date 2016/10/15 9:50
  */
 @Service
-@Transactional(rollbackFor = {Exception.class, RuntimeException.class})
 @Slf4j
 public class TicketCallbackServiceImpl implements TicketCallbackService {
     @Autowired
@@ -230,6 +229,12 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         if (order.getPaymentType() != PaymentConstant.PaymentType.ALI_PAY.intValue()) {
             refundOrderManager.refundMoney(order, refundOrder.getMoney(), String.valueOf(refundOrder.getNumber()));
         }
+
+        // 还库存 记录任务
+        Map<String, String> jobParams = new HashMap<>();
+        jobParams.put("orderItemId", String.valueOf(refundOrder.getOrderItemId()));
+        jobParams.put("check", "false");
+        bookingOrderManager.addJob(OrderConstant.Actions.REFUND_STOCK, jobParams);
 
         // 同步数据
         refundOrderManager.syncRefundTicketData(refundOrder.getId());
