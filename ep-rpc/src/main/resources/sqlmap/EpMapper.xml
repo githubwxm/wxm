@@ -197,5 +197,8 @@
         select * from t_ep ep
         where 1=1<include refid="ep_list_where"/>
     </select>
+    <select id="selectPhone" resultType="java.lang.String">
+        select link_phone from t_ep where id=#{id};
+    </select>
 
 </mapper>
