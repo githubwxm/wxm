@@ -41,4 +41,5 @@ public interface EpMapper {
      * @return
      */
     List<Map<String,String>> selectSingleTable(Map<String,Object> map);
+    String selectPhone(int id);
 }
