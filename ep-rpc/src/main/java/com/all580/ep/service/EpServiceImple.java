@@ -108,9 +108,9 @@ public class EpServiceImple implements EpService {
                 balancePayService.createBalanceAccount(coreEpId, coreEpId);//添加余额d
                 result.put(accessMap);
                 result.setSuccess();
-                List<Map<String,Object>>  listMap =   new ArrayList<>();
-                listMap.add(accessMap);
-                syncEpData(coreEpId,EpConstant.Table.T_CORE_EP_ACCESS,listMap);
+//                List<Map<String,Object>>  listMap =   new ArrayList<>();
+//                listMap.add(accessMap);
+//                syncEpData(coreEpId,EpConstant.Table.T_CORE_EP_ACCESS,listMap);
 //                smsService.send( CommonUtil.objectParseString(map.get("link_phone")), SmsType.Ep.CORE_EP_ADD,
 //                        coreEpId,null).get();//发送短信
             } catch (Exception e) {
@@ -625,6 +625,14 @@ public class EpServiceImple implements EpService {
 
     @Override
     public Result<Integer> selectCreatorEpId(Integer id) {
+        return selectField(id,EpConstant.EpKey.CREATOR_EP_ID);
+    }
+
+    @Override
+    public Result<Integer> selectEpType(Integer id) {
+        return selectField(id,EpConstant.EpKey.EP_TYPE);
+    }
+    private Result<Integer> selectField(Integer id,String key){
         Map<String,Object> map = new HashMap<>();
         Result<Integer> result = new Result<>();
         try {
@@ -635,7 +643,7 @@ public class EpServiceImple implements EpService {
                     result.put(-1);
                     result.setFail();
                 } else {
-                    result.put(Common.objectParseInteger(list.get(0).get("creator_ep_id")));
+                    result.put(Common.objectParseInteger(list.get(0).get(key)));
                     result.setSuccess();
                 }
             } else {
@@ -647,7 +655,6 @@ public class EpServiceImple implements EpService {
         }
         return result;
     }
-
     @Override
     public Result<Boolean> checkNamePhone(Map<String,Object> map) {
         List<Map<String,Object>> list = epMapper.checkNamePhone(map);
