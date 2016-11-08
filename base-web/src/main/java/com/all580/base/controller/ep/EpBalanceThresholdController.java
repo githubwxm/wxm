@@ -74,12 +74,12 @@ public class EpBalanceThresholdController extends BaseController {
     @ResponseBody
     public Result<?> warn(Integer id,Integer balance ) {
             Map<String,Object> map = new HashMap<>();
-             map.put("id",id);
+             map.put("id",id);//企业id
              map.put(EpConstant.EpKey.CORE_EP_ID,getAttribute(EpConstant.EpKey.CORE_EP_ID)) ;//
              map.put("balance",balance);
             ParamsMapValidate.validate(map, generateEpBalanceValidate());
-            boolean bool =epBalanceThresholdService.warn(map);//是否发送成功
-            if(bool){
+            Result r=  epBalanceThresholdService.warn(map);//是否发送成功
+            if(r.isSuccess()){
 
             }
             return null;

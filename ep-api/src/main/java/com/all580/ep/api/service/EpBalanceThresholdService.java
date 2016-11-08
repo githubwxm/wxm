@@ -28,5 +28,5 @@ public interface EpBalanceThresholdService {
      * @param mpa ｛balance：int 必填  余额｝
      * @return  余额小于阀值
      */
-    boolean warn(Map<String,Object> mpa);
+    Result warn(Map<String,Object> mpa);
 }
