@@ -24,6 +24,12 @@ public interface EpService {
     Result<Map<String,Object>> createPlatform(Map<String,Object> ep);
 
     /**
+     *
+     * @param map  ep_id,ep_type
+     * @return
+     */
+    Result<List<Map<String,Object>>> selectDownSupplier(Map<String,Object> map);
+    /**
      *查询平台商通道
      * @return   ｛list:{id:1 平台商id,name:String 平台商名称}｝
      */
