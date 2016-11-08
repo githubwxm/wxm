@@ -850,8 +850,8 @@ public class EpServiceImple implements EpService {
         List<Map<String,Object>> keyList =coreEpAccessMapper.select(tempMap);
         String key ="";
         if(keyList.isEmpty()){
-            log.error("查询平台商key数据错误" );
-            throw new ApiException("查询平台商key数据错误");
+            log.error("未找到{} 对应的key", coreEpId);
+            throw new ApiException("未找到"+coreEpId+"对应的key");
         }else{
             key=CommonUtil.objectParseString( keyList.get(0).get(EpConstant.EpKey.ACCESS_KEY));
         }
