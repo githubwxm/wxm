@@ -433,7 +433,7 @@ public class EpServiceImple implements EpService {
     public Result<Integer> platformFreeze(Map<String, Object> map) {
         Map<String, Object> params = new HashMap();//  同一个查询方法，按map参数查找，所以重构
         params.put("id", map.get("id"));
-        //params.put(EpConstant.EpKey.CORE_EP_ID,map.get("ep_id"));
+        params.put(EpConstant.EpKey.CORE_EP_ID,map.get("ep_id"));//操作人所属企业
         params.put("statusActive", EpConstant.EpStatus.ACTIVE);
         params.put("status", EpConstant.EpStatus.FREEZE);
         try {
