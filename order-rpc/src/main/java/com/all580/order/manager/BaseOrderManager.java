@@ -109,6 +109,18 @@ public class BaseOrderManager {
         }
         return false;
     }
+    /**
+     * 判断企业类型
+     * @param result 企业状类型返回
+     * @param type 需要的类型
+     * @return
+     */
+    public boolean isEpType(Result<Integer> result, int type) {
+        if (result != null && result.get() == type) {
+            return true;
+        }
+        return false;
+    }
 
     /**
      * 获取平台商ID

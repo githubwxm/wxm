@@ -11,7 +11,9 @@ import com.all580.order.entity.OrderItem;
 import com.all580.order.entity.OrderItemDetail;
 import com.all580.order.entity.RefundOrder;
 import com.all580.order.manager.RefundOrderManager;
+import com.all580.order.manager.SmsManager;
 import com.all580.payment.api.conf.PaymentConstant;
+import com.all580.product.api.consts.ProductConstants;
 import com.framework.common.Result;
 import com.framework.common.distributed.lock.DistributedLockTemplate;
 import com.framework.common.distributed.lock.DistributedReentrantLock;
@@ -40,6 +42,8 @@ import java.util.Map;
 public class RefundOrderServiceImpl implements RefundOrderService {
     @Autowired
     private RefundOrderManager refundOrderManager;
+    @Autowired
+    private SmsManager smsManager;
 
     @Autowired
     private OrderItemMapper orderItemMapper;
@@ -107,8 +111,12 @@ public class RefundOrderServiceImpl implements RefundOrderService {
 
             Date refundDate = new Date();
             // 计算退款金额
-            int money = refundOrderManager.calcRefundMoney(daysList, detailList, orderItem.getId(), order.getBuyEpId(),
-                    refundOrderManager.getCoreEpId(refundOrderManager.getCoreEpId(order.getBuyEpId())), refundDate);
+            int money = 0;
+            // 到付不计算
+            if (orderItem.getPaymentFlag() != ProductConstants.PayType.PAYS) {
+                money = refundOrderManager.calcRefundMoney(daysList, detailList, orderItem.getId(), order.getBuyEpId(),
+                        refundOrderManager.getCoreEpId(refundOrderManager.getCoreEpId(order.getBuyEpId())), refundDate);
+            }
             if (money < 0) {
                 throw new ApiException("销售价小于退货手续费");
             }
@@ -206,6 +214,9 @@ public class RefundOrderServiceImpl implements RefundOrderService {
                 return new Result<>(true);
             }
             refundOrderManager.refundFail(refundOrder);
+            // 发送短信
+            smsManager.sendAuditRefuseSms(orderItem);
+
             // 同步数据
             refundOrderManager.syncRefundOrderAuditRefuse(refundOrder.getId());
             return new Result<>(true);

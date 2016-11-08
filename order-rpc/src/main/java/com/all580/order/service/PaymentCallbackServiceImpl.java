@@ -112,25 +112,9 @@ public class PaymentCallbackServiceImpl implements PaymentCallbackService {
             return new Result(true);
         }
 
-        RefundOrder refundOrder = refundOrderMapper.selectBySN(Long.valueOf(serialNum));
-
-        if (refundOrder == null) {
-            log.warn("退款回调:退订订单不存在");
-            return new Result(false, "退订订单不存在");
-        }
-        refundOrder.setRefundMoneyTime(new Date());
-        refundOrder.setStatus(success ? OrderConstant.RefundOrderStatus.REFUND_SUCCESS : OrderConstant.RefundOrderStatus.REFUND_MONEY_FAIL);
-        refundOrderMapper.updateByPrimaryKeySelective(refundOrder);
-        // 同步数据
-        refundOrderManager.syncRefundOrderMoney(refundOrder.getId());
+        refundOrderManager.refundMoneyAfter(Long.valueOf(serialNum), success);
         if (!success) {
             addRefundMoneyJob(ordCode, serialNum);
-        } else {
-            // 还库存 记录任务
-            Map<String, String> jobParams = new HashMap<>();
-            jobParams.put("orderItemId", String.valueOf(refundOrder.getOrderItemId()));
-            jobParams.put("check", "true");
-            bookingOrderManager.addJob(OrderConstant.Actions.REFUND_STOCK, jobParams);
         }
         return new Result(true);
     }
