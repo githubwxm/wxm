@@ -160,7 +160,7 @@ public class EpController extends BaseController {
      * @param ep_id
      * @return
      */
-    @RequestMapping(value = "checkNamePhone", method = RequestMethod.GET)
+    @RequestMapping(value = "selectDownSupplier", method = RequestMethod.GET)
     @ResponseBody
    public Result<List<Map<String,Object>>> selectDownSupplier(String ep_id){
        Map<String,Object> map = new HashMap<>();
