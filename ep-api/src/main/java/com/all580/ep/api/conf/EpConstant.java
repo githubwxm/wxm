@@ -6,7 +6,7 @@ package com.all580.ep.api.conf;
 public class EpConstant {
     public static class Table{
         public static final String T_EP="t_ep";//企业信息表
-        public static final String T_CORE_EP_ACCESS="t_core_ep_access";//企业信息表
+        //public static final String T_CORE_EP_ACCESS="t_core_ep_access";//企业信息表
     }
     public static class EpKey{
         public static final String  EP_ID ="ep_id";//企业类型//
