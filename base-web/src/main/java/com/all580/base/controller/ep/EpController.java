@@ -166,7 +166,7 @@ public class EpController extends BaseController {
        Map<String,Object> map = new HashMap<>();
        map.put("creator_ep_id",ep_id);//查询下级企业id
        map.put("ep_type",EpConstant.EpType.SUPPLIER);
-       ParamsMapValidate.validate(map, platfromValidateManager.generateCreateDownUpValidate());
+       //ParamsMapValidate.validate(map, platfromValidateManager.generateCreateDownUpValidate());
        return epService.selectDownSupplier(map);
    }
 }
