@@ -137,6 +137,12 @@ public interface EpService {
     Result<Integer> selectCreatorEpId(Integer id);
 
     /**
+     * 查找企业类型
+     * @param id
+     * @return
+     */
+    Result<Integer> selectEpType(Integer id);
+    /**
      * 检出啊名字是否存在
      * @param map
      * @return
