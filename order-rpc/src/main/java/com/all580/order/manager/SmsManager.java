@@ -168,7 +168,7 @@ public class SmsManager {
 
         Map<String, String> sendSmsParams = new HashMap<>();
         sendSmsParams.put("dingdanhao", String.valueOf(order.getNumber()));
-        sendSmsParams.put("money", String.valueOf(refundOrder.getMoney()));
+        sendSmsParams.put("money", String.valueOf(refundOrder.getMoney() / 100.0));
         Result result = smsService.send(shipping.getPhone(), SmsType.Order.MONEY_REFUND, order.getPayeeEpId(), sendSmsParams);//发送短信
         if (!result.isSuccess()) {
             return new Result(false, "发送退款成功短信失败");
