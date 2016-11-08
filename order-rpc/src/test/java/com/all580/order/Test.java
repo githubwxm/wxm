@@ -8,7 +8,9 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.framework.common.lang.JsonUtils;
+import com.framework.common.lang.codec.Md5Utils;
 import com.framework.common.lang.codec.TranscodeUtil;
+import com.framework.common.util.CommonUtil;
 import org.nustaq.serialization.FSTConfiguration;
 
 import java.io.IOException;
@@ -61,5 +63,13 @@ public class Test {
         System.out.println(obj);
         System.out.println(JsonUtils.toJson(object));
         System.out.println(JsonUtils.toJson(obj));
+
+        System.out.println(Md5Utils.getMD5For16("1476425996329CJCJ6VXG3YMCNB").toUpperCase());
+
+        Map<String, String> data1 = new HashMap<>();
+        data1.put("ep_id", "1130");
+        data1.put("access_id", "1476425987296LFJFURKK");
+        data1.put("refund_sn", "1478524432441210");
+        System.out.println(CommonUtil.signForData("1476425996329CJCJ6VXG3YMCNB", JsonUtils.toJson(data1)));
     }
 }

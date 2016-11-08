@@ -153,6 +153,18 @@ public class OrderValidateManager {
 
         return rules;
     }
+    /**
+     * 订单支付宝退款验证
+     * @return
+     */
+    public Map<String[], ValidRule[]> refundAlipayValidate() {
+        Map<String[], ValidRule[]> rules = new HashMap<>();
+        rules.put(new String[]{
+                "refund_sn" // 退订订单编号(流水)
+        }, new ValidRule[]{new ValidRule.NotNull(), new ValidRule.Digits()});
+
+        return rules;
+    }
 
     /**
      * 订单重新发票验证

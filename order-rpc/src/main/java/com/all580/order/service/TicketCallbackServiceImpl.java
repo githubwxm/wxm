@@ -1,5 +1,7 @@
 package com.all580.order.service;
 
+import com.all580.notice.api.conf.SmsType;
+import com.all580.notice.api.service.SmsService;
 import com.all580.order.api.OrderConstant;
 import com.all580.order.api.model.ConsumeTicketInfo;
 import com.all580.order.api.model.ReConsumeTicketInfo;
@@ -46,6 +48,8 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
     @Autowired
     private VisitorMapper visitorMapper;
     @Autowired
+    private ShippingMapper shippingMapper;
+    @Autowired
     private RefundOrderMapper refundOrderMapper;
     @Autowired
     private RefundSerialMapper refundSerialMapper;
@@ -54,6 +58,9 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
     private RefundOrderManager refundOrderManager;
     @Autowired
     private BookingOrderManager bookingOrderManager;
+
+    @Autowired
+    private SmsService smsService;
 
     @Override
     public Result sendTicket(Long orderSn, List<SendTicketInfo> infoList, Date procTime) {
@@ -129,6 +136,18 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         // 设置核销人核销数量
         visitor.setUseQuantity(visitor.getUseQuantity() + info.getConsumeQuantity());
         visitorMapper.updateByPrimaryKeySelective(visitor);
+
+        // 发送短信
+        Shipping shipping = shippingMapper.selectByOrder(orderItem.getOrderId());
+        if (shipping == null) {
+            return new Result(false, "订单联系人不存在");
+        }
+
+        // TODO: 2016/11/7 待定 多少元消费成功
+        Result result = smsService.send(shipping.getPhone(), SmsType.Ep.BALANCE_SHORTAGE, 1, null);//发送短信
+        if (!result.isSuccess()) {
+            return new Result(false, "发送核销短信失败");
+        }
 
         // 分账
         // 核销成功 记录任务

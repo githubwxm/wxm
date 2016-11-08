@@ -25,4 +25,7 @@
 
 	<dubbo:reference id="voucherRPCService"
 					 interface="com.all580.voucher.api.service.VoucherRPCService"/>
+
+	<dubbo:reference id="smsService"
+					 interface="com.all580.notice.api.service.SmsService"/>
 </beans>
