@@ -123,14 +123,13 @@ public class PlanController extends BaseController {
     @ResponseBody
     public Result productSubDistributionCreatorEp(@RequestBody Map params) {
         List<Map> list =updateEpOnsalesParams(params);
-        productService.productOnSaleBatch(list);
-        return new Result(true);
+        return productService.productOnSaleBatch(list);
     }
     @RequestMapping(value = "sale/ep")
     @ResponseBody
     public Result productSubDistributionEp(@RequestBody Map params) {
-        productService.productOnSaleBatch(initEpOnsalesParams(params));
-        return new Result(true);
+
+        return  productService.productOnSaleBatch(initEpOnsalesParams(params));
     }
 
     private List<Map> updateEpOnsalesParams(Map params){
