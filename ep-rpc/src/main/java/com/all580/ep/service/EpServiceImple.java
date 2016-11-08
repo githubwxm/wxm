@@ -501,18 +501,18 @@ public class EpServiceImple implements EpService {
             syncEpData(map.get("id"), EpConstant.Table.T_EP, listMap);
 
             String destPhoneNum = selectPhone(CommonUtil.objectParseInteger(map.get("id"))).get();
-            int ep_id = CommonUtil.objectParseInteger(params.get(EpConstant.EpKey.CORE_EP_ID));
+            int core_ep_id = CommonUtil.objectParseInteger(params.get(EpConstant.EpKey.CORE_EP_ID));
             Map<String, String> smsParams = new HashMap<>();
             smsParams.put("dianhuahaoma",SmsType.Ep.CHANGLV_SERVICE_PHONE);//客户
-            Result r = smsService.send(destPhoneNum, SmsType.Ep.PLATFORM_ACTIVE, ep_id, smsParams);//发送短信
+            Result r = smsService.send(destPhoneNum, SmsType.Ep.PLATFORM_ACTIVE, core_ep_id, smsParams);//发送短信
             if (!r.isSuccess()) {
                 log.warn("激活平台商发送消息失败");
                 throw new ApiException("激活平台商发送消息失败");
             }
 
         }catch (ApiException e) {
-            log.error("激活平台商发送消息失败", e);
-            throw new ApiException("激活平台商发送消息失败", e);
+            log.error(e.getMessage(), e);
+            throw new ApiException(e.getMessage(), e);
         }catch (Exception e) {
             log.error("更新平台商状态异常", e);
             throw new ApiException("更新平台商状态异常", e);
@@ -572,8 +572,11 @@ public class EpServiceImple implements EpService {
                         Object groupName = temp.get("name");
                         map.put("group_name", groupName);
                     }
+                }else{
+                    log.error("查询企业分组错误");
+                    throw new ApiException("查询企业分组错误");
                 }
-                log.error("查询企业分组错误");
+
             }
             // String groupName="固定分组";
             int ref = epMapper.update(map);
@@ -584,6 +587,9 @@ public class EpServiceImple implements EpService {
                 result.setSuccess();
             }
 
+        }catch (ApiException e) {
+            log.error(e.getMessage(), e);
+            throw new ApiException(e.getMessage(), e);
         } catch (Exception e) {
             log.error("数据库更新错误", e);
             throw new ApiException("数据库更新错误", e);
