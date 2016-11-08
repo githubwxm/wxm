@@ -18,6 +18,7 @@ public class EpConstant {
         public static final String  PROVINCE ="province";//省id
         public static final String  CITY ="city";//市id
         public static final String  EP_TYPE ="ep_type";//企业类型
+        public static final String  CREATOR_EP_ID ="creator_ep_id";//企业类型
 
     }
 
