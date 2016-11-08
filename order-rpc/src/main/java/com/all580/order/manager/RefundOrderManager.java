@@ -531,7 +531,7 @@ public class RefundOrderManager extends BaseOrderManager {
     public void refundMoney(Order order, int money, String sn) {
         log.debug("订单:{} 发起退款:{}", order.getNumber(), money);
         if (money == 0 && sn != null) {
-            log.debug("订单:{} 退款为0元,直接调用退款成功.");
+            log.debug("订单:{} 退款为0元,直接调用退款成功.", order.getNumber());
             refundMoneyAfter(Long.valueOf(sn), true);
             return;
         }
@@ -626,8 +626,6 @@ public class RefundOrderManager extends BaseOrderManager {
         refundOrder.setStatus(success ? OrderConstant.RefundOrderStatus.REFUND_SUCCESS : OrderConstant.RefundOrderStatus.REFUND_MONEY_FAIL);
         refundOrderMapper.updateByPrimaryKeySelective(refundOrder);
 
-        // 同步数据
-        syncRefundOrderMoney(refundOrder.getId());
         if (success) {
             // 发送短信 退款
             if (refundOrder.getMoney() > 0) {
@@ -641,6 +639,8 @@ public class RefundOrderManager extends BaseOrderManager {
             jobParams.put("check", "true");
             addJob(OrderConstant.Actions.REFUND_STOCK, jobParams);
         }
+        // 同步数据
+        syncRefundOrderMoney(refundOrder.getId());
     }
 
     /**

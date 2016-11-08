@@ -80,4 +80,11 @@ public interface OrderMapper {
      * @return
      */
     Order selectByThirdSn(String sn);
+
+    /**
+     * 根据退订流水查找订单
+     * @param sn 退订流水
+     * @return
+     */
+    Order selectByRefundSn(Long sn);
 }
