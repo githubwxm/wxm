@@ -55,7 +55,7 @@ public interface EpService {
     /**
      *  查询企业信息
      * @param map   id，
-     * @return  返回一条企业信息  map 列 getEp 借口 field 对应
+     * @return  返回一条企业信息  map 列 getEp 接口 field 对应
      */
     Result<Map<String,Object>> selectId (Map<String,Object> map);
     /**
