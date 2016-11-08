@@ -150,6 +150,7 @@ public class PlanController extends BaseController {
         map.put("pricePercent",params.get("pricePercent"));
         map.put("pricePixed",params.get("pricePixed"));
         map.put("productSubId",params.get("productSubId"));
+        list.add(map);
         return list;
     }
     private List<Map> initEpOnsalesParams (Map params) {
