@@ -2,6 +2,7 @@ package com.all580.base.controller.product;
 
 import com.all580.product.api.model.PlanGroupInfo;
 import com.all580.product.api.service.PlanGroupRPCService;
+import com.all580.product.api.service.ProductSalesPlanRPCService;
 import com.framework.common.BaseController;
 import com.framework.common.Result;
 import com.framework.common.util.CommonUtil;
@@ -23,6 +24,7 @@ public class SaleController extends BaseController {
     @Resource
     PlanGroupRPCService planGroupService;
 
+    ProductSalesPlanRPCService productSalesPlanService;
     /**
      * 新增商家分组
      * @param params
@@ -94,5 +96,17 @@ public class SaleController extends BaseController {
     public Result mvEpsToGroup(@RequestBody Map params) {
         //TODO 数据验证
         return planGroupService.addEpsToGroup(CommonUtil.objectParseInteger(params.get("ep_id")), CommonUtil.objectParseInteger(params.get("id")), (List) params.get("ep_ids"));
+    }
+
+    @RequestMapping(value = "update", method = RequestMethod.POST)
+    @ResponseBody
+    public Result updateProfit(@RequestBody Map params) {
+        //TODO 数据验证
+        return productSalesPlanService.updatePlanSale(
+                CommonUtil.objectParseInteger(params.get("planSaleId")),
+                CommonUtil.objectParseInteger(params.get("priceType")),
+                CommonUtil.objectParseInteger(params.get("pricePercent")),
+                CommonUtil.objectParseInteger(params.get("pricePixed"))
+        );
     }
 }
