@@ -107,6 +107,8 @@ public class BookingOrderServiceImpl implements BookingOrderService {
                 CommonUtil.objectParseInteger(params.get("operator_id")),
                 CommonUtil.objectParseString(params.get("operator_name")), from, remark);
 
+        // 存储游客信息
+        Map<Integer, List<Visitor>> visitorMap = new HashMap<>();
         // 获取子订单
         List<Map> items = (List<Map>) params.get("items");
         for (Map item : items) {
@@ -201,6 +203,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             OrderItem orderItem = bookingOrderManager.generateItem(salesInfo, saleAmount, bookingDate, days, order.getId(), quantity, productSubId);
 
             List<OrderItemDetail> detailList = new ArrayList<>();
+            List<Visitor> visitorList = new ArrayList<>();
             // 创建子订单详情
             for (Integer i = 0; i < days; i++) {
                 OrderItemDetail orderItemDetail = bookingOrderManager.generateDetail(salesInfo, orderItem.getId(), DateUtils.addDays(bookingDate, i), quantity);
@@ -209,6 +212,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
                 for (Map v : visitors) {
                     Visitor visitor = bookingOrderManager.generateVisitor(v, orderItemDetail.getId());
                     visitorQuantity += visitor.getQuantity();
+                    visitorList.add(visitor);
                 }
             }
 
@@ -218,6 +222,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             }
             lockStockDtoMap.put(orderItem.getId(), new LockStockDto(orderItem, detailList));
             lockParams.add(bookingOrderManager.parseParams(orderItem));
+            visitorMap.put(orderItem.getId(), visitorList);
 
             // 预分账记录
             bookingOrderManager.preSplitAccount(allDaysSales, orderItem.getId(), quantity, salesInfo.getPayType(), bookingDate);
@@ -283,7 +288,8 @@ public class BookingOrderServiceImpl implements BookingOrderService {
 
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("order", JsonUtils.obj2map(order));
-        resultMap.put("items", JsonUtils.toJson(orderItems));
+        resultMap.put("items", JsonUtils.json2List(JsonUtils.toJson(orderItems)));
+        resultMap.put("visitors", JsonUtils.obj2map(visitorMap));
         Result<Object> result = new Result<>(true);
         result.put(resultMap);
 

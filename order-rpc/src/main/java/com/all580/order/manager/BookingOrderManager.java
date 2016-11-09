@@ -86,7 +86,7 @@ public class BookingOrderManager extends BaseOrderManager {
 
     /**
      * 判断身份证订单次数是否超过最大次数
-     * @param productSubId 子产品ID
+     * @param productSubCode 子产品ID
      * @param sid 身份证
      * @param date 预定日期
      * @param max 最大次数
@@ -249,6 +249,14 @@ public class BookingOrderManager extends BaseOrderManager {
         }
         if (effectiveDate.after(expiryDate)) {
             throw new ApiException("该产品已过期");
+        }
+        // 不能购买当天之前的产品
+        Date now = new Date();
+        now = DateUtils.setHours(now, 0);
+        now = DateUtils.setMinutes(now, 0);
+        now = DateUtils.setSeconds(now, 0);
+        if (now.after(effectiveDate)) {
+            throw new ApiException("预定时间已过期");
         }
         orderItemDetail.setExpiryDate(expiryDate);
         orderItemDetail.setRefundQuantity(0);
