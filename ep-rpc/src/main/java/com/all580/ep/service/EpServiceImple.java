@@ -433,14 +433,14 @@ public class EpServiceImple implements EpService {
     public Result<Integer> platformFreeze(Map<String, Object> map) {
         Map<String, Object> params = new HashMap();//  同一个查询方法，按map参数查找，所以重构
         params.put("id", map.get("id"));
-        params.put(EpConstant.EpKey.CORE_EP_ID,map.get("ep_id"));//操作人所属企业
+       // params.put(EpConstant.EpKey.CORE_EP_ID,map.get("ep_id"));//操作人所属企业
         params.put("statusActive", EpConstant.EpStatus.ACTIVE);
         params.put("status", EpConstant.EpStatus.FREEZE);
         try {
             Result<Integer> result = updatePlatfrom(params);
             if (result.isSuccess()) {
                 String destPhoneNum = selectPhone(CommonUtil.objectParseInteger(map.get("id"))).get();
-                int ep_id = CommonUtil.objectParseInteger(params.get(EpConstant.EpKey.CORE_EP_ID));
+                int ep_id = CommonUtil.objectParseInteger(map.get("ep_id"));
                 Map<String, String> smsParams = new HashMap<>();
                 smsParams.put("dianhuahaoma",SmsType.Ep.CHANGLV_SERVICE_PHONE);//客户
                 Result r = smsService.send(destPhoneNum, SmsType.Ep.PLATFORM_FREEZE, ep_id, smsParams);//发送短信
@@ -467,7 +467,7 @@ public class EpServiceImple implements EpService {
             Result<Integer> result = updatePlatfrom(params);
             if (result.isSuccess()) {
                 String destPhoneNum = selectPhone(CommonUtil.objectParseInteger(map.get("id"))).get();
-                int ep_id = CommonUtil.objectParseInteger(params.get(EpConstant.EpKey.CORE_EP_ID));
+                int ep_id = CommonUtil.objectParseInteger(map.get("ep_id"));
                 Map<String, String> smsParams = new HashMap<>();
                 smsParams.put("dianhuahaoma",SmsType.Ep.CHANGLV_SERVICE_PHONE);//客户
                 Result r = smsService.send(destPhoneNum, SmsType.Ep.PLATFORM_STOP, ep_id, smsParams);//发送短信
@@ -501,10 +501,10 @@ public class EpServiceImple implements EpService {
             syncEpData(map.get("id"), EpConstant.Table.T_EP, listMap);
 
             String destPhoneNum = selectPhone(CommonUtil.objectParseInteger(map.get("id"))).get();
-            int core_ep_id = CommonUtil.objectParseInteger(params.get(EpConstant.EpKey.CORE_EP_ID));
+            int ep_id = CommonUtil.objectParseInteger(map.get("ep_id"));
             Map<String, String> smsParams = new HashMap<>();
             smsParams.put("dianhuahaoma",SmsType.Ep.CHANGLV_SERVICE_PHONE);//客户
-            Result r = smsService.send(destPhoneNum, SmsType.Ep.PLATFORM_ACTIVE, core_ep_id, smsParams);//发送短信
+            Result r = smsService.send(destPhoneNum, SmsType.Ep.PLATFORM_ACTIVE, ep_id, smsParams);//发送短信
             if (!r.isSuccess()) {
                 log.warn("激活平台商发送消息失败");
                 throw new ApiException("激活平台商发送消息失败");
