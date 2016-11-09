@@ -83,7 +83,8 @@ public class AliPayService {
         sParaTemp.put("seller_email", "admin@all580.com");
         sParaTemp.put("out_trade_no", String.valueOf(ordCode));
         sParaTemp.put("subject", String.valueOf(params.get("prodName")));
-        sParaTemp.put("total_fee", String.valueOf(params.get("totalFee")));
+        int totalFee = (Integer) params.get("totalFee");
+        sParaTemp.put("total_fee", String.valueOf(totalFee / 100.0));
         // sParaTemp.put("body", null);
 //        sParaTemp.put("paymethod", "");
 //        sParaTemp.put("defaultbank", "");
@@ -116,7 +117,8 @@ public class AliPayService {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
         sParaTemp.put("batch_no", sdf.format(new Date()) + params.get("serialNum"));
         sParaTemp.put("batch_num", "1");
-        String detail = params.get("outTransId") + "^" + params.get("refundFee") + "^" + "协议退款";
+        int fee = (Integer) params.get("refundFee");
+        String detail = params.get("outTransId") + "^" + String.valueOf(fee / 100.0) + "^" + "协议退款";
         sParaTemp.put("detail_data", detail);
 
         // 建立请求
@@ -125,7 +127,8 @@ public class AliPayService {
     }
 
     public boolean refundCallback(Map<String, String> params, EpPaymentConf epPaymentConf) {
-        AlipayProperties alipayProperties2 = JsonUtils.fromJson(epPaymentConf.getConfData(), AlipayProperties.class);
+        //AlipayProperties alipayProperties2 = JsonUtils.fromJson(epPaymentConf.getConfData(), AlipayProperties.class);
+        // 访问支付宝进行校验
         return AlipayNotify.verify(params, alipayProperties.getPartner(), alipayProperties.getKey());//验证成功
 
     }
