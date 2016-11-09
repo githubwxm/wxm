@@ -24,7 +24,9 @@ public class SaleController extends BaseController {
     @Resource
     PlanGroupRPCService planGroupService;
 
+    @Resource
     ProductSalesPlanRPCService productSalesPlanService;
+
     /**
      * 新增商家分组
      * @param params
