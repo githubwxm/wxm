@@ -1,5 +1,6 @@
 package com.all580.ep.service;
 
+import com.all580.ep.api.conf.EpConstant;
 import com.all580.ep.api.service.EpBalanceThresholdService;
 import com.all580.ep.com.Common;
 import com.all580.ep.dao.EpBalanceThresholdMapper;
@@ -9,6 +10,7 @@ import com.all580.notice.api.service.SmsService;
 import com.framework.common.Result;
 import javax.lang.exception.ApiException;
 import com.framework.common.util.CommonUtil;
+import com.framework.common.validate.ValidRule;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,6 +38,7 @@ public class EpBalanceThresholdServiceImple implements EpBalanceThresholdService
     public  Result<Integer> createOrUpdate(Map<String,Object> map) {
         Result<Integer> result = new Result<>();
         try {
+            map.put("threshold",CommonUtil.objectParseInteger(map.get("threshold")));
             result.put(epBalanceThresholdMapper.createOrUpdate(map));
             result.setSuccess();
         } catch (Exception e) {
@@ -61,7 +64,8 @@ public class EpBalanceThresholdServiceImple implements EpBalanceThresholdService
     }
 
     @Override
-    public boolean warn(Map<String,Object> map) {
+    public Result warn(Map<String,Object> map) {
+        Result returnResult = new Result();
         try {
             Result<Map<String,Object>> result = select(map);
             Integer balance=Common.objectParseInteger(map.get("balance"));//传来的余额
@@ -72,18 +76,19 @@ public class EpBalanceThresholdServiceImple implements EpBalanceThresholdService
             }
             if(balance<threshold){
                 //Todo  发送余额短信
-                Map<String,Object> epMap = new HashMap<>();
-                Integer ep_id= CommonUtil.objectParseInteger(map.get("ep_id"));
+                Map<String,Object> epMap = new HashMap<>();//EpConstant.EpKey.CORE_EP_ID
+                Integer ep_id= CommonUtil.objectParseInteger(map.get("id"));//企业id
                 epMap.put("id",ep_id);//再看发送短信所需要的参数
                  List<Map<String,Object>> list= epMapper.select(epMap);//   获取企业信息
                  if(null==list){
                      if(!list.isEmpty()){//threshold   jinqian
                          Map<String,Object> mapResult = list.get(0);
+                         ep_id=CommonUtil.objectParseInteger( map.get(EpConstant.EpKey.CORE_EP_ID));//发送短信人
                         String destPhoneNum=  mapResult.get("link_phone").toString();
                          Map<String, String>  params = new HashMap<>();
                          params.put("qiye",mapResult.get("name").toString());
                          params.put("jinqian",threshold+"");
-                          smsService.send(destPhoneNum, SmsType.Ep.BALANCE_SHORTAGE,ep_id,params).get();//发送短信
+                       return  smsService.send(destPhoneNum, SmsType.Ep.BALANCE_SHORTAGE,ep_id,params);//发送短信
                      }
                  }
                 //TODO  发送之后操作
@@ -93,7 +98,7 @@ public class EpBalanceThresholdServiceImple implements EpBalanceThresholdService
             log.error("查询数据库出错", e);
             throw new ApiException("查询数据库出错", e);
         }
-        return false;
+        return new Result(false);
     }
 
 }

@@ -94,7 +94,7 @@ public class OrderController extends BaseController {
     @ResponseBody
     public Result<?> refundAliPay(@RequestBody Map params) throws Exception {
         // 验证参数
-        ParamsMapValidate.validate(params, orderValidateManager.cancelValidate());
+        ParamsMapValidate.validate(params, orderValidateManager.refundAlipayValidate());
         return refundOrderService.refundAliPayMoney(params);
     }
 

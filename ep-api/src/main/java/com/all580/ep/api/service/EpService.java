@@ -24,6 +24,12 @@ public interface EpService {
     Result<Map<String,Object>> createPlatform(Map<String,Object> ep);
 
     /**
+     *
+     * @param map  ep_id,ep_type
+     * @return
+     */
+    Result<List<Map<String,Object>>> selectDownSupplier(Map<String,Object> map);
+    /**
      *查询平台商通道
      * @return   ｛list:{id:1 平台商id,name:String 平台商名称}｝
      */
@@ -49,7 +55,7 @@ public interface EpService {
     /**
      *  查询企业信息
      * @param map   id，
-     * @return  返回一条企业信息  map 列 getEp 借口 field 对应
+     * @return  返回一条企业信息  map 列 getEp 接口 field 对应
      */
     Result<Map<String,Object>> selectId (Map<String,Object> map);
     /**
@@ -130,6 +136,12 @@ public interface EpService {
      */
     Result<Integer> selectCreatorEpId(Integer id);
 
+    /**
+     * 查找企业类型
+     * @param id
+     * @return
+     */
+    Result<Integer> selectEpType(Integer id);
     /**
      * 检出啊名字是否存在
      * @param map

@@ -84,7 +84,7 @@ public class Order implements Serializable {
 
     /**
      * 第三方交易号
-     * 所属表字段为 t_order.third__serial_no
+     * 所属表字段为 t_order.third_serial_no
      */
     private String thirdSerialNo;
 

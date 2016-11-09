@@ -231,11 +231,10 @@ public class BookingOrderManager extends BaseOrderManager {
         orderItemDetail.setDisableDay(info.getDisableDate());
         orderItemDetail.setDisableWeek(info.getDisableWeek());
         orderItemDetail.setUseHoursLimit(info.getUseHoursLimit());
-        Date effectiveDate = null;
-        if (orderItemDetail.getDay().before(orderItemDetail.getCreateTime())) {
-            effectiveDate = DateUtils.addHours(orderItemDetail.getCreateTime(), orderItemDetail.getUseHoursLimit());
-        } else {
-            effectiveDate = DateUtils.addHours(orderItemDetail.getDay(), orderItemDetail.getUseHoursLimit());
+        Date effectiveDate = orderItemDetail.getDay();
+        // 产品说就用预定的时间,即使下单时间比预定时间大也取预定时间
+        if (orderItemDetail.getUseHoursLimit() != null) {
+            effectiveDate = DateUtils.addHours(effectiveDate, orderItemDetail.getUseHoursLimit());
         }
         orderItemDetail.setEffectiveDate(effectiveDate);
         Date expiryDate = null;

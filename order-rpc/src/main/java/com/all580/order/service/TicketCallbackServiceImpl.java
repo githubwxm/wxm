@@ -1,5 +1,7 @@
 package com.all580.order.service;
 
+import com.all580.notice.api.conf.SmsType;
+import com.all580.notice.api.service.SmsService;
 import com.all580.order.api.OrderConstant;
 import com.all580.order.api.model.ConsumeTicketInfo;
 import com.all580.order.api.model.ReConsumeTicketInfo;
@@ -10,13 +12,16 @@ import com.all580.order.dao.*;
 import com.all580.order.entity.*;
 import com.all580.order.manager.BookingOrderManager;
 import com.all580.order.manager.RefundOrderManager;
+import com.all580.order.manager.SmsManager;
 import com.all580.payment.api.conf.PaymentConstant;
 import com.framework.common.Result;
+import com.framework.common.lang.DateFormatUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.lang.exception.ApiException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -54,6 +59,8 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
     private RefundOrderManager refundOrderManager;
     @Autowired
     private BookingOrderManager bookingOrderManager;
+    @Autowired
+    private SmsManager smsManager;
 
     @Override
     public Result sendTicket(Long orderSn, List<SendTicketInfo> infoList, Date procTime) {
@@ -130,6 +137,12 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         visitor.setUseQuantity(visitor.getUseQuantity() + info.getConsumeQuantity());
         visitorMapper.updateByPrimaryKeySelective(visitor);
 
+        // 发送短信
+        Result sendSms = smsManager.sendConsumeSms(orderItem, info.getConsumeQuantity());
+        if (!sendSms.isSuccess()) {
+            return sendSms;
+        }
+
         // 分账
         // 核销成功 记录任务
         Map<String, String> jobParams = new HashMap<>();
@@ -179,6 +192,9 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         visitor.setUseQuantity(visitor.getUseQuantity() - orderClearanceSerial.getQuantity());
         visitorMapper.updateByPrimaryKeySelective(visitor);
 
+        // 发送短信
+        smsManager.sendReConsumeSms(orderItem, orderClearanceSerial.getQuantity(), orderClearanceSerial.getQuantity());
+
         // 分账
         // 记录任务
         Map<String, String> jobParams = new HashMap<>();
@@ -205,6 +221,21 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         RefundOrder refundOrder = refundOrderMapper.selectByItemIdAndRefundSn(orderItem.getId(), Long.valueOf(info.getRefId()));
         if (refundOrder == null) {
             return new Result(false, "退订订单不存在");
+        }
+
+        // 退票失败
+        if (!info.isSuccess()) {
+            try {
+                refundOrderManager.refundFail(refundOrder);
+            } catch (Exception e) {
+                throw new ApiException("退票失败还原状态异常", e);
+            }
+
+            // 发送短信
+            smsManager.sendRefundFailSms(orderItem);
+
+            refundOrderManager.syncRefundOrderAuditRefuse(refundOrder.getId());
+            return new Result(true);
         }
 
         refundOrder.setStatus(OrderConstant.RefundOrderStatus.REFUND_MONEY); // 退款中

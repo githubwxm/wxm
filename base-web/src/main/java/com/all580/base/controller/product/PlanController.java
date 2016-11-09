@@ -1,5 +1,6 @@
 package com.all580.base.controller.product;
 
+import com.all580.ep.api.service.EpService;
 import com.all580.product.api.model.AddProductPlanParams;
 import com.all580.product.api.model.CanSaleSubProductInfo;
 import com.all580.product.api.model.OnSalesParams;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -36,6 +38,9 @@ public class PlanController extends BaseController {
 
     @Resource
     ProductRPCService productService;
+
+    @Resource
+    EpService epService;
 
     /**
      * 增加销售计划
@@ -113,13 +118,41 @@ public class PlanController extends BaseController {
         return new Result(true);
     }
 
+
+    @RequestMapping(value = "sale/ep/creator")
+    @ResponseBody
+    public Result productSubDistributionCreatorEp(@RequestBody Map params) {
+        List<Map> list =updateEpOnsalesParams(params);
+        return productService.productOnSaleBatch(list);
+    }
     @RequestMapping(value = "sale/ep")
     @ResponseBody
     public Result productSubDistributionEp(@RequestBody Map params) {
-        productService.productOnSaleBatch(initEpOnsalesParams(params));
-        return new Result(true);
+
+        return  productService.productOnSaleBatch(initEpOnsalesParams(params));
     }
 
+    private List<Map> updateEpOnsalesParams(Map params){
+        Integer ep_id= epService.selectCreatorEpId(CommonUtil.objectParseInteger(params.get("ep_id"))).get();//获取上级id
+        if(ep_id==null){
+            return null;
+        }
+        Map<String,Object> mapId  = new HashMap();
+        mapId.put("id", ep_id);
+        Result<Map<String,Object>> ep=  epService.selectId(mapId);//获取企业信息
+        List<Map> list = new ArrayList<Map>();
+        String name = CommonUtil.objectParseString(ep.get().get("name"));
+         Map map = new HashMap();
+        map.put("name",name);
+        map.put("saleEpId",params.get("ep_id"));
+        map.put("ep_id",ep_id);
+        map.put("priceType",params.get("priceType"));
+        map.put("pricePercent",params.get("pricePercent"));
+        map.put("pricePixed",params.get("pricePixed"));
+        map.put("productSubId",params.get("productSubId"));
+        list.add(map);
+        return list;
+    }
     private List<Map> initEpOnsalesParams (Map params) {
         List<Map> onSalesEps = (List<Map>) params.get("saledArray");
         for (Map ep : onSalesEps) {

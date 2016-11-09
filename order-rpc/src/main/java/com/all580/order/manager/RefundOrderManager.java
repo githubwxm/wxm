@@ -2,6 +2,8 @@ package com.all580.order.manager;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.all580.notice.api.conf.SmsType;
+import com.all580.notice.api.service.SmsService;
 import com.all580.order.api.OrderConstant;
 import com.all580.order.dao.*;
 import com.all580.order.entity.*;
@@ -53,8 +55,6 @@ public class RefundOrderManager extends BaseOrderManager {
     private OrderItemAccountMapper orderItemAccountMapper;
     @Autowired
     private RefundSerialMapper refundSerialMapper;
-    @Autowired
-    private MaSendResponseMapper maSendResponseMapper;
 
     @Autowired
     private ProductSalesPlanRPCService productSalesPlanRPCService;
@@ -62,6 +62,8 @@ public class RefundOrderManager extends BaseOrderManager {
     private VoucherRPCService voucherRPCService;
     @Autowired
     private ThirdPayService thirdPayService;
+    @Autowired
+    private SmsManager smsManager;
 
     /**
      * 取消订单
@@ -528,6 +530,11 @@ public class RefundOrderManager extends BaseOrderManager {
      */
     public void refundMoney(Order order, int money, String sn) {
         log.debug("订单:{} 发起退款:{}", order.getNumber(), money);
+        if (money == 0 && sn != null) {
+            log.debug("订单:{} 退款为0元,直接调用退款成功.", order.getNumber());
+            refundMoneyAfter(Long.valueOf(sn), true);
+            return;
+        }
         Integer coreEpId = getCoreEpId(getCoreEpId(order.getBuyEpId()));
         // 退款
         // 余额退款
@@ -602,6 +609,38 @@ public class RefundOrderManager extends BaseOrderManager {
      */
     public void refundStock(OrderItem orderItem) {
         refundStock(CommonUtil.oneToList(orderItem));
+    }
+
+    /**
+     * 退款后操作
+     * @param sn 流水
+     * @param success 退款成功与否
+     */
+    public void refundMoneyAfter(long sn, boolean success) {
+        RefundOrder refundOrder = refundOrderMapper.selectBySN(sn);
+
+        if (refundOrder == null) {
+            throw new ApiException("退订订单不存在");
+        }
+        refundOrder.setRefundMoneyTime(new Date());
+        refundOrder.setStatus(success ? OrderConstant.RefundOrderStatus.REFUND_SUCCESS : OrderConstant.RefundOrderStatus.REFUND_MONEY_FAIL);
+        refundOrderMapper.updateByPrimaryKeySelective(refundOrder);
+
+        if (success) {
+            // 发送短信 退款
+            if (refundOrder.getMoney() > 0) {
+                smsManager.sendRefundMoneySuccessSms(refundOrder);
+            }
+            // 发送短信 退订
+            smsManager.sendRefundSuccessSms(refundOrder);
+            // 还库存 记录任务
+            Map<String, String> jobParams = new HashMap<>();
+            jobParams.put("orderItemId", String.valueOf(refundOrder.getOrderItemId()));
+            jobParams.put("check", "true");
+            addJob(OrderConstant.Actions.REFUND_STOCK, jobParams);
+        }
+        // 同步数据
+        syncRefundOrderMoney(refundOrder.getId());
     }
 
     /**

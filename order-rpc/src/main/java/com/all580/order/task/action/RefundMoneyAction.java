@@ -44,12 +44,12 @@ public class RefundMoneyAction implements JobRunner {
         // 退款
         Order order = orderMapper.selectBySN(Long.valueOf(params.get("ordCode")));
         if (order == null) {
-            log.warn("退款失败取消回调,订单不存在");
+            log.warn("退款失败任务,订单不存在");
             throw new Exception("订单不存在");
         }
         RefundOrder refundOrder = refundOrderMapper.selectBySN(Long.valueOf(params.get("serialNum")));
         if (refundOrder == null) {
-            log.warn("退款失败取消回调,退订订单不存在");
+            log.warn("退款失败任务,退订订单不存在");
             throw new Exception("退订订单不存在");
         }
         refundOrderManager.refundMoney(order, refundOrder.getMoney(), String.valueOf(refundOrder.getNumber()));

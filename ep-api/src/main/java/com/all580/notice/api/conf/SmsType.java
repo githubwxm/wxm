@@ -8,6 +8,7 @@ package com.all580.notice.api.conf;
  */
 public class SmsType {
     public static class Ep { // 企业
+        public static final String CHANGLV_SERVICE_PHONE="18807490002";
         public static final int CORE_EP_ADD = 12001; // 平台商入驻
         public static final int CORE_EP_CHANNEL = 12002; // 平台商供销关系开通
         public static final int USER_ADD = 12003; // 员工新增

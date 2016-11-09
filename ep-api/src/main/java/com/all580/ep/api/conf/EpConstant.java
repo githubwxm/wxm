@@ -6,6 +6,7 @@ package com.all580.ep.api.conf;
 public class EpConstant {
     public static class Table{
         public static final String T_EP="t_ep";//企业信息表
+        //public static final String T_CORE_EP_ACCESS="t_core_ep_access";//企业信息表
     }
     public static class EpKey{
         public static final String  EP_ID ="ep_id";//企业类型//
@@ -17,6 +18,7 @@ public class EpConstant {
         public static final String  PROVINCE ="province";//省id
         public static final String  CITY ="city";//市id
         public static final String  EP_TYPE ="ep_type";//企业类型
+        public static final String  CREATOR_EP_ID ="creator_ep_id";//企业类型
 
     }
 
@@ -27,11 +29,6 @@ public class EpConstant {
         public static final Integer   SELLER=10003;//销售商
         public static final Integer   DEALER =10004;//自营商
         public static final Integer   OTA=10005;//OTA
-    }
-
-    public static class EpNotArea{//不取全部范围的地址
-        public static final String  ONE="澳门特别行政区香港特别行政区";//省市区只取一个
-        public static final String  TOW="市辖区县";//省市区只取一个
     }
 
     public static class EpStatus{//企业状态

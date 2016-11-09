@@ -90,6 +90,12 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         if (!bookingOrderManager.isEpStatus(epService.getEpStatus(buyEpId), EpConstant.EpStatus.ACTIVE)) {
             throw new ApiException("销售商企业已冻结");
         }
+        // 只有销售商可以下单
+        Result<Integer> epType = epService.selectEpType(buyEpId);
+        if (!bookingOrderManager.isEpType(epType, EpConstant.EpType.SELLER) &&
+                !bookingOrderManager.isEpType(epType, EpConstant.EpType.OTA)) {
+            throw new ApiException("该企业不能购买产品");
+        }
         // 获取平台商ID
         Integer coreEpId = bookingOrderManager.getCoreEpId(bookingOrderManager.getCoreEpId(buyEpId));
         // 锁定库存集合(统一锁定)
