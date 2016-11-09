@@ -93,6 +93,9 @@ public class PaymentCallbackServiceImpl implements PaymentCallbackService {
         if (order == null && outTransId != null) {
             order = orderMapper.selectByThirdSn(outTransId);
         }
+        if (order == null && outTransId == null) {
+            order = orderMapper.selectByRefundSn(ordCode);
+        }
 
         if (order == null) {
             log.warn("退款回调:订单不存在");

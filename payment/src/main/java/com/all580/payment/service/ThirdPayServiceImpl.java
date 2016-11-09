@@ -10,6 +10,7 @@ import com.all580.payment.thirdpay.ali.service.AliPayService;
 import com.all580.payment.thirdpay.wx.model.RefundRsp;
 import com.all580.payment.thirdpay.wx.service.WxPayService;
 import com.framework.common.Result;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -140,14 +141,15 @@ public class ThirdPayServiceImpl implements ThirdPayService {
 
     @Override
     public Result refundCallback(Map<String, String> params, int payType) {
+        Result rst = new Result();
         // 根据企业获取配置信息
         if (PaymentConstant.PaymentType.WX_PAY == payType) {
             throw new RuntimeException("微信没有退款回调");
         } else if (PaymentConstant.PaymentType.ALI_PAY == payType) {
             String resultDetails = params.get("result_details");
             logger.info("支付宝退款返回：result_details=" + resultDetails);
-            String[] split = resultDetails.split("^");
-            String outTransId = split[0]; // 第三方交易号
+            String[] split = StringUtils.split(resultDetails, '^');
+            String outTransId = split[0]; // 第三方交易号-支付宝的交易号
             Result<Integer> result = orderService.getPayeeEpIdByOutTransId(outTransId);
             EpPaymentConf epPaymentConf = epPaymentConfMapper.getByEpIdAndType(result.get(), payType);
             // 验证调用结果是否成功
@@ -155,11 +157,17 @@ public class ThirdPayServiceImpl implements ThirdPayService {
 
             String batchNo = params.get("batch_no");
             String serialNum = batchNo.substring(8);
-            paymentCallbackService.refundCallback(null, serialNum, outTransId, isSuccess);
+            Result result1 = paymentCallbackService.refundCallback(null, serialNum, outTransId, isSuccess);
+            if (result1.isSuccess()) {
+                rst.setSuccess();
+            } else {
+                // ....................
+                logger.error("支付宝退款回调订单->失败：" + result1.getError());
+            }
         } else {
             throw new RuntimeException("不支持的支付类型:" + payType);
         }
-        return null;
+        return rst;
     }
 
     @Override

@@ -203,7 +203,7 @@ public class RefundOrderServiceImpl implements RefundOrderService {
                     orderItem.setRefundQuantity(orderItem.getRefundQuantity() + quantity);
                     orderItemMapper.updateByPrimaryKeySelective(orderItem);
                     // 支付宝需要手动退款
-                    if (order.getPaymentType() != PaymentConstant.PaymentType.ALI_PAY.intValue()) {
+                    if (order.getPaymentType() == null || order.getPaymentType() != PaymentConstant.PaymentType.ALI_PAY.intValue()) {
                         // 退款
                         refundOrderManager.refundMoney(order, refundOrder.getMoney(), String.valueOf(refundOrder.getNumber()));
                     }
