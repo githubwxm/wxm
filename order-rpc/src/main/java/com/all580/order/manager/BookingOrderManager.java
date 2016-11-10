@@ -250,12 +250,8 @@ public class BookingOrderManager extends BaseOrderManager {
         if (effectiveDate.after(expiryDate)) {
             throw new ApiException("该产品已过期");
         }
-        // 不能购买当天之前的产品
-        Date now = new Date();
-        now = DateUtils.setHours(now, 0);
-        now = DateUtils.setMinutes(now, 0);
-        now = DateUtils.setSeconds(now, 0);
-        if (now.after(effectiveDate)) {
+        // 不能购买已过销售计划的产品
+        if (new Date().after(info.getEndTime())) {
             throw new ApiException("预定时间已过期");
         }
         orderItemDetail.setExpiryDate(expiryDate);
