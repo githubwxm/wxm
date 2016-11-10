@@ -42,6 +42,10 @@
 					 interface="com.all580.ep.api.service.EpBalanceThresholdService" />
 	<dubbo:reference id="logCreditService"
 					 interface="com.all580.ep.api.service.LogCreditService" />
+	<dubbo:reference id="funcService"
+					 interface="com.all580.role.api.service.FuncService"/>
+	<dubbo:reference id="intfService"
+					 interface="com.all580.role.api.service.IntfService"/>
 	<dubbo:reference id="smsService"
 					 interface="com.all580.notice.api.service.SmsService"/>
 
