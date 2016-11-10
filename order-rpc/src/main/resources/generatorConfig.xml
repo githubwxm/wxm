@@ -92,7 +92,7 @@
                domainObjectName="OrderClearanceSerial">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
             <columnOverride column="update_time" javaType="java.lang.String"/>
-        </table>
+        </table>-->
         <table tableName="t_order_item"
                enableCountByExample="false"
                enableUpdateByExample="false"
@@ -104,7 +104,7 @@
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
             <columnOverride column="update_time" javaType="java.lang.String"/>
         </table>
-        <table tableName="t_order_item_detail"
+        <!--<table tableName="t_order_item_detail"
                enableCountByExample="false"
                enableUpdateByExample="false"
                enableDeleteByExample="false"
@@ -159,7 +159,7 @@
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
             <columnOverride column="update_time" javaType="java.lang.String"/>
         </table>-->
-        <table tableName="t_visitor"
+        <!--<table tableName="t_visitor"
                enableCountByExample="false"
                enableUpdateByExample="false"
                enableDeleteByExample="false"
@@ -169,7 +169,7 @@
                domainObjectName="Visitor">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
             <columnOverride column="update_time" javaType="java.lang.String"/>
-        </table>
+        </table>-->
         <!--<table tableName="t_ma_send_response"
                enableCountByExample="false"
                enableUpdateByExample="false"

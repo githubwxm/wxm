@@ -172,6 +172,7 @@ public class BookingOrderManager extends BaseOrderManager {
         orderItem.setPaymentFlag(info.getPayType());
         orderItem.setStatus(OrderConstant.OrderItemStatus.AUDIT_SUCCESS);
         orderItem.setSupplierEpId(info.getEpId());
+        orderItem.setSupplierCoreEpId(getCoreEpId(getCoreEpId(info.getEpId())));
         orderItem.setEpMaId(info.getEpMaId());
         orderItemMapper.insertSelective(orderItem);
         return orderItem;
