@@ -1,74 +1,57 @@
 package com.all580.payment.thirdpay.wx.model;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-
 /**
- * 微信账号
+ * 微信账号配置信息
  *
  * @author panyi on 2016/10/13.
  * @since V0.0.1
  */
-@Component
 public class WxProperties {
-    @Value("${weixin.apiclient_cert.p12}")
-    private String apiclient_cert_p12;
-    @Value("${weixin.apiclient_cert.pem}")
-    private String apiclient_cert_pem;
-    @Value("${weixin.apiclient_key.pem}")
-    private String apiclient_key_pem;
-    @Value("${weixin.rootca.pem}")
-    private String rootca_pem;
-    @Value("${weixin.cerpassword}")
-    private String cerpassword;
-    @Value("${weixin.app_id}")
-    public String APP_ID;
-    @Value("${weixin.app_secret}")
-    public String APP_SECRET;
-    @Value("${weixin.partner}")
-    public String PARTNER;
-    @Value("${weixin.partner_key}")
-    public String PARTNER_KEY;
-    @Value("${weixin.app_key}")
-    public String APP_KEY;
+    private String apiClientCertP12Str; // 私钥证书文件字符串
+    private String appId; // 开发应用ID
+    private String mchId; // 商户号
+    private String mchKey; //  商户秘钥
 
-    public String getAPP_ID() {
-        return APP_ID;
+    private int coreEpId; // 平台商ID
+    //private
+
+    public String getAppId() {
+        return appId;
     }
 
-    public String getAPP_SECRET() {
-        return APP_SECRET;
+    public String getMchId() {
+        return mchId;
     }
 
-    public String getPARTNER() {
-        return PARTNER;
+    public String getMchKey() {
+        return mchKey;
     }
 
-    public String getPARTNER_KEY() {
-        return PARTNER_KEY;
+    public String getApiClientCertP12Str() {
+        return apiClientCertP12Str;
     }
 
-    public String getAPP_KEY() {
-        return APP_KEY;
+    public void setApiClientCertP12Str(String apiClientCertP12Str) {
+        this.apiClientCertP12Str = apiClientCertP12Str;
     }
 
-    public String getApiclient_cert_p12() {
-        return apiclient_cert_p12;
+    public void setAppId(String appId) {
+        this.appId = appId;
     }
 
-    public String getApiclient_cert_pem() {
-        return apiclient_cert_pem;
+    public void setMchId(String mchId) {
+        this.mchId = mchId;
     }
 
-    public String getApiclient_key_pem() {
-        return apiclient_key_pem;
+    public void setMchKey(String mchKey) {
+        this.mchKey = mchKey;
     }
 
-    public String getRootca_pem() {
-        return rootca_pem;
+    public int getCoreEpId() {
+        return coreEpId;
     }
 
-    public String getCerpassword() {
-        return cerpassword;
+    public void setCoreEpId(int coreEpId) {
+        this.coreEpId = coreEpId;
     }
 }

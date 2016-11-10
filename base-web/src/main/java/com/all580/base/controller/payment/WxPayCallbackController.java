@@ -29,7 +29,7 @@ import java.util.Map;
  */
 @Controller
 @RequestMapping("no_auth_api/callback/wx")
-public class WxPayController extends BaseController {
+public class WxPayCallbackController extends BaseController {
     @Autowired
     private ThirdPayService thirdPayService;
 
@@ -99,14 +99,14 @@ public class WxPayController extends BaseController {
     @RequestMapping(value = "/reqPayTest")
     public void reqPayTest(HttpServletResponse rsp) throws Exception {
         System.out.println("---------------------------->   /reqPayTest");
-        long ordCode = 1111111113;
+        long ordCode = 1111111120;
         int coreEpId = 1;
         int payType = PaymentConstant.PaymentType.WX_PAY;
         Map<String, Object> params = new HashMap<>();
         params.put("totalFee", 1); // 单位分
         params.put("prodId", 1010);
         params.put("prodName", "测试产品名称");
-        params.put("serialNum", "1111111113");
+        params.put("serialNum", "1111111120");
         Result<String> result = thirdPayService.reqPay(ordCode, coreEpId, payType, params);
         rsp.setContentType("text/html; charset=UTF-8");
         logger.info(result.get());
@@ -118,13 +118,13 @@ public class WxPayController extends BaseController {
     @RequestMapping(value = "/reqRefundTest")
     public void reqRefundTest(HttpServletResponse rsp) throws Exception {
         System.out.println("---------------------------->   /reqRefundTest");
-        long ordCode = 1111111113;
+        long ordCode = 1111111120;
         int coreEpId = 1;
         int payType = PaymentConstant.PaymentType.WX_PAY;
         Map<String, Object> params = new HashMap<>();
         params.put("totalFee", 1);
         params.put("refundFee", 1);
-        params.put("refundId", "1111111113");
+        params.put("serialNum", "2111111120");
         Result<String> result = thirdPayService.reqRefund(ordCode, coreEpId, payType, params);
         rsp.setContentType("text/html; charset=UTF-8");
         logger.info(result.get());

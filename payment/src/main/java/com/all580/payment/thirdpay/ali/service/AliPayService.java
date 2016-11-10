@@ -1,6 +1,5 @@
 package com.all580.payment.thirdpay.ali.service;
 
-import com.all580.payment.entity.EpPaymentConf;
 import com.all580.payment.thirdpay.ali.config.AlipayConfig;
 import com.all580.payment.thirdpay.ali.util.AlipayCore;
 import com.all580.payment.thirdpay.ali.util.AlipayNotify;
@@ -13,7 +12,7 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
@@ -30,14 +29,33 @@ import java.util.Map;
 @Service("aliPayService")
 public class AliPayService {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
-    @Autowired
-    private AlipayProperties alipayProperties;
+    private Map<Integer, AliPayProperties> alipayPropertiesMap = new HashMap<>();
+    @Value("${base.url}")
+    private String domain;
+    @Value("${alipay.payment.callback.url}")
+    private String pay_notify_url;//支付宝服务器主动通知商户网站里指定的页面http路径
+    @Value("${alipay.recharge.callback.url}")
+    private String recharge_notify_url;//支付宝服务器主动通知商户网站里指定的页面http路径
+    @Value("${alipay.refund.callback.url}")
+    private String refund_notify_url;//支付宝服务器主动通知商户网站里指定的页面http路径
+    @Value("${alipay.phonePayment.callback.url}")
+    private String phonepay_notify_url;//支付宝服务器主动通知商户网站里指定的页面http路径
 
-    public Map<String, String> paymentQuery(long ordCode) {
+    public boolean isPropertiesInit(int coreEpId) {
+        return alipayPropertiesMap.containsKey(coreEpId);
+    }
+
+    public synchronized void initProperties(int coreEpId, String confData) {
+        AliPayProperties aliPayProperties = JsonUtils.fromJson(confData, AliPayProperties.class);
+        alipayPropertiesMap.put(coreEpId, aliPayProperties);
+    }
+
+    public Map<String, String> paymentQuery(long ordCode, int coreEpId) {
+        AliPayProperties aliPayProperties = alipayPropertiesMap.get(coreEpId);
         //把请求参数打包成数组
         Map<String, String> sParaTemp = new HashMap<String, String>();
         sParaTemp.put("service", "single_trade_query");
-        sParaTemp.put("partner", alipayProperties.getPartner());
+        sParaTemp.put("partner", aliPayProperties.getPartner());
         sParaTemp.put("_input_charset", AlipayConfig.input_charset);
         sParaTemp.put("trade_no", "");
         sParaTemp.put("out_trade_no", String.valueOf(ordCode));
@@ -45,7 +63,7 @@ public class AliPayService {
         // 建立请求
         Map<String, String> rsp = new HashMap<>();
         try {
-            String res = AlipaySubmit.buildRequest("", "", sParaTemp, alipayProperties.getKey());
+            String res = AlipaySubmit.buildRequest("", "", sParaTemp, aliPayProperties.getKey());
             Document doc = DocumentHelper.parseText(res);
             Element rootElement = doc.getRootElement();
             String isSuccess = rootElement.selectSingleNode("//alipay/is_success").getText();
@@ -66,17 +84,16 @@ public class AliPayService {
         return rsp;
     }
 
-    public String reqPay(long ordCode, int coreEpId, Map<String, Object> params, String confData) {
-        // AlipayProperties alipayProperties = JsonUtils.fromJson(confData, AlipayProperties.class);
-        String notify_url = "http://core.py.ngrok.wendal.cn/no_auth_api/callback/ali/payment";// alipayProperties
-        // .getPay_notify_url();
+    public String reqPay(long ordCode, int coreEpId, Map<String, Object> params) {
+        AliPayProperties aliPayProperties = alipayPropertiesMap.get(coreEpId);
+        String notify_url = domain + pay_notify_url;
+        // "http://core.py.ngrok.wendal.cn/no_auth_api/callback/ali/payment";
 
         // 把请求参数打包成数组
         Map<String, String> sParaTemp = new HashMap<>();
         sParaTemp.put("service", AlipayConfig.INF_NAME_PAY);
-        sParaTemp.put("partner", alipayProperties.getPartner());
+        sParaTemp.put("partner", aliPayProperties.getPartner());
         sParaTemp.put("_input_charset", AlipayConfig.input_charset);
-
         sParaTemp.put("payment_type", AlipayConfig.PayType.PROD_PURCHASE.toString());
         sParaTemp.put("notify_url", notify_url);
         sParaTemp.put("return_url", "");
@@ -86,33 +103,30 @@ public class AliPayService {
         int totalFee = (Integer) params.get("totalFee");
         sParaTemp.put("total_fee", String.valueOf(totalFee / 100.0));
         // sParaTemp.put("body", null);
-//        sParaTemp.put("paymethod", "");
-//        sParaTemp.put("defaultbank", "");
+        // sParaTemp.put("paymethod", "");
+        // sParaTemp.put("defaultbank", "");
         // sParaTemp.put("show_url", null);
         // sParaTemp.put("anti_phishing_key", "");
-//        sParaTemp.put("exter_invoke_ip", "");
-        // 支付宝不支持json串
-        // PayAttachVO attachVO = new PayAttachVO("" + coreEpId, String.valueOf(params.get("serialNum")));
-//        sParaTemp.put("extra_common_param", JsonUtils.toJson(attachVO));
+        // sParaTemp.put("exter_invoke_ip", "");
         sParaTemp.put("extra_common_param", "" + coreEpId);
 
         // 建立请求
-        String sHtmlText = AlipaySubmit.buildRequest(alipayProperties.getKey(), sParaTemp, "get", "确认");
+        String sHtmlText = AlipaySubmit.buildRequest(aliPayProperties.getKey(), sParaTemp, "get", "确认");
 
         return sHtmlText;
     }
 
-    public String reqRefund(Map<String, Object> params, String confData) {
-        // AlipayProperties alipayProperties = JsonUtils.fromJson(confData, AlipayProperties.class);
-        // String notify_url = alipayProperties.getRecharge_notify_url();
-        String notify_url = "http://core.py.ngrok.wendal.cn/no_auth_api/callback/ali/refund";
+    public String reqRefund(Map<String, Object> params, int coreEpId) {
+        AliPayProperties aliPayProperties = alipayPropertiesMap.get(coreEpId);
+        String notify_url = domain + refund_notify_url;
+        // "http://core.py.ngrok.wendal.cn/no_auth_api/callback/ali/refund";
         // 把请求参数打包成数组
         Map<String, String> sParaTemp = new HashMap<String, String>();
         sParaTemp.put("service", AlipayConfig.INF_NAME_REFUND);
-        sParaTemp.put("partner", alipayProperties.getPartner());
+        sParaTemp.put("partner", aliPayProperties.getPartner());
         sParaTemp.put("_input_charset", AlipayConfig.input_charset);
         sParaTemp.put("notify_url", notify_url);
-        sParaTemp.put("seller_email", alipayProperties.getSeller_email());
+        sParaTemp.put("seller_email", aliPayProperties.getSellerEmail());
         sParaTemp.put("refund_date", DateFormatUtils.parseDateToDatetimeString(new Date()));
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
         sParaTemp.put("batch_no", sdf.format(new Date()) + params.get("serialNum"));
@@ -122,14 +136,14 @@ public class AliPayService {
         sParaTemp.put("detail_data", detail);
 
         // 建立请求
-        String sHtmlText = AlipaySubmit.buildRequest(alipayProperties.getKey(), sParaTemp, "get", "确认");
+        String sHtmlText = AlipaySubmit.buildRequest(aliPayProperties.getKey(), sParaTemp, "get", "确认");
         return sHtmlText;
     }
 
-    public boolean refundCallback(Map<String, String> params, EpPaymentConf epPaymentConf) {
-        //AlipayProperties alipayProperties2 = JsonUtils.fromJson(epPaymentConf.getConfData(), AlipayProperties.class);
+    public boolean refundCallback(Map<String, String> params, int coreEpId) {
+        AliPayProperties aliPayProperties = alipayPropertiesMap.get(coreEpId);
         // 访问支付宝进行校验
-        return AlipayNotify.verify(params, alipayProperties.getPartner(), alipayProperties.getKey());//验证成功
+        return AlipayNotify.verify(params, aliPayProperties.getPartner(), aliPayProperties.getKey());//验证成功
 
     }
 
@@ -137,13 +151,13 @@ public class AliPayService {
      * 支付回调
      *
      * @param params
-     * @param epPaymentConf
+     * @param coreEpId
      * @return
      */
-    public Result<Map<String, String>> payCallback(Map<String, String> params, EpPaymentConf epPaymentConf) {
+    public Result<Map<String, String>> payCallback(Map<String, String> params, int coreEpId) {
         Result<Map<String, String>> result = new Result<>();
-        AlipayProperties alipayProperties2 = JsonUtils.fromJson(epPaymentConf.getConfData(), AlipayProperties.class);
-        boolean isSuccess = AlipayNotify.verify(params, alipayProperties.getPartner(), alipayProperties.getKey());
+        AliPayProperties aliPayProperties = alipayPropertiesMap.get(coreEpId);
+        boolean isSuccess = AlipayNotify.verify(params, aliPayProperties.getPartner(), aliPayProperties.getKey());
         if (isSuccess) {
             result.setSuccess();
         } else {

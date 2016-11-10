@@ -7,9 +7,10 @@
         <result column="payment_type" property="paymentType" jdbcType="INTEGER"/>
         <result column="conf_data" property="confData" jdbcType="VARCHAR"/>
         <result column="status" property="status" jdbcType="INTEGER"/>
+        <result column="cert_p12" property="certP12" jdbcType="VARCHAR"/>
     </resultMap>
     <sql id="Base_Column_List">
-    id, core_ep_id, payment_type, conf_data, status
+        id, core_ep_id, payment_type, conf_data, status,cert_p12
   </sql>
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
         select
@@ -49,6 +50,9 @@
             <if test="status != null">
                 status,
             </if>
+            <if test="certP12 != null">
+                cert_p12,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             #{id,jdbcType=INTEGER},
@@ -63,6 +67,9 @@
             </if>
             <if test="status != null">
                 #{status,jdbcType=INTEGER},
+            </if>
+            <if test="certP12 != null">
+                #{cert_p12,jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>
@@ -81,6 +88,9 @@
             <if test="status != null">
                 status = #{status,jdbcType=INTEGER},
             </if>
+            <if test="certP12 != null">
+                cert_p12 = #{status,jdbcType=VARCHAR},
+            </if>
         </set>
         where id = #{id,jdbcType=INTEGER}
     </update>
@@ -90,6 +100,7 @@
           payment_type = #{paymentType,jdbcType=INTEGER},
           conf_data = #{confData,jdbcType=VARCHAR},
           status = #{status,jdbcType=INTEGER}
+        cert_p12 = #{status,jdbcType=VARCHAR}
         where id = #{id,jdbcType=INTEGER}
     </update>
 

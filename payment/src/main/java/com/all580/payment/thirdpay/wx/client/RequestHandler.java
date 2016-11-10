@@ -1,7 +1,6 @@
 package com.all580.payment.thirdpay.wx.client;
 
 
-import com.all580.payment.thirdpay.wx.util.ConstantUtil;
 import com.all580.payment.thirdpay.wx.util.MD5Util;
 import com.all580.payment.thirdpay.wx.util.TenpayUtil;
 import org.slf4j.Logger;
@@ -59,7 +58,7 @@ public class RequestHandler {
         this.response = response;
 
         this.gateUrl = "https://gw.tenpay.com/gateway/pay.htm";
-        this.key = ConstantUtil.PARTNER_KEY;
+        // this.key = ConstantUtil.mchKey;
         this.parameters = new TreeMap();
         this.debugInfo = "";
     }

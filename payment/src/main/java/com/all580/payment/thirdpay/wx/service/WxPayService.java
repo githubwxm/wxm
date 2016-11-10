@@ -1,6 +1,5 @@
 package com.all580.payment.thirdpay.wx.service;
 
-import com.all580.payment.entity.EpPaymentConf;
 import com.all580.payment.thirdpay.wx.client.ClientResponseHandler;
 import com.all580.payment.thirdpay.wx.client.RequestHandler;
 import com.all580.payment.thirdpay.wx.client.ResponseHandler;
@@ -13,11 +12,9 @@ import com.framework.common.lang.JsonUtils;
 import com.framework.common.net.IPUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -31,47 +28,42 @@ import java.util.SortedMap;
 @Service("wxPayService")
 public class WxPayService {
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
+    private Map<Integer, WxProperties> wxPropertiesMap = new HashMap<>();
     @Value("${base.url}")
     private String domain;
-    @Value("${weixin.callback.url}")
-    private String notifyUrl;
+    @Value("${wx.pay.callback.url}")
+    private String payCallbackUrl;
 
-
-    @Autowired
-    private WxProperties wxProperties;
-
-    public String reqPay(long ordCode,int coreEpId, Map<String, Object> params, String confData) throws Exception {
-        WxProperties wxProperties2 = JsonUtils.fromJson(confData, WxProperties.class);
-        domain = "";
-        notifyUrl = "http://core.py.ngrok.wendal.cn/no_auth_api/callback/wx/payment";
+    public String reqPay(long ordCode, int coreEpId, Map<String, Object> params) throws Exception {
+        WxProperties wxProperties = wxPropertiesMap.get(coreEpId);
+        // payCallbackUrl = "http://core.py.ngrok.wendal.cn/no_auth_api/callback/wx/payment";
         UnifiedOrderReq req = new UnifiedOrderReq();
-        req.setAppid(wxProperties.getAPP_ID());
-        req.setMch_id(wxProperties.getPARTNER());
+        req.setAppid(wxProperties.getAppId());
+        req.setMch_id(wxProperties.getMchId());
         req.setNonce_str(WXUtil.getNonceStr());
         req.setDevice_info("");
         req.setTotal_fee(String.valueOf(params.get("totalFee")));
         //透传参数
-        // PayAttachVO attachVO = new PayAttachVO("" + coreEpId, String.valueOf(params.get("serialNum")));
         req.setAttach("" + coreEpId);
         req.setTrade_type(ConstantUtil.NATIVE_TRADE_TYPE);
         req.setProduct_id(String.valueOf(params.get("prodId")));
         req.setSpbill_create_ip(IPUtils.getRealIp(true));
         req.setFee_type("CNY");
-        req.setNotify_url(domain + notifyUrl);
+        req.setNotify_url(domain + payCallbackUrl);
         req.setBody(String.valueOf(params.get("prodName")));
         // req.setGoods_tag();
         req.setOut_trade_no(String.valueOf(ordCode));
         // req.setSign();
 
-        UnifiedOrderRsp unifiedOrderRsp = this.request(ConstantUtil.UNIFIEDORDER, req, UnifiedOrderRsp.class, false);
+        UnifiedOrderRsp unifiedOrderRsp = this.request(ConstantUtil.UNIFIEDORDER, req, UnifiedOrderRsp.class, false, wxProperties);
 
         return unifiedOrderRsp.getCode_url();
 
     }
 
     // 申请退款
-    public RefundRsp reqRefund(long ordCode, Map<String, Object> params, String confData) throws Exception {
-        WxProperties wxProperties2 = JsonUtils.fromJson(confData, WxProperties.class);
+    public RefundRsp reqRefund(long ordCode, Map<String, Object> params, int coreEpId) throws Exception {
+        WxProperties wxProperties = wxPropertiesMap.get(coreEpId);
         RefundReq req = new RefundReq();
         req.setTransaction_id("");
         req.setOut_trade_no(String.valueOf(ordCode));
@@ -79,26 +71,26 @@ public class WxPayService {
         req.setTotal_fee((Integer) params.get("totalFee"));
         req.setRefund_fee((Integer) params.get("refundFee"));
         req.setRefund_fee_type("CNY");
-        req.setAppid(wxProperties.getAPP_ID());
-        req.setMch_id(wxProperties.getPARTNER());
+        req.setAppid(wxProperties.getAppId());
+        req.setMch_id(wxProperties.getMchId());
         req.setNonce_str(WXUtil.getNonceStr());
-        req.setOp_user_id(wxProperties.getPARTNER());
+        req.setOp_user_id(wxProperties.getMchId());
         req.setDevice_info("");
 
-        return this.request(ConstantUtil.REFUND, req, RefundRsp.class, true);
+        return this.request(ConstantUtil.REFUND, req, RefundRsp.class, true, wxProperties);
     }
 
-    public Result<Map<String, String>> payCallback(Map<String, String> params, EpPaymentConf epPaymentConf) {
+    public Result<Map<String, String>> payCallback(Map<String, String> params, int coreEpId) {
         Result<Map<String, String>> result = new Result<>();
-        WxProperties wxProperties2 = JsonUtils.fromJson(epPaymentConf.getConfData(), WxProperties.class);
+        WxProperties wxProperties = wxPropertiesMap.get(coreEpId);
         ResponseHandler resHandler = new ResponseHandler(params);
-        resHandler.setKey(wxProperties.getPARTNER_KEY());
-        Map<String,String> rsp = new HashMap<>();
+        resHandler.setKey(wxProperties.getMchKey());
+        Map<String, String> rsp = new HashMap<>();
         // 判断签名
         if (resHandler.isTenpaySign()) {
             if (null != resHandler.getParameter(ConstantUtil.RETURN_CODE) && resHandler.
                     getParameter(ConstantUtil.RETURN_CODE).equals(ConstantUtil.SUCCESS)) {
-                rsp.put("return_code","SUCCESS");
+                rsp.put("return_code", "SUCCESS");
                 rsp.put("return_msg", "OK");
                 result.setSuccess();
             } else {
@@ -122,7 +114,7 @@ public class WxPayService {
      * @return
      * @throws Exception
      */
-    private <T> T request(String url, CommonsReq req, Class<T> cls, boolean certBool) throws Exception {
+    private <T> T request(String url, CommonsReq req, Class<T> cls, boolean certBool, WxProperties wxProperties) throws Exception {
         // 创建请求对象
         RequestHandler queryReq = new RequestHandler(null, null);
         // 通信对象
@@ -132,7 +124,7 @@ public class WxPayService {
 
         // 通过通知ID查询，确保通知来至财付通
         queryReq.init();
-        queryReq.setKey(wxProperties.getPARTNER_KEY());
+        queryReq.setKey(wxProperties.getMchKey());
         queryReq.setGateUrl(url);
 
         Class clss = req.getClass();
@@ -155,12 +147,14 @@ public class WxPayService {
 //        httpClient.setTimeOut(5);
         // 设置请求内容
         httpClient.setReqContent(queryReq.getRequestURL());
+        httpClient.setIsHttps(certBool); // 退款使用https
+        httpClient.setWxProperties(wxProperties);
         T entity = cls.newInstance();
 
-        if (certBool) {
-            httpClient.setCaInfo(new File(wxProperties.getRootca_pem()));
-            httpClient.setCertInfo(new File(wxProperties.getApiclient_cert_p12()), wxProperties.getPARTNER());
-        }
+        // if (certBool) {
+        // httpClient.setCaInfo(new File(wxProperties.getRootca_pem()));
+        // httpClient.setCertInfo(new File(wxProperties.getApiClientCertP12Str()), wxProperties.getMchId());
+        // }
 
         // 后台调用
         if (httpClient.call()) {
@@ -217,5 +211,16 @@ public class WxPayService {
             throw new Exception("后台调用通信失败");
         }
         return entity;
+    }
+
+    public boolean isPropertiesInit(int coreEpId) {
+        return wxPropertiesMap.containsKey(coreEpId);
+    }
+
+    public synchronized void initProperties(int coreEpId, String confData, String certP12) {
+        WxProperties wxProperties = JsonUtils.fromJson(confData, WxProperties.class);
+        wxProperties.setCoreEpId(coreEpId);
+        wxProperties.setApiClientCertP12Str(certP12);
+        wxPropertiesMap.put(coreEpId, wxProperties);
     }
 }

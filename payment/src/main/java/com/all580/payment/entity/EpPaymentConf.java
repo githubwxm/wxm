@@ -12,6 +12,7 @@ public class EpPaymentConf implements Serializable {
     private String confData;
 
     private Integer status;
+    private String certP12; // 微信证书文件
 
     private static final long serialVersionUID = 1L;
 
@@ -53,5 +54,13 @@ public class EpPaymentConf implements Serializable {
 
     public void setStatus(Integer status) {
         this.status = status;
+    }
+
+    public String getCertP12() {
+        return certP12;
+    }
+
+    public void setCertP12(String certP12) {
+        this.certP12 = certP12;
     }
 }

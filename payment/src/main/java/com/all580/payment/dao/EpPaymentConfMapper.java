@@ -37,4 +37,5 @@ public interface EpPaymentConfMapper {
     int countByEpIdAndType(@Param("coreEpId") Integer coreEpId, @Param("paymentType") Integer paymentType);
 
     EpPaymentConf getByEpIdAndType(@Param("coreEpId") Integer coreEpId, @Param("paymentType") Integer paymentType);
+
 }

@@ -1,19 +1,23 @@
 package com.all580.payment.thirdpay.wx.client;
 
 
+import com.all580.payment.thirdpay.wx.model.WxProperties;
 import com.all580.payment.thirdpay.wx.util.HttpClientUtil;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.http.ssl.SSLContexts;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
-import java.io.*;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.security.KeyManagementException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableKeyException;
+import java.security.*;
 import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 
 /**
  * 财付通http或者https网络通信客户端<br/>
@@ -33,29 +37,17 @@ import java.security.cert.X509Certificate;
  * ========================================================================<br/>
  */
 public class TenpayHttpClient {
-
+    protected Logger logger = LoggerFactory.getLogger(this.getClass());
     private static final String USER_AGENT_VALUE = "Mozilla/4.0 (compatible; MSIE 6.0; Windows XP)";
 
-    private static final String JKS_CA_FILENAME = "tenpay_cacert.jks";
+    // private static final String JKS_CA_FILENAME = "tenpay_cacert.jks";
 
-    private static final String JKS_CA_ALIAS = "tenpay";
+    // private static final String JKS_CA_ALIAS = "tenpay";
 
-    private static final String JKS_CA_PASSWORD = "";
+    // private static final String JKS_CA_PASSWORD = "";
 
-    /**
-     * ca证书文件
-     */
-    private File caFile;
-
-    /**
-     * 证书文件
-     */
-    private File certFile;
-
-    /**
-     * 证书密码
-     */
-    private String certPasswd;
+    private boolean isHttps = false;
+    private WxProperties wxProperties;
 
     /**
      * 请求内容，无论post和get，都用get方式提供
@@ -95,10 +87,6 @@ public class TenpayHttpClient {
     private InputStream inputStream;
 
     public TenpayHttpClient() {
-        this.caFile = null;
-        this.certFile = null;
-        this.certPasswd = "";
-
         this.reqContent = "";
         this.resContent = "";
         this.method = "POST";
@@ -111,25 +99,6 @@ public class TenpayHttpClient {
         this.inputStream = null;
     }
 
-    /**
-     * 设置证书信息
-     *
-     * @param certFile   证书文件
-     * @param certPasswd 证书密码
-     */
-    public void setCertInfo(File certFile, String certPasswd) {
-        this.certFile = certFile;
-        this.certPasswd = certPasswd;
-    }
-
-    /**
-     * 设置ca
-     *
-     * @param caFile
-     */
-    public void setCaInfo(File caFile) {
-        this.caFile = caFile;
-    }
 
     /**
      * 设置请求内容
@@ -203,7 +172,7 @@ public class TenpayHttpClient {
         boolean isRet = false;
 
         // http
-        if (null == this.caFile && null == this.certFile) {
+        if (!this.isHttps()) {
             try {
                 this.callHttp();
                 isRet = true;
@@ -250,88 +219,79 @@ public class TenpayHttpClient {
 
     }
 
-    protected void callHttps() throws IOException, CertificateException,
+    @Deprecated
+    protected void callHttps2() throws IOException, CertificateException,
             KeyStoreException, NoSuchAlgorithmException,
             UnrecoverableKeyException, KeyManagementException {
 
         // ca目录
-        String caPath = this.caFile.getParent();
-
-        File jksCAFile = new File(caPath + "/"
-                + TenpayHttpClient.JKS_CA_FILENAME);
-        if (!jksCAFile.isFile()) {
-            X509Certificate cert = (X509Certificate) HttpClientUtil
-                    .getCertificate(this.caFile);
-
-            FileOutputStream out = new FileOutputStream(jksCAFile);
-
-            // store jks file
-            HttpClientUtil.storeCACert(cert, TenpayHttpClient.JKS_CA_ALIAS,
-                    TenpayHttpClient.JKS_CA_PASSWORD, out);
-
-            out.close();
-
-        }
-
-        FileInputStream trustStream = new FileInputStream(jksCAFile);
-        FileInputStream keyStream = new FileInputStream(this.certFile);
-
-        SSLContext sslContext = HttpClientUtil.getSSLContext(trustStream,
-                TenpayHttpClient.JKS_CA_PASSWORD, keyStream, this.certPasswd);
-
-        // 关闭流
-        keyStream.close();
-        trustStream.close();
-
-        if ("POST".equals(this.method.toUpperCase())) {
-            String url = HttpClientUtil.getURL(this.reqContent);
-            String queryString = HttpClientUtil.getQueryString(this.reqContent);
-            byte[] postData = queryString.getBytes(this.charset);
-
-            this.httpsPostMethod(url, postData, sslContext);
-
-            return;
-        }
-
-        this.httpsGetMethod(this.reqContent, sslContext);
+//        String caPath = this.caFile.getParent();
+//
+//        File jksCAFile = new File(caPath + "/"
+//                + TenpayHttpClient.JKS_CA_FILENAME);
+//        if (!jksCAFile.isFile()) {
+//            X509Certificate cert = (X509Certificate) HttpClientUtil
+//                    .getCertificate(this.caFile);
+//
+//            FileOutputStream out = new FileOutputStream(jksCAFile);
+//
+//            // store jks file
+//            HttpClientUtil.storeCACert(cert, TenpayHttpClient.JKS_CA_ALIAS,
+//                    TenpayHttpClient.JKS_CA_PASSWORD, out);
+//
+//            out.close();
+//
+//        }
+//
+//        FileInputStream trustStream = new FileInputStream(jksCAFile);
+//        FileInputStream keyStream = new FileInputStream(this.certFile);
+//
+//        SSLContext sslContext = HttpClientUtil.getSSLContext(trustStream,
+//                TenpayHttpClient.JKS_CA_PASSWORD, keyStream, this.certPasswd);
+//
+//        // 关闭流
+//        keyStream.close();
+//        trustStream.close();
+//
+//        if ("POST".equals(this.method.toUpperCase())) {
+//            String url = HttpClientUtil.getURL(this.reqContent);
+//            String queryString = HttpClientUtil.getQueryString(this.reqContent);
+//            byte[] postData = queryString.getBytes(this.charset);
+//
+//            this.httpsPostMethod(url, postData, sslContext);
+//
+//            return;
+//        }
+//
+//        this.httpsGetMethod(this.reqContent, sslContext);
 
     }
 
     /**
      * 更换SSLContext的创建方式，不使用jks文件
      */
-    protected void callHttps2() throws IOException, CertificateException,
+    protected void callHttps() throws IOException, CertificateException,
             KeyStoreException, NoSuchAlgorithmException,
             UnrecoverableKeyException, KeyManagementException {
 
-        // ca目录
-        String caPath = this.caFile.getParent();
-
-        File jksCAFile = new File(caPath + "/"
-                + TenpayHttpClient.JKS_CA_FILENAME);
-        if (!jksCAFile.isFile()) {
-            X509Certificate cert = (X509Certificate) HttpClientUtil
-                    .getCertificate(this.caFile);
-
-            FileOutputStream out = new FileOutputStream(jksCAFile);
-
-            // store jks file
-            HttpClientUtil.storeCACert(cert, TenpayHttpClient.JKS_CA_ALIAS,
-                    TenpayHttpClient.JKS_CA_PASSWORD, out);
-
-            out.close();
-
+        // 指定读取证书格式为PKCS12
+        KeyStore keyStore = KeyStore.getInstance("PKCS12");
+        // 读取本机存放的PKCS12证书文件
+        // FileInputStream instream = new FileInputStream(new File("C:/Users/Administrator/
+        // .all580/cert/apiclient_cert.p12"));
+        ByteArrayInputStream inputStream = null;
+        try {
+            // 指定PKCS12的密码(商户ID)
+            inputStream = new ByteArrayInputStream(Base64.decodeBase64(wxProperties.getApiClientCertP12Str().getBytes()));
+            keyStore.load(inputStream, wxProperties.getMchId().toCharArray());
+        } catch (Exception e) {
+            logger.error("微信退款加载证书出错，" + e.getMessage(), e);
+        } finally {
+            if (inputStream != null)
+                inputStream.close();
         }
-
-        FileInputStream trustStream = new FileInputStream(jksCAFile);
-        FileInputStream keyStream = new FileInputStream(this.certFile);
-
-        SSLContext sslContext = HttpClientUtil.getSSLContext(trustStream,
-                TenpayHttpClient.JKS_CA_PASSWORD, keyStream, this.certPasswd);
-
-        // 关闭流
-        keyStream.close();
-        trustStream.close();
+        SSLContext sslContext = SSLContexts.custom()
+                .loadKeyMaterial(keyStore, wxProperties.getMchId().toCharArray()).build();
 
         if ("POST".equals(this.method.toUpperCase())) {
             String url = HttpClientUtil.getURL(this.reqContent);
@@ -528,4 +488,19 @@ public class TenpayHttpClient {
         this.inputStream = conn.getInputStream();
     }
 
+    public WxProperties getWxProperties() {
+        return wxProperties;
+    }
+
+    public void setWxProperties(WxProperties wxProperties) {
+        this.wxProperties = wxProperties;
+    }
+
+    public boolean isHttps() {
+        return isHttps;
+    }
+
+    public void setIsHttps(boolean isHttps) {
+        this.isHttps = isHttps;
+    }
 }
