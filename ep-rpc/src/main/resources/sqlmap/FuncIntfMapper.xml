@@ -8,7 +8,7 @@
     <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, func_id, intf_id, create_time
+    id, func_id, intf_id, create_time,CONCAT('',update_time,'') update_time
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select 
@@ -79,4 +79,17 @@
       create_time = #{createTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=BIGINT}
   </update>
+
+  <select id="selectFuncIntf" resultType="java.util.HashMap" >
+    SELECT
+      i.*
+      FROM
+        t_intf i
+        LEFT JOIN t_func_intf fi ON fi.intf_id = i.id
+       WHERE
+      fi.func_id = #{func_id}
+    order by i.create_time desc
+  </select>
+
+
 </mapper>

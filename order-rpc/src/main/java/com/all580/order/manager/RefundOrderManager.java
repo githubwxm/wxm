@@ -408,19 +408,23 @@ public class RefundOrderManager extends BaseOrderManager {
 
     /**
      * 已支付未出票的订单退订 更新游客退票数据
-     * @param refundId
+     * @param refundOrder
      * @return
      * @throws Exception
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public int nonSendTicketRefund(int refundId) throws Exception {
+    public int nonSendTicketRefund(RefundOrder refundOrder) throws Exception {
         int total = 0;
-        List<RefundVisitor> refundVisitorList = refundVisitorMapper.selectByRefundId(refundId);
+        List<RefundVisitor> refundVisitorList = refundVisitorMapper.selectByRefundId(refundOrder.getId());
+        List<Visitor> visitorList = visitorMapper.selectByOrderItem(refundOrder.getOrderItemId());
         for (RefundVisitor refundVisitor : refundVisitorList) {
             total += refundVisitor.getPreQuantity();
             refundVisitor.setReturnQuantity(refundVisitor.getPreQuantity());
             refundVisitor.setPreQuantity(0);
-            refundVisitorMapper.updateByPrimaryKey(refundVisitor);
+            refundVisitorMapper.updateByPrimaryKeySelective(refundVisitor);
+            Visitor visitor = getVisitorById(visitorList, refundVisitor.getVisitorId());
+            visitor.setReturnQuantity(visitor.getReturnQuantity() + refundVisitor.getReturnQuantity());
+            visitorMapper.updateByPrimaryKeySelective(visitor);
         }
         return total;
     }
@@ -638,6 +642,7 @@ public class RefundOrderManager extends BaseOrderManager {
                 .put("t_refund_order", CommonUtil.oneToList(refundOrder))
                 .put("t_refund_serial", CommonUtil.oneToList(refundSerialMapper.selectByRefundOrder(refundOrder.getId())))
                 .put("t_refund_visitor", refundVisitorMapper.selectByRefundId(refundId))
+                .put("t_visitor", visitorMapper.selectByOrderItem(refundOrder.getOrderItemId()))
                 .put("t_order_item", CommonUtil.oneToList(orderItemMapper.selectByPrimaryKey(refundOrder.getOrderItemId())))
                 .sync();
     }

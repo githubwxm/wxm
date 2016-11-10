@@ -18,7 +18,7 @@
   </resultMap>
   <sql id="Base_Column_List" >
     id, pid, name, alias, description, seq, status, create_time, type, path, funcId, 
-    target, icon
+    target, icon,CONCAT('',update_time,'') update_time
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select 

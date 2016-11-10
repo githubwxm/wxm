@@ -148,14 +148,14 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             for (ProductSalesDayInfo dayInfo : dayInfoList) {
                 if (dayInfo.isBookingLimit()) {
                     int dayLimit = dayInfo.getBookingDayLimit();
-                    Date limit = DateUtils.addDays(bookingDate, dayLimit);
+                    Date limit = DateUtils.addDays(bookingDate, -dayLimit);
                     String time = dayInfo.getBookingTimeLimit();
                     if (time != null) {
                         String[] timeArray = time.split(":");
                         limit = DateUtils.setHours(limit, Integer.parseInt(timeArray[0]));
                         limit = DateUtils.setMinutes(limit, Integer.parseInt(timeArray[1]));
                     }
-                    if (limit.after(when)) {
+                    if (when.after(limit)) {
                         throw new ApiException("预定时间限制");
                     }
                 }
@@ -379,7 +379,8 @@ public class BookingOrderServiceImpl implements BookingOrderService {
                 throw new ApiException("订单不存在");
             }
             if (order.getStatus() != OrderConstant.OrderStatus.PAY_WAIT &&
-                    order.getStatus() != OrderConstant.OrderStatus.PAY_FAIL) {
+                    order.getStatus() != OrderConstant.OrderStatus.PAY_FAIL &&
+                    order.getStatus() != OrderConstant.OrderStatus.PAYING) {
                 throw new ApiException("订单不在待支付状态");
             }
             if (order.getPayAmount() <= 0) {

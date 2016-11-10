@@ -27,7 +27,7 @@ public class PlatfromValidateManager {
                 "province", // 企业省
                 "city", // 市
                 "area", // 区
-                "creator_ep_id",
+
                 "address", // 详细地址
                 "group_id",
         }, new ValidRule[]{new ValidRule.NotNull()});
@@ -37,7 +37,7 @@ public class PlatfromValidateManager {
                 "province", // 企业省
                 "city", // 市
                 "area", // 区
-                "creator_ep_id",
+
                 "group_id",
         }, new ValidRule[]{new ValidRule.Digits()});
         rules.put(new String[]{
