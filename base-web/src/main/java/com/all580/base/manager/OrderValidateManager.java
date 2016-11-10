@@ -197,7 +197,7 @@ public class OrderValidateManager {
 
         rules.put(new String[]{
                 "phone" // 游客手机号码
-        }, new ValidRule[]{new ValidRule.NotNull(), new ValidRule.Pattern(ValidRule.MOBILE_PHONE)});
+        }, new ValidRule[]{new ValidRule.Pattern(ValidRule.MOBILE_PHONE)});
 
         return rules;
     }
