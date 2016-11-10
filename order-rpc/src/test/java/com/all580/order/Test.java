@@ -68,11 +68,11 @@ public class Test {
 
         System.out.println(Md5Utils.getMD5For16("1476425996329CJCJ6VXG3YMCNB").toUpperCase());
 
-        Map<String, String> data1 = new HashMap<>();
-        data1.put("ep_id", "1130");
-        data1.put("access_id", "1476425987296LFJFURKK");
-        data1.put("refund_sn", "1478524432441210");
-        System.out.println(CommonUtil.signForData("1476425996329CJCJ6VXG3YMCNB", JsonUtils.toJson(data1)));
+        Map<String, String> data1 = new TreeMap<>();
+        data1.put("access_id", "1476277249859N2T3JBGA");
+        data1.put("ep_id", "1");
+        data1.put("supplier_core_ep_id", "30");
+        System.out.println(CommonUtil.signForData("1476277250138WFBZ35GTM7PL25", JsonUtils.toJson(data1)));
 
         Map rule = ProductRules.calcRefund("{\"all\":\"0\",\"rule\":[{\"after\":\"\",\"before\":{\"day\":\"-3\",\"time\":\"11:00\"},\"fixed\":\"\",\"percent\":\"1\",\"type\":\"5072\"},{\"after\":{\"day\":\"-3\",\"time\":\"11:00\"},\"before\":{\"day\":\"-2\",\"time\":\"10:00\"},\"fixed\":\"\",\"percent\":\"2\",\"type\":\"5072\"},{\"after\":{\"day\":\"-3\",\"time\":\"11:00\"},\"before\":{\"day\":\"-2\",\"time\":\"10:00\"},\"fixed\":\"\",\"percent\":\"2\",\"type\":\"5072\"},{\"after\":{\"day\":\"-2\",\"time\":\"10:00\"},\"before\":{\"day\":\"-1\",\"time\":\"09:00\"},\"fixed\":\"\",\"percent\":\"3\",\"type\":\"5072\"},{\"after\":{\"day\":\"-1\",\"time\":\"09:00\"},\"before\":{\"day\":\"0\",\"time\":\"08:00\"},\"fixed\":100,\"percent\":\"\",\"type\":\"5071\"},{\"after\":{\"day\":\"0\",\"time\":\"08:00\"},\"before\":{\"day\":\"1\",\"time\":\"12:00\"},\"fixed\":200,\"percent\":\"\",\"type\":\"5071\"},{\"after\":{\"day\":\"1\",\"time\":\"12:00\"},\"before\":{\"day\":\"2\",\"time\":\"17:00\"},\"fixed\":300,\"percent\":\"\",\"type\":\"5071\"},{\"after\":{\"day\":\"2\",\"time\":\"17:00\"},\"before\":{\"day\":\"3\",\"time\":\"18:00\"},\"fixed\":400,\"percent\":\"\",\"type\":\"5071\"},{\"after\":{\"day\":\"3\",\"time\":\"18:00\"},\"before\":\"\",\"fixed\":\"5\",\"percent\":\"100\",\"type\":\"5072\"}]}",
                 DateFormatUtils.converToDateTime("2016-11-09 00:00:00"), DateFormatUtils.converToDateTime("2016-11-09 16:30:00"));
