@@ -183,4 +183,22 @@ public class OrderValidateManager {
 
         return rules;
     }
+
+    /**
+     * 平台商订单列表验证
+     * @return
+     */
+    public Map<String[], ValidRule[]> platformOrderListValidate() {
+        Map<String[], ValidRule[]> rules = new HashMap<>();
+        rules.put(new String[]{
+                "start_time",
+                "end_time"
+        }, new ValidRule[]{new ValidRule.Date()});
+
+        rules.put(new String[]{
+                "phone" // 游客手机号码
+        }, new ValidRule[]{new ValidRule.NotNull(), new ValidRule.Pattern(ValidRule.MOBILE_PHONE)});
+
+        return rules;
+    }
 }

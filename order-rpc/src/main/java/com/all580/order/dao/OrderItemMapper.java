@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public interface OrderItemMapper {
     /**
@@ -101,4 +102,33 @@ public interface OrderItemMapper {
      * @return
      */
     List<Long> getProductIdsByOrderId(@Param("orderId") Integer orderId);
+
+    /**
+     * 查询平台商订单列表
+     * @param coreEpId 供应侧平台商ID
+     * @param startTime 下单开始时间
+     * @param endTime   下单结束时间
+     * @param orderStatus 订单状态
+     * @param orderItemStatus 子订单状态
+     * @param phone 联系人手机
+     * @param orderItemNum 子订单号
+     * @return
+     */
+    List<Map> selectPlatformBySupplierCoreEpId(@Param("coreEpId") Integer coreEpId,
+                                               @Param("startTime") Date startTime,
+                                               @Param("endTime") Date endTime,
+                                               @Param("orderStatus") Integer orderStatus,
+                                               @Param("orderItemStatus") Integer orderItemStatus,
+                                               @Param("phone") String phone,
+                                               @Param("orderItemNumber") Long orderItemNum,
+                                               @Param("record_start") Integer recordStart,
+                                               @Param("record_count") Integer recordCount);
+
+    int selectPlatformBySupplierCoreEpIdCount(@Param("coreEpId") Integer coreEpId,
+                                               @Param("startTime") Date startTime,
+                                               @Param("endTime") Date endTime,
+                                               @Param("orderStatus") Integer orderStatus,
+                                               @Param("orderItemStatus") Integer orderItemStatus,
+                                               @Param("phone") String phone,
+                                               @Param("orderItemNumber") Long orderItemNum);
 }

@@ -20,6 +20,8 @@
 					 interface="com.all580.order.api.service.BookingOrderService" />
 	<dubbo:reference id="refundOrderService"
 					 interface="com.all580.order.api.service.RefundOrderService" />
+	<dubbo:reference id="orderService"
+					 interface="com.all580.order.api.service.OrderService" />
 
 	<dubbo:reference id="voucherRPCService"
 					 interface="com.all580.voucher.api.service.VoucherRPCService" />
