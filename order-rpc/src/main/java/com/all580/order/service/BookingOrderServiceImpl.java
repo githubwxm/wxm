@@ -148,14 +148,14 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             for (ProductSalesDayInfo dayInfo : dayInfoList) {
                 if (dayInfo.isBookingLimit()) {
                     int dayLimit = dayInfo.getBookingDayLimit();
-                    Date limit = DateUtils.addDays(bookingDate, dayLimit);
+                    Date limit = DateUtils.addDays(bookingDate, -dayLimit);
                     String time = dayInfo.getBookingTimeLimit();
                     if (time != null) {
                         String[] timeArray = time.split(":");
                         limit = DateUtils.setHours(limit, Integer.parseInt(timeArray[0]));
                         limit = DateUtils.setMinutes(limit, Integer.parseInt(timeArray[1]));
                     }
-                    if (limit.after(when)) {
+                    if (when.after(limit)) {
                         throw new ApiException("预定时间限制");
                     }
                 }
