@@ -135,19 +135,39 @@ public class AliPayCallbackController extends BaseController {
 
     /* 测试方法，不要调用 */
     @RequestMapping(value = "/reqPayTest")
-    public void reqPayTest(HttpServletResponse rsp, String data) throws Exception {
+    public void reqPayTest(HttpServletResponse rsp) throws Exception {
         System.out.println("---------------------------->   /reqPay");
+        long ordCode = 1111111120;
+        int coreEpId = 1;
+        int payType = PaymentConstant.PaymentType.ALI_PAY;
+        Map<String, Object> params = new HashMap<>();
+        params.put("totalFee", 1);
+        params.put("prodId", 1010);
+        params.put("prodName", "测试产品名称");
+        params.put("serialNum", "1111111120");
+        Result<String> result = thirdPayService.reqPay(ordCode, coreEpId, payType, params);
         rsp.setContentType("text/html; charset=UTF-8");
-        rsp.getWriter().print("<form id=\"alipaysubmit\" name=\"alipaysubmit\" action=\"https://mapi.alipay.com/gateway.do?_input_charset=utf-8\" method=\"get\"><input type=\"hidden\" name=\"sign\" value=\"8fb4859b6bcd91a3e8ea77a2a658fa08\"/><input type=\"hidden\" name=\"_input_charset\" value=\"utf-8\"/><input type=\"hidden\" name=\"extra_common_param\" value=\"30\"/><input type=\"hidden\" name=\"subject\" value=\"B-1-1-普通票-散客-在线支付\"/><input type=\"hidden\" name=\"total_fee\" value=\"0.02\"/><input type=\"hidden\" name=\"sign_type\" value=\"MD5\"/><input type=\"hidden\" name=\"service\" value=\"create_direct_pay_by_user\"/><input type=\"hidden\" name=\"notify_url\" value=\"http://core.py.ngrok.wendal.cn/no_auth_api/callback/ali/payment\"/><input type=\"hidden\" name=\"partner\" value=\"2088111108611396\"/><input type=\"hidden\" name=\"seller_email\" value=\"admin@all580.com\"/><input type=\"hidden\" name=\"out_trade_no\" value=\"1478524145689210\"/><input type=\"hidden\" name=\"payment_type\" value=\"1\"/><input type=\"submit\" value=\"确认\" style=\"display:none;\"></form><script>document.forms['alipaysubmit'].submit();</script>");
+        logger.info(result.get());
+        rsp.getWriter().print(result.get());
         rsp.getWriter().flush();
     }
 
     /* 测试方法，不要调用 */
     @RequestMapping(value = "/reqRefundTest")
-    public void reqRefundTest(HttpServletResponse rsp, String data) throws Exception {
+    public void reqRefundTest(HttpServletResponse rsp) throws Exception {
         System.out.println("---------------------------->   /reqPay");
+        long ordCode = 1111111120;
+        int coreEpId = 1;
+        int payType = PaymentConstant.PaymentType.ALI_PAY;
+        Map<String, Object> params = new HashMap<>();
+        params.put("totalFee", 1);
+        params.put("refundFee", 1);
+        params.put("outTransId", "2016102621001004380237763577");
+        params.put("serialNum", "1111111120");
+        Result<String> result = thirdPayService.reqRefund(ordCode, coreEpId, payType, params);
         rsp.setContentType("text/html; charset=UTF-8");
-        rsp.getWriter().print(data);
+        logger.info(result.get());
+        rsp.getWriter().print(result.get());
         rsp.getWriter().flush();
     }
 }
