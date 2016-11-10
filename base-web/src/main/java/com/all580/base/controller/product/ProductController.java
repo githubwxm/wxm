@@ -131,7 +131,7 @@ public class ProductController extends BaseController {
         subProductInfo.setBookingDayLimit(CommonUtil.objectParseInteger(params.get("bookingDayLimit")));
         subProductInfo.setBookingNotes(CommonUtil.objectParseString(params.get("bookingNotes")));
         subProductInfo.setBookingLimit(CommonUtil.objectParseInteger(params.get("bookingLimit")));
-        subProductInfo.setBookingTimeLimit(CommonUtil.objectParseInteger(params.get("bookingTimeLimit")));
+        subProductInfo.setBookingTimeLimit(CommonUtil.objectParseString(params.get("bookingTimeLimit")));
         subProductInfo.setBuyStartDate(DateFormatUtils.converToDateTime(CommonUtil.objectParseString(params.get("buyStartDate"))));
         subProductInfo.setBuyEndDate(DateFormatUtils.converToDateTime(CommonUtil.objectParseString(params.get("buyEndDate"))));
         subProductInfo.setDescription(CommonUtil.objectParseString(params.get("description")));

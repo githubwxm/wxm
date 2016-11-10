@@ -189,7 +189,7 @@ public class PlanController extends BaseController {
     public Result productSubOffSaleGroup(@RequestBody Map params) {
         List<Map> paramList = (List<Map>) params.get("offSaleArray");
         if (paramList == null || paramList.isEmpty()) return new Result(false, "参数错误");
-        return productService.productOffSaleGroup(paramList);
+        return productService.productOffSaleGroup(params);
     }
 
     /**
