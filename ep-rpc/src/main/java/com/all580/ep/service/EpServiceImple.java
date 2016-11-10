@@ -355,7 +355,7 @@ public class EpServiceImple implements EpService {
             int ref = epMapper.updateStatus(params);
             if (ref > 0) {
                 List<Map<String, String>> listMap = epMapper.selectSingleTable(params);
-                int id = CommonUtil.objectParseInteger(params.get("id"));
+                int id = CommonUtil.objectParseInteger(params.get(EpConstant.EpKey.CORE_EP_ID));
                 syncEpData(id, EpConstant.Table.T_EP, listMap);//同步数据
                 result.put(ref);
                 result.setSuccess();
