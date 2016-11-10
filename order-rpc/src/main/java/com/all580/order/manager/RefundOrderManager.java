@@ -642,6 +642,7 @@ public class RefundOrderManager extends BaseOrderManager {
                 .put("t_refund_order", CommonUtil.oneToList(refundOrder))
                 .put("t_refund_serial", CommonUtil.oneToList(refundSerialMapper.selectByRefundOrder(refundOrder.getId())))
                 .put("t_refund_visitor", refundVisitorMapper.selectByRefundId(refundId))
+                .put("t_visitor", visitorMapper.selectByOrderItem(refundOrder.getOrderItemId()))
                 .put("t_order_item", CommonUtil.oneToList(orderItemMapper.selectByPrimaryKey(refundOrder.getOrderItemId())))
                 .sync();
     }
