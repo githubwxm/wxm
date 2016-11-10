@@ -2,18 +2,20 @@ package com.all580.base.controller.order;
 
 import com.all580.base.manager.OrderValidateManager;
 import com.all580.order.api.service.BookingOrderService;
+import com.all580.order.api.service.OrderService;
 import com.all580.order.api.service.RefundOrderService;
 import com.framework.common.BaseController;
 import com.framework.common.Result;
+import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.validate.ParamsMapValidate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -33,6 +35,8 @@ public class OrderController extends BaseController {
     private BookingOrderService bookingOrderService;
     @Autowired
     private RefundOrderService refundOrderService;
+    @Autowired
+    private OrderService orderService;
 
     @RequestMapping(value = "create", method = RequestMethod.POST)
     @ResponseBody
@@ -104,5 +108,34 @@ public class OrderController extends BaseController {
         // 验证参数
         ParamsMapValidate.validate(params, orderValidateManager.resendTicketValidate());
         return bookingOrderService.resendTicket(params);
+    }
+
+    @RequestMapping(value = "platform/list/supplier")
+    @ResponseBody
+    public Result<?> listPlatformOrderBySupplierCore(@RequestParam Integer supplier_core_ep_id,
+                                                     String start_time,
+                                                     String end_time,
+                                                     Integer order_status,
+                                                     Integer order_item_status,
+                                                     String phone,
+                                                     Long order_item_number,
+                                                     @RequestParam(defaultValue = "0") Integer record_start,
+                                                     @RequestParam(defaultValue = "20") Integer record_count) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("start_time", start_time);
+        params.put("end_time", end_time);
+        params.put("phone", phone);
+        // 验证参数
+        ParamsMapValidate.validate(params, orderValidateManager.platformOrderListValidate());
+        Date startTime = null;
+        Date endTime = null;
+        try {
+            startTime = DateFormatUtils.parseString(DateFormatUtils.DATE_TIME_FORMAT, start_time);
+            endTime = DateFormatUtils.parseString(DateFormatUtils.DATE_TIME_FORMAT, end_time);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+        return orderService.selectPlatformOrderBySupplierCore(supplier_core_ep_id, startTime, endTime, order_status,
+                order_item_status, phone, order_item_number, record_start, record_count);
     }
 }
