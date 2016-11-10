@@ -11,6 +11,7 @@
         <property name="accessId" value="${mns.access.id}"/>
         <property name="accessKey" value="${mns.access.key}"/>
         <property name="accountEndpoint" value="${mns.endpoint}"/>
+        <property name="tagPrefix" value="${mns.tag.prefix}"/>
     </bean>
 
     <!-- 同步数据提交管理器 -->
@@ -29,14 +30,13 @@
         <property name="configs">
             <props>
                 <!-- 参数 -->
-                <prop key="job.fail.store">leveldb</prop>
-                <prop key="jobtracker.job.retry.interval.millis">180</prop>
+                <prop key="job.fail.store">mapdb</prop>
             </props>
         </property>
     </bean>
 
     <!-- 同步数据任务执行器 -->
-    <bean id="syncTaskTracker" class="com.github.ltsopensource.spring.TaskTrackerAnnotationFactoryBean" init-method="start">
+    <!--<bean id="syncTaskTracker" class="com.github.ltsopensource.spring.TaskTrackerAnnotationFactoryBean" init-method="start">
         <property name="jobRunnerClass" value="com.framework.common.synchronize.SynchronizeDataTaskTracker"/>
         <property name="bizLoggerLevel" value="INFO"/>
         <property name="clusterName" value="${task.cluster}"/>
@@ -45,11 +45,11 @@
         <property name="workThreads" value="20"/>
         <property name="configs">
             <props>
-                <prop key="job.fail.store">leveldb</prop>
+                <prop key="job.fail.store">mapdb</prop>
                 <prop key="jobtracker.job.retry.interval.millis">180</prop>
             </props>
         </property>
-    </bean>
+    </bean>-->
     <task:annotation-driven/>
 </beans>
 
