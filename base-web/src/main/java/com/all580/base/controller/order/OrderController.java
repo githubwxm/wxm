@@ -130,8 +130,12 @@ public class OrderController extends BaseController {
         Date startTime = null;
         Date endTime = null;
         try {
-            startTime = DateFormatUtils.parseString(DateFormatUtils.DATE_TIME_FORMAT, start_time);
-            endTime = DateFormatUtils.parseString(DateFormatUtils.DATE_TIME_FORMAT, end_time);
+            if (start_time != null) {
+                startTime = DateFormatUtils.parseString(DateFormatUtils.DATE_TIME_FORMAT, start_time);
+            }
+            if (end_time != null) {
+                endTime = DateFormatUtils.parseString(DateFormatUtils.DATE_TIME_FORMAT, end_time);
+            }
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
