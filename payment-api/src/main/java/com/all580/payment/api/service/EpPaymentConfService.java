@@ -18,7 +18,10 @@ public interface EpPaymentConfService {
      * ******************************* 微信 **************************************
      *
      * ***************************************************************************
-     * @param data {"coreEpId":xxx,"paymentType":7112,"confData":"..."}
+     * @param data {"coreEpId":xxx,"paymentType":7112,"confData":"...","certP12":微信证书文件base64，支付宝传空}
+     *             confData:
+     *               wx:{"appId":"wx8de3fa23129fcb3f","mchId":"1228533602","mchKey":"ECall58020150318WeiXinPayServers"}
+     *               ali:{"partner":"2088111108611396","key":"5k7pyukjkmtut27t0h2vae4g9xr3i83r","sellerEmail":"admin@all580.com"}
      *             paymentType 取值来自于-> PaymentConstant.PaymentType
      * @return 成功，返回{success:true}；失败，返回{success:false,error:错误信息}
      */
@@ -27,7 +30,10 @@ public interface EpPaymentConfService {
     /**
      * 修改收款方式配置
      *
-     * @param data {"coreEpId":xxx,"paymentType":7112,"confData":"...","status":1}
+     * @param data {"coreEpId":xxx,"paymentType":7112,"confData":"...","certP12":微信证书文件base64，支付宝传空}
+     *             confData:
+     *               wx:{"appId":"wx8de3fa23129fcb3f","mchId":"1228533602","mchKey":"ECall58020150318WeiXinPayServers"}
+     *               ali:{"partner":"2088111108611396","key":"5k7pyukjkmtut27t0h2vae4g9xr3i83r","sellerEmail":"admin@all580.com"}
      *             paymentType 取值来自于-> PaymentConstant.PaymentType
      *             status 取值来自于-> PaymentConstant.Status
      * @return 成功，返回{success:true}；失败，返回{success:false,error:错误信息}
