@@ -93,6 +93,25 @@ public class PlatfromValidateManager {
     }
 
     /**
+     *校验添加支付方式配置
+     * @return
+     */
+    public Map<String[], ValidRule[]> generateCreatePaymentValidate() {
+        Map<String[], ValidRule[]> rules = new HashMap<>();
+        // 校验不为空的参数
+        rules.put(new String[]{
+                "paymentType", //
+                "confData", //
+        }, new ValidRule[]{new ValidRule.NotNull()});
+
+        // 校验整数
+        rules.put(new String[]{
+                "paymentType" // 企业id
+        }, new ValidRule[]{new ValidRule.Digits()});
+        return rules;
+    }
+
+    /**
      * 校验企业id
      * @return
      */
