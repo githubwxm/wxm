@@ -103,11 +103,6 @@ public class RefundOrderServiceImpl implements RefundOrderService {
             if (daysList == null) {
                 throw new ApiException("缺少退票详情");
             }
-            // 判断余票 并修改明细退票数量
-            int tmpQuantity = refundOrderManager.canRefundForDays(daysList, detailList);
-            if (tmpQuantity != quantity) {
-                throw new ApiException("退票总数与每天退票数不符");
-            }
 
             Date refundDate = new Date();
             // 计算退款金额
@@ -120,8 +115,15 @@ public class RefundOrderServiceImpl implements RefundOrderService {
             if (money < 0) {
                 throw new ApiException("销售价小于退货手续费");
             }
+
             // 创建退订订单
             RefundOrder refundOrder = refundOrderManager.generateRefundOrder(orderItem.getId(), daysList, quantity, money, cause);
+
+            // 判断余票 并修改明细退票数量 创建游客退票信息
+            int tmpQuantity = refundOrderManager.canRefundForDays(daysList, detailList, refundOrder.getOrderItemId(), refundOrder.getId());
+            if (tmpQuantity != quantity) {
+                throw new ApiException("退票总数与每天退票数不符");
+            }
 
             // 退订分账
             refundOrderManager.preRefundAccount(daysList, orderItem.getId(), refundOrder.getId(), detailList, refundDate);
@@ -196,10 +198,7 @@ public class RefundOrderServiceImpl implements RefundOrderService {
                     // 没有出票直接退款
                     refundOrder.setStatus(OrderConstant.RefundOrderStatus.REFUND_MONEY); // 退款中
                     refundOrderMapper.updateByPrimaryKeySelective(refundOrder);
-                    List daysList = JsonUtils.json2List(refundOrder.getData());
-                    // 每日订单详情
-                    List<OrderItemDetail> detailList = orderItemDetailMapper.selectByItemId(orderItem.getId());
-                    int quantity = refundOrderManager.nonSendTicketRefund(daysList, detailList);
+                    int quantity = refundOrderManager.nonSendTicketRefund(refundOrder.getId());
                     orderItem.setRefundQuantity(orderItem.getRefundQuantity() + quantity);
                     orderItemMapper.updateByPrimaryKeySelective(orderItem);
                     // 支付宝需要手动退款

@@ -15,7 +15,7 @@
 		<property name="configs">
 			<props>
 				<!-- 参数 -->
-				<prop key="job.fail.store">leveldb</prop>
+				<prop key="job.fail.store">mapdb</prop>
 			</props>
 		</property>
 	</bean>
@@ -29,7 +29,7 @@
 		<property name="workThreads" value="20"/>
 		<property name="configs">
 			<props>
-				<prop key="job.fail.store">leveldb</prop>
+				<prop key="job.fail.store">mapdb</prop>
 				<prop key="jobtracker.job.retry.interval.millis">180</prop>
 			</props>
 		</property>

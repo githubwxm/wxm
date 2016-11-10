@@ -10,6 +10,7 @@ import com.all580.payment.api.model.BalanceChangeInfo;
 import com.all580.payment.api.model.BalanceChangeRsp;
 import com.all580.product.api.consts.ProductConstants;
 import com.all580.product.api.model.EpSalesInfo;
+import com.all580.product.api.model.ProductSalesDayInfo;
 import com.all580.product.api.model.ProductSalesInfo;
 import com.framework.common.Result;
 import com.framework.common.lang.DateFormatUtils;
@@ -154,12 +155,11 @@ public class BookingOrderManager extends BaseOrderManager {
      * @return
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public OrderItem generateItem(ProductSalesInfo info, int saleAmount, Date bookingDate, int days, int orderId, int quantity, Integer proSubId) {
+    public OrderItem generateItem(ProductSalesInfo info, Date endTime, int saleAmount, Date bookingDate, int days, int orderId, int quantity, Integer proSubId) {
         OrderItem orderItem = new OrderItem();
         orderItem.setNumber(UUIDGenerator.generateUUID());
         orderItem.setStart(bookingDate);
-        Date end = DateUtils.addDays(info.getEndTime(), days - 1);
-        orderItem.setEnd(end);
+        orderItem.setEnd(endTime);
         orderItem.setSaleAmount(saleAmount); // 进货价
         orderItem.setDays(days);
         orderItem.setGroupId(0); // 散客为0
@@ -220,7 +220,7 @@ public class BookingOrderManager extends BaseOrderManager {
      * @return
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public OrderItemDetail generateDetail(ProductSalesInfo info, int itemId, Date day, int quantity) {
+    public OrderItemDetail generateDetail(ProductSalesDayInfo info, int itemId, Date day, int quantity) {
         OrderItemDetail orderItemDetail = new OrderItemDetail();
         orderItemDetail.setDay(day);
         orderItemDetail.setQuantity(quantity);

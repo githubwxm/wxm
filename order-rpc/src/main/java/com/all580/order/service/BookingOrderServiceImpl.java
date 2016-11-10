@@ -19,6 +19,7 @@ import com.all580.payment.api.model.BalanceChangeInfo;
 import com.all580.payment.api.service.ThirdPayService;
 import com.all580.product.api.consts.ProductConstants;
 import com.all580.product.api.model.EpSalesInfo;
+import com.all580.product.api.model.ProductSalesDayInfo;
 import com.all580.product.api.model.ProductSalesInfo;
 import com.all580.product.api.model.ProductSearchParams;
 import com.all580.product.api.service.ProductSalesPlanRPCService;
@@ -132,14 +133,23 @@ public class BookingOrderServiceImpl implements BookingOrderService {
                 throw new ApiException(salesInfoResult.getError());
             }
             ProductSalesInfo salesInfo = salesInfoResult.get();
+            // 判断供应商状态是否为已冻结
+            if (!bookingOrderManager.isEpStatus(epService.getEpStatus(salesInfo.getEpId()), EpConstant.EpStatus.ACTIVE)) {
+                throw new ApiException("供应商企业已冻结");
+            }
 
+            List<ProductSalesDayInfo> dayInfoList = salesInfo.getDayInfoList();
+
+            if (dayInfoList.size() != days) {
+                throw new ApiException("预定天数与获取产品天数不匹配");
+            }
             // 验证预定时间限制
-            if (salesInfo.isBookingLimit()) {
-                Date when = new Date();
-                for (Integer i = 0; i < days; i++) {
-                    int dayLimit = salesInfo.getBookingDayLimit();
+            Date when = new Date();
+            for (ProductSalesDayInfo dayInfo : dayInfoList) {
+                if (dayInfo.isBookingLimit()) {
+                    int dayLimit = dayInfo.getBookingDayLimit();
                     Date limit = DateUtils.addDays(bookingDate, dayLimit);
-                    String time = salesInfo.getBookingTimeLimit();
+                    String time = dayInfo.getBookingTimeLimit();
                     if (time != null) {
                         String[] timeArray = time.split(":");
                         limit = DateUtils.setHours(limit, Integer.parseInt(timeArray[0]));
@@ -149,11 +159,6 @@ public class BookingOrderServiceImpl implements BookingOrderService {
                         throw new ApiException("预定时间限制");
                     }
                 }
-            }
-
-            // 判断供应商状态是否为已冻结
-            if (!bookingOrderManager.isEpStatus(epService.getEpStatus(salesInfo.getEpId()), EpConstant.EpStatus.ACTIVE)) {
-                throw new ApiException("供应商企业已冻结");
             }
 
             // 判断游客信息
@@ -166,11 +171,8 @@ public class BookingOrderServiceImpl implements BookingOrderService {
                 }
             }
 
-            // 景点特殊处理,自己封装每天的价格
-            List<List<EpSalesInfo>> allDaysSales = new ArrayList<>();
-            for (Integer i = 0; i < days; i++) {
-                allDaysSales.add(new ArrayList<>(salesInfo.getSales()));
-            }
+            // 每天的价格
+            List<List<EpSalesInfo>> allDaysSales = salesInfo.getSales();
 
             // 子订单总进货价
             int saleAmount = 0;
@@ -200,13 +202,14 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             totalPrice += saleAmount;
 
             // 创建子订单
-            OrderItem orderItem = bookingOrderManager.generateItem(salesInfo, saleAmount, bookingDate, days, order.getId(), quantity, productSubId);
+            OrderItem orderItem = bookingOrderManager.generateItem(salesInfo, dayInfoList.get(dayInfoList.size() - 1).getEndTime(), saleAmount, bookingDate, days, order.getId(), quantity, productSubId);
 
             List<OrderItemDetail> detailList = new ArrayList<>();
             List<Visitor> visitorList = new ArrayList<>();
             // 创建子订单详情
-            for (Integer i = 0; i < days; i++) {
-                OrderItemDetail orderItemDetail = bookingOrderManager.generateDetail(salesInfo, orderItem.getId(), DateUtils.addDays(bookingDate, i), quantity);
+            int i = 0;
+            for (ProductSalesDayInfo dayInfo : dayInfoList) {
+                OrderItemDetail orderItemDetail = bookingOrderManager.generateDetail(dayInfo, orderItem.getId(), DateUtils.addDays(bookingDate, i), quantity);
                 detailList.add(orderItemDetail);
                 // 创建游客信息
                 for (Map v : visitors) {
@@ -214,6 +217,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
                     visitorQuantity += visitor.getQuantity();
                     visitorList.add(visitor);
                 }
+                i++;
             }
 
             // 判断总张数是否匹配

@@ -1,7 +1,5 @@
 package com.all580.order.service;
 
-import com.all580.notice.api.conf.SmsType;
-import com.all580.notice.api.service.SmsService;
 import com.all580.order.api.OrderConstant;
 import com.all580.order.api.model.ConsumeTicketInfo;
 import com.all580.order.api.model.ReConsumeTicketInfo;
@@ -15,11 +13,9 @@ import com.all580.order.manager.RefundOrderManager;
 import com.all580.order.manager.SmsManager;
 import com.all580.payment.api.conf.PaymentConstant;
 import com.framework.common.Result;
-import com.framework.common.lang.DateFormatUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.lang.exception.ApiException;
 import java.util.Date;
@@ -50,6 +46,8 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
     private MaSendResponseMapper maSendResponseMapper;
     @Autowired
     private VisitorMapper visitorMapper;
+    @Autowired
+    private RefundVisitorMapper refundVisitorMapper;
     @Autowired
     private RefundOrderMapper refundOrderMapper;
     @Autowired
@@ -247,8 +245,12 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         // 获取核销人信息
         Visitor visitor = visitorMapper.selectByPrimaryKey(info.getVisitorSeqId());
         visitor.setReturnQuantity(visitor.getReturnQuantity() + refundSerial.getQuantity());
-        visitor.setPreReturn(0);
         visitorMapper.updateByPrimaryKeySelective(visitor);
+
+        RefundVisitor refundVisitor = refundVisitorMapper.selectByRefundIdAndVisitorId(refundOrder.getId(), info.getVisitorSeqId());
+        refundVisitor.setReturnQuantity(refundVisitor.getReturnQuantity() + refundSerial.getQuantity());
+        refundVisitor.setPreQuantity(0);
+        refundVisitorMapper.updateByPrimaryKeySelective(refundVisitor);
         orderItem.setRefundQuantity(orderItem.getRefundQuantity() + refundSerial.getQuantity());
         orderItemMapper.updateByPrimaryKeySelective(orderItem);
         refundOrderMapper.updateByPrimaryKeySelective(refundOrder);

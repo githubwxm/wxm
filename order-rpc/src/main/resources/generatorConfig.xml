@@ -20,7 +20,7 @@
         </commentGenerator>
 
         <jdbcConnection driverClass="com.mysql.jdbc.Driver"
-                        connectionURL="jdbc:mysql://192.168.1.250:3306/all580_order?characterEncoding=utf8" userId="root"
+                        connectionURL="jdbc:mysql://192.168.1.114:3306/all580_order?characterEncoding=utf8" userId="root"
                         password="abcd1234"/>
 
         <javaModelGenerator targetPackage="com.all580.order.entity"
@@ -39,7 +39,7 @@
             <property name="enableSubPackages" value="true"/>
         </javaClientGenerator>
 
-        <table tableName="t_order_item_account"
+        <!--<table tableName="t_order_item_account"
                enableCountByExample="false"
                enableUpdateByExample="false"
                enableDeleteByExample="false"
@@ -158,7 +158,7 @@
                domainObjectName="Shipping">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
             <columnOverride column="update_time" javaType="java.lang.String"/>
-        </table>
+        </table>-->
         <table tableName="t_visitor"
                enableCountByExample="false"
                enableUpdateByExample="false"
@@ -170,7 +170,7 @@
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
             <columnOverride column="update_time" javaType="java.lang.String"/>
         </table>
-        <table tableName="t_ma_send_response"
+        <!--<table tableName="t_ma_send_response"
                enableCountByExample="false"
                enableUpdateByExample="false"
                enableDeleteByExample="false"
@@ -180,6 +180,17 @@
                domainObjectName="MaSendResponse">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
             <columnOverride column="update_time" javaType="java.lang.String"/>
-        </table>
+        </table>-->
+        <!--<table tableName="t_refund_visitor"
+               enableCountByExample="false"
+               enableUpdateByExample="false"
+               enableDeleteByExample="false"
+               enableSelectByExample="false"
+               selectByExampleQueryId="false"
+               delimitAllColumns="true"
+               domainObjectName="RefundVisitor">
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+            <columnOverride column="update_time" javaType="java.lang.String"/>
+        </table>-->
     </context>
 </generatorConfiguration>

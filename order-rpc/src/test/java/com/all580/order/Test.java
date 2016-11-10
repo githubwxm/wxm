@@ -2,11 +2,13 @@ package com.all580.order;
 
 import com.alibaba.fastjson.JSON;
 import com.all580.order.entity.Order;
+import com.all580.product.api.consts.ProductRules;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.lang.codec.Md5Utils;
 import com.framework.common.lang.codec.TranscodeUtil;
@@ -71,5 +73,9 @@ public class Test {
         data1.put("access_id", "1476425987296LFJFURKK");
         data1.put("refund_sn", "1478524432441210");
         System.out.println(CommonUtil.signForData("1476425996329CJCJ6VXG3YMCNB", JsonUtils.toJson(data1)));
+
+        Map rule = ProductRules.calcRefund("{\"all\":\"0\",\"rule\":[{\"after\":\"\",\"before\":{\"day\":\"-3\",\"time\":\"11:00\"},\"fixed\":\"\",\"percent\":\"1\",\"type\":\"5072\"},{\"after\":{\"day\":\"-3\",\"time\":\"11:00\"},\"before\":{\"day\":\"-2\",\"time\":\"10:00\"},\"fixed\":\"\",\"percent\":\"2\",\"type\":\"5072\"},{\"after\":{\"day\":\"-3\",\"time\":\"11:00\"},\"before\":{\"day\":\"-2\",\"time\":\"10:00\"},\"fixed\":\"\",\"percent\":\"2\",\"type\":\"5072\"},{\"after\":{\"day\":\"-2\",\"time\":\"10:00\"},\"before\":{\"day\":\"-1\",\"time\":\"09:00\"},\"fixed\":\"\",\"percent\":\"3\",\"type\":\"5072\"},{\"after\":{\"day\":\"-1\",\"time\":\"09:00\"},\"before\":{\"day\":\"0\",\"time\":\"08:00\"},\"fixed\":100,\"percent\":\"\",\"type\":\"5071\"},{\"after\":{\"day\":\"0\",\"time\":\"08:00\"},\"before\":{\"day\":\"1\",\"time\":\"12:00\"},\"fixed\":200,\"percent\":\"\",\"type\":\"5071\"},{\"after\":{\"day\":\"1\",\"time\":\"12:00\"},\"before\":{\"day\":\"2\",\"time\":\"17:00\"},\"fixed\":300,\"percent\":\"\",\"type\":\"5071\"},{\"after\":{\"day\":\"2\",\"time\":\"17:00\"},\"before\":{\"day\":\"3\",\"time\":\"18:00\"},\"fixed\":400,\"percent\":\"\",\"type\":\"5071\"},{\"after\":{\"day\":\"3\",\"time\":\"18:00\"},\"before\":\"\",\"fixed\":\"5\",\"percent\":\"100\",\"type\":\"5072\"}]}",
+                DateFormatUtils.converToDateTime("2016-11-09 00:00:00"), DateFormatUtils.converToDateTime("2016-11-09 16:30:00"));
+        System.out.println(rule);
     }
 }
