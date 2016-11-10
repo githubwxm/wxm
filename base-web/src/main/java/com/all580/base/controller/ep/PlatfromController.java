@@ -3,6 +3,7 @@ package com.all580.base.controller.ep;
 import com.all580.base.manager.PlatfromValidateManager;
 import com.all580.ep.api.conf.EpConstant;
 import com.all580.ep.api.service.EpService;
+import com.all580.payment.api.service.EpPaymentConfService;
 import com.framework.common.BaseController;
 import com.framework.common.Result;
 
@@ -28,6 +29,9 @@ public class PlatfromController extends BaseController {
 
     @Autowired
     private PlatfromValidateManager platfromValidateManager;
+
+    @Autowired
+    private EpPaymentConfService epPaymentConfService;
 
     @RequestMapping(value = "create", method = RequestMethod.POST)
     @ResponseBody
@@ -107,6 +111,34 @@ public class PlatfromController extends BaseController {
         return epService.platformEnable(map);
 
     }//
+
+    /**
+     * 添加配置支付方式
+     *
+     * @param
+     * @return
+     */
+    @RequestMapping(value = "payment/add", method = RequestMethod.POST)
+    @ResponseBody
+    public Result<Integer> paymentAdd(@RequestBody Map map) {
+        ParamsMapValidate.validate(map, platfromValidateManager.generateCreatePaymentValidate());
+        return     epPaymentConfService.create(map);
+    }//payment
+
+    /**
+     * 添加配置支付方式
+     *
+     * @param
+     * @return
+     */
+    @RequestMapping(value = "payment/update", method = RequestMethod.POST)
+    @ResponseBody
+    public Result<Integer> paymentUpdate(@RequestBody Map map) {
+        ParamsMapValidate.validate(map, platfromValidateManager.generateCreatePaymentValidate());
+        ParamsMapValidate.validate(map, platfromValidateManager.generateCreateStatusValidate());
+        return     epPaymentConfService.update(map);
+    }//payment
+
 
     /**
      * 上游平台商
