@@ -11,7 +11,7 @@
     <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, name, auth, description, seq, status, create_time
+    id, name, auth, description, seq, status, create_time,CONCAT('',update_time,'') update_time
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select 
