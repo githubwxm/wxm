@@ -59,16 +59,23 @@ public class EpController extends BaseController {
     @ResponseBody
     public Result<Map<String,Object>> update(@RequestBody Map<String,Object> map) {
         // 验证参数
-
-            ParamsMapValidate.validate(map, platfromValidateManager.generateCreateEpValidate());
+        ParamsMapValidate.validate(map, platfromValidateManager.generateCreateEpValidate());
+        Integer ep_type=CommonUtil.objectParseInteger(map.get("ep_type"));
+        if(!EpConstant.EpType.PLATFORM.equals(ep_type)){
+            //  "creator_ep_id", ep_type
             String ep_class = (String) map.get("ep_class");
-            String id = map.get("id").toString();
-            if (!CommonUtil.isTrue(id, "\\d+")) {
-                throw new ParamsMapValidationException("企业id错误");
-            }
             if (!CommonUtil.isTrue(ep_class, "\\d+")) {
                 throw new ParamsMapValidationException("企业分类错误");
             }
+            String creator_ep_id = (String) map.get("creator_ep_id");
+            if (!CommonUtil.isTrue(creator_ep_id, "\\d+")) {
+                throw new ParamsMapValidationException("创建企业不能为空");
+            }
+        }
+        String id = map.get("id").toString();
+        if (!CommonUtil.isTrue(id, "\\d+")) {
+            throw new ParamsMapValidationException("企业id错误");
+        }
             return epService.updateEp(map);
     }
 
