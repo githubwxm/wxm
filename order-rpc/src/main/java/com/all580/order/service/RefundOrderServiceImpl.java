@@ -198,7 +198,7 @@ public class RefundOrderServiceImpl implements RefundOrderService {
                     // 没有出票直接退款
                     refundOrder.setStatus(OrderConstant.RefundOrderStatus.REFUND_MONEY); // 退款中
                     refundOrderMapper.updateByPrimaryKeySelective(refundOrder);
-                    int quantity = refundOrderManager.nonSendTicketRefund(refundOrder.getId());
+                    int quantity = refundOrderManager.nonSendTicketRefund(refundOrder);
                     orderItem.setRefundQuantity(orderItem.getRefundQuantity() + quantity);
                     orderItemMapper.updateByPrimaryKeySelective(orderItem);
                     // 支付宝需要手动退款

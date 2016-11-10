@@ -379,7 +379,8 @@ public class BookingOrderServiceImpl implements BookingOrderService {
                 throw new ApiException("订单不存在");
             }
             if (order.getStatus() != OrderConstant.OrderStatus.PAY_WAIT &&
-                    order.getStatus() != OrderConstant.OrderStatus.PAY_FAIL) {
+                    order.getStatus() != OrderConstant.OrderStatus.PAY_FAIL &&
+                    order.getStatus() != OrderConstant.OrderStatus.PAYING) {
                 throw new ApiException("订单不在待支付状态");
             }
             if (order.getPayAmount() <= 0) {
