@@ -211,7 +211,7 @@ public class ProductController extends BaseController {
             @RequestParam("status") Integer distributionStatus) {
         switch (CommonUtil.objectParseInteger(distributionStatus)) {
             case ProductConstants.ProductDistributionState.HAD_DISTRIBUTE:
-                return productDistributionService.selectAlreadyDistributionEp(productSubId);
+                return productDistributionService.selectAlreadyDistributionEp(productSubId, epId);
             case ProductConstants.ProductDistributionState.NOT_DISTRIBUTE:
                 return productDistributionService.selectNoDistributionEp(epId, productSubId);
         }
