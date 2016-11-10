@@ -279,4 +279,15 @@ public class ProductController extends BaseController {
         return productService.searchOtherProviderProductList(epId, productName, supplierId, productType, sale, recordStart, recordCount);
     }
 
+    @RequestMapping(value = "other/price")
+    @ResponseBody
+    public Result<Map> searchPlanSaleAllPrice(@RequestParam("ep_id") Integer epId, @RequestParam("batchId") Integer batchId) {
+        return productService.searchPlanSaleAllPrice(epId, batchId);
+    }
+
+    @RequestMapping(value = "other/profit")
+    @ResponseBody
+    public Result<Map> searchPlanSaleAllPriceAndProfit(@RequestParam("planSaleId") Integer id) {
+        return productService.searchPlanSaleAllPriceAndProfit(id);
+    }
 }

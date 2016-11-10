@@ -182,6 +182,7 @@ public class Common {
     public static void isEmpty(Result<List<Map<String,Object>>> result, List<Map<String,Object>> list) {
         if (list.isEmpty()) {
             result.setError("未查询到数据");
+            result.setSuccess();
         } else {
             result.put(list);
             result.setSuccess();

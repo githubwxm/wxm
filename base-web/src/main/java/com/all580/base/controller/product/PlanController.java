@@ -15,12 +15,10 @@ import com.framework.common.util.CommonUtil;
 import com.framework.common.vo.Paginator;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.lang.exception.ApiException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -47,7 +45,7 @@ public class PlanController extends BaseController {
      * @param params
      * @return
      */
-    @RequestMapping(value = "config")
+    @RequestMapping(value = "config", method = RequestMethod.POST)
     @ResponseBody
     public Result<?> addSalesPlan(@RequestBody Map params) {
         return productSalesPlanService.addProductPlanBatch(initAddProductPlanParams(params));
@@ -72,7 +70,7 @@ public class PlanController extends BaseController {
      * @param params
      * @return
      */
-    @RequestMapping(value = "update")
+    @RequestMapping(value = "update", method = RequestMethod.POST)
     @ResponseBody
     public Result<?> updateSalesPlan(@RequestBody Map params) {
         return null;
@@ -109,7 +107,7 @@ public class PlanController extends BaseController {
         return productSalesPlanService.selectCanSaleSubProduct(epId,productName,productSubName,province,city,area,ticketFlag,payType,ticketDict,start,count);
     }
 
-    @RequestMapping(value = "sale/group")
+    @RequestMapping(value = "sale/group", method = RequestMethod.POST)
     @ResponseBody
     public Result productSubDistributionGroup(@RequestBody Map params) {
         for (OnSalesParams param : initGroupOnsalesParams(params)) {
@@ -118,14 +116,14 @@ public class PlanController extends BaseController {
         return new Result(true);
     }
 
-
-    @RequestMapping(value = "sale/ep/creator")
+    @RequestMapping(value = "sale/ep/creator", method = RequestMethod.POST)
     @ResponseBody
     public Result productSubDistributionCreatorEp(@RequestBody Map params) {
         List<Map> list =updateEpOnsalesParams(params);
         return productService.productOnSaleBatch(list);
     }
-    @RequestMapping(value = "sale/ep")
+
+    @RequestMapping(value = "sale/ep", method = RequestMethod.POST)
     @ResponseBody
     public Result productSubDistributionEp(@RequestBody Map params) {
 
@@ -178,20 +176,20 @@ public class PlanController extends BaseController {
         return onSalesParamses;
     }
 
-    @RequestMapping(value = "off_sale/ep")
+    @RequestMapping(value = "off_sale/ep", method = RequestMethod.POST)
     @ResponseBody
     public Result productSubOffSaleEp(@RequestBody Map params) {
         List<Map> paramList = (List<Map>) params.get("offSaleArray");
         if (paramList == null || paramList.isEmpty()) return new Result(false, "参数错误");
-        return productService.productOffSaleBatch(paramList);
+        return productService.productOffSaleBatch(params);
     }
 
-    @RequestMapping(value = "off_sale/group")
+    @RequestMapping(value = "off_sale/group", method = RequestMethod.POST)
     @ResponseBody
     public Result productSubOffSaleGroup(@RequestBody Map params) {
         List<Map> paramList = (List<Map>) params.get("offSaleArray");
         if (paramList == null || paramList.isEmpty()) return new Result(false, "参数错误");
-        return productService.productOffSaleBatch(paramList);
+        return productService.productOffSaleGroup(paramList);
     }
 
     /**
