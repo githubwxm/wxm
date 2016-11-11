@@ -162,7 +162,7 @@ public class AliPayCallbackController extends BaseController {
         Map<String, Object> params = new HashMap<>();
         params.put("totalFee", 1);
         params.put("refundFee", 1);
-        params.put("outTransId", "2016102621001004380237763577");
+        params.put("outTransId", "2016111021001004380274119776");
         params.put("serialNum", "1111111120");
         Result<String> result = thirdPayService.reqRefund(ordCode, coreEpId, payType, params);
         rsp.setContentType("text/html; charset=UTF-8");
