@@ -203,6 +203,8 @@ public class EpServiceImple implements EpService {
             log.error(e.getMessage(), e);
             throw new ApiException(e.getMessage(), e);
         }
+
+
         boolean flag = false;//是否添加余额阀值标识
         map.put("status", EpConstant.EpStatus.ACTIVE);// 状态默认未初始化
         map.put("status_bak", EpConstant.EpStatus.ACTIVE);// 状态默认未初始化
@@ -212,6 +214,11 @@ public class EpServiceImple implements EpService {
         //address  // TODO: 2016/10/22 0022
         String ep_type = (String) map.get("ep_type");//企业类型
         String creator_ep_id = (String) map.get("creator_ep_id");//上级企业id
+        // 获取创建企业的平台商ID,判断该企业平台商ID是否与当前操作平台商ID一致
+        Integer core_ep_id = selectPlatformId(Integer.parseInt(creator_ep_id)).get();
+        if(!core_ep_id.equals(CommonUtil.objectParseInteger(map.get(EpConstant.EpKey.CORE_EP_ID)))){
+            throw new ApiException("创建人与审核人不是同一平台");
+        }
         Integer group_id = CommonUtil.objectParseInteger(map.get("group_id"));
         String ep_class = (String) map.get("ep_class");//企业分类
         try {
@@ -258,7 +265,7 @@ public class EpServiceImple implements EpService {
         try {
             epMapper.create(map);//添加企业信息
             Integer epId = Common.objectParseInteger(map.get("id"));
-            Integer core_ep_id = selectPlatformId(Integer.parseInt(creator_ep_id)).get();
+
             Result r = balancePayService.createBalanceAccount(epId, core_ep_id); //创建余额账户
             if (!r.isSuccess()) {
                 throw new ApiException("添加企业余额失败");
@@ -811,10 +818,11 @@ public class EpServiceImple implements EpService {
     }
 
     @Override
-    public Result<Map<String, Object>> selectId(Map<String, Object> params) {
+    public Result<Map<String, Object>> selectId(int id) {
         Result<Map<String, Object>> result = new Result<>();
+        Map params = new HashMap();
+        params.put("id",id);
         try {
-            CommonUtil.checkPage(params);
             List<Map<String, Object>> resuleMap = epMapper.select(params);
             if (resuleMap.isEmpty()) {
                 result.setError("未查询到数据");
