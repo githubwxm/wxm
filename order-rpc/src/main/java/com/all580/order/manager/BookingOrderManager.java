@@ -124,17 +124,19 @@ public class BookingOrderManager extends BaseOrderManager {
      * 创建订单生成订单数据
      * @param coreEpId 操作平台商
      * @param buyEpId 销售企业ID
+     * @param buyEpName 下单企业名称
      * @param userId 销售用户ID
      * @param userName 销售用户名称
      * @param from 来源
      * @return
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public Order generateOrder(Integer coreEpId, Integer buyEpId, Integer userId, String userName, Integer from, String remark) {
+    public Order generateOrder(Integer coreEpId, Integer buyEpId, String buyEpName, Integer userId, String userName, Integer from, String remark) {
         Order order = new Order();
         order.setNumber(UUIDGenerator.generateUUID());
         order.setStatus(OrderConstant.OrderStatus.PAY_WAIT);
         order.setBuyEpId(buyEpId);
+        order.setBuyEpName(buyEpName);
         order.setBuyOperatorId(userId);
         order.setBuyOperatorName(userName);
         order.setCreateTime(new Date());
