@@ -45,7 +45,7 @@
       #{funcid,jdbcType=VARCHAR}, #{target,jdbcType=VARCHAR}, #{icon,jdbcType=VARCHAR}
       )
   </insert>
-  <insert id="insertSelective" parameterType="com.all580.role.entity.Func" >
+  <insert id="insertSelective" >
     <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
       SELECT LAST_INSERT_ID()
     </selectKey>
@@ -127,7 +127,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.all580.role.entity.Func" >
+  <update id="updateByPrimaryKeySelective"  >
     update t_func
     <set >
       <if test="pid != null" >
@@ -190,4 +190,17 @@
     <include refid="Base_Column_List" />
     from t_func
   </select>
+
+  <select id="selectPidRefId" resultType="java.lang.Long">
+      select id from t_func  where pid in
+       <foreach item="item" index="index" collection="pids" open="(" separator="," close=")">
+         #{item}
+       </foreach>
+  </select>
+  <delete  id="deletePidAll">
+   delete t_func  where id in
+    <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </delete>
 </mapper>

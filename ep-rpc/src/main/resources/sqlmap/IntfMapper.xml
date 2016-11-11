@@ -114,4 +114,14 @@
       create_time = #{createTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=BIGINT}
   </update>
+
+  <insert id="insertIntf">
+    <selectKey resultType="java.lang.Long" keyProperty="intf_id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+      insert into t_intf (name,auth,status)values(#{name},#{auth},1);
+    <!--<selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">-->
+      <!--SELECT LAST_INSERT_ID();-->
+    <!--</selectKey>-->
+  </insert>
 </mapper>
