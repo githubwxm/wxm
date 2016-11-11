@@ -15,4 +15,15 @@ public interface FuncService {
      */
     Result <List<Map<String,Object>>> getAll();
 
+    /**
+     * pid,name,alias,description,seq,status,create_time,type,path,funcId,target,icon
+     * @param params
+     * @return
+     */
+    Result insertSelective(Map<String,Object> params);
+
+    Result updateByPrimaryKeySelective(Map<String,Object> params);
+
+    Result deleteByPrimaryKey(Long id);
+
 }
