@@ -54,10 +54,10 @@ public interface EpService {
 
     /**
      *  查询企业信息
-     * @param map   id，
+     * @param    id，
      * @return  返回一条企业信息  map 列 getEp 接口 field 对应
      */
-    Result<Map<String,Object>> selectId (Map<String,Object> map);
+    Result<Map<String,Object>> selectId (int id);
     /**
      * 获取企业基本信息接口
      *
@@ -110,14 +110,14 @@ public interface EpService {
     Result<Map<String,Object>> updateEp(Map<String,Object> map);
 
     /**
-     * 下游平台商列表接口
+     * 下游平台商列表接口  ep_id 必填
      * @param map
      * @return
      */
     Result<Map<String,Object>> platformListDown(Map<String,Object> map);
 
     /**
-     * 下游
+     * 上游平台商  ep_id 必填
      * @param map
      * @return
      */
