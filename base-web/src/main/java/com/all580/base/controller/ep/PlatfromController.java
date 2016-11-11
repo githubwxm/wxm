@@ -59,10 +59,8 @@ public class PlatfromController extends BaseController {
     @RequestMapping(value = "selectPlatfromId", method = RequestMethod.GET)
     @ResponseBody
     public Result<Map<String,Object>> selectPlatfromId(Integer id) {
-        Map<String,Object> map = new HashMap();
-        map.put("id", id);
-        ParamsMapValidate.validate(map, platfromValidateManager.generateCreateStatusValidate());
-        return epService.selectId(map);
+
+        return epService.selectId(id);
 
     }
     /**
