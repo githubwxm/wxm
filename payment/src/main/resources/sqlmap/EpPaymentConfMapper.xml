@@ -27,9 +27,9 @@
             SELECT LAST_INSERT_ID()
         </selectKey>
         insert into t_core_ep_payment_conf (id, core_ep_id, payment_type,
-        conf_data, status)
+        conf_data, status,cert_p12)
         values (#{id,jdbcType=INTEGER}, #{coreEpId,jdbcType=INTEGER}, #{paymentType,jdbcType=INTEGER},
-        #{confData,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER})
+        #{confData,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER},#{certP12,jdbcType=VARCHAR})
     </insert>
     <insert id="insertSelective" parameterType="com.all580.payment.entity.EpPaymentConf">
         <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
@@ -69,7 +69,7 @@
                 #{status,jdbcType=INTEGER},
             </if>
             <if test="certP12 != null">
-                #{cert_p12,jdbcType=VARCHAR},
+                #{certP12,jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>
