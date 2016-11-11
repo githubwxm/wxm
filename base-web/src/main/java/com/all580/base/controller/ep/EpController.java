@@ -44,7 +44,7 @@ public class EpController extends BaseController {
     @RequestMapping(value = "create", method = RequestMethod.POST)
     @ResponseBody
     public Result<Map<String,Object>> create(HttpServletRequest request, @RequestBody Map<String,Object> map) {
-            map.put("core_ep_id",request.getAttribute("core_ep_id")) ;
+            map.put(EpConstant.EpKey.CORE_EP_ID,request.getAttribute(EpConstant.EpKey.CORE_EP_ID)) ;
             ParamsMapValidate.validate(map, platfromValidateManager.generateCreateEpValidate());
             return epService.createEp(map);
     }
