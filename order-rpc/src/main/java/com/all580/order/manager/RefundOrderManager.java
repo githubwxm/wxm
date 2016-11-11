@@ -28,6 +28,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.lang.exception.ApiException;
+import java.math.BigDecimal;
 import java.util.*;
 
 /**
@@ -358,11 +359,11 @@ public class RefundOrderManager extends BaseOrderManager {
                 // 平台内部分账->利润
                 if (coreEpId == account.getCoreEpId()) {
                     int profit = dayData.getIntValue("profit");
-                    float percent = 1.0f;
+                    double percent = 1.0;
                     if (rate.get("type") == ProductConstants.AddPriceType.FIX) {
-                        percent = rate.get("fixed") / payAmount;
+                        percent = new BigDecimal(rate.get("fixed") / (double)payAmount).setScale(2, BigDecimal.ROUND_DOWN).doubleValue();
                     } else {
-                        percent = rate.get("percent") / 100.0f;
+                        percent = new BigDecimal(rate.get("percent") / 100.0).setScale(2, BigDecimal.ROUND_DOWN).doubleValue();
                     }
                     money += profit * quantity * (1 - percent);
                     cash += profit * quantity * percent;
