@@ -124,4 +124,8 @@
       <!--SELECT LAST_INSERT_ID();-->
     <!--</selectKey>-->
   </insert>
+  <select id="selectFuncId" resultType="java.util.Map">
+    select <include refid="Base_Column_List" /> from t_intf where func_id=#{func_id}
+
+  </select>
 </mapper>
