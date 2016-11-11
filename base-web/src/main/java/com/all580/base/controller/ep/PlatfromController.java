@@ -120,9 +120,7 @@ public class PlatfromController extends BaseController {
     @ResponseBody
     public Result<Integer> paymentAdd(@RequestBody Map map) {
         ParamsMapValidate.validate(map, platfromValidateManager.generateCreatePaymentValidate());
-        map.put(EpConstant.EpKey.CORE_EP_ID,getAttribute(EpConstant.EpKey.CORE_EP_ID));
-        map.put("payment_type",map.get("paymentType"));
-        map.put("conf_data",map.get("confData"));
+        map.put("coreEpId",getAttribute(EpConstant.EpKey.CORE_EP_ID));
         return     epPaymentConfService.create(map);
     }//payment
 
@@ -137,9 +135,7 @@ public class PlatfromController extends BaseController {
     public Result<Integer> paymentUpdate(@RequestBody Map map) {
         ParamsMapValidate.validate(map, platfromValidateManager.generateCreatePaymentValidate());
         ParamsMapValidate.validate(map, platfromValidateManager.generateCreateStatusValidate());
-        map.put(EpConstant.EpKey.CORE_EP_ID,getAttribute(EpConstant.EpKey.CORE_EP_ID));
-        map.put("payment_type",map.get("paymentType"));
-        map.put("conf_data",map.get("confData"));
+        map.put("coreEpId",getAttribute(EpConstant.EpKey.CORE_EP_ID));
         return     epPaymentConfService.update(map);
     }//payment
 
