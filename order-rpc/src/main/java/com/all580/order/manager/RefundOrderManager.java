@@ -329,7 +329,7 @@ public class RefundOrderManager extends BaseOrderManager {
      * @param refundDate 退订时间
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public void preRefundAccount(List daysList, int itemId, int refundOrderId, List<OrderItemDetail> detailList, Date refundDate) throws Exception {
+    public void preRefundAccount(List daysList, int itemId, int refundOrderId, List<OrderItemDetail> detailList, Date refundDate, int payAmount) throws Exception {
         Map<Integer, Integer> coreEpIdMap = new HashMap<>();
         List<OrderItemAccount> accounts = orderItemAccountMapper.selectByOrderItem(itemId);
         for (OrderItemAccount account : accounts) {
@@ -340,6 +340,7 @@ public class RefundOrderManager extends BaseOrderManager {
             JSONArray daysData = JSONArray.parseArray(data);
             int coreEpId = getCoreEp(coreEpIdMap, account.getEpId());
             int money = 0;
+            int cash = 0;
             for (Object item : daysList) {
                 Map dayMap = (Map) item;
                 String day = CommonUtil.objectParseString(dayMap.get("day"));
@@ -357,11 +358,14 @@ public class RefundOrderManager extends BaseOrderManager {
                 // 平台内部分账->利润
                 if (coreEpId == account.getCoreEpId()) {
                     int profit = dayData.getIntValue("profit");
+                    float percent = 1.0f;
                     if (rate.get("type") == ProductConstants.AddPriceType.FIX) {
-                        money += profit * quantity - rate.get("fixed") * quantity;
+                        percent = rate.get("fixed") / payAmount;
                     } else {
-                        money += profit - profit * quantity * (float)rate.get("percent") / 100;
+                        percent = rate.get("percent") / 100.0f;
                     }
+                    money += profit * quantity * (1 - percent);
+                    cash += profit * quantity * percent;
                 } else {
                     // 平台之间分账->进货价
                     int inPrice = dayData.getIntValue("inPrice");
@@ -375,10 +379,17 @@ public class RefundOrderManager extends BaseOrderManager {
             RefundAccount refundAccount = new RefundAccount();
             refundAccount.setEpId(account.getEpId());
             refundAccount.setCoreEpId(account.getCoreEpId());
-            refundAccount.setMoney(money == 0 ? 0 : account.getMoney() > 0 ? -money : money);
+            refundAccount.setMoney(money == 0 ? 0 : -money);
             refundAccount.setStatus(OrderConstant.AccountSplitStatus.NOT);
             refundAccount.setRefundOrderId(refundOrderId);
             refundAccountMapper.insertSelective(refundAccount);
+            RefundAccount refundAccountCash = new RefundAccount();
+            refundAccountCash.setEpId(account.getEpId());
+            refundAccountCash.setCoreEpId(account.getCoreEpId());
+            refundAccountCash.setMoney(cash == 0 ? 0 : cash);
+            refundAccountCash.setStatus(OrderConstant.AccountSplitStatus.NOT);
+            refundAccountCash.setRefundOrderId(refundOrderId);
+            refundAccountMapper.insertSelective(refundAccountCash);
         }
     }
 

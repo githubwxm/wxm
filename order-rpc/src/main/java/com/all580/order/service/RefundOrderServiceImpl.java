@@ -126,7 +126,7 @@ public class RefundOrderServiceImpl implements RefundOrderService {
             }
 
             // 退订分账
-            refundOrderManager.preRefundAccount(daysList, orderItem.getId(), refundOrder.getId(), detailList, refundDate);
+            refundOrderManager.preRefundAccount(daysList, orderItem.getId(), refundOrder.getId(), detailList, refundDate, order.getPayAmount());
 
             // 同步数据
             refundOrderManager.syncRefundOrderApplyData(refundOrder.getId());
