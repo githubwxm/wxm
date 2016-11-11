@@ -103,8 +103,15 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         Map<Integer, LockStockDto> lockStockDtoMap = new HashMap<>();
         List<ProductSearchParams> lockParams = new ArrayList<>();
 
+        // 获取下单企业名称
+        String buyEpName = null;
+        Result<Map<String, Object>> epResult = epService.selectId(buyEpId);
+        if (epResult != null && epResult.isSuccess() && !epResult.isEmpty()) {
+            buyEpName = String.valueOf(epResult.get().get("name"));
+        }
+
         // 创建订单
-        Order order = bookingOrderManager.generateOrder(coreEpId, buyEpId,
+        Order order = bookingOrderManager.generateOrder(coreEpId, buyEpId, buyEpName,
                 CommonUtil.objectParseInteger(params.get("operator_id")),
                 CommonUtil.objectParseString(params.get("operator_name")), from, remark);
 

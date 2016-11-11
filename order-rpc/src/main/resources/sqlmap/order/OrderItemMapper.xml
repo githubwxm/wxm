@@ -449,7 +449,7 @@
             toi.number,
             toi.pro_name,
             toi.pro_sub_name,
-            o.buy_operator_name,
+            o.buy_ep_name,
             o.create_time,
             CASE IFNULL(toi.payment_flag,'')
             when 5011 then CONCAT('在线支付-',case IFNULL(o.payment_type,'') when 7111 then '余额' when 7112 then '支付宝' when 7113 then '微信' else '' end)

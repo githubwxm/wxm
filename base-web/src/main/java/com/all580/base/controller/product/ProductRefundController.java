@@ -9,10 +9,7 @@ import com.framework.common.lang.JsonUtils;
 import com.framework.common.util.CommonUtil;
 import com.framework.common.vo.Paginator;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.Map;
@@ -27,10 +24,30 @@ public class ProductRefundController extends BaseController {
     @Resource
     ProductRefundRuleRPCService productRefundRuleService;
 
-    @RequestMapping("add")
+    @RequestMapping(value = "add", method = RequestMethod.POST)
     @ResponseBody
     public Result<?> addProductRefund (@RequestBody Map params) {
         return productRefundRuleService.addProductRefundRule(initProductRefundRuleInfo(params));
+    }
+
+    @RequestMapping(value = "info")
+    @ResponseBody
+    public Result searchRefundInfo (@RequestParam("refundId") Integer refundId) {
+        return productRefundRuleService.searchProductRefundRule(refundId);
+    }
+
+    @RequestMapping(value = "update", method = RequestMethod.POST)
+    public Result updateProductRefund (@RequestBody Map params) {
+        return productRefundRuleService.updateProductRefundRule(initUpdateParams(params));
+    }
+
+    private ProductRefundRuleInfo initUpdateParams(Map params) {
+        ProductRefundRuleInfo info = new ProductRefundRuleInfo();
+        info.setId(CommonUtil.objectParseInteger(params.get("refundId")));
+        info.setName(CommonUtil.objectParseString(params.get("name")));
+        info.setAll(CommonUtil.objectParseInteger(params.get("all")));
+        info.setRule(JsonUtils.toJson(params.get("rule")));
+        return info;
     }
 
     /**
