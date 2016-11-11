@@ -38,5 +38,14 @@
 
 	<bean id="smsService" class="com.all580.notice.sms.service.SmsServiceImpl"/>
 	<dubbo:service interface="com.all580.notice.api.service.SmsService" ref="smsService"/>
+
+	<bean id="funcService" class="com.all580.role.service.FuncServiceImple" />
+	<dubbo:service interface="com.all580.role.api.service.FuncService" ref="funcService" />
+
+	<!--<bean id="funcIntfService" class="com.all580.role.service.FuncIntfServiceImpl" />-->
+	<!--<dubbo:service interface="com.all580.role.api.service.FuncIntfService" ref="funcIntfService" />-->
+
+	<bean id="intfService" class="com.all580.role.service.IntfServiceImple" />
+	<dubbo:service interface="com.all580.role.api.service.IntfService" ref="intfService" />
 	
 </beans>
