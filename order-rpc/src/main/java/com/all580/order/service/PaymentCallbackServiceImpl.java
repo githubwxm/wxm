@@ -65,12 +65,14 @@ public class PaymentCallbackServiceImpl implements PaymentCallbackService {
             order.setStatus(OrderConstant.OrderStatus.PAID_HANDLING); // 已支付,处理中
             orderMapper.updateByPrimaryKeySelective(order);
 
-            // 支付成功后加平台商余额(平帐)
-            BalanceChangeInfo info = new BalanceChangeInfo();
-            info.setEpId(bookingOrderManager.getCoreEpId(bookingOrderManager.getCoreEpId(order.getBuyEpId())));
-            info.setCoreEpId(info.getEpId());
-            info.setBalance(order.getPayAmount());
-            bookingOrderManager.changeBalances(PaymentConstant.BalanceChangeType.THIRD_PAY_FOR_ORDER, serialNum, info);
+            // 支付成功后加平台商余额(平帐),余额支付不做平帐
+            if (order.getPaymentType() != PaymentConstant.PaymentType.BALANCE.intValue()) {
+                BalanceChangeInfo info = new BalanceChangeInfo();
+                info.setEpId(bookingOrderManager.getCoreEpId(bookingOrderManager.getCoreEpId(order.getBuyEpId())));
+                info.setCoreEpId(info.getEpId());
+                info.setBalance(order.getPayAmount());
+                bookingOrderManager.changeBalances(PaymentConstant.BalanceChangeType.THIRD_PAY_FOR_ORDER, serialNum, info);
+            }
 
             // 支付成功回调 记录任务
             Map<String, String> jobParams = new HashMap<>();

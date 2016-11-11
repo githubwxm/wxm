@@ -106,7 +106,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         // 获取下单企业名称
         String buyEpName = null;
         Result<Map<String, Object>> epResult = epService.selectId(buyEpId);
-        if (epResult != null && epResult.isSuccess() && !epResult.isEmpty()) {
+        if (epResult != null && epResult.isSuccess() && epResult.get() != null) {
             buyEpName = String.valueOf(epResult.get().get("name"));
         }
 

@@ -186,8 +186,11 @@ public class BaseOrderManager {
         }
         jobClient.submitJob(jobs);
     }
+    public void addJobs(Job... jobs) {
+        jobClient.submitJob(Arrays.asList(jobs));
+    }
 
-    private Job createJob(String action, Map<String, String> params, boolean once) {
+    public Job createJob(String action, Map<String, String> params, boolean once) {
         Job job = new Job();
         job.setTaskId("ORDER-JOB-" + UUIDGenerator.generateUUID());
         job.setExtParams(params);

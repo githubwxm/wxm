@@ -9,6 +9,7 @@ import com.all580.order.dao.*;
 import com.all580.order.entity.*;
 import com.all580.payment.api.conf.PaymentConstant;
 import com.all580.payment.api.model.BalanceChangeInfo;
+import com.all580.payment.api.model.BalanceChangeRsp;
 import com.all580.payment.api.service.ThirdPayService;
 import com.all580.product.api.consts.ProductConstants;
 import com.all580.product.api.consts.ProductRules;
@@ -21,6 +22,7 @@ import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.lang.UUIDGenerator;
 import com.framework.common.util.CommonUtil;
+import com.github.ltsopensource.core.domain.Job;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +30,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.lang.exception.ApiException;
+import java.math.BigDecimal;
 import java.util.*;
 
 /**
@@ -329,7 +332,7 @@ public class RefundOrderManager extends BaseOrderManager {
      * @param refundDate 退订时间
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public void preRefundAccount(List daysList, int itemId, int refundOrderId, List<OrderItemDetail> detailList, Date refundDate) throws Exception {
+    public void preRefundAccount(List daysList, int itemId, int refundOrderId, List<OrderItemDetail> detailList, Date refundDate, int payAmount) throws Exception {
         Map<Integer, Integer> coreEpIdMap = new HashMap<>();
         List<OrderItemAccount> accounts = orderItemAccountMapper.selectByOrderItem(itemId);
         for (OrderItemAccount account : accounts) {
@@ -340,6 +343,7 @@ public class RefundOrderManager extends BaseOrderManager {
             JSONArray daysData = JSONArray.parseArray(data);
             int coreEpId = getCoreEp(coreEpIdMap, account.getEpId());
             int money = 0;
+            int cash = 0;
             for (Object item : daysList) {
                 Map dayMap = (Map) item;
                 String day = CommonUtil.objectParseString(dayMap.get("day"));
@@ -357,11 +361,14 @@ public class RefundOrderManager extends BaseOrderManager {
                 // 平台内部分账->利润
                 if (coreEpId == account.getCoreEpId()) {
                     int profit = dayData.getIntValue("profit");
+                    double percent = 1.0;
                     if (rate.get("type") == ProductConstants.AddPriceType.FIX) {
-                        money += profit * quantity - rate.get("fixed") * quantity;
+                        percent = new BigDecimal(rate.get("fixed") / (double)payAmount).setScale(2, BigDecimal.ROUND_DOWN).doubleValue();
                     } else {
-                        money += profit - profit * quantity * (float)rate.get("percent") / 100;
+                        percent = new BigDecimal(rate.get("percent") / 100.0).setScale(2, BigDecimal.ROUND_DOWN).doubleValue();
                     }
+                    money += profit * quantity * (1 - percent);
+                    cash += profit * quantity * percent;
                 } else {
                     // 平台之间分账->进货价
                     int inPrice = dayData.getIntValue("inPrice");
@@ -375,10 +382,40 @@ public class RefundOrderManager extends BaseOrderManager {
             RefundAccount refundAccount = new RefundAccount();
             refundAccount.setEpId(account.getEpId());
             refundAccount.setCoreEpId(account.getCoreEpId());
-            refundAccount.setMoney(money == 0 ? 0 : account.getMoney() > 0 ? -money : money);
+            refundAccount.setMoney(money == 0 ? 0 : -money);
+            refundAccount.setProfit(cash == 0 ? 0 : cash);
             refundAccount.setStatus(OrderConstant.AccountSplitStatus.NOT);
             refundAccount.setRefundOrderId(refundOrderId);
             refundAccountMapper.insertSelective(refundAccount);
+        }
+    }
+
+    /**
+     * 退款分账
+     * @param refundId 退订订单
+     * @return
+     */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public void refundSplitAccount(int refundId) {
+        List<RefundAccount> accountList = refundAccountMapper.selectByRefundId(refundId);
+        if (accountList != null) {
+            List<BalanceChangeInfo> infoList = new ArrayList<>();
+            for (RefundAccount refundAccount : accountList) {
+                BalanceChangeInfo info = new BalanceChangeInfo();
+                info.setEpId(refundAccount.getEpId());
+                info.setCoreEpId(refundAccount.getCoreEpId());
+                info.setBalance(refundAccount.getMoney());
+                info.setCanCash(refundAccount.getProfit());
+                infoList.add(info);
+                refundAccount.setStatus(OrderConstant.AccountSplitStatus.HAS);
+                refundAccountMapper.updateByPrimaryKeySelective(refundAccount);
+            }
+            // 调用分账
+            Result<BalanceChangeRsp> result = changeBalances(PaymentConstant.BalanceChangeType.REFUND_PAY, String.valueOf(refundId), infoList);
+            if (!result.isSuccess()) {
+                log.warn("退款分账失败:{}", result.get());
+                throw new ApiException(result.getError());
+            }
         }
     }
 
@@ -601,7 +638,14 @@ public class RefundOrderManager extends BaseOrderManager {
             Map<String, String> jobParams = new HashMap<>();
             jobParams.put("orderItemId", String.valueOf(refundOrder.getOrderItemId()));
             jobParams.put("check", "true");
-            addJob(OrderConstant.Actions.REFUND_STOCK, jobParams);
+            Job stockJob = createJob(OrderConstant.Actions.REFUND_STOCK, jobParams, false);
+
+            // 退款分账 记录任务
+            Map<String, String> moneyJobParams = new HashMap<>();
+            moneyJobParams.put("refundId", String.valueOf(refundOrder.getId()));
+            Job moneyJob = createJob(OrderConstant.Actions.REFUND_MONEY_SPLIT_ACCOUNT, moneyJobParams, false);
+
+            addJobs(stockJob, moneyJob);
         }
         // 同步数据
         syncRefundOrderMoney(refundOrder.getId());
@@ -628,6 +672,16 @@ public class RefundOrderManager extends BaseOrderManager {
                 .put("t_refund_order", CommonUtil.oneToList(refundOrder))
                 .put("t_order_item_detail", orderItemDetailMapper.selectByItemId(refundOrder.getOrderItemId()))
                 .put("t_refund_visitor", refundVisitorMapper.selectByRefundId(refundId))
+                .put("t_refund_account", refundAccountMapper.selectByRefundId(refundId))
+                .sync();
+    }
+    /**
+     * 同步退款分账数据
+     * @param refundId 退订订单ID
+     */
+    public void syncRefundAccountData(int refundId) {
+        RefundOrder refundOrder = refundOrderMapper.selectByPrimaryKey(refundId);
+        generateSyncByItem(refundOrder.getOrderItemId())
                 .put("t_refund_account", refundAccountMapper.selectByRefundId(refundId))
                 .sync();
     }

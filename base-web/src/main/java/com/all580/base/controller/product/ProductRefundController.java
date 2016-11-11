@@ -37,6 +37,7 @@ public class ProductRefundController extends BaseController {
     }
 
     @RequestMapping(value = "update", method = RequestMethod.POST)
+    @ResponseBody
     public Result updateProductRefund (@RequestBody Map params) {
         return productRefundRuleService.updateProductRefundRule(initUpdateParams(params));
     }

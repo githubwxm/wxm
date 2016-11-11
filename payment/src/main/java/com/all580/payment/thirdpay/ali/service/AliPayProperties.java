@@ -8,7 +8,7 @@ package com.all580.payment.thirdpay.ali.service;
  */
 public class AliPayProperties {
     private String partner; //签约的支付宝账号对应的支付宝唯一用户号。
-    private String key;
+    private String key; // 秘钥
     private String sellerEmail;//卖家支付宝账号。
 
     public String getKey() {
