@@ -122,6 +122,8 @@ public class PlatfromController extends BaseController {
     @ResponseBody
     public Result<Integer> paymentAdd(@RequestBody Map map) {
         ParamsMapValidate.validate(map, platfromValidateManager.generateCreatePaymentValidate());
+        map.put("payment_type",map.get("paymentType"));
+        map.put("conf_data",map.get("confData"));
         return     epPaymentConfService.create(map);
     }//payment
 
@@ -136,6 +138,8 @@ public class PlatfromController extends BaseController {
     public Result<Integer> paymentUpdate(@RequestBody Map map) {
         ParamsMapValidate.validate(map, platfromValidateManager.generateCreatePaymentValidate());
         ParamsMapValidate.validate(map, platfromValidateManager.generateCreateStatusValidate());
+        map.put("payment_type",map.get("paymentType"));
+        map.put("conf_data",map.get("confData"));
         return     epPaymentConfService.update(map);
     }//payment
 
