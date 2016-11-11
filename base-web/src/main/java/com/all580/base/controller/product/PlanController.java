@@ -137,7 +137,7 @@ public class PlanController extends BaseController {
         }
         Map<String,Object> mapId  = new HashMap();
         mapId.put("id", ep_id);
-        Result<Map<String,Object>> ep=  epService.selectId(mapId);//获取企业信息
+        Result<Map<String,Object>> ep=  epService.selectId(ep_id);//获取企业信息
         List<Map> list = new ArrayList<Map>();
         String name = CommonUtil.objectParseString(ep.get().get("name"));
          Map map = new HashMap();
