@@ -94,7 +94,7 @@
     </select>
 <!-- platform/list/down   下游平台商     truncate(rate/100,2) as-->
     <select id="platformListDown" resultType="java.util.HashMap">
-    select pic_address,name,linkman,link_phone,province,city,area,address, rate from t_core_ep_channel c
+    select e.id,pic_address,name,linkman,link_phone,province,city,area,address, rate from t_core_ep_channel c
        join t_ep e on e.id=c.seller_core_ep_id
         where  1=1 and supplier_core_ep_id= #{ep_id} and ep_type=#{ep_type}
                <include refid="platformListUpDown"/>
@@ -106,7 +106,7 @@
         <include refid="platformListUpDown"/>
     </select>
     <sql id="platformListUpDown">
-        <if test="epName != null">
+        <if test="epName != null ">
             and   name like CONCAT('%',#{epName}'%')
         </if>
         <if test="epProvince != null">
@@ -123,7 +123,7 @@
 
     <!-- platform/list/up   truncate(rate/100,2) as 上游平台商-->
     <select id="platformListUp" resultType="java.util.HashMap">
-        select pic_address,name,linkman,link_phone,province,city,area,address,rate from t_core_ep_channel c
+        select e.id,pic_address,name,linkman,link_phone,province,city,area,address,rate from t_core_ep_channel c
         join t_ep e on e.id=c.supplier_core_ep_id
         where  1=1 and seller_core_ep_id= #{ep_id} and ep_type=#{ep_type}
         <include refid="platformListUpDown"/>
