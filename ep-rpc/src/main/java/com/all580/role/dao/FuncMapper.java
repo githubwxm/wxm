@@ -10,13 +10,18 @@ public interface FuncMapper {
 
     int insert(Func record);
 
-    int insertSelective(Func record);
+    int insertSelective(Map<String,Object> params);
 
     Func selectByPrimaryKey(Long id);
 
-    int updateByPrimaryKeySelective(Func record);
+    int updateByPrimaryKeySelective(Map<String,Object> params);
 
     int updateByPrimaryKey(Func record);
 
     List<Map<String,Object>> getAll();
+
+    List<Long> selectPidRefId(List<Long> pids);
+
+    int deletePidAll(List<Long> ids);
+
 }
