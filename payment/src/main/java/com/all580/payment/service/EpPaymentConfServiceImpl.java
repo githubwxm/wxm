@@ -91,8 +91,8 @@ public class EpPaymentConfServiceImpl implements EpPaymentConfService {
         Map<String[], ValidRule[]> rules = new HashMap<>();
         // 校验不为空的参数
         rules.put(new String[]{
-                "payment_type", // 支付类型
-                "conf_data", // 支付配置
+                "paymentType", // 支付类型
+                "confData", // 支付配置
         }, new ValidRule[]{new ValidRule.NotNull()});
         return rules;
     }
