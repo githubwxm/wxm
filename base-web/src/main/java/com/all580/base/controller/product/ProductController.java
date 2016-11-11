@@ -186,6 +186,7 @@ public class ProductController extends BaseController {
     @ResponseBody
     public Result<Paginator<ProductAndSubInfo>> searchCanSaleList(@RequestParam("ep_id") Integer epId,
                                        @RequestParam("productName") String productName,
+                                       @RequestParam("isSupplier") Integer isSupplier,
                                        @RequestParam("orderStr") Integer order,
                                        @RequestParam("record_start") Integer start,
                                        @RequestParam("record_count") Integer count) {
@@ -199,7 +200,7 @@ public class ProductController extends BaseController {
                 case PRODUCT_NAME_DESC: orderStr = CanSaleOrderState.PRODUCT_NAME_DESC.getValue(); break;
             }
         }
-        Result<Paginator<ProductAndSubInfo>> result = productService.searchSubProductListByProductName(epId, productName, orderStr, start, count);
+        Result<Paginator<ProductAndSubInfo>> result = productService.searchSubProductListByProductName(epId, productName, isSupplier, orderStr, start, count);
         return result;
     }
 
