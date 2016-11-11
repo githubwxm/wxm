@@ -466,7 +466,10 @@
             o.`status` order_status,
             topo.`name` order_status_name,
             toi.`status` order_item_status,
-            topi.`name` order_item_status_name
+            topi.`name` order_item_status_name,
+            toi.id,
+            toi.pro_sub_id,
+            toi.pro_sub_number
         FROM t_order_item toi
         LEFT JOIN t_order o ON o.id = toi.order_id
         LEFT JOIN t_shipping ts ON ts.order_id = o.id
