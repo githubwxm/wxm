@@ -2,8 +2,6 @@ package com.all580.order.manager;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.all580.notice.api.conf.SmsType;
-import com.all580.notice.api.service.SmsService;
 import com.all580.order.api.OrderConstant;
 import com.all580.order.dao.*;
 import com.all580.order.entity.*;
@@ -31,7 +29,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.lang.exception.ApiException;
-import java.math.BigDecimal;
 import java.util.*;
 
 /**
@@ -236,7 +233,7 @@ public class RefundOrderManager extends BaseOrderManager {
             return null;
         }
         for (Visitor visitor : visitorList) {
-            if (visitor.getId().intValue() == id) {
+            if (visitor != null && visitor.getId() != null && visitor.getId().intValue() == id) {
                 return visitor;
             }
         }
@@ -248,7 +245,7 @@ public class RefundOrderManager extends BaseOrderManager {
             return null;
         }
         for (RefundVisitor visitor : visitorList) {
-            if (visitor.getId().intValue() == id) {
+            if (visitor != null && visitor.getId() != null && visitor.getId().intValue() == id) {
                 return visitor;
             }
         }
