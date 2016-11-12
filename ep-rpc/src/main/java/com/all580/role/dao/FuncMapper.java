@@ -1,27 +1,27 @@
 package com.all580.role.dao;
 
-import com.all580.role.entity.Func;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
 
 public interface FuncMapper {
-    int deleteByPrimaryKey(Long id);
+    int deleteByPrimaryKey(int id);
 
-    int insert(Func record);
+    int insert(Map<String,Object> record);
 
     int insertSelective(Map<String,Object> params);
 
-    Func selectByPrimaryKey(Long id);
+    Map<String,Object> selectByPrimaryKey(int id);
 
     int updateByPrimaryKeySelective(Map<String,Object> params);
 
-    int updateByPrimaryKey(Func record);
+    int updateByPrimaryKey(Map<String,Object> record);
 
     List<Map<String,Object>> getAll();
 
-    List<Long> selectPidRefId(List<Long> pids);
+    List<Integer> selectPidRefId(@Param("pids") List<Integer> pids);
 
-    int deletePidAll(List<Long> ids);
+    int deletePidAll(@Param("ids")List<Integer> ids);
 
 }

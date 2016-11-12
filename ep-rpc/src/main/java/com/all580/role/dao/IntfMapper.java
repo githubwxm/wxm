@@ -1,22 +1,21 @@
 package com.all580.role.dao;
 
-import com.all580.role.entity.Intf;
 
 import java.util.List;
 import java.util.Map;
 
 public interface IntfMapper {
-    int deleteByPrimaryKey(Long id);
+    int deleteByPrimaryKey(int id);
+    int deleteByFuncId(int func_id);
+    int insert(Map<String,Object> record);
 
-    int insert(Intf record);
+    int insertSelective(Map<String,Object> record);
 
-    int insertSelective(Intf record);
+    Map<String,Object> selectByPrimaryKey(int id);
 
-    Intf selectByPrimaryKey(Long id);
+    int updateByPrimaryKeySelective(Map<String,Object> record);
 
-    int updateByPrimaryKeySelective(Intf record);
-
-    int updateByPrimaryKey(Intf record);
+    int updateByPrimaryKey(Map<String,Object> record);
 
     /**
      * @param params  name,auth   --  ,status
@@ -27,5 +26,5 @@ public interface IntfMapper {
     /**
      * 查询菜单下的所有
      */
-    List<Map<String,Object>> selectFuncId(Long id);
+    List<Map<String,Object>> selectFuncId(int id);
 }
