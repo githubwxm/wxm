@@ -171,7 +171,7 @@
   <select id="getAll" resultType="java.util.Map">
     select
     <include refid="Base_Column_List" />
-    from t_func where isdelete=0
+    from t_func where isdelete=0  order by id
   </select>
 
   <select id="selectPidRefId" resultType="java.lang.Integer">
