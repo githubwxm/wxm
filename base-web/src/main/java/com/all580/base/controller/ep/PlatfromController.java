@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -137,8 +138,19 @@ public class PlatfromController extends BaseController {
         ParamsMapValidate.validate(map, platfromValidateManager.generateCreateStatusValidate());
         map.put("coreEpId",getAttribute(EpConstant.EpKey.CORE_EP_ID));
         return     epPaymentConfService.update(map);
-    }//payment
+    }//payment listByEpId
 
+    /**
+     * 添加配置支付列表
+     *
+     * @param
+     * @return
+     */
+    @RequestMapping(value = "payment/listByEpId", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<List<Map<String, String>>> paymentListByEpId(Integer epId) {
+        return     epPaymentConfService.listByEpId(epId);
+    }//payment
 
     /**
      * 上游平台商
