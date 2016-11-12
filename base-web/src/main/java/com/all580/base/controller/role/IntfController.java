@@ -37,7 +37,7 @@ public class IntfController extends BaseController{
         return intfService.insertInft(params);
     }
     /**
-     * 添加接口
+     * 删除接口
      * @return
      */
     @RequestMapping(value = "delete", method = RequestMethod.POST)
