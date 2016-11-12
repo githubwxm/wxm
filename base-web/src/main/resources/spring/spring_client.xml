@@ -48,6 +48,8 @@
 					 interface="com.all580.role.api.service.FuncService"/>
 	<dubbo:reference id="intfService"
 					 interface="com.all580.role.api.service.IntfService"/>
+	<dubbo:reference id="epRoleService"
+					 interface="com.all580.role.api.service.EpRoleService"/>
 	<dubbo:reference id="smsService"
 					 interface="com.all580.notice.api.service.SmsService"/>
 
