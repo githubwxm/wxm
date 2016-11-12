@@ -109,13 +109,13 @@
         <if test="epName != null ">
             and   name like CONCAT('%',#{epName}'%')
         </if>
-        <if test="epProvince != null">
+        <if test="epProvince != null and epProvince!=''">
             and province =#{epProvince}
         </if>
-        <if test="epCity != null">
+        <if test="epCity != null and epCity!=''">
             and city=#{epCity}
         </if>
-        <if test="epPhone != null">
+        <if test="epPhone != null and epPhone!=''">
             and link_phone =#{epPhone}
         </if>
         <include refid="limit"/>
