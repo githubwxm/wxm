@@ -60,11 +60,12 @@ public class FuncServiceImple implements FuncService{
     }
 
     @Override
-    public Result deleteByPrimaryKey(Long id) {
+    public Result deleteByPrimaryKey(int id) {
         try{
-            List<Long> list = new ArrayList<>();
+            List<Integer> list = new ArrayList<>();
             list.add(id);
-            deletePid(list);
+         list.addAll(deletePid(list,null)) ;
+            funcMapper.deletePidAll(list);
         }catch (Exception e){
             log.error("删除菜单功能异常",e);
             new ApiException("删除菜单功能异常");
@@ -72,15 +73,27 @@ public class FuncServiceImple implements FuncService{
         return new Result(true);
     }
 
-    private void deletePid(List<Long> list){
-        if(null==list||list.isEmpty()){
+//    private void deletePid(List<Integer> list){//  list 1  list 22  33
+//        if(null==list||list.isEmpty()){
+//
+//        }else{
+//            List<Integer> ids= funcMapper.selectPidRefId(list);// ids  22  33     ids  222 3333
+//            funcMapper.deletePidAll(list);// list 1 delete   22  33
+//            deletePid(ids);  // ids  22   33 - 222  333
+//        }
+//    }
 
-        }else{
-            List<Long> ids= funcMapper.selectPidRefId(list);
-            funcMapper.deletePidAll(list);
-            deletePid(ids);
+    private List<Integer> deletePid(List<Integer> list, List<Integer> resultList){
+        if(resultList==null){
+            resultList=new ArrayList<>();
         }
-
+        List<Integer> ids= funcMapper.selectPidRefId(list);
+        if(ids==null||ids.isEmpty()){
+            return  resultList;
+        }
+        resultList.addAll(ids);
+        deletePid(ids, resultList);
+        return  resultList;
     }
 
 }

@@ -36,7 +36,7 @@ public class IntfServiceImple implements IntfService {
         return new Result(true);
     }
     @Override
-    public Result selectFuncId(long id) {
+    public Result selectFuncId(int id) {
         try {
             intfMapper.selectFuncId(id);
             // funcIntfMapper.insertFuncIntf(params);
@@ -48,7 +48,7 @@ public class IntfServiceImple implements IntfService {
     }
 
     @Override
-    public Result deleteInft(long id) {
+    public Result deleteInft(int id) {
         try {
            // funcIntfMapper.deleteFuncIntf(id);
 
