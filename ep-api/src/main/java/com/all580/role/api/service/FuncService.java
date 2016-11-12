@@ -13,7 +13,7 @@ public interface FuncService {
      * 获取树形功能菜单
      * @return
      */
-    Result <Map<String, Object>> getAll();
+    Result <List<Map<String,Object>>> getAll();
 
     /**
      * pid,name,alias,description,seq,status,create_time,type,path,funcId,target,icon
