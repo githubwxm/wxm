@@ -51,7 +51,7 @@ public class EpRoleServiceImple implements EpRoleService {
             List<Integer> func_ids =(List<Integer>)params.get("func_ids");
             epRoleFuncMapper.insertEpRoleFuncBatch(ep_role_id,oper_id,func_ids);
         }catch (Exception e){
-            log.error("添加角色出错 {}",e.getMessage());
+            log.error("添加菜单出错 {}",e.getMessage());
             return new Result(false,e.getMessage());
         }
         return result;  //
@@ -82,7 +82,7 @@ public class EpRoleServiceImple implements EpRoleService {
             }
             epRoleFuncMapper.insertEpRoleFuncBatch(ep_role_id,oper_id,func_ids);
         }catch (Exception e){
-            log.error("修改角色出错 {}",e.getMessage());
+            log.error("修改菜单出错 {}",e.getMessage());
             return new Result(false,e.getMessage());
         }
         return new Result(true);
