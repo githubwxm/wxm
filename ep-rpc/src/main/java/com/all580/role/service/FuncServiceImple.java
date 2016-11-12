@@ -39,13 +39,15 @@ public class FuncServiceImple implements FuncService{
 
     @Override
     public Result insertSelective(Map<String, Object> params) {
+        Result result= new Result(true);
         try{
             funcMapper.insertSelective(params);
+            result.put(params.get("id"));
         }catch (Exception e){
             log.error("添加菜单功能异常",e);
             new ApiException("添加菜单功能异常");
         }
-        return new Result(true);
+        return result;
     }
 
     @Override
