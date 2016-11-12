@@ -38,7 +38,7 @@ public class EpRoleController {
     }
 
     /**
-     * 添加树形菜单接口
+     * 修改树形菜单接口
      * @return
      */
     @RequestMapping(value = "update", method = RequestMethod.POST)
