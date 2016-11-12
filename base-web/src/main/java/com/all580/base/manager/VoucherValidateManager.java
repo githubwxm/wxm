@@ -54,8 +54,8 @@ public class VoucherValidateManager {
         rules.put(new String[]{
                 "ep_id", // 企业ID
                 "voucher_id", // 凭证平台ID
-                "access_id", // 凭证商户ID
-                "access_key" // 凭证商户KEY
+                "voucher_access_id", // 凭证商户ID
+                "voucher_access_key" // 凭证商户KEY
         }, new ValidRule[]{new ValidRule.NotNull()});
 
         rules.put(new String[]{"voucher_id", "ep_id"}, new ValidRule[]{new ValidRule.Digits()});
