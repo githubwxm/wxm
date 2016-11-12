@@ -18,6 +18,7 @@ import com.all580.product.api.service.ProductSalesPlanRPCService;
 import com.all580.voucher.api.model.RefundTicketParams;
 import com.all580.voucher.api.service.VoucherRPCService;
 import com.framework.common.Result;
+import com.framework.common.lang.Arith;
 import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.lang.UUIDGenerator;
@@ -363,12 +364,12 @@ public class RefundOrderManager extends BaseOrderManager {
                     int profit = dayData.getIntValue("profit");
                     double percent = 1.0;
                     if (rate.get("type") == ProductConstants.AddPriceType.FIX) {
-                        percent = new BigDecimal(rate.get("fixed") / (double)payAmount).setScale(2, BigDecimal.ROUND_DOWN).doubleValue();
+                        percent = Arith.div(rate.get("fixed"), payAmount, 4);
                     } else {
-                        percent = new BigDecimal(rate.get("percent") / 100.0).setScale(2, BigDecimal.ROUND_DOWN).doubleValue();
+                        percent = Arith.div(rate.get("percent"), 100, 4);
                     }
-                    money += profit * quantity * (1 - percent);
-                    cash += profit * quantity * percent;
+                    money += Arith.round(Arith.mul(profit * quantity, percent), 0);
+                    cash += Arith.round(Arith.mul(profit * quantity, percent), 0);
                 } else {
                     // 平台之间分账->进货价
                     int inPrice = dayData.getIntValue("inPrice");
