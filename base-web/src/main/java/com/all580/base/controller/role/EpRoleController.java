@@ -27,7 +27,7 @@ public class EpRoleController {
     @Autowired
     private EpRoleService epRoleService;
     /**
-     * 添加树形菜单接口
+     * 添加角色与菜单
      * @return
      */
     @RequestMapping(value = "add", method = RequestMethod.POST)
@@ -38,7 +38,7 @@ public class EpRoleController {
     }
 
     /**
-     * 修改树形菜单接口
+     * 修改角色与菜单
      * @return
      */
     @RequestMapping(value = "update", method = RequestMethod.POST)
