@@ -43,6 +43,7 @@ public class FuncServiceImple implements FuncService{
         try{
             funcMapper.insertSelective(params);
             result.put(params.get("id"));
+            log.warn(result.get().toString());
         }catch (Exception e){
             log.error("添加菜单功能异常",e);
             new ApiException("添加菜单功能异常");

@@ -27,7 +27,7 @@ public class EpRoleController {
     @Autowired
     private EpRoleService epRoleService;
     /**
-     * 添加角色与菜单
+     * 添加角色
      * @return
      */
     @RequestMapping(value = "add", method = RequestMethod.POST)
@@ -36,9 +36,20 @@ public class EpRoleController {
         ParamsMapValidate.validate(params, generateAddEpRoleValidate());
         return epRoleService.addEpRole(params);
     }
+    /**
+     * 添加菜单
+     * @return
+     */
+    @RequestMapping(value = "add/func", method = RequestMethod.POST)
+    @ResponseBody
+    public Result addFunc(@RequestBody Map<String,Object> params) {
+        //ep_role_id
+        ParamsMapValidate.validate(params, generateAddEpRoleFuncValidate());
+        return epRoleService.addEpRoleFunc(params);
+    }
 
     /**
-     * 修改角色与菜单
+     * 修改角色
      * @return
      */
     @RequestMapping(value = "update", method = RequestMethod.POST)
@@ -48,7 +59,36 @@ public class EpRoleController {
         return epRoleService.updateEpRole(params);
     }
 
+    /**
+     * 修改菜单
+     * @return
+     */
+    @RequestMapping(value = "update/func", method = RequestMethod.POST)
+    @ResponseBody
+    public Result updateFunc(@RequestBody Map<String,Object> params) {
+        ParamsMapValidate.validate(params, generateUpdateEpRoleFuncValidate());
+        return epRoleService.updateEpRoleFunc(params);
+    }
 
+
+    /**
+     *
+     * @return
+     */
+    public Map<String[], ValidRule[]> generateAddEpRoleFuncValidate() {
+        Map<String[], ValidRule[]> rules = new HashMap<>();
+        // 校验不为空的参数
+        rules.put(new String[]{
+                "ep_role_id", //
+                "oper_id", //
+                "func_ids", //
+        }, new ValidRule[]{new ValidRule.NotNull()});
+        // 校验整数
+        rules.put(new String[]{
+                "ep_role_id", //
+        }, new ValidRule[]{new ValidRule.Digits()});
+        return rules;
+    }
 
     public Map<String[], ValidRule[]> generateAddEpRoleValidate() {
         Map<String[], ValidRule[]> rules = new HashMap<>();
@@ -56,7 +96,6 @@ public class EpRoleController {
         rules.put(new String[]{
                 "name", //
                 "user_id", //
-                "func_ids", //
         }, new ValidRule[]{new ValidRule.NotNull()});
         // 校验整数
         rules.put(new String[]{
@@ -71,8 +110,21 @@ public class EpRoleController {
         // 校验不为空的参数
         rules.put(new String[]{
                 "name", //
-                "id", //
+                "ep_role_id", //
                 "status", //
+        }, new ValidRule[]{new ValidRule.NotNull()});
+        // 校验整数
+        rules.put(new String[]{
+                "ep_role_id", //
+        }, new ValidRule[]{new ValidRule.Digits()});
+        return rules;
+    }
+
+    public Map<String[], ValidRule[]> generateUpdateEpRoleFuncValidate() {
+        Map<String[], ValidRule[]> rules = new HashMap<>();
+        // 校验不为空的参数
+        rules.put(new String[]{
+                "id", //
                 "func_ids", //
         }, new ValidRule[]{new ValidRule.NotNull()});
         // 校验整数

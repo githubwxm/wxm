@@ -48,7 +48,7 @@ public class FuncController extends BaseController {
     @RequestMapping(value = "create", method = RequestMethod.POST)
     @ResponseBody
     public Result create(@RequestBody Map<String,Object> params) {
-        params.put("status",1);//添加默认状态
+        //params.put("status",1);//添加默认状态
         ParamsMapValidate.validate(params, generateFuncValidate());
         return funcService.insertSelective(params);
     }
