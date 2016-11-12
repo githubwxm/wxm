@@ -36,21 +36,42 @@ public class EpRoleServiceImple implements EpRoleService {
             epRoleMapper.insertSelective(params);
             Integer ep_role_id =CommonUtil.objectParseInteger(params.get("id"));
             result.put(ep_role_id);
-            Integer oper_id = CommonUtil.objectParseInteger(params.get("user_id")) ;
+        }catch (Exception e){
+            log.error("添加角色出错 {}",e.getMessage());
+            return new Result(false,e.getMessage());
+        }
+        return result;  //addEpRoleFunc
+    }
+    @Override
+    public Result addEpRoleFunc(Map<String, Object> params) {
+        Result result= new Result(true);
+        try{
+          Integer ep_role_id=CommonUtil.objectParseInteger(params.get("ep_role_id"));
+            Integer oper_id = CommonUtil.objectParseInteger(params.get("oper_id")) ;
             List<Integer> func_ids =(List<Integer>)params.get("func_ids");
             epRoleFuncMapper.insertEpRoleFuncBatch(ep_role_id,oper_id,func_ids);
         }catch (Exception e){
             log.error("添加角色出错 {}",e.getMessage());
             return new Result(false,e.getMessage());
         }
-        return result;
+        return result;  //
     }
 
     @Override
     public Result updateEpRole(Map<String, Object> params) {
         try {
             epRoleMapper.updateByPrimaryKeySelective(params);
-            Integer ep_role_id = CommonUtil.objectParseInteger(params.get("id")) ;//角色
+        }catch (Exception e){
+            log.error("修改角色出错 {}",e.getMessage());
+            return new Result(false,e.getMessage());
+        }
+        return new Result(true);
+    }
+
+    @Override
+    public Result updateEpRoleFunc(Map<String, Object> params) {
+        try {
+            Integer ep_role_id = CommonUtil.objectParseInteger(params.get("ep_role_id")) ;//角色
             Integer oper_id= CommonUtil.objectParseInteger(params.get("oper_id")) ;//操作人
             List<Integer> func_ids =(List<Integer>)params.get("func_ids");
             epRoleFuncMapper.updateEpRoleFuncIsDelete(ep_role_id,oper_id);//更新原始的 为delete状态
