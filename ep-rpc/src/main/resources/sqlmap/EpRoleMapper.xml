@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.all580.role.dao.EpRoleMapper" >
+
+  <sql id="Base_Column_List" >
+    id, name, status, create_time, user_id, update_time, isdelete
+  </sql>
+  <select id="selectByPrimaryKey" resultType="java.util.Map" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_ep_role
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey"  >
+    delete from t_ep_role
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into t_ep_role (name, status, create_time, 
+      user_id, update_time, isdelete
+      )
+    values (#{name,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{userId,jdbcType=BIGINT}, #{updateTime,jdbcType=TIMESTAMP}, #{isdelete,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective"  >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into t_ep_role (name,user_id)values(#{name},#{user_id});
+  </insert>
+  <update id="updateByPrimaryKeySelective"  >
+    update t_ep_role
+    <set >
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey"  >
+    update t_ep_role
+    set name = #{name,jdbcType=VARCHAR},
+      status = #{status,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      user_id = #{userId,jdbcType=BIGINT},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      isdelete = #{isdelete,jdbcType=INTEGER}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

@@ -5,7 +5,7 @@
 
 <generatorConfiguration>
     <classPathEntry
-            location="C:\Users\Administrator\.m2\repository\mysql\mysql-connector-java\5.1.39\mysql-connector-java-5.1.39.jar"/>
+            location="C:\Users\Administrator\.m2\repository\mysql\mysql-connector-java\5.1.30\mysql-connector-java-5.1.30.jar"/>
     <context id="my" targetRuntime="MyBatis3">
         <!-- 抑制警告 -->
         <property name="suppressTypeWarnings" value="true"/>
@@ -17,29 +17,29 @@
         </commentGenerator>
 
         <jdbcConnection driverClass="com.mysql.jdbc.Driver"
-                        connectionURL="jdbc:mysql://121.42.44.170:3306/all580_ep?characterEncoding=utf8"
+                        connectionURL="jdbc:mysql://192.168.1.114:3306/all580_ep?characterEncoding=utf8"
                         userId="root"
-                        password="abcd1234!@#"/>
+                        password="abcd1234"/>
 
-        <javaModelGenerator targetPackage="com.all580.notice.entity"
-                            targetProject="D:\workspace\GIT\base\ep-rpc\src\main\java">
+        <javaModelGenerator targetPackage="com.all580.role.entity"
+                            targetProject="D:\java\3.0\base\ep-rpc\src\main\java">
             <property name="enableSubPackages" value="true"/>
             <property name="trimStrings" value="true"/>
         </javaModelGenerator>
 
         <sqlMapGenerator targetPackage="sqlmap"
-                         targetProject="D:\workspace\GIT\base\ep-rpc\src\main\resources">
+                         targetProject="D:\java\3.0\base\ep-rpc\src\main\resources">
             <property name="enableSubPackages" value="true"/>
         </sqlMapGenerator>
 
-        <javaClientGenerator targetPackage="com.all580.notice.dao"
-                             targetProject="D:\workspace\GIT\base\ep-rpc\src\main\java" type="XMLMAPPER">
+        <javaClientGenerator targetPackage="com.all580.role.dao"
+                             targetProject="D:\java\3.0\base\ep-rpc\src\main\java" type="XMLMAPPER">
             <property name="enableSubPackages" value="true"/>
         </javaClientGenerator>
 
-        <table tableName="t_sms_account_conf" enableCountByExample="false" enableUpdateByExample="false"
+        <table tableName="t_ep_role_func" enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"
-               domainObjectName="SmsAccountConf">
+               domainObjectName="EpRoleFunc">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
         </table>
 

@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.all580.role.dao.EpRoleFuncMapper" >
+
+  <sql id="Base_Column_List" >
+    id, ep_role_id, func_id, create_time, isdelete, oper_id, update_time
+  </sql>
+  <select id="selectByPrimaryKey" resultType="java.util.Map">
+    select 
+    <include refid="Base_Column_List" />
+    from t_ep_role_func
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" >
+    delete from t_ep_role_func
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert"  >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into t_ep_role_func (ep_role_id, func_id, create_time, 
+      isdelete, oper_id, update_time
+      )
+    values (#{epRoleId,jdbcType=BIGINT}, #{funcId,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{isdelete,jdbcType=INTEGER}, #{operId,jdbcType=BIGINT}, #{updateTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into t_ep_role_func
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="epRoleId != null" >
+        ep_role_id,
+      </if>
+      <if test="funcId != null" >
+        func_id,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="isdelete != null" >
+        isdelete,
+      </if>
+      <if test="operId != null" >
+        oper_id,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="epRoleId != null" >
+        #{epRoleId,jdbcType=BIGINT},
+      </if>
+      <if test="funcId != null" >
+        #{funcId,jdbcType=BIGINT},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isdelete != null" >
+        #{isdelete,jdbcType=INTEGER},
+      </if>
+      <if test="operId != null" >
+        #{operId,jdbcType=BIGINT},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" >
+    update t_ep_role_func
+    <set >
+      <if test="epRoleId != null" >
+        ep_role_id = #{epRoleId,jdbcType=BIGINT},
+      </if>
+      <if test="funcId != null" >
+        func_id = #{funcId,jdbcType=BIGINT},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isdelete != null" >
+        isdelete = #{isdelete,jdbcType=INTEGER},
+      </if>
+      <if test="operId != null" >
+        oper_id = #{operId,jdbcType=BIGINT},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey"  >
+    update t_ep_role_func
+    set ep_role_id = #{epRoleId,jdbcType=BIGINT},
+      func_id = #{funcId,jdbcType=BIGINT},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      isdelete = #{isdelete,jdbcType=INTEGER},
+      oper_id = #{operId,jdbcType=BIGINT},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <insert id="insertEpRoleFuncBatch" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+      SELECT
+      LAST_INSERT_ID()
+    </selectKey>
+    insert into t_ep_role_func (ep_role_id,oper_id,func_id)
+    values
+    <foreach collection="func_ids" item="item" index="index" separator="," >
+      (#{ep_role_id},#{oper_id},#{item})
+    </foreach>
+  </insert>
+  <update id="updateEpRoleFuncIsDelete">
+      update t_ep_role_func set isdelete = 1
+    <if test="oper_id != null" >
+      , oper_id = #{oper_id}
+    </if>
+      where  ep_role_id =#{ep_role_id};
+  </update>
+
+  <update id="updateEpRoleFuncIsNotDelete">
+    update t_ep_role_func set isdelete = 0 where  ep_role_id = #{ep_role_id} and `func_id`  in
+    <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </update>
+
+  <select id="selectEpRoleIdFuncId" resultType="java.lang.Integer">
+    select func_id FROM t_ep_role_func where  ep_role_id = #{ep_role_id} and `func_id`  in
+    <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </select>
+</mapper>

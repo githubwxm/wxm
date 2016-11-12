@@ -47,5 +47,8 @@
 
 	<bean id="intfService" class="com.all580.role.service.IntfServiceImple" />
 	<dubbo:service interface="com.all580.role.api.service.IntfService" ref="intfService" />
+
+	<bean id="epRoleService" class="com.all580.role.service.EpRoleServiceImple" />
+	<dubbo:service interface="com.all580.role.api.service.EpRoleService" ref="epRoleService" />
 	
 </beans>

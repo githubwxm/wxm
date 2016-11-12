@@ -1,30 +1,26 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.all580.role.dao.IntfMapper" >
-  <resultMap id="BaseResultMap" type="com.all580.role.entity.Intf" >
-    <id column="id" property="id" jdbcType="BIGINT" />
-    <result column="name" property="name" jdbcType="VARCHAR" />
-    <result column="auth" property="auth" jdbcType="VARCHAR" />
-    <result column="description" property="description" jdbcType="VARCHAR" />
-    <result column="seq" property="seq" jdbcType="BIGINT" />
-    <result column="status" property="status" jdbcType="INTEGER" />
-    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
-  </resultMap>
+
   <sql id="Base_Column_List" >
-    id, name, auth, description, seq, status, create_time,CONCAT('',update_time,'') update_time
+    id, name, auth, description, seq, status,isdelete, create_time,CONCAT('',update_time,'') update_time
   </sql>
-  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+  <select id="selectByPrimaryKey" resultType="java.util.Map" >
     select 
     <include refid="Base_Column_List" />
     from t_intf
     where id = #{id,jdbcType=BIGINT}
   </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
-    delete from t_intf
+  <update id="deleteByPrimaryKey"  >
+    update t_intf set isdelete=1
     where id = #{id,jdbcType=BIGINT}
-  </delete>
-  <insert id="insert" parameterType="com.all580.role.entity.Intf" >
-    <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
+  </update>
+
+  <update id="deleteByFuncId">
+    update t_intf set isdelete=1  where func_id =#{func_id};
+  </update>
+  <insert id="insert"  >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
       SELECT LAST_INSERT_ID()
     </selectKey>
     insert into t_intf (name, auth, description, 
@@ -34,8 +30,8 @@
       #{seq,jdbcType=BIGINT}, #{status,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}
       )
   </insert>
-  <insert id="insertSelective" parameterType="com.all580.role.entity.Intf" >
-    <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
+  <insert id="insertSelective" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
       SELECT LAST_INSERT_ID()
     </selectKey>
     insert into t_intf
@@ -80,7 +76,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.all580.role.entity.Intf" >
+  <update id="updateByPrimaryKeySelective"  >
     update t_intf
     <set >
       <if test="name != null" >
@@ -104,7 +100,7 @@
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.all580.role.entity.Intf" >
+  <update id="updateByPrimaryKey"  >
     update t_intf
     set name = #{name,jdbcType=VARCHAR},
       auth = #{auth,jdbcType=VARCHAR},
@@ -116,7 +112,7 @@
   </update>
 
   <insert id="insertIntf">
-    <selectKey resultType="java.lang.Long" keyProperty="intf_id" order="AFTER" >
+    <selectKey resultType="java.lang.Integer" keyProperty="intf_id" order="AFTER" >
       SELECT LAST_INSERT_ID()
     </selectKey>
       insert into t_intf (name,auth,status)values(#{name},#{auth},1);
