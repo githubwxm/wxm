@@ -107,7 +107,7 @@
     </select>
     <sql id="platformListUpDown">
         <if test="epName != null ">
-            and   name like CONCAT('%',#{epName}'%')
+            and   name like CONCAT('%',#{epName},'%')
         </if>
         <if test="epProvince != null and epProvince!=''">
             and province =#{epProvince}

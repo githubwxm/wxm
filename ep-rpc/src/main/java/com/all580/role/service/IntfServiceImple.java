@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.lang.exception.ApiException;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -26,25 +27,29 @@ public class IntfServiceImple implements IntfService {
 
     @Override
     public Result insertInft(Map<String, Object> params) {
+        Result result=  new Result(true);
         try {
             intfMapper.insertIntf(params);
+            result.put(params.get("id"));
            // funcIntfMapper.insertFuncIntf(params);
         } catch (Exception e) {
             log.error("添加接口异常", e);
             new ApiException("添加接口异常");
         }
-        return new Result(true);
+        return result;
     }
     @Override
     public Result selectFuncId(int id) {
+        Result result=  new Result(true);
         try {
-            intfMapper.selectFuncId(id);
+            List<Map<String,Object>> list= intfMapper.selectFuncId(id);
+            result.put(list);
             // funcIntfMapper.insertFuncIntf(params);
         } catch (Exception e) {
             log.error("查询接口异常", e);
             new ApiException("查询接口异常");
         }
-        return new Result(true);
+        return result;
     }
 
     @Override

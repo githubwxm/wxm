@@ -32,7 +32,7 @@ public class IntfController extends BaseController{
      */
     @RequestMapping(value = "add", method = RequestMethod.POST)
     @ResponseBody
-    public Result<List<Map<String,Object>>> add(@RequestBody Map<String,Object> params) {
+    public Result add(@RequestBody Map<String,Object> params) {
 
         return intfService.insertInft(params);
     }
@@ -42,7 +42,7 @@ public class IntfController extends BaseController{
      */
     @RequestMapping(value = "delete", method = RequestMethod.POST)
     @ResponseBody
-    public Result<List<Map<String,Object>>> delete(@RequestBody Map<String,Object> params) {
+    public Result delete(@RequestBody Map<String,Object> params) {
         int id= CommonUtil.objectParseInteger(params.get("id"));
         return intfService.deleteInft(id);
     }

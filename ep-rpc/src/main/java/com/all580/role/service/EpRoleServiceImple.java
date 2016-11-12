@@ -31,9 +31,11 @@ public class EpRoleServiceImple implements EpRoleService {
 
     @Override
     public Result addEpRole(Map<String, Object> params) {
+        Result result= new Result(true);
         try{
             epRoleMapper.insertSelective(params);
             Integer ep_role_id =CommonUtil.objectParseInteger(params.get("id"));
+            result.put(ep_role_id);
             Integer oper_id = CommonUtil.objectParseInteger(params.get("user_id")) ;
             List<Integer> func_ids =(List<Integer>)params.get("func_ids");
             epRoleFuncMapper.insertEpRoleFuncBatch(ep_role_id,oper_id,func_ids);
@@ -41,7 +43,7 @@ public class EpRoleServiceImple implements EpRoleService {
             log.error("添加角色出错 {}",e.getMessage());
             return new Result(false,e.getMessage());
         }
-        return new Result(true);
+        return result;
     }
 
     @Override
