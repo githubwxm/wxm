@@ -80,7 +80,7 @@ public class EpRoleController {
      */
     @RequestMapping(value = "select/func", method = RequestMethod.GET)
     @ResponseBody
-    public Result selectepRoleId(@RequestParam(value = "prodName", required = true) Integer ep_role_id) {
+    public Result selectepRoleId(@RequestParam(value = "ep_role_id", required = true) Integer ep_role_id) {
         return epRoleService.selectepRoleId(ep_role_id);
     }//
 
