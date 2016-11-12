@@ -141,15 +141,15 @@ public class PlatfromController extends BaseController {
     }//payment listByEpId
 
     /**
-     * 添加配置支付列表
+     * 支付列表
      *
      * @param
      * @return
      */
     @RequestMapping(value = "payment/listByEpId", method = RequestMethod.GET)
     @ResponseBody
-    public Result<List<Map<String, String>>> paymentListByEpId(Integer epId) {
-        return     epPaymentConfService.listByEpId(epId);
+    public Result<List<Map<String, String>>> paymentListByEpId(Integer ep_id) {
+        return     epPaymentConfService.listByEpId(ep_id);
     }//payment
 
     /**
