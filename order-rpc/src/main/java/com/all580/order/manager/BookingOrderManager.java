@@ -364,14 +364,14 @@ public class BookingOrderManager extends BaseOrderManager {
         // 缓存平台商ID
         Map<Integer, Integer> coreEpMap = new HashMap<>();
         // 每个企业所有天的利润
-        Map<Integer, List<AccountDataDto>> daysAccountDataMap = new HashMap<>();
+        Map<String, List<AccountDataDto>> daysAccountDataMap = new HashMap<>();
         // 叶子销售商最终卖价
         int salePrice = 0;
         // 遍历每天的销售链
         int i = 0;
         for (List<EpSalesInfo> infoList : daySalesList) {
             // 一天的利润单价
-            Map<Integer, AccountDataDto> dayAccountDataMap = new HashMap<>();
+            Map<String, AccountDataDto> dayAccountDataMap = new HashMap<>();
             Date day = DateUtils.addDays(bookingDate, i);
             for (EpSalesInfo info : infoList) {
                 Integer buyCoreEpId = null;
@@ -385,26 +385,25 @@ public class BookingOrderManager extends BaseOrderManager {
                 Integer saleCoreEpId = getCoreEp(coreEpMap, info.getSaleEpId());
                 // 卖家 == 平台商 && 买家 == 平台商
                 if (info.getBuyEpId() == buyCoreEpId.intValue() && saleCoreEpId.intValue() == info.getSaleEpId()) {
-                    AccountDataDto dto = addDayAccount(dayAccountDataMap, infoList, buyCoreEpId, day);
+                    AccountDataDto dto = addDayAccount(dayAccountDataMap, saleCoreEpId, buyCoreEpId, infoList, day);
                     dto.setSaleCoreEpId(saleCoreEpId);
-                    addDayAccount(dayAccountDataMap, infoList, saleCoreEpId, day);
                 }
 
                 // 买家平台商ID == 卖家平台商ID && 卖家ID != 卖家平台商ID
                 if (buyCoreEpId.intValue() == saleCoreEpId/* && info.getSaleEpId() != saleCoreEpId*/) {
-                    AccountDataDto dto = addDayAccount(dayAccountDataMap, infoList, info.getSaleEpId(), day);
+                    AccountDataDto dto = addDayAccount(dayAccountDataMap, info.getSaleEpId(), info.getBuyEpId() == -1 ? info.getSaleEpId() : info.getBuyEpId(), infoList, day);
                     dto.setSaleCoreEpId(saleCoreEpId);
                 }
             }
 
             // 把一天的利润添加到所有天当中
-            for (Integer epId : dayAccountDataMap.keySet()) {
-                List<AccountDataDto> accountDataDtoList = daysAccountDataMap.get(epId);
+            for (String key : dayAccountDataMap.keySet()) {
+                List<AccountDataDto> accountDataDtoList = daysAccountDataMap.get(key);
                 if (accountDataDtoList == null) {
                     accountDataDtoList = new ArrayList<>();
-                    daysAccountDataMap.put(epId, accountDataDtoList);
+                    daysAccountDataMap.put(key, accountDataDtoList);
                 }
-                accountDataDtoList.add(dayAccountDataMap.get(epId));
+                accountDataDtoList.add(dayAccountDataMap.get(key));
             }
             i++;
         }
@@ -412,80 +411,102 @@ public class BookingOrderManager extends BaseOrderManager {
         // 把每天的利润集合做分账
         // 平台商本企业内部分账一次扣款
         Map<Integer, Integer> coreSubMap = new HashMap<>();
-        for (Integer epId : daysAccountDataMap.keySet()) {
-            Integer coreEpId = getCoreEp(coreEpMap, epId);
-            List<AccountDataDto> dataDtos = daysAccountDataMap.get(epId);
-            int totalInPrice = 0;
+        for (String key : daysAccountDataMap.keySet()) {
+            String[] keyArray = key.split("#");
+            Integer saleEpId = Integer.parseInt(keyArray[0]);
+            Integer buyEpId = Integer.parseInt(keyArray[1]);
+            Integer saleCoreEpId = getCoreEp(coreEpMap, saleEpId);
+            Integer buyCoreEpId = getCoreEp(coreEpMap, buyEpId);
+
+            List<AccountDataDto> dataDtoList = daysAccountDataMap.get(key);
+            int totalOutPrice = 0;
             int totalProfit = 0;
-            for (AccountDataDto dataDto : dataDtos) {
-                totalInPrice += dataDto.getInPrice();
+            for (AccountDataDto dataDto : dataDtoList) {
+                totalOutPrice += dataDto.getOutPrice();
                 totalProfit += dataDto.getProfit();
             }
-            // 平台商之间分账(进货价)
-            if (coreEpId.intValue() == epId) {
-                AccountDataDto dto = dataDtos.get(0);
-                if (dto != null && dto.getSaleCoreEpId() != null) {
-                    if (dto.getSaleCoreEpId().intValue() == epId) {
-                        continue;
-                    }
-                    GenerateAccountDto accountDto = new GenerateAccountDto();
+            // 平台商
+            if (saleCoreEpId.equals(saleEpId) && buyCoreEpId.equals(buyEpId)) {
+                // 预付
+                if (payType == ProductConstants.PayType.PREPAY) {
+                    OrderItemAccount addAccount = new OrderItemAccount();
+                    addAccount.setEpId(saleEpId);
+                    addAccount.setCoreEpId(saleCoreEpId);
+                    addAccount.setMoney(totalOutPrice * quantity);
+                    addAccount.setProfit(0);
+                    addAccount.setOrderItemId(itemId);
+                    addAccount.setData(null);
+                    addAccount.setSettledMoney(0);
+                    addAccount.setStatus(OrderConstant.AccountSplitStatus.NOT);
+                    orderItemAccountMapper.insertSelective(addAccount);
 
-                    // 卖家平台商每天的利润
-                    List<AccountDataDto> saleAccountDataDtoList = daysAccountDataMap.get(dto.getSaleCoreEpId());
-                    int totalAddProfit = getTotalProfit(saleAccountDataDtoList);
-                    // 预付
-                    if (payType == ProductConstants.PayType.PREPAY) {
-                        accountDto.setSubtractEpId(epId); // 买家 扣钱
-                        accountDto.setSubtractCoreId(dto.getSaleCoreEpId()); // 在卖家的平台商
-                        accountDto.setAddEpId(dto.getSaleCoreEpId()); // 卖家的平台商收钱
-                        accountDto.setAddCoreId(dto.getSaleCoreEpId());
-                        accountDto.setMoney(totalInPrice * quantity); // 金额 进货价 * 票数
-                        accountDto.setSubtractProfit(totalProfit * quantity); // 买家每天的总利润 * 票数
-                        accountDto.setAddProfit(totalAddProfit * quantity); // 卖家每天的总利润 * 票数
-                        accountDto.setOrderItemId(itemId);
-                        accountDto.setSubtractData(dataDtos); // 买家每天的单价利润
-                        accountDto.setAddData(saleAccountDataDtoList); // 卖家每天的单价利润
-                    } else {
-                        // 到付
-                        accountDto.setSubtractEpId(dto.getSaleCoreEpId()); // 卖家 扣钱
-                        accountDto.setSubtractCoreId(dto.getSaleCoreEpId()); // 在卖家的平台商
-                        accountDto.setAddEpId(epId); // 买家的平台商收钱
-                        accountDto.setAddCoreId(dto.getSaleCoreEpId()); // 在卖家平台商的余额
-                        accountDto.setMoney((salePrice - totalInPrice) * quantity); // 金额 卖价 * 票数
-                        accountDto.setSubtractProfit(totalAddProfit * quantity); // 卖家每天的总利润 * 票数
-                        accountDto.setAddProfit(totalProfit * quantity); // 买家每天的总利润 * 票数
-                        accountDto.setOrderItemId(itemId);
-                        accountDto.setSubtractData(saleAccountDataDtoList); // 卖家每天的单价利润
-                        accountDto.setAddData(dataDtos); // 买家每天的单价利润
-                    }
-                    accounts.addAll(generateAccount(accountDto));
+                    OrderItemAccount subAccount = new OrderItemAccount();
+                    subAccount.setEpId(buyEpId);
+                    subAccount.setCoreEpId(saleCoreEpId);
+                    subAccount.setMoney(-(totalOutPrice * quantity));
+                    subAccount.setProfit(-(totalOutPrice * quantity));
+                    subAccount.setOrderItemId(itemId);
+                    subAccount.setData(null);
+                    subAccount.setSettledMoney(0);
+                    subAccount.setStatus(OrderConstant.AccountSplitStatus.NOT);
+                    orderItemAccountMapper.insertSelective(subAccount);
+                } else {
+                    OrderItemAccount addAccount = new OrderItemAccount();
+                    addAccount.setEpId(buyEpId);
+                    addAccount.setCoreEpId(saleCoreEpId);
+                    addAccount.setMoney((salePrice - totalOutPrice) * quantity);
+                    addAccount.setProfit((salePrice - totalOutPrice) * quantity);
+                    addAccount.setOrderItemId(itemId);
+                    addAccount.setData(null);
+                    addAccount.setSettledMoney(0);
+                    addAccount.setStatus(OrderConstant.AccountSplitStatus.NOT);
+                    orderItemAccountMapper.insertSelective(addAccount);
+
+                    OrderItemAccount subAccount = new OrderItemAccount();
+                    subAccount.setEpId(saleCoreEpId);
+                    subAccount.setCoreEpId(saleCoreEpId);
+                    subAccount.setMoney(-((salePrice - totalOutPrice) * quantity));
+                    subAccount.setProfit(0);
+                    subAccount.setOrderItemId(itemId);
+                    subAccount.setData(null);
+                    subAccount.setSettledMoney(0);
+                    subAccount.setStatus(OrderConstant.AccountSplitStatus.NOT);
+                    orderItemAccountMapper.insertSelective(subAccount);
                 }
             } else {
                 // 平台内部企业分账(利润)
-                OrderItemAccount account = new OrderItemAccount();
-                account.setEpId(epId);
-                account.setCoreEpId(coreEpId);
-                account.setMoney(totalProfit * quantity);
-                account.setProfit(totalProfit * quantity);
-                account.setOrderItemId(itemId);
-                account.setData(JsonUtils.toJson(dataDtos));
-                account.setSettledMoney(0);
-                account.setStatus(OrderConstant.AccountSplitStatus.NOT);
-                orderItemAccountMapper.insertSelective(account);
-                accounts.add(account);
-                Integer val = coreSubMap.get(coreEpId);
-                coreSubMap.put(coreEpId, val == null ? account.getMoney() : val + account.getMoney());
+                if (!saleEpId.equals(saleCoreEpId)) {
+                    OrderItemAccount account = new OrderItemAccount();
+                    account.setEpId(saleEpId);
+                    account.setCoreEpId(saleCoreEpId);
+                    account.setMoney(totalProfit * quantity);
+                    account.setProfit(totalProfit * quantity);
+                    account.setOrderItemId(itemId);
+                    account.setData(JsonUtils.toJson(dataDtoList));
+                    account.setSettledMoney(0);
+                    account.setStatus(OrderConstant.AccountSplitStatus.NOT);
+                    orderItemAccountMapper.insertSelective(account);
+                    accounts.add(account);
+                    Integer val = coreSubMap.get(saleCoreEpId);
+                    coreSubMap.put(saleCoreEpId, val == null ? account.getMoney() : val + account.getMoney());
+                }
             }
         }
         for (Integer id : coreSubMap.keySet()) {
-            List<AccountDataDto> dataDtos = daysAccountDataMap.get(id);
+            List<AccountDataDto> dataDtoList = null;
+            for (String key : daysAccountDataMap.keySet()) {
+                if (key.startsWith(id + "#")) {
+                    dataDtoList = daysAccountDataMap.get(key);
+                    break;
+                }
+            }
             OrderItemAccount account = new OrderItemAccount();
             account.setEpId(id);
             account.setCoreEpId(id);
             account.setMoney(-coreSubMap.get(id));
-            account.setProfit(getTotalProfit(dataDtos) * quantity);
+            account.setProfit(getTotalProfit(dataDtoList) * quantity);
             account.setOrderItemId(itemId);
-            account.setData(JsonUtils.toJson(dataDtos));
+            account.setData(JsonUtils.toJson(dataDtoList));
             account.setSettledMoney(0);
             account.setStatus(OrderConstant.AccountSplitStatus.NOT);
             orderItemAccountMapper.insertSelective(account);
@@ -494,12 +515,13 @@ public class BookingOrderManager extends BaseOrderManager {
         return accounts;
     }
 
-    private AccountDataDto addDayAccount(Map<Integer, AccountDataDto> dayAccountDataMap, List<EpSalesInfo> infoList, Integer epId, Date day) {
-        AccountDataDto accountDataDto = dayAccountDataMap.get(epId);
+    private AccountDataDto addDayAccount(Map<String, AccountDataDto> dayAccountDataMap, Integer saleEpId, Integer buyEpId, List<EpSalesInfo> infoList, Date day) {
+        String key = saleEpId + "#" + buyEpId;
+        AccountDataDto accountDataDto = dayAccountDataMap.get(key);
         if (accountDataDto == null) {
-            accountDataDto = getProfit(infoList, epId);
+            accountDataDto = getProfit(infoList, saleEpId);
             accountDataDto.setDay(day);
-            dayAccountDataMap.put(epId, accountDataDto);
+            dayAccountDataMap.put(key, accountDataDto);
         }
         return accountDataDto;
     }

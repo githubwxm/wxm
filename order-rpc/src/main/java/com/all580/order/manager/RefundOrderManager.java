@@ -356,26 +356,16 @@ public class RefundOrderManager extends BaseOrderManager {
                     throw new ApiException(String.format("日期:%s没有利润数据,数据异常", day));
                 }
                 Map<String, Integer> rate = ProductRules.calcRefund(detail.getCustRefundRule(), detail.getDay(), refundDate);
-                // 平台内部分账->利润
-                if (coreEpId == account.getCoreEpId()) {
-                    int profit = dayData.getIntValue("profit");
-                    double percent = 1.0;
-                    if (rate.get("type") == ProductConstants.AddPriceType.FIX) {
-                        percent = Arith.div(rate.get("fixed"), payAmount, 4);
-                    } else {
-                        percent = Arith.div(rate.get("percent"), 100, 4);
-                    }
-                    money += Arith.round(Arith.mul(profit * quantity, percent), 0);
-                    cash += Arith.round(Arith.mul(profit * quantity, percent), 0);
+                // 利润
+                int profit = dayData.getIntValue("profit");
+                double percent = 1.0;
+                if (rate.get("type") == ProductConstants.AddPriceType.FIX) {
+                    percent = Arith.div(rate.get("fixed"), payAmount, 4);
                 } else {
-                    // 平台之间分账->进货价
-                    int inPrice = dayData.getIntValue("inPrice");
-                    if (rate.get("type") == ProductConstants.AddPriceType.FIX) {
-                        money += inPrice * quantity - rate.get("fixed") * quantity;
-                    } else {
-                        money += inPrice * quantity - inPrice * (float)rate.get("percent") / 100;
-                    }
+                    percent = Arith.div(rate.get("percent"), 100, 4);
                 }
+                money += Arith.round(Arith.mul(profit * quantity, percent), 0);
+                cash += Arith.round(Arith.mul(profit * quantity, percent), 0);
             }
             RefundAccount refundAccount = new RefundAccount();
             refundAccount.setEpId(account.getEpId());
