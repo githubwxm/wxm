@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -27,14 +26,10 @@ public class FuncServiceImple implements FuncService{
 
 
     @Override
-    public Result<Map<String, Object>> getAll() {
-        Result<Map<String, Object>> result = new Result<>(true);
+    public Result<List<Map<String, Object>>> getAll() {
+        Result<List<Map<String, Object>>> result = new Result<>(true);
         try{
-            Map<String, Object> resultMap = new HashMap<>();
-            List<Map<String,Object>> list=funcMapper.getAll();
-            resultMap.put("list",list);
-            result.put(resultMap);
-            //list
+            result.put(funcMapper.getAll());
         }catch (Exception e){
             log.error("查询菜单功能异常",e);
             new ApiException("查询菜单功能异常");
