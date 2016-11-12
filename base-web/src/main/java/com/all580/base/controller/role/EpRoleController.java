@@ -32,7 +32,7 @@ public class EpRoleController {
      */
     @RequestMapping(value = "add", method = RequestMethod.POST)
     @ResponseBody
-    public Result<List<Map<String,Object>>> add(@RequestBody Map<String,Object> params) {
+    public Result add(@RequestBody Map<String,Object> params) {
         ParamsMapValidate.validate(params, generateAddEpRoleValidate());
         return epRoleService.addEpRole(params);
     }
@@ -43,7 +43,7 @@ public class EpRoleController {
      */
     @RequestMapping(value = "update", method = RequestMethod.POST)
     @ResponseBody
-    public Result<List<Map<String,Object>>> update(@RequestBody Map<String,Object> params) {
+    public Result update(@RequestBody Map<String,Object> params) {
         ParamsMapValidate.validate(params, generateUpdateEpRoleValidate());
         return epRoleService.updateEpRole(params);
     }

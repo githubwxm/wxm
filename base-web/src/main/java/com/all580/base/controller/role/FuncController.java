@@ -47,7 +47,7 @@ public class FuncController extends BaseController {
      */
     @RequestMapping(value = "create", method = RequestMethod.POST)
     @ResponseBody
-    public Result <List<Map<String,Object>>> create(@RequestBody Map<String,Object> params) {
+    public Result create(@RequestBody Map<String,Object> params) {
         params.put("status",1);//添加默认状态
         ParamsMapValidate.validate(params, generateFuncValidate());
         return funcService.insertSelective(params);
@@ -58,7 +58,7 @@ public class FuncController extends BaseController {
      */
     @RequestMapping(value = "update", method = RequestMethod.POST)
     @ResponseBody
-    public Result <List<Map<String,Object>>> update(@RequestBody Map<String,Object> params) {
+    public Result  update(@RequestBody Map<String,Object> params) {
         ParamsMapValidate.validate(params, generateFuncValidate());
         return funcService.updateByPrimaryKeySelective(params);
     }
@@ -69,7 +69,7 @@ public class FuncController extends BaseController {
      */
     @RequestMapping(value = "delete", method = RequestMethod.POST)
     @ResponseBody
-    public Result <List<Map<String,Object>>> delete(@RequestBody Map<String,Object> params) {
+    public Result  delete(@RequestBody Map<String,Object> params) {
         int id= CommonUtil.objectParseInteger(params.get("id"));
         return funcService.deleteByPrimaryKey(id);
     }
@@ -80,7 +80,7 @@ public class FuncController extends BaseController {
      */
     @RequestMapping(value = "selectFuncId", method = RequestMethod.GET)
     @ResponseBody
-    public Result <List<Map<String,Object>>> selectFuncId(int id) {
+    public Result  selectFuncId(int id) {
         return intfService.selectFuncId(id);
     }
 
