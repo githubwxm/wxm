@@ -7,10 +7,7 @@ import com.framework.common.validate.ValidRule;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -26,69 +23,69 @@ public class EpRoleController {
 
     @Autowired
     private EpRoleService epRoleService;
+
     /**
      * 添加角色
+     *
      * @return
      */
     @RequestMapping(value = "add", method = RequestMethod.POST)
     @ResponseBody
-    public Result add(@RequestBody Map<String,Object> params) {
+    public Result add(@RequestBody Map<String, Object> params) {
         ParamsMapValidate.validate(params, generateAddEpRoleValidate());
         return epRoleService.addEpRole(params);
     }
-    /**
-     * 添加菜单
-     * @return
-     */
-    @RequestMapping(value = "add/func", method = RequestMethod.POST)
-    @ResponseBody
-    public Result addFunc(@RequestBody Map<String,Object> params) {
-        //ep_role_id
-        ParamsMapValidate.validate(params, generateAddEpRoleFuncValidate());
-        return epRoleService.addEpRoleFunc(params);
-    }
+
+
 
     /**
      * 修改角色
+     *
      * @return
      */
     @RequestMapping(value = "update", method = RequestMethod.POST)
     @ResponseBody
-    public Result update(@RequestBody Map<String,Object> params) {
+    public Result update(@RequestBody Map<String, Object> params) {
         ParamsMapValidate.validate(params, generateUpdateEpRoleValidate());
         return epRoleService.updateEpRole(params);
     }
 
     /**
-     * 修改菜单
+     * 添加菜单
+     *
+     * @return
+     */
+    @RequestMapping(value = "add/func", method = RequestMethod.POST)
+    @ResponseBody
+    public Result addFunc(@RequestBody Map<String, Object> params) {
+        //ep_role_id
+        ParamsMapValidate.validate(params, generateAddEpRoleFuncValidate());
+        return epRoleService.addEpRoleFunc(params);
+    }
+    /**
+     * 修改角色菜单
+     *
      * @return
      */
     @RequestMapping(value = "update/func", method = RequestMethod.POST)
     @ResponseBody
-    public Result updateFunc(@RequestBody Map<String,Object> params) {
+    public Result updateFunc(@RequestBody Map<String, Object> params) {
         ParamsMapValidate.validate(params, generateUpdateEpRoleFuncValidate());
         return epRoleService.updateEpRoleFunc(params);
-    }
-
-
+    }//selectepRoleId
     /**
+     * 查询角色菜单
      *
      * @return
      */
-    public Map<String[], ValidRule[]> generateAddEpRoleFuncValidate() {
-        Map<String[], ValidRule[]> rules = new HashMap<>();
-        // 校验不为空的参数
-        rules.put(new String[]{
-                "ep_role_id", //
-                "oper_id", //
-                "func_ids", //
-        }, new ValidRule[]{new ValidRule.NotNull()});
-        // 校验整数
-        rules.put(new String[]{
-                "ep_role_id", //
-        }, new ValidRule[]{new ValidRule.Digits()});
-        return rules;
-    }
+    @RequestMapping(value = "select/func", method = RequestMethod.GET)
+    @ResponseBody
+    public Result selectepRoleId(@RequestParam(value = "prodName", required = true) Integer ep_role_id) {
+        return epRoleService.selectepRoleId(ep_role_id);
+    }//
+
+
+
 
     public Map<String[], ValidRule[]> generateAddEpRoleValidate() {
         Map<String[], ValidRule[]> rules = new HashMap<>();
@@ -110,8 +107,25 @@ public class EpRoleController {
         // 校验不为空的参数
         rules.put(new String[]{
                 "name", //
-                "ep_role_id", //
+                "id", //
                 "status", //
+        }, new ValidRule[]{new ValidRule.NotNull()});
+        // 校验整数
+        rules.put(new String[]{
+                "id", //
+        }, new ValidRule[]{new ValidRule.Digits()});
+        return rules;
+    }
+    /**
+     * @return
+     */
+    public Map<String[], ValidRule[]> generateAddEpRoleFuncValidate() {
+        Map<String[], ValidRule[]> rules = new HashMap<>();
+        // 校验不为空的参数
+        rules.put(new String[]{
+                "ep_role_id", //
+                "oper_id", //
+                "func_ids", //
         }, new ValidRule[]{new ValidRule.NotNull()});
         // 校验整数
         rules.put(new String[]{
@@ -124,12 +138,13 @@ public class EpRoleController {
         Map<String[], ValidRule[]> rules = new HashMap<>();
         // 校验不为空的参数
         rules.put(new String[]{
-                "id", //
+                "oper_id",
+                "ep_role_id", //
                 "func_ids", //
         }, new ValidRule[]{new ValidRule.NotNull()});
         // 校验整数
         rules.put(new String[]{
-                "id", //
+                "ep_role_id", //
         }, new ValidRule[]{new ValidRule.Digits()});
         return rules;
     }
