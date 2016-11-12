@@ -111,4 +111,10 @@ public class SaleController extends BaseController {
                 CommonUtil.objectParseInteger(params.get("pricePixed"))
         );
     }
+
+    @RequestMapping(value = "platform_ep/list")
+    @ResponseBody
+    public Result<List<Map>> searchPlatformEp(@RequestParam("ep_id") Integer epId) {
+        return null;
+    }
 }
