@@ -43,7 +43,7 @@ public class IntfController extends BaseController{
     @RequestMapping(value = "delete", method = RequestMethod.POST)
     @ResponseBody
     public Result<List<Map<String,Object>>> delete(@RequestBody Map<String,Object> params) {
-        long id= Long.parseLong(CommonUtil.objectParseString(params.get("id")));
+        int id= CommonUtil.objectParseInteger(params.get("id"));
         return intfService.deleteInft(id);
     }
 

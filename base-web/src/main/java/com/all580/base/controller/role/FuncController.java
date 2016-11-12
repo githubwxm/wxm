@@ -45,9 +45,9 @@ public class FuncController extends BaseController {
      * 添加树形菜单接口
      * @return
      */
-    @RequestMapping(value = "add", method = RequestMethod.POST)
+    @RequestMapping(value = "create", method = RequestMethod.POST)
     @ResponseBody
-    public Result <List<Map<String,Object>>> add(@RequestBody Map<String,Object> params) {
+    public Result <List<Map<String,Object>>> create(@RequestBody Map<String,Object> params) {
         params.put("status",1);//添加默认状态
         ParamsMapValidate.validate(params, generateFuncValidate());
         return funcService.insertSelective(params);
@@ -70,7 +70,7 @@ public class FuncController extends BaseController {
     @RequestMapping(value = "delete", method = RequestMethod.POST)
     @ResponseBody
     public Result <List<Map<String,Object>>> delete(@RequestBody Map<String,Object> params) {
-        long id= Long.parseLong(CommonUtil.objectParseString(params.get("id")));
+        int id= CommonUtil.objectParseInteger(params.get("id"));
         return funcService.deleteByPrimaryKey(id);
     }
 
@@ -80,7 +80,7 @@ public class FuncController extends BaseController {
      */
     @RequestMapping(value = "selectFuncId", method = RequestMethod.GET)
     @ResponseBody
-    public Result <List<Map<String,Object>>> selectFuncId(long id) {
+    public Result <List<Map<String,Object>>> selectFuncId(int id) {
         return intfService.selectFuncId(id);
     }
 
