@@ -56,12 +56,12 @@ public class CoreEpAccessServiceImple implements CoreEpAccessService {
         Result<List<String>> result = new Result<>();
         try {
             List<String> list = coreEpAccessMapper.selectAccessList(ids);
-            if (list.isEmpty()) {
-                result.setError("未查询到数据");
-            } else {
+//            if (list.isEmpty()) {
+//                result.setError("未查询到数据");
+//            } else {
                 result.put(list);
                 result.setSuccess();
-            }
+           // }
         } catch (Exception e) {
             log.error("查询中心平台接口访问配置", e);
             throw new ApiException("查询中心平台接口访问配置", e);

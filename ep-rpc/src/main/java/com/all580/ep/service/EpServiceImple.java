@@ -630,14 +630,14 @@ public class EpServiceImple implements EpService {
         try {
             Common.checkPage(map);
             List<Map<String, Object>> list = epMapper.platformListUp(map);
-            if (list.isEmpty()) {
-                result.setError("未查询到数据");
-            } else {
+//            if (list.isEmpty()) {
+//                result.setError("未查询到数据");
+//            } else {
                 resultMap.put("list", list);
                 resultMap.put("totalCount", epMapper.platformListUpCount(map));
                 result.put(resultMap);
                 result.setSuccess();
-            }
+//            }
         } catch (Exception e) {
             log.error("数据库查询错误", e);
             throw new ApiException("数据库查询错误", e);
@@ -743,13 +743,13 @@ public class EpServiceImple implements EpService {
             Map<String, Object> resultMap = new HashMap<>();
             CommonUtil.checkPage(map);
             List<Map<String, Object>> list = epMapper.select(map);
-            if (list.isEmpty()) {
-                result.setError("未查询到数据");
-            } else {
+//            if (list.isEmpty()) {
+//                result.setError("未查询到数据");
+//            } else {
                 resultMap.put("list", list);
                 resultMap.put("totalCount", epMapper.selectCount(map));
                 result.put(resultMap);
-            }
+          //  }
         } catch (Exception e) {
             log.error("查询数据库异常", e);
             throw new ApiException("查询数据库异常", e);
@@ -825,7 +825,9 @@ public class EpServiceImple implements EpService {
         try {
             List<Map<String, Object>> resuleMap = epMapper.select(params);
             if (resuleMap.isEmpty()) {
-                result.setError("未查询到数据");
+                //result.setError("未查询到数据");
+                result.put(null);
+                result.setSuccess();
             } else {
                 result.put(resuleMap.get(0));
                 result.setSuccess();
