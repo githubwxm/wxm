@@ -24,6 +24,6 @@ public interface FuncService {
 
     Result updateByPrimaryKeySelective(Map<String,Object> params);
 
-    Result deleteByPrimaryKey(Long id);
+    Result deleteByPrimaryKey(int id);
 
 }

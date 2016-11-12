@@ -13,9 +13,9 @@ public interface IntfService {
      * @return
      */
     Result insertInft(Map<String,Object> params);
-    Result deleteInft(long id);
+    Result deleteInft(int id);
 
-    Result selectFuncId(long id);
+    Result selectFuncId(int id);
 
 
 }
