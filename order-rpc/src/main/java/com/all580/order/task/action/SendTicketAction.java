@@ -7,6 +7,7 @@ import com.all580.order.dao.VisitorMapper;
 import com.all580.order.entity.OrderItem;
 import com.all580.order.entity.OrderItemDetail;
 import com.all580.order.entity.Visitor;
+import com.all580.order.manager.BookingOrderManager;
 import com.all580.product.api.consts.ProductConstants;
 import com.all580.voucher.api.conf.VoucherConstant;
 import com.all580.voucher.api.model.SendTicketParams;
@@ -47,6 +48,9 @@ public class SendTicketAction implements JobRunner {
     @Autowired
     private VoucherRPCService voucherRPCService;
 
+    @Autowired
+    private BookingOrderManager bookingOrderManager;
+
     @Override
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public Result run(JobContext jobContext) throws Throwable {
@@ -59,6 +63,8 @@ public class SendTicketAction implements JobRunner {
             log.warn("出票任务,子订单不存在");
             throw new Exception("子订单不存在");
         }
+        orderItem.setStatus(OrderConstant.OrderItemStatus.TICKETING);
+        orderItemMapper.updateByPrimaryKey(orderItem);
 
         List<OrderItemDetail> detailList = orderItemDetailMapper.selectByItemId(orderItem.getId());
         OrderItemDetail detail = detailList.get(0); // 景点只有一天
@@ -88,6 +94,8 @@ public class SendTicketAction implements JobRunner {
         if (!r.isSuccess()) {
             log.warn("子订单:{},出票失败:{}", orderItem.getNumber(), r.getError());
         }
+
+        bookingOrderManager.syncSendingData(orderItemId);
         return new Result(Action.EXECUTE_SUCCESS);
     }
 

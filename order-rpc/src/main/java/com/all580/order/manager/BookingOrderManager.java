@@ -638,6 +638,16 @@ public class BookingOrderManager extends BaseOrderManager {
     }
 
     /**
+     * 同步发票中数据
+     * @param itemId 订单ID
+     */
+    public void syncSendingData(int itemId) {
+        generateSyncByItem(itemId)
+                .put("t_order_item", CommonUtil.oneToList(orderItemMapper.selectByPrimaryKey(itemId)))
+                .sync();
+    }
+
+    /**
      * 同步反核销分账数据
      * @param itemId 子订单ID
      */
