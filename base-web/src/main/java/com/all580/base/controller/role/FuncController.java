@@ -74,15 +74,15 @@ public class FuncController extends BaseController {
         return funcService.deleteByPrimaryKey(id);
     }
 
-    /**
-     * 查询菜单下接口
-     * @return
-     */
-    @RequestMapping(value = "selectFuncId", method = RequestMethod.GET)
-    @ResponseBody
-    public Result  selectFuncId(int id) {
-        return intfService.selectFuncId(id);
-    }
+//    /**
+//     * 查询菜单下接口
+//     * @return
+//     */
+//    @RequestMapping(value = "selectFuncId", method = RequestMethod.GET)
+//    @ResponseBody
+//    public Result  selectFuncId(int id) {
+//        return intfService.selectFuncId(id);
+//    }
 
 
     /**

@@ -32,10 +32,22 @@ public class EpRoleController {
     @RequestMapping(value = "add", method = RequestMethod.POST)
     @ResponseBody
     public Result add(@RequestBody Map<String, Object> params) {
+        params.put("user_id",params.get("operator_id"));
         ParamsMapValidate.validate(params, generateAddEpRoleValidate());
         return epRoleService.addEpRole(params);
     }
 
+    @RequestMapping(value = "select", method = RequestMethod.GET)
+    @ResponseBody
+    public Result select(@RequestParam(value = "id", required = true) Integer id) {
+        return epRoleService.select(id);
+    }//
+
+    @RequestMapping(value = "selectRoleFunc", method = RequestMethod.GET)
+    @ResponseBody
+    public Result selectRoleFunc(@RequestParam(value = "ep_role_id", required = true) Integer ep_role_id) {
+        return epRoleService.selectRoleFunc(ep_role_id);
+    }
 
 
     /**
@@ -58,10 +70,12 @@ public class EpRoleController {
     @RequestMapping(value = "add/func", method = RequestMethod.POST)
     @ResponseBody
     public Result addFunc(@RequestBody Map<String, Object> params) {
-        //ep_role_id
+        params.put("oper_id",params.get("operator_id"));
         ParamsMapValidate.validate(params, generateAddEpRoleFuncValidate());
         return epRoleService.addEpRoleFunc(params);
     }
+
+
     /**
      * 修改角色菜单
      *
@@ -70,6 +84,7 @@ public class EpRoleController {
     @RequestMapping(value = "update/func", method = RequestMethod.POST)
     @ResponseBody
     public Result updateFunc(@RequestBody Map<String, Object> params) {
+        params.put("oper_id",params.get("operator_id"));
         ParamsMapValidate.validate(params, generateUpdateEpRoleFuncValidate());
         return epRoleService.updateEpRoleFunc(params);
     }//selectepRoleId
@@ -82,7 +97,17 @@ public class EpRoleController {
     @ResponseBody
     public Result selectepRoleId(@RequestParam(value = "ep_role_id", required = true) Integer ep_role_id) {
         return epRoleService.selectepRoleId(ep_role_id);
-    }//
+    }//selectList
+
+    @RequestMapping(value = "selectList", method = RequestMethod.GET)
+    @ResponseBody
+    public Result selectList(Integer record_start,
+                             Integer record_count) {
+        Map<String,Object> map = new HashMap<String,Object>();
+        map.put("record_start", record_start);
+        map.put("record_count", record_count);
+        return epRoleService.selectList(map);
+    }//selectList
 
 
 
