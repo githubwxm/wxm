@@ -33,6 +33,12 @@ public class EpRoleServiceImple implements EpRoleService {
     public Result addEpRole(Map<String, Object> params) {
         Result result= new Result(true);
         try{
+            String name =CommonUtil.objectParseString(params.get("name"));
+           int ref= epRoleMapper.checkName(name);
+            if(ref>0){
+                log.error("角色名字已存在 {}",name);
+                return new Result(false,"角色名字已存在");
+            }
             epRoleMapper.insertSelective(params);
             Integer ep_role_id =CommonUtil.objectParseInteger(params.get("id"));
             result.put(ep_role_id);
@@ -42,6 +48,36 @@ public class EpRoleServiceImple implements EpRoleService {
         }
         return result;  //addEpRoleFunc
     }
+
+    @Override
+    public Result updateEpRole(Map<String, Object> params) {
+        try {
+            String name =CommonUtil.objectParseString(params.get("name"));
+            int ref= epRoleMapper.checkName(name);
+            if(ref>0){
+                log.error("角色名字已存在 {}",name);
+                return new Result(false,"角色名字已存在");
+            }
+            epRoleMapper.updateByPrimaryKeySelective(params);
+        }catch (Exception e){
+            log.error("修改角色出错 {}",e.getMessage());
+            return new Result(false,e.getMessage());
+        }
+        return new Result(true);
+    }
+
+    @Override
+    public Result selectepRoleId(int ep_role_id) {
+        Result result= new Result(true);
+        try {
+            result.put(epRoleFuncMapper.selectepRoleId(ep_role_id));
+        }catch (Exception e){
+            log.error("修改角色出错 {}",e.getMessage());
+            return new Result(false,e.getMessage());
+        }
+        return result;
+    }
+
     @Override
     public Result addEpRoleFunc(Map<String, Object> params) {
         Result result= new Result(true);
@@ -57,16 +93,7 @@ public class EpRoleServiceImple implements EpRoleService {
         return result;  //
     }
 
-    @Override
-    public Result updateEpRole(Map<String, Object> params) {
-        try {
-            epRoleMapper.updateByPrimaryKeySelective(params);
-        }catch (Exception e){
-            log.error("修改角色出错 {}",e.getMessage());
-            return new Result(false,e.getMessage());
-        }
-        return new Result(true);
-    }
+
 
     @Override
     public Result updateEpRoleFunc(Map<String, Object> params) {
