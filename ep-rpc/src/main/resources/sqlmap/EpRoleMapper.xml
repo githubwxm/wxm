@@ -3,7 +3,7 @@
 <mapper namespace="com.all580.role.dao.EpRoleMapper" >
 
   <sql id="Base_Column_List" >
-    id, name, status, create_time, user_id, update_time, isdelete
+    id, name, status, create_time, user_id, CONCAT('',update_time,'') update_time, isdelete
   </sql>
   <select id="selectByPrimaryKey" resultType="java.util.Map" >
     select 
@@ -54,4 +54,7 @@
       isdelete = #{isdelete,jdbcType=INTEGER}
     where id = #{id,jdbcType=BIGINT}
   </update>
+  <select id="checkName"resultType="java.lang.Integer">
+    select count(1) from t_ep_role where name =#{name};
+  </select>
 </mapper>
