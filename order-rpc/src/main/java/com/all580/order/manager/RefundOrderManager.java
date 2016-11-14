@@ -331,7 +331,6 @@ public class RefundOrderManager extends BaseOrderManager {
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public void preRefundAccount(List daysList, int itemId, int refundOrderId, List<OrderItemDetail> detailList, Date refundDate, int payAmount) throws Exception {
-        Map<Integer, Integer> coreEpIdMap = new HashMap<>();
         List<OrderItemAccount> accounts = orderItemAccountMapper.selectByOrderItem(itemId);
         for (OrderItemAccount account : accounts) {
             String data = account.getData();
@@ -339,7 +338,6 @@ public class RefundOrderManager extends BaseOrderManager {
                 continue;
             }
             JSONArray daysData = JSONArray.parseArray(data);
-            int coreEpId = getCoreEp(coreEpIdMap, account.getEpId());
             int money = 0;
             int cash = 0;
             for (Object item : daysList) {
@@ -364,7 +362,7 @@ public class RefundOrderManager extends BaseOrderManager {
                 } else {
                     percent = Arith.div(rate.get("percent"), 100, 4);
                 }
-                money += Arith.round(Arith.mul(profit * quantity, percent), 0);
+                money += Arith.round(Arith.mul(profit * quantity, 1 - percent), 0);
                 cash += Arith.round(Arith.mul(profit * quantity, percent), 0);
             }
             RefundAccount refundAccount = new RefundAccount();
