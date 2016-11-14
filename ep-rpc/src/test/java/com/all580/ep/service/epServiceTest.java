@@ -90,9 +90,9 @@ public class epServiceTest {
         map.put("name","test");
         map.put("user_id","11");
         map.put("id",3);
-        epRoleService.updateEpRole(map);
+       // epRoleService.updateEpRole(map);
         //epRoleMapper.updateByPrimaryKey(map);
-        print(map.get("id"));
+        print(epRoleService.selectList(map));
     }
     @Test
     public void testFunc() {

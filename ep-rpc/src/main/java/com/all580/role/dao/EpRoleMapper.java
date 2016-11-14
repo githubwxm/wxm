@@ -1,6 +1,7 @@
 package com.all580.role.dao;
 
 
+import java.util.List;
 import java.util.Map;
 
 public interface EpRoleMapper {
@@ -17,4 +18,10 @@ public interface EpRoleMapper {
     int updateByPrimaryKey(Map<String,Object> record);
 
     int checkName(String name);
+
+    Map<String,Object> select(int id);
+
+    List<Map<String,Object>> selectList(Map<String,Object> param);
+
+    int selectListCount();
 }

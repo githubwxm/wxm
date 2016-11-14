@@ -54,4 +54,8 @@ public interface EpRoleFuncMapper {
     List<Integer> selectEpRoleIdFuncId(@Param("ep_role_id") int ep_role_id,@Param("ids")List<Integer> ids);
 
     List<Map<String,Object>> selectepRoleId(@Param("ep_role_id") int ep_role_id);
+
+
+
+    List<Map<String,Object>> selectRoleFunc(@Param("ep_role_id") int ep_role_id);
 }

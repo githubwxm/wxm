@@ -879,9 +879,17 @@ public class EpServiceImple implements EpService {
             throw new ApiException("查询数据库异常", e);
         }
         return result;
-
     }
-
+    @Override
+    public Result updateEpRole(Map<String,Object> params){
+        try{
+            epMapper.updateEpRole(params);
+        }catch(Exception e){
+            log.error("查询数据库异常", e);
+            throw new ApiException("查询数据库异常", e);
+        }
+        return new Result(true);
+    }
     /**
      * 同步数据
      *

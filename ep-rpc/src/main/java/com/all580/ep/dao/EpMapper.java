@@ -42,4 +42,5 @@ public interface EpMapper {
      */
     List<Map<String,String>> selectSingleTable(Map<String,Object> map);
     String selectPhone(int id);
+    int updateEpRole(Map<String,Object> map);
 }

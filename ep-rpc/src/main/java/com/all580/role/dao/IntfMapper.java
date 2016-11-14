@@ -26,5 +26,9 @@ public interface IntfMapper {
     /**
      * 查询菜单下的所有
      */
-    List<Map<String,Object>> selectFuncId(int id);
+    List<Map<String,Object>> selectFuncId(Map<String,Object> prarms);
+     int selectFuncIdCount(Map<String,Object> prarms);
+    int intListCount();
+
+    List<Map<String,Object>> intfList(Map<String,Object> params);
 }
