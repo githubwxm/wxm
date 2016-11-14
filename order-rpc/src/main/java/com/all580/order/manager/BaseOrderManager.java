@@ -24,6 +24,7 @@ import com.framework.common.synchronize.SynchronizeDataManager;
 import com.github.ltsopensource.core.domain.Job;
 import com.github.ltsopensource.jobclient.JobClient;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -278,22 +279,14 @@ public class BaseOrderManager {
     /**
      * 根据每天的利润获取消费金额
      * @param consumeQuantity 消费张数
-     * @param account 分账数据
-     * @param coreEpId
      * @param dayData 消费日期利润
      * @return
      */
-    private int getMoney(int consumeQuantity, OrderItemAccount account, int coreEpId, JSONObject dayData) {
+    private int getMoney(int consumeQuantity, JSONObject dayData) {
         int money = 0;
         // 平台内部分账->利润
-        if (coreEpId == account.getCoreEpId()) {
-            int profit = dayData.getIntValue("profit");
-            money = consumeQuantity * profit;
-        } else {
-            // 平台之间分账->进货价
-            int inPrice = dayData.getIntValue("inPrice");
-            money = consumeQuantity * inPrice;
-        }
+        int profit = dayData.getIntValue("profit");
+        money = consumeQuantity * profit;
         return money;
     }
 
@@ -309,22 +302,23 @@ public class BaseOrderManager {
     public void consumeOrReConsumeSplitAccount(OrderItem orderItem, Date day, int consumeQuantity, String sn, boolean consume) {
         // 获取子订单的分账记录
         List<OrderItemAccount> accounts = orderItemAccountMapper.selectByOrderItem(orderItem.getId());
-        Map<Integer, Integer> coreEpIdMap = new HashMap<>();
         // 存储调用余额分账的数据
         List<BalanceChangeInfo> balanceChangeInfoList = new ArrayList<>();
         // 预付
         if (orderItem.getPaymentFlag() == ProductConstants.PayType.PREPAY) {
             for (OrderItemAccount account : accounts) {
-                int coreEpId = getCoreEp(coreEpIdMap, account.getEpId());
                 // 每天的单价利润数据
                 String data = account.getData();
+                if (StringUtils.isEmpty(data)) {
+                    continue;
+                }
                 JSONArray daysData = JSONArray.parseArray(data);
                 // 获取核销日期的单价利润
                 JSONObject dayData = getAccountDataByDay(daysData, DateFormatUtils.parseDateToDatetimeString(day));
                 BalanceChangeInfo changeInfo = new BalanceChangeInfo();
                 changeInfo.setEpId(account.getEpId());
                 changeInfo.setCoreEpId(account.getCoreEpId());
-                int money = getMoney(consumeQuantity, account, coreEpId, dayData);
+                int money = getMoney(consumeQuantity, dayData);
                 if (money == 0) {
                     continue;
                 }
