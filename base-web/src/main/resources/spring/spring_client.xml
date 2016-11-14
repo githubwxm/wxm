@@ -25,13 +25,7 @@
 
 	<dubbo:reference id="voucherRPCService"
 					 interface="com.all580.voucher.api.service.VoucherRPCService" />
-	<dubbo:reference id="SENDService"
-					 interface="com.all580.voucher.api.service.VoucherCallbackService" />
-	<dubbo:reference id="CONSUMEService"
-					 interface="com.all580.voucher.api.service.VoucherCallbackService" />
-	<dubbo:reference id="RE_CONSUMEService"
-					 interface="com.all580.voucher.api.service.VoucherCallbackService" />
-	<dubbo:reference id="REFUNDService"
+	<dubbo:reference id="voucherCallbackService"
 					 interface="com.all580.voucher.api.service.VoucherCallbackService" />
 
 	<dubbo:reference id="epService"
