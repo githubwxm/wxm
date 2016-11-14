@@ -39,8 +39,6 @@ public class PaymentCallbackServiceImpl implements PaymentCallbackService {
 
     @Autowired
     private OrderMapper orderMapper;
-    @Autowired
-    private RefundOrderMapper refundOrderMapper;
 
     @Autowired
     private DistributedLockTemplate distributedLockTemplate;
