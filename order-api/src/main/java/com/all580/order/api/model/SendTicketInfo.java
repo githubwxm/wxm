@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 /**
  * @author zhouxianjun(Alone)
  * @ClassName:
@@ -13,7 +15,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class SendTicketInfo {
+public class SendTicketInfo implements Serializable {
+    private static final long serialVersionUID = 1712445078030149125L;
     /** 游客ID */
     private int visitorSeqId;
     /** 二维码图像链接 */

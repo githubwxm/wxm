@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 /**
  * @author zhouxianjun(Alone)
  * @ClassName:
@@ -13,7 +15,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class RefundTicketInfo {
+public class RefundTicketInfo implements Serializable {
+    private static final long serialVersionUID = 6084118196393307375L;
     /** 游客ID */
     private int visitorSeqId;
 
