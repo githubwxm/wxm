@@ -131,4 +131,30 @@ public interface OrderItemMapper {
                                                @Param("orderItemStatus") Integer orderItemStatus,
                                                @Param("phone") String phone,
                                                @Param("orderItemNumber") Long orderItemNum);
+
+    List<Map> selectBySupplierPlatform(@Param("coreEpId") Integer coreEpId,
+                                       @Param("saleCoreEpId") Integer saleCoreEpId,
+                                       @Param("dateType") Integer dateType,
+                                       @Param("startTime") Date startTime,
+                                       @Param("endTime") Date endTime,
+                                       @Param("orderStatus") Integer orderStatus,
+                                       @Param("orderItemStatus") Integer orderItemStatus,
+                                       @Param("phone") String phone,
+                                       @Param("orderItemNumber") Long orderItemNum,
+                                       @Param("self") Boolean self,
+                                       @Param("productSubNumber") Long productSubNumber,
+                                       @Param("record_start") Integer recordStart,
+                                       @Param("record_count") Integer recordCount);
+
+    int selectBySupplierPlatformCount(@Param("coreEpId") Integer coreEpId,
+                                      @Param("saleCoreEpId") Integer saleCoreEpId,
+                                      @Param("dateType") Integer dateType,
+                                      @Param("startTime") Date startTime,
+                                      @Param("endTime") Date endTime,
+                                      @Param("orderStatus") Integer orderStatus,
+                                      @Param("orderItemStatus") Integer orderItemStatus,
+                                      @Param("phone") String phone,
+                                      @Param("orderItemNumber") Long orderItemNum,
+                                      @Param("self") Boolean self,
+                                      @Param("productSubNumber") Long productSubNumber);
 }

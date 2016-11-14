@@ -121,25 +121,54 @@ public class OrderController extends BaseController {
                                                      Long order_item_number,
                                                      @RequestParam(defaultValue = "0") Integer record_start,
                                                      @RequestParam(defaultValue = "20") Integer record_count) {
+        checkPlatformOrderParams(start_time, end_time, phone);
+        Date[] dates = checkDate(start_time, end_time);
+        return orderService.selectPlatformOrderBySupplierCore(supplier_core_ep_id, dates[0], dates[1], order_status,
+                order_item_status, phone, order_item_number, record_start, record_count);
+    }
+
+    @RequestMapping(value = "list/supplier")
+    @ResponseBody
+    public Result<?> listSupplierPlatform(@RequestParam Integer supplier_core_ep_id,
+                                          Integer sale_core_ep_id,
+                                          Integer date_type,
+                                          String start_time,
+                                          String end_time,
+                                          Integer order_status,
+                                          Integer order_item_status,
+                                          String phone,
+                                          Long order_item_number,
+                                          Boolean self,
+                                          Long product_sub_number,
+                                          @RequestParam(defaultValue = "0") Integer record_start,
+                                          @RequestParam(defaultValue = "20") Integer record_count) {
+        checkPlatformOrderParams(start_time, end_time, phone);
+        Date[] dates = checkDate(start_time, end_time);
+        return orderService.selectBySupplierPlatform(supplier_core_ep_id, sale_core_ep_id, date_type,
+                dates[0], dates[1], order_status, order_item_status, phone, order_item_number, self, product_sub_number, record_start, record_count);
+    }
+
+    private Date[] checkDate(String start_time, String end_time) {
+        Date[] result = new Date[]{null, null};
+        try {
+            if (start_time != null) {
+                result[0] = DateFormatUtils.parseString(DateFormatUtils.DATE_TIME_FORMAT, start_time);
+            }
+            if (end_time != null) {
+                result[1] = DateFormatUtils.parseString(DateFormatUtils.DATE_TIME_FORMAT, end_time);
+            }
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+        return result;
+    }
+
+    private void checkPlatformOrderParams(String start_time, String end_time, String phone) {
         Map<String, Object> params = new HashMap<>();
         params.put("start_time", start_time);
         params.put("end_time", end_time);
         params.put("phone", phone);
         // 验证参数
         ParamsMapValidate.validate(params, orderValidateManager.platformOrderListValidate());
-        Date startTime = null;
-        Date endTime = null;
-        try {
-            if (start_time != null) {
-                startTime = DateFormatUtils.parseString(DateFormatUtils.DATE_TIME_FORMAT, start_time);
-            }
-            if (end_time != null) {
-                endTime = DateFormatUtils.parseString(DateFormatUtils.DATE_TIME_FORMAT, end_time);
-            }
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
-        return orderService.selectPlatformOrderBySupplierCore(supplier_core_ep_id, startTime, endTime, order_status,
-                order_item_status, phone, order_item_number, record_start, record_count);
     }
 }

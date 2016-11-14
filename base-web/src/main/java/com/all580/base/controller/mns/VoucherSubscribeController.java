@@ -33,6 +33,7 @@ import java.util.Map;
 public class VoucherSubscribeController extends BaseController {
     @Autowired
     private ApplicationContext applicationContext;
+    private Map<String, VoucherCallbackService> serviceMap = new HashMap<>();
 
     @RequestMapping(value = "voucher", method = RequestMethod.POST)
     public void voucher(HttpServletRequest request, HttpServletResponse response) {
@@ -49,7 +50,7 @@ public class VoucherSubscribeController extends BaseController {
                 Map map = JSONObject.parseObject(msg, Map.class);
                 validate(map);
                 String action = map.get("action").toString();
-                VoucherCallbackService service = applicationContext.getBean(action + "Service", VoucherCallbackService.class);
+                VoucherCallbackService service = getService(action);
                 if (service == null) {
                     throw new Exception("action is not found");
                 }
@@ -57,6 +58,7 @@ public class VoucherSubscribeController extends BaseController {
                 Object time = map.get("createTime");
                 Date createTime = time == null ? null : DateFormatUtils.converToDateTime(time.toString());
                 Result result = service.process(mnsMsgId, content, createTime);
+                log.debug("调用凭证回调Action:{}, Result:{}", action, result.toJsonString());
                 if (!result.isSuccess()) {
                     throw new Exception(result.getError());
                 }
@@ -73,5 +75,14 @@ public class VoucherSubscribeController extends BaseController {
         validRuleMap.put(new String[]{"action", "content", "createTime"}, new ValidRule[]{new ValidRule.NotNull()});
         validRuleMap.put(new String[]{"createTime"}, new ValidRule[]{new ValidRule.Date()});
         ParamsMapValidate.validate(params, validRuleMap);
+    }
+
+    private VoucherCallbackService getService(String name) {
+        if (serviceMap.containsKey(name)) {
+            return serviceMap.get(name);
+        }
+        VoucherCallbackService service = applicationContext.getBean(name + "Service", VoucherCallbackService.class);
+        serviceMap.put(name, service);
+        return service;
     }
 }

@@ -501,4 +501,142 @@
         1=1
         <include refid="selectPlatformBySupplierCoreEpId_where"/>
     </select>
+
+    <sql id="selectBySupplierPlatform_where">
+        AND toi.supplier_core_ep_id = #{coreEpId}
+        <if test="saleCoreEpId != null">
+            AND o.payee_ep_id = #{saleCoreEpId}
+        </if>
+        <if test="startTime != null">
+            <choose>
+                <when test="dateType != null and dateType == 361">
+                    <![CDATA[and TIMESTAMP(toi.`start`) >= #{startTime}	]]>
+                </when>
+                <when test="dateType != null and dateType == 362">
+                    <![CDATA[and TIMESTAMP(tocs.use_time) >= #{startTime}	]]>
+                </when>
+                <otherwise>
+                    <![CDATA[and TIMESTAMP(o.create_time) >= #{startTime}	]]>
+                </otherwise>
+            </choose>
+        </if>
+        <if test="endTime != null">
+            <choose>
+                <when test="dateType != null and dateType == 361">
+                    <![CDATA[and TIMESTAMP(toi.`start`) < #{endTime}	]]>
+                </when>
+                <when test="dateType != null and dateType == 362">
+                    <![CDATA[and TIMESTAMP(tocs.use_time) < #{endTime}]]>
+                </when>
+                <otherwise>
+                    <![CDATA[and TIMESTAMP(o.create_time) < #{endTime}]]>
+                </otherwise>
+            </choose>
+        </if>
+        <if test="orderItemNumber != null">
+            AND toi.number = #{orderItemNumber}
+        </if>
+        <if test="phone != null">
+            AND ts.phone = #{phone}
+        </if>
+        <if test="orderStatus != null">
+            AND o.`status` = #{orderStatus}
+        </if>
+        <if test="orderItemStatus != null">
+            AND toi.`status` = #{orderItemStatus}
+        </if>
+        <if test="productSubNumber != null">
+            AND toi.pro_sub_number = #{productSubNumber}
+        </if>
+        <if test="self != null and self == true">
+            AND toi.supplier_ep_id = #{coreEpId}
+        </if>
+        <if test="self != null and self == false">
+            AND toi.supplier_ep_id != #{coreEpId}
+        </if>
+    </sql>
+
+    <select id="selectBySupplierPlatform" resultType="map">
+        SELECT
+            o.id order_id,
+            o.number order_number,
+            toi.id order_item_id,
+            toi.number order_item_number,
+            toi.pro_name,
+            toi.pro_sub_id,
+            toi.pro_sub_number,
+            toi.pro_sub_name,
+            ts.`name`,
+            ts.phone,
+            ts.sid,
+            o.create_time,
+            toi.`start` booking_date,
+            tocs.use_time,
+            toi.quantity,
+            toid.used_quantity,
+            toid.refund_quantity,
+            toid.expired_quantity,
+            toia.`data`,
+            o.buy_ep_id,
+            o.buy_ep_name,
+            o.buy_operator_id,
+            o.buy_operator_name,
+            o.`status` order_status,
+            topo.`name` order_status_name,
+            toi.`status` order_item_status,
+            topi.`name` order_item_status_name,
+            IFNULL(tra.profit, 0) refund_fee,
+            '一票多刷' send_ma_type,
+            null outer_number
+        FROM t_order_item toi
+        LEFT JOIN t_order o ON o.id = toi.order_id
+        LEFT JOIN t_shipping ts ON ts.order_id = o.id
+        LEFT JOIN t_order_param topo ON topo.id = o.`status` AND topo.category = 'OrderStatus'
+        LEFT JOIN t_order_param topi ON topi.id = toi.`status` AND topi.category = 'OrderItemStatus'
+        LEFT JOIN (
+            SELECT
+                order_item_id,
+                MAX(clearance_time) use_time
+            FROM t_order_clearance_serial
+            GROUP BY order_item_id
+        ) tocs ON tocs.order_item_id = toi.id
+        LEFT JOIN t_order_item_account toia ON toia.order_item_id = toi.id AND toia.ep_id = toi.supplier_core_ep_id AND `data` is not null
+        LEFT JOIN (
+            SELECT SUM(tra.profit) profit, tra.`data`, tro.order_item_id, tra.ep_id
+            FROM t_refund_account tra
+            LEFT JOIN t_refund_order tro ON tro.id = tra.refund_order_id
+            GROUP BY tro.order_item_id, tra.ep_id
+        ) tra ON tra.order_item_id = toi.id AND tra.ep_id = toi.supplier_core_ep_id
+        JOIN (
+            SELECT
+                order_item_id,
+                SUM(used_quantity) used_quantity,
+                SUM(refund_quantity) refund_quantity,
+                SUM( if(expiry_date &lt;= SYSDATE(),quantity - used_quantity - refund_quantity,0 ) ) expired_quantity
+            FROM t_order_item_detail GROUP BY order_item_id
+        ) toid on toid.order_item_id = toi.id
+        WHERE
+        1=1
+        <include refid="selectBySupplierPlatform_where"/>
+        <include refid="limit"/>
+    </select>
+
+    <select id="selectBySupplierPlatformCount" resultType="int">
+        SELECT
+            count(*)
+        FROM t_order_item toi
+        LEFT JOIN t_order o ON o.id = toi.order_id
+        LEFT JOIN t_shipping ts ON ts.order_id = o.id
+        LEFT JOIN (
+            SELECT
+                order_item_id,
+                MAX(clearance_time) use_time
+            FROM t_order_clearance_serial
+            GROUP BY order_item_id
+        ) tocs ON tocs.order_item_id = toi.id
+        WHERE
+        1=1
+        <include refid="selectBySupplierPlatform_where"/>
+        <include refid="limit"/>
+    </select>
 </mapper>

@@ -55,4 +55,20 @@ public class OrderServiceImpl implements OrderService {
         result.put(record);
         return result;
     }
+
+    @Override
+    public Result<PageRecord<Map>> selectBySupplierPlatform(Integer coreEpId, Integer saleCoreEpId, Integer dateType, Date startTime, Date endTime, Integer orderStatus, Integer orderItemStatus, String phone, Long orderItemNum, Boolean self, Long productSubNumber, Integer recordStart, Integer recordCount) {
+        PageRecord<Map> record = new PageRecord<>();
+        int count = orderItemMapper.selectBySupplierPlatformCount(coreEpId, saleCoreEpId, dateType, startTime, endTime, orderStatus, orderItemStatus, phone, orderItemNum, self, productSubNumber);
+        record.setTotalCount(count);
+        if (count > 0) {
+            List<Map> list = orderItemMapper.selectBySupplierPlatform(coreEpId, saleCoreEpId, dateType, startTime, endTime, orderStatus, orderItemStatus, phone, orderItemNum, self, productSubNumber, recordStart, recordCount);
+            record.setList(list);
+        } else {
+            record.setList(new ArrayList<Map>());
+        }
+        Result<PageRecord<Map>> result = new Result<>(true);
+        result.put(record);
+        return result;
+    }
 }

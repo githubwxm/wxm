@@ -62,6 +62,15 @@ public class OrderConstant {
     }
 
     /**
+     * 查询日期类型
+     */
+    public static class SearchDateType {
+        public static final int CREATE = 360; // 下单
+        public static final int BOOKING = 361; // 预定
+        public static final int USE = 362; // 使用
+    }
+
+    /**
      * 任务执行器
      */
     public static class Actions {

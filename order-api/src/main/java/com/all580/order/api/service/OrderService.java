@@ -42,4 +42,35 @@ public interface OrderService {
                                                             Long orderItemNumber,
                                                             Integer recordStart,
                                                             Integer recordCount);
+
+    /**
+     * 根据供应商平台查询订单
+     * @param coreEpId 供应侧平台商ID
+     * @param saleCoreEpId 销售商平台ID
+     * @param dateType 时间类型
+     * @param startTime 开始时间
+     * @param endTime 结束时间
+     * @param orderStatus 订单状态
+     * @param orderItemStatus 子订单状态
+     * @param phone 手机号码
+     * @param orderItemNum 子订单
+     * @param self 是否自供
+     * @param productSubNumber 子产品ID
+     * @param recordStart 记录开始
+     * @param recordCount 记录数
+     * @return
+     */
+    Result<PageRecord<Map>> selectBySupplierPlatform(Integer coreEpId,
+                                                     Integer saleCoreEpId,
+                                                     Integer dateType,
+                                                     Date startTime,
+                                                     Date endTime,
+                                                     Integer orderStatus,
+                                                     Integer orderItemStatus,
+                                                     String phone,
+                                                     Long orderItemNum,
+                                                     Boolean self,
+                                                     Long productSubNumber,
+                                                     Integer recordStart,
+                                                     Integer recordCount);
 }
