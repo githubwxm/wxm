@@ -145,7 +145,16 @@ public class EpController extends BaseController {
 
         return epService.select(map);
 
-   }
+   }//
+    @RequestMapping(value = "updateEpRole", method = RequestMethod.POST)
+    @ResponseBody
+    public Result<Integer> updateEpRole(@RequestBody Map<String,Object> map) {
+        // 验证参数D  ep_role
+        ParamsMapValidate.validate(map, platfromValidateManager.generateCreateStatusValidate());
+        //map.put(EpConstant.EpKey.ACCESS_KEY,getAttribute(EpConstant.EpKey.ACCESS_KEY));
+        return epService.updateEpRole(map);
+
+    }
 
     /**
      * 检查名字与电话是否存在
