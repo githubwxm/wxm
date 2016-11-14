@@ -8,7 +8,7 @@
   <select id="selectByPrimaryKey" resultType="java.util.Map">
     select 
     <include refid="Base_Column_List" />
-    from t_ep_role_func
+    from t_ep_role_func where isdelete=0
     where id = #{id,jdbcType=BIGINT}
   </select>
   <delete id="deleteByPrimaryKey" >
@@ -134,7 +134,7 @@
   </update>
 
   <select id="selectEpRoleIdFuncId" resultType="java.lang.Integer">
-    select func_id FROM t_ep_role_func where  ep_role_id = #{ep_role_id} and `func_id`  in
+    select func_id FROM t_ep_role_func where  ep_role_id = #{ep_role_id} and isdelete=0 and `func_id`  in
     <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">
       #{item}
     </foreach>
@@ -142,7 +142,22 @@
 
   <select id="selectepRoleId" resultType="java.util.Map">
   select <include refid="Base_Column_List" /> from t_ep_role_func
-    where ep_role_id=#{ep_role_id}
+    where ep_role_id=#{ep_role_id} and isdelete=0
+  </select>
 
+
+
+  <sql id="limit">
+    <if test="limit != null">
+      limit #{record_start},#{record_count}
+    </if>
+  </sql>
+
+  <select id="selectRoleFunc" resultType="java.util.Map">
+    select f.*,IF(rf.id is NUll,0,1) owned
+                from t_func f
+                left join t_ep_role_func rf on f.id = rf.func_id
+                 and rf.ep_role_id=#{ep_role_id} and isdelete=0 and f.`status`=1
+                order by pid,seq;
   </select>
 </mapper>

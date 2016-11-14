@@ -54,7 +54,26 @@
       isdelete = #{isdelete,jdbcType=INTEGER}
     where id = #{id,jdbcType=BIGINT}
   </update>
-  <select id="checkName"resultType="java.lang.Integer">
+  <select id="checkName" resultType="java.lang.Integer">
     select count(1) from t_ep_role where name =#{name};
   </select>
+
+  <select id="select" resultType="java.util.Map">
+    select * from t_ep_role where id=#{id};
+  </select>
+
+  <!--写错位置 -->
+  <select id="selectList" resultType="java.util.Map">
+    select * from t_ep_role  ORDER BY id desc
+    <include refid="limit"/>
+  </select>
+  <select id="selectListCount" resultType="java.lang.Integer">
+    select count(1) from t_ep_role ORDER BY id desc
+  </select>
+
+  <sql id="limit">
+    <if test="limit != null">
+      limit #{record_start},#{record_count}
+    </if>
+  </sql>
 </mapper>

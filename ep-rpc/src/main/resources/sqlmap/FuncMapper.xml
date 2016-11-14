@@ -10,7 +10,7 @@
     select 
     <include refid="Base_Column_List" />
     from t_func
-    where id = #{id,jdbcType=BIGINT}
+    where id = #{id,jdbcType=BIGINT} and isdelete=0
   </select>
 
   <insert id="insert"  >
@@ -171,7 +171,7 @@
   <select id="getAll" resultType="java.util.Map">
     select
     <include refid="Base_Column_List" />
-    from t_func where isdelete=0  order by id
+    from t_func where isdelete=0  order by pid,seq
   </select>
 
   <select id="selectPidRefId" resultType="java.lang.Integer">

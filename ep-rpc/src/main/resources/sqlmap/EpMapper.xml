@@ -180,12 +180,15 @@
             SELECT LAST_INSERT_ID();
         </selectKey>   <!-- 添加到map里面key id  -->
     </insert>
-    <update id="platFormfreeze">
-        update t_ep set status_bak=status,status=#{status}
-        where core_ep_id=#{id}
-        <if test="statusActive != null">
-            and status=#{statusActive}
-        </if>
+    <!--<update id="platFormfreeze">-->
+        <!--update t_ep set status_bak=status,status=#{status}-->
+        <!--where core_ep_id=#{id}-->
+        <!--<if test="statusActive != null">-->
+            <!--and status=#{statusActive}-->
+        <!--</if>-->
+    <!--</update>-->
+    <update id="updateEpRole">
+       update t_ep set ep_role=#{ep_role} where id=#{id};
     </update>
 
     <select id="checkNamePhone" resultType="java.util.Map">

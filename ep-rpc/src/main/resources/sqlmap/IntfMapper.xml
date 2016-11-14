@@ -9,7 +9,7 @@
     select 
     <include refid="Base_Column_List" />
     from t_intf
-    where id = #{id,jdbcType=BIGINT}
+    where id = #{id,jdbcType=BIGINT} and isdelete=0
   </select>
   <update id="deleteByPrimaryKey"  >
     update t_intf set isdelete=1
@@ -115,13 +115,30 @@
     <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
       SELECT LAST_INSERT_ID()
     </selectKey>
-      insert into t_intf (name,auth,status)values(#{name},#{auth},1);
+      insert into t_intf (name,auth,status,func_id)values(#{name},#{auth},1,#{func_id});
     <!--<selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">-->
       <!--SELECT LAST_INSERT_ID();-->
     <!--</selectKey>-->
   </insert>
   <select id="selectFuncId" resultType="java.util.Map">
-    select <include refid="Base_Column_List" /> from t_intf where func_id=#{func_id}
-
+    select <include refid="Base_Column_List" /> from t_intf where isdelete=0 and func_id=#{func_id}
+    <include refid="limit"/>
   </select>
+  <select id="selectFuncIdCount" resultType="java.lang.Integer">
+    select count(1) from t_intf where isdelete=0 and func_id=#{func_id}
+  </select>
+
+  <select id="intListCount" resultType="java.lang.Integer">
+    select count(1) from t_intf;
+  </select>
+
+  <select id="intfList" resultType="java.util.Map">
+     select * from t_intf  where isdelete=0  order by func_id
+       <include refid="limit"/>
+  </select>
+  <sql id="limit">
+    <if test="limit != null">
+      limit #{record_start},#{record_count}
+    </if>
+  </sql>
 </mapper>
