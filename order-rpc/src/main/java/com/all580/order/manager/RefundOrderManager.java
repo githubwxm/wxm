@@ -491,7 +491,7 @@ public class RefundOrderManager extends BaseOrderManager {
         for (RefundVisitor refundVisitor : refundVisitorList) {
             RefundTicketParams ticketParams = new RefundTicketParams();
             ticketParams.setApplyTime(refundOrder.getAuditTime());
-            ticketParams.setOrderSn(refundVisitor.getOrderItemId());
+            ticketParams.setOrderSn(orderItem.getNumber());
             ticketParams.setQuantity(refundVisitor.getPreQuantity());
             ticketParams.setVisitorId(refundVisitor.getVisitorId());
             ticketParams.setRefundSn(String.valueOf(refundSerial.getLocalSerialNo()));
