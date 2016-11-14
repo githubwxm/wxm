@@ -123,6 +123,7 @@ public interface EpService {
      */
     Result<Map<String,Object>> platformListUp(Map<String,Object> map);
 
+    Result updateEpRole(Map<String,Object> params);
     /**
      * 查询企业下的下级销售商
      * @param id  企业id

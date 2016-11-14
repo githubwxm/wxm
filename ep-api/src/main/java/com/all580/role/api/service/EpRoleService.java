@@ -17,7 +17,7 @@ public interface EpRoleService {
      */
     Result addEpRole(Map<String,Object> params);
 
-
+    Result select(Integer id);
     /**
      * 添加菜单
      * @param params    user_id 创建人,   func_ids 功能集合list<Integer>
@@ -35,4 +35,14 @@ public interface EpRoleService {
     Result updateEpRoleFunc(Map<String,Object> params);
     //
     Result selectepRoleId(int id);
+
+     Result selectList(Map<String,Object> params);
+
+    /**
+     * 查询角色对应功能接口
+     * @param ep_role_id
+     * @return
+     */
+    Result selectRoleFunc(int ep_role_id);
+
 }
