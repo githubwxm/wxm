@@ -17,10 +17,22 @@ public interface EpRoleService {
      */
     Result addEpRole(Map<String,Object> params);
 
+
+    /**
+     * 添加菜单
+     * @param params    user_id 创建人,   func_ids 功能集合list<Integer>
+     * @return
+     */
+    Result addEpRoleFunc(Map<String,Object> params);
+
     /**
      * 修改角色与菜单
      * @param params  id  角色id，  name ,status 状态 0 ， oper_id 操作人   func_ids 功能集合list<Integer>
      * @return
      */
     Result updateEpRole(Map<String,Object> params);
+
+    Result updateEpRoleFunc(Map<String,Object> params);
+    //
+    Result selectepRoleId(int id);
 }

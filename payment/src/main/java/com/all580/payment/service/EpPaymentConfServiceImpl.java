@@ -5,6 +5,7 @@ import com.all580.payment.api.service.EpPaymentConfService;
 import com.all580.payment.dao.EpPaymentConfMapper;
 import com.all580.payment.entity.EpPaymentConf;
 import com.framework.common.Result;
+import com.framework.common.lang.JsonUtils;
 import com.framework.common.validate.ParamsMapValidate;
 import com.framework.common.validate.ValidRule;
 import org.apache.commons.beanutils.BeanUtils;
@@ -33,6 +34,7 @@ public class EpPaymentConfServiceImpl implements EpPaymentConfService {
         try {
             ParamsMapValidate.validate(map, genValidateOfCreate());
             EpPaymentConf conf = new EpPaymentConf();
+            map.put("confData",JsonUtils.toJson(map.get("confData")));
             BeanUtils.populate(conf, map);
             // 检查同一企业下是否已经存在相同支付类型的配置
             checkExistSameTypeRecord(conf.getCoreEpId(), conf.getPaymentType());

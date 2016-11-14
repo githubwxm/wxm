@@ -3,7 +3,7 @@
 <mapper namespace="com.all580.role.dao.EpRoleFuncMapper" >
 
   <sql id="Base_Column_List" >
-    id, ep_role_id, func_id, create_time, isdelete, oper_id, update_time
+    id, ep_role_id, func_id, create_time, isdelete, oper_id, CONCAT('',update_time,'') update_time
   </sql>
   <select id="selectByPrimaryKey" resultType="java.util.Map">
     select 
@@ -138,5 +138,11 @@
     <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">
       #{item}
     </foreach>
+  </select>
+
+  <select id="selectepRoleId" resultType="java.util.Map">
+  select <include refid="Base_Column_List" /> from t_ep_role_func
+    where ep_role_id=#{ep_role_id}
+
   </select>
 </mapper>

@@ -15,4 +15,6 @@ public interface EpRoleMapper {
     int updateByPrimaryKeySelective(Map<String,Object> record);
 
     int updateByPrimaryKey(Map<String,Object> record);
+
+    int checkName(String name);
 }
