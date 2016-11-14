@@ -637,6 +637,5 @@
         WHERE
         1=1
         <include refid="selectBySupplierPlatform_where"/>
-        <include refid="limit"/>
     </select>
 </mapper>
