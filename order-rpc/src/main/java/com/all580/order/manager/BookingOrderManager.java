@@ -18,6 +18,7 @@ import com.framework.common.lang.JsonUtils;
 import com.framework.common.lang.UUIDGenerator;
 import com.framework.common.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -308,7 +309,7 @@ public class BookingOrderManager extends BaseOrderManager {
     public boolean isOrderAllAudit(int orderId, int... excludes) {
         List<OrderItem> orderItems = orderItemMapper.selectByOrderId(orderId);
         for (OrderItem orderItem : orderItems) {
-            if (excludes != null && Arrays.binarySearch(excludes, orderItem.getId()) >= 0) {
+            if (excludes != null && ArrayUtils.indexOf(excludes, orderItem.getId()) >= 0) {
                 continue;
             }
             if (orderItem.getStatus() == OrderConstant.OrderItemStatus.AUDIT_WAIT) {

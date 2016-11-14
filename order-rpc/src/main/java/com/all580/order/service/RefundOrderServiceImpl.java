@@ -20,6 +20,7 @@ import com.framework.common.distributed.lock.DistributedReentrantLock;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -83,7 +84,7 @@ public class RefundOrderServiceImpl implements RefundOrderService {
 
         // 锁成功
         try {
-            if (Arrays.binarySearch(new int[]{
+            if (ArrayUtils.indexOf(new int[]{
                     OrderConstant.OrderItemStatus.SEND,
                     OrderConstant.OrderItemStatus.NON_SEND,
                     OrderConstant.OrderItemStatus.TICKET_FAIL
