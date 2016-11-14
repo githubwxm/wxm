@@ -325,9 +325,9 @@ public class BookingOrderManager extends BaseOrderManager {
      * @return
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public void paySplitAccount(int orderId, List<OrderItem> orderItems) {
+    public void paySplitAccount(Order order, List<OrderItem> orderItems) {
         if (orderItems == null) {
-            orderItems = orderItemMapper.selectByOrderId(orderId);
+            orderItems = orderItemMapper.selectByOrderId(order.getId());
         }
         // 遍历所有子订单封装分账数据统一分账
         List<BalanceChangeInfo> infoList = new ArrayList<>();
@@ -344,7 +344,7 @@ public class BookingOrderManager extends BaseOrderManager {
             }
         }
         // 调用分账
-        Result<BalanceChangeRsp> result = changeBalances(PaymentConstant.BalanceChangeType.PAY_SPLIT, String.valueOf(orderId), infoList);
+        Result<BalanceChangeRsp> result = changeBalances(PaymentConstant.BalanceChangeType.PAY_SPLIT, String.valueOf(order.getNumber()), infoList);
         if (!result.isSuccess()) {
             log.warn("支付分账失败:{}", result.get());
             throw new ApiException(result.getError());

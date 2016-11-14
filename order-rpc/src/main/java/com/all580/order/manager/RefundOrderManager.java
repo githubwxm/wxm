@@ -384,7 +384,8 @@ public class RefundOrderManager extends BaseOrderManager {
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public void refundSplitAccount(int refundId) {
-        List<RefundAccount> accountList = refundAccountMapper.selectByRefundId(refundId);
+        RefundOrder refundOrder = refundOrderMapper.selectByPrimaryKey(refundId);
+        List<RefundAccount> accountList = refundAccountMapper.selectByRefundId(refundOrder.getId());
         if (accountList != null) {
             List<BalanceChangeInfo> infoList = new ArrayList<>();
             for (RefundAccount refundAccount : accountList) {
@@ -398,7 +399,7 @@ public class RefundOrderManager extends BaseOrderManager {
                 refundAccountMapper.updateByPrimaryKeySelective(refundAccount);
             }
             // 调用分账
-            Result<BalanceChangeRsp> result = changeBalances(PaymentConstant.BalanceChangeType.REFUND_PAY, String.valueOf(refundId), infoList);
+            Result<BalanceChangeRsp> result = changeBalances(PaymentConstant.BalanceChangeType.REFUND_PAY, String.valueOf(refundOrder.getNumber()), infoList);
             if (!result.isSuccess()) {
                 log.warn("退款分账失败:{}", result.get());
                 throw new ApiException(result.getError());
