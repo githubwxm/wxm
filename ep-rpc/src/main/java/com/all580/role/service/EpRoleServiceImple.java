@@ -6,12 +6,14 @@ import com.all580.role.dao.EpRoleFuncMapper;
 import com.all580.role.dao.EpRoleMapper;
 import com.framework.common.Result;
 import com.framework.common.util.CommonUtil;
-import com.sun.org.apache.bcel.internal.generic.LSTORE;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.lang.exception.ApiException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -37,11 +39,13 @@ public class EpRoleServiceImple implements EpRoleService {
            int ref= epRoleMapper.checkName(name);
             if(ref>0){
                 log.error("角色名字已存在 {}",name);
-                return new Result(false,"角色名字已存在");
+                throw  new ApiException("角色名字已存在");
             }
             epRoleMapper.insertSelective(params);
             Integer ep_role_id =CommonUtil.objectParseInteger(params.get("id"));
             result.put(ep_role_id);
+        }catch (ApiException e1){
+            throw  new ApiException(e1.getMessage());
         }catch (Exception e){
             log.error("添加角色出错 {}",e.getMessage());
             return new Result(false,e.getMessage());
@@ -49,6 +53,17 @@ public class EpRoleServiceImple implements EpRoleService {
         return result;  //addEpRoleFunc
     }
 
+    @Override
+    public Result select(Integer id){
+        Result result= new Result(true);
+        try{
+            result.put(epRoleMapper.select(id));
+        }catch (Exception e){
+            log.error("查询角色出错 {}",e.getMessage());
+            throw   new ApiException("查询角色出错");
+        }
+        return result;
+    }
     @Override
     public Result updateEpRole(Map<String, Object> params) {
         try {
@@ -72,8 +87,42 @@ public class EpRoleServiceImple implements EpRoleService {
         try {
             result.put(epRoleFuncMapper.selectepRoleId(ep_role_id));
         }catch (Exception e){
+            log.error("查询角色出错 {}",e.getMessage());
+            return new Result(false,e.getMessage());
+        }
+        return result;
+    }
+    @Override
+    public Result selectRoleFunc(int ep_role_id) {
+        Result result= new Result(true);
+        try {
+            result.put(epRoleFuncMapper.selectRoleFunc(ep_role_id));
+        }catch (Exception e){
             log.error("修改角色出错 {}",e.getMessage());
             return new Result(false,e.getMessage());
+        }
+        return result;
+    }
+
+    @Override
+    public Result selectList(Map<String,Object> params){
+        Result result= new Result(true);
+        Map<String,Object> resultMap = new HashMap<>();
+        try {
+            int ref= epRoleMapper.selectListCount();
+            resultMap.put("totalCount",ref);
+            if(ref<1){
+                resultMap.put("list",new ArrayList<>());
+                result.put(resultMap);
+                return  result;
+            }
+            Common.checkPage(params);
+            List list =epRoleMapper.selectList(params);
+            resultMap.put("list",list);
+            result.put(resultMap);
+        }catch (Exception e){
+            log.error("查询角色列表出错 {}",e.getMessage());
+          throw   new ApiException("查询角色列表出错");
         }
         return result;
     }
@@ -114,4 +163,6 @@ public class EpRoleServiceImple implements EpRoleService {
         }
         return new Result(true);
     }
+
+
 }

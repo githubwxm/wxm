@@ -3,12 +3,12 @@ package com.all580.role.service;
 import com.all580.role.api.service.FuncService;
 import com.all580.role.dao.FuncMapper;
 import com.framework.common.Result;
-import com.taobao.api.ApiException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.lang.exception.ApiException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +32,7 @@ public class FuncServiceImple implements FuncService{
             result.put(funcMapper.getAll());
         }catch (Exception e){
             log.error("查询菜单功能异常",e);
-            new ApiException("查询菜单功能异常");
+            throw    new javax.lang.exception.ApiException("查询菜单功能异常");
         }
         return result;
     }
@@ -46,7 +46,7 @@ public class FuncServiceImple implements FuncService{
             log.warn(result.get().toString());
         }catch (Exception e){
             log.error("添加菜单功能异常",e);
-            new ApiException("添加菜单功能异常");
+            throw  new ApiException("添加菜单功能异常");
         }
         return result;
     }
@@ -57,7 +57,7 @@ public class FuncServiceImple implements FuncService{
             funcMapper.updateByPrimaryKeySelective(params);
         }catch (Exception e){
             log.error("修改菜单功能异常",e);
-            new ApiException("修改菜单功能异常");
+            throw  new ApiException("修改菜单功能异常");
         }
         return new Result(true);
     }
@@ -71,7 +71,7 @@ public class FuncServiceImple implements FuncService{
             funcMapper.deletePidAll(list);
         }catch (Exception e){
             log.error("删除菜单功能异常",e);
-            new ApiException("删除菜单功能异常");
+            throw  new ApiException("删除菜单功能异常");
         }
         return new Result(true);
     }
