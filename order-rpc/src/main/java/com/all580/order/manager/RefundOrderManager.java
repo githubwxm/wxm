@@ -372,6 +372,7 @@ public class RefundOrderManager extends BaseOrderManager {
             refundAccount.setProfit(cash == 0 ? 0 : cash);
             refundAccount.setStatus(OrderConstant.AccountSplitStatus.NOT);
             refundAccount.setRefundOrderId(refundOrderId);
+            refundAccount.setData(data);
             refundAccountMapper.insertSelective(refundAccount);
         }
     }
