@@ -9,6 +9,7 @@ import com.framework.common.Result;
 
 import com.framework.common.validate.ParamsMapValidate;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -125,8 +126,13 @@ public class PlatfromController extends BaseController {
         return     epPaymentConfService.create(map);
     }//payment
 
+    @RequestMapping(value = "payment/select", method = RequestMethod.POST)
+    @ResponseBody
+    public Result<Integer> paymentAdd(@RequestParam(value="id") Integer id) {
+        return     epPaymentConfService.selectByPrimaryKey(id);
+    }
     /**
-     * 添加配置支付方式
+     * 修改配置支付方式
      *
      * @param
      * @return

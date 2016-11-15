@@ -74,6 +74,20 @@ public class EpPaymentConfServiceImpl implements EpPaymentConfService {
             result.setError("修改失败:" + e.getMessage());
         }
         return result;
+    }//
+
+
+    @Override
+    public Result selectByPrimaryKey(Integer id) {
+        Result result = new Result<>();
+        try {
+            EpPaymentConf e=  epPaymentConfMapper.selectByPrimaryKey(id);
+            result.setSuccess();
+            result.put(e);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 
     @Override
