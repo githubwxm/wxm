@@ -126,6 +126,22 @@ public class PlatfromController extends BaseController {
         return     epPaymentConfService.create(map);
     }//payment
 
+    //平台商收款方式停用
+    @RequestMapping(value = "payment/stop", method = RequestMethod.POST)
+    @ResponseBody
+    public Result<Integer> paymentStop(@RequestBody Map map) {
+        map.put("status",0);
+        ParamsMapValidate.validate(map, platfromValidateManager.generateCreatePaymentStatusValidate());
+        return     epPaymentConfService.update(map);
+    }
+    //平台商收款方式启用
+    @RequestMapping(value = "payment/start", method = RequestMethod.POST)
+    @ResponseBody
+    public Result<Integer> paymentStart(@RequestBody Map map) {
+        map.put("status",1);
+        ParamsMapValidate.validate(map, platfromValidateManager.generateCreatePaymentStatusValidate());
+        return     epPaymentConfService.update(map);
+    }
     @RequestMapping(value = "payment/select", method = RequestMethod.POST)
     @ResponseBody
     public Result<Integer> paymentAdd(@RequestParam(value="id") Integer id) {
