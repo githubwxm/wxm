@@ -55,6 +55,7 @@
         <dependency>
             <groupId>com.github.sgroschupf</groupId>
             <artifactId>zkclient</artifactId>
+            <version>0.1</version>
         </dependency>
         <dependency>
             <groupId>com.aliyun.openservices</groupId>
@@ -76,6 +77,7 @@
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
+            <version>2.5</version>
         </dependency>
 
         <dependency>
