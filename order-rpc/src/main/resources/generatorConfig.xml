@@ -92,7 +92,7 @@
                domainObjectName="OrderClearanceSerial">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
             <columnOverride column="update_time" javaType="java.lang.String"/>
-        </table>
+        </table>-->
         <table tableName="t_order_item"
                enableCountByExample="false"
                enableUpdateByExample="false"
@@ -103,7 +103,7 @@
                domainObjectName="OrderItem">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
             <columnOverride column="update_time" javaType="java.lang.String"/>
-        </table>-->
+        </table>
         <!--<table tableName="t_order_item_detail"
                enableCountByExample="false"
                enableUpdateByExample="false"

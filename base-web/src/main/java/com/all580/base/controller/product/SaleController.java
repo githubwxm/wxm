@@ -2,8 +2,11 @@ package com.all580.base.controller.product;
 
 import com.all580.ep.api.service.EpService;
 import com.all580.product.api.consts.ProductConstants;
+import com.all580.product.api.model.DistributionEpInfo;
 import com.all580.product.api.model.PlanGroupInfo;
 import com.all580.product.api.service.PlanGroupRPCService;
+import com.all580.product.api.service.ProductDistributionRPCService;
+import com.all580.product.api.service.ProductRPCService;
 import com.all580.product.api.service.ProductSalesPlanRPCService;
 import com.framework.common.BaseController;
 import com.framework.common.Result;
@@ -34,6 +37,12 @@ public class SaleController extends BaseController {
 
     @Resource
     EpService epService;
+
+    @Resource
+    ProductRPCService productService;
+
+    @Resource
+    ProductDistributionRPCService productDistributionService;
 
     /**
      * 新增商家分组
@@ -134,13 +143,20 @@ public class SaleController extends BaseController {
             throw new ApiException("下游平台商查询出错");
         Map<String, Object> map = epResult.get();
         List<Map<String, Object>> eps = (List<Map<String,Object>>) map.get("list");
-        Result<List<Integer>> distributedEpIdsResult = productSalesPlanService.searchDistributionEp(productSubId, epId);
-        if (distributedEpIdsResult == null || distributedEpIdsResult.isFault()) throw new ApiException("查询分销企业出错");
+//        Result<List<DistributionEpInfo>> distributedEpsResult = productSalesPlanService.searchDistributionEpInfo(productSubId, epId);
+        Result<List<DistributionEpInfo>> distributedEpsResult = productDistributionService.selectAlreadyDistributionEp(productSubId, epId);
+        if (distributedEpsResult == null) throw new ApiException("查询分销企业出错");
         List<Map<String, Object>> returnList = new ArrayList<>();
         if (ProductConstants.ProductDistributionState.HAD_DISTRIBUTE == isDistributed) {
             for (Map<String, Object> ep : eps) {
-                for (int distributedEpId : distributedEpIdsResult.get()) {
-                    if ((Integer) ep.get("id") == distributedEpId) {
+                if (distributedEpsResult.get() != null)
+                for (DistributionEpInfo distributedEp : distributedEpsResult.get()) {
+                    if (((Integer) ep.get("id")).equals(distributedEp.getId())) {
+                        ep.put("minPrice", distributedEp.getMinPrice());       // 最低售价
+                        ep.put("buyingPrice", distributedEp.getBuyingPrice());    // 进货价
+                        ep.put("pricePercent", distributedEp.getPricePercent());   // 加价百分比
+                        ep.put("pricePixed", distributedEp.getPricePixed());     // 固定加价金额
+                        ep.put("priceType", distributedEp.getPriceType());      // 加价类型
                         returnList.add(ep);
                         break;
                     }
@@ -148,16 +164,21 @@ public class SaleController extends BaseController {
             }
         }
         if (ProductConstants.ProductDistributionState.NOT_DISTRIBUTE == isDistributed) {
+            Result<Map> pricesResult = productService.searchPlanSaleAllPrices(epId, productSubId);
+            if (pricesResult == null || pricesResult.isFault()) return new Result<>(false, "未查到产品价格信息");
             for (Map<String, Object> ep : eps) {
                 // 是否已分销标记
                 boolean flag = false;
-                for (int distributedEpId : distributedEpIdsResult.get()) {
-                    if ((Integer) ep.get("id") == distributedEpId) {
+                if (distributedEpsResult.get() != null)
+                for (DistributionEpInfo distributedEp : distributedEpsResult.get()) {
+                    if (((Integer) ep.get("id")).equals(distributedEp.getId())) {
                         flag = true;
                         break;
                     }
                 }
                 if (!flag) {
+                    ep.put("minPrice", pricesResult.get().get("min_sell_price"));       // 最低售价
+                    ep.put("buyingPrice", pricesResult.get().get("price"));    // 进货价
                     returnList.add(ep);
                 }
             }

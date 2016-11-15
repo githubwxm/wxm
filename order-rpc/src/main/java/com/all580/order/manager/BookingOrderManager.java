@@ -73,13 +73,18 @@ public class BookingOrderManager extends BaseOrderManager {
             if (sids.contains(sid)) {
                 return new Result<>(false, Result.PARAMS_ERROR, "身份证:" + sid + "重复");
             }
-            if (!canOrderByCount(productSubCode, sid, bookingDate, maxCount)) {
-                return new Result<>(false, Result.PARAMS_ERROR, "身份证:" + sid + "超出该产品当天最大订单数");
+            int count = getOrderByCount(productSubCode, sid, bookingDate);
+            if (count >= maxCount) {
+                return new Result<>(false, Result.PARAMS_ERROR,
+                        String.format("身份证:%s超出该产品当天最大订单次数,已定次数:%d,最大次数:%d",
+                        sid, count, maxCount));
             }
             Integer qty = CommonUtil.objectParseInteger(visitorMap.get("quantity"));
-            if (!canOrderByQuantity(productSubCode, sid, bookingDate, maxQuantity, qty)) {
+            int quantity = getOrderByQuantity(productSubCode, sid, bookingDate);
+            if (quantity + qty > maxQuantity) {
                 return new Result<>(false, Result.PARAMS_ERROR,
-                        "身份证:" + sid + "超出该产品当天最大购票数,现已定" + qty + "张,最大购票" + maxQuantity + "张");
+                        String.format("身份证:%s超出该产品当天最大购票数,已定张数%d,最大购票张数%d",
+                                sid, quantity, maxQuantity));
             }
             sids.add(sid);
         }
@@ -91,16 +96,12 @@ public class BookingOrderManager extends BaseOrderManager {
      * @param productSubCode 子产品ID
      * @param sid 身份证
      * @param date 预定日期
-     * @param max 最大次数
      * @return
      */
-    private boolean canOrderByCount(Long productSubCode, String sid, Date date, Integer max) {
-        if (max == null || max <= 0)
-            return true;
+    private int getOrderByCount(Long productSubCode, String sid, Date date) {
         Date start = DateFormatUtils.dayBegin(date);
         Date end = DateFormatUtils.dayEnd(date);
-        int count = orderItemMapper.countBySidAndProductForDate(productSubCode, sid, start, end);
-        return count < max;
+        return orderItemMapper.countBySidAndProductForDate(productSubCode, sid, start, end);
     }
 
     /**
@@ -108,17 +109,12 @@ public class BookingOrderManager extends BaseOrderManager {
      * @param productSubCode 子产品CODE
      * @param sid 身份证
      * @param date 预定日期
-     * @param max 最大张数
-     * @param cur 当前需要订购张数
      * @return
      */
-    private boolean canOrderByQuantity(Long productSubCode, String sid, Date date, Integer max, Integer cur) {
-        if (max == null || max <= 0)
-            return true;
+    private int getOrderByQuantity(Long productSubCode, String sid, Date date) {
         Date start = DateFormatUtils.dayBegin(date);
         Date end = DateFormatUtils.dayEnd(date);
-        int quantity = visitorMapper.quantityBySidAndProductForDate(productSubCode, sid, start, end);
-        return quantity + cur <= max;
+        return visitorMapper.quantityBySidAndProductForDate(productSubCode, sid, start, end);
     }
 
     /**
