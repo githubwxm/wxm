@@ -18,8 +18,8 @@ public interface CapitalSerialMapper {
     CapitalSerial selectByPrimaryKey(Integer id);
 
     List<Map<String,String>> listByCapitalId(@Param("capitalId") Integer capitalId,
-                                             @Param("startRecord")int startRecord,
-                                             @Param("maxRecords")int maxRecords);
+                                             @Param("startRecord")Integer startRecord,
+                                             @Param("maxRecords")Integer maxRecords);
 
     int countByCapitalId(@Param("capitalId") Integer capitalId);
 
