@@ -133,8 +133,8 @@
     </foreach>
   </update>
 
-  <select id="selectEpRoleIdFuncId" resultType="java.lang.Integer">
-    select func_id FROM t_ep_role_func where  ep_role_id = #{ep_role_id} and isdelete=0 and `func_id`  in
+  <select id="selectEpRoleIdFuncId" resultType="java.lang.Integer">   <!-- and isdelete=0  去掉-->
+    select func_id FROM t_ep_role_func where  ep_role_id = #{ep_role_id}  and `func_id`  in
     <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">
       #{item}
     </foreach>
