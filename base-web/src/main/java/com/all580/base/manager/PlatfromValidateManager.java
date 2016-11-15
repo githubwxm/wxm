@@ -110,6 +110,21 @@ public class PlatfromValidateManager {
         }, new ValidRule[]{new ValidRule.Digits()});
         return rules;
     }
+    public Map<String[], ValidRule[]> generateCreatePaymentStatusValidate() {
+        Map<String[], ValidRule[]> rules = new HashMap<>();
+        // 校验不为空的参数
+        rules.put(new String[]{
+                "id", //
+                "status", //
+        }, new ValidRule[]{new ValidRule.NotNull()});
+
+        // 校验整数
+        rules.put(new String[]{
+                "id", //
+                "status"//
+        }, new ValidRule[]{new ValidRule.Digits()});
+        return rules;
+    }
 
     /**
      * 校验企业id
