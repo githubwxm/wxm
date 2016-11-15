@@ -39,8 +39,16 @@ public class EpFinanceServiceImple implements EpFinanceService {
     @Override
     public Result<Map<String,Object>> getAccountInfoList(Map<String,Object> map) {
         Result<Map<String,Object>> result = new Result<>();
+        Map<String,Object> resultMap= new HashMap<>();
         try {
             List<Map<String,Object>> epList= epMapper.getAccountInfoList(map);//企业信息
+            if(null==epList||epList.isEmpty()){
+                resultMap.put("list",epList);
+                resultMap.put("totalCount",0);
+                result.put(resultMap);
+                result.setSuccess();
+                return result;
+            }
             List<Integer> listEpId = new ArrayList<Integer>();//企业id
             Map<String,Map> tempEpMap=new HashMap<String,Map>();//把企业信息以 epId 为key存入用于与余额合并
             Integer core_ep_id = CommonUtil.objectParseInteger(map.get("core_ep_id"));
@@ -55,7 +63,7 @@ public class EpFinanceServiceImple implements EpFinanceService {
                 Map temp=tempEpMap.get(tempss);
                 balance.putAll(temp);//把企业信息合并到余额信息里面
             }
-            Map<String,Object> resultMap= new HashMap<>();
+
             resultMap.put("list",balanceList);
             resultMap.put("totalCount",epMapper.getAccountInfoListCount(map));
             result.put(resultMap);

@@ -581,7 +581,7 @@ public class EpServiceImple implements EpService {
                     }
                 }else{
                     log.error("查询企业分组错误");
-                    throw new ApiException("查询企业分组错误");
+                   // throw new ApiException("查询企业分组错误");
                 }
 
             }
