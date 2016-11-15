@@ -73,7 +73,12 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         orderItem.setSendMaTime(procTime);
         orderItemMapper.updateByPrimaryKeySelective(orderItem);
 
+        List<MaSendResponse> maSendResponseList = maSendResponseMapper.selectByOrderItemId(orderItem.getId());
         for (SendTicketInfo ticketInfo : infoList) {
+            // check
+            if (getMaSendResponse(maSendResponseList, ticketInfo.getVisitorSeqId(), orderItem.getEpMaId()) != null) {
+                continue;
+            }
             MaSendResponse response = new MaSendResponse();
             response.setVisitorId(ticketInfo.getVisitorSeqId()); // 游客ID
             response.setEpMaId(orderItem.getEpMaId()); // 哪个凭证的商户ID
@@ -272,5 +277,18 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         // 同步数据
         refundOrderManager.syncRefundTicketData(refundOrder.getId());
         return new Result(true);
+    }
+
+    private MaSendResponse getMaSendResponse(List<MaSendResponse> list, int visitorId, int epMaId) {
+        if (list == null) {
+            return null;
+        }
+        for (MaSendResponse response : list) {
+            if (response != null && response.getVisitorId() != null && response.getEpMaId() != null
+                    && response.getEpMaId() == epMaId && response.getVisitorId() == visitorId) {
+                return response;
+            }
+        }
+        return null;
     }
 }

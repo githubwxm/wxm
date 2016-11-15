@@ -4,14 +4,12 @@ import com.all580.ep.api.conf.EpConstant;
 import com.all580.ep.api.service.EpService;
 import com.all580.order.api.OrderConstant;
 import com.all580.order.api.service.BookingOrderService;
+import com.all580.order.dao.MaSendResponseMapper;
 import com.all580.order.dao.OrderItemDetailMapper;
 import com.all580.order.dao.OrderItemMapper;
 import com.all580.order.dao.OrderMapper;
 import com.all580.order.dto.LockStockDto;
-import com.all580.order.entity.Order;
-import com.all580.order.entity.OrderItem;
-import com.all580.order.entity.OrderItemDetail;
-import com.all580.order.entity.Visitor;
+import com.all580.order.entity.*;
 import com.all580.order.manager.BookingOrderManager;
 import com.all580.order.manager.RefundOrderManager;
 import com.all580.payment.api.conf.PaymentConstant;
@@ -63,6 +61,8 @@ public class BookingOrderServiceImpl implements BookingOrderService {
     private OrderItemMapper orderItemMapper;
     @Autowired
     private OrderItemDetailMapper orderItemDetailMapper;
+    @Autowired
+    private MaSendResponseMapper maSendResponseMapper;
 
     @Autowired
     private ProductSalesPlanRPCService productSalesPlanRPCService;
@@ -457,10 +457,20 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         if (orderItem == null) {
             throw new ApiException("子订单不存在");
         }
-        ReSendTicketParams reSendTicketParams = new ReSendTicketParams();
-        reSendTicketParams.setOrderSn(orderItem.getNumber());
-        reSendTicketParams.setVisitorId(CommonUtil.objectParseInteger(params.get("visitor_id")));
-        reSendTicketParams.setMobile(params.get("phone").toString());
-        return voucherRPCService.resendTicket(orderItem.getEpMaId(), reSendTicketParams);
+        Integer visitorId = CommonUtil.objectParseInteger(params.get("visitor_id"));
+        MaSendResponse response = maSendResponseMapper.selectByVisitorId(orderItem.getId(), visitorId, orderItem.getEpMaId());
+        if (orderItem.getStatus() == OrderConstant.OrderItemStatus.SEND && response != null) {
+            ReSendTicketParams reSendTicketParams = new ReSendTicketParams();
+            reSendTicketParams.setOrderSn(orderItem.getNumber());
+            reSendTicketParams.setVisitorId(visitorId);
+            reSendTicketParams.setMobile(params.get("phone").toString());
+            return voucherRPCService.resendTicket(orderItem.getEpMaId(), reSendTicketParams);
+        }
+        // 出票
+        // 记录任务
+        Map<String, String> jobParam = new HashMap<>();
+        jobParam.put("orderItemId", orderItem.getId().toString());
+        bookingOrderManager.addJob(OrderConstant.Actions.SEND_TICKET, jobParam);
+        return new Result<>(true);
     }
 }
