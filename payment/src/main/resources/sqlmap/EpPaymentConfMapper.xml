@@ -79,9 +79,9 @@
             <if test="coreEpId != null">
                 core_ep_id = #{coreEpId,jdbcType=INTEGER},
             </if>
-            <if test="paymentType != null">
-                payment_type = #{paymentType,jdbcType=INTEGER},
-            </if>
+            <!--<if test="paymentType != null">-->
+                <!--payment_type = #{paymentType,jdbcType=INTEGER},-->
+            <!--</if>-->
             <if test="confData != null">
                 conf_data = #{confData,jdbcType=VARCHAR},
             </if>
