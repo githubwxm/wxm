@@ -7,32 +7,32 @@
         </if>
     </sql>
     <sql id="ep_list_where">
-        <if test="id != null">
+        <if test="id != null and id!=''">
             and ep.`id`=#{id}
         </if>
-        <if test="name != null">
+        <if test="name != null and name!=''">
           <!--  and ep.name like  CONCAT('%',#{name},'%'), and ep.name =  #{name} -->
             and ep.name like  CONCAT('%',#{name},'%')
         </if>
-        <if test="ep_type != null">
+        <if test="ep_type != null and ep_type!=''">
             and ep.ep_type=#{ep_type}
         </if>
-        <if test="status != null">
+        <if test="status != null  and status!=''">
             and ep.status=#{status}
         </if>
-        <if test="province != null">
+        <if test="province != null and province!=''">
             and ep.province=#{province}
         </if>
-        <if test="city != null">
+        <if test="city != null and city!=''">
             and ep.city=#{city}
         </if>
-        <if test="link_phone != null">
+        <if test="link_phone != null and link_phone!=''">
             and ep.link_phone=#{link_phone}
         </if>
-        <if test="core_ep_id != null">
+        <if test="core_ep_id != null and core_ep_id!=''">
             and ep.core_ep_id = #{core_ep_id}
         </if>
-        <if test="creator_ep_id != null">
+        <if test="creator_ep_id != null and creator_ep_id!=''">
             and ep.creator_ep_id = #{creator_ep_id}
         </if>
 
@@ -165,9 +165,53 @@
     </update>
     <update id="update">
         update t_ep
-         set pic_address=#{pic_address},name=#{name},en_name=#{en_name},linkman=#{linkman},link_phone=#{link_phone},address=#{address},
-         code=#{code},license=#{license},logo_pic=#{logo_pic},province=#{province},city=#{city},area=#{area}
-         ,ep_class=#{ep_class}, pic_address=#{pic_address},group_name=#{group_name},group_id=#{group_id}
+        <set>
+            <if test="pic_address != null">
+                pic_address = #{pic_address},
+            </if>
+            <if test="name != null">
+                name = #{name},
+            </if>
+            <if test="en_name != null">
+                en_name = #{en_name},
+            </if>
+            <if test="linkman != null">
+                linkman = #{linkman},
+            </if>
+            <if test="link_phone != null">
+                link_phone = #{link_phone},
+            </if>
+            <if test="address != null">
+                address = #{address},
+            </if>
+            <if test="code != null">
+                code = #{code},
+            </if>
+            <if test="license != null">
+                license = #{license},
+            </if>
+            <if test="logo_pic != null">
+                logo_pic = #{logo_pic},
+            </if>
+            <if test="province != null">
+                province = #{province},
+            </if>
+            <if test="city != null">
+                city = #{city},
+            </if>
+            <if test="area != null">
+                area = #{area},
+            </if>
+            <if test="ep_class != null">
+                ep_class = #{ep_class},
+            </if>
+            <if test="group_name != null">
+                group_name = #{group_name},
+            </if>
+            <if test="group_id != null">
+                group_id = #{group_id},
+            </if>
+        </set>
         where id =#{id}
     </update>
     <insert id="create">
