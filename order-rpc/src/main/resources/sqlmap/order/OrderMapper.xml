@@ -306,7 +306,7 @@
     <select id="selectNoPayForMinute" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         SELECT * FROM t_order
         WHERE `status` = 311
-        AND (UNIX_TIMESTAMP(NOW())-UNIX_TIMESTAMP(create_time))/60 &gt;= #{minute}
+        AND (UNIX_TIMESTAMP(NOW())-UNIX_TIMESTAMP(audit_time))/60 &gt;= #{minute}
         limit 20
     </select>
 

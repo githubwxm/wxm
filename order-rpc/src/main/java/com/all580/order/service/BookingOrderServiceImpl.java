@@ -295,6 +295,11 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             jobParams.put("orderId", order.getId().toString());
             bookingOrderManager.addJob(OrderConstant.Actions.PAYMENT_CALLBACK, jobParams);
         }
+
+        // 更新审核时间
+        if (order.getStatus() != OrderConstant.OrderStatus.AUDIT_WAIT && order.getAuditTime() == null) {
+            order.setAuditTime(new Date());
+        }
         orderMapper.updateByPrimaryKeySelective(order);
 
         Map<String, Object> resultMap = new HashMap<>();
