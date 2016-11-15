@@ -337,6 +337,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
 
             orderItem.setAuditUserId(CommonUtil.objectParseInteger(params.get("operator_id")));
             orderItem.setAuditUserName(CommonUtil.objectParseString(params.get("operator_name")));
+            orderItem.setAuditTime(new Date());
             boolean status = Boolean.parseBoolean(params.get("status").toString());
             // 通过
             if (status) {
@@ -345,6 +346,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
                 boolean allAudit = bookingOrderManager.isOrderAllAudit(orderItem.getOrderId(), orderItem.getId());
                 if (allAudit) {
                     order.setStatus(OrderConstant.OrderStatus.PAY_WAIT);
+                    order.setAuditTime(new Date());
                     // 判断是否需要支付
                     if (order.getPayAmount() <= 0) { // 不需要支付
                         order.setStatus(OrderConstant.OrderStatus.PAID_HANDLING); // 已支付,处理中
