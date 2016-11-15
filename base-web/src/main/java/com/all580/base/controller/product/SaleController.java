@@ -123,10 +123,10 @@ public class SaleController extends BaseController {
     @RequestMapping(value = "platform_ep/list")
     @ResponseBody
     public Result<List<Map<String, Object>>> searchPlatformEp(@RequestParam("ep_id") Integer epId, @RequestParam("productSubId") Integer productSubId, @RequestParam("isDistributed") Integer isDistributed) {
-        return searchPlatformEp(epId, productSubId, isDistributed);
+        return searchIsProviderEp(epId, productSubId, isDistributed);
     }
 
-    private List<Map<String, Object>> searchIsProviderEp(int epId, int productSubId, int isDistributed) {
+    private Result<List<Map<String, Object>>> searchIsProviderEp(int epId, int productSubId, int isDistributed) {
         Map param = new HashMap();
         param.put("ep_id", epId);
         Result<Map<String, Object>> epResult = epService.platformListDown(param);
@@ -162,6 +162,8 @@ public class SaleController extends BaseController {
                 }
             }
         }
-        return returnList;
+        Result<List<Map<String, Object>>> result = new Result<>(true);
+        result.put(returnList);
+        return result;
     }
 }
