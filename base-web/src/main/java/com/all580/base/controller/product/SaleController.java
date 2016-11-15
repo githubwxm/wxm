@@ -5,6 +5,7 @@ import com.all580.product.api.consts.ProductConstants;
 import com.all580.product.api.model.DistributionEpInfo;
 import com.all580.product.api.model.PlanGroupInfo;
 import com.all580.product.api.service.PlanGroupRPCService;
+import com.all580.product.api.service.ProductDistributionRPCService;
 import com.all580.product.api.service.ProductRPCService;
 import com.all580.product.api.service.ProductSalesPlanRPCService;
 import com.framework.common.BaseController;
@@ -39,6 +40,9 @@ public class SaleController extends BaseController {
 
     @Resource
     ProductRPCService productService;
+
+    @Resource
+    ProductDistributionRPCService productDistributionService;
 
     /**
      * 新增商家分组
@@ -139,12 +143,13 @@ public class SaleController extends BaseController {
             throw new ApiException("下游平台商查询出错");
         Map<String, Object> map = epResult.get();
         List<Map<String, Object>> eps = (List<Map<String,Object>>) map.get("list");
-//        Result<List<Integer>> distributedEpsResult = productSalesPlanService.searchDistributionEp(productSubId, epId);
-        Result<List<DistributionEpInfo>> distributedEpsResult = productSalesPlanService.searchDistributionEpInfo(productSubId, epId);
-        if (distributedEpsResult == null || distributedEpsResult.isFault()) throw new ApiException("查询分销企业出错");
+//        Result<List<DistributionEpInfo>> distributedEpsResult = productSalesPlanService.searchDistributionEpInfo(productSubId, epId);
+        Result<List<DistributionEpInfo>> distributedEpsResult = productDistributionService.selectAlreadyDistributionEp(productSubId, epId);
+        if (distributedEpsResult == null) throw new ApiException("查询分销企业出错");
         List<Map<String, Object>> returnList = new ArrayList<>();
         if (ProductConstants.ProductDistributionState.HAD_DISTRIBUTE == isDistributed) {
             for (Map<String, Object> ep : eps) {
+                if (distributedEpsResult.get() != null)
                 for (DistributionEpInfo distributedEp : distributedEpsResult.get()) {
                     if (((Integer) ep.get("id")).equals(distributedEp.getId())) {
                         ep.put("minPrice", distributedEp.getMinPrice());       // 最低售价
@@ -164,6 +169,7 @@ public class SaleController extends BaseController {
             for (Map<String, Object> ep : eps) {
                 // 是否已分销标记
                 boolean flag = false;
+                if (distributedEpsResult.get() != null)
                 for (DistributionEpInfo distributedEp : distributedEpsResult.get()) {
                     if (((Integer) ep.get("id")).equals(distributedEp.getId())) {
                         flag = true;
