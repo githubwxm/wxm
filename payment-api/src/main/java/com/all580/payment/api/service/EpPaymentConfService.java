@@ -48,4 +48,12 @@ public interface EpPaymentConfService {
      */
     Result<List<Map<String, String>>> listByEpId(Integer epId);
 
+
+    /**
+     * 通过id查询收款方式配置信息
+     * @param id
+     * @return
+     */
+    Result selectByPrimaryKey(Integer id);
+
 }
