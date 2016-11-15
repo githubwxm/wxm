@@ -140,7 +140,7 @@ public class SaleController extends BaseController {
         if (ProductConstants.ProductDistributionState.HAD_DISTRIBUTE == isDistributed) {
             for (Map<String, Object> ep : eps) {
                 for (int distributedEpId : distributedEpIdsResult.get()) {
-                    if (ep.get("id") == distributedEpId) {
+                    if ((Integer) ep.get("id") == distributedEpId) {
                         returnList.add(ep);
                         break;
                     }
@@ -152,7 +152,7 @@ public class SaleController extends BaseController {
                 // 是否已分销标记
                 boolean flag = false;
                 for (int distributedEpId : distributedEpIdsResult.get()) {
-                    if (ep.get("id") == distributedEpId) {
+                    if ((Integer) ep.get("id") == distributedEpId) {
                         flag = true;
                         break;
                     }
