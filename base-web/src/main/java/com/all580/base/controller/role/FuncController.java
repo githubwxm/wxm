@@ -60,7 +60,7 @@ public class FuncController extends BaseController {
     @ResponseBody
     public Result  update(@RequestBody Map<String,Object> params) {
         ParamsMapValidate.validate(params, generateFuncValidate());
-        ParamsMapValidate.validate(params, generateFuncValidate());
+        ParamsMapValidate.validate(params, generateFuncIdValidate());
         return funcService.updateByPrimaryKeySelective(params);
     }
 
