@@ -20,4 +20,6 @@ public interface EpFinanceService {
     Result<Map<String, String>> getBalanceAccountInfo(Integer epId, Integer coreEpId);
 
     Result addBalance(Integer epId,Integer coreEpId,Integer balance);
+
+    Result getBalanceSerialList(Integer epId, Integer coreEpId,Integer startRecord, Integer maxRecords,Integer changType);
 }
