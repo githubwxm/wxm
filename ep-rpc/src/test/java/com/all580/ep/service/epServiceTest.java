@@ -154,9 +154,9 @@ public class epServiceTest {
        List ids = new ArrayList<Integer>();
        ids.add(-1);
        print(coreEpAccessService.selectAccessList(ids).get()+"ssss");*/
-//       Map map = new HashMap();
-//       map.put("core_ep_id","1");
-//       epFinanceService.getAccountInfoList(map);
+       Map map = new HashMap();
+       map.put("core_ep_id","1");
+       epFinanceService.addBalance(1146,1,11111);
     }
 
     @Test

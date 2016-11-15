@@ -46,21 +46,21 @@
         date_format(ep.add_time,'%Y-%m-%d') add_time,param.`name` as ep_type_name  from
         t_ep  ep left JOIN t_ep_param param on ep.`ep_type` = param.id
         where
-        1=1
+        1=1  and ep.id != ep.core_ep_id
         <include refid="ep_list_where"/>
         <include refid="limit"/>
     </select>
 
-    <select id="getAccountInfoListCount" resultType="java.util.HashMap">
+    <select id="getAccountInfoListCount" resultType="java.lang.Integer">
         select  count(1)  from
         t_ep  ep left JOIN t_ep_param param on ep.`ep_type` = param.id
         where
-        1=1
+        1=1 and ep.id != ep.core_ep_id
         <include refid="ep_list_where"/>
     </select>
 
     <select id="select" resultType="java.util.HashMap">
-        select  pic_address,ep.id,ep.name,ep.en_name,ep.ep_type,ep.linkman,ep.link_phone,ep.address,ep.code,ep.license,ep.logo_pic,ep.status,ep.access_id,
+        select  ep.ep_role,pic_address,ep.id,ep.name,ep.en_name,ep.ep_type,ep.linkman,ep.link_phone,ep.address,ep.code,ep.license,ep.logo_pic,ep.status,ep.access_id,
         ep.access_key,ep.creator_ep_id,ep.core_ep_id,ep.status_bak,ep.province,
         ep.city,ep.area,ep.group_id,ep.group_name,ep.ep_class,
         date_format(ep.add_time,'%Y-%m-%d') add_time,param.`name` as status_name  from
@@ -197,7 +197,7 @@
     </select>
 
     <select id="selectSingleTable" resultType="java.util.Map">
-        select  id,name,en_name,ep_type,linkman,link_phone,address,code,license,logo_pic,status,access_id,access_key,
+        select  ep_role,id,name,en_name,ep_type,linkman,link_phone,address,code,license,logo_pic,status,access_id,access_key,
         creator_ep_id,core_ep_id,add_time,status_bak,province,city,area,group_id,group_name,ep_class,pic_address,
         CONCAT('',update_time,'') update_time  from t_ep ep
         where 1=1<include refid="ep_list_where"/>

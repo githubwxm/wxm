@@ -16,4 +16,10 @@ public interface EpFinanceService {
     date_format(ep.add_time,'%Y-%m-%d') add_time,param.`name` as ep_type_name
      */
       Result<Map<String,Object>> getAccountInfoList(Map<String,Object> map);
+
+    Result<Map<String, String>> getBalanceAccountInfo(Integer epId, Integer coreEpId);
+
+    Result addBalance(Integer epId,Integer coreEpId,Integer balance);
+
+    Result getBalanceSerialList(Integer epId, Integer coreEpId,Integer startRecord, Integer maxRecords,Integer changType);
 }

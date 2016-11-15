@@ -31,7 +31,7 @@ public interface EpMapper {
 
 
     List<Map<String,Object>> getAccountInfoList(Map<String,Object> map);
-    List<Map<String,Object>> getAccountInfoListCount(Map<String,Object> map);
+    int getAccountInfoListCount(Map<String,Object> map);
 
     List<Map<String,Object>> checkNamePhone(Map<String,Object> map);
 
