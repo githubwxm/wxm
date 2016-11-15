@@ -43,6 +43,8 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
     @Autowired
     private OrderClearanceDetailMapper orderClearanceDetailMapper;
     @Autowired
+    private ClearanceWashedSerialMapper clearanceWashedSerialMapper;
+    @Autowired
     private MaSendResponseMapper maSendResponseMapper;
     @Autowired
     private VisitorMapper visitorMapper;
@@ -188,6 +190,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         serial.setCreateTime(new Date());
         serial.setDay(orderItem.getStart());
         serial.setQuantity(orderClearanceSerial.getQuantity());
+        clearanceWashedSerialMapper.insertSelective(serial);
 
         // 获取核销人信息
         Visitor visitor = visitorMapper.selectByPrimaryKey(info.getVisitorSeqId());
