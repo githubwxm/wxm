@@ -46,7 +46,7 @@ public class IntfController extends BaseController{
     }//
     @RequestMapping(value = "selectFuncId", method = RequestMethod.GET)
     @ResponseBody
-    public Result selectFuncId(@RequestParam(value = "func_id", required = true) Integer func_id,Integer record_start,
+    public Result selectFuncId(@RequestParam(value = "func_id") Integer func_id,Integer record_start,
                                Integer record_count) {
         Map<String,Object> map = new HashMap<>();
         map.put("record_start", record_start);

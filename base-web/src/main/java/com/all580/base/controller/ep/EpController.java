@@ -150,6 +150,7 @@ public class EpController extends BaseController {
     @ResponseBody
     public Result<Integer> updateEpRole(@RequestBody Map<String,Object> map) {
         // 验证参数D  ep_role
+        map.put(EpConstant.EpKey.CORE_EP_ID,getAttribute(EpConstant.EpKey.CORE_EP_ID));
         ParamsMapValidate.validate(map, platfromValidateManager.generateCreateStatusValidate());
         //map.put(EpConstant.EpKey.ACCESS_KEY,getAttribute(EpConstant.EpKey.ACCESS_KEY));
         return epService.updateEpRole(map);
