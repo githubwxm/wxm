@@ -118,6 +118,12 @@ public class EpFinanceController extends BaseController {
      Integer coreEpId = CommonUtil.objectParseInteger(getAttribute(EpConstant.EpKey.CORE_EP_ID));
         return epFinanceService.getBalanceAccountInfo(epId,coreEpId);
     }
+    @RequestMapping(value = "lstBalance", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<?> lstBalance(@RequestParam(value = "epId") Integer epId,Integer startRecord, Integer maxRecords){
+        Integer coreEpId = CommonUtil.objectParseInteger(getAttribute(EpConstant.EpKey.CORE_EP_ID));
+        return epFinanceService.getBalanceSerialList(epId,coreEpId,startRecord,maxRecords,null);
+    }
 
     /**
      * 修改余额
