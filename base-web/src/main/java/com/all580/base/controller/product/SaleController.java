@@ -1,5 +1,7 @@
 package com.all580.base.controller.product;
 
+import com.all580.ep.api.service.EpService;
+import com.all580.product.api.consts.ProductConstants;
 import com.all580.product.api.model.PlanGroupInfo;
 import com.all580.product.api.service.PlanGroupRPCService;
 import com.all580.product.api.service.ProductSalesPlanRPCService;
@@ -7,10 +9,14 @@ import com.framework.common.BaseController;
 import com.framework.common.Result;
 import com.framework.common.util.CommonUtil;
 import com.framework.common.vo.Paginator;
+import com.sun.xml.internal.ws.api.pipe.helper.AbstractPipeImpl;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.lang.exception.ApiException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -26,6 +32,9 @@ public class SaleController extends BaseController {
 
     @Resource
     ProductSalesPlanRPCService productSalesPlanService;
+
+    @Resource
+    EpService epService;
 
     /**
      * 新增商家分组
@@ -114,7 +123,46 @@ public class SaleController extends BaseController {
 
     @RequestMapping(value = "platform_ep/list")
     @ResponseBody
-    public Result<List<Map>> searchPlatformEp(@RequestParam("ep_id") Integer epId) {
-        return null;
+    public Result<List<Map<String, Object>>> searchPlatformEp(@RequestParam("ep_id") Integer epId, @RequestParam("productSubId") Integer productSubId, @RequestParam("isDistributed") Integer isDistributed) {
+        return searchPlatformEp(epId, productSubId, isDistributed);
+    }
+
+    private List<Map<String, Object>> searchIsProviderEp(int epId, int productSubId, int isDistributed) {
+        Map param = new HashMap();
+        param.put("ep_id", epId);
+        Result<Map<String, Object>> epResult = epService.platformListDown(param);
+        if (epResult == null || epResult.isFault())
+            throw new ApiException("下游平台商查询出错");
+        Map<String, Object> map = epResult.get();
+        List<Map<String, Object>> eps = (List<Map<String,Object>>) map.get("list");
+        Result<List<Integer>> distributedEpIdsResult = productSalesPlanService.searchDistributionEp(productSubId, epId);
+        if (distributedEpIdsResult == null || distributedEpIdsResult.isFault()) throw new ApiException("查询分销企业出错");
+        List<Map<String, Object>> returnList = new ArrayList<>();
+        if (ProductConstants.ProductDistributionState.HAD_DISTRIBUTE == isDistributed) {
+            for (Map<String, Object> ep : eps) {
+                for (int distributedEpId : distributedEpIdsResult.get()) {
+                    if (ep.get("id") == distributedEpId) {
+                        returnList.add(ep);
+                        break;
+                    }
+                }
+            }
+        }
+        if (ProductConstants.ProductDistributionState.NOT_DISTRIBUTE == isDistributed) {
+            for (Map<String, Object> ep : eps) {
+                // 是否已分销标记
+                boolean flag = false;
+                for (int distributedEpId : distributedEpIdsResult.get()) {
+                    if (ep.get("id") == distributedEpId) {
+                        flag = true;
+                        break;
+                    }
+                }
+                if (!flag) {
+                    returnList.add(ep);
+                }
+            }
+        }
+        return returnList;
     }
 }
