@@ -22,7 +22,7 @@ public interface BalancePayService {
      *                              {epId:A平台商,coreEpId:A平台商,balance:0,canCash:5},
      *                              {epId:A供应商,coreEpId:A平台商,balance:0,canCash:5}]
      * @param type                  余额变动类型 7001-余额支付 7002-支付分账 7003-核销分账 7004-核销冲正分账 7005-退票分账
-     *                              7006-余额调整
+     *                              7007-余额调整
      * @param serialNum             流水号
      * @return 成功，返回:{success:true}
      * 失败，返回：{success:false,result:{epId:xx,coreEpId:xx},error:错误信息}
