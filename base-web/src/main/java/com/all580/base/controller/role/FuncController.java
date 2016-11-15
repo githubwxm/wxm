@@ -60,6 +60,7 @@ public class FuncController extends BaseController {
     @ResponseBody
     public Result  update(@RequestBody Map<String,Object> params) {
         ParamsMapValidate.validate(params, generateFuncValidate());
+        ParamsMapValidate.validate(params, generateFuncValidate());
         return funcService.updateByPrimaryKeySelective(params);
     }
 
@@ -105,6 +106,19 @@ public class FuncController extends BaseController {
                 "seq", //
                 "type", //
                 "status",
+        }, new ValidRule[]{new ValidRule.Digits()});
+        return rules;
+    }
+
+    public Map<String[], ValidRule[]> generateFuncIdValidate() {
+        Map<String[], ValidRule[]> rules = new HashMap<>();
+        // 校验不为空的参数
+        rules.put(new String[]{
+                "id", //
+        }, new ValidRule[]{new ValidRule.NotNull()});
+        // 校验整数
+        rules.put(new String[]{
+                "id", //
         }, new ValidRule[]{new ValidRule.Digits()});
         return rules;
     }
