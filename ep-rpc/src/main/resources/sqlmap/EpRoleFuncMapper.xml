@@ -157,7 +157,8 @@
     select f.*,IF(rf.id is NUll,0,1) owned
                 from t_func f
                 left join t_ep_role_func rf on f.id = rf.func_id
-                 and rf.ep_role_id=#{ep_role_id} and isdelete=0 and f.`status`=1
+                 and 0=rf.isdelete and rf.ep_role_id=#{ep_role_id}
+                 where  f.isdelete=0
                 order by pid,seq;
   </select>
 </mapper>

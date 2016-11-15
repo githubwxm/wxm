@@ -17,7 +17,7 @@ public interface EpRoleMapper {
 
     int updateByPrimaryKey(Map<String,Object> record);
 
-    int checkName(String name);
+    int checkName(Map<String,Object> params);
 
     Map<String,Object> select(int id);
 

@@ -884,6 +884,10 @@ public class EpServiceImple implements EpService {
     public Result updateEpRole(Map<String,Object> params){
         try{
             epMapper.updateEpRole(params);
+            Map<String,Object> map = new HashMap<>();
+            map.put("id",params.get("id"));
+            List<Map<String, String>> listMap = epMapper.selectSingleTable(map);
+            syncEpData(params.get(EpConstant.EpKey.CORE_EP_ID), EpConstant.Table.T_EP, listMap);
         }catch(Exception e){
             log.error("查询数据库异常", e);
             throw new ApiException("查询数据库异常", e);

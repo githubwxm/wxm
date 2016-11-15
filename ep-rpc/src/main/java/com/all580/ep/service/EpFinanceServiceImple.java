@@ -3,9 +3,13 @@ package com.all580.ep.service;
 import com.all580.ep.api.service.EpFinanceService;
 import com.all580.ep.api.service.EpService;
 import com.all580.ep.dao.EpMapper;
+import com.all580.payment.api.conf.PaymentConstant;
+import com.all580.payment.api.model.BalanceChangeInfo;
 import com.all580.payment.api.service.BalancePayService;
 import com.framework.common.Result;
 import javax.lang.exception.ApiException;
+
+import com.framework.common.lang.StringUtils;
 import com.framework.common.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +51,9 @@ public class EpFinanceServiceImple implements EpFinanceService {
             }
             List<Map<String, String>> balanceList= balancePayService.getBalanceList(listEpId,core_ep_id).get();
             for(Map<String, String> balance:balanceList){
-                balance.putAll(tempEpMap.get(balance.get("ep_id")));//把企业信息合并到余额信息里面
+                String tempss = String.valueOf(balance.get("epId"));
+                Map temp=tempEpMap.get(tempss);
+                balance.putAll(temp);//把企业信息合并到余额信息里面
             }
             Map<String,Object> resultMap= new HashMap<>();
             resultMap.put("list",balanceList);
@@ -62,8 +68,26 @@ public class EpFinanceServiceImple implements EpFinanceService {
     }
 
 
-    public Result<Map> getAccountInfo(Map map) {
+    @Override
+    public Result<Map<String, String>> getBalanceAccountInfo(Integer epId, Integer coreEpId) {
 
-        return null;
+        return balancePayService.getBalanceAccountInfo(epId,coreEpId);
+    }
+
+    @Override
+    public Result addBalance(Integer epId,Integer coreEpId,Integer balance){
+        List<BalanceChangeInfo> balanceList=new ArrayList<>();
+        BalanceChangeInfo b= new BalanceChangeInfo();
+        b.setBalance(balance);
+        b.setEpId(epId);
+        b.setCoreEpId(coreEpId);
+        balanceList.add(b);
+        String  serialNum=System.currentTimeMillis()+"";
+        return balancePayService.changeBalances(balanceList, PaymentConstant.BalanceChangeType.MANUAL_CHANGE_BALANCE,serialNum);
+    }
+    @Override
+    public Result getBalanceSerialList(Integer epId, Integer coreEpId,Integer startRecord, Integer maxRecords,Integer changType) {
+//changType   用余提现  暂时未用到
+        return balancePayService.getBalanceSerialList(epId,coreEpId,startRecord,maxRecords);
     }
 }

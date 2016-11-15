@@ -35,10 +35,9 @@ public class EpRoleServiceImple implements EpRoleService {
     public Result addEpRole(Map<String, Object> params) {
         Result result= new Result(true);
         try{
-            String name =CommonUtil.objectParseString(params.get("name"));
-           int ref= epRoleMapper.checkName(name);
+           int ref= epRoleMapper.checkName(params);
             if(ref>0){
-                log.error("角色名字已存在 {}",name);
+                log.error("角色名字已存在 {}",params.get("name"));
                 throw  new ApiException("角色名字已存在");
             }
             epRoleMapper.insertSelective(params);
@@ -67,10 +66,9 @@ public class EpRoleServiceImple implements EpRoleService {
     @Override
     public Result updateEpRole(Map<String, Object> params) {
         try {
-            String name =CommonUtil.objectParseString(params.get("name"));
-            int ref= epRoleMapper.checkName(name);
+            int ref= epRoleMapper.checkName(params);
             if(ref>0){
-                log.error("角色名字已存在 {}",name);
+                log.error("角色名字已存在 {}",params.get("name"));
                 return new Result(false,"角色名字已存在");
             }
             epRoleMapper.updateByPrimaryKeySelective(params);
