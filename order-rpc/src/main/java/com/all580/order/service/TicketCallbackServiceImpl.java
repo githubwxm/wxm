@@ -113,6 +113,11 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
             return new Result(false, "订单详情不存在");
         }
 
+        OrderClearanceSerial oldSerial = orderClearanceSerialMapper.selectBySn(info.getValidateSn());
+        if (oldSerial != null) {
+            return new Result(false, "核销流水:" + info.getValidateSn() + "重复核销");
+        }
+
         // 目前景点只有一天
         OrderItemDetail itemDetail = detailList.get(0);
         itemDetail.setUsedQuantity(itemDetail.getUsedQuantity() + info.getConsumeQuantity());
@@ -177,6 +182,11 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
             return new Result(false, "订单详情不存在");
         }
 
+        ClearanceWashedSerial oldSerial = clearanceWashedSerialMapper.selectBySn(info.getReValidateSn());
+        if (oldSerial != null) {
+            return new Result(false, "反核销流水:" + info.getReValidateSn() + "重复冲正");
+        }
+
         // 目前景点只有一天
         OrderItemDetail itemDetail = detailList.get(0);
         itemDetail.setUsedQuantity(itemDetail.getUsedQuantity() - orderClearanceSerial.getQuantity());
@@ -222,6 +232,10 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         RefundSerial refundSerial = refundSerialMapper.selectByLocalSn(Long.valueOf(info.getRefId()));
         if (refundSerial == null) {
             return new Result(false, "退票流水错误");
+        }
+
+        if (refundSerial.getRefundTime() != null) {
+            return new Result(false, "退票流水:" + info.getRefId() + "重复操作");
         }
 
         RefundOrder refundOrder = refundOrderMapper.selectByItemIdAndRefundSn(orderItem.getId(), Long.valueOf(info.getRefId()));

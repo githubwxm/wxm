@@ -64,7 +64,7 @@ public class SendTicketAction implements JobRunner {
             throw new Exception("子订单不存在");
         }
         orderItem.setStatus(OrderConstant.OrderItemStatus.TICKETING);
-        orderItemMapper.updateByPrimaryKey(orderItem);
+        orderItemMapper.updateByPrimaryKeySelective(orderItem);
 
         List<OrderItemDetail> detailList = orderItemDetailMapper.selectByItemId(orderItem.getId());
         OrderItemDetail detail = detailList.get(0); // 景点只有一天
