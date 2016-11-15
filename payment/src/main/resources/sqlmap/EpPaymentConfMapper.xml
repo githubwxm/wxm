@@ -10,7 +10,7 @@
         <result column="cert_p12" property="certP12" jdbcType="VARCHAR"/>
     </resultMap>
     <sql id="Base_Column_List">
-        id, core_ep_id, payment_type, conf_data, status,cert_p12
+        id, core_ep_id, payment_type, conf_data, status,cert_p12,update_time
   </sql>
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
         select
