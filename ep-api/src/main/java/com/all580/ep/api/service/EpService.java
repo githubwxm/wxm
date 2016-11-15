@@ -118,7 +118,9 @@ public interface EpService {
 
     /**
      * 上游平台商  ep_id 必填
-     * @param map
+     * @param map   list { e.id 企业id,pic_address 省市县地区,name 企业名字
+     *              ,linkman 联系人名字,link_phone 联系人电话,province 省id,city 市,area,
+     *              address 详细地址,rate 通道费率}
      * @return
      */
     Result<Map<String,Object>> platformListUp(Map<String,Object> map);
