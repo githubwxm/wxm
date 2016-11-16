@@ -94,7 +94,11 @@ public class ProductController extends BaseController {
         switch (Integer.valueOf(params.get("type").toString())) {
             case ProductConstants.ProductType.SCENERY:
                 ProductSceneryInfo productSceneryInfo = initProductScenery((Map) params.get("props"));
-                productService.addSceneryProduct(params.get("name").toString(), Integer.valueOf(params.get("ep_id").toString()), productSceneryInfo);
+                Object phone = params.get("phone");
+                productService.addSceneryProduct(params.get("name").toString(),
+                        Integer.valueOf(params.get("ep_id").toString()),
+                        phone == null ? null : phone.toString(),
+                        productSceneryInfo);
                 break;
             default: return new Result<>(false, "产品类型不匹配");
         }
