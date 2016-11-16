@@ -82,5 +82,7 @@ public interface BalancePayService {
      * -------------balanceAdd - int - 余额增加金额，单位分
      * -------------canCashAdd - int - 可提现金额变动金额，单位分
      */
-    Result<PageRecord<Map<String, String>>> getBalanceSerialList(Integer epId, Integer coreEpId, Integer startRecord, Integer maxRecords);
+    Result<PageRecord<Map<String, String>>> getBalanceSerialList(Integer epId, Integer coreEpId,
+                                                                 String balanceSatatus,String startDate,String endDate,String ref_id,
+                                                                 Integer startRecord, Integer maxRecords);
 }
