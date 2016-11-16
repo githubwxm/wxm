@@ -34,13 +34,19 @@ public class EpPaymentConfServiceTest implements ApplicationContextAware {
 
     @Test
     public void createTest() {
-        Map<String, Object> data = new HashMap<>();
-        data.put("coreEpId", 1);
-        data.put("paymentType", 7001);
-        data.put("confData", "{sss:1,bbb:2}");
-        data.put("status", 1);
-        Result result = epPaymentConfService.create(data);
-        Assert.isTrue(result.isSuccess());
+//        Map<String, Object> data = new HashMap<>();
+//        data.put("coreEpId", 1);
+//        data.put("paymentType", 7001);
+//        data.put("confData", "{sss:1,bbb:2}");
+//        data.put("status", 1);
+//        Result result = epPaymentConfService.create(data);
+//        Assert.isTrue(result.isSuccess());
+        Map map = new HashMap();
+        map.put("id",85);
+        map.put("status",1);
+        epPaymentConfService.update(map);
+       // Result r = epPaymentConfService.selectByPrimaryKey(85);
+        //System.out.println(r);
     }
 
     @Test

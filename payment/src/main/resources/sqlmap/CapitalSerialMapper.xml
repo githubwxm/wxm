@@ -157,24 +157,48 @@
     </insert>
 
     <select id="listByCapitalId" parameterType="java.lang.Integer" resultType="map">
+        select * from(
         select
         c.id,c.ref_id,c.ref_type, c.create_time as createTime,c.new_balance-c.old_balance as balanceAdd,c.new_can_cash-c.old_can_cash as
         canCashAdd,p.name as changeType ,new_balance , CASE WHEN c.new_balance-c.old_balance >0 THEN '收入' else '支出' end as balanceSatatus
         from t_capital_serial c
         LEFT JOIN t_payment_param p on c.ref_type=p.id
         where capital_id = #{capitalId,jdbcType=INTEGER}
+        ) f  where 1=1
+        <if test="balanceSatatus != null  and balanceSatatus != ''">
+          and   f.balanceSatatus= #{balanceSatatus}
+        </if>
+        <if test="startDate != null and endDate != null ">
+            and createTime between  #{startDate} and #{endDate}
+        </if>
+        <if test="ref_id != null  and ref_id != ''">
+            and   ref_id=#{ref_id}
+        </if>
+        order by id desc
         <if test="startRecord != null">
             limit #{startRecord}
         </if>
         <if test="maxRecords != null">
             , #{maxRecords}
         </if>
-
     </select>
-    <select id="countByCapitalId" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+    <select id="countByCapitalId"  resultType="java.lang.Integer">
+        select count(1) from(
         select
-        count(*)
-        from t_capital_serial
+        c.id,c.ref_id,c.ref_type, c.create_time as createTime,c.new_balance-c.old_balance as balanceAdd,c.new_can_cash-c.old_can_cash as
+        canCashAdd,p.name as changeType ,new_balance , CASE WHEN c.new_balance-c.old_balance >0 THEN '收入' else '支出' end as balanceSatatus
+        from t_capital_serial c
+        LEFT JOIN t_payment_param p on c.ref_type=p.id
         where capital_id = #{capitalId,jdbcType=INTEGER}
+        ) f  where 1=1
+        <if test="balanceSatatus != null  and balanceSatatus != ''">
+            and   f.balanceSatatus= #{balanceSatatus}
+        </if>
+        <if test="startDate != null and endDate != null ">
+            and createTime between  #{startDate} and #{endDate}
+        </if>
+        <if test="ref_id != null  and ref_id != ''">
+            and   ref_id=#{ref_id}
+        </if>
     </select>
 </mapper>

@@ -18,10 +18,17 @@ public interface CapitalSerialMapper {
     CapitalSerial selectByPrimaryKey(Integer id);
 
     List<Map<String,String>> listByCapitalId(@Param("capitalId") Integer capitalId,
+                                             @Param("balanceSatatus") String balanceSatatus,
+                                             @Param("startDate") String startDate,
+                                             @Param("endDate") String endDate,
+                                             @Param("ref_id") String ref_id,
                                              @Param("startRecord")Integer startRecord,
                                              @Param("maxRecords")Integer maxRecords);
 
-    int countByCapitalId(@Param("capitalId") Integer capitalId);
+    int countByCapitalId(@Param("capitalId") Integer capitalId,
+                         @Param("balanceSatatus") String balanceSatatus,
+                          @Param("startDate") String startDate,
+                         @Param("endDate") String endDate,   @Param("ref_id") String ref_id);
 
     int updateByPrimaryKeySelective(CapitalSerial record);
 
