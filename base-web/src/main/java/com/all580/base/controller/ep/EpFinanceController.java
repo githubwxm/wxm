@@ -73,9 +73,9 @@ public class EpFinanceController extends BaseController {
      */
     @RequestMapping(value = "credit/hostoryCredit", method = RequestMethod.GET)
     @ResponseBody
-    public Result<?> hostoryCredit(HttpServletRequest request,Integer ep_id) {
+    public Result<?> hostoryCredit(HttpServletRequest request,Integer epId) {
         Map<String,Object> map = new HashMap<>();
-        map.put("ep_id", ep_id);
+        map.put("ep_id", epId);
         map.put("core_ep_id", request.getAttribute("core_ep_id"));
         ParamsMapValidate.validate(map, generateCreateSelectValidate());
         return logCreditService.hostoryCredit(map);
@@ -89,6 +89,7 @@ public class EpFinanceController extends BaseController {
     @RequestMapping(value = "credit/set", method = RequestMethod.POST)
     @ResponseBody
     public Result<Integer> set(@RequestBody Map map) {
+        map.put("ep_id",map.get("epId"));
             ParamsMapValidate.validate(map, generateCreateCreditValidate());
             return logCreditService.create(map);
     }//set
@@ -102,7 +103,7 @@ public class EpFinanceController extends BaseController {
     Integer province,Integer city){
         Map<String,Object> map = new HashMap<>();
         map.put("ep_id",ep_id);  //todo 获取平台商id
-        map.put("core_ep_id",request.getAttribute("core_ep_id"));
+        map.put("core_ep_id",ep_id);//
         map.put("name",name);
         map.put("link_phone",link_phone);
         map.put("ep_type",ep_type);
@@ -120,9 +121,12 @@ public class EpFinanceController extends BaseController {
     }
     @RequestMapping(value = "lstBalance", method = RequestMethod.GET)
     @ResponseBody
-    public Result<?> lstBalance(@RequestParam(value = "epId") Integer epId,Integer record_start, Integer record_count){
+    public Result<?> lstBalance(@RequestParam(value = "epId") Integer epId,
+                                String balanceSatatus,String startData,String endData,String ref_id,
+                                Integer startRecord, Integer maxRecords){
         Integer coreEpId = CommonUtil.objectParseInteger(getAttribute(EpConstant.EpKey.CORE_EP_ID));
-        return epFinanceService.getBalanceSerialList(epId,coreEpId,record_start,record_count,null);
+        return epFinanceService.getBalanceSerialList(epId,coreEpId,balanceSatatus,
+                startData,endData,ref_id,startRecord,maxRecords,null);
     }
 
     /**
