@@ -342,8 +342,8 @@ public class EpServiceImple implements EpService {
         try {
             List<Map<String, Object>> list = epMapper.select(params);
             if (list.isEmpty()) {
-                log.warn("未找到该企业");
-                throw new ApiException("未找到该企业");
+                log.warn("该平台下未找到该企业");
+                throw new ApiException("该平台下未找到该企业");
             } else {
                 Integer currentStatus = CommonUtil.objectParseInteger(list.get(0).get("status"));
                 if (EpConstant.EpStatus.ACTIVE.equals(nextStatus)) {
@@ -507,15 +507,15 @@ public class EpServiceImple implements EpService {
             List<Map<String, String>> listMap = epMapper.selectSingleTable(paramsMap);
             syncEpData(map.get("id"), EpConstant.Table.T_EP, listMap);
 
-            String destPhoneNum = selectPhone(CommonUtil.objectParseInteger(map.get("id"))).get();
-            int ep_id = CommonUtil.objectParseInteger(map.get("ep_id"));
-            Map<String, String> smsParams = new HashMap<>();
-            smsParams.put("dianhuahaoma",SmsType.Ep.CHANGLV_SERVICE_PHONE);//客户
-            Result r = smsService.send(destPhoneNum, SmsType.Ep.PLATFORM_ACTIVE, ep_id, smsParams);//发送短信
-            if (!r.isSuccess()) {
-                log.warn("激活平台商发送消息失败");
-                throw new ApiException("激活平台商发送消息失败");
-            }
+//            String destPhoneNum = selectPhone(CommonUtil.objectParseInteger(map.get("id"))).get();
+//            int ep_id = CommonUtil.objectParseInteger(map.get("ep_id"));
+//            Map<String, String> smsParams = new HashMap<>();
+//            smsParams.put("dianhuahaoma",SmsType.Ep.CHANGLV_SERVICE_PHONE);//客户
+//            Result r = smsService.send(destPhoneNum, SmsType.Ep.PLATFORM_ACTIVE, ep_id, smsParams);//发送短信
+//            if (!r.isSuccess()) {
+//                log.warn("激活平台商发送消息失败");
+//                throw new ApiException("激活平台商发送消息失败");
+//            }
 
         }catch (ApiException e) {
             log.error(e.getMessage(), e);
