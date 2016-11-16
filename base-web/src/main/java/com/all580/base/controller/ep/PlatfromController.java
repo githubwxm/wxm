@@ -142,7 +142,7 @@ public class PlatfromController extends BaseController {
         ParamsMapValidate.validate(map, platfromValidateManager.generateCreatePaymentStatusValidate());
         return     epPaymentConfService.update(map);
     }
-    @RequestMapping(value = "payment/select", method = RequestMethod.POST)
+    @RequestMapping(value = "payment/select", method = RequestMethod.GET)
     @ResponseBody
     public Result<Integer> paymentAdd(@RequestParam(value="id") Integer id) {
         return     epPaymentConfService.selectByPrimaryKey(id);
