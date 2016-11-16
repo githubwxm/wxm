@@ -148,10 +148,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         visitorMapper.updateByPrimaryKeySelective(visitor);
 
         // 发送短信
-        Result sendSms = smsManager.sendConsumeSms(orderItem, info.getConsumeQuantity());
-        if (!sendSms.isSuccess()) {
-            return sendSms;
-        }
+        smsManager.sendConsumeSms(orderItem, info.getConsumeQuantity());
 
         // 分账
         // 核销成功 记录任务

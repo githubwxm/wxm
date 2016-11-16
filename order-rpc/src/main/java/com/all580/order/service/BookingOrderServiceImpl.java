@@ -12,6 +12,7 @@ import com.all580.order.dto.LockStockDto;
 import com.all580.order.entity.*;
 import com.all580.order.manager.BookingOrderManager;
 import com.all580.order.manager.RefundOrderManager;
+import com.all580.order.manager.SmsManager;
 import com.all580.payment.api.conf.PaymentConstant;
 import com.all580.payment.api.model.BalanceChangeInfo;
 import com.all580.payment.api.service.ThirdPayService;
@@ -54,6 +55,8 @@ public class BookingOrderServiceImpl implements BookingOrderService {
     private BookingOrderManager bookingOrderManager;
     @Autowired
     private RefundOrderManager refundOrderManager;
+    @Autowired
+    private SmsManager smsManager;
 
     @Autowired
     private OrderMapper orderMapper;
@@ -267,6 +270,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
                 if (oversell && item.getStatus() == OrderConstant.OrderItemStatus.AUDIT_SUCCESS) {
                     item.setStatus(OrderConstant.OrderItemStatus.AUDIT_WAIT);
                     orderItemMapper.updateByPrimaryKeySelective(item);
+                    smsManager.sendAuditSms(item);
                 }
                 // 更新子订单详情
                 orderItemDetailMapper.updateByPrimaryKeySelective(detail);
@@ -361,6 +365,8 @@ public class BookingOrderServiceImpl implements BookingOrderService {
                         bookingOrderManager.addJob(OrderConstant.Actions.PAYMENT_CALLBACK, jobParams);
                     }
                     orderMapper.updateByPrimaryKeySelective(order);
+                    // TODO: 2016/11/16  目前只支持单子订单发送
+                    smsManager.sendAuditSuccess(orderItem);
                 }
                 // 同步数据
                 bookingOrderManager.syncOrderAuditAcceptData(order.getId(), orderItem.getId());

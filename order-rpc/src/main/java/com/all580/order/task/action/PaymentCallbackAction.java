@@ -6,6 +6,7 @@ import com.all580.order.dao.OrderMapper;
 import com.all580.order.entity.Order;
 import com.all580.order.entity.OrderItem;
 import com.all580.order.manager.BookingOrderManager;
+import com.all580.order.manager.SmsManager;
 import com.all580.product.api.model.ProductSearchParams;
 import com.all580.product.api.service.ProductSalesPlanRPCService;
 import com.framework.common.validate.ParamsMapValidate;
@@ -39,6 +40,8 @@ public class PaymentCallbackAction implements JobRunner {
     private OrderMapper orderMapper;
     @Autowired
     private BookingOrderManager bookingOrderManager;
+    @Autowired
+    private SmsManager smsManager;
 
     @Autowired
     private ProductSalesPlanRPCService productSalesPlanRPCService;
@@ -90,6 +93,10 @@ public class PaymentCallbackAction implements JobRunner {
 
         // 同步数据
         bookingOrderManager.syncPaymentSuccessData(orderId);
+
+        // 发送短信
+        // TODO: 2016/11/16  目前只支持单子订单发送
+        smsManager.sendPaymentSuccess(orderItems.get(0));
         return new Result(Action.EXECUTE_SUCCESS);
     }
 
