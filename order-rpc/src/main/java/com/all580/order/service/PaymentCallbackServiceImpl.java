@@ -54,9 +54,11 @@ public class PaymentCallbackServiceImpl implements PaymentCallbackService {
         try {
             Order order = orderMapper.selectBySN(ordCode);
             if (order == null) {
+                log.warn("订单:{}不存在", ordCode);
                 return new Result(false, "订单不存在");
             }
             if (order.getStatus() != OrderConstant.OrderStatus.PAYING) {
+                log.warn("订单:{}状态:{}不是支付中", ordCode, order.getStatus());
                 return new Result(false, "订单已经处理");
             }
             order.setThirdSerialNo(outTransId);
