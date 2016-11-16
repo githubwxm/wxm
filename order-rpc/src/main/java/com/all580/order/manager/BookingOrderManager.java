@@ -176,6 +176,7 @@ public class BookingOrderManager extends BaseOrderManager {
         orderItem.setStatus(OrderConstant.OrderItemStatus.AUDIT_SUCCESS);
         orderItem.setSupplierEpId(info.getEpId());
         orderItem.setSupplierCoreEpId(getCoreEpId(getCoreEpId(info.getEpId())));
+        orderItem.setSupplierPhone(info.getPhone());
         orderItem.setEpMaId(info.getEpMaId());
         orderItemMapper.insertSelective(orderItem);
         return orderItem;

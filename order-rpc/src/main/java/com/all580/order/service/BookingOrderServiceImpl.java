@@ -166,7 +166,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
                         limit = DateUtils.setMinutes(limit, Integer.parseInt(timeArray[1]));
                     }
                     if (when.after(limit)) {
-                        throw new ApiException("预定时间限制,最晚预定时间:" + limit);
+                        throw new ApiException("预定时间限制,最晚预定时间:" + DateFormatUtils.parseDateToDatetimeString(limit));
                     }
                 }
             }

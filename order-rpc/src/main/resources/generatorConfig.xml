@@ -61,7 +61,7 @@
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
             <columnOverride column="update_time" javaType="java.lang.String"/>
         </table>-->
-        <table tableName="t_order"
+        <!--<table tableName="t_order"
                enableCountByExample="false"
                enableUpdateByExample="false"
                enableDeleteByExample="false"
@@ -71,7 +71,7 @@
                domainObjectName="Order">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
             <columnOverride column="update_time" javaType="java.lang.String"/>
-        </table>
+        </table>-->
         <!--<table tableName="t_order_clearance_detail"
                enableCountByExample="false"
                enableUpdateByExample="false"
