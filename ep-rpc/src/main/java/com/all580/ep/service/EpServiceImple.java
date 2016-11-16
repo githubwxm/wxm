@@ -363,7 +363,7 @@ public class EpServiceImple implements EpService {
             if (ref > 0) {
                 List<Map<String, String>> listMap = epMapper.selectSingleTable(params);
                // int id = CommonUtil.objectParseInteger(params.get(EpConstant.EpKey.CORE_EP_ID));
-                syncEpData(selectPlatformId(CommonUtil.objectParseInteger(params.get("id"))), EpConstant.Table.T_EP, listMap);//同步数据
+                syncEpData(selectPlatformId(CommonUtil.objectParseInteger(params.get("id"))).get(), EpConstant.Table.T_EP, listMap);//同步数据
                 result.put(ref);
                 result.setSuccess();
             } else {
@@ -589,7 +589,7 @@ public class EpServiceImple implements EpService {
             int ref = epMapper.update(map);
             if (ref > 0) {
                 List<Map<String, String>> listMap = epMapper.selectSingleTable(map);
-                syncEpData(selectPlatformId(CommonUtil.objectParseInteger(map.get("id"))), EpConstant.Table.T_EP, listMap);
+                syncEpData(selectPlatformId(CommonUtil.objectParseInteger(map.get("id"))).get(), EpConstant.Table.T_EP, listMap);
                 result.put(map);
                 result.setSuccess();
             }
@@ -887,7 +887,7 @@ public class EpServiceImple implements EpService {
             Map<String,Object> map = new HashMap<>();
             map.put("id",params.get("id"));
             List<Map<String, String>> listMap = epMapper.selectSingleTable(map);
-            syncEpData(selectPlatformId(CommonUtil.objectParseInteger(params.get("id"))), EpConstant.Table.T_EP, listMap);
+            syncEpData(selectPlatformId(CommonUtil.objectParseInteger(params.get("id"))).get(), EpConstant.Table.T_EP, listMap);
         }catch(Exception e){
             log.error("查询数据库异常", e);
             throw new ApiException("查询数据库异常", e);
