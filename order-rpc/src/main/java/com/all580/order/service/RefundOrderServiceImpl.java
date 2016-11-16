@@ -1,5 +1,6 @@
 package com.all580.order.service;
 
+import com.all580.ep.api.conf.EpConstant;
 import com.all580.order.api.OrderConstant;
 import com.all580.order.api.service.RefundOrderService;
 import com.all580.order.dao.OrderItemDetailMapper;
@@ -91,6 +92,12 @@ public class RefundOrderServiceImpl implements RefundOrderService {
             }, orderItem.getStatus()) < 0 ||
                     order.getStatus() != OrderConstant.OrderStatus.PAID) {
                 throw new ApiException("订单不在可退订状态");
+            }
+            if (!params.containsKey(EpConstant.EpKey.EP_ID)) {
+                throw new ApiException("非法请求:企业ID为空");
+            }
+            if (!String.valueOf(params.get(EpConstant.EpKey.EP_ID)).equals(String.valueOf(order.getBuyEpId()))) {
+                throw new ApiException("非法请求:当前企业不能退订该订单");
             }
 
             // 每日订单详情
@@ -188,6 +195,9 @@ public class RefundOrderServiceImpl implements RefundOrderService {
             if (order == null) {
                 throw new ApiException("订单不存在");
             }
+            if (!String.valueOf(params.get(EpConstant.EpKey.CORE_EP_ID)).equals(String.valueOf(orderItem.getSupplierCoreEpId()))) {
+                throw new ApiException("非法请求:当前企业不能审核该退订订单");
+            }
             boolean status = Boolean.parseBoolean(params.get("status").toString());
             // 通过
             if (status) {
@@ -242,6 +252,9 @@ public class RefundOrderServiceImpl implements RefundOrderService {
         Order order = orderMapper.selectByPrimaryKey(orderItem.getOrderId());
         if (order == null) {
             throw new ApiException("订单不存在");
+        }
+        if (!String.valueOf(params.get(EpConstant.EpKey.CORE_EP_ID)).equals(String.valueOf(orderItem.getSupplierCoreEpId()))) {
+            throw new ApiException("非法请求:当前企业不能退款该退订订单");
         }
         // 退款
         refundOrderManager.refundMoney(order, refundOrder.getMoney(), String.valueOf(refundOrder.getNumber()));

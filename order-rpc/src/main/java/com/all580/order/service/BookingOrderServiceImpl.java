@@ -320,7 +320,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
 
     @Override
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public Result<?> audit(final Map params) {
+    public Result<?> audit(Map params) {
         String orderItemId = params.get("order_item_id").toString();
         long orderItemSn = Long.valueOf(orderItemId);
         // 分布式锁
@@ -328,7 +328,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
 
         // 锁成功
         try {
-            final OrderItem orderItem = orderItemMapper.selectBySN(orderItemSn);
+            OrderItem orderItem = orderItemMapper.selectBySN(orderItemSn);
             if (orderItem == null) {
                 throw new ApiException("订单不存在");
             }
@@ -342,6 +342,12 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             }
             if (order.getStatus() != OrderConstant.OrderStatus.AUDIT_WAIT) {
                 throw new ApiException("订单不在待审状态");
+            }
+            if (!params.containsKey(EpConstant.EpKey.EP_ID)) {
+                throw new ApiException("非法请求:企业ID为空");
+            }
+            if (!String.valueOf(params.get(EpConstant.EpKey.EP_ID)).equals(String.valueOf(orderItem.getSupplierEpId()))) {
+                throw new ApiException("非法请求:当前企业不能审核该订单");
             }
 
             orderItem.setAuditUserId(CommonUtil.objectParseInteger(params.get("operator_id")));
@@ -406,7 +412,12 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             if (order.getPayAmount() <= 0) {
                 throw new ApiException("该订单不需要支付");
             }
-
+            if (!params.containsKey(EpConstant.EpKey.EP_ID)) {
+                throw new ApiException("非法请求:企业ID为空");
+            }
+            if (!String.valueOf(params.get(EpConstant.EpKey.EP_ID)).equals(String.valueOf(order.getBuyEpId()))) {
+                throw new ApiException("非法请求:当前企业不能支付该订单");
+            }
 
             order.setStatus(OrderConstant.OrderStatus.PAYING);
             order.setLocalPaymentSerialNo(String.valueOf(UUIDGenerator.generateUUID()));
