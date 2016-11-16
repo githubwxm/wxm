@@ -25,7 +25,7 @@ import java.util.Map;
 @Controller
 @RequestMapping("api/ep/platform/channel")
 @Slf4j
-public class EpChannelController extends BaseController {
+public class EpChannelController extends BaseController {   //倒萨
     @Autowired
     private CoreEpChannelService coreEpChannelService;
 
