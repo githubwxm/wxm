@@ -569,6 +569,12 @@ public class EpServiceImple implements EpService {
     public Result<Map<String, Object>> updateEp(Map<String, Object> map) {
         Result<Map<String, Object>> result = new Result<>();
         try {
+            checkNamePhone(map);//检查电话与名字是否存在 ，存在抛出异常
+        } catch (ApiException e) {
+            log.error(e.getMessage(), e);
+            throw new ApiException(e.getMessage(), e);
+        }
+        try {
             //CommonUtil.formtAddress(map);
             Integer group_id = CommonUtil.objectParseInteger(map.get("group_id"));
             if (null != group_id) {

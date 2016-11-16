@@ -94,8 +94,10 @@ public class EpFinanceServiceImple implements EpFinanceService {
         return balancePayService.changeBalances(balanceList, PaymentConstant.BalanceChangeType.MANUAL_CHANGE_BALANCE,serialNum);
     }
     @Override
-    public Result getBalanceSerialList(Integer epId, Integer coreEpId,Integer startRecord, Integer maxRecords,Integer changType) {
+    public Result getBalanceSerialList(Integer epId, Integer coreEpId,
+                                       String balanceSatatus,String startDate,String endDate,String ref_id,
+                                       Integer startRecord, Integer maxRecords,Integer changType) {
 //changType   用余提现  暂时未用到
-        return balancePayService.getBalanceSerialList(epId,coreEpId,startRecord,maxRecords);
+        return balancePayService.getBalanceSerialList(epId,coreEpId,balanceSatatus,startDate,endDate,ref_id,startRecord,maxRecords);
     }
 }

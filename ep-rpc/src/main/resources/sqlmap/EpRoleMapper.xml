@@ -57,7 +57,7 @@
   <select id="checkName" resultType="java.lang.Integer">
     select count(1) from t_ep_role where name =#{name}
     <if test="id != null">
-      id=#{id}
+      and id !=#{id}
     </if>
   </select>
 
