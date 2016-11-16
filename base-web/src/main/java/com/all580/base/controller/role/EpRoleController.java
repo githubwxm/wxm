@@ -63,7 +63,7 @@ public class EpRoleController {
     }
 
     /**
-     * 添加菜单
+     * 添加角色菜单(未用到?)
      *
      * @return
      */
@@ -97,8 +97,17 @@ public class EpRoleController {
     @ResponseBody
     public Result selectepRoleId(@RequestParam(value = "ep_role_id", required = true) Integer ep_role_id) {
         return epRoleService.selectepRoleId(ep_role_id);
+
+
     }//selectList
 
+
+    /**
+     * 查询角色列表
+     * @param record_start
+     * @param record_count
+     * @return
+     */
     @RequestMapping(value = "selectList", method = RequestMethod.GET)
     @ResponseBody
     public Result selectList(Integer record_start,
