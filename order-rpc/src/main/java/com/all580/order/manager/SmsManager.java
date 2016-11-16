@@ -11,6 +11,7 @@ import com.all580.order.entity.RefundOrder;
 import com.all580.order.entity.Shipping;
 import com.framework.common.Result;
 import com.framework.common.lang.DateFormatUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,6 +29,7 @@ import java.util.Map;
  * @date 2016/11/8 16:38
  */
 @Component
+@Slf4j
 public class SmsManager {
     @Autowired
     private SmsService smsService;
@@ -184,7 +186,32 @@ public class SmsManager {
      * @return
      */
     public void sendAuditSms(OrderItem orderItem) {
-        // TODO: 2016/11/8  供应商产品管理员获取不到
+        Shipping shipping = shippingMapper.selectByOrder(orderItem.getOrderId());
+        if (shipping == null) {
+            throw new ApiException("订单联系人不存在");
+        }
+
+        Order order = orderMapper.selectByPrimaryKey(orderItem.getOrderId());
+        if (order == null) {
+            throw new ApiException("订单不存在");
+        }
+
+        if (orderItem.getSupplierPhone() == null) {
+            log.warn("子订单:{}没有供应商短信通知号码,不发送短信", orderItem.getNumber());
+            return;
+        }
+
+        Map<String, String> sendSmsParams = new HashMap<>();
+        sendSmsParams.put("dingdanhao", orderItem.getNumber().toString());
+        sendSmsParams.put("zichanpinming", orderItem.getProSubName());
+        sendSmsParams.put("date", DateFormatUtils.parseDateToDatetimeString(orderItem.getStart()));
+        sendSmsParams.put("xingmin", shipping.getName());
+        sendSmsParams.put("shuliang", String.valueOf(orderItem.getQuantity()));
+        sendSmsParams.put("dianhua", shipping.getPhone());
+        Result result = smsService.send(orderItem.getSupplierPhone(), SmsType.Order.SUPPLIER_ORDER_WARN, order.getPayeeEpId(), sendSmsParams);//发送短信
+        if (!result.isSuccess()) {
+            throw new ApiException("发送预定审核短信失败:" + result.getError());
+        }
     }
 
     /**
