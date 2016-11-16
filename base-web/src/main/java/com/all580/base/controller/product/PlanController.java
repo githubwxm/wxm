@@ -119,8 +119,7 @@ public class PlanController extends BaseController {
     @RequestMapping(value = "sale/ep/creator", method = RequestMethod.POST)
     @ResponseBody
     public Result productSubDistributionCreatorEp(@RequestBody Map params) {
-        List<Map> list =updateEpOnsalesParams(params);
-        return productService.productOnSaleBatch(list);
+        return productService.productOnSaleBatch(updateEpOnsalesParams(params));
     }
 
     @RequestMapping(value = "sale/ep", method = RequestMethod.POST)
