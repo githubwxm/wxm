@@ -73,18 +73,22 @@ public class BookingOrderManager extends BaseOrderManager {
             if (sids.contains(sid)) {
                 return new Result<>(false, Result.PARAMS_ERROR, "身份证:" + sid + "重复");
             }
-            int count = getOrderByCount(productSubCode, sid, bookingDate);
-            if (count >= maxCount) {
-                return new Result<>(false, Result.PARAMS_ERROR,
-                        String.format("身份证:%s超出该产品当天最大订单次数,已定次数:%d,最大次数:%d",
-                        sid, count, maxCount));
+            if (maxCount > 0) {
+                int count = getOrderByCount(productSubCode, sid, bookingDate);
+                if (count >= maxCount) {
+                    return new Result<>(false, Result.PARAMS_ERROR,
+                            String.format("身份证:%s超出该产品当天最大订单次数,已定次数:%d,最大次数:%d",
+                                    sid, count, maxCount));
+                }
             }
-            Integer qty = CommonUtil.objectParseInteger(visitorMap.get("quantity"));
-            int quantity = getOrderByQuantity(productSubCode, sid, bookingDate);
-            if (quantity + qty > maxQuantity) {
-                return new Result<>(false, Result.PARAMS_ERROR,
-                        String.format("身份证:%s超出该产品当天最大购票数,已定张数%d,最大购票张数%d",
-                                sid, quantity, maxQuantity));
+            if (maxQuantity > 0) {
+                Integer qty = CommonUtil.objectParseInteger(visitorMap.get("quantity"));
+                int quantity = getOrderByQuantity(productSubCode, sid, bookingDate);
+                if (quantity + qty > maxQuantity) {
+                    return new Result<>(false, Result.PARAMS_ERROR,
+                            String.format("身份证:%s超出该产品当天最大购票数,已定张数%d,最大购票张数%d",
+                                    sid, quantity, maxQuantity));
+                }
             }
             sids.add(sid);
         }
