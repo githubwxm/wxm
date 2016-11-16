@@ -122,11 +122,11 @@ public class EpFinanceController extends BaseController {
     @RequestMapping(value = "lstBalance", method = RequestMethod.GET)
     @ResponseBody
     public Result<?> lstBalance(@RequestParam(value = "epId") Integer epId,
-                                String balanceSatatus,String startData,String endData,String ref_id,
+                                String balanceSatatus,String startDate,String endDate,String ref_id,
                                 Integer startRecord, Integer maxRecords){
         Integer coreEpId = CommonUtil.objectParseInteger(getAttribute(EpConstant.EpKey.CORE_EP_ID));
         return epFinanceService.getBalanceSerialList(epId,coreEpId,balanceSatatus,
-                startData,endData,ref_id,startRecord,maxRecords,null);
+                startDate,endDate,ref_id,startRecord,maxRecords,null);
     }
 
     /**
