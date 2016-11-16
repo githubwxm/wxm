@@ -240,7 +240,6 @@ public class ProductController extends BaseController {
 
 
 
-
     @RequestMapping(value = "booking/view")
     @ResponseBody
     public Result<Map> searchProductBookingView(@RequestParam("ep_id") Integer epId, @RequestParam("id") Integer productSubId) {

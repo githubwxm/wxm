@@ -126,7 +126,6 @@ public class PlanController extends BaseController {
     @RequestMapping(value = "sale/ep", method = RequestMethod.POST)
     @ResponseBody
     public Result productSubDistributionEp(@RequestBody Map params) {
-
         return  productService.productOnSaleBatch(initEpOnsalesParams(params));
     }
 
