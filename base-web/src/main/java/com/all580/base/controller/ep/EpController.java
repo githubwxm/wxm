@@ -164,9 +164,10 @@ public class EpController extends BaseController {
      */
     @RequestMapping(value = "checkNamePhone", method = RequestMethod.GET)
     @ResponseBody
-   public Result<Boolean> checkNamePhone(String name,String link_phone){
+   public Result<Boolean> checkNamePhone(String name,String link_phone,Integer id){
        //where name =#{name} or link_phone=#{link_phone}
        Map<String,Object> map = new HashMap<>();
+        map.put("id",id);
        map.put("name",name);
        map.put("link_phone",link_phone);
        return epService.checkNamePhone(map);
