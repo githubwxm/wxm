@@ -107,6 +107,11 @@ public class PlanController extends BaseController {
         return productSalesPlanService.selectCanSaleSubProduct(epId,productName,productSubName,province,city,area,ticketFlag,payType,ticketDict,start,count);
     }
 
+    /**
+     * 对组分销
+     * @param params
+     * @return
+     */
     @RequestMapping(value = "sale/group", method = RequestMethod.POST)
     @ResponseBody
     public Result productSubDistributionGroup(@RequestBody Map params) {
@@ -122,10 +127,39 @@ public class PlanController extends BaseController {
         return productService.productOnSaleBatch(updateEpOnsalesParams(params));
     }
 
+    /**
+     * 对企业分销
+     * @param params
+     * @return
+     */
     @RequestMapping(value = "sale/ep", method = RequestMethod.POST)
     @ResponseBody
     public Result productSubDistributionEp(@RequestBody Map params) {
         return  productService.productOnSaleBatch(initEpOnsalesParams(params));
+    }
+
+    @RequestMapping(value = "sale/platform_ep", method = RequestMethod.POST)
+    @ResponseBody
+    public Result productSubsDistributionPlatformEp(@RequestBody Map params) {
+        return null;
+    }
+
+    private List<Map> initPlatformPlanSalesParams(Map params) {
+        Map<String, Object> ep = epService.selectId(CommonUtil.objectParseInteger(params.get("platfrom_ep_id"))).get();
+        List<Map> onSales = (List<Map>) params.get("saledArray");
+        for (Map planSale : onSales) {
+            ep.put("sale_ep_id", params.get("ep_id"));
+            ep.put("ep_id", ep.get("id"));
+            ep.put("name", ep.get("name"));
+            // ep内有product_sub_id
+            // ep内有batch_id
+            // ep内有price
+            // ep内有price_type
+            // ep内有price_pixed
+            // ep内有price_percent
+
+        }
+        return null;
     }
 
     private List<Map> updateEpOnsalesParams(Map params){
@@ -136,9 +170,9 @@ public class PlanController extends BaseController {
         Map<String,Object> mapId  = new HashMap();
         mapId.put("id", ep_id);
         Result<Map<String,Object>> ep=  epService.selectId(ep_id);//获取企业信息
-        List<Map> list = new ArrayList<Map>();
+        List<Map> list = new ArrayList<>();
         String name = CommonUtil.objectParseString(ep.get().get("name"));
-         Map map = new HashMap();
+        Map map = new HashMap();
         map.put("name",name);
         map.put("saleEpId",params.get("ep_id"));
         map.put("ep_id",ep_id);
@@ -174,6 +208,11 @@ public class PlanController extends BaseController {
         return onSalesParamses;
     }
 
+    /**
+     * 对企业下架
+     * @param params
+     * @return
+     */
     @RequestMapping(value = "off_sale/ep", method = RequestMethod.POST)
     @ResponseBody
     public Result productSubOffSaleEp(@RequestBody Map params) {
@@ -182,6 +221,11 @@ public class PlanController extends BaseController {
         return productService.productOffSaleBatch(params);
     }
 
+    /**
+     * 对组下架
+     * @param params
+     * @return
+     */
     @RequestMapping(value = "off_sale/group", method = RequestMethod.POST)
     @ResponseBody
     public Result productSubOffSaleGroup(@RequestBody Map params) {
