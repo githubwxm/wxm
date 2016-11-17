@@ -594,7 +594,9 @@ public class EpServiceImple implements EpService {
             // String groupName="固定分组";
             int ref = epMapper.update(map);
             if (ref > 0) {
-                List<Map<String, String>> listMap = epMapper.selectSingleTable(map);
+                Map<String,Object> tempMap=new HashMap<>();
+                tempMap.put("id",map.get("id"));
+                List<Map<String, String>> listMap = epMapper.selectSingleTable(tempMap);
                 syncEpData(selectPlatformId(CommonUtil.objectParseInteger(map.get("id"))).get(), EpConstant.Table.T_EP, listMap);
                 result.put(map);
                 result.setSuccess();
@@ -703,6 +705,35 @@ public class EpServiceImple implements EpService {
             throw new ApiException("查询数据库异常", e);
         }
         return result;
+    }
+
+    @Override
+    public Result updateEpGroup(Integer groupId,String GroupName , List<Integer> epIds){
+        try {
+            if(null==epIds||epIds.isEmpty()){
+                throw new ApiException("企业不能为空");
+            }
+            if(null==groupId){
+                throw new ApiException("企业分组不能为空");
+            }
+            if(null==GroupName){
+                throw new ApiException("企业分组名称不能为空");
+            }
+            int ref= epMapper.updateEpGroup(groupId,GroupName,epIds);
+            if (ref > 0) {
+                Integer core_ep_id= selectPlatformId(epIds.get(0)).get();
+                List<Map<String, String>> listMap = epMapper.selectEpList(epIds);
+                syncEpData(core_ep_id, EpConstant.Table.T_EP, listMap);
+            }
+        }catch (ApiException e) {
+            log.error(e.getMessage(), e);
+            throw new ApiException(e.getMessage(), e);
+        }catch (Exception e) {
+            log.error("批量修改企业分组错误", e);
+            throw new ApiException(e.getMessage(), e);
+        }
+
+        return null;
     }
 
     @Override
@@ -900,6 +931,8 @@ public class EpServiceImple implements EpService {
         }
         return new Result(true);
     }
+
+
     /**
      * 同步数据
      *
