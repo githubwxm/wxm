@@ -216,7 +216,7 @@ public class EpServiceImple implements EpService {
         String creator_ep_id = (String) map.get("creator_ep_id");//上级企业id
         // 获取创建企业的平台商ID,判断该企业平台商ID是否与当前操作平台商ID一致
         Integer core_ep_id = selectPlatformId(Integer.parseInt(creator_ep_id)).get();
-        if(!core_ep_id.equals(CommonUtil.objectParseInteger(map.get(EpConstant.EpKey.CORE_EP_ID)))){
+        if (!core_ep_id.equals(CommonUtil.objectParseInteger(map.get(EpConstant.EpKey.CORE_EP_ID)))) {
             throw new ApiException("创建人与审核人不是同一平台");
         }
         Integer group_id = CommonUtil.objectParseInteger(map.get("group_id"));
@@ -362,7 +362,7 @@ public class EpServiceImple implements EpService {
             int ref = epMapper.updateStatus(params);
             if (ref > 0) {
                 List<Map<String, String>> listMap = epMapper.selectSingleTable(params);
-               // int id = CommonUtil.objectParseInteger(params.get(EpConstant.EpKey.CORE_EP_ID));
+                // int id = CommonUtil.objectParseInteger(params.get(EpConstant.EpKey.CORE_EP_ID));
                 syncEpData(selectPlatformId(CommonUtil.objectParseInteger(params.get("id"))).get(), EpConstant.Table.T_EP, listMap);//同步数据
                 result.put(ref);
                 result.setSuccess();
@@ -440,7 +440,7 @@ public class EpServiceImple implements EpService {
     public Result<Integer> platformFreeze(Map<String, Object> map) {
         Map<String, Object> params = new HashMap();//  同一个查询方法，按map参数查找，所以重构
         params.put("id", map.get("id"));
-       // params.put(EpConstant.EpKey.CORE_EP_ID,map.get("ep_id"));//操作人所属企业
+        // params.put(EpConstant.EpKey.CORE_EP_ID,map.get("ep_id"));//操作人所属企业
         params.put("statusActive", EpConstant.EpStatus.ACTIVE);
         params.put("status", EpConstant.EpStatus.FREEZE);
         try {
@@ -449,7 +449,7 @@ public class EpServiceImple implements EpService {
                 String destPhoneNum = selectPhone(CommonUtil.objectParseInteger(map.get("id"))).get();
                 int ep_id = CommonUtil.objectParseInteger(map.get("ep_id"));
                 Map<String, String> smsParams = new HashMap<>();
-                smsParams.put("dianhuahaoma",SmsType.Ep.CHANGLV_SERVICE_PHONE);//客户
+                smsParams.put("dianhuahaoma", SmsType.Ep.CHANGLV_SERVICE_PHONE);//客户
                 Result r = smsService.send(destPhoneNum, SmsType.Ep.PLATFORM_FREEZE, ep_id, smsParams);//发送短信
                 if (!r.isSuccess()) {
                     log.warn("冻结平台商发送消息失败");
@@ -476,7 +476,7 @@ public class EpServiceImple implements EpService {
                 String destPhoneNum = selectPhone(CommonUtil.objectParseInteger(map.get("id"))).get();
                 int ep_id = CommonUtil.objectParseInteger(map.get("ep_id"));
                 Map<String, String> smsParams = new HashMap<>();
-                smsParams.put("dianhuahaoma",SmsType.Ep.CHANGLV_SERVICE_PHONE);//客户
+                smsParams.put("dianhuahaoma", SmsType.Ep.CHANGLV_SERVICE_PHONE);//客户
                 Result r = smsService.send(destPhoneNum, SmsType.Ep.PLATFORM_STOP, ep_id, smsParams);//发送短信
                 if (!r.isSuccess()) {
                     log.warn("停用平台商发送消息失败");
@@ -517,10 +517,10 @@ public class EpServiceImple implements EpService {
 //                throw new ApiException("激活平台商发送消息失败");
 //            }
 
-        }catch (ApiException e) {
+        } catch (ApiException e) {
             log.error(e.getMessage(), e);
             throw new ApiException(e.getMessage(), e);
-        }catch (Exception e) {
+        } catch (Exception e) {
             log.error("更新平台商状态异常", e);
             throw new ApiException("更新平台商状态异常", e);
         }
@@ -585,24 +585,24 @@ public class EpServiceImple implements EpService {
                         Object groupName = temp.get("name");
                         map.put("group_name", groupName);
                     }
-                }else{
-                    log.error("查询企业分组错误",group_id);
-                   // throw new ApiException("查询企业分组错误");
+                } else {
+                    log.error("查询企业分组错误", group_id);
+                    // throw new ApiException("查询企业分组错误");
                 }
 
             }
             // String groupName="固定分组";
             int ref = epMapper.update(map);
             if (ref > 0) {
-                Map<String,Object> tempMap=new HashMap<>();
-                tempMap.put("id",map.get("id"));
+                Map<String, Object> tempMap = new HashMap<>();
+                tempMap.put("id", map.get("id"));
                 List<Map<String, String>> listMap = epMapper.selectSingleTable(tempMap);
                 syncEpData(selectPlatformId(CommonUtil.objectParseInteger(map.get("id"))).get(), EpConstant.Table.T_EP, listMap);
                 result.put(map);
                 result.setSuccess();
             }
 
-        }catch (ApiException e) {
+        } catch (ApiException e) {
             log.error(e.getMessage(), e);
             throw new ApiException(e.getMessage(), e);
         } catch (Exception e) {
@@ -641,10 +641,10 @@ public class EpServiceImple implements EpService {
 //            if (list.isEmpty()) {
 //                result.setError("未查询到数据");
 //            } else {
-                resultMap.put("list", list);
-                resultMap.put("totalCount", epMapper.platformListUpCount(map));
-                result.put(resultMap);
-                result.setSuccess();
+            resultMap.put("list", list);
+            resultMap.put("totalCount", epMapper.platformListUpCount(map));
+            result.put(resultMap);
+            result.setSuccess();
 //            }
         } catch (Exception e) {
             log.error("数据库查询错误", e);
@@ -708,49 +708,50 @@ public class EpServiceImple implements EpService {
     }
 
     @Override
-    public Result updateEpRemoveGroup(Map<String,Object> map){
-        try{
-            Integer epId=CommonUtil.objectParseInteger(map.get("creator_ep_id"));//操作人id
-            Integer groupId=CommonUtil.objectParseInteger(map.get("group_id"));
+    public Result updateEpRemoveGroup(Map<String, Object> map) {
+        try {
+            Integer epId = CommonUtil.objectParseInteger(map.get("creator_ep_id"));//操作人id
+            Integer groupId = CommonUtil.objectParseInteger(map.get("group_id"));
             Integer id = CommonUtil.objectParseInteger(map.get("id"));
             List<Integer> list = new ArrayList<>();
             list.add(id);
-             Result r= planGroupRPCService.mvEpsToGroup(epId,groupId,list);
-            if(r.isSuccess()){
+            Result r = planGroupRPCService.mvEpsToGroup(epId, groupId, list);
+            if (r.isSuccess()) {
                 return updateEp(map);
-            }else{
-                return   r;
+            } else {
+                return r;
             }
-        }catch (ApiException e) {
+        } catch (ApiException e) {
             log.error(e.getMessage(), e);
             throw new ApiException(e.getMessage(), e);
-        }catch (Exception e){
+        } catch (Exception e) {
             log.error("移动分组出错", e);
             throw new ApiException("移动分组出错", e);
         }
     }
+
     @Override
-    public Result updateEpGroup(Integer groupId,String GroupName , List<Integer> epIds){
+    public Result updateEpGroup(Integer groupId, String GroupName, List<Integer> epIds) {
         try {
-            if(null==epIds||epIds.isEmpty()){
+            if (null == epIds || epIds.isEmpty()) {
                 throw new ApiException("企业不能为空");
             }
-            if(null==groupId){
+            if (null == groupId) {
                 throw new ApiException("企业分组不能为空");
             }
-            if(null==GroupName){
+            if (null == GroupName) {
                 throw new ApiException("企业分组名称不能为空");
             }
-            int ref= epMapper.updateEpGroup(groupId,GroupName,epIds);
+            int ref = epMapper.updateEpGroup(groupId, GroupName, epIds);
             if (ref > 0) {
-                Integer core_ep_id= selectPlatformId(epIds.get(0)).get();
+                Integer core_ep_id = selectPlatformId(epIds.get(0)).get();
                 List<Map<String, String>> listMap = epMapper.selectEpList(epIds);
                 syncEpData(core_ep_id, EpConstant.Table.T_EP, listMap);
             }
-        }catch (ApiException e) {
+        } catch (ApiException e) {
             log.error(e.getMessage(), e);
             throw new ApiException(e.getMessage(), e);
-        }catch (Exception e) {
+        } catch (Exception e) {
             log.error("批量修改企业分组错误", e);
             throw new ApiException(e.getMessage(), e);
         }
@@ -805,10 +806,10 @@ public class EpServiceImple implements EpService {
 //            if (list.isEmpty()) {
 //                result.setError("未查询到数据");
 //            } else {
-                resultMap.put("list", list);
-                resultMap.put("totalCount", epMapper.selectCount(map));
-                result.put(resultMap);
-          //  }
+            resultMap.put("list", list);
+            resultMap.put("totalCount", epMapper.selectCount(map));
+            result.put(resultMap);
+            //  }
         } catch (Exception e) {
             log.error("查询数据库异常", e);
             throw new ApiException("查询数据库异常", e);
@@ -880,7 +881,7 @@ public class EpServiceImple implements EpService {
     public Result<Map<String, Object>> selectId(int id) {
         Result<Map<String, Object>> result = new Result<>();
         Map params = new HashMap();
-        params.put("id",id);
+        params.put("id", id);
         try {
             List<Map<String, Object>> resuleMap = epMapper.select(params);
             if (resuleMap.isEmpty()) {
@@ -928,6 +929,12 @@ public class EpServiceImple implements EpService {
     @Override
     public Result<List<Map<String, Object>>> getEp(Integer[] epids, String[] field) {
         Map<String, Object> map = new HashMap<>();
+        if (epids == null || epids.length == 0) {
+            throw new ApiException("epids不能为空");
+        }
+        if (field == null || field.length == 0) {
+            throw new ApiException("field不能为空");
+        }
         map.put("epids", epids);
         map.put("field", field);
         Result<List<Map<String, Object>>> result = new Result<>();
@@ -939,15 +946,16 @@ public class EpServiceImple implements EpService {
         }
         return result;
     }
+
     @Override
-    public Result updateEpRole(Map<String,Object> params){
-        try{
+    public Result updateEpRole(Map<String, Object> params) {
+        try {
             epMapper.updateEpRole(params);
-            Map<String,Object> map = new HashMap<>();
-            map.put("id",params.get("id"));
+            Map<String, Object> map = new HashMap<>();
+            map.put("id", params.get("id"));
             List<Map<String, String>> listMap = epMapper.selectSingleTable(map);
             syncEpData(selectPlatformId(CommonUtil.objectParseInteger(params.get("id"))).get(), EpConstant.Table.T_EP, listMap);
-        }catch(Exception e){
+        } catch (Exception e) {
             log.error("查询数据库异常", e);
             throw new ApiException("查询数据库异常", e);
         }
