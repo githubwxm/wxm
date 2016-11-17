@@ -25,7 +25,7 @@ public class SmsServiceTest {
 
     @Test
     public void sendTest(){
-        String destPhoneNum = "13808466967";
+        String destPhoneNum = "12345678910";
         Integer smsType = SmsType.Ep.BALANCE_SHORTAGE; // 12006
         Integer epId = 1;
         Map<String, String> params = new HashMap<>();
