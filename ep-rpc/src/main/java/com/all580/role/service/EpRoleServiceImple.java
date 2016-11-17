@@ -155,7 +155,10 @@ public class EpRoleServiceImple implements EpRoleService {
                 epRoleFuncMapper.updateEpRoleFuncIsNotDelete(ep_role_id, initFunc);
                 removeAllList(func_ids,initFunc);
             }
-            epRoleFuncMapper.insertEpRoleFuncBatch(ep_role_id, oper_id, func_ids);
+            if(!(null == func_ids || func_ids.isEmpty())){
+                epRoleFuncMapper.insertEpRoleFuncBatch(ep_role_id, oper_id, func_ids);
+            }
+
         } catch (Exception e) {
             log.error("修改菜单出错 {}", e.getMessage());
             return new Result(false, e.getMessage());
