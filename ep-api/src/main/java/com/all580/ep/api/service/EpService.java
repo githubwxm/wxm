@@ -154,6 +154,14 @@ public interface EpService {
 
 
     /**
+     * 修改企业分组信息
+     * @param groupId
+     * @param GroupName
+     * @param epIds
+     * @return
+     */
+    Result updateEpGroup(Integer groupId,String GroupName , List<Integer> epIds);
+    /**
      *
      * @param id   企业id
      * @return  String 电话号码
