@@ -45,12 +45,12 @@ public class BalancePayServiceTest extends BaseTest {
 
     @Test
     public void getBalanceListTest(){
-        try{
-            balancePayService.getBalanceSerialList(1,1,1,1);
-
-        }catch(Exception e){
-e.printStackTrace();
-        }
+//        try{
+//            balancePayService.getBalanceSerialList(1,1,1,1);
+//
+//        }catch(Exception e){
+//e.printStackTrace();
+//        }
 
 //        List<Integer> epIds = Arrays.asList(new Integer[]{10,20});
 //        Result<List<Map<String, String>>> result = balancePayService.getBalanceList(epIds, 100);
