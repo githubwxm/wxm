@@ -3,6 +3,8 @@ package com.all580.ep.dao;
 
 
 
+import org.apache.ibatis.annotations.Param;
+
 import java.util.List;
 import java.util.Map;
 
@@ -34,13 +36,19 @@ public interface EpMapper {
     int getAccountInfoListCount(Map<String,Object> map);
 
     List<Map<String,Object>> checkNamePhone(Map<String,Object> map);
-
+     int updateEpGroup(@Param("groupId") Integer groupId,@Param("GroupName") String GroupName,@Param("epids") List<Integer> epids);
     /**
      * 只查询了ep单表的数据
      * @param map
      * @return
      */
     List<Map<String,String>> selectSingleTable(Map<String,Object> map);
+    /**
+     * 只查询了ep单表的数据
+     * @param
+     * @return
+     */
+    List<Map<String,String>> selectEpList(@Param("epids") List<Integer> epids);
     String selectPhone(int id);
     int updateEpRole(Map<String,Object> map);
 }

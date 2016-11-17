@@ -92,7 +92,10 @@ public class epServiceTest {
         map.put("id",3);
        // epRoleService.updateEpRole(map);
         //epRoleMapper.updateByPrimaryKey(map);
-        print(epRoleService.selectList(map));
+        List<Integer> list = new ArrayList<Integer>();
+        list.add(1140);
+        epService.updateEpGroup(14,"",list);
+      //  print(epRoleService.selectList(map));
     }
     @Test
     public void testFunc() {
@@ -156,7 +159,7 @@ public class epServiceTest {
        print(coreEpAccessService.selectAccessList(ids).get()+"ssss");*/
        Map map = new HashMap();
        map.put("core_ep_id","1");
-       epFinanceService.addBalance(1146,1,11111);
+       epFinanceService.getAccountInfoList(map);
     }
 
     @Test

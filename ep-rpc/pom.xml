@@ -31,6 +31,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
+            <version>${lombok_version}</version>
         </dependency>
         <dependency>
             <groupId>com.all580</groupId>
@@ -55,7 +56,7 @@
         <dependency>
             <groupId>com.github.sgroschupf</groupId>
             <artifactId>zkclient</artifactId>
-            <version>0.1</version>
+            <version> ${zkclient_version}</version>
         </dependency>
         <dependency>
             <groupId>com.aliyun.openservices</groupId>

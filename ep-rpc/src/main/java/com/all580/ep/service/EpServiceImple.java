@@ -708,6 +708,28 @@ public class EpServiceImple implements EpService {
     }
 
     @Override
+    public Result updateEpRemoveGroup(Map<String,Object> map){
+        try{
+            Integer epId=CommonUtil.objectParseInteger(map.get("creator_ep_id"));//操作人id
+            Integer groupId=CommonUtil.objectParseInteger(map.get("group_id"));
+            Integer id = CommonUtil.objectParseInteger(map.get("id"));
+            List<Integer> list = new ArrayList<>();
+            list.add(id);
+             Result r= planGroupRPCService.mvEpsToGroup(epId,groupId,list);
+            if(r.isSuccess()){
+                return updateEp(map);
+            }else{
+                return   r;
+            }
+        }catch (ApiException e) {
+            log.error(e.getMessage(), e);
+            throw new ApiException(e.getMessage(), e);
+        }catch (Exception e){
+            log.error("移动分组出错", e);
+            throw new ApiException("移动分组出错", e);
+        }
+    }
+    @Override
     public Result updateEpGroup(Integer groupId,String GroupName , List<Integer> epIds){
         try {
             if(null==epIds||epIds.isEmpty()){
