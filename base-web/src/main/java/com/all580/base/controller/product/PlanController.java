@@ -209,6 +209,17 @@ public class PlanController extends BaseController {
     }
 
     /**
+     * 对上级供应商下架
+     * @param params
+     * @return
+     */
+    @RequestMapping(value = "off_sale/supplier", method = RequestMethod.POST)
+    @ResponseBody
+    public Result productSubOffSaleSupplier(@RequestBody Map params) {
+        return productService.productOffSaleSupplier(params);
+    }
+
+    /**
      * 对企业下架
      * @param params
      * @return
