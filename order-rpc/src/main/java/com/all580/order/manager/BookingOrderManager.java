@@ -246,12 +246,12 @@ public class BookingOrderManager extends BaseOrderManager {
         if (info.getEffectiveType() == ProductConstants.EffectiveValidType.DAY) {
             // 这里目前只做了门票的,默认结束日期就是当天的,酒店应该是第二天
             expiryDate = DateUtils.addDays(orderItemDetail.getDay(), info.getEffectiveDay() - 1);
-            expiryDate = DateUtils.setHours(expiryDate, DateFormatUtils.get(info.getEndTime(), Calendar.HOUR_OF_DAY));
-            expiryDate = DateUtils.setMinutes(expiryDate, DateFormatUtils.get(info.getEndTime(), Calendar.MINUTE));
-            expiryDate = DateUtils.setSeconds(expiryDate, DateFormatUtils.get(info.getEndTime(), Calendar.SECOND));
         } else {
             expiryDate = info.getEffectiveEndDate();
         }
+        expiryDate = DateUtils.setHours(expiryDate, DateFormatUtils.get(info.getEndTime(), Calendar.HOUR_OF_DAY));
+        expiryDate = DateUtils.setMinutes(expiryDate, DateFormatUtils.get(info.getEndTime(), Calendar.MINUTE));
+        expiryDate = DateUtils.setSeconds(expiryDate, DateFormatUtils.get(info.getEndTime(), Calendar.SECOND));
         if (effectiveDate.after(expiryDate)) {
             throw new ApiException("该产品已过期");
         }
