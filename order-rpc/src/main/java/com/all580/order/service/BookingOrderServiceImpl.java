@@ -263,8 +263,13 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             // 判断是否需要审核
             LockStockDto lockStockDto = lockStockDtoMap.get(itemId);
             OrderItem item = lockStockDto.getOrderItem();
-            for (Boolean oversell : listMap.get(itemId)) {
-                OrderItemDetail detail = lockStockDto.getOrderItemDetail().get(i);
+            List<Boolean> booleanList = listMap.get(itemId);
+            List<OrderItemDetail> orderItemDetail = lockStockDto.getOrderItemDetail();
+            if (booleanList.size() != orderItemDetail.size()) {
+                throw new ApiException(String.format("锁库存天数:%d与购买天数:%d不匹配", booleanList.size(), orderItemDetail.size()));
+            }
+            for (Boolean oversell : booleanList) {
+                OrderItemDetail detail = orderItemDetail.get(i);
                 detail.setOversell(oversell);
                 // 如果是超卖则把子订单状态修改为待审
                 if (oversell && item.getStatus() == OrderConstant.OrderItemStatus.AUDIT_SUCCESS) {
