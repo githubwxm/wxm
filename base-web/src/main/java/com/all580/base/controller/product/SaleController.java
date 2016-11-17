@@ -144,7 +144,7 @@ public class SaleController extends BaseController {
         Map<String, Object> map = epResult.get();
         List<Map<String, Object>> eps = (List<Map<String,Object>>) map.get("list");
 //        Result<List<DistributionEpInfo>> distributedEpsResult = productSalesPlanService.searchDistributionEpInfo(productSubId, epId);
-        Result<List<DistributionEpInfo>> distributedEpsResult = productDistributionService.selectAlreadyDistributionEp(productSubId, epId);
+        Result<List<DistributionEpInfo>> distributedEpsResult = productDistributionService.selectAlreadyDistributionPlatformEp(productSubId, epId);
         if (distributedEpsResult == null) throw new ApiException("查询分销企业出错");
         List<Map<String, Object>> returnList = new ArrayList<>();
         if (ProductConstants.ProductDistributionState.HAD_DISTRIBUTE == isDistributed) {
