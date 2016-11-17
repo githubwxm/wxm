@@ -64,6 +64,7 @@ public class EpPaymentConfServiceImpl implements EpPaymentConfService {
         Result result = new Result();
         try {
             EpPaymentConf conf = new EpPaymentConf();
+            map.put("confData",JsonUtils.toJson(map.get("confData")));
             BeanUtils.populate(conf, map);
             // 检查同一企业下是否已经存在相同支付类型的配置    --   修改的话修改本身是已经存在的
             //checkExistSameTypeRecord(conf.getCoreEpId(), conf.getPaymentType());
