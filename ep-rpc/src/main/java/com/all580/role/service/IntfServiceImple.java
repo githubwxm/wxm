@@ -57,11 +57,7 @@ public class IntfServiceImple implements IntfService {
             List list =intfMapper.selectFuncId(params);
             resultMap.put("list",list);
             result.put(resultMap);
-        }catch (ApiException e){
-            log.error("查询接口列表出错 {}",e.getMessage());
-            throw   new ApiException("查询接口列表出错");
-        }
-        catch (Exception e){
+        }catch (Exception e){
             log.error("查询接口列表出错 {}",e.getMessage());
             throw   new ApiException("查询接口列表出错");
         }
