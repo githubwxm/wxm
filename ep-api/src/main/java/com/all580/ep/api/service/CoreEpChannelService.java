@@ -32,6 +32,7 @@ public interface CoreEpChannelService {
      */
     Result<Map<String,Object>> select(Map<String,Object> params);
 
+    Result<Integer> selectPlatfromRate(int supplier_core_ep_id,int seller_core_ep_id);
     /**
      * 取消平台供应关系
      * @param id
