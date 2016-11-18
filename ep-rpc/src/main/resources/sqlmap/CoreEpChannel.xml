@@ -56,7 +56,7 @@
     </select>
 
     <select id="selectPlatfromRate" resultType="java.lang.Integer">
-        select * from t_core_ep_channel
+        select rate from t_core_ep_channel
          where supplier_core_ep_id =#{supplier_core_ep_id} and seller_core_ep_id=#{seller_core_ep_id};
     </select>
     <select id="selectCount" resultType="java.lang.Integer">
