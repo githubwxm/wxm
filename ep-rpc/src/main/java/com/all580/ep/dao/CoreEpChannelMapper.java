@@ -16,4 +16,6 @@ public interface CoreEpChannelMapper {
    List<Map<String,Object>> select(Map<String,Object> params);
    int cancel(@Param("id") Integer id);
    int selectCount(Map<String,Object> map);
+   Integer selectPlatfromRate(@Param("supplier_core_ep_id") int supplier_core_ep_id
+           ,@Param("seller_core_ep_id") int seller_core_ep_id);
 }

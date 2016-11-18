@@ -97,7 +97,12 @@ public class CoreEpChannelServiceImple implements CoreEpChannelService {
         }
         return result;
     }
-
+   @Override
+   public Result<Integer> selectPlatfromRate(int supplier_core_ep_id,int seller_core_ep_id){
+       Result result = new Result(true);
+       result.put(coreEpChannelMapper.selectPlatfromRate(supplier_core_ep_id,seller_core_ep_id));
+     return result;
+    }
 
 //    private Map<String[], ValidRule[]> generateCreateEpChannelValidate() {
 //        Map<String[], ValidRule[]> rules = new HashMap<>();
