@@ -44,7 +44,7 @@ public class EpServiceImple implements EpService {
     private BalancePayService balancePayService;
 
     @Autowired
-    private PlanGroupRPCService planGroupRPCService;
+    private PlanGroupRPCService planGroupService;
 
     @Autowired
     private EpBalanceThresholdService epBalanceThresholdService;
@@ -204,8 +204,6 @@ public class EpServiceImple implements EpService {
             log.error(e.getMessage(), e);
             throw new ApiException(e.getMessage(), e);
         }
-
-
         boolean flag = false;//是否添加余额阀值标识
         map.put("status", EpConstant.EpStatus.ACTIVE);// 状态默认未初始化
         map.put("status_bak", EpConstant.EpStatus.ACTIVE);// 状态默认未初始化
@@ -223,7 +221,7 @@ public class EpServiceImple implements EpService {
         Integer group_id = CommonUtil.objectParseInteger(map.get("group_id"));
         String ep_class = (String) map.get("ep_class");//企业分类
         try {
-            Object groupName = planGroupRPCService.searchPlanGroupById(group_id).get().get("name");
+            Object groupName = planGroupService.searchPlanGroupById(group_id).get().get("name");
             // String groupName="固定分组";
             if (null == groupName) {
                 throw new ParamsMapValidationException("企业分组错误");
@@ -266,10 +264,14 @@ public class EpServiceImple implements EpService {
         try {
             epMapper.create(map);//添加企业信息
             Integer epId = Common.objectParseInteger(map.get("id"));
-
             Result r = balancePayService.createBalanceAccount(epId, core_ep_id); //创建余额账户
             if (!r.isSuccess()) {
                 throw new ApiException("添加企业余额失败");
+            }
+          r=  planGroupService.addEpToGroup(CommonUtil.objectParseInteger(map.get("operator_id")),
+                    epId,CommonUtil.objectParseString(map.get("name")),core_ep_id,group_id );
+            if (!r.isSuccess()) {
+                throw new ApiException("修改分组信息失败");
             }
             if (flag) {//如果是分销商默认加载余额阀值为1000
                 Map<String, Object> epBalanceThresholdMap = new HashMap<>();
@@ -579,7 +581,7 @@ public class EpServiceImple implements EpService {
             //CommonUtil.formtAddress(map);
             Integer group_id = CommonUtil.objectParseInteger(map.get("group_id"));
             if (null != group_id) {
-                Result<Map> tempResult = planGroupRPCService.searchPlanGroupById(group_id);
+                Result<Map> tempResult = planGroupService.searchPlanGroupById(group_id);
                 if (tempResult.isSuccess()) {
                     Map<String, Object> temp = tempResult.get();
                     if (null != temp && (!temp.isEmpty())) {
@@ -716,7 +718,7 @@ public class EpServiceImple implements EpService {
             Integer id = CommonUtil.objectParseInteger(map.get("id"));
             List<Integer> list = new ArrayList<>();
             list.add(id);
-            Result r = planGroupRPCService.mvEpsToGroup(epId, groupId, list);
+            Result r = planGroupService.mvEpsToGroup(epId, groupId, list);
             if (r.isSuccess()) {
                 return updateEp(map);
             } else {
