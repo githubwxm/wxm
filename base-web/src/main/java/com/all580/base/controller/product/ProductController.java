@@ -241,8 +241,20 @@ public class ProductController extends BaseController {
         return new Result<>(false, "状态参数错误");
     }
 
-
-
+    @RequestMapping(value = "platform/distribution")
+    @ResponseBody
+    public Result<List<Map<String, Object>>> searchSelfAndOtherProduct(
+            @RequestParam("ep_id") Integer epId,
+            @RequestParam("platform_ep_id") Integer platformEpId,
+            @RequestParam("status") Integer distributionStatus) {
+        switch (CommonUtil.objectParseInteger(distributionStatus)) {
+            case ProductConstants.ProductDistributionState.HAD_DISTRIBUTE:
+                return productDistributionService.searchAlreadyDistributionProduct(platformEpId, epId);
+            case ProductConstants.ProductDistributionState.NOT_DISTRIBUTE:
+                return null;
+        }
+        return new Result<>(false, "状态参数错误");
+    }
 
     @RequestMapping(value = "booking/view")
     @ResponseBody
