@@ -330,8 +330,22 @@ public class RefundOrderManager extends BaseOrderManager {
      * @param refundDate 退订时间
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public void preRefundAccount(List daysList, int itemId, int refundOrderId, List<OrderItemDetail> detailList, Date refundDate, int payAmount) throws Exception {
+    public void preRefundAccount(List daysList, int itemId, int refundOrderId, List<OrderItemDetail> detailList, Date refundDate, Order order) throws Exception {
         List<OrderItemAccount> accounts = orderItemAccountMapper.selectByOrderItem(itemId);
+        JSONArray priceDaysData = null;
+        for (OrderItemAccount account : accounts) {
+            if (account.getEpId().intValue() == order.getBuyEpId() && account.getCoreEpId().intValue() == order.getPayeeEpId()) {
+                String data = account.getData();
+                if (StringUtils.isEmpty(data)) {
+                    throw new ApiException("分账数据异常");
+                }
+                priceDaysData = JSONArray.parseArray(data);
+                break;
+            }
+        }
+        if (priceDaysData == null) {
+            throw new ApiException("分账单价数据异常");
+        }
         for (OrderItemAccount account : accounts) {
             String data = account.getData();
             if (StringUtils.isEmpty(data)) {
@@ -358,7 +372,11 @@ public class RefundOrderManager extends BaseOrderManager {
                 int profit = dayData.getIntValue("profit");
                 double percent = 1.0;
                 if (rate.get("type") == ProductConstants.AddPriceType.FIX) {
-                    percent = Arith.div(rate.get("fixed"), payAmount, 4);
+                    JSONObject priceDayData = getAccountDataByDay(priceDaysData, day);
+                    if (priceDayData == null) {
+                        throw new ApiException("日期:"+day+"分账单价数据异常");
+                    }
+                    percent = Arith.div(rate.get("fixed"), priceDayData.getIntValue("outPrice"), 4);
                 } else {
                     percent = Arith.div(rate.get("percent"), 100, 4);
                 }

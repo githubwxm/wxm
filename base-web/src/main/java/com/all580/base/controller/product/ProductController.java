@@ -251,7 +251,7 @@ public class ProductController extends BaseController {
             case ProductConstants.ProductDistributionState.HAD_DISTRIBUTE:
                 return productDistributionService.searchAlreadyDistributionProduct(platformEpId, epId);
             case ProductConstants.ProductDistributionState.NOT_DISTRIBUTE:
-                return null;
+                return productDistributionService.searchNotDistributionProduct(platformEpId, epId);
         }
         return new Result<>(false, "状态参数错误");
     }
