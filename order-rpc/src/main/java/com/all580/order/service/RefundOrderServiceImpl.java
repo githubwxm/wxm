@@ -88,7 +88,8 @@ public class RefundOrderServiceImpl implements RefundOrderService {
             if (ArrayUtils.indexOf(new int[]{
                     OrderConstant.OrderItemStatus.SEND,
                     OrderConstant.OrderItemStatus.NON_SEND,
-                    OrderConstant.OrderItemStatus.TICKET_FAIL
+                    OrderConstant.OrderItemStatus.TICKET_FAIL,
+                    OrderConstant.OrderItemStatus.TICKETING // TODO: 2016/11/18  目前凭证没做好，导致这里现在可以退订
             }, orderItem.getStatus()) < 0 ||
                     order.getStatus() != OrderConstant.OrderStatus.PAID) {
                 throw new ApiException("订单不在可退订状态");
@@ -134,7 +135,9 @@ public class RefundOrderServiceImpl implements RefundOrderService {
             }
 
             // 退订分账
-            refundOrderManager.preRefundAccount(daysList, orderItem.getId(), refundOrder.getId(), detailList, refundDate, order.getPayAmount());
+            if (orderItem.getPaymentFlag() != ProductConstants.PayType.PAYS && order.getPayAmount() != 0) {
+                refundOrderManager.preRefundAccount(daysList, orderItem.getId(), refundOrder.getId(), detailList, refundDate, order.getPayAmount());
+            }
 
             // 同步数据
             refundOrderManager.syncRefundOrderApplyData(refundOrder.getId());

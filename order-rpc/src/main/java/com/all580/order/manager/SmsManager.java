@@ -290,7 +290,7 @@ public class SmsManager {
         sendSmsParams.put("chanpinmingcheng", orderItem.getProSubName());
         sendSmsParams.put("date", DateFormatUtils.parseDateToDatetimeString(orderItem.getStart()));
         sendSmsParams.put("num", String.valueOf(orderItem.getQuantity()));
-        Result result = smsService.send(shipping.getPhone(), SmsType.Order.SUPPLIER_PAY, order.getPayeeEpId(), sendSmsParams);//发送短信
+        Result result = smsService.send(shipping.getPhone(), SmsType.Prod.PRODUCT_ORDER_OTA, order.getPayeeEpId(), sendSmsParams);//发送短信
         if (!result.isSuccess()) {
             throw new ApiException("发送预定支付成功短信失败:" + result.getError());
         }
