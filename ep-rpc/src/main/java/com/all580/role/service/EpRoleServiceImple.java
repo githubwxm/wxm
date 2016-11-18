@@ -173,8 +173,8 @@ public class EpRoleServiceImple implements EpRoleService {
      */
     private void removeAllList(List<Integer> func_ids,List<Integer> initFunc) {
            for(int i= func_ids.size()-1;i>-1;i--){
+               Integer id=CommonUtil.objectParseInteger( func_ids.get(i));
                for(Integer temp :initFunc){
-                   Integer id=CommonUtil.objectParseInteger( func_ids.get(i));
                    if(temp.equals(id)){
                        func_ids.remove(i);
                        break;
