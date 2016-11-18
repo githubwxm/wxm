@@ -25,7 +25,7 @@ public interface EpService {
 
     /**
      *
-     * @param map  ep_id,ep_type
+     * @param map  creator_ep_id
      * @return
      */
     Result<List<Map<String,Object>>> selectDownSupplier(Map<String,Object> map);
@@ -125,6 +125,11 @@ public interface EpService {
      */
     Result<Map<String,Object>> platformListUp(Map<String,Object> map);
 
+    /**
+     * 修改企业角色
+     * @param params ｛id，ep_role｝
+     * @return
+     */
     Result updateEpRole(Map<String,Object> params);
     /**
      * 查询企业下的下级销售商
@@ -135,7 +140,7 @@ public interface EpService {
     /**
      * 查找创建企业id
      * @param id
-     * @return   未找到 -1  平台商0   上级企业id
+     * @return   未找到 -1  平台商的创建企业为空   上级企业id
      */
     Result<Integer> selectCreatorEpId(Integer id);
 
@@ -147,7 +152,7 @@ public interface EpService {
     Result<Integer> selectEpType(Integer id);
     /**
      * 检出啊名字是否存在
-     * @param map
+     * @param map ｛link_phone，name,id:选填｝
      * @return
      */
     Result<Boolean>  checkNamePhone(Map<String,Object> map);
