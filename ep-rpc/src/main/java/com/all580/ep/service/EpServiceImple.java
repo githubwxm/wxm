@@ -123,6 +123,7 @@ public class EpServiceImple implements EpService {
     public Result<List<Map<String, Object>>> selectDownSupplier(Map<String, Object> map) {
         Result<List<Map<String, Object>>> result = new Result<>();
         try {
+            map.put("ep_type",EpConstant.EpType.SUPPLIER);
             result.put(epMapper.select(map));
             result.setSuccess();
             result.setCode(200);
