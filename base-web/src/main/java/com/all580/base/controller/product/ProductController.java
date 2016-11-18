@@ -241,6 +241,13 @@ public class ProductController extends BaseController {
         return new Result<>(false, "状态参数错误");
     }
 
+    /**
+     * 跨平台分销
+     * @param epId
+     * @param platformEpId
+     * @param distributionStatus
+     * @return
+     */
     @RequestMapping(value = "platform/distribution")
     @ResponseBody
     public Result<List<Map<String, Object>>> searchSelfAndOtherProduct(
