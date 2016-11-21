@@ -144,10 +144,10 @@ public class PlanController extends BaseController {
         return productService.productOnSaleProductBatch(initPlatformPlanSalesParams(params));
     }
 
-    private List<Map> initPlatformPlanSalesParams(Map params) {
+    private List<Map<String, Object>> initPlatformPlanSalesParams(Map params) {
         Map<String, Object> ep = epService.selectId(CommonUtil.objectParseInteger(params.get("platfrom_ep_id"))).get();
-        List<Map> onSales = (List<Map>) params.get("saledArray");
-        for (Map planSale : onSales) {
+        List<Map<String, Object>> onSales = (List<Map<String, Object>>) params.get("saledArray");
+        for (Map<String, Object> planSale : onSales) {
             ep.put("sale_ep_id", params.get("ep_id"));
             ep.put("ep_id", ep.get("id"));
             ep.put("name", ep.get("name"));
@@ -157,9 +157,8 @@ public class PlanController extends BaseController {
             // ep内有price_type
             // ep内有price_pixed
             // ep内有price_percent
-
         }
-        return null;
+        return onSales;
     }
 
     private List<Map> updateEpOnsalesParams(Map params){
