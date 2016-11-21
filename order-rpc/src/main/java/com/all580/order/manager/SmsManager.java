@@ -9,6 +9,7 @@ import com.all580.order.entity.Order;
 import com.all580.order.entity.OrderItem;
 import com.all580.order.entity.RefundOrder;
 import com.all580.order.entity.Shipping;
+import com.all580.payment.api.conf.PaymentConstant;
 import com.framework.common.Result;
 import com.framework.common.lang.DateFormatUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -169,6 +170,11 @@ public class SmsManager {
         Order order = orderMapper.selectByPrimaryKey(orderItem.getOrderId());
         if (order == null) {
             throw new ApiException("订单不存在");
+        }
+
+        // 余额不发短信
+        if (order.getPaymentType() == PaymentConstant.PaymentType.BALANCE.intValue()) {
+            return;
         }
 
         Map<String, String> sendSmsParams = new HashMap<>();
