@@ -166,6 +166,17 @@ public class PlanController extends BaseController {
         return onSales;
     }
 
+    /**
+     * 对单个平台商下架多个产品批次
+     * @param params
+     * @return
+     */
+    @RequestMapping(value = "off_sale/platform_ep", method = RequestMethod.POST)
+    @ResponseBody
+    public Result productSubsOffDistributionPlatformEp(@RequestBody Map params) {
+        return productService.productOffSaleProductBatch(initPlatformPlanSalesParams(params));
+    }
+
     private List<Map> updateEpOnsalesParams(Map params){
         Integer ep_id= epService.selectCreatorEpId(CommonUtil.objectParseInteger(params.get("ep_id"))).get();//获取上级id
         if(ep_id==null){
