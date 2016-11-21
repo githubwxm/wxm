@@ -26,7 +26,7 @@ public class OrderValidateManager {
                 "shipping.phone", // 订单联系人手机号码
                 "items.visitor.name", // 订单游客姓名
                 "items.visitor.phone", // 订单游客手机号码
-                "items.visitor.sid", // 订单游客身份证号码
+                //"items.visitor.sid", // 订单游客身份证号码
                 "items.product_sub_id", // 订单子产品ID
                 "items.start", // 计划开始时间
                 "items.days", // 天数：景点固定1
