@@ -435,9 +435,9 @@ public class BookingOrderManager extends BaseOrderManager {
                     addAccount.setEpId(saleEpId);
                     addAccount.setCoreEpId(saleCoreEpId);
                     addAccount.setMoney(totalOutPrice * quantity);
-                    addAccount.setProfit(0);
+                    addAccount.setProfit(totalOutPrice * quantity);
                     addAccount.setOrderItemId(itemId);
-                    addAccount.setData(null);
+                    addAccount.setData(JsonUtils.toJson(dataDtoList));
                     addAccount.setSettledMoney(0);
                     addAccount.setStatus(OrderConstant.AccountSplitStatus.NOT);
                     orderItemAccountMapper.insertSelective(addAccount);

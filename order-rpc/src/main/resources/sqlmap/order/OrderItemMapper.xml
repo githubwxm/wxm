@@ -481,7 +481,7 @@
             toid.expiry_date,
             ts.`name`,
             ts.phone,
-            (SELECT `data` FROM t_order_item_account WHERE order_item_id = toi.id AND ep_id = toi.supplier_core_ep_id AND `data` is not null) supplier_price,
+            (SELECT `data` FROM t_order_item_account WHERE order_item_id = toi.id AND ep_id = toi.supplier_core_ep_id AND `data` is not null limit 1) supplier_price,
             toi.quantity,
             toid.used_quantity,
             toid.refund_quantity,

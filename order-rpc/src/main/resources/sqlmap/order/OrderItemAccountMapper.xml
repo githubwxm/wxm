@@ -200,6 +200,7 @@
         WHERE `order_item_id` = #{itemId,jdbcType=INTEGER}
         AND `ep_id` = #{epId,jdbcType=INTEGER}
         AND `core_ep_id` = #{coreEpId,jdbcType=INTEGER}
+        AND `data` is not null
         limit 1
     </select>
 

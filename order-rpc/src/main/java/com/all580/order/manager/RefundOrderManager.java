@@ -346,11 +346,17 @@ public class RefundOrderManager extends BaseOrderManager {
         if (priceDaysData == null) {
             throw new ApiException("分账单价数据异常");
         }
+        Set<String> uk = new HashSet<>();
         for (OrderItemAccount account : accounts) {
             String data = account.getData();
             if (StringUtils.isEmpty(data)) {
                 continue;
             }
+            String key = account.getEpId() + "#" + account.getCoreEpId();
+            if (uk.contains(key)) {
+                continue;
+            }
+            uk.add(key);
             JSONArray daysData = JSONArray.parseArray(data);
             int money = 0;
             int cash = 0;

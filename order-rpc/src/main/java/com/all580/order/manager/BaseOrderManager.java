@@ -306,12 +306,18 @@ public class BaseOrderManager {
         List<BalanceChangeInfo> balanceChangeInfoList = new ArrayList<>();
         // 预付
         if (orderItem.getPaymentFlag() == ProductConstants.PayType.PREPAY) {
+            Set<String> uk = new HashSet<>();
             for (OrderItemAccount account : accounts) {
                 // 每天的单价利润数据
                 String data = account.getData();
                 if (StringUtils.isEmpty(data)) {
                     continue;
                 }
+                String key = account.getEpId() + "#" + account.getCoreEpId();
+                if (uk.contains(key)) {
+                    continue;
+                }
+                uk.add(key);
                 JSONArray daysData = JSONArray.parseArray(data);
                 // 获取核销日期的单价利润
                 JSONObject dayData = getAccountDataByDay(daysData, DateFormatUtils.parseDateToDatetimeString(day));
@@ -323,7 +329,7 @@ public class BaseOrderManager {
                     continue;
                 }
                 // 核销分账可提现金额
-                changeInfo.setCanCash(account.getMoney() > 0 ? (consume ? money : -money) : (consume ? -money : money));
+                changeInfo.setCanCash(consume ? money : -money);
                 balanceChangeInfoList.add(changeInfo);
                 account.setSettledMoney(consume ? account.getSettledMoney() + money : account.getSettledMoney() - money); // 设置已结算金额
                 orderItemAccountMapper.updateByPrimaryKeySelective(account);
