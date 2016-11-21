@@ -138,6 +138,11 @@ public class PlanController extends BaseController {
         return  productService.productOnSaleBatch(initEpOnsalesParams(params));
     }
 
+    /**
+     * 对单个平台商上架多个产品批次
+     * @param params
+     * @return
+     */
     @RequestMapping(value = "sale/platform_ep", method = RequestMethod.POST)
     @ResponseBody
     public Result productSubsDistributionPlatformEp(@RequestBody Map params) {
@@ -148,15 +153,15 @@ public class PlanController extends BaseController {
         Map<String, Object> ep = epService.selectId(CommonUtil.objectParseInteger(params.get("platfrom_ep_id"))).get();
         List<Map<String, Object>> onSales = (List<Map<String, Object>>) params.get("saledArray");
         for (Map<String, Object> planSale : onSales) {
-            ep.put("sale_ep_id", params.get("ep_id"));
-            ep.put("ep_id", ep.get("id"));
-            ep.put("name", ep.get("name"));
-            // ep内有product_sub_id
-            // ep内有batch_id
-            // ep内有price
-            // ep内有price_type
-            // ep内有price_pixed
-            // ep内有price_percent
+            planSale.put("sale_ep_id", params.get("ep_id"));
+            planSale.put("ep_id", ep.get("id"));
+            planSale.put("name", ep.get("name"));
+            // planSale内有product_sub_id
+            // planSale内有batch_id
+            // planSale内有price
+            // planSale内有price_type
+            // planSale内有price_pixed
+            // planSale内有price_percent
         }
         return onSales;
     }
