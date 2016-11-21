@@ -143,7 +143,7 @@ public class PlanController extends BaseController {
      * @param params
      * @return
      */
-    @RequestMapping(value = "sale/platform_ep", method = RequestMethod.POST)
+    @RequestMapping(value = "on_sale/platform_ep", method = RequestMethod.POST)
     @ResponseBody
     public Result productSubsDistributionPlatformEp(@RequestBody Map params) {
         return productService.productOnSaleProductBatch(initPlatformPlanSalesParams(params));
