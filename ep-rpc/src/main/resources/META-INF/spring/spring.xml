@@ -25,4 +25,6 @@
             </list>
         </property>
     </bean>
+    <context:component-scan base-package="com.all580.ep"/>
+    <context:annotation-config/>
 </beans>
