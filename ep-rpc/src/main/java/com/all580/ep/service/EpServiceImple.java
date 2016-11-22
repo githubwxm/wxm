@@ -14,10 +14,14 @@ import com.all580.payment.api.service.BalancePayService;
 import com.all580.payment.api.service.EpPaymentConfService;
 import com.all580.product.api.service.PlanGroupRPCService;
 import com.framework.common.Result;
+import com.framework.common.lang.UUIDGenerator;
 import com.framework.common.synchronize.SynchronizeDataManager;
 import com.framework.common.util.CommonUtil;
+import com.github.ltsopensource.core.domain.Job;
+import com.github.ltsopensource.jobclient.JobClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -57,6 +61,15 @@ public class EpServiceImple implements EpService {
 
     @Autowired
     private SmsService smsService;
+
+    @Autowired
+    private JobClient jobClient;
+
+    @Value("${task.maxRetryTimes}")
+    private Integer maxRetryTimes;
+
+    @Value("${task.tracker}")
+    private String taskTracker;
 
     /**
      * // 创建平台商
@@ -713,17 +726,34 @@ public class EpServiceImple implements EpService {
     @Override
     public Result updateEpRemoveGroup(Map<String, Object> map) {
         try {
-            Integer epId = CommonUtil.objectParseInteger(map.get("creator_ep_id"));//操作人id
-            Integer groupId = CommonUtil.objectParseInteger(map.get("group_id"));
-            Integer id = CommonUtil.objectParseInteger(map.get("id"));
-            List<Integer> list = new ArrayList<>();
-            list.add(id);
-            Result r = planGroupService.mvEpsToGroup(epId, groupId, list);
-            if (r.isSuccess()) {
+//            Integer  id = CommonUtil.objectParseInteger(map.get("id"));
+//           Integer  groupId = CommonUtil.objectParseInteger(map.get("group_id"));
+//            List<Integer> list = new ArrayList<>();
+//            list.add(id);
+//            Result r = planGroupService.mvEpsToGroup(CommonUtil.objectParseInteger(map.get("creator_ep_id")),
+//                    groupId, list);
+            String epId = CommonUtil.objectParseString(map.get("creator_ep_id"));//操作人id
+            String groupId = CommonUtil.objectParseString(map.get("group_id"));
+            String ids = CommonUtil.objectParseString(map.get("id"));
+
+//            if (r.isSuccess()) {
+                Job job = new Job();
+                job.setTaskId("EP-JOB-" + UUIDGenerator.generateUUID());
+                //job.setExtParams(map);
+                job.setParam("ids",ids);
+                job.setParam("epId",epId);
+                job.setParam("groupId",groupId);
+                job.setParam("$ACTION$", "EP_TO_GROUP");
+                job.setTaskTrackerNodeGroup(taskTracker);
+                if (maxRetryTimes != null) {
+                    job.setMaxRetryTimes(maxRetryTimes);
+                }
+                job.setNeedFeedback(false);
+                jobClient.submitJob(job);
                 return updateEp(map);
-            } else {
-                return r;
-            }
+//            } else {
+//                return r;
+//            }
         } catch (ApiException e) {
             log.error(e.getMessage(), e);
             throw new ApiException(e.getMessage(), e);
