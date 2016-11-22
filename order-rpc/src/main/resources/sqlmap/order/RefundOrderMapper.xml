@@ -282,4 +282,11 @@
         WHERE `order_item_id` = #{itemId,jdbcType=INTEGER}
         AND `local_refund_serial_no` = #{refundSn,jdbcType=BIGINT}
     </select>
+
+    <select id="selectByItemIdAndVisitor" resultMap="BaseResultMap">
+        SELECT tro.* FROM t_refund_order tro
+        LEFT JOIN t_refund_visitor trv ON trv.refund_order_id = tro.id
+        WHERE tro.`order_item_id` = #{itemId,jdbcType=INTEGER}
+        AND trv.visitor_id = #{visitorId}
+    </select>
 </mapper>

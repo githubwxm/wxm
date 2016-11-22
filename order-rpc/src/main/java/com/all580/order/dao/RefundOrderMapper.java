@@ -66,4 +66,12 @@ public interface RefundOrderMapper {
      * @return
      */
     RefundOrder selectByItemIdAndRefundSn(@Param("itemId") Integer itemId, @Param("refundSn") Long refundSn);
+
+    /**
+     * 根据子订单ID以及退票游客ID查询退票订单
+     * @param itemId
+     * @param visitorId
+     * @return
+     */
+    RefundOrder selectByItemIdAndVisitor(@Param("itemId") Integer itemId, @Param("visitorId") Integer visitorId);
 }
