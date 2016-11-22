@@ -541,12 +541,12 @@ public class RefundOrderManager extends BaseOrderManager {
      * 退款
      * @param order 订单
      */
-    public void refundMoney(Order order, int money, String sn) {
+    public Result refundMoney(Order order, int money, String sn) {
         log.debug("订单:{} 发起退款:{}", order.getNumber(), money);
         if (money == 0 && sn != null) {
             log.debug("订单:{} 退款为0元,直接调用退款成功.", order.getNumber());
             refundMoneyAfter(Long.valueOf(sn), true);
-            return;
+            return null;
         }
         Integer coreEpId = getCoreEpId(getCoreEpId(order.getBuyEpId()));
         // 退款
@@ -570,7 +570,7 @@ public class RefundOrderManager extends BaseOrderManager {
                 log.warn("余额退款失败:{}", result.get());
                 throw new ApiException(result.getError());
             }
-            return;
+            return null;
         }
         // 第三方退款
         Map<String, Object> payParams = new HashMap<>();
@@ -583,6 +583,7 @@ public class RefundOrderManager extends BaseOrderManager {
             log.warn("第三方退款异常:{}", result);
             throw new ApiException(result.getError());
         }
+        return result;
     }
 
     /**

@@ -258,7 +258,10 @@ public class RefundOrderServiceImpl implements RefundOrderService {
             throw new ApiException("非法请求:当前企业不能退款该退订订单");
         }
         // 退款
-        refundOrderManager.refundMoney(order, refundOrder.getMoney(), String.valueOf(refundOrder.getNumber()));
-        return new Result<>(true);
+        Result result = refundOrderManager.refundMoney(order, refundOrder.getMoney(), String.valueOf(refundOrder.getNumber()));
+        if (result == null) {
+            throw new ApiException("调用退款返回null");
+        }
+        return result;
     }
 }
