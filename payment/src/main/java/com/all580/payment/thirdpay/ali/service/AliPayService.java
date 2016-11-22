@@ -41,6 +41,8 @@ public class AliPayService {
     @Value("${alipay.phonePayment.callback.url}")
     private String phonepay_notify_url;//支付宝服务器主动通知商户网站里指定的页面http路径
 
+    public static final String HEAD = "<head><meta charset=\"UTF-8\"><meta content=\"text/html\"></head>";
+
     public boolean isPropertiesInit(int coreEpId) {
         return alipayPropertiesMap.containsKey(coreEpId);
     }
@@ -113,7 +115,7 @@ public class AliPayService {
         // 建立请求
         String sHtmlText = AlipaySubmit.buildRequest(aliPayProperties.getKey(), sParaTemp, "get", "确认");
 
-        return sHtmlText;
+        return HEAD + sHtmlText;
     }
 
     public String reqRefund(Map<String, Object> params, int coreEpId) {
@@ -137,7 +139,7 @@ public class AliPayService {
 
         // 建立请求
         String sHtmlText = AlipaySubmit.buildRequest(aliPayProperties.getKey(), sParaTemp, "get", "确认");
-        return sHtmlText;
+        return HEAD + sHtmlText;
     }
 
     public boolean refundCallback(Map<String, String> params, int coreEpId) {
