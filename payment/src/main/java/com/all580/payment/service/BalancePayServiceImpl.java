@@ -38,12 +38,6 @@ public class BalancePayServiceImpl implements BalancePayService {
 
     @Value("${mns.topic}")
     private String topicName;
-    @Value("${mns.access.id}")
-    private String mnsAccessId;
-    @Value("${mns.access.key}")
-    private String mnsAccessKey;
-    @Value("${mns.endpoint}")
-    private String mnsAccountEndpoint;
 
     @Autowired
     private CapitalMapper capitalMapper;
@@ -177,9 +171,6 @@ public class BalancePayServiceImpl implements BalancePayService {
     private void fireBalanceChangedEvent(List<Capital> capitals) {
         logger.info("余额变更事件----->开始");
         String tag = "core";
-        topicPushManager.setAccessId(mnsAccessId);
-        topicPushManager.setAccessKey(mnsAccessKey);
-        topicPushManager.setAccountEndpoint(mnsAccountEndpoint);
         topicPushManager.asyncFireEvent(topicName, tag, PaymentConstant.EVENT_NAME_BALANCE_CHANGE, capitals);
         logger.info("余额变更事件----->成功");
     }

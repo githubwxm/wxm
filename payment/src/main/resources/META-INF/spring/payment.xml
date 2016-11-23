@@ -16,7 +16,12 @@
     <bean id="thirdPayService" class="com.all580.payment.service.ThirdPayServiceImpl"/>
     <bean id="epPaymentConfService" class="com.all580.payment.service.EpPaymentConfServiceImpl"/>
 
-    <bean id="topicPushManager" class="com.framework.common.mns.TopicPushManager"/>
+    <bean id="topicPushManager" class="com.framework.common.mns.TopicPushManager">
+        <property name="accessId" value="${mns.access.id}"/>
+        <property name="accessKey" value="${mns.access.key}"/>
+        <property name="accountEndpoint" value="${mns.endpoint}"/>
+        <property name="tagPrefix" value="${mns.tag.prefix}"/>
+    </bean>
 
     <dubbo:service interface="com.all580.payment.api.service.BalancePayService" ref="balancePayService"/>
     <dubbo:service interface="com.all580.payment.api.service.ThirdPayService" ref="thirdPayService"/>
