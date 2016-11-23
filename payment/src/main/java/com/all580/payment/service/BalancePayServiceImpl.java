@@ -177,14 +177,10 @@ public class BalancePayServiceImpl implements BalancePayService {
     private void fireBalanceChangedEvent(List<Capital> capitals) {
         logger.info("余额变更事件----->开始");
         String tag = "core";
-        Map<String, Object> data = new HashMap<>();
-        data.put("action", PaymentConstant.EVENT_NAME_BALANCE_CHANGE);
-        data.put("createTime", DateFormatUtils.converToStringDate(new Date()));
-        data.put("content", capitals);
         topicPushManager.setAccessId(mnsAccessId);
         topicPushManager.setAccessKey(mnsAccessKey);
         topicPushManager.setAccountEndpoint(mnsAccountEndpoint);
-        topicPushManager.pushAsync(topicName, tag, JsonUtils.toJson(data));
+        topicPushManager.asyncFireEvent(topicName, tag, PaymentConstant.EVENT_NAME_BALANCE_CHANGE, capitals);
         logger.info("余额变更事件----->成功");
     }
 
