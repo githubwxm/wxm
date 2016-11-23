@@ -26,14 +26,12 @@ public class SmsServiceTest {
     @Test
     public void sendTest(){
         String destPhoneNum = "13417325939";
-        Integer smsType = 12035; // 12006
+        Integer smsType = 12032; // 12006
         Integer epId = 1;
         Map<String, String> params = new HashMap<>();
-        params.put("chanpinmingcheng","测试企业22");
-        params.put("date","测试企业22");
-        params.put("shuliang","测试企业22");
-        params.put("buydate","测试企业22");
-        params.put("money", "300.00");
+        params.put("dingdanhao",null);
+        params.put("money","测试企业22");
+
         Result send = smsService.send(destPhoneNum, smsType, epId, params);
         Assert.isTrue(send.isSuccess());
     }

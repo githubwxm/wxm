@@ -37,11 +37,11 @@
         </if>
 
     </sql>
-    <select id="selectPlatform" resultType="java.util.HashMap">
+    <select id="selectPlatform" resultType="java.util.Map">
         select id,name from t_ep where ep_type=10001;
     </select>
 
-    <select id="getAccountInfoList" resultType="java.util.HashMap">
+    <select id="getAccountInfoList" resultType="java.util.Map">
         select  pic_address,ep.id ,ep.name,ep.linkman,ep.link_phone,ep.province,ep.city,ep.area,ep.address,ep.status,
         date_format(ep.add_time,'%Y-%m-%d') add_time,param.`name` as ep_type_name  from
         t_ep  ep left JOIN t_ep_param param on ep.`ep_type` = param.id
@@ -59,7 +59,7 @@
         <include refid="ep_list_where"/>
     </select>
 
-    <select id="select" resultType="java.util.HashMap">
+    <select id="select" resultType="java.util.Map">
         select  ep.ep_role,pic_address,ep.id,ep.name,ep.en_name,ep.ep_type,ep.linkman,ep.link_phone,ep.address,ep.code,ep.license,ep.logo_pic,ep.status,ep.access_id,
         ep.access_key,ep.creator_ep_id,ep.core_ep_id,ep.status_bak,ep.province,
         ep.city,ep.area,ep.group_id,ep.group_name,ep.ep_class,
@@ -78,7 +78,7 @@
         1=1
         <include refid="ep_list_where"/>
     </select>
-    <select id="getEp" resultType="java.util.HashMap">
+    <select id="getEp" resultType="java.util.Map">
         select    <foreach item="xxoo" index="index" collection="field" open="" separator="," close="">
         ${xxoo}
     </foreach> from t_ep
@@ -89,11 +89,11 @@
         </foreach>
 
     </select>
-    <select id="all" resultType="java.util.HashMap" >
+    <select id="all" resultType="java.util.Map" >
        select * from t_ep where  core_ep_id=#{core_ep_id};
     </select>
 <!-- platform/list/down   下游平台商     truncate(rate/100,2) as-->
-    <select id="platformListDown" resultType="java.util.HashMap">
+    <select id="platformListDown" resultType="java.util.Map">
     select e.id,pic_address,name,linkman,link_phone,province,city,area,address, rate from t_core_ep_channel c
        join t_ep e on e.id=c.seller_core_ep_id
         where  1=1 and supplier_core_ep_id= #{ep_id} and ep_type=#{ep_type}
@@ -122,7 +122,7 @@
     </sql>
 
     <!-- platform/list/up   truncate(rate/100,2) as 上游平台商-->
-    <select id="platformListUp" resultType="java.util.HashMap">
+    <select id="platformListUp" resultType="java.util.Map">
         select e.id,pic_address,name,linkman,link_phone,province,city,area,address,rate from t_core_ep_channel c
         join t_ep e on e.id=c.supplier_core_ep_id
         where  1=1 and seller_core_ep_id= #{ep_id} and ep_type=#{ep_type}
@@ -267,6 +267,21 @@
 
     <select id="selectPhone" resultType="java.lang.String">
         select link_phone from t_ep where id=#{id};
+    </select>
+
+    <select id="getCoreEpName" resultType="java.util.Map">
+      select a.id, case  when a.id=b.id then null else a.name end as name   from (
+        select id,name from t_ep
+         where id in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+         ) a left JOIN (
+          select id,name from t_ep  where core_ep_id
+         in(
+         select core_ep_id from t_ep
+         where id=#{mainEpId}
+          ) ) b on a.id=b.id
     </select>
     <!--<resultMap id="StringMapResultMap" type="java.util.HashMap">-->
         <!--&lt;!&ndash;-->

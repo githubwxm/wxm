@@ -71,6 +71,34 @@ public class EpServiceImple implements EpService {
     @Value("${task.tracker}")
     private String taskTracker;
 
+    @Override
+    public Result<List<String>> getCoreEpName(List<Integer> list, Integer mainEpId) {
+        if(null==list||list.isEmpty()){
+            log.warn("查询企业名字 list 为空");
+            return null;
+        }
+        Result result = new Result(true);
+        List<String> listResult = new ArrayList<>();
+        Map<Integer,String> tempMap = new HashMap<>();
+        try {
+            List<Map<String,String>> reList =epMapper.getCoreEpName(list,mainEpId);
+            for(Map<String,String> t:reList){
+                tempMap.put(CommonUtil.objectParseInteger(t.get("id")),t.get("name"));
+            }
+            for(Integer id :list){//保证顺序
+                listResult.add(tempMap.get(id));
+            }
+          result.put(listResult);
+        } catch (ApiException e) {
+            log.error(e.getMessage(), e);
+            throw new ApiException(e.getMessage(), e);
+        } catch (Exception e) {
+            log.error("查询数据库异常", e);
+            throw new ApiException("查询数据库异常", e);
+        }
+        return result;
+    }
+
     /**
      * // 创建平台商
      *
@@ -78,7 +106,8 @@ public class EpServiceImple implements EpService {
      * @return CoreEpAccess
      */
     @Override
-    public Result<Map<String, Object>> createPlatform(Map<String, Object> map) {
+    public Result<Map<String, Object>>
+    createPlatform(Map<String, Object> map) {
         try {
             checkNamePhone(map);//检查电话与名字是否存在 ，存在抛出异常
         } catch (ApiException e) {

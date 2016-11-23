@@ -50,5 +50,7 @@
 
 	<bean id="epRoleService" class="com.all580.role.service.EpRoleServiceImple" />
 	<dubbo:service interface="com.all580.role.api.service.EpRoleService" ref="epRoleService" />
-	
+
+	<bean id="mnsBalanceChangeAction"  class="com.all580.ep.service.BalanceChangeSubscribeServiceImpl" />
+	<dubbo:service interface="com.all580.notice.api.service.BalanceChangeSubscribeService" ref="mnsBalanceChangeAction"/>
 </beans>
