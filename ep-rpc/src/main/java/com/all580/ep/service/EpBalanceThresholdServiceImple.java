@@ -70,6 +70,9 @@ public class EpBalanceThresholdServiceImple implements EpBalanceThresholdService
             Result<Map<String,Object>> result = select(map);
             Integer balance=Common.objectParseInteger(map.get("balance"));//传来的余额
             Integer threshold = Common.objectParseInteger(result.get("threshold"));//阀值
+            if(threshold==null){
+                return new Result(true);
+            }
             if(null==result.get()){
                 log.error("未查询到阀值数据"+map);
                 throw new ApiException("添加更新余额阀值出错"+map);
@@ -81,7 +84,7 @@ public class EpBalanceThresholdServiceImple implements EpBalanceThresholdService
                 epMap.put("id",ep_id);//再看发送短信所需要的参数
                  List<Map<String,Object>> list= epMapper.select(epMap);//   获取企业信息
                  if(null==list){
-                     if(!list.isEmpty()){//threshold   jinqian
+                     if(!list.isEmpty()){
                          Map<String,Object> mapResult = list.get(0);
                          ep_id=CommonUtil.objectParseInteger( map.get(EpConstant.EpKey.CORE_EP_ID));//发送短信人
                         String destPhoneNum=  mapResult.get("link_phone").toString();
@@ -91,14 +94,12 @@ public class EpBalanceThresholdServiceImple implements EpBalanceThresholdService
                        return  smsService.send(destPhoneNum, SmsType.Ep.BALANCE_SHORTAGE,ep_id,params);//发送短信
                      }
                  }
-                //TODO  发送之后操作
-
             }
         } catch (Exception e) {
             log.error("查询数据库出错", e);
             throw new ApiException("查询数据库出错", e);
         }
-        return new Result(false);
+        return new Result(true);
     }
 
 }
