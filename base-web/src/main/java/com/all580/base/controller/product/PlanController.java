@@ -150,7 +150,7 @@ public class PlanController extends BaseController {
     }
 
     private List<Map<String, Object>> initPlatformPlanSalesParams(Map params) {
-        Map<String, Object> ep = epService.selectId(CommonUtil.objectParseInteger(params.get("platfrom_ep_id"))).get();
+        Map<String, Object> ep = epService.selectId(CommonUtil.objectParseInteger(params.get("platform_ep_id"))).get();
         List<Map<String, Object>> onSales = (List<Map<String, Object>>) params.get("saledArray");
         for (Map<String, Object> planSale : onSales) {
             planSale.put("sale_ep_id", params.get("ep_id"));
@@ -166,6 +166,19 @@ public class PlanController extends BaseController {
         return onSales;
     }
 
+    private List<Map<String, Object>> initPlatformPlanOffSalesParams(Map params) {
+        List<String> batches = (List<String>) params.get("offSaleArray");
+        List<Map<String, Object>> offSales = new ArrayList<>();
+        for (String batch_id : batches) {
+            Map<String, Object> ep = new HashMap<>();
+            ep.put("sale_ep_id", params.get("ep_id"));
+            ep.put("ep_id", params.get("platform_ep_id"));
+            ep.put("batch_id", CommonUtil.objectParseInteger(batch_id));
+            offSales.add(ep);
+        }
+        return offSales;
+    }
+
     /**
      * 对单个平台商下架多个产品批次
      * @param params
@@ -174,7 +187,7 @@ public class PlanController extends BaseController {
     @RequestMapping(value = "off_sale/platform_ep", method = RequestMethod.POST)
     @ResponseBody
     public Result productSubsOffDistributionPlatformEp(@RequestBody Map params) {
-        return productService.productOffSaleProductBatch(initPlatformPlanSalesParams(params));
+        return productService.productOffSaleProductBatch(initPlatformPlanOffSalesParams(params));
     }
 
     private List<Map> updateEpOnsalesParams(Map params){

@@ -4,10 +4,7 @@ import com.all580.ep.api.conf.EpConstant;
 import com.all580.ep.api.service.EpService;
 import com.all580.order.api.OrderConstant;
 import com.all580.order.api.service.BookingOrderService;
-import com.all580.order.dao.MaSendResponseMapper;
-import com.all580.order.dao.OrderItemDetailMapper;
-import com.all580.order.dao.OrderItemMapper;
-import com.all580.order.dao.OrderMapper;
+import com.all580.order.dao.*;
 import com.all580.order.dto.LockStockDto;
 import com.all580.order.entity.*;
 import com.all580.order.manager.BookingOrderManager;
@@ -32,6 +29,7 @@ import com.framework.common.lang.JsonUtils;
 import com.framework.common.lang.UUIDGenerator;
 import com.framework.common.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,6 +64,8 @@ public class BookingOrderServiceImpl implements BookingOrderService {
     private OrderItemDetailMapper orderItemDetailMapper;
     @Autowired
     private MaSendResponseMapper maSendResponseMapper;
+    @Autowired
+    private RefundOrderMapper refundOrderMapper;
 
     @Autowired
     private ProductSalesPlanRPCService productSalesPlanRPCService;
@@ -486,7 +486,21 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         if (orderItem == null) {
             throw new ApiException("子订单不存在");
         }
+        if (ArrayUtils.indexOf(new int[]{
+                OrderConstant.OrderItemStatus.TICKETING,
+                OrderConstant.OrderItemStatus.TICKET_FAIL,
+                OrderConstant.OrderItemStatus.SEND,
+                OrderConstant.OrderItemStatus.NON_SEND
+        }, orderItem.getStatus()) < 0) {
+            throw new ApiException("子订单不在可重新发票状态");
+        }
+
         Integer visitorId = CommonUtil.objectParseInteger(params.get("visitor_id"));
+        RefundOrder refundOrder = refundOrderMapper.selectByItemIdAndVisitor(orderItem.getId(), visitorId);
+        if (refundOrder != null) {
+            throw new ApiException("该子订单已发起退票");
+        }
+
         MaSendResponse response = maSendResponseMapper.selectByVisitorId(orderItem.getId(), visitorId, orderItem.getEpMaId());
         if (orderItem.getStatus() == OrderConstant.OrderItemStatus.SEND && response != null) {
             ReSendTicketParams reSendTicketParams = new ReSendTicketParams();
