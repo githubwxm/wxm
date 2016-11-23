@@ -7,6 +7,6 @@ import java.util.Date;
 /**
  * Created by wxming on 2016/11/23 0023.
  */
-public interface MnsSubscribeService {
+public interface BalanceChangeSubscribeService {
     Result process(String mnsMsgId, String content, Date createDate);
 }
