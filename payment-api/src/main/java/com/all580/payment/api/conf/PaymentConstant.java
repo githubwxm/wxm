@@ -6,7 +6,7 @@ package com.all580.payment.api.conf;
  * @author Created by panyi on 2016/10/8.
  */
 public class PaymentConstant {
-    public static final String EVENT_NAME_BALANCE_CHANGE = "BALANCE_CHANGE"; // 事件名称-余额变更
+    public static final String EVENT_NAME_BALANCE_CHANGE = "mnsBalanceChangeAction"; // 事件名称-余额变更
 
     public static class Status {
         public static final int DISABLED = 0;
