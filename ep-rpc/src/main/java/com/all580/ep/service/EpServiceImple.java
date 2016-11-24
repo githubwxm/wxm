@@ -314,7 +314,7 @@ public class EpServiceImple implements EpService {
             //        epId,CommonUtil.objectParseString(map.get("name")),core_ep_id,group_id );
            //start
             Job job = new Job();
-            job.setTaskId("EP-JOB-" + UUIDGenerator.generateUUID());
+            job.setTaskId("EP-JOB-" + UUIDGenerator.getUUID());
             //job.setExtParams(map);
             job.setParam("operator_id",CommonUtil.objectParseString(map.get("operator_id")) );
             job.setParam("epId",epId+"");
@@ -781,7 +781,7 @@ public class EpServiceImple implements EpService {
 
 //            if (r.isSuccess()) {
                 Job job = new Job();
-                job.setTaskId("EP-JOB-" + UUIDGenerator.generateUUID());
+                job.setTaskId("EP-JOB-" + UUIDGenerator.getUUID());
                 //job.setExtParams(map);
                 job.setParam("ids",ids);
                 job.setParam("epId",epId);
