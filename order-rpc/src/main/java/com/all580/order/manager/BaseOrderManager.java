@@ -193,7 +193,7 @@ public class BaseOrderManager {
 
     public Job createJob(String action, Map<String, String> params, boolean once) {
         Job job = new Job();
-        job.setTaskId("ORDER-JOB-" + UUIDGenerator.generateUUID());
+        job.setTaskId("ORDER-JOB-" + UUIDGenerator.getUUID());
         job.setExtParams(params);
         job.setParam("$ACTION$", action);
         job.setTaskTrackerNodeGroup(taskTracker);
