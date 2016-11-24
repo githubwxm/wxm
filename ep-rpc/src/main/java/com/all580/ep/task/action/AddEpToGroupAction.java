@@ -28,11 +28,11 @@ public class AddEpToGroupAction  implements JobRunner {
     public Result run(JobContext jobContext) throws Throwable {
         //jobContext.getJob().getExtParams();
         Job job= jobContext.getJob();
-        Integer operator_id = CommonUtil.objectParseInteger(jobContext.getJob().getParam("operator_id"));
-        Integer epId = CommonUtil.objectParseInteger(jobContext.getJob().getParam("epId"));
-        String name = CommonUtil.objectParseString(jobContext.getJob().getParam("name"));
-        Integer group_id = CommonUtil.objectParseInteger(jobContext.getJob().getParam("group_id"));
-        Integer core_ep_id = CommonUtil.objectParseInteger(jobContext.getJob().getParam("core_ep_id"));
+        Integer operator_id = CommonUtil.objectParseInteger(job.getParam("operator_id"));
+        Integer epId = CommonUtil.objectParseInteger(job.getParam("epId"));
+        String name = CommonUtil.objectParseString(job.getParam("name"));
+        Integer group_id = CommonUtil.objectParseInteger(job.getParam("group_id"));
+        Integer core_ep_id = CommonUtil.objectParseInteger(job.getParam("core_ep_id"));
         com.framework.common.Result r=  planGroupService.addEpToGroup(operator_id,
                 epId,name,core_ep_id,group_id );
 
