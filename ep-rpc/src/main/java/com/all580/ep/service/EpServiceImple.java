@@ -310,11 +310,25 @@ public class EpServiceImple implements EpService {
             if (!r.isSuccess()) {
                 throw new ApiException("添加企业余额失败");
             }
-          r=  planGroupService.addEpToGroup(CommonUtil.objectParseInteger(map.get("operator_id")),
-                    epId,CommonUtil.objectParseString(map.get("name")),core_ep_id,group_id );
-            if (!r.isSuccess()) {
-                throw new ApiException("修改分组信息失败");
+          //r=  planGroupService.addEpToGroup(CommonUtil.objectParseInteger(map.get("operator_id")),
+            //        epId,CommonUtil.objectParseString(map.get("name")),core_ep_id,group_id );
+           //start
+            Job job = new Job();
+            job.setTaskId("EP-JOB-" + UUIDGenerator.generateUUID());
+            //job.setExtParams(map);
+            job.setParam("operator_id",CommonUtil.objectParseString(map.get("operator_id")) );
+            job.setParam("epId",epId+"");
+            job.setParam("name",CommonUtil.objectParseString(map.get("name")));
+            job.setParam("group_id",group_id+"");
+            job.setParam("core_ep_id",core_ep_id+"");
+            job.setParam("$ACTION$", "EP_TO_ADD_GROUP");
+            job.setTaskTrackerNodeGroup(taskTracker);
+            if (maxRetryTimes != null) {
+                job.setMaxRetryTimes(maxRetryTimes);
             }
+            job.setNeedFeedback(false);
+            jobClient.submitJob(job);
+           //end
             if (flag) {//如果是分销商默认加载余额阀值为1000
                 Map<String, Object> epBalanceThresholdMap = new HashMap<>();
                 epBalanceThresholdMap.put("id", epId);
