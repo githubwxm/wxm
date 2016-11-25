@@ -83,16 +83,14 @@ public class EpBalanceThresholdServiceImple implements EpBalanceThresholdService
                 Integer ep_id= CommonUtil.objectParseInteger(map.get("id"));//企业id
                 epMap.put("id",ep_id);//再看发送短信所需要的参数
                  List<Map<String,Object>> list= epMapper.select(epMap);//   获取企业信息
-                 if(null==list){
-                     if(!list.isEmpty()){
-                         Map<String,Object> mapResult = list.get(0);
-                         ep_id=CommonUtil.objectParseInteger( map.get(EpConstant.EpKey.CORE_EP_ID));//发送短信人
-                        String destPhoneNum=  mapResult.get("link_phone").toString();
-                         Map<String, String>  params = new HashMap<>();
-                         params.put("qiye",mapResult.get("name").toString());
-                         params.put("jinqian",threshold+"");
-                       return  smsService.send(destPhoneNum, SmsType.Ep.BALANCE_SHORTAGE,ep_id,params);//发送短信
-                     }
+                 if(null!=list && !list.isEmpty()){
+                     Map<String,Object> mapResult = list.get(0);
+                     ep_id=CommonUtil.objectParseInteger( map.get(EpConstant.EpKey.CORE_EP_ID));//发送短信人
+                    String destPhoneNum=  mapResult.get("link_phone").toString();
+                     Map<String, String>  params = new HashMap<>();
+                     params.put("qiye",mapResult.get("name").toString());
+                     params.put("jinqian",threshold+"");
+                   return  smsService.send(destPhoneNum, SmsType.Ep.BALANCE_SHORTAGE,ep_id,params);//发送短信
                  }
             }
         } catch (Exception e) {
