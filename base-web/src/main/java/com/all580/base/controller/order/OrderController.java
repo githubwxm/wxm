@@ -42,9 +42,6 @@ public class OrderController extends BaseController {
     @RequestMapping(value = "create", method = RequestMethod.POST)
     @ResponseBody
     public Result<?> create(@RequestBody Map params) throws Exception {
-        if (params != null) {
-            params.put(EpConstant.EpKey.CORE_EP_ID, getAttribute(EpConstant.EpKey.CORE_EP_ID));
-        }
         // 验证参数
         ParamsMapValidate.validate(params, orderValidateManager.createValidate());
         return bookingOrderService.create(params);
@@ -53,9 +50,6 @@ public class OrderController extends BaseController {
     @RequestMapping(value = "audit", method = RequestMethod.POST)
     @ResponseBody
     public Result<?> audit(@RequestBody Map params) {
-        if (params != null) {
-            params.put(EpConstant.EpKey.CORE_EP_ID, getAttribute(EpConstant.EpKey.CORE_EP_ID));
-        }
         // 验证参数
         ParamsMapValidate.validate(params, orderValidateManager.auditValidate());
         return bookingOrderService.audit(params);
@@ -64,9 +58,6 @@ public class OrderController extends BaseController {
     @RequestMapping(value = "payment", method = RequestMethod.POST)
     @ResponseBody
     public Result<?> payment(@RequestBody Map params) {
-        if (params != null) {
-            params.put(EpConstant.EpKey.CORE_EP_ID, getAttribute(EpConstant.EpKey.CORE_EP_ID));
-        }
         // 验证参数
         ParamsMapValidate.validate(params, orderValidateManager.paymentValidate());
         return bookingOrderService.payment(params);
@@ -75,9 +66,6 @@ public class OrderController extends BaseController {
     @RequestMapping(value = "refund/apply", method = RequestMethod.POST)
     @ResponseBody
     public Result<?> refundApply(@RequestBody Map params) throws Exception {
-        if (params != null) {
-            params.put(EpConstant.EpKey.CORE_EP_ID, getAttribute(EpConstant.EpKey.CORE_EP_ID));
-        }
         // 验证参数
         ParamsMapValidate.validate(params, orderValidateManager.refundApplyValidate());
         return refundOrderService.apply(params);
@@ -86,9 +74,6 @@ public class OrderController extends BaseController {
     @RequestMapping(value = "refund/audit", method = RequestMethod.POST)
     @ResponseBody
     public Result<?> refundAudit(@RequestBody Map params) throws Exception {
-        if (params != null) {
-            params.put(EpConstant.EpKey.CORE_EP_ID, getAttribute(EpConstant.EpKey.CORE_EP_ID));
-        }
         // 验证参数
         ParamsMapValidate.validate(params, orderValidateManager.refundAuditValidate());
         return refundOrderService.audit(params);
@@ -97,9 +82,6 @@ public class OrderController extends BaseController {
     @RequestMapping(value = "cancel", method = RequestMethod.POST)
     @ResponseBody
     public Result<?> cancel(@RequestBody Map params) {
-        if (params != null) {
-            params.put(EpConstant.EpKey.CORE_EP_ID, getAttribute(EpConstant.EpKey.CORE_EP_ID));
-        }
         // 验证参数
         ParamsMapValidate.validate(params, orderValidateManager.cancelValidate());
         return refundOrderService.cancel(params);
@@ -108,9 +90,6 @@ public class OrderController extends BaseController {
     @RequestMapping(value = "cancel/nosplit", method = RequestMethod.POST)
     @ResponseBody
     public Result<?> cancelNoSplit(@RequestBody Map params) {
-        if (params != null) {
-            params.put(EpConstant.EpKey.CORE_EP_ID, getAttribute(EpConstant.EpKey.CORE_EP_ID));
-        }
         // 验证参数
         ParamsMapValidate.validate(params, orderValidateManager.cancelValidate());
         return refundOrderService.cancelNoSplit(params);
@@ -119,9 +98,6 @@ public class OrderController extends BaseController {
     @RequestMapping(value = "refund/alipay", method = RequestMethod.POST)
     @ResponseBody
     public Result<?> refundAliPay(@RequestBody Map params) throws Exception {
-        if (params != null) {
-            params.put(EpConstant.EpKey.CORE_EP_ID, getAttribute(EpConstant.EpKey.CORE_EP_ID));
-        }
         // 验证参数
         ParamsMapValidate.validate(params, orderValidateManager.refundAlipayValidate());
         return refundOrderService.refundAliPayMoney(params);
@@ -130,9 +106,6 @@ public class OrderController extends BaseController {
     @RequestMapping(value = "resend/ticket", method = RequestMethod.POST)
     @ResponseBody
     public Result<?> resendTicket(@RequestBody Map params) throws Exception {
-        if (params != null) {
-            params.put(EpConstant.EpKey.CORE_EP_ID, getAttribute(EpConstant.EpKey.CORE_EP_ID));
-        }
         // 验证参数
         ParamsMapValidate.validate(params, orderValidateManager.resendTicketValidate());
         return bookingOrderService.resendTicket(params);
