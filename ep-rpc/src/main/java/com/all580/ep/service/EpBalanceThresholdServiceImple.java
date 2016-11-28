@@ -114,7 +114,9 @@ public class EpBalanceThresholdServiceImple implements EpBalanceThresholdService
                     String destPhoneNum=  mapResult.get("link_phone").toString();
                      Map<String, String>  params = new HashMap<>();
                      params.put("qiye",mapResult.get("name").toString());
-                     params.put("jinqian",threshold+"");
+                     String jinqian =threshold+"";
+                     String point = Common.matcher(jinqian,"([\\d]{2}$)" );//Common.matcher(125665419+"","([\\d]{2}$)" )
+                     params.put("jinqian",jinqian.replaceAll("([\\d]{2}$)", "."+point));
                    return  smsService.send(destPhoneNum, SmsType.Ep.BALANCE_SHORTAGE,ep_id,params);//发送短信
                  }
             }
