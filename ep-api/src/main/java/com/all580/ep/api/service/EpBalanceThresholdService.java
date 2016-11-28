@@ -16,6 +16,8 @@ public interface EpBalanceThresholdService {
     Result<Integer>  createOrUpdate(Map<String,Object> map);
 
 
+    Result<Map<String,Object>> selectBalance(Map<String,Object> map);
+
     /**
      *
      * @param map ｛ep_id：int 必填 销售商id,core_ep_id int 必填 供应商id平台商id｝
