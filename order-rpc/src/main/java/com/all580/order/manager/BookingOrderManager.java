@@ -541,9 +541,9 @@ public class BookingOrderManager extends BaseOrderManager {
      * 同步创建订单数据
      * @param orderId 订单ID
      */
-    public void syncCreateOrderData(int orderId) {
+    public Map<String, List<?>> syncCreateOrderData(int orderId) {
 
-        generateSyncByOrder(orderId)
+        return generateSyncByOrder(orderId)
                 // 同步订单表
                 .put("t_order", CommonUtil.oneToList(orderMapper.selectByPrimaryKey(orderId)))
                 // 同步子订单表
@@ -557,105 +557,105 @@ public class BookingOrderManager extends BaseOrderManager {
                 // 同步游客信息表
                 .put("t_visitor", visitorMapper.selectByOrder(orderId))
                 // 同步
-                .sync();
+                .sync().getDataMap();
     }
 
     /**
      * 同步订单审核通过数据
      * @param orderId 订单ID
      */
-    public void syncOrderAuditAcceptData(int orderId, int orderItemId) {
-        generateSyncByOrder(orderId)
+    public Map<String, List<?>> syncOrderAuditAcceptData(int orderId, int orderItemId) {
+        return generateSyncByOrder(orderId)
                 .put("t_order", CommonUtil.oneToList(orderMapper.selectByPrimaryKey(orderId)))
                 .put("t_order_item", CommonUtil.oneToList(orderItemMapper.selectByPrimaryKey(orderItemId)))
-                .sync();
+                .sync().getDataMap();
     }
 
     /**
      * 同步订单支付数据
      * @param orderId 订单ID
      */
-    public void syncOrderPaymentData(int orderId) {
-        generateSyncByOrder(orderId)
+    public Map<String, List<?>> syncOrderPaymentData(int orderId) {
+        return generateSyncByOrder(orderId)
                 .put("t_order", CommonUtil.oneToList(orderMapper.selectByPrimaryKey(orderId)))
-                .sync();
+                .sync().getDataMap();
     }
 
     /**
      * 同步订单分账数据
      * @param itemId 子订单ID
      */
-    public void syncOrderAccountData(int itemId) {
-        generateSyncByItem(itemId)
+    public Map<String, List<?>> syncOrderAccountData(int itemId) {
+        return generateSyncByItem(itemId)
                 .put("t_order_item_account", orderItemAccountMapper.selectByOrderItem(itemId))
-                .sync();
+                .sync().getDataMap();
     }
 
     /**
      * 同步发票数据
      * @param itemId 子订单ID
      */
-    public void syncSendTicketData(int itemId) {
-        generateSyncByItem(itemId)
+    public Map<String, List<?>> syncSendTicketData(int itemId) {
+        return generateSyncByItem(itemId)
                 .put("t_order_item", CommonUtil.oneToList(orderItemMapper.selectByPrimaryKey(itemId)))
                 .put("t_ma_send_response", maSendResponseMapper.selectByOrderItemId(itemId))
-                .sync();
+                .sync().getDataMap();
     }
 
     /**
      * 同步消费数据
      * @param itemId 子订单ID
      */
-    public void syncConsumeData(int itemId, String sn) {
-        generateSyncByItem(itemId)
+    public Map<String, List<?>> syncConsumeData(int itemId, String sn) {
+        return generateSyncByItem(itemId)
                 .put("t_order_item_detail", orderItemDetailMapper.selectByItemId(itemId))
                 .put("t_order_clearance_serial", CommonUtil.oneToList(orderClearanceSerialMapper.selectBySn(sn)))
                 .put("t_order_clearance_detail", CommonUtil.oneToList(orderClearanceDetailMapper.selectBySn(sn)))
                 .put("t_visitor", visitorMapper.selectByOrderItem(itemId))
-                .sync();
+                .sync().getDataMap();
     }
 
     /**
      * 同步冲正数据
      * @param itemId 子订单ID
      */
-    public void syncReConsumeData(int itemId, String sn) {
-        generateSyncByItem(itemId)
+    public Map<String, List<?>> syncReConsumeData(int itemId, String sn) {
+        return generateSyncByItem(itemId)
                 .put("t_order_item_detail", orderItemDetailMapper.selectByItemId(itemId))
                 .put("t_clearance_washed_serial", CommonUtil.oneToList(clearanceWashedSerialMapper.selectBySn(sn)))
                 .put("t_visitor", visitorMapper.selectByOrderItem(itemId))
-                .sync();
+                .sync().getDataMap();
     }
 
     /**
      * 同步支付成功数据
      * @param orderId 订单ID
      */
-    public void syncPaymentSuccessData(int orderId) {
-        generateSyncByOrder(orderId)
+    public Map<String, List<?>> syncPaymentSuccessData(int orderId) {
+        return generateSyncByOrder(orderId)
                 .put("t_order", CommonUtil.oneToList(orderMapper.selectByPrimaryKey(orderId)))
                 .put("t_order_item", orderItemMapper.selectByOrderId(orderId))
                 .put("t_order_item_account", orderItemAccountMapper.selectByOrder(orderId))
-                .sync();
+                .sync().getDataMap();
     }
 
     /**
      * 同步发票中数据
      * @param itemId 订单ID
      */
-    public void syncSendingData(int itemId) {
-        generateSyncByItem(itemId)
+    public Map<String, List<?>> syncSendingData(int itemId) {
+        return generateSyncByItem(itemId)
                 .put("t_order_item", CommonUtil.oneToList(orderItemMapper.selectByPrimaryKey(itemId)))
-                .sync();
+                .sync().getDataMap();
     }
 
     /**
      * 同步反核销分账数据
      * @param itemId 子订单ID
      */
-    public void syncReConsumeSplitAccountData(int itemId) {
-        generateSyncByItem(itemId)
+    public Map<String, List<?>> syncReConsumeSplitAccountData(int itemId) {
+        return generateSyncByItem(itemId)
                 .put("t_order_item_account", orderItemAccountMapper.selectByOrderItem(itemId))
-                .sync();
+                .sync().getDataMap();
     }
 }
