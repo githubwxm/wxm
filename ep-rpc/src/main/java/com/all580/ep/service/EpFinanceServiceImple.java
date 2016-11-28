@@ -87,6 +87,7 @@ public class EpFinanceServiceImple implements EpFinanceService {
         List<BalanceChangeInfo> balanceList=new ArrayList<>();
         BalanceChangeInfo b= new BalanceChangeInfo();
         b.setBalance(balance);
+        b.setCanCash(balance);
         b.setEpId(epId);
         b.setCoreEpId(coreEpId);
         balanceList.add(b);

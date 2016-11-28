@@ -276,21 +276,17 @@ public class EpServiceImple implements EpService {
                 throw new ParamsMapValidationException("企业分类错误");
             }
 
+
             if (!Common.isTrue(ep_type, "\\d+")) {//供应商添加企业    销售商自营商与OTA创建的都是销售商
                 Map<String, Object> tempMap = new HashMap<>();
                 tempMap.put("id", creator_ep_id);
-                Integer epType = Common.objectParseInteger(epMapper.select(tempMap).get(0).get("ep_type"));// 没有传企业类型获取创建企业类型
-
-                if (EpConstant.EpType.SUPPLIER.equals(epType)) {
-                    map.put("ep_type", epType);
-                } else if (EpConstant.EpType.SELLER.equals(epType) || EpConstant.EpType.OTA.equals(epType) ||
-                        EpConstant.EpType.DEALER.equals(epType)) {
-                    //todo 企业余额提醒值
-                    flag = true;
-                    map.put("ep_type", EpConstant.EpType.SELLER);
-                } else {
-                    throw new ParamsMapValidationException("企业类型错误");
-                }
+                ep_type = CommonUtil.objectParseString(epMapper.select(tempMap).get(0).get("ep_type"));// 没有传企业类型获取创建企业类型
+            }
+            Integer epType=CommonUtil.objectParseInteger(ep_type);
+            if (EpConstant.EpType.SELLER.equals(epType) || EpConstant.EpType.OTA.equals(epType) ||
+                    EpConstant.EpType.DEALER.equals(epType)) {
+                //todo 企业余额提醒值
+                flag = true;
             }
 
         } catch (ParamsMapValidationException e) {
@@ -329,15 +325,15 @@ public class EpServiceImple implements EpService {
             job.setNeedFeedback(false);
             jobClient.submitJob(job);
            //end
-            if (flag) {//如果是分销商默认加载余额阀值为1000
+            if (flag) {//如果是分销商默认加载余额阀值为1000元
                 Map<String, Object> epBalanceThresholdMap = new HashMap<>();
                 epBalanceThresholdMap.put("id", epId);
                 epBalanceThresholdMap.put("core_ep_id", core_ep_id);
                 Object threshold = map.get("threshold");
                 if (null == threshold) {
                     threshold = 1000;
-                    epBalanceThresholdMap.put("threshold", threshold);
                 }
+                epBalanceThresholdMap.put("threshold", threshold);
                 epBalanceThresholdService.createOrUpdate(epBalanceThresholdMap);
             }
             resultMap.put("ep_info", map);
