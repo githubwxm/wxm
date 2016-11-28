@@ -62,7 +62,7 @@ public class EpBalanceThresholdController extends BaseController {
             map.put("id",id);
             map.put(EpConstant.EpKey.CORE_EP_ID,getAttribute(EpConstant.EpKey.CORE_EP_ID)) ;//
          ParamsMapValidate.validate(map, generateEpBalanceThresholdValidate());
-            return epBalanceThresholdService.select(map);
+            return epBalanceThresholdService.selectBalance(map);
     }
 
     /**
