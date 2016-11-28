@@ -437,7 +437,7 @@ public class EpServiceImple implements EpService {
         params.put("id", map.get("id"));
         params.put(EpConstant.EpKey.CORE_EP_ID, map.get("ep_id"));
         params.put("status", EpConstant.EpStatus.FREEZE);
-        params.put("statusActive", EpConstant.EpStatus.ACTIVE);
+        params.put("status_active", EpConstant.EpStatus.ACTIVE);
         try {
             return updateStatus(params);
         } catch (ApiException e) {
@@ -452,7 +452,7 @@ public class EpServiceImple implements EpService {
         params.put("id", map.get("id"));
         params.put(EpConstant.EpKey.CORE_EP_ID, map.get("ep_id"));
         params.put("status", EpConstant.EpStatus.STOP);
-        params.put("statusActive", EpConstant.EpStatus.ACTIVE);
+        params.put("status_active", EpConstant.EpStatus.ACTIVE);
         try {
             return updateStatus(params);
         } catch (ApiException e) {
@@ -496,7 +496,7 @@ public class EpServiceImple implements EpService {
         Map<String, Object> params = new HashMap();//  同一个查询方法，按map参数查找，所以重构
         params.put("id", map.get("id"));
         // params.put(EpConstant.EpKey.CORE_EP_ID,map.get("ep_id"));//操作人所属企业
-        params.put("statusActive", EpConstant.EpStatus.ACTIVE);
+        params.put("status_active", EpConstant.EpStatus.ACTIVE);
         params.put("status", EpConstant.EpStatus.FREEZE);
         try {
             Result<Integer> result = updatePlatfrom(params);
@@ -523,7 +523,7 @@ public class EpServiceImple implements EpService {
         Map<String, Object> params = new HashMap();
         params.put("id", map.get("id"));
         // params.put(EpConstant.EpKey.CORE_EP_ID,map.get("ep_id"));
-        params.put("statusActive", EpConstant.EpStatus.ACTIVE);
+        params.put("status_active", EpConstant.EpStatus.ACTIVE);
         params.put("status", EpConstant.EpStatus.STOP);
         try {
             Result<Integer> result = updatePlatfrom(params);
