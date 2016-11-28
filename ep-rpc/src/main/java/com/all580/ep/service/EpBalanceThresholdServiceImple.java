@@ -38,12 +38,37 @@ public class EpBalanceThresholdServiceImple implements EpBalanceThresholdService
     public  Result<Integer> createOrUpdate(Map<String,Object> map) {
         Result<Integer> result = new Result<>();
         try {
-            map.put("threshold",CommonUtil.objectParseInteger(map.get("threshold")));
+            //   map.put("threshold",CommonUtil.objectParseInteger(map.get("threshold")));
+            String threshold = CommonUtil.objectParseString(map.get("threshold"));
+            if(threshold!=null){
+                if(threshold.length()>7){
+                    throw new ApiException("余额阀值太大超出范围");
+                }else{
+                    Integer num = CommonUtil.objectParseInteger(threshold);
+                    map.put("threshold",num*100);
+                }
+            }
             result.put(epBalanceThresholdMapper.createOrUpdate(map));
             result.setSuccess();
+        }catch (ApiException e) {
+            log.error(e.getMessage(), e);
+            throw new ApiException(e.getMessage(), e);
         } catch (Exception e) {
             log.error("添加更新余额阀值出错", e);
             throw new ApiException("添加更新余额阀值出错", e);
+        }
+        return result;
+    }
+
+    @Override
+    public  Result<Map<String,Object>> selectBalance(Map<String,Object> map) {
+        Result<Map<String,Object>> result = new Result<>();
+        try {
+            result.put(epBalanceThresholdMapper.selectBalance(map));
+            result.setSuccess();
+        } catch (Exception e) {
+            log.error("查询余额阀值出错", e);
+            throw new ApiException("查询余额阀值出错", e);
         }
         return result;
     }
