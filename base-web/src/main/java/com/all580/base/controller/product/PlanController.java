@@ -115,10 +115,10 @@ public class PlanController extends BaseController {
     @RequestMapping(value = "sale/group", method = RequestMethod.POST)
     @ResponseBody
     public Result productSubDistributionGroup(@RequestBody Map params) {
-        for (OnSalesParams param : initGroupOnsalesParams(params)) {
-            productService.productOnSale(param);
-        }
-        return new Result(true);
+//        for (OnSalesParams param : initGroupOnsalesParams(params)) {
+//            productService.productOnSale(param);
+//        }
+        return productService.productOnSaleToGroup(initGroupOnsalesParams(params));
     }
 
     @RequestMapping(value = "sale/ep/creator", method = RequestMethod.POST)

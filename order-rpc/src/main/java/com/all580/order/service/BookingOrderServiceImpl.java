@@ -159,11 +159,15 @@ public class BookingOrderServiceImpl implements BookingOrderService {
                 if (dayInfo.isBookingLimit()) {
                     int dayLimit = dayInfo.getBookingDayLimit();
                     Date limit = DateUtils.addDays(bookingDate, -dayLimit);
-                    String time = dayInfo.getBookingTimeLimit();
-                    if (time != null) {
-                        String[] timeArray = time.split(":");
-                        limit = DateUtils.setHours(limit, Integer.parseInt(timeArray[0]));
-                        limit = DateUtils.setMinutes(limit, Integer.parseInt(timeArray[1]));
+                    try {
+                        String time = dayInfo.getBookingTimeLimit();
+                        if (time != null) {
+                            String[] timeArray = time.split(":");
+                            limit = DateUtils.setHours(limit, Integer.parseInt(timeArray[0]));
+                            limit = DateUtils.setMinutes(limit, Integer.parseInt(timeArray[1]));
+                        }
+                    } catch (Exception e) {
+                        throw new ApiException("预定时间限制数据不合法", e);
                     }
                     if (when.after(limit)) {
                         throw new ApiException("预定时间限制,最晚预定时间:" + DateFormatUtils.parseDateToDatetimeString(limit));
