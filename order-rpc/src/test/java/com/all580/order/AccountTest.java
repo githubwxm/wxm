@@ -277,13 +277,13 @@ public class AccountTest {
             } else {
                 // 平台内部企业分账(利润)
                 OrderItemAccount account = new OrderItemAccount();
-                account.setEpId(epId);
-                account.setCoreEpId(coreEpId);
+                account.setEp_id(epId);
+                account.setCore_ep_id(coreEpId);
                 account.setMoney(totalProfit * quantity);
                 account.setProfit(totalProfit * quantity);
-                account.setOrderItemId(itemId);
+                account.setOrder_item_id(itemId);
                 account.setData(JsonUtils.toJson(dataDtos));
-                account.setSettledMoney(0);
+                account.setSettled_money(0);
                 account.setStatus(OrderConstant.AccountSplitStatus.NOT);
                 System.out.println(JsonUtils.toJson(account));
                 Integer val = coreSubMap.get(coreEpId);
@@ -307,13 +307,13 @@ public class AccountTest {
         }
         for (Integer id : coreSubMap.keySet()) {
             OrderItemAccount account = new OrderItemAccount();
-            account.setEpId(id);
-            account.setCoreEpId(id);
+            account.setEp_id(id);
+            account.setCore_ep_id(id);
             account.setMoney(-coreSubMap.get(id));
             account.setProfit(0);
-            account.setOrderItemId(itemId);
+            account.setOrder_item_id(itemId);
             account.setData(JsonUtils.toJson(daysAccountDataMap.get(id)));
-            account.setSettledMoney(0);
+            account.setSettled_money(0);
             account.setStatus(OrderConstant.AccountSplitStatus.NOT);
             System.out.println(JsonUtils.toJson(account));
         }
@@ -349,23 +349,23 @@ public class AccountTest {
     public static List<OrderItemAccount> generateAccount(GenerateAccountDto dto) {
         List<OrderItemAccount> accounts = new ArrayList<>();
         OrderItemAccount subtractAccount = new OrderItemAccount();
-        subtractAccount.setEpId(dto.getSubtractEpId());
-        subtractAccount.setCoreEpId(dto.getSubtractCoreId());
-        subtractAccount.setOrderItemId(dto.getOrderItemId());
+        subtractAccount.setEp_id(dto.getSubtractEpId());
+        subtractAccount.setCore_ep_id(dto.getSubtractCoreId());
+        subtractAccount.setOrder_item_id(dto.getOrderItemId());
         subtractAccount.setMoney(-dto.getMoney());
         subtractAccount.setProfit(dto.getSubtractProfit());
-        subtractAccount.setSettledMoney(0);
+        subtractAccount.setSettled_money(0);
         subtractAccount.setStatus(OrderConstant.AccountSplitStatus.NOT);
         subtractAccount.setData(dto.getSubtractData() == null ? null : JsonUtils.toJson(dto.getSubtractData()));
         accounts.add(subtractAccount);
 
         OrderItemAccount addAccount = new OrderItemAccount();
-        addAccount.setEpId(dto.getAddEpId());
-        addAccount.setCoreEpId(dto.getAddCoreId());
-        addAccount.setOrderItemId(dto.getOrderItemId());
+        addAccount.setEp_id(dto.getAddEpId());
+        addAccount.setCore_ep_id(dto.getAddCoreId());
+        addAccount.setOrder_item_id(dto.getOrderItemId());
         addAccount.setMoney(dto.getMoney());
         addAccount.setProfit(dto.getAddProfit());
-        addAccount.setSettledMoney(0);
+        addAccount.setSettled_money(0);
         addAccount.setStatus(OrderConstant.AccountSplitStatus.NOT);
         addAccount.setData(dto.getAddData() == null ? null : JsonUtils.toJson(dto.getAddData()));
         accounts.add(addAccount);

@@ -158,7 +158,7 @@ public class BaseOrderManager {
      */
     public ProductSearchParams parseParams(OrderItem orderItem) {
         ProductSearchParams params = new ProductSearchParams();
-        params.setSubProductId(orderItem.getProSubId());
+        params.setSubProductId(orderItem.getPro_sub_id());
         params.setStartDate(orderItem.getStart());
         params.setDays(orderItem.getDays());
         params.setQuantity(orderItem.getQuantity());
@@ -305,7 +305,7 @@ public class BaseOrderManager {
         // 存储调用余额分账的数据
         List<BalanceChangeInfo> balanceChangeInfoList = new ArrayList<>();
         // 预付
-        if (orderItem.getPaymentFlag() == ProductConstants.PayType.PREPAY) {
+        if (orderItem.getPayment_flag() == ProductConstants.PayType.PREPAY) {
             Set<String> uk = new HashSet<>();
             for (OrderItemAccount account : accounts) {
                 // 每天的单价利润数据
@@ -313,7 +313,7 @@ public class BaseOrderManager {
                 if (StringUtils.isEmpty(data)) {
                     continue;
                 }
-                String key = account.getEpId() + "#" + account.getCoreEpId();
+                String key = account.getEp_id() + "#" + account.getCore_ep_id();
                 if (uk.contains(key)) {
                     continue;
                 }
@@ -322,8 +322,8 @@ public class BaseOrderManager {
                 // 获取核销日期的单价利润
                 JSONObject dayData = getAccountDataByDay(daysData, DateFormatUtils.parseDateToDatetimeString(day));
                 BalanceChangeInfo changeInfo = new BalanceChangeInfo();
-                changeInfo.setEpId(account.getEpId());
-                changeInfo.setCoreEpId(account.getCoreEpId());
+                changeInfo.setEpId(account.getEp_id());
+                changeInfo.setCoreEpId(account.getCore_ep_id());
                 int money = getMoney(consumeQuantity, dayData);
                 if (money == 0) {
                     continue;
@@ -331,7 +331,7 @@ public class BaseOrderManager {
                 // 核销分账可提现金额
                 changeInfo.setCanCash(consume ? money : -money);
                 balanceChangeInfoList.add(changeInfo);
-                account.setSettledMoney(consume ? account.getSettledMoney() + money : account.getSettledMoney() - money); // 设置已结算金额
+                account.setSettled_money(consume ? account.getSettled_money() + money : account.getSettled_money() - money); // 设置已结算金额
                 orderItemAccountMapper.updateByPrimaryKeySelective(account);
             }
         }

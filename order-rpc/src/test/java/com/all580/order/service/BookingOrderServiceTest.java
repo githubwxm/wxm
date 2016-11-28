@@ -43,8 +43,8 @@ public class BookingOrderServiceTest {
         Order order = new Order();
         order.setId(157);
         order.setRemark("123");
-        order.setUpdateTime("2016-10-31 14:49:58.000000");
+        order.setUpdate_time("2016-10-31 14:49:58.000000");
         orderMapper.updateByPrimaryKeySelective(order);
-        System.out.println(order.getUpdateTime());
+        System.out.println(order.getUpdate_time());
     }
 }

@@ -51,12 +51,12 @@ public class ReConsumeSplitAccountAction implements JobRunner {
             log.warn("反核销后分账任务,反核销流水不存在");
             throw new Exception("反核销流水不存在");
         }
-        OrderClearanceSerial serial = orderClearanceSerialMapper.selectBySn(washedSerial.getClearanceSerialNo());
+        OrderClearanceSerial serial = orderClearanceSerialMapper.selectBySn(washedSerial.getClearance_serial_no());
         if (serial == null) {
             log.warn("反核销后分账任务,核销流水不存在");
             throw new Exception("核销流水不存在");
         }
-        OrderItem orderItem = orderItemMapper.selectByPrimaryKey(serial.getOrderItemId());
+        OrderItem orderItem = orderItemMapper.selectByPrimaryKey(serial.getOrder_item_id());
         bookingOrderManager.consumeOrReConsumeSplitAccount(orderItem, washedSerial.getDay(), washedSerial.getQuantity(), sn, false);
 
         // 同步数据
