@@ -39,7 +39,7 @@
             <property name="enableSubPackages" value="true"/>
         </javaClientGenerator>
 
-        <!--<table tableName="t_order_item_account"
+        <table tableName="t_order_item_account"
                enableCountByExample="false"
                enableUpdateByExample="false"
                enableDeleteByExample="false"
@@ -47,6 +47,7 @@
                selectByExampleQueryId="false"
                delimitAllColumns="true"
                domainObjectName="OrderItemAccount">
+            <property name="useActualColumnNames" value="true"/>
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
             <columnOverride column="update_time" javaType="java.lang.String"/>
         </table>
@@ -58,10 +59,11 @@
                selectByExampleQueryId="false"
                delimitAllColumns="true"
                domainObjectName="ClearanceWashedSerial">
+            <property name="useActualColumnNames" value="true"/>
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
             <columnOverride column="update_time" javaType="java.lang.String"/>
-        </table>-->
-        <!--<table tableName="t_order"
+        </table>
+        <table tableName="t_order"
                enableCountByExample="false"
                enableUpdateByExample="false"
                enableDeleteByExample="false"
@@ -69,10 +71,11 @@
                selectByExampleQueryId="false"
                delimitAllColumns="true"
                domainObjectName="Order">
+            <property name="useActualColumnNames" value="true"/>
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
             <columnOverride column="update_time" javaType="java.lang.String"/>
-        </table>-->
-        <!--<table tableName="t_order_clearance_detail"
+        </table>
+        <table tableName="t_order_clearance_detail"
                enableCountByExample="false"
                enableUpdateByExample="false"
                enableDeleteByExample="false"
@@ -80,7 +83,9 @@
                selectByExampleQueryId="false"
                delimitAllColumns="true"
                domainObjectName="OrderClearanceDetail">
+            <property name="useActualColumnNames" value="true"/>
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+            <columnOverride column="update_time" javaType="java.lang.String"/>
         </table>
         <table tableName="t_order_clearance_serial"
                enableCountByExample="false"
@@ -90,9 +95,10 @@
                selectByExampleQueryId="false"
                delimitAllColumns="true"
                domainObjectName="OrderClearanceSerial">
+            <property name="useActualColumnNames" value="true"/>
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
             <columnOverride column="update_time" javaType="java.lang.String"/>
-        </table>-->
+        </table>
         <table tableName="t_order_item"
                enableCountByExample="false"
                enableUpdateByExample="false"
@@ -101,10 +107,11 @@
                selectByExampleQueryId="false"
                delimitAllColumns="true"
                domainObjectName="OrderItem">
+            <property name="useActualColumnNames" value="true"/>
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
             <columnOverride column="update_time" javaType="java.lang.String"/>
         </table>
-        <!--<table tableName="t_order_item_detail"
+        <table tableName="t_order_item_detail"
                enableCountByExample="false"
                enableUpdateByExample="false"
                enableDeleteByExample="false"
@@ -112,8 +119,11 @@
                selectByExampleQueryId="false"
                delimitAllColumns="true"
                domainObjectName="OrderItemDetail">
+            <property name="useActualColumnNames" value="true"/>
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
             <columnOverride column="update_time" javaType="java.lang.String"/>
+            <columnOverride column="cust_refund_rule" jdbcType="VARCHAR" />
+            <columnOverride column="saler_refund_rule" jdbcType="VARCHAR" />
         </table>
         <table tableName="t_refund_account"
                enableCountByExample="false"
@@ -123,6 +133,7 @@
                selectByExampleQueryId="false"
                delimitAllColumns="true"
                domainObjectName="RefundAccount">
+            <property name="useActualColumnNames" value="true"/>
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
             <columnOverride column="update_time" javaType="java.lang.String"/>
         </table>
@@ -134,6 +145,7 @@
                selectByExampleQueryId="false"
                delimitAllColumns="true"
                domainObjectName="RefundOrder">
+            <property name="useActualColumnNames" value="true"/>
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
             <columnOverride column="update_time" javaType="java.lang.String"/>
         </table>
@@ -145,6 +157,7 @@
                selectByExampleQueryId="false"
                delimitAllColumns="true"
                domainObjectName="RefundSerial">
+            <property name="useActualColumnNames" value="true"/>
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
             <columnOverride column="update_time" javaType="java.lang.String"/>
         </table>
@@ -156,10 +169,11 @@
                selectByExampleQueryId="false"
                delimitAllColumns="true"
                domainObjectName="Shipping">
+            <property name="useActualColumnNames" value="true"/>
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
             <columnOverride column="update_time" javaType="java.lang.String"/>
-        </table>-->
-        <!--<table tableName="t_visitor"
+        </table>
+        <table tableName="t_visitor"
                enableCountByExample="false"
                enableUpdateByExample="false"
                enableDeleteByExample="false"
@@ -167,10 +181,11 @@
                selectByExampleQueryId="false"
                delimitAllColumns="true"
                domainObjectName="Visitor">
+            <property name="useActualColumnNames" value="true"/>
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
             <columnOverride column="update_time" javaType="java.lang.String"/>
-        </table>-->
-        <!--<table tableName="t_ma_send_response"
+        </table>
+        <table tableName="t_ma_send_response"
                enableCountByExample="false"
                enableUpdateByExample="false"
                enableDeleteByExample="false"
@@ -178,10 +193,11 @@
                selectByExampleQueryId="false"
                delimitAllColumns="true"
                domainObjectName="MaSendResponse">
+            <property name="useActualColumnNames" value="true"/>
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
             <columnOverride column="update_time" javaType="java.lang.String"/>
-        </table>-->
-        <!--<table tableName="t_refund_visitor"
+        </table>
+        <table tableName="t_refund_visitor"
                enableCountByExample="false"
                enableUpdateByExample="false"
                enableDeleteByExample="false"
@@ -189,8 +205,9 @@
                selectByExampleQueryId="false"
                delimitAllColumns="true"
                domainObjectName="RefundVisitor">
+            <property name="useActualColumnNames" value="true"/>
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
             <columnOverride column="update_time" javaType="java.lang.String"/>
-        </table>-->
+        </table>
     </context>
 </generatorConfiguration>

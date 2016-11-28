@@ -75,7 +75,7 @@ public class PaymentCallbackAction implements JobRunner {
         orderItemMapper.setStatusByOrderId(orderId, OrderConstant.OrderItemStatus.NON_SEND);
 
         // 分账 到付不分账
-        if (order.getPayAmount() > 0) {
+        if (order.getPay_amount() > 0) {
             bookingOrderManager.paySplitAccount(order, orderItems);
         }
         order.setStatus(OrderConstant.OrderStatus.PAID);

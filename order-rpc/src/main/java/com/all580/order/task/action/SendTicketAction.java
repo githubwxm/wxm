@@ -70,14 +70,14 @@ public class SendTicketAction implements JobRunner {
         OrderItemDetail detail = detailList.get(0); // 景点只有一天
         SendTicketParams sendTicketParams = new SendTicketParams();
         sendTicketParams.setOrderSn(orderItem.getNumber());
-        sendTicketParams.setProductSn(orderItem.getProSubNumber());
-        sendTicketParams.setPaymentType(orderItem.getPaymentFlag() == ProductConstants.PayType.PREPAY ?
+        sendTicketParams.setProductSn(orderItem.getPro_sub_number());
+        sendTicketParams.setPaymentType(orderItem.getPayment_flag() == ProductConstants.PayType.PREPAY ?
                 VoucherConstant.PaymentType.ONLINE : VoucherConstant.PaymentType.LIVE);
         sendTicketParams.setConsumeType(VoucherConstant.ConsumeType.COUNT); // 默认
-        sendTicketParams.setValidTime(detail.getEffectiveDate());
-        sendTicketParams.setInvalidTime(detail.getExpiryDate());
-        sendTicketParams.setDisableWeek(detail.getDisableWeek());
-        sendTicketParams.setDisableDate(detail.getDisableDay());
+        sendTicketParams.setValidTime(detail.getEffective_date());
+        sendTicketParams.setInvalidTime(detail.getExpiry_date());
+        sendTicketParams.setDisableWeek(detail.getDisable_week());
+        sendTicketParams.setDisableDate(detail.getDisable_day());
         // TODO: 2016/11/3 出票发送短信
         sendTicketParams.setSendSms(true);
         //sendTicketParams.setSms("");
@@ -90,7 +90,7 @@ public class SendTicketAction implements JobRunner {
             contacts.add(v);
         }
         sendTicketParams.setVisitors(contacts);
-        com.framework.common.Result r = voucherRPCService.sendTicket(orderItem.getEpMaId(), sendTicketParams);
+        com.framework.common.Result r = voucherRPCService.sendTicket(orderItem.getEp_ma_id(), sendTicketParams);
         if (!r.isSuccess()) {
             log.warn("子订单:{},出票失败:{}", orderItem.getNumber(), r.getError());
         }

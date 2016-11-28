@@ -297,11 +297,11 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         }
 
         // 更新订单金额
-        order.setPayAmount(from == OrderConstant.FromType.TRUST ? totalPayShopPrice : totalPayPrice);
-        order.setSaleAmount(totalPrice);
+        order.setPay_amount(from == OrderConstant.FromType.TRUST ? totalPayShopPrice : totalPayPrice);
+        order.setSale_amount(totalPrice);
 
         // 到付
-        if (order.getStatus() != OrderConstant.OrderStatus.AUDIT_WAIT && order.getPayAmount() <= 0) {
+        if (order.getStatus() != OrderConstant.OrderStatus.AUDIT_WAIT && order.getPay_amount() <= 0) {
             order.setStatus(OrderConstant.OrderStatus.PAID_HANDLING); // 已支付,处理中
             // 支付成功回调 记录任务
             Map<String, String> jobParams = new HashMap<>();
@@ -310,8 +310,8 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         }
 
         // 更新审核时间
-        if (order.getStatus() != OrderConstant.OrderStatus.AUDIT_WAIT && order.getAuditTime() == null) {
-            order.setAuditTime(new Date());
+        if (order.getStatus() != OrderConstant.OrderStatus.AUDIT_WAIT && order.getAudit_time() == null) {
+            order.setAudit_time(new Date());
         }
         orderMapper.updateByPrimaryKeySelective(order);
 
@@ -345,7 +345,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
                 throw new ApiException("订单不在待审状态");
             }
 
-            Order order = orderMapper.selectByPrimaryKey(orderItem.getOrderId());
+            Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
             if (order == null) {
                 throw new ApiException("订单不存在");
             }
@@ -355,24 +355,24 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             if (!params.containsKey(EpConstant.EpKey.EP_ID)) {
                 throw new ApiException("非法请求:企业ID为空");
             }
-            if (!String.valueOf(params.get(EpConstant.EpKey.EP_ID)).equals(String.valueOf(orderItem.getSupplierEpId()))) {
+            if (!String.valueOf(params.get(EpConstant.EpKey.EP_ID)).equals(String.valueOf(orderItem.getSupplier_ep_id()))) {
                 throw new ApiException("非法请求:当前企业不能审核该订单");
             }
 
-            orderItem.setAuditUserId(CommonUtil.objectParseInteger(params.get("operator_id")));
-            orderItem.setAuditUserName(CommonUtil.objectParseString(params.get("operator_name")));
-            orderItem.setAuditTime(new Date());
+            orderItem.setAudit_user_id(CommonUtil.objectParseInteger(params.get("operator_id")));
+            orderItem.setAudit_user_name(CommonUtil.objectParseString(params.get("operator_name")));
+            orderItem.setAudit_time(new Date());
             boolean status = Boolean.parseBoolean(params.get("status").toString());
             // 通过
             if (status) {
                 orderItem.setStatus(OrderConstant.OrderItemStatus.AUDIT_SUCCESS);
                 orderItemMapper.updateByPrimaryKeySelective(orderItem);
-                boolean allAudit = bookingOrderManager.isOrderAllAudit(orderItem.getOrderId(), orderItem.getId());
+                boolean allAudit = bookingOrderManager.isOrderAllAudit(orderItem.getOrder_id(), orderItem.getId());
                 if (allAudit) {
                     order.setStatus(OrderConstant.OrderStatus.PAY_WAIT);
-                    order.setAuditTime(new Date());
+                    order.setAudit_time(new Date());
                     // 判断是否需要支付
-                    if (order.getPayAmount() <= 0) { // 不需要支付
+                    if (order.getPay_amount() <= 0) { // 不需要支付
                         order.setStatus(OrderConstant.OrderStatus.PAID_HANDLING); // 已支付,处理中
                         // 支付成功回调 记录任务
                         Map<String, String> jobParams = new HashMap<>();
@@ -418,35 +418,35 @@ public class BookingOrderServiceImpl implements BookingOrderService {
                     order.getStatus() != OrderConstant.OrderStatus.PAYING) {
                 throw new ApiException("订单不在待支付状态");
             }
-            if (order.getPayAmount() <= 0) {
+            if (order.getPay_amount() <= 0) {
                 throw new ApiException("该订单不需要支付");
             }
             if (!params.containsKey(EpConstant.EpKey.EP_ID)) {
                 throw new ApiException("非法请求:企业ID为空");
             }
-            if (!String.valueOf(params.get(EpConstant.EpKey.EP_ID)).equals(String.valueOf(order.getBuyEpId()))) {
+            if (!String.valueOf(params.get(EpConstant.EpKey.EP_ID)).equals(String.valueOf(order.getBuy_ep_id()))) {
                 throw new ApiException("非法请求:当前企业不能支付该订单");
             }
 
             order.setStatus(OrderConstant.OrderStatus.PAYING);
-            order.setLocalPaymentSerialNo(String.valueOf(UUIDGenerator.generateUUID()));
-            order.setPaymentType(payType);
-            order.setPayTime(new Date());
+            order.setLocal_payment_serial_no(String.valueOf(UUIDGenerator.generateUUID()));
+            order.setPayment_type(payType);
+            order.setPay_time(new Date());
             orderMapper.updateByPrimaryKeySelective(order);
 
             // 调用支付RPC
             // 余额支付
             if (payType == PaymentConstant.PaymentType.BALANCE.intValue()) {
                 BalanceChangeInfo payInfo = new BalanceChangeInfo();
-                payInfo.setEpId(order.getBuyEpId());
-                payInfo.setCoreEpId(bookingOrderManager.getCoreEpId(bookingOrderManager.getCoreEpId(order.getBuyEpId())));
-                payInfo.setBalance(-order.getPayAmount());
-                payInfo.setCanCash(-order.getPayAmount());
+                payInfo.setEpId(order.getBuy_ep_id());
+                payInfo.setCoreEpId(bookingOrderManager.getCoreEpId(bookingOrderManager.getCoreEpId(order.getBuy_ep_id())));
+                payInfo.setBalance(-order.getPay_amount());
+                payInfo.setCanCash(-order.getPay_amount());
 
                 BalanceChangeInfo saveInfo = new BalanceChangeInfo();
                 saveInfo.setEpId(payInfo.getCoreEpId());
                 saveInfo.setCoreEpId(payInfo.getCoreEpId());
-                saveInfo.setBalance(order.getPayAmount());
+                saveInfo.setBalance(order.getPay_amount());
                 // 支付
                 Result result = bookingOrderManager.changeBalances(
                         PaymentConstant.BalanceChangeType.BALANCE_PAY,
@@ -465,12 +465,12 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             List<Long> ids = orderItemMapper.getProductIdsByOrderId(order.getId());
             Map<String, Object> payParams = new HashMap<>();
             payParams.put("prodName", StringUtils.join(names, ","));
-            payParams.put("totalFee", order.getPayAmount());
+            payParams.put("totalFee", order.getPay_amount());
             payParams.put("serialNum", order.getNumber().toString());
             payParams.put("prodId", StringUtils.join(ids, ","));
 
             Result result = thirdPayService.reqPay(order.getNumber(),
-                    bookingOrderManager.getCoreEpId(epService.selectPlatformId(order.getBuyEpId())),
+                    bookingOrderManager.getCoreEpId(epService.selectPlatformId(order.getBuy_ep_id())),
                     payType, payParams);
             if (!result.isSuccess()) {
                 log.warn("第三方支付异常:{}", result);
@@ -505,13 +505,13 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             throw new ApiException("该子订单已发起退票");
         }
 
-        MaSendResponse response = maSendResponseMapper.selectByVisitorId(orderItem.getId(), visitorId, orderItem.getEpMaId());
+        MaSendResponse response = maSendResponseMapper.selectByVisitorId(orderItem.getId(), visitorId, orderItem.getEp_ma_id());
         if (orderItem.getStatus() == OrderConstant.OrderItemStatus.SEND && response != null) {
             ReSendTicketParams reSendTicketParams = new ReSendTicketParams();
             reSendTicketParams.setOrderSn(orderItem.getNumber());
             reSendTicketParams.setVisitorId(visitorId);
             reSendTicketParams.setMobile(params.get("phone").toString());
-            return voucherRPCService.resendTicket(orderItem.getEpMaId(), reSendTicketParams);
+            return voucherRPCService.resendTicket(orderItem.getEp_ma_id(), reSendTicketParams);
         }
         // 出票
         // 记录任务

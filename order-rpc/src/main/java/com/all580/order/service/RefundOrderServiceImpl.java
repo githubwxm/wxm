@@ -75,7 +75,7 @@ public class RefundOrderServiceImpl implements RefundOrderService {
         if (orderItem == null) {
             throw new ApiException("订单不存在");
         }
-        Order order = orderMapper.selectByPrimaryKey(orderItem.getOrderId());
+        Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
         if (order == null) {
             throw new ApiException("订单不存在");
         }
@@ -97,7 +97,7 @@ public class RefundOrderServiceImpl implements RefundOrderService {
             if (!params.containsKey(EpConstant.EpKey.EP_ID)) {
                 throw new ApiException("非法请求:企业ID为空");
             }
-            if (!String.valueOf(params.get(EpConstant.EpKey.EP_ID)).equals(String.valueOf(order.getBuyEpId()))) {
+            if (!String.valueOf(params.get(EpConstant.EpKey.EP_ID)).equals(String.valueOf(order.getBuy_ep_id()))) {
                 throw new ApiException("非法请求:当前企业不能退订该订单");
             }
 
@@ -117,9 +117,9 @@ public class RefundOrderServiceImpl implements RefundOrderService {
             // 计算退款金额
             int money = 0;
             // 到付不计算
-            if (orderItem.getPaymentFlag() != ProductConstants.PayType.PAYS) {
-                money = refundOrderManager.calcRefundMoney(daysList, detailList, orderItem.getId(), order.getBuyEpId(),
-                        refundOrderManager.getCoreEpId(refundOrderManager.getCoreEpId(order.getBuyEpId())), refundDate);
+            if (orderItem.getPayment_flag() != ProductConstants.PayType.PAYS) {
+                money = refundOrderManager.calcRefundMoney(daysList, detailList, orderItem.getId(), order.getBuy_ep_id(),
+                        refundOrderManager.getCoreEpId(refundOrderManager.getCoreEpId(order.getBuy_ep_id())), refundDate);
             }
             if (money < 0) {
                 throw new ApiException("销售价小于退货手续费");
@@ -129,7 +129,7 @@ public class RefundOrderServiceImpl implements RefundOrderService {
             RefundOrder refundOrder = refundOrderManager.generateRefundOrder(orderItem.getId(), daysList, quantity, money, cause);
 
             // 判断余票 并修改明细退票数量 创建游客退票信息
-            int tmpQuantity = refundOrderManager.canRefundForDays(daysList, detailList, refundOrder.getOrderItemId(), refundOrder.getId());
+            int tmpQuantity = refundOrderManager.canRefundForDays(daysList, detailList, refundOrder.getOrder_item_id(), refundOrder.getId());
             if (tmpQuantity != quantity) {
                 throw new ApiException("退票总数与每天退票数不符");
             }
@@ -162,7 +162,7 @@ public class RefundOrderServiceImpl implements RefundOrderService {
                 throw new ApiException("订单不在已支付处理中状态");
             }
             // 退款,取消在退款回调中执行
-            refundOrderManager.refundMoney(order, order.getPayAmount(), null);
+            refundOrderManager.refundMoney(order, order.getPay_amount(), null);
             return new Result<>(true);
         } finally {
             lock.unlock();
@@ -185,18 +185,18 @@ public class RefundOrderServiceImpl implements RefundOrderService {
             if (refundOrder.getStatus() != OrderConstant.RefundOrderStatus.AUDIT_WAIT) {
                 throw new ApiException("退订订单不在待审核状态");
             }
-            refundOrder.setAuditTime(new Date());
-            refundOrder.setAuditUserId(CommonUtil.objectParseInteger(params.get("operator_id")));
-            refundOrder.setAuditUserName(CommonUtil.objectParseString(params.get("operator_name")));
-            OrderItem orderItem = orderItemMapper.selectByPrimaryKey(refundOrder.getOrderItemId());
+            refundOrder.setAudit_time(new Date());
+            refundOrder.setAudit_user_id(CommonUtil.objectParseInteger(params.get("operator_id")));
+            refundOrder.setAudit_user_name(CommonUtil.objectParseString(params.get("operator_name")));
+            OrderItem orderItem = orderItemMapper.selectByPrimaryKey(refundOrder.getOrder_item_id());
             if (orderItem == null) {
                 throw new ApiException("订单不存在");
             }
-            Order order = orderMapper.selectByPrimaryKey(orderItem.getOrderId());
+            Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
             if (order == null) {
                 throw new ApiException("订单不存在");
             }
-            if (!String.valueOf(params.get(EpConstant.EpKey.CORE_EP_ID)).equals(String.valueOf(orderItem.getSupplierCoreEpId()))) {
+            if (!String.valueOf(params.get(EpConstant.EpKey.CORE_EP_ID)).equals(String.valueOf(orderItem.getSupplier_core_ep_id()))) {
                 throw new ApiException("非法请求:当前企业不能审核该退订订单");
             }
             boolean status = Boolean.parseBoolean(params.get("status").toString());
@@ -211,10 +211,10 @@ public class RefundOrderServiceImpl implements RefundOrderService {
                     refundOrder.setStatus(OrderConstant.RefundOrderStatus.REFUND_MONEY); // 退款中
                     refundOrderMapper.updateByPrimaryKeySelective(refundOrder);
                     int quantity = refundOrderManager.nonSendTicketRefund(refundOrder);
-                    orderItem.setRefundQuantity(orderItem.getRefundQuantity() + quantity);
+                    orderItem.setRefund_quantity(orderItem.getRefund_quantity() + quantity);
                     orderItemMapper.updateByPrimaryKeySelective(orderItem);
                     // 支付宝需要手动退款
-                    if (order.getPaymentType() == null || order.getPaymentType() != PaymentConstant.PaymentType.ALI_PAY.intValue()) {
+                    if (order.getPayment_type() == null || order.getPayment_type() != PaymentConstant.PaymentType.ALI_PAY.intValue()) {
                         // 退款
                         refundOrderManager.refundMoney(order, refundOrder.getMoney(), String.valueOf(refundOrder.getNumber()));
                     }
@@ -246,15 +246,15 @@ public class RefundOrderServiceImpl implements RefundOrderService {
         if (refundOrder.getStatus() != OrderConstant.RefundOrderStatus.REFUND_MONEY) {
             throw new ApiException("退订订单不在退款中状态");
         }
-        OrderItem orderItem = orderItemMapper.selectByPrimaryKey(refundOrder.getOrderItemId());
+        OrderItem orderItem = orderItemMapper.selectByPrimaryKey(refundOrder.getOrder_item_id());
         if (orderItem == null) {
             throw new ApiException("订单不存在");
         }
-        Order order = orderMapper.selectByPrimaryKey(orderItem.getOrderId());
+        Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
         if (order == null) {
             throw new ApiException("订单不存在");
         }
-        if (!String.valueOf(params.get(EpConstant.EpKey.CORE_EP_ID)).equals(String.valueOf(orderItem.getSupplierCoreEpId()))) {
+        if (!String.valueOf(params.get(EpConstant.EpKey.CORE_EP_ID)).equals(String.valueOf(orderItem.getSupplier_core_ep_id()))) {
             throw new ApiException("非法请求:当前企业不能退款该退订订单");
         }
         // 退款

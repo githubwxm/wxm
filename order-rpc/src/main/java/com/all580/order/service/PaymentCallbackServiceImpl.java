@@ -61,16 +61,16 @@ public class PaymentCallbackServiceImpl implements PaymentCallbackService {
                 log.warn("订单:{}状态:{}不是支付中", ordCode, order.getStatus());
                 return new Result(false, "订单已经处理");
             }
-            order.setThirdSerialNo(outTransId);
+            order.setThird_serial_no(outTransId);
             order.setStatus(OrderConstant.OrderStatus.PAID_HANDLING); // 已支付,处理中
             orderMapper.updateByPrimaryKeySelective(order);
 
             // 支付成功后加平台商余额(平帐),余额支付不做平帐
-            if (order.getPaymentType() != PaymentConstant.PaymentType.BALANCE.intValue()) {
+            if (order.getPayment_type() != PaymentConstant.PaymentType.BALANCE.intValue()) {
                 BalanceChangeInfo info = new BalanceChangeInfo();
-                info.setEpId(bookingOrderManager.getCoreEpId(bookingOrderManager.getCoreEpId(order.getBuyEpId())));
+                info.setEpId(bookingOrderManager.getCoreEpId(bookingOrderManager.getCoreEpId(order.getBuy_ep_id())));
                 info.setCoreEpId(info.getEpId());
-                info.setBalance(order.getPayAmount());
+                info.setBalance(order.getPay_amount());
                 bookingOrderManager.changeBalances(PaymentConstant.BalanceChangeType.THIRD_PAY_FOR_ORDER, serialNum, info);
             }
 

@@ -72,26 +72,26 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
             return new Result(false, "订单状态不在出票中");
         }
         orderItem.setStatus(OrderConstant.OrderItemStatus.SEND);
-        orderItem.setSendMaTime(procTime);
+        orderItem.setSend_ma_time(procTime);
         orderItemMapper.updateByPrimaryKeySelective(orderItem);
 
         List<MaSendResponse> maSendResponseList = maSendResponseMapper.selectByOrderItemId(orderItem.getId());
         for (SendTicketInfo ticketInfo : infoList) {
             // check
-            if (getMaSendResponse(maSendResponseList, ticketInfo.getVisitorSeqId(), orderItem.getEpMaId()) != null) {
+            if (getMaSendResponse(maSendResponseList, ticketInfo.getVisitorSeqId(), orderItem.getEp_ma_id()) != null) {
                 continue;
             }
             MaSendResponse response = new MaSendResponse();
-            response.setVisitorId(ticketInfo.getVisitorSeqId()); // 游客ID
-            response.setEpMaId(orderItem.getEpMaId()); // 哪个凭证的商户ID
-            response.setMaOrderId(ticketInfo.getTicketId()); // 凭证号对应的凭证ID
+            response.setVisitor_id(ticketInfo.getVisitorSeqId()); // 游客ID
+            response.setEp_ma_id(orderItem.getEp_ma_id()); // 哪个凭证的商户ID
+            response.setMa_order_id(ticketInfo.getTicketId()); // 凭证号对应的凭证ID
             response.setSid(ticketInfo.getSid()); // 身份证
             response.setPhone(ticketInfo.getPhone()); // 手机号码
-            response.setImageUrl(ticketInfo.getImgUrl()); // 二维码
-            response.setVoucherValue(ticketInfo.getVoucherNumber()); // 凭证号
-            response.setMaProductId(ticketInfo.getMaProductId()); // 凭证产品ID
-            response.setOrderItemId(orderItem.getId()); // 子订单ID
-            response.setCreateTime(procTime);
+            response.setImage_url(ticketInfo.getImgUrl()); // 二维码
+            response.setVoucher_value(ticketInfo.getVoucherNumber()); // 凭证号
+            response.setMa_product_id(ticketInfo.getMaProductId()); // 凭证产品ID
+            response.setOrder_item_id(orderItem.getId()); // 子订单ID
+            response.setCreate_time(procTime);
             maSendResponseMapper.insertSelective(response);
         }
 
@@ -120,31 +120,31 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
 
         // 目前景点只有一天
         OrderItemDetail itemDetail = detailList.get(0);
-        itemDetail.setUsedQuantity(itemDetail.getUsedQuantity() + info.getConsumeQuantity());
+        itemDetail.setUsed_quantity(itemDetail.getUsed_quantity() + info.getConsumeQuantity());
         orderItemDetailMapper.updateByPrimaryKeySelective(itemDetail);
 
         // 保存核销流水
         OrderClearanceSerial serial = new OrderClearanceSerial();
-        serial.setOrderItemId(orderItem.getId());
-        serial.setClearanceTime(procTime);
-        serial.setCreateTime(new Date());
+        serial.setOrder_item_id(orderItem.getId());
+        serial.setClearance_time(procTime);
+        serial.setCreate_time(new Date());
         serial.setDay(orderItem.getStart());
         serial.setQuantity(info.getConsumeQuantity());
-        serial.setSerialNo(info.getValidateSn());
+        serial.setSerial_no(info.getValidateSn());
         orderClearanceSerialMapper.insertSelective(serial);
 
         // 获取核销人信息
         Visitor visitor = visitorMapper.selectByPrimaryKey(info.getVisitorSeqId());
         // 保存核销明细
         OrderClearanceDetail detail = new OrderClearanceDetail();
-        detail.setSerialNo(info.getValidateSn());
+        detail.setSerial_no(info.getValidateSn());
         detail.setName(visitor.getName());
         detail.setSid(visitor.getSid());
         detail.setPhone(visitor.getPhone());
         orderClearanceDetailMapper.insertSelective(detail);
 
         // 设置核销人核销数量
-        visitor.setUseQuantity(visitor.getUseQuantity() + info.getConsumeQuantity());
+        visitor.setUse_quantity(visitor.getUse_quantity() + info.getConsumeQuantity());
         visitorMapper.updateByPrimaryKeySelective(visitor);
 
         // 发送短信
@@ -153,7 +153,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         // 分账
         // 核销成功 记录任务
         Map<String, String> jobParams = new HashMap<>();
-        jobParams.put("sn", serial.getSerialNo());
+        jobParams.put("sn", serial.getSerial_no());
         refundOrderManager.addJob(OrderConstant.Actions.CONSUME_SPLIT_ACCOUNT, jobParams);
 
         // 同步数据
@@ -186,15 +186,15 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
 
         // 目前景点只有一天
         OrderItemDetail itemDetail = detailList.get(0);
-        itemDetail.setUsedQuantity(itemDetail.getUsedQuantity() - orderClearanceSerial.getQuantity());
+        itemDetail.setUsed_quantity(itemDetail.getUsed_quantity() - orderClearanceSerial.getQuantity());
         orderItemDetailMapper.updateByPrimaryKeySelective(itemDetail);
 
         // 保存冲正流水
         ClearanceWashedSerial serial = new ClearanceWashedSerial();
-        serial.setSerialNo(info.getReValidateSn());
-        serial.setClearanceSerialNo(info.getValidateSn());
-        serial.setClearanceWashedTime(procTime);
-        serial.setCreateTime(new Date());
+        serial.setSerial_no(info.getReValidateSn());
+        serial.setClearance_serial_no(info.getValidateSn());
+        serial.setClearance_washed_time(procTime);
+        serial.setCreate_time(new Date());
         serial.setDay(orderItem.getStart());
         serial.setQuantity(orderClearanceSerial.getQuantity());
         clearanceWashedSerialMapper.insertSelective(serial);
@@ -202,7 +202,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         // 获取核销人信息
         Visitor visitor = visitorMapper.selectByPrimaryKey(info.getVisitorSeqId());
         // 设置核销人核销数量
-        visitor.setUseQuantity(visitor.getUseQuantity() - orderClearanceSerial.getQuantity());
+        visitor.setUse_quantity(visitor.getUse_quantity() - orderClearanceSerial.getQuantity());
         visitorMapper.updateByPrimaryKeySelective(visitor);
 
         // 发送短信
@@ -211,7 +211,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         // 分账
         // 记录任务
         Map<String, String> jobParams = new HashMap<>();
-        jobParams.put("sn", serial.getSerialNo());
+        jobParams.put("sn", serial.getSerial_no());
         refundOrderManager.addJob(OrderConstant.Actions.RE_CONSUME_SPLIT_ACCOUNT, jobParams);
 
         // 同步数据
@@ -231,7 +231,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
             return new Result(false, "退票流水错误");
         }
 
-        if (refundSerial.getRefundTime() != null) {
+        if (refundSerial.getRefund_time() != null) {
             return new Result(false, "退票流水:" + info.getRefId() + "重复操作");
         }
 
@@ -256,35 +256,35 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         }
 
         refundOrder.setStatus(OrderConstant.RefundOrderStatus.REFUND_MONEY); // 退款中
-        refundOrder.setRefundTicketTime(procTime);
+        refundOrder.setRefund_ticket_time(procTime);
 
         //refundSerial.setRemoteSerialNo(refundSn);
-        refundSerial.setRefundTime(procTime);
+        refundSerial.setRefund_time(procTime);
 
         // 获取核销人信息
         Visitor visitor = visitorMapper.selectByPrimaryKey(info.getVisitorSeqId());
-        visitor.setReturnQuantity(visitor.getReturnQuantity() + refundSerial.getQuantity());
+        visitor.setReturn_quantity(visitor.getReturn_quantity() + refundSerial.getQuantity());
         visitorMapper.updateByPrimaryKeySelective(visitor);
 
         RefundVisitor refundVisitor = refundVisitorMapper.selectByRefundIdAndVisitorId(refundOrder.getId(), info.getVisitorSeqId());
-        refundVisitor.setReturnQuantity(refundVisitor.getReturnQuantity() + refundSerial.getQuantity());
-        refundVisitor.setPreQuantity(0);
+        refundVisitor.setReturn_quantity(refundVisitor.getReturn_quantity() + refundSerial.getQuantity());
+        refundVisitor.setPre_quantity(0);
         refundVisitorMapper.updateByPrimaryKeySelective(refundVisitor);
-        orderItem.setRefundQuantity(orderItem.getRefundQuantity() + refundSerial.getQuantity());
+        orderItem.setRefund_quantity(orderItem.getRefund_quantity() + refundSerial.getQuantity());
         orderItemMapper.updateByPrimaryKeySelective(orderItem);
         refundOrderMapper.updateByPrimaryKeySelective(refundOrder);
         refundSerialMapper.updateByPrimaryKeySelective(refundSerial);
 
         // 退款
-        Order order = orderMapper.selectByPrimaryKey(orderItem.getOrderId());
+        Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
         // 支付宝退款走财务手动
-        if (order.getPaymentType() != PaymentConstant.PaymentType.ALI_PAY.intValue()) {
+        if (order.getPayment_type() != PaymentConstant.PaymentType.ALI_PAY.intValue()) {
             refundOrderManager.refundMoney(order, refundOrder.getMoney(), String.valueOf(refundOrder.getNumber()));
         }
 
         // 还库存 记录任务
         Map<String, String> jobParams = new HashMap<>();
-        jobParams.put("orderItemId", String.valueOf(refundOrder.getOrderItemId()));
+        jobParams.put("orderItemId", String.valueOf(refundOrder.getOrder_item_id()));
         jobParams.put("check", "false");
         bookingOrderManager.addJob(OrderConstant.Actions.REFUND_STOCK, jobParams);
 
@@ -298,8 +298,8 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
             return null;
         }
         for (MaSendResponse response : list) {
-            if (response != null && response.getVisitorId() != null && response.getEpMaId() != null
-                    && response.getEpMaId() == epMaId && response.getVisitorId() == visitorId) {
+            if (response != null && response.getVisitor_id() != null && response.getEp_ma_id() != null
+                    && response.getEp_ma_id() == epMaId && response.getVisitor_id() == visitorId) {
                 return response;
             }
         }

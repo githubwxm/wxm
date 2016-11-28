@@ -36,7 +36,7 @@ public class OrderServiceImpl implements OrderService {
             return new Result<>(false, "订单不存在");
         }
         Result<Integer> result = new Result<>(true);
-        result.put(order.getPayeeEpId());
+        result.put(order.getPayee_ep_id());
         return result;
     }
 

@@ -136,14 +136,14 @@ public class BookingOrderManager extends BaseOrderManager {
         Order order = new Order();
         order.setNumber(UUIDGenerator.generateUUID());
         order.setStatus(OrderConstant.OrderStatus.PAY_WAIT);
-        order.setBuyEpId(buyEpId);
-        order.setBuyEpName(buyEpName);
-        order.setBuyOperatorId(userId);
-        order.setBuyOperatorName(userName);
-        order.setCreateTime(new Date());
-        order.setFromType(from);
+        order.setBuy_ep_id(buyEpId);
+        order.setBuy_ep_name(buyEpName);
+        order.setBuy_operator_id(userId);
+        order.setBuy_operator_name(userName);
+        order.setCreate_time(new Date());
+        order.setFrom_type(from);
         order.setRemark(remark);
-        order.setPayeeEpId(coreEpId);
+        order.setPayee_ep_id(coreEpId);
         orderMapper.insertSelective(order);
         return order;
     }
@@ -163,21 +163,21 @@ public class BookingOrderManager extends BaseOrderManager {
         orderItem.setNumber(UUIDGenerator.generateUUID());
         orderItem.setStart(bookingDate);
         orderItem.setEnd(endTime);
-        orderItem.setSaleAmount(saleAmount); // 进货价
+        orderItem.setSale_amount(saleAmount); // 进货价
         orderItem.setDays(days);
-        orderItem.setGroupId(0); // 散客为0
-        orderItem.setOrderId(orderId);
-        orderItem.setProName(info.getProductName());
-        orderItem.setProSubName(info.getProductSubName());
-        orderItem.setProSubNumber(info.getProductSubCode());
-        orderItem.setProSubId(proSubId);
+        orderItem.setGroup_id(0); // 散客为0
+        orderItem.setOrder_id(orderId);
+        orderItem.setPro_name(info.getProductName());
+        orderItem.setPro_sub_name(info.getProductSubName());
+        orderItem.setPro_sub_number(info.getProductSubCode());
+        orderItem.setPro_sub_id(proSubId);
         orderItem.setQuantity(quantity);
-        orderItem.setPaymentFlag(info.getPayType());
+        orderItem.setPayment_flag(info.getPayType());
         orderItem.setStatus(OrderConstant.OrderItemStatus.AUDIT_SUCCESS);
-        orderItem.setSupplierEpId(info.getEpId());
-        orderItem.setSupplierCoreEpId(getCoreEpId(getCoreEpId(info.getEpId())));
-        orderItem.setSupplierPhone(info.getPhone());
-        orderItem.setEpMaId(info.getEpMaId());
+        orderItem.setSupplier_ep_id(info.getEpId());
+        orderItem.setSupplier_core_ep_id(getCoreEpId(getCoreEpId(info.getEpId())));
+        orderItem.setSupplier_phone(info.getPhone());
+        orderItem.setEp_ma_id(info.getEpMaId());
         orderItemMapper.insertSelective(orderItem);
         return orderItem;
     }
@@ -191,24 +191,24 @@ public class BookingOrderManager extends BaseOrderManager {
     public List<OrderItemAccount> generateAccount(GenerateAccountDto dto) {
         List<OrderItemAccount> accounts = new ArrayList<>();
         OrderItemAccount subtractAccount = new OrderItemAccount();
-        subtractAccount.setEpId(dto.getSubtractEpId());
-        subtractAccount.setCoreEpId(dto.getSubtractCoreId());
-        subtractAccount.setOrderItemId(dto.getOrderItemId());
+        subtractAccount.setEp_id(dto.getSubtractEpId());
+        subtractAccount.setCore_ep_id(dto.getSubtractCoreId());
+        subtractAccount.setOrder_item_id(dto.getOrderItemId());
         subtractAccount.setMoney(-dto.getMoney());
         subtractAccount.setProfit(dto.getSubtractProfit());
-        subtractAccount.setSettledMoney(0);
+        subtractAccount.setSettled_money(0);
         subtractAccount.setStatus(OrderConstant.AccountSplitStatus.NOT);
         subtractAccount.setData(dto.getSubtractData() == null ? null : JsonUtils.toJson(dto.getSubtractData()));
         accounts.add(subtractAccount);
         orderItemAccountMapper.insertSelective(subtractAccount);
 
         OrderItemAccount addAccount = new OrderItemAccount();
-        addAccount.setEpId(dto.getAddEpId());
-        addAccount.setCoreEpId(dto.getAddCoreId());
-        addAccount.setOrderItemId(dto.getOrderItemId());
+        addAccount.setEp_id(dto.getAddEpId());
+        addAccount.setCore_ep_id(dto.getAddCoreId());
+        addAccount.setOrder_item_id(dto.getOrderItemId());
         addAccount.setMoney(dto.getMoney());
         addAccount.setProfit(dto.getAddProfit());
-        addAccount.setSettledMoney(0);
+        addAccount.setSettled_money(0);
         addAccount.setStatus(OrderConstant.AccountSplitStatus.NOT);
         addAccount.setData(dto.getAddData() == null ? null : JsonUtils.toJson(dto.getAddData()));
         accounts.add(addAccount);
@@ -229,19 +229,19 @@ public class BookingOrderManager extends BaseOrderManager {
         OrderItemDetail orderItemDetail = new OrderItemDetail();
         orderItemDetail.setDay(day);
         orderItemDetail.setQuantity(quantity);
-        orderItemDetail.setCustRefundRule(info.getCustRefundRule()); // 销售方退货规则
-        orderItemDetail.setSalerRefundRule(info.getSalerRefundRule()); // 供应方退货规则
-        orderItemDetail.setOrderItemId(itemId);
-        orderItemDetail.setCreateTime(new Date());
-        orderItemDetail.setDisableDay(info.getDisableDate());
-        orderItemDetail.setDisableWeek(info.getDisableWeek());
-        orderItemDetail.setUseHoursLimit(info.getUseHoursLimit());
+        orderItemDetail.setCust_refund_rule(info.getCustRefundRule()); // 销售方退货规则
+        orderItemDetail.setSaler_refund_rule(info.getSalerRefundRule()); // 供应方退货规则
+        orderItemDetail.setOrder_item_id(itemId);
+        orderItemDetail.setCreate_time(new Date());
+        orderItemDetail.setDisable_day(info.getDisableDate());
+        orderItemDetail.setDisable_week(info.getDisableWeek());
+        orderItemDetail.setUse_hours_limit(info.getUseHoursLimit());
         Date effectiveDate = orderItemDetail.getDay();
         // 产品说就用预定的时间,即使下单时间比预定时间大也取预定时间
-        if (orderItemDetail.getUseHoursLimit() != null) {
-            effectiveDate = DateUtils.addHours(effectiveDate, orderItemDetail.getUseHoursLimit());
+        if (orderItemDetail.getUse_hours_limit() != null) {
+            effectiveDate = DateUtils.addHours(effectiveDate, orderItemDetail.getUse_hours_limit());
         }
-        orderItemDetail.setEffectiveDate(effectiveDate);
+        orderItemDetail.setEffective_date(effectiveDate);
         Date expiryDate = null;
         if (info.getEffectiveType() == ProductConstants.EffectiveValidType.DAY) {
             // 这里目前只做了门票的,默认结束日期就是当天的,酒店应该是第二天
@@ -259,9 +259,9 @@ public class BookingOrderManager extends BaseOrderManager {
         if (new Date().after(info.getEndTime())) {
             throw new ApiException("预定时间已过期");
         }
-        orderItemDetail.setExpiryDate(expiryDate);
-        orderItemDetail.setRefundQuantity(0);
-        orderItemDetail.setUsedQuantity(0);
+        orderItemDetail.setExpiry_date(expiryDate);
+        orderItemDetail.setRefund_quantity(0);
+        orderItemDetail.setUsed_quantity(0);
         orderItemDetailMapper.insertSelective(orderItemDetail);
         return orderItemDetail;
     }
@@ -275,7 +275,7 @@ public class BookingOrderManager extends BaseOrderManager {
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public Visitor generateVisitor(Map v, int itemDetailId) {
         Visitor visitor = new Visitor();
-        visitor.setRefId(itemDetailId);
+        visitor.setRef_id(itemDetailId);
         visitor.setName(CommonUtil.objectParseString(v.get("name")));
         visitor.setPhone(CommonUtil.objectParseString(v.get("phone")));
         visitor.setSid(CommonUtil.objectParseString(v.get("sid")));
@@ -293,7 +293,7 @@ public class BookingOrderManager extends BaseOrderManager {
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public Shipping generateShipping(Map shippingMap, int orderId) {
         Shipping shipping = new Shipping();
-        shipping.setOrderId(orderId);
+        shipping.setOrder_id(orderId);
         shipping.setName(CommonUtil.objectParseString(shippingMap.get("name")));
         shipping.setPhone(CommonUtil.objectParseString(shippingMap.get("phone")));
         shipping.setSid(CommonUtil.objectParseString(shippingMap.get("sid")));
@@ -336,8 +336,8 @@ public class BookingOrderManager extends BaseOrderManager {
             List<OrderItemAccount> orderItemAccounts = orderItemAccountMapper.selectByOrderItem(orderItem.getId());
             for (OrderItemAccount itemAccount : orderItemAccounts) {
                 BalanceChangeInfo info = new BalanceChangeInfo();
-                info.setEpId(itemAccount.getEpId());
-                info.setCoreEpId(itemAccount.getCoreEpId());
+                info.setEpId(itemAccount.getEp_id());
+                info.setCoreEpId(itemAccount.getCore_ep_id());
                 info.setBalance(itemAccount.getMoney());
                 infoList.add(info);
                 itemAccount.setStatus(OrderConstant.AccountSplitStatus.HAS);
@@ -432,46 +432,46 @@ public class BookingOrderManager extends BaseOrderManager {
                 // 预付
                 if (payType == ProductConstants.PayType.PREPAY) {
                     OrderItemAccount addAccount = new OrderItemAccount();
-                    addAccount.setEpId(saleEpId);
-                    addAccount.setCoreEpId(saleCoreEpId);
+                    addAccount.setEp_id(saleEpId);
+                    addAccount.setCore_ep_id(saleCoreEpId);
                     addAccount.setMoney(totalOutPrice * quantity);
                     addAccount.setProfit(totalOutPrice * quantity);
-                    addAccount.setOrderItemId(itemId);
+                    addAccount.setOrder_item_id(itemId);
                     addAccount.setData(JsonUtils.toJson(dataDtoList));
-                    addAccount.setSettledMoney(0);
+                    addAccount.setSettled_money(0);
                     addAccount.setStatus(OrderConstant.AccountSplitStatus.NOT);
                     orderItemAccountMapper.insertSelective(addAccount);
 
                     OrderItemAccount subAccount = new OrderItemAccount();
-                    subAccount.setEpId(buyEpId);
-                    subAccount.setCoreEpId(saleCoreEpId);
+                    subAccount.setEp_id(buyEpId);
+                    subAccount.setCore_ep_id(saleCoreEpId);
                     subAccount.setMoney(-(totalOutPrice * quantity));
                     subAccount.setProfit(-(totalOutPrice * quantity));
-                    subAccount.setOrderItemId(itemId);
+                    subAccount.setOrder_item_id(itemId);
                     subAccount.setData(null);
-                    subAccount.setSettledMoney(0);
+                    subAccount.setSettled_money(0);
                     subAccount.setStatus(OrderConstant.AccountSplitStatus.NOT);
                     orderItemAccountMapper.insertSelective(subAccount);
                 } else {
                     OrderItemAccount addAccount = new OrderItemAccount();
-                    addAccount.setEpId(buyEpId);
-                    addAccount.setCoreEpId(saleCoreEpId);
+                    addAccount.setEp_id(buyEpId);
+                    addAccount.setCore_ep_id(saleCoreEpId);
                     addAccount.setMoney((salePrice - totalOutPrice) * quantity);
                     addAccount.setProfit((salePrice - totalOutPrice) * quantity);
-                    addAccount.setOrderItemId(itemId);
+                    addAccount.setOrder_item_id(itemId);
                     addAccount.setData(null);
-                    addAccount.setSettledMoney(0);
+                    addAccount.setSettled_money(0);
                     addAccount.setStatus(OrderConstant.AccountSplitStatus.NOT);
                     orderItemAccountMapper.insertSelective(addAccount);
 
                     OrderItemAccount subAccount = new OrderItemAccount();
-                    subAccount.setEpId(saleCoreEpId);
-                    subAccount.setCoreEpId(saleCoreEpId);
+                    subAccount.setEp_id(saleCoreEpId);
+                    subAccount.setCore_ep_id(saleCoreEpId);
                     subAccount.setMoney(-((salePrice - totalOutPrice) * quantity));
                     subAccount.setProfit(0);
-                    subAccount.setOrderItemId(itemId);
+                    subAccount.setOrder_item_id(itemId);
                     subAccount.setData(null);
-                    subAccount.setSettledMoney(0);
+                    subAccount.setSettled_money(0);
                     subAccount.setStatus(OrderConstant.AccountSplitStatus.NOT);
                     orderItemAccountMapper.insertSelective(subAccount);
                 }
@@ -479,13 +479,13 @@ public class BookingOrderManager extends BaseOrderManager {
                 // 平台内部企业分账(利润)
                 if (!saleEpId.equals(saleCoreEpId)) {
                     OrderItemAccount account = new OrderItemAccount();
-                    account.setEpId(saleEpId);
-                    account.setCoreEpId(saleCoreEpId);
+                    account.setEp_id(saleEpId);
+                    account.setCore_ep_id(saleCoreEpId);
                     account.setMoney(totalProfit * quantity);
                     account.setProfit(totalProfit * quantity);
-                    account.setOrderItemId(itemId);
+                    account.setOrder_item_id(itemId);
                     account.setData(JsonUtils.toJson(dataDtoList));
-                    account.setSettledMoney(0);
+                    account.setSettled_money(0);
                     account.setStatus(OrderConstant.AccountSplitStatus.NOT);
                     orderItemAccountMapper.insertSelective(account);
                     accounts.add(account);
@@ -503,13 +503,13 @@ public class BookingOrderManager extends BaseOrderManager {
                 }
             }
             OrderItemAccount account = new OrderItemAccount();
-            account.setEpId(id);
-            account.setCoreEpId(id);
+            account.setEp_id(id);
+            account.setCore_ep_id(id);
             account.setMoney(-coreSubMap.get(id));
             account.setProfit(getTotalProfit(dataDtoList) * quantity);
-            account.setOrderItemId(itemId);
+            account.setOrder_item_id(itemId);
             account.setData(JsonUtils.toJson(dataDtoList));
-            account.setSettledMoney(0);
+            account.setSettled_money(0);
             account.setStatus(OrderConstant.AccountSplitStatus.NOT);
             orderItemAccountMapper.insertSelective(account);
             accounts.add(account);

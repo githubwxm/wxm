@@ -139,14 +139,14 @@ public class RefundOrderManager extends BaseOrderManager {
                 throw new ApiException(String.format("日期:%s没有订单数据", day));
             }
             Integer quantity = CommonUtil.objectParseInteger(dayMap.get("quantity"));
-            if (detail.getQuantity() - detail.getUsedQuantity() - detail.getRefundQuantity() < quantity) {
+            if (detail.getQuantity() - detail.getUsed_quantity() - detail.getRefund_quantity() < quantity) {
                 throw new ApiException(
                         String.format("日期:%s余票不足,已用:%s,已退:%s",
-                                new Object[]{day, detail.getUsedQuantity(), detail.getRefundQuantity()}));
+                                new Object[]{day, detail.getUsed_quantity(), detail.getRefund_quantity()}));
             }
             total += quantity;
             // 修改退票数
-            detail.setRefundQuantity(detail.getRefundQuantity() + quantity);
+            detail.setRefund_quantity(detail.getRefund_quantity() + quantity);
             orderItemDetailMapper.updateByPrimaryKeySelective(detail);
 
             int tmpVisitorQuantity = 0;
@@ -206,16 +206,16 @@ public class RefundOrderManager extends BaseOrderManager {
             // 判断余票
             RefundVisitor upRefundVisitor = getRefundVisitorById(refundVisitorList, id);
             if (upRefundVisitor != null &&
-                    upRefundVisitor.getPreQuantity() + upRefundVisitor.getReturnQuantity() + vQuantity > visitor.getQuantity() ) {
+                    upRefundVisitor.getPre_quantity() + upRefundVisitor.getReturn_quantity() + vQuantity > visitor.getQuantity() ) {
                 throw new ApiException(String.format("游客:%d 余票不足.总票数:%d 已退票:%d 已预退票:%d 本次预退票:%d",
                         new Object[]{visitor.getName(),
-                                visitor.getQuantity(), upRefundVisitor.getReturnQuantity(), upRefundVisitor.getPreQuantity(), vQuantity}));
+                                visitor.getQuantity(), upRefundVisitor.getReturn_quantity(), upRefundVisitor.getPre_quantity(), vQuantity}));
             }
             RefundVisitor refundVisitor = new RefundVisitor();
-            refundVisitor.setVisitorId(id);
-            refundVisitor.setPreQuantity(vQuantity);
-            refundVisitor.setRefundOrderId(refundId);
-            refundVisitor.setOrderItemId(itemId);
+            refundVisitor.setVisitor_id(id);
+            refundVisitor.setPre_quantity(vQuantity);
+            refundVisitor.setRefund_order_id(refundId);
+            refundVisitor.setOrder_item_id(itemId);
             refundVisitorMapper.insertSelective(refundVisitor);
             total += vQuantity;
         }
@@ -289,7 +289,7 @@ public class RefundOrderManager extends BaseOrderManager {
             }
             int outPrice = dayData.getIntValue("outPrice");
             Integer quantity = CommonUtil.objectParseInteger(dayMap.get("quantity"));
-            Map<String, Integer> rate = ProductRules.calcRefund(detail.getCustRefundRule(), detail.getDay(), refundDate);
+            Map<String, Integer> rate = ProductRules.calcRefund(detail.getCust_refund_rule(), detail.getDay(), refundDate);
             if (rate.get("type") == ProductConstants.AddPriceType.FIX) {
                 money += (outPrice * quantity) - rate.get("fixed") * quantity;
             } else {
@@ -310,12 +310,12 @@ public class RefundOrderManager extends BaseOrderManager {
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public RefundOrder generateRefundOrder(int itemId, List daysList, int quantity, int money, String cause) {
         RefundOrder refundOrder = new RefundOrder();
-        refundOrder.setOrderItemId(itemId);
+        refundOrder.setOrder_item_id(itemId);
         refundOrder.setNumber(UUIDGenerator.generateUUID());
         refundOrder.setQuantity(quantity);
         refundOrder.setData(JsonUtils.toJson(daysList));
         refundOrder.setStatus(OrderConstant.RefundOrderStatus.AUDIT_WAIT);
-        refundOrder.setCreateTime(new Date());
+        refundOrder.setCreate_time(new Date());
         refundOrder.setMoney(money);
         refundOrder.setCause(cause);
         refundOrderMapper.insertSelective(refundOrder);
@@ -334,7 +334,7 @@ public class RefundOrderManager extends BaseOrderManager {
         List<OrderItemAccount> accounts = orderItemAccountMapper.selectByOrderItem(itemId);
         JSONArray priceDaysData = null;
         for (OrderItemAccount account : accounts) {
-            if (account.getEpId().intValue() == order.getBuyEpId() && account.getCoreEpId().intValue() == order.getPayeeEpId()) {
+            if (account.getEp_id().intValue() == order.getBuy_ep_id() && account.getCore_ep_id().intValue() == order.getPayee_ep_id()) {
                 String data = account.getData();
                 if (StringUtils.isEmpty(data)) {
                     throw new ApiException("分账数据异常");
@@ -352,7 +352,7 @@ public class RefundOrderManager extends BaseOrderManager {
             if (StringUtils.isEmpty(data)) {
                 continue;
             }
-            String key = account.getEpId() + "#" + account.getCoreEpId();
+            String key = account.getEp_id() + "#" + account.getCore_ep_id();
             if (uk.contains(key)) {
                 continue;
             }
@@ -373,7 +373,7 @@ public class RefundOrderManager extends BaseOrderManager {
                 if (dayData == null) {
                     throw new ApiException(String.format("日期:%s没有利润数据,数据异常", day));
                 }
-                Map<String, Integer> rate = ProductRules.calcRefund(detail.getCustRefundRule(), detail.getDay(), refundDate);
+                Map<String, Integer> rate = ProductRules.calcRefund(detail.getCust_refund_rule(), detail.getDay(), refundDate);
                 // 利润
                 int profit = dayData.getIntValue("profit");
                 double percent = 1.0;
@@ -390,12 +390,12 @@ public class RefundOrderManager extends BaseOrderManager {
                 cash += Arith.round(Arith.mul(profit * quantity, percent), 0);
             }
             RefundAccount refundAccount = new RefundAccount();
-            refundAccount.setEpId(account.getEpId());
-            refundAccount.setCoreEpId(account.getCoreEpId());
+            refundAccount.setEp_id(account.getEp_id());
+            refundAccount.setCore_ep_id(account.getCore_ep_id());
             refundAccount.setMoney(money == 0 ? 0 : -money);
             refundAccount.setProfit(cash == 0 ? 0 : cash);
             refundAccount.setStatus(OrderConstant.AccountSplitStatus.NOT);
-            refundAccount.setRefundOrderId(refundOrderId);
+            refundAccount.setRefund_order_id(refundOrderId);
             refundAccount.setData(data);
             refundAccountMapper.insertSelective(refundAccount);
         }
@@ -414,8 +414,8 @@ public class RefundOrderManager extends BaseOrderManager {
             List<BalanceChangeInfo> infoList = new ArrayList<>();
             for (RefundAccount refundAccount : accountList) {
                 BalanceChangeInfo info = new BalanceChangeInfo();
-                info.setEpId(refundAccount.getEpId());
-                info.setCoreEpId(refundAccount.getCoreEpId());
+                info.setEpId(refundAccount.getEp_id());
+                info.setCoreEpId(refundAccount.getCore_ep_id());
                 info.setBalance(refundAccount.getMoney());
                 info.setCanCash(refundAccount.getProfit());
                 infoList.add(info);
@@ -450,7 +450,7 @@ public class RefundOrderManager extends BaseOrderManager {
             }
             Integer quantity = CommonUtil.objectParseInteger(dayMap.get("quantity"));
             // 修改退票数
-            detail.setRefundQuantity(detail.getRefundQuantity() - quantity);
+            detail.setRefund_quantity(detail.getRefund_quantity() - quantity);
             orderItemDetailMapper.updateByPrimaryKeySelective(detail);
         }
     }
@@ -465,14 +465,14 @@ public class RefundOrderManager extends BaseOrderManager {
     public int nonSendTicketRefund(RefundOrder refundOrder) throws Exception {
         int total = 0;
         List<RefundVisitor> refundVisitorList = refundVisitorMapper.selectByRefundId(refundOrder.getId());
-        List<Visitor> visitorList = visitorMapper.selectByOrderItem(refundOrder.getOrderItemId());
+        List<Visitor> visitorList = visitorMapper.selectByOrderItem(refundOrder.getOrder_item_id());
         for (RefundVisitor refundVisitor : refundVisitorList) {
-            total += refundVisitor.getPreQuantity();
-            refundVisitor.setReturnQuantity(refundVisitor.getPreQuantity());
-            refundVisitor.setPreQuantity(0);
+            total += refundVisitor.getPre_quantity();
+            refundVisitor.setReturn_quantity(refundVisitor.getPre_quantity());
+            refundVisitor.setPre_quantity(0);
             refundVisitorMapper.updateByPrimaryKeySelective(refundVisitor);
-            Visitor visitor = getVisitorById(visitorList, refundVisitor.getVisitorId());
-            visitor.setReturnQuantity(visitor.getReturnQuantity() + refundVisitor.getReturnQuantity());
+            Visitor visitor = getVisitorById(visitorList, refundVisitor.getVisitor_id());
+            visitor.setReturn_quantity(visitor.getReturn_quantity() + refundVisitor.getReturn_quantity());
             visitorMapper.updateByPrimaryKeySelective(visitor);
         }
         return total;
@@ -487,7 +487,7 @@ public class RefundOrderManager extends BaseOrderManager {
     public void refundFail(RefundOrder refundOrder) throws Exception {
         refundOrder.setStatus(OrderConstant.RefundOrderStatus.FAIL);
         List daysList = JsonUtils.json2List(refundOrder.getData());
-        List<OrderItemDetail> detailList = orderItemDetailMapper.selectByItemId(refundOrder.getOrderItemId());
+        List<OrderItemDetail> detailList = orderItemDetailMapper.selectByItemId(refundOrder.getOrder_item_id());
         returnRefundForDays(daysList, detailList);
         refundOrderMapper.updateByPrimaryKeySelective(refundOrder);
     }
@@ -500,30 +500,30 @@ public class RefundOrderManager extends BaseOrderManager {
     public void refundTicket(RefundOrder refundOrder) {
         // 生成退票流水
         RefundSerial refundSerial = new RefundSerial();
-        refundSerial.setLocalSerialNo(UUIDGenerator.generateUUID());
+        refundSerial.setLocal_serial_no(UUIDGenerator.generateUUID());
         refundSerial.setQuantity(refundOrder.getQuantity());
         refundSerial.setData(refundOrder.getData());
-        refundSerial.setRefundOrderId(refundOrder.getId());
-        refundSerial.setCreateTime(new Date());
+        refundSerial.setRefund_order_id(refundOrder.getId());
+        refundSerial.setCreate_time(new Date());
         refundSerialMapper.insertSelective(refundSerial);
 
         refundOrder.setStatus(OrderConstant.RefundOrderStatus.REFUNDING);
-        refundOrder.setLocalRefundSerialNo(refundSerial.getLocalSerialNo());
+        refundOrder.setLocal_refund_serial_no(refundSerial.getLocal_serial_no());
 
         int i = 0;
-        OrderItem orderItem = orderItemMapper.selectByPrimaryKey(refundOrder.getOrderItemId());
+        OrderItem orderItem = orderItemMapper.selectByPrimaryKey(refundOrder.getOrder_item_id());
         List<RefundVisitor> refundVisitorList = refundVisitorMapper.selectByRefundId(refundOrder.getId());
         for (RefundVisitor refundVisitor : refundVisitorList) {
             RefundTicketParams ticketParams = new RefundTicketParams();
-            ticketParams.setApplyTime(refundOrder.getAuditTime());
+            ticketParams.setApplyTime(refundOrder.getAudit_time());
             ticketParams.setOrderSn(orderItem.getNumber());
-            ticketParams.setQuantity(refundVisitor.getPreQuantity());
-            ticketParams.setVisitorId(refundVisitor.getVisitorId());
-            ticketParams.setRefundSn(String.valueOf(refundSerial.getLocalSerialNo()));
+            ticketParams.setQuantity(refundVisitor.getPre_quantity());
+            ticketParams.setVisitorId(refundVisitor.getVisitor_id());
+            ticketParams.setRefundSn(String.valueOf(refundSerial.getLocal_serial_no()));
             ticketParams.setReason(refundOrder.getCause());
             try {
                 // TODO: 2016/11/3 讲道理这里要一起提交或者只能一个人退票
-                Result result = voucherRPCService.refundTicket(orderItem.getEpMaId(), ticketParams);
+                Result result = voucherRPCService.refundTicket(orderItem.getEp_ma_id(), ticketParams);
                 if (!result.isSuccess()) {
                     throw new ApiException(result.getError());
                 }
@@ -548,17 +548,17 @@ public class RefundOrderManager extends BaseOrderManager {
             refundMoneyAfter(Long.valueOf(sn), true);
             return null;
         }
-        Integer coreEpId = getCoreEpId(getCoreEpId(order.getBuyEpId()));
+        Integer coreEpId = getCoreEpId(getCoreEpId(order.getBuy_ep_id()));
         // 退款
         // 余额退款
-        if (order.getPaymentType() == PaymentConstant.PaymentType.BALANCE.intValue()) {
+        if (order.getPayment_type() == PaymentConstant.PaymentType.BALANCE.intValue()) {
             BalanceChangeInfo payInfo = new BalanceChangeInfo();
             payInfo.setEpId(coreEpId);
             payInfo.setCoreEpId(coreEpId);
             payInfo.setBalance(-money);
 
             BalanceChangeInfo saveInfo = new BalanceChangeInfo();
-            saveInfo.setEpId(order.getBuyEpId());
+            saveInfo.setEpId(order.getBuy_ep_id());
             saveInfo.setCoreEpId(payInfo.getCoreEpId());
             saveInfo.setBalance(money);
             saveInfo.setCanCash(money);
@@ -574,11 +574,11 @@ public class RefundOrderManager extends BaseOrderManager {
         }
         // 第三方退款
         Map<String, Object> payParams = new HashMap<>();
-        payParams.put("totalFee", order.getPayAmount());
+        payParams.put("totalFee", order.getPay_amount());
         payParams.put("refundFee", money);
-        payParams.put("serialNum", sn == null ? order.getLocalPaymentSerialNo() : sn);
-        payParams.put("outTransId", order.getThirdSerialNo());
-        Result result = thirdPayService.reqRefund(order.getNumber(), coreEpId, order.getPaymentType(), payParams);
+        payParams.put("serialNum", sn == null ? order.getLocal_payment_serial_no() : sn);
+        payParams.put("outTransId", order.getThird_serial_no());
+        Result result = thirdPayService.reqRefund(order.getNumber(), coreEpId, order.getPayment_type(), payParams);
         if (!result.isSuccess()) {
             log.warn("第三方退款异常:{}", result);
             throw new ApiException(result.getError());
@@ -598,7 +598,7 @@ public class RefundOrderManager extends BaseOrderManager {
                 for (OrderItemDetail detail : detailList) {
                     if (!detail.getOversell()) {
                         ProductSearchParams p = new ProductSearchParams();
-                        p.setSubProductId(orderItem.getProSubId());
+                        p.setSubProductId(orderItem.getPro_sub_id());
                         p.setStartDate(detail.getDay());
                         p.setDays(1);
                         p.setQuantity(detail.getQuantity());
@@ -636,7 +636,7 @@ public class RefundOrderManager extends BaseOrderManager {
         if (refundOrder == null) {
             throw new ApiException("退订订单不存在");
         }
-        refundOrder.setRefundMoneyTime(new Date());
+        refundOrder.setRefund_money_time(new Date());
         refundOrder.setStatus(success ? OrderConstant.RefundOrderStatus.REFUND_SUCCESS : OrderConstant.RefundOrderStatus.REFUND_MONEY_FAIL);
         refundOrderMapper.updateByPrimaryKeySelective(refundOrder);
 
@@ -649,7 +649,7 @@ public class RefundOrderManager extends BaseOrderManager {
             smsManager.sendRefundSuccessSms(refundOrder);
             // 还库存 记录任务
             Map<String, String> jobParams = new HashMap<>();
-            jobParams.put("orderItemId", String.valueOf(refundOrder.getOrderItemId()));
+            jobParams.put("orderItemId", String.valueOf(refundOrder.getOrder_item_id()));
             jobParams.put("check", "true");
             Job stockJob = createJob(OrderConstant.Actions.REFUND_STOCK, jobParams, false);
 
@@ -681,9 +681,9 @@ public class RefundOrderManager extends BaseOrderManager {
      */
     public void syncRefundOrderApplyData(int refundId) {
         RefundOrder refundOrder = refundOrderMapper.selectByPrimaryKey(refundId);
-        generateSyncByItem(refundOrder.getOrderItemId())
+        generateSyncByItem(refundOrder.getOrder_item_id())
                 .put("t_refund_order", CommonUtil.oneToList(refundOrder))
-                .put("t_order_item_detail", orderItemDetailMapper.selectByItemId(refundOrder.getOrderItemId()))
+                .put("t_order_item_detail", orderItemDetailMapper.selectByItemId(refundOrder.getOrder_item_id()))
                 .put("t_refund_visitor", refundVisitorMapper.selectByRefundId(refundId))
                 .put("t_refund_account", refundAccountMapper.selectByRefundId(refundId))
                 .sync();
@@ -694,7 +694,7 @@ public class RefundOrderManager extends BaseOrderManager {
      */
     public void syncRefundAccountData(int refundId) {
         RefundOrder refundOrder = refundOrderMapper.selectByPrimaryKey(refundId);
-        generateSyncByItem(refundOrder.getOrderItemId())
+        generateSyncByItem(refundOrder.getOrder_item_id())
                 .put("t_refund_account", refundAccountMapper.selectByRefundId(refundId))
                 .sync();
     }
@@ -705,12 +705,12 @@ public class RefundOrderManager extends BaseOrderManager {
      */
     public void syncRefundOrderAuditAcceptData(int refundId) {
         RefundOrder refundOrder = refundOrderMapper.selectByPrimaryKey(refundId);
-        generateSyncByItem(refundOrder.getOrderItemId())
+        generateSyncByItem(refundOrder.getOrder_item_id())
                 .put("t_refund_order", CommonUtil.oneToList(refundOrder))
                 .put("t_refund_serial", CommonUtil.oneToList(refundSerialMapper.selectByRefundOrder(refundOrder.getId())))
                 .put("t_refund_visitor", refundVisitorMapper.selectByRefundId(refundId))
-                .put("t_visitor", visitorMapper.selectByOrderItem(refundOrder.getOrderItemId()))
-                .put("t_order_item", CommonUtil.oneToList(orderItemMapper.selectByPrimaryKey(refundOrder.getOrderItemId())))
+                .put("t_visitor", visitorMapper.selectByOrderItem(refundOrder.getOrder_item_id()))
+                .put("t_order_item", CommonUtil.oneToList(orderItemMapper.selectByPrimaryKey(refundOrder.getOrder_item_id())))
                 .sync();
     }
 
@@ -720,9 +720,9 @@ public class RefundOrderManager extends BaseOrderManager {
      */
     public void syncRefundOrderAuditRefuse(int refundId) {
         RefundOrder refundOrder = refundOrderMapper.selectByPrimaryKey(refundId);
-        generateSyncByItem(refundOrder.getOrderItemId())
+        generateSyncByItem(refundOrder.getOrder_item_id())
                 .put("t_refund_order", CommonUtil.oneToList(refundOrder))
-                .put("t_order_item_detail", orderItemDetailMapper.selectByItemId(refundOrder.getOrderItemId()))
+                .put("t_order_item_detail", orderItemDetailMapper.selectByItemId(refundOrder.getOrder_item_id()))
                 .sync();
     }
 
@@ -732,7 +732,7 @@ public class RefundOrderManager extends BaseOrderManager {
      */
     public void syncRefundOrderMoney(int refundId) {
         RefundOrder refundOrder = refundOrderMapper.selectByPrimaryKey(refundId);
-        generateSyncByItem(refundOrder.getOrderItemId())
+        generateSyncByItem(refundOrder.getOrder_item_id())
                 .put("t_refund_order", CommonUtil.oneToList(refundOrder))
                 .sync();
     }
@@ -743,11 +743,11 @@ public class RefundOrderManager extends BaseOrderManager {
      */
     public void syncRefundTicketData(int refundId) {
         RefundOrder refundOrder = refundOrderMapper.selectByPrimaryKey(refundId);
-        generateSyncByItem(refundOrder.getOrderItemId())
+        generateSyncByItem(refundOrder.getOrder_item_id())
                 .put("t_refund_order", CommonUtil.oneToList(refundOrder))
-                .put("t_order_item", CommonUtil.oneToList(orderItemMapper.selectByPrimaryKey(refundOrder.getOrderItemId())))
+                .put("t_order_item", CommonUtil.oneToList(orderItemMapper.selectByPrimaryKey(refundOrder.getOrder_item_id())))
                 .put("t_refund_serial", CommonUtil.oneToList(refundSerialMapper.selectByRefundOrder(refundOrder.getId())))
-                .put("t_visitor", visitorMapper.selectByOrderItem(refundOrder.getOrderItemId()))
+                .put("t_visitor", visitorMapper.selectByOrderItem(refundOrder.getOrder_item_id()))
                 .put("t_refund_visitor", refundVisitorMapper.selectByRefundId(refundId))
                 .sync();
     }
