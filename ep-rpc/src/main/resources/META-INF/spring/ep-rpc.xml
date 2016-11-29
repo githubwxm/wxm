@@ -13,15 +13,15 @@
 	<dubbo:registry address="${dubbo.registry.zk}" />
 	<dubbo:protocol name="dubbo" port="${dubbo.port}" />
 
-	<bean id="epService" class="com.all580.ep.service.EpServiceImple" />
+	<bean id="epService" class="com.all580.ep.service.EpServiceImpl" />
 
 	<dubbo:service interface="com.all580.ep.api.service.EpService" ref="epService" />
 
-	<bean id="coreEpAccessService" class="com.all580.ep.service.CoreEpAccessServiceImple" />
+	<bean id="coreEpAccessService" class="com.all580.ep.service.CoreEpAccessServiceImpl" />
 
 	<dubbo:service interface="com.all580.ep.api.service.CoreEpAccessService" ref="coreEpAccessService" />
 
-	<bean id="coreEpChannelServiceImple" class="com.all580.ep.service.CoreEpChannelServiceImple" />
+	<bean id="coreEpChannelServiceImple" class="com.all580.ep.service.CoreEpChannelServiceImpl" />
 
 	<dubbo:service interface="com.all580.ep.api.service.CoreEpChannelService" ref="coreEpChannelServiceImple" />
 
@@ -30,7 +30,7 @@
 	<dubbo:service interface="com.all580.ep.api.service.EpBalanceThresholdService" ref="epBalanceThresholdServiceImple" />
 
 
-	<bean id="logCreditServiceImple" class="com.all580.ep.service.LogCreditServiceImple" />
+	<bean id="logCreditServiceImple" class="com.all580.ep.service.LogCreditServiceImpl" />
 	<dubbo:service interface="com.all580.ep.api.service.LogCreditService" ref="logCreditServiceImple" />
 
 	<bean id="epFinanceServiceImple" class="com.all580.ep.service.EpFinanceServiceImple" />
