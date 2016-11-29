@@ -138,8 +138,8 @@ public class RefundOrderServiceImpl implements RefundOrderService {
             refundOrderManager.preRefundAccount(daysList, orderItem.getId(), refundOrder.getId(), detailList, refundDate, order);
 
             // 同步数据
-            refundOrderManager.syncRefundOrderApplyData(refundOrder.getId());
-            return new Result<>(true);
+            Map<String, List<?>> syncData = refundOrderManager.syncRefundOrderApplyData(refundOrder.getId());
+            return new Result<>(true).putExt(Result.SYNC_DATA, syncData);
         } finally {
             lock.unlock();
         }
@@ -221,16 +221,16 @@ public class RefundOrderServiceImpl implements RefundOrderService {
                 }
 
                 // 同步数据
-                refundOrderManager.syncRefundOrderAuditAcceptData(refundOrder.getId());
-                return new Result<>(true);
+                Map<String, List<?>> syncData = refundOrderManager.syncRefundOrderAuditAcceptData(refundOrder.getId());
+                return new Result<>(true).putExt(Result.SYNC_DATA, syncData);
             }
             refundOrderManager.refundFail(refundOrder);
             // 发送短信
             smsManager.sendAuditRefuseSms(orderItem);
 
             // 同步数据
-            refundOrderManager.syncRefundOrderAuditRefuse(refundOrder.getId());
-            return new Result<>(true);
+            Map<String, List<?>> syncData = refundOrderManager.syncRefundOrderAuditRefuse(refundOrder.getId());
+            return new Result<>(true).putExt(Result.SYNC_DATA, syncData);
         } finally {
             lock.unlock();
         }
