@@ -952,19 +952,9 @@ public class EpServiceImple implements EpService {
     @Override
     public Result<Map<String, Object>> selectId(int id) {
         Result<Map<String, Object>> result = new Result<>();
-        Map params = new HashMap();
-        params.put("id", id);
         try {
-            List<Map<String, Object>> resuleMap = epMapper.select(params);
-            if (resuleMap.isEmpty()) {
-                //result.setError("未查询到数据");
-                result.put(null);
+            result.put(epMapper.selectId(id));
                 result.setSuccess();
-            } else {
-                result.put(resuleMap.get(0));
-                result.setSuccess();
-            }
-
         } catch (Exception e) {
             log.error("查询数据库异常", e);
             throw new ApiException("查询数据库异常", e);
