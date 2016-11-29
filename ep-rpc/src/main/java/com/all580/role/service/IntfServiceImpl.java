@@ -21,7 +21,7 @@ import java.util.Map;
 @Service
 @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
 @Slf4j
-public class IntfServiceImple implements IntfService {
+public class IntfServiceImpl implements IntfService {
 
     @Autowired
     private IntfMapper intfMapper;

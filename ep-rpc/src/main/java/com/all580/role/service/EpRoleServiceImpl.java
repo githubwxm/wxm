@@ -23,7 +23,7 @@ import java.util.Map;
 @Service
 @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
 @Slf4j
-public class EpRoleServiceImple implements EpRoleService {
+public class EpRoleServiceImpl implements EpRoleService {
 
     @Autowired
     private EpRoleMapper epRoleMapper;

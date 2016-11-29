@@ -19,7 +19,7 @@ import java.util.Map;
 @Service
 @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
 @Slf4j
-public class FuncServiceImple implements FuncService{
+public class FuncServiceImpl implements FuncService{
     @Autowired
     private FuncMapper funcMapper;
 
