@@ -30,7 +30,7 @@ public interface EpMapper {
 
     List<Map<String,Object>> platformListUp(Map<String,Object> map);
     int platformListUpCount(Map<String,Object> map);
-
+    Map<String, Object> selectId(int id);
 
     List<Map<String,Object>> getAccountInfoList(Map<String,Object> map);
     int getAccountInfoListCount(Map<String,Object> map);
