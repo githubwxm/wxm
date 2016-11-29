@@ -114,10 +114,8 @@ public class RefundOrderManager extends BaseOrderManager {
         // 还库存
         refundStock(orderItems);
         // 同步数据
-        Map<String, List<?>> syncData = syncOrderCancelData(order.getId());
-        Result result = new Result(true);
-        result.putExt(Result.SYNC_DATA, syncData);
-        return result;
+        Map<String, Object> syncData = syncOrderCancelData(order.getId());
+        return new Result(true).putExt(Result.SYNC_DATA, syncData);
     }
 
     /**
@@ -670,7 +668,7 @@ public class RefundOrderManager extends BaseOrderManager {
      * 同步订单取消数据
      * @param orderId 订单ID
      */
-    public Map<String, List<?>> syncOrderCancelData(int orderId) {
+    public Map<String, Object> syncOrderCancelData(int orderId) {
         return generateSyncByOrder(orderId)
                 .put("t_order", CommonUtil.oneToList(orderMapper.selectByPrimaryKey(orderId)))
                 .put("t_order_item", orderItemMapper.selectByOrderId(orderId))
@@ -681,7 +679,7 @@ public class RefundOrderManager extends BaseOrderManager {
      * 同步退订订单申请数据
      * @param refundId 退订订单ID
      */
-    public Map<String, List<?>> syncRefundOrderApplyData(int refundId) {
+    public Map<String, Object> syncRefundOrderApplyData(int refundId) {
         RefundOrder refundOrder = refundOrderMapper.selectByPrimaryKey(refundId);
         return generateSyncByItem(refundOrder.getOrder_item_id())
                 .put("t_refund_order", CommonUtil.oneToList(refundOrder))
@@ -694,7 +692,7 @@ public class RefundOrderManager extends BaseOrderManager {
      * 同步退款分账数据
      * @param refundId 退订订单ID
      */
-    public Map<String, List<?>> syncRefundAccountData(int refundId) {
+    public Map<String, Object> syncRefundAccountData(int refundId) {
         RefundOrder refundOrder = refundOrderMapper.selectByPrimaryKey(refundId);
         return generateSyncByItem(refundOrder.getOrder_item_id())
                 .put("t_refund_account", refundAccountMapper.selectByRefundId(refundId))
@@ -705,7 +703,7 @@ public class RefundOrderManager extends BaseOrderManager {
      * 同步退订审核通过数据
      * @param refundId 退订订单ID
      */
-    public Map<String, List<?>> syncRefundOrderAuditAcceptData(int refundId) {
+    public Map<String, Object> syncRefundOrderAuditAcceptData(int refundId) {
         RefundOrder refundOrder = refundOrderMapper.selectByPrimaryKey(refundId);
         return generateSyncByItem(refundOrder.getOrder_item_id())
                 .put("t_refund_order", CommonUtil.oneToList(refundOrder))
@@ -720,7 +718,7 @@ public class RefundOrderManager extends BaseOrderManager {
      * 同步退订订单审核拒绝数据
      * @param refundId 退订订单ID
      */
-    public Map<String, List<?>> syncRefundOrderAuditRefuse(int refundId) {
+    public Map<String, Object> syncRefundOrderAuditRefuse(int refundId) {
         RefundOrder refundOrder = refundOrderMapper.selectByPrimaryKey(refundId);
         return generateSyncByItem(refundOrder.getOrder_item_id())
                 .put("t_refund_order", CommonUtil.oneToList(refundOrder))
@@ -732,7 +730,7 @@ public class RefundOrderManager extends BaseOrderManager {
      * 同步退订订单退款数据
      * @param refundId 退订订单ID
      */
-    public Map<String, List<?>> syncRefundOrderMoney(int refundId) {
+    public Map<String, Object> syncRefundOrderMoney(int refundId) {
         RefundOrder refundOrder = refundOrderMapper.selectByPrimaryKey(refundId);
         return generateSyncByItem(refundOrder.getOrder_item_id())
                 .put("t_refund_order", CommonUtil.oneToList(refundOrder))
@@ -743,7 +741,7 @@ public class RefundOrderManager extends BaseOrderManager {
      * 同步退票数据
      * @param refundId 退订订单ID
      */
-    public Map<String, List<?>> syncRefundTicketData(int refundId) {
+    public Map<String, Object> syncRefundTicketData(int refundId) {
         RefundOrder refundOrder = refundOrderMapper.selectByPrimaryKey(refundId);
         return generateSyncByItem(refundOrder.getOrder_item_id())
                 .put("t_refund_order", CommonUtil.oneToList(refundOrder))

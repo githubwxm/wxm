@@ -541,7 +541,7 @@ public class BookingOrderManager extends BaseOrderManager {
      * 同步创建订单数据
      * @param orderId 订单ID
      */
-    public Map<String, List<?>> syncCreateOrderData(int orderId) {
+    public Map<String, Object> syncCreateOrderData(int orderId) {
 
         return generateSyncByOrder(orderId)
                 // 同步订单表
@@ -564,7 +564,7 @@ public class BookingOrderManager extends BaseOrderManager {
      * 同步订单审核通过数据
      * @param orderId 订单ID
      */
-    public Map<String, List<?>> syncOrderAuditAcceptData(int orderId, int orderItemId) {
+    public Map<String, Object> syncOrderAuditAcceptData(int orderId, int orderItemId) {
         return generateSyncByOrder(orderId)
                 .put("t_order", CommonUtil.oneToList(orderMapper.selectByPrimaryKey(orderId)))
                 .put("t_order_item", CommonUtil.oneToList(orderItemMapper.selectByPrimaryKey(orderItemId)))
@@ -575,7 +575,7 @@ public class BookingOrderManager extends BaseOrderManager {
      * 同步订单支付数据
      * @param orderId 订单ID
      */
-    public Map<String, List<?>> syncOrderPaymentData(int orderId) {
+    public Map<String, Object> syncOrderPaymentData(int orderId) {
         return generateSyncByOrder(orderId)
                 .put("t_order", CommonUtil.oneToList(orderMapper.selectByPrimaryKey(orderId)))
                 .sync().getDataMap();
@@ -585,7 +585,7 @@ public class BookingOrderManager extends BaseOrderManager {
      * 同步订单分账数据
      * @param itemId 子订单ID
      */
-    public Map<String, List<?>> syncOrderAccountData(int itemId) {
+    public Map<String, Object> syncOrderAccountData(int itemId) {
         return generateSyncByItem(itemId)
                 .put("t_order_item_account", orderItemAccountMapper.selectByOrderItem(itemId))
                 .sync().getDataMap();
@@ -595,7 +595,7 @@ public class BookingOrderManager extends BaseOrderManager {
      * 同步发票数据
      * @param itemId 子订单ID
      */
-    public Map<String, List<?>> syncSendTicketData(int itemId) {
+    public Map<String, Object> syncSendTicketData(int itemId) {
         return generateSyncByItem(itemId)
                 .put("t_order_item", CommonUtil.oneToList(orderItemMapper.selectByPrimaryKey(itemId)))
                 .put("t_ma_send_response", maSendResponseMapper.selectByOrderItemId(itemId))
@@ -606,7 +606,7 @@ public class BookingOrderManager extends BaseOrderManager {
      * 同步消费数据
      * @param itemId 子订单ID
      */
-    public Map<String, List<?>> syncConsumeData(int itemId, String sn) {
+    public Map<String, Object> syncConsumeData(int itemId, String sn) {
         return generateSyncByItem(itemId)
                 .put("t_order_item_detail", orderItemDetailMapper.selectByItemId(itemId))
                 .put("t_order_clearance_serial", CommonUtil.oneToList(orderClearanceSerialMapper.selectBySn(sn)))
@@ -619,7 +619,7 @@ public class BookingOrderManager extends BaseOrderManager {
      * 同步冲正数据
      * @param itemId 子订单ID
      */
-    public Map<String, List<?>> syncReConsumeData(int itemId, String sn) {
+    public Map<String, Object> syncReConsumeData(int itemId, String sn) {
         return generateSyncByItem(itemId)
                 .put("t_order_item_detail", orderItemDetailMapper.selectByItemId(itemId))
                 .put("t_clearance_washed_serial", CommonUtil.oneToList(clearanceWashedSerialMapper.selectBySn(sn)))
@@ -631,7 +631,7 @@ public class BookingOrderManager extends BaseOrderManager {
      * 同步支付成功数据
      * @param orderId 订单ID
      */
-    public Map<String, List<?>> syncPaymentSuccessData(int orderId) {
+    public Map<String, Object> syncPaymentSuccessData(int orderId) {
         return generateSyncByOrder(orderId)
                 .put("t_order", CommonUtil.oneToList(orderMapper.selectByPrimaryKey(orderId)))
                 .put("t_order_item", orderItemMapper.selectByOrderId(orderId))
@@ -643,7 +643,7 @@ public class BookingOrderManager extends BaseOrderManager {
      * 同步发票中数据
      * @param itemId 订单ID
      */
-    public Map<String, List<?>> syncSendingData(int itemId) {
+    public Map<String, Object> syncSendingData(int itemId) {
         return generateSyncByItem(itemId)
                 .put("t_order_item", CommonUtil.oneToList(orderItemMapper.selectByPrimaryKey(itemId)))
                 .sync().getDataMap();
@@ -653,7 +653,7 @@ public class BookingOrderManager extends BaseOrderManager {
      * 同步反核销分账数据
      * @param itemId 子订单ID
      */
-    public Map<String, List<?>> syncReConsumeSplitAccountData(int itemId) {
+    public Map<String, Object> syncReConsumeSplitAccountData(int itemId) {
         return generateSyncByItem(itemId)
                 .put("t_order_item_account", orderItemAccountMapper.selectByOrderItem(itemId))
                 .sync().getDataMap();
