@@ -3,7 +3,7 @@
 <mapper namespace="com.all580.role.dao.FuncMapper" >
 
   <sql id="Base_Column_List" >
-    id, pid, name, alias, description, seq, status,isdelete, create_time, type, path, funcId,
+    id, pid, name, alias, description, seq, status,isdelete, create_time, type, path, funcid,
     target, icon,CONCAT('',update_time,'') update_time
   </sql>
   <select id="selectByPrimaryKey" resultType="java.util.Map" >
@@ -20,7 +20,7 @@
     insert into t_func (pid, name, alias, 
       description, seq, status, 
       create_time, type, path, 
-      funcId, target, icon
+      funcid, target, icon
       )
     values (#{pid,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{alias,jdbcType=VARCHAR}, 
       #{description,jdbcType=VARCHAR}, #{seq,jdbcType=BIGINT}, #{status,jdbcType=INTEGER}, 
@@ -62,7 +62,7 @@
         path,
       </if>
       <if test="funcid != null" >
-        funcId,
+        funcid,
       </if>
       <if test="target != null" >
         target,
@@ -141,7 +141,7 @@
         path = #{path,jdbcType=VARCHAR},
       </if>
       <if test="funcid != null" >
-        funcId = #{funcid,jdbcType=VARCHAR},
+        funcid = #{funcid,jdbcType=VARCHAR},
       </if>
       <if test="target != null" >
         target = #{target,jdbcType=VARCHAR},
@@ -163,7 +163,7 @@
       create_time = #{createTime,jdbcType=TIMESTAMP},
       type = #{type,jdbcType=INTEGER},
       path = #{path,jdbcType=VARCHAR},
-      funcId = #{funcid,jdbcType=VARCHAR},
+      funcid = #{funcid,jdbcType=VARCHAR},
       target = #{target,jdbcType=VARCHAR},
       icon = #{icon,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
