@@ -363,21 +363,9 @@ public class EpServiceImpl implements EpService {
             result.setFail();
             result.setError(Result.PARAMS_ERROR, "参数错误");
         }
-        Integer core_ep_id;
-        Map<String, Object> map = new HashMap<>();
-        map.put("id", epId);
         try {
-            List<Map<String, Object>> list = epMapper.select(map);
-            if (null != list) {
-                if (!list.isEmpty()) {
-                    core_ep_id = Common.objectParseInteger(list.get(0).get("core_ep_id"));//list.get().get(0).getCore_ep_id();
-                    if (null == core_ep_id) {
-                        core_ep_id = epId;
-                    }
-                    result.put(core_ep_id);
-                    result.setSuccess();
-                }
-            }
+            result.put( epMapper.selectPlatformId(epId));
+            result.setSuccess();
         } catch (Exception e) {
             log.error("查询平台商出错", e);
             throw new ApiException("查询平台商出错", e);
