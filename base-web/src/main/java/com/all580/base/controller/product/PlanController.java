@@ -77,6 +77,17 @@ public class PlanController extends BaseController {
     }
 
     /**
+     * 删除子产品销售计划
+     * @param params
+     * @return
+     */
+    @RequestMapping(value = "delete", method = RequestMethod.POST)
+    @ResponseBody
+    public Result<?> deleteSalesPlan(@RequestBody Map params) {
+        return productSalesPlanService.deleteProductPlanByProductSubId(CommonUtil.objectParseInteger(params.get("productPlanId")));
+    }
+
+    /**
      * 查询可售子产品列表
      * @param epId
      * @param productName

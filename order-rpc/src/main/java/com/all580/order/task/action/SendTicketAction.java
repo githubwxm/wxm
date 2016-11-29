@@ -93,6 +93,7 @@ public class SendTicketAction implements JobRunner {
         com.framework.common.Result r = voucherRPCService.sendTicket(orderItem.getEp_ma_id(), sendTicketParams);
         if (!r.isSuccess()) {
             log.warn("子订单:{},出票失败:{}", orderItem.getNumber(), r.getError());
+            throw new Exception("出票失败:" + r.getError());
         }
 
         bookingOrderManager.syncSendingData(orderItemId);
