@@ -22,7 +22,7 @@ import java.util.Map;
 @Service
 @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
 @Slf4j
-public class LogCreditServiceImple implements LogCreditService{
+public class LogCreditServiceImpl implements LogCreditService{
 
     @Autowired
     private LogCreditMapper logCreditMapper;

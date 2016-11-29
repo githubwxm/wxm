@@ -35,7 +35,7 @@ import java.util.Map;
 @Service
 @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
 @Slf4j
-public class EpServiceImple implements EpService {
+public class EpServiceImpl implements EpService {
 
 
     @Autowired

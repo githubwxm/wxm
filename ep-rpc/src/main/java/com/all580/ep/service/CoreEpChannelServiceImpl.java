@@ -20,7 +20,7 @@ import java.util.Map;
 @Service
 @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
 @Slf4j
-public class CoreEpChannelServiceImple implements CoreEpChannelService {
+public class CoreEpChannelServiceImpl implements CoreEpChannelService {
 
     @Autowired
     private CoreEpChannelMapper coreEpChannelMapper;

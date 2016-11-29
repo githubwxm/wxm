@@ -20,7 +20,7 @@ import java.util.Map;
 @Service
 @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
 @Slf4j
-public class CoreEpAccessServiceImple implements CoreEpAccessService {
+public class CoreEpAccessServiceImpl implements CoreEpAccessService {
 
     @Autowired
     private CoreEpAccessMapper coreEpAccessMapper;//ddd
