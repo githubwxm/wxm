@@ -323,7 +323,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         result.put(resultMap);
 
         // 同步数据
-        Map<String, List<?>> syncData = bookingOrderManager.syncCreateOrderData(order.getId());
+        Map<String, Object> syncData = bookingOrderManager.syncCreateOrderData(order.getId());
         result.putExt(Result.SYNC_DATA, syncData);
         return result;
     }
@@ -385,7 +385,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
                     smsManager.sendAuditSuccess(orderItem);
                 }
                 // 同步数据
-                Map<String, List<?>> syncData = bookingOrderManager.syncOrderAuditAcceptData(order.getId(), orderItem.getId());
+                Map<String, Object> syncData = bookingOrderManager.syncOrderAuditAcceptData(order.getId(), orderItem.getId());
                 Result<?> result = new Result<>(true);
                 result.putExt(Result.SYNC_DATA, syncData);
                 return result;
@@ -459,7 +459,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
                     throw new ApiException(result.getError());
                 }
                 // 同步数据
-                Map<String, List<?>> syncData = bookingOrderManager.syncOrderPaymentData(order.getId());
+                Map<String, Object> syncData = bookingOrderManager.syncOrderPaymentData(order.getId());
                 return new Result<>(true).putExt(Result.SYNC_DATA, syncData);
             }
             // 第三方支付
@@ -480,7 +480,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
                 throw new ApiException(result.getError());
             }
             // 同步数据
-            Map<String, List<?>> syncData = bookingOrderManager.syncOrderPaymentData(order.getId());
+            Map<String, Object> syncData = bookingOrderManager.syncOrderPaymentData(order.getId());
             return result.putExt(Result.SYNC_DATA, syncData);
         } finally {
             lock.unlock();
