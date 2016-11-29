@@ -114,8 +114,10 @@ public class RefundOrderManager extends BaseOrderManager {
         // 还库存
         refundStock(orderItems);
         // 同步数据
-        syncOrderCancelData(order.getId());
-        return new Result(true);
+        Map<String, List<?>> syncData = syncOrderCancelData(order.getId());
+        Result result = new Result(true);
+        result.putExt(Result.SYNC_DATA, syncData);
+        return result;
     }
 
     /**

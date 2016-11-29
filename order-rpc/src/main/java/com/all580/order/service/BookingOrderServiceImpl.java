@@ -323,7 +323,8 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         result.put(resultMap);
 
         // 同步数据
-        bookingOrderManager.syncCreateOrderData(order.getId());
+        Map<String, List<?>> syncData = bookingOrderManager.syncCreateOrderData(order.getId());
+        result.putExt(Result.SYNC_DATA, syncData);
         return result;
     }
 
@@ -384,8 +385,10 @@ public class BookingOrderServiceImpl implements BookingOrderService {
                     smsManager.sendAuditSuccess(orderItem);
                 }
                 // 同步数据
-                bookingOrderManager.syncOrderAuditAcceptData(order.getId(), orderItem.getId());
-                return new Result<>(true);
+                Map<String, List<?>> syncData = bookingOrderManager.syncOrderAuditAcceptData(order.getId(), orderItem.getId());
+                Result<?> result = new Result<>(true);
+                result.putExt(Result.SYNC_DATA, syncData);
+                return result;
             }
             orderItemMapper.updateByPrimaryKeySelective(orderItem);
 
@@ -456,8 +459,8 @@ public class BookingOrderServiceImpl implements BookingOrderService {
                     throw new ApiException(result.getError());
                 }
                 // 同步数据
-                bookingOrderManager.syncOrderPaymentData(order.getId());
-                return new Result<>(true);
+                Map<String, List<?>> syncData = bookingOrderManager.syncOrderPaymentData(order.getId());
+                return new Result<>(true).putExt(Result.SYNC_DATA, syncData);
             }
             // 第三方支付
             // 获取商品名称
@@ -477,8 +480,8 @@ public class BookingOrderServiceImpl implements BookingOrderService {
                 throw new ApiException(result.getError());
             }
             // 同步数据
-            bookingOrderManager.syncOrderPaymentData(order.getId());
-            return result;
+            Map<String, List<?>> syncData = bookingOrderManager.syncOrderPaymentData(order.getId());
+            return result.putExt(Result.SYNC_DATA, syncData);
         } finally {
             lock.unlock();
         }
@@ -491,7 +494,6 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             throw new ApiException("子订单不存在");
         }
         if (ArrayUtils.indexOf(new int[]{
-                OrderConstant.OrderItemStatus.TICKETING,
                 OrderConstant.OrderItemStatus.TICKET_FAIL,
                 OrderConstant.OrderItemStatus.SEND,
                 OrderConstant.OrderItemStatus.NON_SEND
