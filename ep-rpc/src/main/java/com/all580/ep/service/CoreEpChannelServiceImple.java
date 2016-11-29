@@ -49,8 +49,8 @@ public class CoreEpChannelServiceImple implements CoreEpChannelService {
             params.put("core_ep_id",coreEpId);
             epBalanceThresholdService.createOrUpdate(params);//添加余额阀值
         } catch (Exception e) {
-            log.error("添加汇率通道参数错误", e);
-            throw new ApiException("添加汇率通道参数错误", e);
+            log.error(e.getMessage(), e);
+            throw new ApiException(e.getMessage(), e);
         }
         return result;
     }
