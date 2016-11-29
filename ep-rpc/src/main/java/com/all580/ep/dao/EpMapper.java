@@ -35,6 +35,7 @@ public interface EpMapper {
     List<Map<String,Object>> getAccountInfoList(Map<String,Object> map);
     int getAccountInfoListCount(Map<String,Object> map);
 
+    Integer selectPlatformId(int id);
     List<Map<String,Object>> checkNamePhone(Map<String,Object> map);
      int updateEpGroup(@Param("groupId") Integer groupId,@Param("GroupName") String GroupName,@Param("epids") List<Integer> epids);
     /**
