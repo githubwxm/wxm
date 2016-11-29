@@ -244,6 +244,12 @@
              and id !=#{id}
          </if>
     </select>
+    <select id="selectPlatformId" resultType="java.lang.Integer">
+        select core_ep_id from t_ep
+        where  id=#{id}
+    </select>
+
+
     <update id="updateEpGroup">
         update t_ep set group_id =#{groupId},group_name=#{GroupName}  where id in
         <foreach item="item" index="index" collection="epids" open="(" separator="," close=")">
