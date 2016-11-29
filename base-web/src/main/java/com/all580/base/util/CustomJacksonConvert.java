@@ -15,6 +15,7 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
@@ -41,6 +42,7 @@ public class CustomJacksonConvert extends MappingJackson2HttpMessageConverter {
 			result.put("code", r.getCode() == null ? (r.isSuccess() ? Result.SUCCESS : Result.FAIL) : r.getCode());
 			result.put("message", r.getError()== null ? (r.isSuccess() ? "操作成功" : "操作失败") :r.getError());
 			result.put("data", r.get());
+			result.put("sync_data", r.getExt(Result.SYNC_DATA) == null ? Collections.EMPTY_MAP : r.getExt(Result.SYNC_DATA));
 			String key = CommonUtil.objectParseString(r.getExt("access_key"));
 			 key= key==null?"":key;
 		//	TreeMap tree=new TreeMap(result);//排序  不确定是否需要加
