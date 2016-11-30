@@ -45,4 +45,11 @@ public interface RefundOrderService {
      * @return
      */
     Result<?> refundAliPayMoney(Map params);
+
+    /**
+     * 退款审核
+     * @param params
+     * @return
+     */
+    Result<?> refundMoneyAudit(Map params);
 }

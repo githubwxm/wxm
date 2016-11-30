@@ -119,6 +119,36 @@ public class RefundOrderManager extends BaseOrderManager {
     }
 
     /**
+     * 退订审核通过
+     * @param orderItem 子订单
+     * @param refundOrder 退订订单
+     * @param order 订单
+     * @return
+     * @throws Exception
+     */
+    public Result auditSuccess(OrderItem orderItem, RefundOrder refundOrder, Order order) throws Exception {
+        if (refundOrder.getAudit_time() == null) {
+            refundOrder.setAudit_time(new Date());
+        }
+        if (orderItem.getStatus() == OrderConstant.OrderItemStatus.SEND) {
+            // 调用退票
+            refundTicket(refundOrder);
+            refundOrderMapper.updateByPrimaryKeySelective(refundOrder);
+        } else {
+            // 没有出票直接退款
+            int quantity = nonSendTicketRefund(refundOrder);
+            orderItem.setRefund_quantity(orderItem.getRefund_quantity() + quantity);
+            orderItemMapper.updateByPrimaryKeySelective(orderItem);
+            // 退款
+            refundMoney(order, refundOrder.getMoney(), String.valueOf(refundOrder.getNumber()), orderItem, refundOrder);
+        }
+
+        // 同步数据
+        Map<String, Object> syncData = syncRefundOrderAuditAcceptData(refundOrder.getId());
+        return new Result<>(true).putExt(Result.SYNC_DATA, syncData);
+    }
+
+    /**
      * 判断是否可退 并更新退票数
      * @param daysList 每天数据
      * @param detailList 订单详情
@@ -538,6 +568,35 @@ public class RefundOrderManager extends BaseOrderManager {
     }
 
     /**
+     * 退款 判断是否审核
+     * @param order
+     * @param money
+     * @param sn
+     * @param orderItem
+     * @param refundOrder
+     * @return
+     */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public Result refundMoney(Order order, int money, String sn, OrderItem orderItem, RefundOrder refundOrder) {
+        // 需要审核
+        if (orderItem != null && orderItem.getRefund_money_audit() == ProductConstants.RefundMoneyAudit.YES &&
+                refundOrder.getStatus() != OrderConstant.RefundOrderStatus.REFUND_MONEY_AUDITING) {
+            refundOrder.setStatus(OrderConstant.RefundOrderStatus.REFUND_MONEY_AUDITING);
+            refundOrderMapper.updateByPrimaryKeySelective(refundOrder);
+            return new Result(true);
+        }
+        // 不需要审核
+        refundOrder.setStatus(OrderConstant.RefundOrderStatus.REFUND_MONEY);
+        refundOrderMapper.updateByPrimaryKeySelective(refundOrder);
+        // 非支付宝
+        if (order.getPayment_type() == null || order.getPayment_type() != PaymentConstant.PaymentType.ALI_PAY.intValue()) {
+            // 退款
+            return refundMoney(order, money, sn);
+        }
+        return new Result(true);
+    }
+
+    /**
      * 退款
      * @param order 订单
      */
@@ -546,7 +605,7 @@ public class RefundOrderManager extends BaseOrderManager {
         if (money == 0 && sn != null) {
             log.debug("订单:{} 退款为0元,直接调用退款成功.", order.getNumber());
             refundMoneyAfter(Long.valueOf(sn), true);
-            return null;
+            return new Result(true);
         }
         Integer coreEpId = getCoreEpId(getCoreEpId(order.getBuy_ep_id()));
         // 退款
@@ -570,7 +629,7 @@ public class RefundOrderManager extends BaseOrderManager {
                 log.warn("余额退款失败:{}", result.get());
                 throw new ApiException(result.getError());
             }
-            return null;
+            return new Result(true);
         }
         // 第三方退款
         Map<String, Object> payParams = new HashMap<>();

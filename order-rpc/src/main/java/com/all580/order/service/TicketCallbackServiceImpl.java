@@ -255,7 +255,6 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
             return new Result(true);
         }
 
-        refundOrder.setStatus(OrderConstant.RefundOrderStatus.REFUND_MONEY); // 退款中
         refundOrder.setRefund_ticket_time(procTime);
 
         //refundSerial.setRemoteSerialNo(refundSn);
@@ -272,15 +271,11 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         refundVisitorMapper.updateByPrimaryKeySelective(refundVisitor);
         orderItem.setRefund_quantity(orderItem.getRefund_quantity() + refundSerial.getQuantity());
         orderItemMapper.updateByPrimaryKeySelective(orderItem);
-        refundOrderMapper.updateByPrimaryKeySelective(refundOrder);
         refundSerialMapper.updateByPrimaryKeySelective(refundSerial);
 
         // 退款
         Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
-        // 支付宝退款走财务手动
-        if (order.getPayment_type() != PaymentConstant.PaymentType.ALI_PAY.intValue()) {
-            refundOrderManager.refundMoney(order, refundOrder.getMoney(), String.valueOf(refundOrder.getNumber()));
-        }
+        refundOrderManager.refundMoney(order, refundOrder.getMoney(), String.valueOf(refundOrder.getNumber()), orderItem, refundOrder);
 
         // 还库存 记录任务
         Map<String, String> jobParams = new HashMap<>();

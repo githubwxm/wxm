@@ -51,6 +51,7 @@ public class OrderConstant {
         public static final int REFUND_MONEY = 343; // 退款中
         public static final int REFUND_MONEY_FAIL = 344; // 退款失败
         public static final int REFUND_SUCCESS = 345; // 退订成功
+        public static final int REFUND_MONEY_AUDITING = 346; // 退款审核中
     }
 
     /**

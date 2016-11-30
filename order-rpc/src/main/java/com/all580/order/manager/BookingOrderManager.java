@@ -167,17 +167,19 @@ public class BookingOrderManager extends BaseOrderManager {
         orderItem.setDays(days);
         orderItem.setGroup_id(0); // 散客为0
         orderItem.setOrder_id(orderId);
-        orderItem.setPro_name(info.getProductName());
-        orderItem.setPro_sub_name(info.getProductSubName());
-        orderItem.setPro_sub_number(info.getProductSubCode());
+        orderItem.setPro_name(info.getProduct_name());
+        orderItem.setPro_sub_name(info.getProduct_sub_name());
+        orderItem.setPro_sub_number(info.getProduct_sub_code());
         orderItem.setPro_sub_id(proSubId);
         orderItem.setQuantity(quantity);
-        orderItem.setPayment_flag(info.getPayType());
+        orderItem.setPayment_flag(info.getPay_type());
         orderItem.setStatus(OrderConstant.OrderItemStatus.AUDIT_SUCCESS);
-        orderItem.setSupplier_ep_id(info.getEpId());
-        orderItem.setSupplier_core_ep_id(getCoreEpId(getCoreEpId(info.getEpId())));
+        orderItem.setSupplier_ep_id(info.getEp_id());
+        orderItem.setSupplier_core_ep_id(getCoreEpId(getCoreEpId(info.getEp_id())));
         orderItem.setSupplier_phone(info.getPhone());
-        orderItem.setEp_ma_id(info.getEpMaId());
+        orderItem.setEp_ma_id(info.getEp_ma_id());
+        orderItem.setRefund_audit(info.getRefund_audit());
+        orderItem.setRefund_money_audit(info.getRefund_money_audit());
         orderItemMapper.insertSelective(orderItem);
         return orderItem;
     }
@@ -229,13 +231,13 @@ public class BookingOrderManager extends BaseOrderManager {
         OrderItemDetail orderItemDetail = new OrderItemDetail();
         orderItemDetail.setDay(day);
         orderItemDetail.setQuantity(quantity);
-        orderItemDetail.setCust_refund_rule(info.getCustRefundRule()); // 销售方退货规则
-        orderItemDetail.setSaler_refund_rule(info.getSalerRefundRule()); // 供应方退货规则
+        orderItemDetail.setCust_refund_rule(info.getCust_refund_rule()); // 销售方退货规则
+        orderItemDetail.setSaler_refund_rule(info.getSaler_refund_rule()); // 供应方退货规则
         orderItemDetail.setOrder_item_id(itemId);
         orderItemDetail.setCreate_time(new Date());
-        orderItemDetail.setDisable_day(info.getDisableDate());
-        orderItemDetail.setDisable_week(info.getDisableWeek());
-        orderItemDetail.setUse_hours_limit(info.getUseHoursLimit());
+        orderItemDetail.setDisable_day(info.getDisable_date());
+        orderItemDetail.setDisable_week(info.getDisable_week());
+        orderItemDetail.setUse_hours_limit(info.getUse_hours_limit());
         Date effectiveDate = orderItemDetail.getDay();
         // 产品说就用预定的时间,即使下单时间比预定时间大也取预定时间
         if (orderItemDetail.getUse_hours_limit() != null) {
@@ -243,20 +245,20 @@ public class BookingOrderManager extends BaseOrderManager {
         }
         orderItemDetail.setEffective_date(effectiveDate);
         Date expiryDate = null;
-        if (info.getEffectiveType() == ProductConstants.EffectiveValidType.DAY) {
+        if (info.getEffective_type() == ProductConstants.EffectiveValidType.DAY) {
             // 这里目前只做了门票的,默认结束日期就是当天的,酒店应该是第二天
-            expiryDate = DateUtils.addDays(orderItemDetail.getDay(), info.getEffectiveDay() - 1);
+            expiryDate = DateUtils.addDays(orderItemDetail.getDay(), info.getEffective_day() - 1);
         } else {
-            expiryDate = info.getEffectiveEndDate();
+            expiryDate = info.getEffective_end_date();
         }
-        expiryDate = DateUtils.setHours(expiryDate, DateFormatUtils.get(info.getEndTime(), Calendar.HOUR_OF_DAY));
-        expiryDate = DateUtils.setMinutes(expiryDate, DateFormatUtils.get(info.getEndTime(), Calendar.MINUTE));
-        expiryDate = DateUtils.setSeconds(expiryDate, DateFormatUtils.get(info.getEndTime(), Calendar.SECOND));
+        expiryDate = DateUtils.setHours(expiryDate, DateFormatUtils.get(info.getEnd_time(), Calendar.HOUR_OF_DAY));
+        expiryDate = DateUtils.setMinutes(expiryDate, DateFormatUtils.get(info.getEnd_time(), Calendar.MINUTE));
+        expiryDate = DateUtils.setSeconds(expiryDate, DateFormatUtils.get(info.getEnd_time(), Calendar.SECOND));
         if (effectiveDate.after(expiryDate)) {
             throw new ApiException("该产品已过期");
         }
         // 不能购买已过销售计划的产品
-        if (new Date().after(info.getEndTime())) {
+        if (new Date().after(info.getEnd_time())) {
             throw new ApiException("预定时间已过期");
         }
         orderItemDetail.setExpiry_date(expiryDate);

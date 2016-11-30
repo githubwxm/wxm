@@ -127,7 +127,8 @@ public class OrderValidateManager {
     public Map<String[], ValidRule[]> refundAuditValidate() {
         Map<String[], ValidRule[]> rules = new HashMap<>();
         rules.put(new String[]{
-                "refund_sn" // 订单编号(流水)
+                "refund_sn", // 订单编号(流水)
+                "operator_id" // 操作人ID
         }, new ValidRule[]{new ValidRule.NotNull(), new ValidRule.Digits()});
 
         rules.put(new String[]{
@@ -135,7 +136,26 @@ public class OrderValidateManager {
         }, new ValidRule[]{new ValidRule.NotNull(), new ValidRule.Boolean()});
 
         rules.put(new String[]{
-                "reason" // 原因
+                "reason", // 原因
+                "operator_name" // 操作人名称
+        }, new ValidRule[]{new ValidRule.NotNull()});
+
+        return rules;
+    }
+
+    /**
+     * 订单退订退款审核验证
+     * @return
+     */
+    public Map<String[], ValidRule[]> refundMoneyAuditValidate() {
+        Map<String[], ValidRule[]> rules = new HashMap<>();
+        rules.put(new String[]{
+                "refund_sn", // 订单编号(流水)
+                "operator_id" // 操作人ID
+        }, new ValidRule[]{new ValidRule.NotNull(), new ValidRule.Digits()});
+
+        rules.put(new String[]{
+                "operator_name" // 操作人名称
         }, new ValidRule[]{new ValidRule.NotNull()});
 
         return rules;
