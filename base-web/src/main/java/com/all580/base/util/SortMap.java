@@ -52,7 +52,8 @@ public class SortMap {
                 continue;
             }
             if (entry.getValue() instanceof Object) {
-                sortMap.put(entry.getKey(),CommonUtil.objectParseString(entry.getValue()));
+                sortMap.put(entry.getKey(),
+                        sortMapByKey( JsonUtils.obj2map(entry.getValue()) ));
                 continue;
             }
             if (entry.getValue() == null) {
