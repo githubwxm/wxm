@@ -144,11 +144,11 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             }
             ProductSalesInfo salesInfo = salesInfoResult.get();
             // 判断供应商状态是否为已冻结
-            if (!bookingOrderManager.isEpStatus(epService.getEpStatus(salesInfo.getEpId()), EpConstant.EpStatus.ACTIVE)) {
+            if (!bookingOrderManager.isEpStatus(epService.getEpStatus(salesInfo.getEp_id()), EpConstant.EpStatus.ACTIVE)) {
                 throw new ApiException("供应商企业已冻结");
             }
 
-            List<ProductSalesDayInfo> dayInfoList = salesInfo.getDayInfoList();
+            List<ProductSalesDayInfo> dayInfoList = salesInfo.getDay_info_list();
 
             if (dayInfoList.size() != days) {
                 throw new ApiException("预定天数与获取产品天数不匹配");
@@ -156,11 +156,11 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             // 验证预定时间限制
             Date when = new Date();
             for (ProductSalesDayInfo dayInfo : dayInfoList) {
-                if (dayInfo.isBookingLimit()) {
-                    int dayLimit = dayInfo.getBookingDayLimit();
+                if (dayInfo.isBooking_limit()) {
+                    int dayLimit = dayInfo.getBooking_day_limit();
                     Date limit = DateUtils.addDays(bookingDate, -dayLimit);
                     try {
-                        String time = dayInfo.getBookingTimeLimit();
+                        String time = dayInfo.getBooking_time_limit();
                         if (time != null) {
                             String[] timeArray = time.split(":");
                             limit = DateUtils.setHours(limit, Integer.parseInt(timeArray[0]));
@@ -177,9 +177,9 @@ public class BookingOrderServiceImpl implements BookingOrderService {
 
             // 判断游客信息
             List<Map> visitors = (List<Map>) item.get("visitor");
-            if (salesInfo.isRequireSid()) {
+            if (salesInfo.isRequire_sid()) {
                 Result visitorResult = bookingOrderManager.validateVisitor(
-                        visitors, salesInfo.getProductSubCode(), bookingDate, salesInfo.getSidDayCount(), salesInfo.getSidDayQuantity());
+                        visitors, salesInfo.getProduct_sub_code(), bookingDate, salesInfo.getSid_day_count(), salesInfo.getSid_day_quantity());
                 if (!visitorResult.isSuccess()) {
                     throw new ApiException(visitorResult.getError());
                 }
@@ -198,7 +198,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
                 }
                 saleAmount += info.getPrice() * quantity;
                 // 只计算预付的,到付不计算在内
-                if (salesInfo.getPayType() == ProductConstants.PayType.PREPAY) {
+                if (salesInfo.getPay_type() == ProductConstants.PayType.PREPAY) {
                     totalPayPrice += info.getPrice() * quantity; // 计算进货价
                     totalPayShopPrice += (info.getShopPrice() == null ? 0 : info.getShopPrice()) * quantity; // 计算门市价
                 }
@@ -216,7 +216,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             totalPrice += saleAmount;
 
             // 创建子订单
-            OrderItem orderItem = bookingOrderManager.generateItem(salesInfo, dayInfoList.get(dayInfoList.size() - 1).getEndTime(), saleAmount, bookingDate, days, order.getId(), quantity, productSubId);
+            OrderItem orderItem = bookingOrderManager.generateItem(salesInfo, dayInfoList.get(dayInfoList.size() - 1).getEnd_time(), saleAmount, bookingDate, days, order.getId(), quantity, productSubId);
 
             List<OrderItemDetail> detailList = new ArrayList<>();
             List<Visitor> visitorList = new ArrayList<>();
@@ -238,12 +238,16 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             if (visitorQuantity != quantity) {
                 throw new ApiException("游客票数与总票数不符");
             }
+            // 判断最高票数 散客
+            if (salesInfo.getMax_buy_quantity() != null && visitorQuantity > salesInfo.getMax_buy_quantity()) {
+                throw new ApiException(String.format("超过订单最高购买限制: 当前购买:%d, 最大购买:%d", visitorQuantity, salesInfo.getMax_buy_quantity()));
+            }
             lockStockDtoMap.put(orderItem.getId(), new LockStockDto(orderItem, detailList));
             lockParams.add(bookingOrderManager.parseParams(orderItem));
             visitorMap.put(orderItem.getId(), visitorList);
 
             // 预分账记录
-            bookingOrderManager.preSplitAccount(allDaysSales, orderItem.getId(), quantity, salesInfo.getPayType(), bookingDate);
+            bookingOrderManager.preSplitAccount(allDaysSales, orderItem.getId(), quantity, salesInfo.getPay_type(), bookingDate);
         }
 
         // 创建订单联系人
