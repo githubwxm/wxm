@@ -14,7 +14,7 @@ public class SortMap {
     /** * 对Map按key进行排序，支持map和list混合嵌套 * * @param map * @return */
     public static Map<String, Object> sortMapByKey(Map<String, Object> map) {
         if (map == null || map.isEmpty()) {
-            return Collections.EMPTY_MAP ;
+            return null ;
         }
         Map<String, Object> sortMap = new TreeMap<String, Object>(
                 new MapComparator());
@@ -51,6 +51,14 @@ public class SortMap {
                 sortMap.put(entry.getKey(), DateFormatUtils.converToDateTime(entry.getValue().toString()));
                 continue;
             }
+            if (entry.getValue() instanceof Object) {
+                sortMap.put(entry.getKey(),CommonUtil.objectParseString(entry.getValue()));
+                continue;
+            }
+            if (entry.getValue() == null) {
+                sortMap.put(entry.getKey(),CommonUtil.objectParseString(entry.getValue()));
+                continue;
+            }
         }
         return sortMap;
     }
@@ -58,7 +66,7 @@ public class SortMap {
     /** * 对list进行排序，支持map和list混合嵌套 * * @param list * @return */
     public static List<?> sortListByValue(List<?> list) {
         if (list == null || list.isEmpty()) {
-            return list;
+            return null;
         }
         List<Object> sortList = new ArrayList<Object>();
         for (Object item : list) {
