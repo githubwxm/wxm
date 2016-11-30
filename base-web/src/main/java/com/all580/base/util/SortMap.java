@@ -67,7 +67,7 @@ public class SortMap {
     /** * 对list进行排序，支持map和list混合嵌套 * * @param list * @return */
     public static List<?> sortListByValue(List<?> list) {
         if (list == null || list.isEmpty()) {
-            return null;
+            return list;
         }
         List<Object> sortList = new ArrayList<Object>();
         for (Object item : list) {
