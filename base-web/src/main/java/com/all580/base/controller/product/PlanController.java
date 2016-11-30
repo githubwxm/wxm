@@ -84,7 +84,7 @@ public class PlanController extends BaseController {
     @RequestMapping(value = "delete", method = RequestMethod.POST)
     @ResponseBody
     public Result<?> deleteSalesPlan(@RequestBody Map params) {
-        return productSalesPlanService.deleteProductPlanByProductSubId(CommonUtil.objectParseInteger(params.get("productPlanId")));
+        return productSalesPlanService.deleteProductPlanByProductSubId(CommonUtil.objectParseInteger(params.get("product_sub_id")));
     }
 
     /**
