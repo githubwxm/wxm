@@ -79,6 +79,14 @@ public class OrderController extends BaseController {
         return refundOrderService.audit(params);
     }
 
+    @RequestMapping(value = "refund/money/audit", method = RequestMethod.POST)
+    @ResponseBody
+    public Result<?> refundMoneyAudit(@RequestBody Map params) throws Exception {
+        // 验证参数
+        ParamsMapValidate.validate(params, orderValidateManager.refundMoneyAuditValidate());
+        return refundOrderService.refundMoneyAudit(params);
+    }
+
     @RequestMapping(value = "cancel", method = RequestMethod.POST)
     @ResponseBody
     public Result<?> cancel(@RequestBody Map params) {
