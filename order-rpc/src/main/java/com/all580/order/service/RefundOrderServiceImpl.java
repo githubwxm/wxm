@@ -64,7 +64,15 @@ public class RefundOrderServiceImpl implements RefundOrderService {
     @Override
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public Result<?> cancel(Map params) {
-        return refundOrderManager.cancel(Long.valueOf(params.get("order_sn").toString()));
+        if (!params.containsKey(EpConstant.EpKey.EP_ID)) {
+            throw new ApiException("非法请求:企业ID为空");
+        }
+        Order order = orderMapper.selectBySN(Long.valueOf(params.get("order_sn").toString()));
+        if (!String.valueOf(params.get(EpConstant.EpKey.EP_ID)).equals(String.valueOf(order.getBuy_ep_id()))
+                && !String.valueOf(params.get(EpConstant.EpKey.CORE_EP_ID)).equals(String.valueOf(order.getPayee_ep_id()))) {
+            throw new ApiException("非法请求:当前企业不能取消该订单");
+        }
+        return refundOrderManager.cancel(order);
     }
 
     @Override
