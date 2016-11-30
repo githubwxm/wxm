@@ -23,17 +23,17 @@ public class BalanceController extends BaseController {
     @Autowired
     private BalancePayService balancePayService;
 
-    @RequestMapping(value = "info/{epId}", method = RequestMethod.GET)
+    @RequestMapping(value = "info", method = RequestMethod.GET)
     @ResponseBody
-    public Result getBalance(@PathVariable("epId") Integer epId) {
+    public Result getBalance(@RequestParam(value = "ep_id") Integer ep_id) {
         Result<Map<String, String>> result = new Result<>();
         try {
             Integer coreEpId = CommonUtil.objectParseInteger(getAttribute("core_ep_id"));
-            if (epId == null || coreEpId == null) {
+            if (ep_id == null || coreEpId == null) {
                 result.setFail();
                 result.setError("缺少参数");
             } else {
-                result = balancePayService.getBalanceAccountInfo(epId, coreEpId);
+                result = balancePayService.getBalanceAccountInfo(ep_id, coreEpId);
             }
         } catch (Exception e) {
             String msg = "获取余额账户信息出错，原因：" + e.getMessage();
