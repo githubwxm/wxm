@@ -406,8 +406,9 @@ public class EpServiceImpl implements EpService {
             if (ref > 0) {
                 List<Map<String, String>> listMap = epMapper.selectSingleTable(params);
                 // int id = CommonUtil.objectParseInteger(params.get(EpConstant.EpKey.CORE_EP_ID));
-                syncEpData(selectPlatformId(CommonUtil.objectParseInteger(params.get("id"))).get(), EpConstant.Table.T_EP, listMap);//同步数据
+                Map<String,Object> syncData=  syncEpData(selectPlatformId(CommonUtil.objectParseInteger(params.get("id"))).get(), EpConstant.Table.T_EP, listMap);//同步数据
                 result.put(ref);
+                result.putExt(Result.SYNC_DATA, syncData);
                 result.setSuccess();
             } else {
                 result.setError("数据不用更新");
@@ -466,8 +467,9 @@ public class EpServiceImpl implements EpService {
             Integer ref = updateStatus(params).get();
             if (ref > 0) {//是否有更新
                 List<Map<String, String>> listMap = epMapper.selectSingleTable(params);
-                syncEpData(map.get("ep_id"), EpConstant.Table.T_EP, listMap);
+                Map<String,Object> syncData=  syncEpData(map.get("ep_id"), EpConstant.Table.T_EP, listMap);
                 result.setSuccess();
+                result.putExt(Result.SYNC_DATA, syncData);
             } else {
                 result.setError("企业已经激活");
             }
@@ -548,8 +550,8 @@ public class EpServiceImpl implements EpService {
             Map<String, Object> paramsMap = new HashMap<>();//数据同步条件
             paramsMap.put("core_ep_id", map.get("id"));
             List<Map<String, String>> listMap = epMapper.selectSingleTable(paramsMap);
-            syncEpData(map.get("id"), EpConstant.Table.T_EP, listMap);
-
+            Map<String,Object> syncData=  syncEpData(map.get("id"), EpConstant.Table.T_EP, listMap);
+             result.putExt(Result.SYNC_DATA, syncData);
 //            String destPhoneNum = selectPhone(CommonUtil.objectParseInteger(map.get("id"))).get();
 //            int ep_id = CommonUtil.objectParseInteger(map.get("ep_id"));
 //            Map<String, String> smsParams = new HashMap<>();
@@ -596,7 +598,8 @@ public class EpServiceImpl implements EpService {
             Map<String, Object> paramsMap = new HashMap<>();
             paramsMap.put("core_ep_id", map.get("id"));
             List<Map<String, String>> listMap = epMapper.selectSingleTable(paramsMap);
-            syncEpData(map.get("id"), EpConstant.Table.T_EP, listMap);
+            Map<String,Object> syncData=   syncEpData(map.get("id"), EpConstant.Table.T_EP, listMap);
+            result.putExt(Result.SYNC_DATA, syncData);
         } catch (ApiException e) {
             log.error(e.getMessage(), e);
             throw new ApiException(e.getMessage(), e);
@@ -640,9 +643,10 @@ public class EpServiceImpl implements EpService {
                 Map<String, Object> tempMap = new HashMap<>();
                 tempMap.put("id", map.get("id"));
                 List<Map<String, String>> listMap = epMapper.selectSingleTable(tempMap);
-                syncEpData(selectPlatformId(CommonUtil.objectParseInteger(map.get("id"))).get(), EpConstant.Table.T_EP, listMap);
+                Map<String,Object> syncData=  syncEpData(selectPlatformId(CommonUtil.objectParseInteger(map.get("id"))).get(), EpConstant.Table.T_EP, listMap);
                 result.put(map);
                 result.setSuccess();
+                result.putExt(Result.SYNC_DATA, syncData);
             }
 
         } catch (ApiException e) {
@@ -806,7 +810,8 @@ public class EpServiceImpl implements EpService {
             if (ref > 0) {
                 Integer core_ep_id = selectPlatformId(epIds.get(0)).get();
                 List<Map<String, String>> listMap = epMapper.selectEpList(epIds);
-                syncEpData(core_ep_id, EpConstant.Table.T_EP, listMap);
+               Map<String,Object> syncData= syncEpData(core_ep_id, EpConstant.Table.T_EP, listMap);
+                return new Result(true).putExt(Result.SYNC_DATA, syncData);
             }
         } catch (ApiException e) {
             log.error(e.getMessage(), e);
@@ -816,7 +821,7 @@ public class EpServiceImpl implements EpService {
             throw new ApiException(e.getMessage(), e);
         }
 
-        return null;
+         return new Result(true).putExt(Result.SYNC_DATA, null);
     }
 
     @Override
@@ -1004,12 +1009,12 @@ public class EpServiceImpl implements EpService {
             Map<String, Object> map = new HashMap<>();
             map.put("id", params.get("id"));
             List<Map<String, String>> listMap = epMapper.selectSingleTable(map);
-            syncEpData(selectPlatformId(CommonUtil.objectParseInteger(params.get("id"))).get(), EpConstant.Table.T_EP, listMap);
+            Map<String, Object> syncData = syncEpData(selectPlatformId(CommonUtil.objectParseInteger(params.get("id"))).get(), EpConstant.Table.T_EP, listMap);
+            return new Result(true).putExt(Result.SYNC_DATA, syncData);
         } catch (Exception e) {
             log.error("查询数据库异常", e);
             throw new ApiException("查询数据库异常", e);
         }
-        return new Result(true);
     }
 
 
@@ -1018,7 +1023,7 @@ public class EpServiceImpl implements EpService {
      *
      * @param
      */
-    public void syncEpData(Object coreEpId, String table, List<?> data) {
+    public Map<String, Object> syncEpData(Object coreEpId, String table, List<?> data) {
         try {
             if (!CommonUtil.objectIsNumber(coreEpId)) {
                 log.error("同步数据平台商错误 {} {}", table, data);
@@ -1036,9 +1041,9 @@ public class EpServiceImpl implements EpService {
             } else {
                 key = CommonUtil.objectParseString(keyList.get(0).get(EpConstant.EpKey.ACCESS_KEY));
             }
-            synchronizeDataManager.generate(key)
+            return synchronizeDataManager.generate(key)
                     .put(table, data)
-                    .sync();
+                    .sync().getDataMap();
         } catch (ApiException e) {
             log.error(e.getMessage());
             throw new ApiException(e.getMessage());
