@@ -45,10 +45,11 @@ public class CustomJacksonConvert extends MappingJackson2HttpMessageConverter {
 			result.put("sync_data", r.getExt(Result.SYNC_DATA) == null ? Collections.EMPTY_MAP : r.getExt(Result.SYNC_DATA));
 			String key = CommonUtil.objectParseString(r.getExt("access_key"));
 			 key= key==null?"":key;
-			TreeMap tree=new TreeMap(result);//排序  不确定是否需要加
-			String data = JsonUtils.toJson(tree);//替换转String 那行
-			//String data1 = JSON.toJSONString(result);
-			String sign=CommonUtil.signForData(key,data);
+		//	TreeMap tree=new TreeMap(result);//排序  不确定是否需要加
+			//String data = JsonUtils.toJson(tree);//替换转String 那行
+			String data1 = JSON.toJSONString(result);
+			JSON.parse(data1);
+			String sign=CommonUtil.signForData(key,data1);
 			result.put("sign",sign);
 			super.writeInternal(result, outputMessage);
 			return;
