@@ -1,6 +1,8 @@
 package com.all580.base.util;
 
+
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.parser.Feature;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -15,10 +17,7 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 @Slf4j
 public class CustomJacksonConvert extends MappingJackson2HttpMessageConverter {
@@ -45,10 +44,14 @@ public class CustomJacksonConvert extends MappingJackson2HttpMessageConverter {
 			result.put("sync_data", r.getExt(Result.SYNC_DATA) == null ? Collections.EMPTY_MAP : r.getExt(Result.SYNC_DATA));
 			String key = CommonUtil.objectParseString(r.getExt("access_key"));
 			 key= key==null?"":key;
-		//	TreeMap tree=new TreeMap(result);//排序  不确定是否需要加
-			//String data = JsonUtils.toJson(tree);//替换转String 那行
-			String data1 = JSON.toJSONString(result);
-			String sign=CommonUtil.signForData(key,data1);
+			//TreeMap tree=new TreeMap(result);//排序  不确定是否需要加
+			//String data = JsonUtils.toJson(result);//替换转String 那行
+			//result=  JSON.parseObject(data,LinkedHashMap.class,Feature.OrderedField);
+			result=SortMap.sortMapByKey(result);
+			String data = JsonUtils.toJson(result);
+
+			//String data1 = JSON.toJSONString(result);
+			String sign=CommonUtil.signForData(key,data);
 			result.put("sign",sign);
 			super.writeInternal(result, outputMessage);
 			return;
