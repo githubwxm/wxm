@@ -428,7 +428,8 @@ public class EpServiceImpl implements EpService {
         params.put("status", EpConstant.EpStatus.FREEZE);
         params.put("status_active", EpConstant.EpStatus.ACTIVE);
         try {
-            return updateStatus(params);
+            Result result =updateStatus(params);
+            return result;
         } catch (ApiException e) {
             log.error(e.getMessage(), e);
             throw new ApiException(e.getMessage(), e);
@@ -490,17 +491,17 @@ public class EpServiceImpl implements EpService {
         params.put("status", EpConstant.EpStatus.FREEZE);
         try {
             Result<Integer> result = updatePlatfrom(params);
-            if (result.isSuccess()) {
-                String destPhoneNum = selectPhone(CommonUtil.objectParseInteger(map.get("id"))).get();
-                int ep_id = CommonUtil.objectParseInteger(map.get("ep_id"));
-                Map<String, String> smsParams = new HashMap<>();
-                smsParams.put("dianhuahaoma", SmsType.Ep.CHANGLV_SERVICE_PHONE);//客户
-                Result r = smsService.send(destPhoneNum, SmsType.Ep.PLATFORM_FREEZE, ep_id, smsParams);//发送短信
-                if (!r.isSuccess()) {
-                    log.warn("冻结平台商发送消息失败");
-                    throw new ApiException("冻结平台商发送消息失败");
-                }
-            }
+//            if (result.isSuccess()) {
+//                String destPhoneNum = selectPhone(CommonUtil.objectParseInteger(map.get("id"))).get();
+//                int ep_id = CommonUtil.objectParseInteger(map.get("ep_id"));
+//                Map<String, String> smsParams = new HashMap<>();
+//                smsParams.put("dianhuahaoma", SmsType.Ep.CHANGLV_SERVICE_PHONE);//客户
+//                Result r = smsService.send(destPhoneNum, SmsType.Ep.PLATFORM_FREEZE, ep_id, smsParams);//发送短信
+//                if (!r.isSuccess()) {
+//                    log.warn("冻结平台商发送消息失败");
+//                    throw new ApiException("冻结平台商发送消息失败");
+//                }
+//            }
             return result;
         } catch (ApiException e) {
             log.error(e.getMessage(), e);
@@ -517,17 +518,17 @@ public class EpServiceImpl implements EpService {
         params.put("status", EpConstant.EpStatus.STOP);
         try {
             Result<Integer> result = updatePlatfrom(params);
-            if (result.isSuccess()) {
-                String destPhoneNum = selectPhone(CommonUtil.objectParseInteger(map.get("id"))).get();
-                int ep_id = CommonUtil.objectParseInteger(map.get("ep_id"));
-                Map<String, String> smsParams = new HashMap<>();
-                smsParams.put("dianhuahaoma", SmsType.Ep.CHANGLV_SERVICE_PHONE);//客户
-                Result r = smsService.send(destPhoneNum, SmsType.Ep.PLATFORM_STOP, ep_id, smsParams);//发送短信
-                if (!r.isSuccess()) {
-                    log.warn("停用平台商发送消息失败");
-                    throw new ApiException("停用平台商发送消息失败");
-                }
-            }
+//            if (result.isSuccess()) {
+//                String destPhoneNum = selectPhone(CommonUtil.objectParseInteger(map.get("id"))).get();
+//                int ep_id = CommonUtil.objectParseInteger(map.get("ep_id"));
+//                Map<String, String> smsParams = new HashMap<>();
+//                smsParams.put("dianhuahaoma", SmsType.Ep.CHANGLV_SERVICE_PHONE);//客户
+//                Result r = smsService.send(destPhoneNum, SmsType.Ep.PLATFORM_STOP, ep_id, smsParams);//发送短信
+//                if (!r.isSuccess()) {
+//                    log.warn("停用平台商发送消息失败");
+//                    throw new ApiException("停用平台商发送消息失败");
+//                }
+//            }
             return result;
 
         } catch (ApiException e) {
@@ -551,7 +552,7 @@ public class EpServiceImpl implements EpService {
             paramsMap.put("core_ep_id", map.get("id"));
             List<Map<String, String>> listMap = epMapper.selectSingleTable(paramsMap);
             Map<String,Object> syncData=  syncEpData(map.get("id"), EpConstant.Table.T_EP, listMap);
-             result.putExt(Result.SYNC_DATA, syncData);
+            // result.putExt(Result.SYNC_DATA, syncData);
 //            String destPhoneNum = selectPhone(CommonUtil.objectParseInteger(map.get("id"))).get();
 //            int ep_id = CommonUtil.objectParseInteger(map.get("ep_id"));
 //            Map<String, String> smsParams = new HashMap<>();
@@ -599,7 +600,7 @@ public class EpServiceImpl implements EpService {
             paramsMap.put("core_ep_id", map.get("id"));
             List<Map<String, String>> listMap = epMapper.selectSingleTable(paramsMap);
             Map<String,Object> syncData=   syncEpData(map.get("id"), EpConstant.Table.T_EP, listMap);
-            result.putExt(Result.SYNC_DATA, syncData);
+            //result.putExt(Result.SYNC_DATA, syncData);
         } catch (ApiException e) {
             log.error(e.getMessage(), e);
             throw new ApiException(e.getMessage(), e);
