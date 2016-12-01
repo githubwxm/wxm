@@ -32,7 +32,7 @@ public class ProductRefundController extends BaseController {
 
     @RequestMapping(value = "info")
     @ResponseBody
-    public Result searchRefundInfo (@RequestParam("refundId") Integer refundId) {
+    public Result searchRefundInfo (@RequestParam("refund_id") Integer refundId) {
         return productRefundRuleService.searchProductRefundRule(refundId);
     }
 
@@ -44,7 +44,7 @@ public class ProductRefundController extends BaseController {
 
     private ProductRefundRuleInfo initUpdateParams(Map params) {
         ProductRefundRuleInfo info = new ProductRefundRuleInfo();
-        info.setId(CommonUtil.objectParseInteger(params.get("refundId")));
+        info.setId(CommonUtil.objectParseInteger(params.get("refund_id")));
         info.setName(CommonUtil.objectParseString(params.get("name")));
         info.setAll(CommonUtil.objectParseInteger(params.get("all")));
         info.setRule(JsonUtils.toJson(params.get("rule")));
@@ -62,26 +62,26 @@ public class ProductRefundController extends BaseController {
      */
     @RequestMapping("list")
     @ResponseBody
-    public Result<Paginator<ProductRefundRuleInfo>> searchProductRefunds (@RequestParam("ep_id") Integer epId, @RequestParam("name") String name, @RequestParam("productType") Integer productType, @RequestParam("record_start") Integer start, @RequestParam("record_count") Integer count) {
+    public Result<Paginator<ProductRefundRuleInfo>> searchProductRefunds (@RequestParam("ep_id") Integer epId, @RequestParam("name") String name, @RequestParam("product_type") Integer productType, @RequestParam("record_start") Integer start, @RequestParam("record_count") Integer count) {
         return productRefundRuleService.searchProductRefundRules(initParams(epId, name, productType, start, count));
     }
 
     private ProductRefundRuleParams initParams (Integer epId, String name, Integer productType, Integer start, Integer count) {
         ProductRefundRuleParams params = new ProductRefundRuleParams();
-        params.setEpId(epId);
+        params.setEp_id(epId);
         params.setName(name);
-        params.setProductType(productType);
-        params.setRecordStart(start);
-        params.setRecordCount(count);
+        params.setProduct_type(productType);
+        params.setRecord_start(start);
+        params.setRecord_count(count);
         return params;
     }
 
     ProductRefundRuleInfo initProductRefundRuleInfo(Map params) {
         ProductRefundRuleInfo productRefundRuleInfo = new ProductRefundRuleInfo();
-        productRefundRuleInfo.setEpId(CommonUtil.objectParseInteger(params.get("ep_id")));
+        productRefundRuleInfo.setEp_id(CommonUtil.objectParseInteger(params.get("ep_id")));
         productRefundRuleInfo.setAll(CommonUtil.objectParseInteger(params.get("all")));
         productRefundRuleInfo.setName(CommonUtil.objectParseString(params.get("name")));
-        productRefundRuleInfo.setProductType(CommonUtil.objectParseInteger(params.get("productType")));
+        productRefundRuleInfo.setProduct_type(CommonUtil.objectParseInteger(params.get("product_type")));
         productRefundRuleInfo.setRule(JsonUtils.toJson(params.get("rule")));
 //        productRefundRuleInfo.setStatus(CommonUtil.objectParseInteger(params.get("status")));
         productRefundRuleInfo.setType(CommonUtil.objectParseInteger(params.get("type")));

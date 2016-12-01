@@ -56,9 +56,9 @@ public class ProductController extends BaseController {
      * @param  productSubId  主产品id
      * @return
      */
-    @RequestMapping(value = "selectProductSubBatch", method = RequestMethod.GET)
+    @RequestMapping(value = "sub", method = RequestMethod.GET)
     @ResponseBody
-    public Result<?> selectProductSubBatch(@RequestParam("productSubId") Integer productSubId){
+    public Result<?> selectProductSubBatch(@RequestParam("product_sub_id") Integer productSubId){
         return productService.selectProductSubBatch(productSubId);
     }
     /**
@@ -66,9 +66,9 @@ public class ProductController extends BaseController {
      * @param  productId  主产品id
      * @return
      */
-    @RequestMapping(value = "findByProductId", method = RequestMethod.GET)
+    @RequestMapping(value = "scenery", method = RequestMethod.GET)
     @ResponseBody
-    public Result<?> selectSceneryProduct(@RequestParam("productId") Integer productId){
+    public Result<?> selectSceneryProduct(@RequestParam("product_id") Integer productId){
         return productService.findByProductId(productId);
     }
 
@@ -113,12 +113,12 @@ public class ProductController extends BaseController {
         productSceneryInfo.setPcastr(props.get("pcastr").toString());
         productSceneryInfo.setAddress(props.get("address").toString());
         productSceneryInfo.setBlurb(props.get("blurb").toString());
-        productSceneryInfo.setBusinessTime(props.get("business_time").toString());
+        productSceneryInfo.setBusiness_time(props.get("business_time").toString());
         productSceneryInfo.setTel(props.get("tel").toString());
         productSceneryInfo.setMap(props.get("map").toString());
         productSceneryInfo.setImgs(JsonUtils.toJson(props.get("imgs")));
         productSceneryInfo.setLevel(Integer.valueOf(props.get("level").toString()));
-        productSceneryInfo.setTransitLine(props.get("transit_lines").toString());
+        productSceneryInfo.setTransit_line(props.get("transit_lines").toString());
         productSceneryInfo.setType(JsonUtils.toJson(props.get("type")));
         return productSceneryInfo;
     }
@@ -131,51 +131,51 @@ public class ProductController extends BaseController {
 
     private SubProductInfo intSubProduct(Map params) {
         SubProductInfo subProductInfo = new SubProductInfo();
-        subProductInfo.setEpId(CommonUtil.objectParseInteger(params.get("ep_id")));
-        subProductInfo.setBookingDayLimit(CommonUtil.objectParseInteger(params.get("bookingDayLimit")));
-        subProductInfo.setBookingNotes(CommonUtil.objectParseString(params.get("bookingNotes")));
-        subProductInfo.setBookingLimit(CommonUtil.objectParseInteger(params.get("bookingLimit")));
-        subProductInfo.setBookingTimeLimit(CommonUtil.objectParseString(params.get("bookingTimeLimit")));
-        subProductInfo.setBuyStartDate(DateFormatUtils.converToDateTime(CommonUtil.objectParseString(params.get("buyStartDate"))));
-        subProductInfo.setBuyEndDate(DateFormatUtils.converToDateTime(CommonUtil.objectParseString(params.get("buyEndDate"))));
+        subProductInfo.setEp_id(CommonUtil.objectParseInteger(params.get("ep_id")));
+        subProductInfo.setBooking_day_limit(CommonUtil.objectParseInteger(params.get("booking_day_limit")));
+        subProductInfo.setBooking_notes(CommonUtil.objectParseString(params.get("booking_notes")));
+        subProductInfo.setBooking_limit(CommonUtil.objectParseInteger(params.get("booking_limit")));
+        subProductInfo.setBooking_time_limit(CommonUtil.objectParseString(params.get("booking_time_limit")));
+        subProductInfo.setBuy_start_date(DateFormatUtils.converToDateTime(CommonUtil.objectParseString(params.get("buy_start_date"))));
+        subProductInfo.setBuy_end_date(DateFormatUtils.converToDateTime(CommonUtil.objectParseString(params.get("buy_end_date"))));
         subProductInfo.setDescription(CommonUtil.objectParseString(params.get("description")));
-        subProductInfo.setDisableDate(JsonUtils.toJson(params.get("disableDate")));
-        subProductInfo.setDisableWeek(JsonUtils.toJson(params.get("disableWeek")));
-        subProductInfo.setEffectiveDay(CommonUtil.objectParseInteger(params.get("effectiveDay")));
-        subProductInfo.setEffectiveEndDate(CommonUtil.objectParseString(params.get("effectiveEndDate")));
-        subProductInfo.setEffectiveStartDate(CommonUtil.objectParseString(params.get("effectiveStartDate")));
-        subProductInfo.setEffectiveType(CommonUtil.objectParseInteger(params.get("effectiveType")));
+        subProductInfo.setDisable_date(JsonUtils.toJson(params.get("disable_date")));
+        subProductInfo.setDisable_week(JsonUtils.toJson(params.get("disable_week")));
+        subProductInfo.setEffective_day(CommonUtil.objectParseInteger(params.get("effective_day")));
+        subProductInfo.setEffective_end_date(CommonUtil.objectParseString(params.get("effective_end_date")));
+        subProductInfo.setEffective_start_date(CommonUtil.objectParseString(params.get("effective_start_date")));
+        subProductInfo.setEffective_type(CommonUtil.objectParseInteger(params.get("effective_type")));
         subProductInfo.setImg(JsonUtils.toJson(params.get("img")));
-        subProductInfo.setEpMaId(CommonUtil.objectParseInteger(params.get("epMaId")));
-        subProductInfo.setMaProductId(CommonUtil.objectParseString(params.get("maProductId")));
-        subProductInfo.setMarketPrice(CommonUtil.objectParseInteger(params.get("marketPrice")));
-        subProductInfo.setMaxBuyQuantity(CommonUtil.objectParseInteger(params.get("maxBuyQuantity")));
-        subProductInfo.setMinBuyQuantity(CommonUtil.objectParseInteger(params.get("minBuyQuantity")));
-        subProductInfo.setMinSellPrice(CommonUtil.objectParseInteger(params.get("minSellPrice")));
+        subProductInfo.setEp_ma_id(CommonUtil.objectParseInteger(params.get("ep_ma_id")));
+        subProductInfo.setMa_product_id(CommonUtil.objectParseString(params.get("ma_product_id")));
+        subProductInfo.setMarket_price(CommonUtil.objectParseInteger(params.get("market_price")));
+        subProductInfo.setMax_buy_quantity(CommonUtil.objectParseInteger(params.get("max_buy_quantity")));
+        subProductInfo.setMin_buy_quantity(CommonUtil.objectParseInteger(params.get("min_buy_quantity")));
+        subProductInfo.setMin_sell_price(CommonUtil.objectParseInteger(params.get("min_sell_price")));
         subProductInfo.setName(CommonUtil.objectParseString(params.get("name")));
-        subProductInfo.setPayType(CommonUtil.objectParseInteger(params.get("payType")));
-        subProductInfo.setProductId(CommonUtil.objectParseInteger(params.get("productId")));
-        subProductInfo.setProductName(CommonUtil.objectParseString(params.get("productName")));
-        subProductInfo.setRealName(CommonUtil.objectParseInteger(params.get("realName")));
-        subProductInfo.setRequireSid(CommonUtil.objectParseInteger(params.get("requireSid")));
-        subProductInfo.setSaleQuantity(CommonUtil.objectParseInteger(params.get("saleQuantity")));
-//        subProductInfo.setSalerRefundRule(CommonUtil.objectParseInteger(params.get("salerRefundRule")));
-        subProductInfo.setCustRefundRule(CommonUtil.objectParseInteger(params.get("salerRefundRule")));
-        subProductInfo.setSaleRuleType(CommonUtil.objectParseInteger(params.get("saleRuleType")));
-        subProductInfo.setSettlePrice(CommonUtil.objectParseInteger(params.get("settlePrice")));
-        subProductInfo.setSidDayCount(CommonUtil.objectParseInteger(params.get("sidDayCount")));
-        subProductInfo.setSidDayQuantity(CommonUtil.objectParseInteger(params.get("sidDayQuantity")));
+        subProductInfo.setPay_type(CommonUtil.objectParseInteger(params.get("pay_type")));
+        subProductInfo.setProduct_id(CommonUtil.objectParseInteger(params.get("product_id")));
+        subProductInfo.setProduct_name(CommonUtil.objectParseString(params.get("product_name")));
+        subProductInfo.setReal_name(CommonUtil.objectParseInteger(params.get("real_name")));
+        subProductInfo.setRequire_sid(CommonUtil.objectParseInteger(params.get("require_sid")));
+        subProductInfo.setSale_quantity(CommonUtil.objectParseInteger(params.get("sale_quantity")));
+//        subProductInfo.setSaler_refund_rule(CommonUtil.objectParseInteger(params.get("saler_refund_rule")));
+        subProductInfo.setCust_refund_rule(CommonUtil.objectParseInteger(params.get("saler_refund_rule")));
+        subProductInfo.setSale_rule_type(CommonUtil.objectParseInteger(params.get("sale_rule_type")));
+        subProductInfo.setSettle_price(CommonUtil.objectParseInteger(params.get("settle_price")));
+        subProductInfo.setSid_day_count(CommonUtil.objectParseInteger(params.get("sid_day_count")));
+        subProductInfo.setSid_day_quantity(CommonUtil.objectParseInteger(params.get("sid_day_quantity")));
         subProductInfo.setStatus(CommonUtil.objectParseInteger(params.get("status")));
-        subProductInfo.setStockLimit(CommonUtil.objectParseInteger(params.get("stockLimit")));
-        subProductInfo.setTicketDict(CommonUtil.objectParseInteger(params.get("ticketDict")));
-        subProductInfo.setTicketFlag(CommonUtil.objectParseInteger(params.get("ticketFlag")));
-        subProductInfo.setTicketMsg(CommonUtil.objectParseString(params.get("ticketMsg")));
-        subProductInfo.setTicketFlag(CommonUtil.objectParseInteger(params.get("ticketFlag")));
-        subProductInfo.setTicketType(CommonUtil.objectParseInteger(params.get("ticketType")));
-        subProductInfo.setTotalStock(CommonUtil.objectParseInteger(params.get("totalStock")));
-        subProductInfo.setUseHoursLimit(CommonUtil.objectParseInteger(params.get("useHoursLimit")));
-        subProductInfo.setUseNotes(CommonUtil.objectParseString(params.get("useNotes")));
-        subProductInfo.setVoucherMsg(CommonUtil.objectParseString(params.get("voucherMsg")));
+        subProductInfo.setStock_limit(CommonUtil.objectParseInteger(params.get("stock_limit")));
+        subProductInfo.setTicket_dict(CommonUtil.objectParseInteger(params.get("ticket_dict")));
+        subProductInfo.setTicket_flag(CommonUtil.objectParseInteger(params.get("ticket_flag")));
+        subProductInfo.setTicket_msg(CommonUtil.objectParseString(params.get("ticket_msg")));
+        subProductInfo.setTicket_flag(CommonUtil.objectParseInteger(params.get("ticket_flag")));
+        subProductInfo.setTicket_type(CommonUtil.objectParseInteger(params.get("ticket_type")));
+        subProductInfo.setTotal_stock(CommonUtil.objectParseInteger(params.get("total_stock")));
+        subProductInfo.setUse_hours_limit(CommonUtil.objectParseInteger(params.get("use_hours_limit")));
+        subProductInfo.setUse_notes(CommonUtil.objectParseString(params.get("use_notes")));
+        subProductInfo.setVoucher_msg(CommonUtil.objectParseString(params.get("voucher_msg")));
         return subProductInfo;
     }
 
@@ -189,9 +189,9 @@ public class ProductController extends BaseController {
     @RequestMapping(value = "sale/list")
     @ResponseBody
     public Result<Paginator<ProductAndSubInfo>> searchCanSaleList(@RequestParam("ep_id") Integer epId,
-                                       @RequestParam("productName") String productName,
-                                       @RequestParam("isSupplier") Integer isSupplier,
-                                       @RequestParam("orderStr") Integer order,
+                                       @RequestParam("product_name") String productName,
+                                       @RequestParam("is_supplier") Integer isSupplier,
+                                       @RequestParam("order_str") Integer order,
                                        @RequestParam("record_start") Integer start,
                                        @RequestParam("record_count") Integer count) {
 
@@ -212,7 +212,7 @@ public class ProductController extends BaseController {
     @ResponseBody
     public Result<List<DistributionEpInfo>> searchDistributionEpInfo(
             @RequestParam("ep_id") Integer epId,
-            @RequestParam("productSubId") Integer productSubId,
+            @RequestParam("product_sub_id") Integer productSubId,
             @RequestParam("status") Integer distributionStatus) {
         switch (CommonUtil.objectParseInteger(distributionStatus)) {
             case ProductConstants.ProductDistributionState.HAD_DISTRIBUTE:
@@ -227,7 +227,7 @@ public class ProductController extends BaseController {
     @ResponseBody
     public Result<Paginator<DistributionGroupInfo>> searchDistributionGroupInfo (
         @RequestParam("ep_id") Integer epId,
-        @RequestParam("productSubId") Integer productSubId,
+        @RequestParam("product_sub_id") Integer productSubId,
         @RequestParam("status") Integer distributionStatus,
         @RequestParam("record_start") Integer start,
         @RequestParam("record_count") Integer count
@@ -293,9 +293,9 @@ public class ProductController extends BaseController {
     @RequestMapping(value = "other/list")
     @ResponseBody
     public Result<?> searchOtherProdiverProduct(@RequestParam("ep_id") Integer epId,
-                                                @RequestParam("productName") String productName,
-                                                @RequestParam("supplierId") Integer supplierId,
-                                                @RequestParam("productType") Integer productType,
+                                                @RequestParam("product_name") String productName,
+                                                @RequestParam("supplier_id") Integer supplierId,
+                                                @RequestParam("product_type") Integer productType,
                                                 @RequestParam("sale") Integer sale,
                                                 @RequestParam("record_start") Integer recordStart,
                                                 @RequestParam("record_count") Integer recordCount) {
@@ -304,13 +304,13 @@ public class ProductController extends BaseController {
 
     @RequestMapping(value = "other/price")
     @ResponseBody
-    public Result<Map> searchPlanSaleAllPrice(@RequestParam("ep_id") Integer epId, @RequestParam("batchId") Integer batchId) {
+    public Result<Map> searchPlanSaleAllPrice(@RequestParam("ep_id") Integer epId, @RequestParam("batch_id") Integer batchId) {
         return productService.searchPlanSaleAllPrice(epId, batchId);
     }
 
     @RequestMapping(value = "other/profit")
     @ResponseBody
-    public Result<Map> searchPlanSaleAllPriceAndProfit(@RequestParam("planSaleId") Integer id) {
+    public Result<Map> searchPlanSaleAllPriceAndProfit(@RequestParam("plan_sale_id") Integer id) {
         return productService.searchPlanSaleAllPriceAndProfit(id);
     }
 }

@@ -122,16 +122,16 @@ public class SaleController extends BaseController {
     public Result updateProfit(@RequestBody Map params) {
         //TODO 数据验证
         return productSalesPlanService.updatePlanSale(
-                CommonUtil.objectParseInteger(params.get("planSaleId")),
-                CommonUtil.objectParseInteger(params.get("priceType")),
-                CommonUtil.objectParseInteger(params.get("pricePercent")),
-                CommonUtil.objectParseInteger(params.get("pricePixed"))
+                CommonUtil.objectParseInteger(params.get("plan_sale_id")),
+                CommonUtil.objectParseInteger(params.get("price_type")),
+                CommonUtil.objectParseInteger(params.get("price_percent")),
+                CommonUtil.objectParseInteger(params.get("price_pixed"))
         );
     }
 
     @RequestMapping(value = "platform_ep/list")
     @ResponseBody
-    public Result<List<Map<String, Object>>> searchPlatformEp(@RequestParam("ep_id") Integer epId, @RequestParam("productSubId") Integer productSubId, @RequestParam("isDistributed") Integer isDistributed) {
+    public Result<List<Map<String, Object>>> searchPlatformEp(@RequestParam("ep_id") Integer epId, @RequestParam("product_sub_id") Integer productSubId, @RequestParam("is_distributed") Integer isDistributed) {
         return searchIsProviderEp(epId, productSubId, isDistributed);
     }
 
@@ -152,11 +152,11 @@ public class SaleController extends BaseController {
                 if (distributedEpsResult.get() != null)
                 for (DistributionEpInfo distributedEp : distributedEpsResult.get()) {
                     if (((Integer) ep.get("id")).equals(distributedEp.getId())) {
-                        ep.put("minPrice", distributedEp.getMinPrice());       // 最低售价
-                        ep.put("buyingPrice", distributedEp.getBuyingPrice());    // 进货价
-                        ep.put("pricePercent", distributedEp.getPricePercent());   // 加价百分比
-                        ep.put("pricePixed", distributedEp.getPricePixed());     // 固定加价金额
-                        ep.put("priceType", distributedEp.getPriceType());      // 加价类型
+                        ep.put("min_price", distributedEp.getMin_price());       // 最低售价
+                        ep.put("buying_price", distributedEp.getBuying_price());    // 进货价
+                        ep.put("price_percent", distributedEp.getPrice_percent());   // 加价百分比
+                        ep.put("price_pixed", distributedEp.getPrice_pixed());     // 固定加价金额
+                        ep.put("price_type", distributedEp.getPrice_type());      // 加价类型
                         returnList.add(ep);
                         break;
                     }
@@ -171,14 +171,14 @@ public class SaleController extends BaseController {
                 boolean flag = false;
                 if (distributedEpsResult.get() != null)
                 for (DistributionEpInfo distributedEp : distributedEpsResult.get()) {
-                    if (((Integer) ep.get("id")).equals(distributedEp.getId())) {
+                    if (ep.get("id").equals(distributedEp.getId())) {
                         flag = true;
                         break;
                     }
                 }
                 if (!flag) {
-                    ep.put("minPrice", pricesResult.get().get("min_sell_price"));       // 最低售价
-                    ep.put("buyingPrice", pricesResult.get().get("price"));    // 进货价
+                    ep.put("min_price", pricesResult.get().get("min_sell_price"));       // 最低售价
+                    ep.put("buying_price", pricesResult.get().get("price"));    // 进货价
                     returnList.add(ep);
                 }
             }
