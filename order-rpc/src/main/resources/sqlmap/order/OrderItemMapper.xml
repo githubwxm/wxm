@@ -685,4 +685,10 @@
         1=1
         <include refid="selectBySupplierPlatform_where" />
     </select>
+
+    <select id="selectCountByGroup" resultType="int">
+        SELECT COUNT(*)
+        FROM t_order_item
+        WHERE group_id = #{groupId}
+    </select>
 </mapper>
