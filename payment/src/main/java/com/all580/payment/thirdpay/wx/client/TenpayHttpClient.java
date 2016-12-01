@@ -282,8 +282,8 @@ public class TenpayHttpClient {
         ByteArrayInputStream inputStream = null;
         try {
             // 指定PKCS12的密码(商户ID)
-            inputStream = new ByteArrayInputStream(Base64.decodeBase64(wxProperties.getApiClientCertP12Str().getBytes()));
-            keyStore.load(inputStream, wxProperties.getMchId().toCharArray());
+            inputStream = new ByteArrayInputStream(Base64.decodeBase64(wxProperties.getApi_client_cert_p12_str().getBytes()));
+            keyStore.load(inputStream, wxProperties.getMch_id().toCharArray());
         } catch (Exception e) {
             logger.error("微信退款加载证书出错，" + e.getMessage(), e);
         } finally {
@@ -291,7 +291,7 @@ public class TenpayHttpClient {
                 inputStream.close();
         }
         SSLContext sslContext = SSLContexts.custom()
-                .loadKeyMaterial(keyStore, wxProperties.getMchId().toCharArray()).build();
+                .loadKeyMaterial(keyStore, wxProperties.getMch_id().toCharArray()).build();
 
         if ("POST".equals(this.method.toUpperCase())) {
             String url = HttpClientUtil.getURL(this.reqContent);

@@ -34,8 +34,8 @@ public interface EpPaymentConfMapper {
      * @param paymentType 支付类型
      * @return 记录数
      */
-    int countByEpIdAndType(@Param("coreEpId") Integer coreEpId, @Param("paymentType") Integer paymentType);
+    int countByEpIdAndType(@Param("core_ep_id") Integer coreEpId, @Param("payment_type") Integer paymentType);
 
-    EpPaymentConf getByEpIdAndType(@Param("coreEpId") Integer coreEpId, @Param("paymentType") Integer paymentType);
+    EpPaymentConf getByEpIdAndType(@Param("core_ep_id") Integer coreEpId, @Param("payment_type") Integer paymentType);
 
 }

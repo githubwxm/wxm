@@ -5,9 +5,9 @@ import java.io.Serializable;
 public class PaymentReq implements Serializable {
     private Integer id;
 
-    private Long ordId;
+    private Long ord_id;
 
-    private Long serialNo;
+    private Long serial_no;
 
     private String data;
 
@@ -21,20 +21,20 @@ public class PaymentReq implements Serializable {
         this.id = id;
     }
 
-    public Long getOrdId() {
-        return ordId;
+    public Long getOrd_id() {
+        return ord_id;
     }
 
-    public void setOrdId(Long ordId) {
-        this.ordId = ordId;
+    public void setOrd_id(Long ord_id) {
+        this.ord_id = ord_id;
     }
 
-    public Long getSerialNo() {
-        return serialNo;
+    public Long getSerial_no() {
+        return serial_no;
     }
 
-    public void setSerialNo(Long serialNo) {
-        this.serialNo = serialNo;
+    public void setSerial_no(Long serial_no) {
+        this.serial_no = serial_no;
     }
 
     public String getData() {

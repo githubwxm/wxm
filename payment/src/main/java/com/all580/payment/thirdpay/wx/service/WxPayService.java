@@ -38,8 +38,8 @@ public class WxPayService {
         WxProperties wxProperties = wxPropertiesMap.get(coreEpId);
         // payCallbackUrl = "http://core.py.ngrok.wendal.cn/no_auth_api/callback/wx/payment";
         UnifiedOrderReq req = new UnifiedOrderReq();
-        req.setAppid(wxProperties.getAppId());
-        req.setMch_id(wxProperties.getMchId());
+        req.setAppid(wxProperties.getApp_id());
+        req.setMch_id(wxProperties.getMch_id());
         req.setNonce_str(WXUtil.getNonceStr());
         req.setDevice_info("");
         req.setTotal_fee(String.valueOf(params.get("totalFee")));
@@ -71,10 +71,10 @@ public class WxPayService {
         req.setTotal_fee((Integer) params.get("totalFee"));
         req.setRefund_fee((Integer) params.get("refundFee"));
         req.setRefund_fee_type("CNY");
-        req.setAppid(wxProperties.getAppId());
-        req.setMch_id(wxProperties.getMchId());
+        req.setAppid(wxProperties.getApp_id());
+        req.setMch_id(wxProperties.getMch_id());
         req.setNonce_str(WXUtil.getNonceStr());
-        req.setOp_user_id(wxProperties.getMchId());
+        req.setOp_user_id(wxProperties.getMch_id());
         req.setDevice_info("");
 
         return this.request(ConstantUtil.REFUND, req, RefundRsp.class, true, wxProperties);
@@ -84,7 +84,7 @@ public class WxPayService {
         Result<Map<String, String>> result = new Result<>();
         WxProperties wxProperties = wxPropertiesMap.get(coreEpId);
         ResponseHandler resHandler = new ResponseHandler(params);
-        resHandler.setKey(wxProperties.getMchKey());
+        resHandler.setKey(wxProperties.getMch_key());
         Map<String, String> rsp = new HashMap<>();
         // 判断签名
         if (resHandler.isTenpaySign()) {
@@ -124,7 +124,7 @@ public class WxPayService {
 
         // 通过通知ID查询，确保通知来至财付通
         queryReq.init();
-        queryReq.setKey(wxProperties.getMchKey());
+        queryReq.setKey(wxProperties.getMch_key());
         queryReq.setGateUrl(url);
 
         Class clss = req.getClass();
@@ -219,8 +219,8 @@ public class WxPayService {
 
     public synchronized void initProperties(int coreEpId, String confData, String certP12) {
         WxProperties wxProperties = JsonUtils.fromJson(confData, WxProperties.class);
-        wxProperties.setCoreEpId(coreEpId);
-        wxProperties.setApiClientCertP12Str(certP12);
+        wxProperties.setCore_ep_id(coreEpId);
+        wxProperties.setApi_client_cert_p12_str(certP12);
         wxPropertiesMap.put(coreEpId, wxProperties);
     }
 }

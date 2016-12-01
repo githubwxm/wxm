@@ -9,7 +9,7 @@ package com.all580.payment.thirdpay.ali.service;
 public class AliPayProperties {
     private String partner; //签约的支付宝账号对应的支付宝唯一用户号。
     private String key; // 秘钥
-    private String sellerEmail;//卖家支付宝账号。
+    private String seller_email;//卖家支付宝账号。
 
     public String getKey() {
         return key;
@@ -27,11 +27,11 @@ public class AliPayProperties {
         this.partner = partner;
     }
 
-    public String getSellerEmail() {
-        return sellerEmail;
+    public String getSeller_email() {
+        return seller_email;
     }
 
-    public void setSellerEmail(String sellerEmail) {
-        this.sellerEmail = sellerEmail;
+    public void setSeller_email(String seller_email) {
+        this.seller_email = seller_email;
     }
 }

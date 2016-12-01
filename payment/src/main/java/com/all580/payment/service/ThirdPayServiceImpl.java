@@ -67,7 +67,7 @@ public class ThirdPayServiceImpl implements ThirdPayService {
     /* 获取aliPayService前，初始化平台商的账号配置信息 */
     private AliPayService getAliPayService(int coreEpId, int payType) {
         if (!aliPayService.isPropertiesInit(coreEpId)) {
-            String confData = getConf(coreEpId, payType).getConfData();
+            String confData = getConf(coreEpId, payType).getConf_data();
             aliPayService.initProperties(coreEpId, confData);
         }
         return aliPayService;
@@ -77,7 +77,7 @@ public class ThirdPayServiceImpl implements ThirdPayService {
     private WxPayService getWxPayService(int coreEpId, int payType) {
         if (!wxPayService.isPropertiesInit(coreEpId)) {
             EpPaymentConf epPaymentConf = getConf(coreEpId, payType);
-            wxPayService.initProperties(coreEpId, epPaymentConf.getConfData(), epPaymentConf.getCertP12());
+            wxPayService.initProperties(coreEpId, epPaymentConf.getConf_data(), epPaymentConf.getCert_p12());
         }
         return wxPayService;
     }

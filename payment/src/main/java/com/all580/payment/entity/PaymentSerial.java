@@ -6,21 +6,21 @@ import java.util.Date;
 public class PaymentSerial implements Serializable {
     private Integer id;
 
-    private String localSerialNo;
+    private String local_serial_no;
 
-    private String remoteSerialNo;
+    private String remote_serial_no;
 
-    private Integer payAmount;
+    private Integer pay_amount;
 
-    private String payTime;
+    private String pay_time;
 
-    private Integer refId;
+    private Integer ref_id;
 
-    private Integer refType;
+    private Integer ref_type;
 
-    private Integer paymentType;
+    private Integer payment_type;
 
-    private Date createTime;
+    private Date create_time;
 
     private static final long serialVersionUID = 1L;
 
@@ -32,67 +32,67 @@ public class PaymentSerial implements Serializable {
         this.id = id;
     }
 
-    public String getLocalSerialNo() {
-        return localSerialNo;
+    public String getLocal_serial_no() {
+        return local_serial_no;
     }
 
-    public void setLocalSerialNo(String localSerialNo) {
-        this.localSerialNo = localSerialNo == null ? null : localSerialNo.trim();
+    public void setLocal_serial_no(String local_serial_no) {
+        this.local_serial_no = local_serial_no;
     }
 
-    public String getRemoteSerialNo() {
-        return remoteSerialNo;
+    public String getRemote_serial_no() {
+        return remote_serial_no;
     }
 
-    public void setRemoteSerialNo(String remoteSerialNo) {
-        this.remoteSerialNo = remoteSerialNo == null ? null : remoteSerialNo.trim();
+    public void setRemote_serial_no(String remote_serial_no) {
+        this.remote_serial_no = remote_serial_no;
     }
 
-    public Integer getPayAmount() {
-        return payAmount;
+    public Integer getPay_amount() {
+        return pay_amount;
     }
 
-    public void setPayAmount(Integer payAmount) {
-        this.payAmount = payAmount;
+    public void setPay_amount(Integer pay_amount) {
+        this.pay_amount = pay_amount;
     }
 
-    public String getPayTime() {
-        return payTime;
+    public String getPay_time() {
+        return pay_time;
     }
 
-    public void setPayTime(String payTime) {
-        this.payTime = payTime == null ? null : payTime.trim();
+    public void setPay_time(String pay_time) {
+        this.pay_time = pay_time;
     }
 
-    public Integer getRefId() {
-        return refId;
+    public Integer getRef_id() {
+        return ref_id;
     }
 
-    public void setRefId(Integer refId) {
-        this.refId = refId;
+    public void setRef_id(Integer ref_id) {
+        this.ref_id = ref_id;
     }
 
-    public Integer getRefType() {
-        return refType;
+    public Integer getRef_type() {
+        return ref_type;
     }
 
-    public void setRefType(Integer refType) {
-        this.refType = refType;
+    public void setRef_type(Integer ref_type) {
+        this.ref_type = ref_type;
     }
 
-    public Integer getPaymentType() {
-        return paymentType;
+    public Integer getPayment_type() {
+        return payment_type;
     }
 
-    public void setPaymentType(Integer paymentType) {
-        this.paymentType = paymentType;
+    public void setPayment_type(Integer payment_type) {
+        this.payment_type = payment_type;
     }
 
-    public Date getCreateTime() {
-        return createTime;
+    public Date getCreate_time() {
+        return create_time;
     }
 
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
+    public void setCreate_time(Date create_time) {
+        this.create_time = create_time;
     }
 }

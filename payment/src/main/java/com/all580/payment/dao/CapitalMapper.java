@@ -15,10 +15,10 @@ public interface CapitalMapper {
     int insertSelective(Capital record);
 
     Capital selectByPrimaryKey(Integer id);
-    Capital selectByEpIdAndCoreEpId(@Param("epId")Integer epId, @Param("coreEpId")Integer coreEpId);
+    Capital selectByEpIdAndCoreEpId(@Param("ep_id")Integer epId, @Param("core_ep_id")Integer coreEpId);
 
     List<Capital> selectForUpdateByEpList(@Param("changeInfos") List<BalanceChangeInfo> changeInfos);
-    List<Map<String,String>> listByEpIdAndCoreEpId(@Param("epIdList") List<Integer> epIdList,@Param("coreEpId")
+    List<Map<String,String>> listByEpIdAndCoreEpId(@Param("epIdList") List<Integer> epIdList,@Param("core_ep_id")
                                                    Integer coreEpId);
 
     int updateByPrimaryKeySelective(Capital record);

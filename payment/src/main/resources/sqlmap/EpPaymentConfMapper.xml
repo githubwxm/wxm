@@ -3,11 +3,11 @@
 <mapper namespace="com.all580.payment.dao.EpPaymentConfMapper">
     <resultMap id="BaseResultMap" type="com.all580.payment.entity.EpPaymentConf">
         <id column="id" property="id" jdbcType="INTEGER"/>
-        <result column="core_ep_id" property="coreEpId" jdbcType="INTEGER"/>
-        <result column="payment_type" property="paymentType" jdbcType="INTEGER"/>
-        <result column="conf_data" property="confData" jdbcType="VARCHAR"/>
+        <result column="core_ep_id" property="core_ep_id" jdbcType="INTEGER"/>
+        <result column="payment_type" property="payment_type" jdbcType="INTEGER"/>
+        <result column="conf_data" property="conf_data" jdbcType="VARCHAR"/>
         <result column="status" property="status" jdbcType="INTEGER"/>
-        <result column="cert_p12" property="certP12" jdbcType="VARCHAR"/>
+        <result column="cert_p12" property="cert_p12" jdbcType="VARCHAR"/>
     </resultMap>
     <sql id="Base_Column_List">
         id, core_ep_id, payment_type, conf_data, status,cert_p12,update_time
@@ -28,8 +28,8 @@
         </selectKey>
         insert into t_core_ep_payment_conf (id, core_ep_id, payment_type,
         conf_data, status,cert_p12)
-        values (#{id,jdbcType=INTEGER}, #{coreEpId,jdbcType=INTEGER}, #{paymentType,jdbcType=INTEGER},
-        #{confData,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER},#{certP12,jdbcType=VARCHAR})
+        values (#{id,jdbcType=INTEGER}, #{core_ep_id,jdbcType=INTEGER}, #{payment_type,jdbcType=INTEGER},
+        #{conf_data,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER},#{cert_p12,jdbcType=VARCHAR})
     </insert>
     <insert id="insertSelective" parameterType="com.all580.payment.entity.EpPaymentConf">
         <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
@@ -38,57 +38,57 @@
         insert into t_core_ep_payment_conf
         <trim prefix="(" suffix=")" suffixOverrides=",">
             id,
-            <if test="coreEpId != null">
+            <if test="core_ep_id != null">
                 core_ep_id,
             </if>
-            <if test="paymentType != null">
+            <if test="payment_type != null">
                 payment_type,
             </if>
-            <if test="confData != null">
+            <if test="conf_data != null">
                 conf_data,
             </if>
             <if test="status != null">
                 status,
             </if>
-            <if test="certP12 != null">
+            <if test="cert_p12 != null">
                 cert_p12,
             </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             #{id,jdbcType=INTEGER},
-            <if test="coreEpId != null">
-                #{coreEpId,jdbcType=INTEGER},
+            <if test="core_ep_id != null">
+                #{core_ep_id,jdbcType=INTEGER},
             </if>
-            <if test="paymentType != null">
-                #{paymentType,jdbcType=INTEGER},
+            <if test="payment_type != null">
+                #{payment_type,jdbcType=INTEGER},
             </if>
-            <if test="confData != null">
-                #{confData,jdbcType=VARCHAR},
+            <if test="conf_data != null">
+                #{conf_data,jdbcType=VARCHAR},
             </if>
             <if test="status != null">
                 #{status,jdbcType=INTEGER},
             </if>
-            <if test="certP12 != null">
-                #{certP12,jdbcType=VARCHAR},
+            <if test="cert_p12 != null">
+                #{cert_p12,jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>
     <update id="updateByPrimaryKeySelective" parameterType="com.all580.payment.entity.EpPaymentConf">
         update t_core_ep_payment_conf
         <set>
-            <if test="coreEpId != null">
-                core_ep_id = #{coreEpId,jdbcType=INTEGER},
+            <if test="core_ep_id != null">
+                core_ep_id = #{core_ep_id,jdbcType=INTEGER},
             </if>
-            <!--<if test="paymentType != null">-->
-                <!--payment_type = #{paymentType,jdbcType=INTEGER},-->
+            <!--<if test="payment_type != null">-->
+                <!--payment_type = #{payment_type,jdbcType=INTEGER},-->
             <!--</if>-->
-            <if test="confData != null">
-                conf_data = #{confData,jdbcType=VARCHAR},
+            <if test="conf_data != null">
+                conf_data = #{conf_data,jdbcType=VARCHAR},
             </if>
             <if test="status != null">
                 status = #{status,jdbcType=INTEGER},
             </if>
-            <if test="certP12 != null">
+            <if test="cert_p12 != null">
                 cert_p12 = #{status,jdbcType=VARCHAR},
             </if>
         </set>
@@ -96,9 +96,9 @@
     </update>
     <update id="updateByPrimaryKey" parameterType="com.all580.payment.entity.EpPaymentConf">
         update t_core_ep_payment_conf
-        set core_ep_id = #{coreEpId,jdbcType=INTEGER},
-          payment_type = #{paymentType,jdbcType=INTEGER},
-          conf_data = #{confData,jdbcType=VARCHAR},
+        set core_ep_id = #{core_ep_id,jdbcType=INTEGER},
+          payment_type = #{payment_type,jdbcType=INTEGER},
+          conf_data = #{conf_data,jdbcType=VARCHAR},
           status = #{status,jdbcType=INTEGER}
         cert_p12 = #{status,jdbcType=VARCHAR}
         where id = #{id,jdbcType=INTEGER}
@@ -113,13 +113,13 @@
 
     <select id="countByEpIdAndType" resultType="java.lang.Integer">
         select count(1)  from t_core_ep_payment_conf
-        where core_ep_id=#{coreEpId,jdbcType=INTEGER} and payment_type=#{paymentType,jdbcType=INTEGER}
+        where core_ep_id=#{core_ep_id,jdbcType=INTEGER} and payment_type=#{payment_type,jdbcType=INTEGER}
     </select>
 
     <select id="getByEpIdAndType" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from t_core_ep_payment_conf
-        where core_ep_id=#{coreEpId,jdbcType=INTEGER} and payment_type=#{paymentType,jdbcType=INTEGER}
+        where core_ep_id=#{core_ep_id,jdbcType=INTEGER} and payment_type=#{payment_type,jdbcType=INTEGER}
     </select>
 </mapper>

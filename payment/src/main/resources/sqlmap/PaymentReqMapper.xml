@@ -3,8 +3,8 @@
 <mapper namespace="com.all580.payment.dao.PaymentReqMapper">
     <resultMap id="BaseResultMap" type="com.all580.payment.entity.PaymentReq">
         <id column="id" jdbcType="INTEGER" property="id"/>
-        <result column="ord_id" jdbcType="BIGINT" property="ordId"/>
-        <result column="serial_no" jdbcType="BIGINT" property="serialNo"/>
+        <result column="ord_id" jdbcType="BIGINT" property="ord_id"/>
+        <result column="serial_no" jdbcType="BIGINT" property="serial_no"/>
         <result column="data" jdbcType="VARCHAR" property="data"/>
     </resultMap>
     <sql id="Base_Column_List">
@@ -26,7 +26,7 @@
         </selectKey>
         insert into t_payment_req (id, ord_id, serial_no,
         data)
-        values (#{id,jdbcType=INTEGER}, #{ordId,jdbcType=BIGINT}, #{serialNo,jdbcType=BIGINT},
+        values (#{id,jdbcType=INTEGER}, #{ord_id,jdbcType=BIGINT}, #{serial_no,jdbcType=BIGINT},
         #{data,jdbcType=VARCHAR})
     </insert>
     <insert id="insertSelective" parameterType="com.all580.payment.entity.PaymentReq">
@@ -36,10 +36,10 @@
         insert into t_payment_req
         <trim prefix="(" suffix=")" suffixOverrides=",">
             id,
-            <if test="ordId != null">
+            <if test="ord_id != null">
                 ord_id,
             </if>
-            <if test="serialNo != null">
+            <if test="serial_no != null">
                 serial_no,
             </if>
             <if test="data != null">
@@ -48,11 +48,11 @@
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             #{id,jdbcType=INTEGER},
-            <if test="ordId != null">
-                #{ordId,jdbcType=BIGINT},
+            <if test="ord_id != null">
+                #{ord_id,jdbcType=BIGINT},
             </if>
-            <if test="serialNo != null">
-                #{serialNo,jdbcType=BIGINT},
+            <if test="serial_no != null">
+                #{serial_no,jdbcType=BIGINT},
             </if>
             <if test="data != null">
                 #{data,jdbcType=VARCHAR},
@@ -62,11 +62,11 @@
     <update id="updateByPrimaryKeySelective" parameterType="com.all580.payment.entity.PaymentReq">
         update t_payment_req
         <set>
-            <if test="ordId != null">
-                ord_id = #{ordId,jdbcType=BIGINT},
+            <if test="ord_id != null">
+                ord_id = #{ord_id,jdbcType=BIGINT},
             </if>
-            <if test="serialNo != null">
-                serial_no = #{serialNo,jdbcType=BIGINT},
+            <if test="serial_no != null">
+                serial_no = #{serial_no,jdbcType=BIGINT},
             </if>
             <if test="data != null">
                 data = #{data,jdbcType=VARCHAR},
@@ -76,8 +76,8 @@
     </update>
     <update id="updateByPrimaryKey" parameterType="com.all580.payment.entity.PaymentReq">
     update t_payment_req
-    set ord_id = #{ordId,jdbcType=BIGINT},
-      serial_no = #{serialNo,jdbcType=BIGINT},
+    set ord_id = #{ord_id,jdbcType=BIGINT},
+      serial_no = #{serial_no,jdbcType=BIGINT},
       data = #{data,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>

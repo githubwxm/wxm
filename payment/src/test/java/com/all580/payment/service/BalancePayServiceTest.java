@@ -26,16 +26,16 @@ public class BalancePayServiceTest extends BaseTest {
     public void changeBalancesForAddOrdTest() {
         List<BalanceChangeInfo> balanceChangeInfoList = new ArrayList<>();
         BalanceChangeInfo changeInfo = new BalanceChangeInfo();
-        changeInfo.setEpId(10);
-        changeInfo.setCoreEpId(100);
+        changeInfo.setEp_id(10);
+        changeInfo.setCore_ep_id(100);
         changeInfo.setBalance(10);
-        changeInfo.setCanCash(10);
+        changeInfo.setCan_cash(10);
         balanceChangeInfoList.add(changeInfo);
         BalanceChangeInfo changeInfo2 = new BalanceChangeInfo();
-        changeInfo2.setEpId(20);
-        changeInfo2.setCoreEpId(100);
+        changeInfo2.setEp_id(20);
+        changeInfo2.setCore_ep_id(100);
         changeInfo2.setBalance(10);
-        changeInfo2.setCanCash(10);
+        changeInfo2.setCan_cash(10);
         balanceChangeInfoList.add(changeInfo2);
         Integer type = 7001;
         String serialNum = "ord-456";

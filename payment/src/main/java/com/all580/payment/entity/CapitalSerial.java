@@ -6,21 +6,21 @@ import java.util.Date;
 public class CapitalSerial implements Serializable {
     private Integer id;
 
-    private String refId;
+    private String ref_id;
 
-    private Integer refType;
+    private Integer ref_type;
 
-    private Integer capitalId;
+    private Integer capital_id;
 
-    private Integer oldBalance;
+    private Integer old_balance;
 
-    private Integer oldCanCash;
+    private Integer old_can_cash;
 
-    private Integer newBalance;
+    private Integer new_balance;
 
-    private Integer newCanCash;
+    private Integer new_can_cash;
 
-    private Date createTime;
+    private Date create_time;
 
     private static final long serialVersionUID = 1L;
 
@@ -32,67 +32,67 @@ public class CapitalSerial implements Serializable {
         this.id = id;
     }
 
-    public String getRefId() {
-        return refId;
+    public String getRef_id() {
+        return ref_id;
     }
 
-    public void setRefId(String refId) {
-        this.refId = refId == null ? null : refId.trim();
+    public void setRef_id(String ref_id) {
+        this.ref_id = ref_id;
     }
 
-    public Integer getRefType() {
-        return refType;
+    public Integer getRef_type() {
+        return ref_type;
     }
 
-    public void setRefType(Integer refType) {
-        this.refType = refType;
+    public void setRef_type(Integer ref_type) {
+        this.ref_type = ref_type;
     }
 
-    public Integer getCapitalId() {
-        return capitalId;
+    public Integer getCapital_id() {
+        return capital_id;
     }
 
-    public void setCapitalId(Integer capitalId) {
-        this.capitalId = capitalId;
+    public void setCapital_id(Integer capital_id) {
+        this.capital_id = capital_id;
     }
 
-    public Integer getOldBalance() {
-        return oldBalance;
+    public Integer getOld_balance() {
+        return old_balance;
     }
 
-    public void setOldBalance(Integer oldBalance) {
-        this.oldBalance = oldBalance;
+    public void setOld_balance(Integer old_balance) {
+        this.old_balance = old_balance;
     }
 
-    public Integer getOldCanCash() {
-        return oldCanCash;
+    public Integer getOld_can_cash() {
+        return old_can_cash;
     }
 
-    public void setOldCanCash(Integer oldCanCash) {
-        this.oldCanCash = oldCanCash;
+    public void setOld_can_cash(Integer old_can_cash) {
+        this.old_can_cash = old_can_cash;
     }
 
-    public Integer getNewBalance() {
-        return newBalance;
+    public Integer getNew_balance() {
+        return new_balance;
     }
 
-    public void setNewBalance(Integer newBalance) {
-        this.newBalance = newBalance;
+    public void setNew_balance(Integer new_balance) {
+        this.new_balance = new_balance;
     }
 
-    public Integer getNewCanCash() {
-        return newCanCash;
+    public Integer getNew_can_cash() {
+        return new_can_cash;
     }
 
-    public void setNewCanCash(Integer newCanCash) {
-        this.newCanCash = newCanCash;
+    public void setNew_can_cash(Integer new_can_cash) {
+        this.new_can_cash = new_can_cash;
     }
 
-    public Date getCreateTime() {
-        return createTime;
+    public Date getCreate_time() {
+        return create_time;
     }
 
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
+    public void setCreate_time(Date create_time) {
+        this.create_time = create_time;
     }
 }

@@ -128,7 +128,7 @@ public class AliPayService {
         sParaTemp.put("partner", aliPayProperties.getPartner());
         sParaTemp.put("_input_charset", AlipayConfig.input_charset);
         sParaTemp.put("notify_url", notify_url);
-        sParaTemp.put("seller_email", aliPayProperties.getSellerEmail());
+        sParaTemp.put("seller_email", aliPayProperties.getSeller_email());
         sParaTemp.put("refund_date", DateFormatUtils.parseDateToDatetimeString(new Date()));
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
         sParaTemp.put("batch_no", sdf.format(new Date()) + params.get("serialNum"));

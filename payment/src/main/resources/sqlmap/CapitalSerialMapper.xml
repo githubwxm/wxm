@@ -3,14 +3,14 @@
 <mapper namespace="com.all580.payment.dao.CapitalSerialMapper">
     <resultMap id="BaseResultMap" type="com.all580.payment.entity.CapitalSerial">
         <id column="id" jdbcType="INTEGER" property="id"/>
-        <result column="ref_id" jdbcType="VARCHAR" property="refId"/>
-        <result column="ref_type" jdbcType="INTEGER" property="refType"/>
-        <result column="capital_id" jdbcType="INTEGER" property="capitalId"/>
-        <result column="old_balance" jdbcType="INTEGER" property="oldBalance"/>
-        <result column="old_can_cash" jdbcType="INTEGER" property="oldCanCash"/>
-        <result column="new_balance" jdbcType="INTEGER" property="newBalance"/>
-        <result column="new_can_cash" jdbcType="INTEGER" property="newCanCash"/>
-        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="ref_id" jdbcType="VARCHAR" property="ref_id"/>
+        <result column="ref_type" jdbcType="INTEGER" property="ref_type"/>
+        <result column="capital_id" jdbcType="INTEGER" property="capital_id"/>
+        <result column="old_balance" jdbcType="INTEGER" property="old_balance"/>
+        <result column="old_can_cash" jdbcType="INTEGER" property="old_can_cash"/>
+        <result column="new_balance" jdbcType="INTEGER" property="new_balance"/>
+        <result column="new_can_cash" jdbcType="INTEGER" property="new_can_cash"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="create_time"/>
     </resultMap>
     <sql id="Base_Column_List">
     id, ref_id, ref_type, capital_id, old_balance, old_can_cash, new_balance, new_can_cash, 
@@ -34,9 +34,9 @@
         capital_id, old_balance, old_can_cash,
         new_balance, new_can_cash, create_time
         )
-        values (#{id,jdbcType=INTEGER}, #{refId,jdbcType=VARCHAR}, #{refType,jdbcType=INTEGER},
-        #{capitalId,jdbcType=INTEGER}, #{oldBalance,jdbcType=INTEGER}, #{oldCanCash,jdbcType=INTEGER},
-        #{newBalance,jdbcType=INTEGER}, #{newCanCash,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}
+        values (#{id,jdbcType=INTEGER}, #{ref_id,jdbcType=VARCHAR}, #{ref_type,jdbcType=INTEGER},
+        #{capital_id,jdbcType=INTEGER}, #{old_balance,jdbcType=INTEGER}, #{old_can_cash,jdbcType=INTEGER},
+        #{new_balance,jdbcType=INTEGER}, #{new_can_cash,jdbcType=INTEGER}, #{create_time,jdbcType=TIMESTAMP}
         )
     </insert>
     <insert id="insertSelective" parameterType="com.all580.payment.entity.CapitalSerial">
@@ -46,99 +46,99 @@
         insert into t_capital_serial
         <trim prefix="(" suffix=")" suffixOverrides=",">
             id,
-            <if test="refId != null">
+            <if test="ref_id != null">
                 ref_id,
             </if>
-            <if test="refType != null">
+            <if test="ref_type != null">
                 ref_type,
             </if>
-            <if test="capitalId != null">
+            <if test="capital_id != null">
                 capital_id,
             </if>
-            <if test="oldBalance != null">
+            <if test="old_balance != null">
                 old_balance,
             </if>
-            <if test="oldCanCash != null">
+            <if test="old_can_cash != null">
                 old_can_cash,
             </if>
-            <if test="newBalance != null">
+            <if test="new_balance != null">
                 new_balance,
             </if>
-            <if test="newCanCash != null">
+            <if test="new_can_cash != null">
                 new_can_cash,
             </if>
-            <if test="createTime != null">
+            <if test="create_time != null">
                 create_time,
             </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             #{id,jdbcType=INTEGER},
-            <if test="refId != null">
-                #{refId,jdbcType=VARCHAR},
+            <if test="ref_id != null">
+                #{ref_id,jdbcType=VARCHAR},
             </if>
-            <if test="refType != null">
-                #{refType,jdbcType=INTEGER},
+            <if test="ref_type != null">
+                #{ref_type,jdbcType=INTEGER},
             </if>
-            <if test="capitalId != null">
-                #{capitalId,jdbcType=INTEGER},
+            <if test="capital_id != null">
+                #{capital_id,jdbcType=INTEGER},
             </if>
-            <if test="oldBalance != null">
-                #{oldBalance,jdbcType=INTEGER},
+            <if test="old_balance != null">
+                #{old_balance,jdbcType=INTEGER},
             </if>
-            <if test="oldCanCash != null">
-                #{oldCanCash,jdbcType=INTEGER},
+            <if test="old_can_cash != null">
+                #{old_can_cash,jdbcType=INTEGER},
             </if>
-            <if test="newBalance != null">
-                #{newBalance,jdbcType=INTEGER},
+            <if test="new_balance != null">
+                #{new_balance,jdbcType=INTEGER},
             </if>
-            <if test="newCanCash != null">
-                #{newCanCash,jdbcType=INTEGER},
+            <if test="new_can_cash != null">
+                #{new_can_cash,jdbcType=INTEGER},
             </if>
-            <if test="createTime != null">
-                #{createTime,jdbcType=TIMESTAMP},
+            <if test="create_time != null">
+                #{create_time,jdbcType=TIMESTAMP},
             </if>
         </trim>
     </insert>
     <update id="updateByPrimaryKeySelective" parameterType="com.all580.payment.entity.CapitalSerial">
         update t_capital_serial
         <set>
-            <if test="refId != null">
-                ref_id = #{refId,jdbcType=VARCHAR},
+            <if test="ref_id != null">
+                ref_id = #{ref_id,jdbcType=VARCHAR},
             </if>
-            <if test="refType != null">
-                ref_type = #{refType,jdbcType=INTEGER},
+            <if test="ref_type != null">
+                ref_type = #{ref_type,jdbcType=INTEGER},
             </if>
-            <if test="capitalId != null">
-                capital_id = #{capitalId,jdbcType=INTEGER},
+            <if test="capital_id != null">
+                capital_id = #{capital_id,jdbcType=INTEGER},
             </if>
-            <if test="oldBalance != null">
-                old_balance = #{oldBalance,jdbcType=INTEGER},
+            <if test="old_balance != null">
+                old_balance = #{old_balance,jdbcType=INTEGER},
             </if>
-            <if test="oldCanCash != null">
-                old_can_cash = #{oldCanCash,jdbcType=INTEGER},
+            <if test="old_can_cash != null">
+                old_can_cash = #{old_can_cash,jdbcType=INTEGER},
             </if>
-            <if test="newBalance != null">
-                new_balance = #{newBalance,jdbcType=INTEGER},
+            <if test="new_balance != null">
+                new_balance = #{new_balance,jdbcType=INTEGER},
             </if>
-            <if test="newCanCash != null">
-                new_can_cash = #{newCanCash,jdbcType=INTEGER},
+            <if test="new_can_cash != null">
+                new_can_cash = #{new_can_cash,jdbcType=INTEGER},
             </if>
-            <if test="createTime != null">
-                create_time = #{createTime,jdbcType=TIMESTAMP},
+            <if test="create_time != null">
+                create_time = #{create_time,jdbcType=TIMESTAMP},
             </if>
         </set>
         where id = #{id,jdbcType=INTEGER}
     </update>
     <update id="updateByPrimaryKey" parameterType="com.all580.payment.entity.CapitalSerial">
     update t_capital_serial
-    set ref_id = #{refId,jdbcType=VARCHAR},
-      ref_type = #{refType,jdbcType=INTEGER},
-      capital_id = #{capitalId,jdbcType=INTEGER},
-      old_balance = #{oldBalance,jdbcType=INTEGER},
-      old_can_cash = #{oldCanCash,jdbcType=INTEGER},
-      new_balance = #{newBalance,jdbcType=INTEGER},
-      new_can_cash = #{newCanCash,jdbcType=INTEGER},
-      create_time = #{createTime,jdbcType=TIMESTAMP}
+    set ref_id = #{ref_id,jdbcType=VARCHAR},
+      ref_type = #{ref_type,jdbcType=INTEGER},
+      capital_id = #{capital_id,jdbcType=INTEGER},
+      old_balance = #{old_balance,jdbcType=INTEGER},
+      old_can_cash = #{old_can_cash,jdbcType=INTEGER},
+      new_balance = #{new_balance,jdbcType=INTEGER},
+      new_can_cash = #{new_can_cash,jdbcType=INTEGER},
+      create_time = #{create_time,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=INTEGER}
   </update>
 
@@ -151,51 +151,51 @@
         new_balance, new_can_cash)
         values
         <foreach collection="records" index="index" item="item" separator=",">
-            (#{item.id}, #{item.refId}, #{item.refType},#{item.capitalId}, #{item.oldBalance}, #{item.oldCanCash},
-            #{item.newBalance}, #{item.newCanCash})
+            (#{item.id}, #{item.ref_id}, #{item.ref_type},#{item.capital_id}, #{item.old_balance}, #{item.old_can_cash},
+            #{item.new_balance}, #{item.new_can_cash})
         </foreach>
     </insert>
 
     <select id="listByCapitalId" parameterType="java.lang.Integer" resultType="map">
         select * from(
         select
-        c.id,c.ref_id,c.ref_type, c.create_time as createTime,c.new_balance-c.old_balance as balanceAdd,c.new_can_cash-c.old_can_cash as
-        canCashAdd,p.name as changeType ,new_balance , CASE WHEN c.new_balance-c.old_balance >0 THEN '收入' else '支出' end as balanceSatatus
+        c.id,c.ref_id,c.ref_type, c.create_time as create_time,c.new_balance-c.old_balance as balance_add,c.new_can_cash-c.old_can_cash as
+        can_cash_add,p.name as change_type ,new_balance , CASE WHEN c.new_balance-c.old_balance >0 THEN '收入' else '支出' end as balance_status
         from t_capital_serial c
         LEFT JOIN t_payment_param p on c.ref_type=p.id
-        where capital_id = #{capitalId,jdbcType=INTEGER}
+        where capital_id = #{capital_id,jdbcType=INTEGER}
         ) f  where 1=1
-        <if test="balanceSatatus != null  and balanceSatatus != ''">
-          and   f.balanceSatatus= #{balanceSatatus}
+        <if test="balance_satatus != null  and balance_satatus != ''">
+          and   f.balance_satatus= #{balance_satatus}
         </if>
-        <if test="startDate != null and endDate != null ">
-            and createTime between  #{startDate} and #{endDate}
+        <if test="start_date != null and end_date != null ">
+            and create_time between  #{start_date} and #{end_date}
         </if>
         <if test="ref_id != null  and ref_id != ''">
             and   ref_id=#{ref_id}
         </if>
         order by id desc
-        <if test="startRecord != null">
-            limit #{startRecord}
+        <if test="start_record != null">
+            limit #{start_record}
         </if>
-        <if test="maxRecords != null">
-            , #{maxRecords}
+        <if test="max_records != null">
+            , #{max_records}
         </if>
     </select>
     <select id="countByCapitalId"  resultType="java.lang.Integer">
         select count(1) from(
         select
-        c.id,c.ref_id,c.ref_type, c.create_time as createTime,c.new_balance-c.old_balance as balanceAdd,c.new_can_cash-c.old_can_cash as
-        canCashAdd,p.name as changeType ,new_balance , CASE WHEN c.new_balance-c.old_balance >0 THEN '收入' else '支出' end as balanceSatatus
+        c.id,c.ref_id,c.ref_type, c.create_time as create_time,c.new_balance-c.old_balance as balance_add,c.new_can_cash-c.old_can_cash as
+        can_cash_add,p.name as change_type ,new_balance , CASE WHEN c.new_balance-c.old_balance >0 THEN '收入' else '支出' end as balance_status
         from t_capital_serial c
         LEFT JOIN t_payment_param p on c.ref_type=p.id
-        where capital_id = #{capitalId,jdbcType=INTEGER}
+        where capital_id = #{capital_id,jdbcType=INTEGER}
         ) f  where 1=1
-        <if test="balanceSatatus != null  and balanceSatatus != ''">
-            and   f.balanceSatatus= #{balanceSatatus}
+        <if test="balance_satatus != null  and balance_satatus != ''">
+            and   f.balance_satatus= #{balance_satatus}
         </if>
-        <if test="startDate != null and endDate != null ">
-            and createTime between  #{startDate} and #{endDate}
+        <if test="start_date != null and end_date != null ">
+            and create_time between  #{start_date} and #{end_date}
         </if>
         <if test="ref_id != null  and ref_id != ''">
             and   ref_id=#{ref_id}

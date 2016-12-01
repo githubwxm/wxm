@@ -7,51 +7,52 @@ package com.all580.payment.thirdpay.wx.model;
  * @since V0.0.1
  */
 public class WxProperties {
-    private String apiClientCertP12Str; // 私钥证书文件字符串
-    private String appId; // 开发应用ID
-    private String mchId; // 商户号
-    private String mchKey; //  商户秘钥
+    private String api_client_cert_p12_str; // 私钥证书文件字符串
+    private String app_id; // 开发应用ID
+    private String mch_id; // 商户号
+    private String mch_key; //  商户秘钥
 
-    private int coreEpId; // 平台商ID
+    private int core_ep_id; // 平台商ID
     //private
 
-    public String getAppId() {
-        return appId;
+
+    public String getApi_client_cert_p12_str() {
+        return api_client_cert_p12_str;
     }
 
-    public String getMchId() {
-        return mchId;
+    public void setApi_client_cert_p12_str(String api_client_cert_p12_str) {
+        this.api_client_cert_p12_str = api_client_cert_p12_str;
     }
 
-    public String getMchKey() {
-        return mchKey;
+    public String getApp_id() {
+        return app_id;
     }
 
-    public String getApiClientCertP12Str() {
-        return apiClientCertP12Str;
+    public void setApp_id(String app_id) {
+        this.app_id = app_id;
     }
 
-    public void setApiClientCertP12Str(String apiClientCertP12Str) {
-        this.apiClientCertP12Str = apiClientCertP12Str;
+    public String getMch_id() {
+        return mch_id;
     }
 
-    public void setAppId(String appId) {
-        this.appId = appId;
+    public void setMch_id(String mch_id) {
+        this.mch_id = mch_id;
     }
 
-    public void setMchId(String mchId) {
-        this.mchId = mchId;
+    public String getMch_key() {
+        return mch_key;
     }
 
-    public void setMchKey(String mchKey) {
-        this.mchKey = mchKey;
+    public void setMch_key(String mch_key) {
+        this.mch_key = mch_key;
     }
 
-    public int getCoreEpId() {
-        return coreEpId;
+    public int getCore_ep_id() {
+        return core_ep_id;
     }
 
-    public void setCoreEpId(int coreEpId) {
-        this.coreEpId = coreEpId;
+    public void setCore_ep_id(int core_ep_id) {
+        this.core_ep_id = core_ep_id;
     }
 }

@@ -5,15 +5,15 @@ import java.io.Serializable;
 public class Capital implements Serializable {
     private Integer id;
 
-    private Integer epId;
+    private Integer ep_id;
 
     private Integer credit;
 
     private Integer balance;
 
-    private Integer canCash;
+    private Integer can_cash;
 
-    private Integer coreEpId;
+    private Integer core_ep_id;
 
     private static final long serialVersionUID = 1L;
 
@@ -25,12 +25,12 @@ public class Capital implements Serializable {
         this.id = id;
     }
 
-    public Integer getEpId() {
-        return epId;
+    public Integer getEp_id() {
+        return ep_id;
     }
 
-    public void setEpId(Integer epId) {
-        this.epId = epId;
+    public void setEp_id(Integer ep_id) {
+        this.ep_id = ep_id;
     }
 
     public Integer getCredit() {
@@ -49,19 +49,19 @@ public class Capital implements Serializable {
         this.balance = balance;
     }
 
-    public Integer getCanCash() {
-        return canCash;
+    public Integer getCan_cash() {
+        return can_cash;
     }
 
-    public void setCanCash(Integer canCash) {
-        this.canCash = canCash;
+    public void setCan_cash(Integer can_cash) {
+        this.can_cash = can_cash;
     }
 
-    public Integer getCoreEpId() {
-        return coreEpId;
+    public Integer getCore_ep_id() {
+        return core_ep_id;
     }
 
-    public void setCoreEpId(Integer coreEpId) {
-        this.coreEpId = coreEpId;
+    public void setCore_ep_id(Integer core_ep_id) {
+        this.core_ep_id = core_ep_id;
     }
 }

@@ -110,33 +110,33 @@ public class BalancePayServiceImpl implements BalancePayService {
         List<CapitalSerial> capitalSerials = new ArrayList<>();
         Map<String, Capital> capitalMap = convertCapitalList(capitals);
         for (BalanceChangeInfo balanceChangeInfo : balanceChangeInfoList) {
-            String key = balanceChangeInfo.getEpId() + "|" + balanceChangeInfo.getCoreEpId();
+            String key = balanceChangeInfo.getEp_id()  + "|" + balanceChangeInfo.getCore_ep_id();
             if (capitalMap.containsKey(key)) {
                 Capital capital = capitalMap.get(key);
                 int newBalance = capital.getBalance() + balanceChangeInfo.getBalance();
-                int newCanCash = capital.getCanCash() + balanceChangeInfo.getCanCash();
+                int newCanCash = capital.getCan_cash() + balanceChangeInfo.getCan_cash();
                 // 生成流水记录
                 CapitalSerial capitalSerial = new CapitalSerial();
-                capitalSerial.setCapitalId(capital.getId());
-                capitalSerial.setRefId(serialNum);
-                capitalSerial.setRefType(type);
-                capitalSerial.setOldBalance(capital.getBalance());
-                capitalSerial.setOldCanCash(capital.getCanCash());
-                capitalSerial.setNewBalance(newBalance);
-                capitalSerial.setNewCanCash(newCanCash);
+                capitalSerial.setCapital_id(capital.getId());
+                capitalSerial.setRef_id(serialNum);
+                capitalSerial.setRef_type(type);
+                capitalSerial.setOld_balance(capital.getBalance());
+                capitalSerial.setOld_can_cash(capital.getCan_cash());
+                capitalSerial.setNew_balance(newBalance);
+                capitalSerial.setNew_can_cash(newCanCash);
                 capitalSerials.add(capitalSerial);
 
                 capital.setBalance(newBalance);
-                capital.setCanCash(newCanCash);
+                capital.setCan_cash(newCanCash);
             } else {
-                BalanceChangeRsp changeRsp = new BalanceChangeRsp(balanceChangeInfo.getEpId(), balanceChangeInfo
-                        .getCoreEpId(), null);
+                BalanceChangeRsp changeRsp = new BalanceChangeRsp(balanceChangeInfo.getEp_id(), balanceChangeInfo
+                        .getCore_ep_id(), null);
                 throw new BusinessException("余额账号不存在", changeRsp);
             }
         }
         for (Capital capital : capitalMap.values()) {
             if (capital.getBalance() + capital.getCredit() < 0) {
-                BalanceChangeRsp changeRsp = new BalanceChangeRsp(capital.getEpId(), capital.getCoreEpId(), null);
+                BalanceChangeRsp changeRsp = new BalanceChangeRsp(capital.getEp_id(), capital.getCore_ep_id(), null);
                 throw new BusinessException("余额不足", changeRsp);
             }
         }
@@ -146,7 +146,7 @@ public class BalancePayServiceImpl implements BalancePayService {
     private Map<String, Capital> convertCapitalList(List<Capital> capitals) {
         Map<String, Capital> capitalMap = new HashMap<>();
         for (Capital capital : capitals) {
-            capitalMap.put(capital.getEpId() + "|" + capital.getCoreEpId(), capital);
+            capitalMap.put(capital.getEp_id() + "|" + capital.getCore_ep_id(), capital);
         }
         return capitalMap;
     }
@@ -182,8 +182,8 @@ public class BalancePayServiceImpl implements BalancePayService {
         Assert.notNull(coreEpId, "参数【coreEpId】不能为空");
         Result result = new Result();
         Capital capital = new Capital();
-        capital.setEpId(epId);
-        capital.setCoreEpId(coreEpId);
+        capital.setEp_id(epId);
+        capital.setCore_ep_id(coreEpId);
         capitalMapper.insertSelective(capital);
         result.setSuccess();
         return result;
@@ -198,8 +198,8 @@ public class BalancePayServiceImpl implements BalancePayService {
         Result result = new Result();
         try {
             Capital capital = new Capital();
-            capital.setEpId(epId);
-            capital.setCoreEpId(coreEpId);
+            capital.setEp_id(epId);
+            capital.setCore_ep_id(coreEpId);
             capital.setCredit(credit);
             capitalMapper.updateByEpIdAndCoreEpId(capital);
             result.setSuccess();

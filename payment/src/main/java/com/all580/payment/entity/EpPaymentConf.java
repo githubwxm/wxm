@@ -5,14 +5,14 @@ import java.io.Serializable;
 public class EpPaymentConf implements Serializable {
     private Integer id;
 
-    private Integer coreEpId;
+    private Integer core_ep_id;
 
-    private Integer paymentType;
+    private Integer payment_type;
 
-    private String confData;
+    private String conf_data;
 
     private Integer status;
-    private String certP12; // 微信证书文件
+    private String cert_p12; // 微信证书文件
 
     private static final long serialVersionUID = 1L;
 
@@ -24,28 +24,28 @@ public class EpPaymentConf implements Serializable {
         this.id = id;
     }
 
-    public Integer getCoreEpId() {
-        return coreEpId;
+    public Integer getCore_ep_id() {
+        return core_ep_id;
     }
 
-    public void setCoreEpId(Integer coreEpId) {
-        this.coreEpId = coreEpId;
+    public void setCore_ep_id(Integer core_ep_id) {
+        this.core_ep_id = core_ep_id;
     }
 
-    public Integer getPaymentType() {
-        return paymentType;
+    public Integer getPayment_type() {
+        return payment_type;
     }
 
-    public void setPaymentType(Integer paymentType) {
-        this.paymentType = paymentType;
+    public void setPayment_type(Integer payment_type) {
+        this.payment_type = payment_type;
     }
 
-    public String getConfData() {
-        return confData;
+    public String getConf_data() {
+        return conf_data;
     }
 
-    public void setConfData(String confData) {
-        this.confData = confData == null ? null : confData.trim();
+    public void setConf_data(String conf_data) {
+        this.conf_data = conf_data;
     }
 
     public Integer getStatus() {
@@ -56,11 +56,11 @@ public class EpPaymentConf implements Serializable {
         this.status = status;
     }
 
-    public String getCertP12() {
-        return certP12;
+    public String getCert_p12() {
+        return cert_p12;
     }
 
-    public void setCertP12(String certP12) {
-        this.certP12 = certP12;
+    public void setCert_p12(String cert_p12) {
+        this.cert_p12 = cert_p12;
     }
 }

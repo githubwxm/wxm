@@ -34,10 +34,10 @@ public class EpPaymentConfServiceImpl implements EpPaymentConfService {
         try {
             ParamsMapValidate.validate(map, genValidateOfCreate());
             EpPaymentConf conf = new EpPaymentConf();
-            map.put("confData",JsonUtils.toJson(map.get("confData")));
+            map.put("conf_data",JsonUtils.toJson(map.get("conf_data")));
             BeanUtils.populate(conf, map);
             // 检查同一企业下是否已经存在相同支付类型的配置
-            checkExistSameTypeRecord(conf.getCoreEpId(), conf.getPaymentType());
+            checkExistSameTypeRecord( conf.getCore_ep_id(), conf.getPayment_type());
             epPaymentConfMapper.insertSelective(conf);
             result.setSuccess();
             logger.info("完成 -> 创建企业收款方式配置");
@@ -64,7 +64,9 @@ public class EpPaymentConfServiceImpl implements EpPaymentConfService {
         Result result = new Result();
         try {
             EpPaymentConf conf = new EpPaymentConf();
-            map.put("confData",JsonUtils.toJson(map.get("confData")));
+            if(null!=map.get("conf_data")){
+                map.put("conf_data",JsonUtils.toJson(map.get("conf_data")));
+            }
             BeanUtils.populate(conf, map);
             // 检查同一企业下是否已经存在相同支付类型的配置    --   修改的话修改本身是已经存在的
             //checkExistSameTypeRecord(conf.getCoreEpId(), conf.getPaymentType());
@@ -108,8 +110,8 @@ public class EpPaymentConfServiceImpl implements EpPaymentConfService {
         Map<String[], ValidRule[]> rules = new HashMap<>();
         // 校验不为空的参数
         rules.put(new String[]{
-                "paymentType", // 支付类型
-                "confData", // 支付配置
+                "payment_type", // 支付类型
+                "conf_data", // 支付配置
         }, new ValidRule[]{new ValidRule.NotNull()});
         return rules;
     }

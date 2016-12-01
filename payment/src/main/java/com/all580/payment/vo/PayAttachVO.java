@@ -2,7 +2,7 @@ package com.all580.payment.vo;
 
 /**
  * 支付透传参数VO
- * @author panyi on 2016/10/20.
+ * @author panyi on 2016/10/20.    未用到
  * @since V0.0.1
  */
 public class PayAttachVO {
