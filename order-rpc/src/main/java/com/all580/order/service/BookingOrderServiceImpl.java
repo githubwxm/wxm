@@ -200,14 +200,14 @@ public class BookingOrderServiceImpl implements BookingOrderService {
                 // 只计算预付的,到付不计算在内
                 if (salesInfo.getPay_type() == ProductConstants.PayType.PREPAY) {
                     totalPayPrice += info.getPrice() * quantity; // 计算进货价
-                    totalPayShopPrice += (info.getShopPrice() == null ? 0 : info.getShopPrice()) * quantity; // 计算门市价
+                    totalPayShopPrice += (info.getShop_price() == null ? 0 : info.getShop_price()) * quantity; // 计算门市价
                 }
 
                 EpSalesInfo self = new EpSalesInfo();
-                self.setSaleEpId(buyEpId);
-                self.setBuyEpId(-1);
+                self.setSale_ep_id(buyEpId);
+                self.setEp_id(-1);
                 // 代收:叶子销售商以门市价卖出
-                self.setPrice(from == OrderConstant.FromType.TRUST ? info.getShopPrice() : info.getPrice());
+                self.setPrice(from == OrderConstant.FromType.TRUST ? info.getShop_price() : info.getPrice());
                 if (self.getPrice() == null) {
                     self.setPrice(0);
                 }
@@ -445,14 +445,14 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             // 余额支付
             if (payType == PaymentConstant.PaymentType.BALANCE.intValue()) {
                 BalanceChangeInfo payInfo = new BalanceChangeInfo();
-                payInfo.setEpId(order.getBuy_ep_id());
-                payInfo.setCoreEpId(bookingOrderManager.getCoreEpId(bookingOrderManager.getCoreEpId(order.getBuy_ep_id())));
+                payInfo.setEp_id(order.getBuy_ep_id());
+                payInfo.setCore_ep_id(bookingOrderManager.getCoreEpId(bookingOrderManager.getCoreEpId(order.getBuy_ep_id())));
                 payInfo.setBalance(-order.getPay_amount());
-                payInfo.setCanCash(-order.getPay_amount());
+                payInfo.setCan_cash(-order.getPay_amount());
 
                 BalanceChangeInfo saveInfo = new BalanceChangeInfo();
-                saveInfo.setEpId(payInfo.getCoreEpId());
-                saveInfo.setCoreEpId(payInfo.getCoreEpId());
+                saveInfo.setEp_id(payInfo.getCore_ep_id());
+                saveInfo.setCore_ep_id(payInfo.getCore_ep_id());
                 saveInfo.setBalance(order.getPay_amount());
                 // 支付
                 Result result = bookingOrderManager.changeBalances(

@@ -73,10 +73,10 @@ public class BaseOrderManager {
         int salePrice = 0;
         int buyPrice = 0;
         for (EpSalesInfo info : salesInfoList) {
-            if (info.getSaleEpId() == epId) {
+            if (info.getSale_ep_id() == epId) {
                 salePrice = info.getPrice();
             }
-            if (info.getBuyEpId() == epId) {
+            if (info.getEp_id() == epId) {
                 buyPrice = info.getPrice();
             }
         }
@@ -91,7 +91,7 @@ public class BaseOrderManager {
      */
     public EpSalesInfo getBuyingPrice(List<EpSalesInfo> epSalesInfos, Integer buyEpId) {
         for (EpSalesInfo info : epSalesInfos) {
-            if (info.getBuyEpId() == buyEpId.intValue()) {
+            if (info.getEp_id() == buyEpId.intValue()) {
                 return info;
             }
         }
@@ -322,14 +322,14 @@ public class BaseOrderManager {
                 // 获取核销日期的单价利润
                 JSONObject dayData = getAccountDataByDay(daysData, DateFormatUtils.parseDateToDatetimeString(day));
                 BalanceChangeInfo changeInfo = new BalanceChangeInfo();
-                changeInfo.setEpId(account.getEp_id());
-                changeInfo.setCoreEpId(account.getCore_ep_id());
+                changeInfo.setEp_id(account.getEp_id());
+                changeInfo.setCore_ep_id(account.getCore_ep_id());
                 int money = getMoney(consumeQuantity, dayData);
                 if (money == 0) {
                     continue;
                 }
                 // 核销分账可提现金额
-                changeInfo.setCanCash(consume ? money : -money);
+                changeInfo.setCan_cash(consume ? money : -money);
                 balanceChangeInfoList.add(changeInfo);
                 account.setSettled_money(consume ? account.getSettled_money() + money : account.getSettled_money() - money); // 设置已结算金额
                 orderItemAccountMapper.updateByPrimaryKeySelective(account);

@@ -68,8 +68,8 @@ public class PaymentCallbackServiceImpl implements PaymentCallbackService {
             // 支付成功后加平台商余额(平帐),余额支付不做平帐
             if (order.getPayment_type() != PaymentConstant.PaymentType.BALANCE.intValue()) {
                 BalanceChangeInfo info = new BalanceChangeInfo();
-                info.setEpId(bookingOrderManager.getCoreEpId(bookingOrderManager.getCoreEpId(order.getBuy_ep_id())));
-                info.setCoreEpId(info.getEpId());
+                info.setEp_id(bookingOrderManager.getCoreEpId(bookingOrderManager.getCoreEpId(order.getBuy_ep_id())));
+                info.setCore_ep_id(info.getEp_id());
                 info.setBalance(order.getPay_amount());
                 bookingOrderManager.changeBalances(PaymentConstant.BalanceChangeType.THIRD_PAY_FOR_ORDER, serialNum, info);
             }
