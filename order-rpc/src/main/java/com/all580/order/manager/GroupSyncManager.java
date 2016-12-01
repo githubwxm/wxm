@@ -47,7 +47,7 @@ public class GroupSyncManager {
      * @param groupId 团队ID
      * @return
      */
-    public Map<String, Object> syncGroup(int groupId) {
+    public Map<String, Object> syncGroup(int groupId, Integer guideId) {
         Group group = groupMapper.selectByPrimaryKey(groupId);
         if (group == null) {
             throw new ApiException("同步团队数据异常:null");
@@ -55,8 +55,19 @@ public class GroupSyncManager {
         return generateSyncByGroup(group)
                 // 同步团队表
                 .put("t_group", Collections.singletonList(group))
+                // 同步导游表
+                .put("t_guide", guideId != null ? Collections.singletonList(guideMapper.selectByPrimaryKey(guideId)) : Collections.EMPTY_LIST)
                 // 同步
                 .sync().getDataMap();
+    }
+
+    /**
+     * 同步团队
+     * @param groupId 团队ID
+     * @return
+     */
+    public Map<String, Object> syncGroup(int groupId) {
+        return syncGroup(groupId, null);
     }
 
     /**

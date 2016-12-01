@@ -53,8 +53,26 @@ public class GroupServiceImpl implements GroupService {
         group.setCreate_user_id(CommonUtil.objectParseInteger(params.get("operator_id")));
         group.setCreate_user_name(CommonUtil.objectParseString(params.get("operator_name")));
         group.setCreate_time(new Date());
-        groupMapper.insertSelective(group);
-        return new Result<>(true).putExt(Result.SYNC_DATA, groupSyncManager.syncGroup(group.getId()));
+        int ret = groupMapper.insertSelective(group);
+        if (ret <= 0) {
+            throw new ApiException("新增团队失败");
+        }
+        Guide guide = new Guide();
+        guide.setCore_ep_id(group.getCore_ep_id());
+        guide.setEp_id(group.getEp_id());
+        guide.setCreate_user_id(group.getCreate_user_id());
+        guide.setCreate_user_name(group.getCreate_user_name());
+        guide.setCreate_time(group.getCreate_time());
+
+        guide.setName(group.getGuide_name());
+        guide.setPhone(group.getGuide_phone());
+        guide.setSid(group.getGuide_sid());
+        guide.setCard(group.getGuide_card());
+        ret = guideMapper.insertSelective(guide);
+        if (ret <= 0) {
+            throw new ApiException("新增导游失败");
+        }
+        return new Result<>(true).putExt(Result.SYNC_DATA, groupSyncManager.syncGroup(group.getId(), guide.getId()));
     }
 
     @Override
