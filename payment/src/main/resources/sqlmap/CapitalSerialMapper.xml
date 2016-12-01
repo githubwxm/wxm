@@ -165,8 +165,8 @@
         LEFT JOIN t_payment_param p on c.ref_type=p.id
         where capital_id = #{capital_id,jdbcType=INTEGER}
         ) f  where 1=1
-        <if test="balance_satatus != null  and balance_satatus != ''">
-          and   f.balance_satatus= #{balance_satatus}
+        <if test="balance_status != null  and balance_status != ''">
+          and   f.balance_status= #{balance_status}
         </if>
         <if test="start_date != null and end_date != null ">
             and create_time between  #{start_date} and #{end_date}
@@ -191,8 +191,8 @@
         LEFT JOIN t_payment_param p on c.ref_type=p.id
         where capital_id = #{capital_id,jdbcType=INTEGER}
         ) f  where 1=1
-        <if test="balance_satatus != null  and balance_satatus != ''">
-            and   f.balance_satatus= #{balance_satatus}
+        <if test="balance_status != null  and balance_status != ''">
+            and   f.balance_status= #{balance_status}
         </if>
         <if test="start_date != null and end_date != null ">
             and create_time between  #{start_date} and #{end_date}
