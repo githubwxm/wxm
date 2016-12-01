@@ -157,4 +157,6 @@ public interface OrderItemMapper {
                                       @Param("orderItemNumber") Long orderItemNum,
                                       @Param("self") Boolean self,
                                       @Param("productSubNumber") Long productSubNumber);
+
+    int selectCountByGroup(@Param("groupId") Integer groupId);
 }

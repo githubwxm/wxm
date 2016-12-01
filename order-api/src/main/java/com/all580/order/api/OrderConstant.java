@@ -72,6 +72,14 @@ public class OrderConstant {
     }
 
     /**
+     * 证件类型
+     */
+    public static class CardType {
+        public static final int ID = 370; // 身份证
+        public static final int OTHER = 371; // 其它
+    }
+
+    /**
      * 任务执行器
      */
     public static class Actions {
