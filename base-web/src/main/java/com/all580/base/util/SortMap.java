@@ -57,7 +57,7 @@ public class SortMap {
                 continue;
             }
             if (entry.getValue() == null) {
-                sortMap.put(entry.getKey(),CommonUtil.objectParseString(entry.getValue()));
+                sortMap.put(entry.getKey(),null);
                 continue;
             }
         }
@@ -93,6 +93,11 @@ public class SortMap {
             }
             if (item instanceof Number) {
                 sortList.add(item);
+                continue;
+            }
+            if (item instanceof Object) {
+                sortList.add(
+                        sortMapByKey( JsonUtils.obj2map(item) ));
                 continue;
             }
         }
