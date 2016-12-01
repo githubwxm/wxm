@@ -56,8 +56,8 @@
         <if test="name != null">
             and name like CONCAT('%',#{name},'%')
         </if>
-        <if test="limitStart != null">
-            and credit_after BETWEEN #{limitStart} and #{limitEnd}
+        <if test="limit_start != null">
+            and credit_after BETWEEN #{limit_start} and #{limit_end}
         </if>
         <if test="credit != false">
             and credit_after is not null

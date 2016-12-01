@@ -59,7 +59,7 @@ public class EpFinanceServiceImple implements EpFinanceService {
             }
             List<Map<String, String>> balanceList= balancePayService.getBalanceList(listEpId,core_ep_id).get();
             for(Map<String, String> balance:balanceList){
-                String tempss = String.valueOf(balance.get("epId"));
+                String tempss = String.valueOf(balance.get("ep_id"));
                 Map temp=tempEpMap.get(tempss);
                 balance.putAll(temp);//把企业信息合并到余额信息里面
             }
@@ -87,9 +87,9 @@ public class EpFinanceServiceImple implements EpFinanceService {
         List<BalanceChangeInfo> balanceList=new ArrayList<>();
         BalanceChangeInfo b= new BalanceChangeInfo();
         b.setBalance(balance);
-        b.setCanCash(balance);
-        b.setEpId(epId);
-        b.setCoreEpId(coreEpId);
+        b.setCan_cash(balance);
+        b.setEp_id(epId);
+        b.setCore_ep_id(coreEpId);
         balanceList.add(b);
         String  serialNum=System.currentTimeMillis()+"";
         return balancePayService.changeBalances(balanceList, PaymentConstant.BalanceChangeType.MANUAL_CHANGE_BALANCE,serialNum);

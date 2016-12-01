@@ -48,6 +48,10 @@ public class EpBalanceThresholdServiceImple implements EpBalanceThresholdService
                     map.put("threshold",num*100);
                 }
             }
+          Integer core_ep_id=  epMapper.selectPlatformId(CommonUtil.objectParseInteger(map.get("id")));
+            if(!core_ep_id.equals(map.get(EpConstant.EpKey.CORE_EP_ID))){
+                throw new ApiException("企业不属于该平台商");
+            }
             result.put(epBalanceThresholdMapper.createOrUpdate(map));
             result.setSuccess();
         }catch (ApiException e) {
