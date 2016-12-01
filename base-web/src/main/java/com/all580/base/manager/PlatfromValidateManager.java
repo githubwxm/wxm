@@ -100,13 +100,13 @@ public class PlatfromValidateManager {
         Map<String[], ValidRule[]> rules = new HashMap<>();
         // 校验不为空的参数
         rules.put(new String[]{
-                "paymentType", //
-                "confData", //
+                "payment_type", //
+                "conf_data", //
         }, new ValidRule[]{new ValidRule.NotNull()});
 
         // 校验整数
         rules.put(new String[]{
-                "paymentType" // 企业id
+                "payment_type" // 企业id
         }, new ValidRule[]{new ValidRule.Digits()});
         return rules;
     }

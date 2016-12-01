@@ -44,7 +44,7 @@ public class BalanceController extends BaseController {
         return result;
     }
 
-    @RequestMapping(value = "getBalanceSerialList", method = RequestMethod.GET)
+    @RequestMapping(value = "get_balance_serial_list", method = RequestMethod.GET)
     @ResponseBody
     public Result getBalanceSerialList(Integer epId, @RequestParam("record_start") Integer recordStart,
                                        @RequestParam("record_count") Integer recordCount) {

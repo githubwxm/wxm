@@ -42,7 +42,7 @@ public class VerifyFilter implements  Filter{
         ServletRequest requestWrapper = null;
         String postParams="";
         String currenttSing="";
-       // String url =httpRequest.getRequestURI(); // 访问url
+        //String url =httpRequest.getRequestURI(); // 访问url
         CoreEpAccessService coreEpAccessService= BeanUtil.getBean("coreEpAccessService", CoreEpAccessService.class);
 
         if ("POST".equals(method)) {

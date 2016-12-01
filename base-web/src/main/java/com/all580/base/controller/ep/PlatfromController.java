@@ -58,7 +58,7 @@ public class PlatfromController extends BaseController {
     /**
      *查询平台商id
      */
-    @RequestMapping(value = "selectPlatfromId", method = RequestMethod.GET)
+    @RequestMapping(value = "select_platfrom_id", method = RequestMethod.GET)
     @ResponseBody
     public Result<Map<String,Object>> selectPlatfromId(Integer id) {
 
@@ -122,7 +122,7 @@ public class PlatfromController extends BaseController {
     @ResponseBody
     public Result<Integer> paymentAdd(@RequestBody Map map) {
         ParamsMapValidate.validate(map, platfromValidateManager.generateCreatePaymentValidate());
-        map.put("coreEpId",getAttribute(EpConstant.EpKey.CORE_EP_ID));
+        //map.put("coreEpId",getAttribute(EpConstant.EpKey.CORE_EP_ID));
         return     epPaymentConfService.create(map);
     }//payment
 
@@ -158,9 +158,9 @@ public class PlatfromController extends BaseController {
     public Result<Integer> paymentUpdate(@RequestBody Map map) {
         ParamsMapValidate.validate(map, platfromValidateManager.generateCreatePaymentValidate());
         ParamsMapValidate.validate(map, platfromValidateManager.generateCreateStatusValidate());
-        map.put("coreEpId",getAttribute(EpConstant.EpKey.CORE_EP_ID));
+       // map.put("coreEpId",getAttribute(EpConstant.EpKey.CORE_EP_ID));
         return     epPaymentConfService.update(map);
-    }//payment listByEpId
+    }
 
     /**
      * 支付列表
@@ -168,7 +168,7 @@ public class PlatfromController extends BaseController {
      * @param
      * @return
      */
-    @RequestMapping(value = "payment/listByEpId", method = RequestMethod.GET)
+    @RequestMapping(value = "payment/list_by_ep_id", method = RequestMethod.GET)
     @ResponseBody
     public Result<List<Map<String, String>>> paymentListByEpId(Integer ep_id) {
         return     epPaymentConfService.listByEpId(ep_id);
@@ -184,16 +184,16 @@ public class PlatfromController extends BaseController {
     @ResponseBody
     public Result<Map<String,Object>> platformListUp(
                                        String ep_id,
-                                       String epName,
-                                      String epProvince,
-                                      String epCity,
-                                     String epPhone,Integer record_start,Integer record_count) {
+                                       String name,
+                                      String province,
+                                      String city,
+                                     String link_phone,Integer record_start,Integer record_count) {
         Map<String,Object> map = new HashMap<String,Object>();
         map.put("ep_id", ep_id);
-        map.put("epName", epName);
-        map.put("epProvince", epProvince);
-        map.put("epCity", epCity);
-        map.put("epPhone", epPhone);
+        map.put("name", name);
+        map.put("province", province);
+        map.put("city", city);
+        map.put("link_phone", link_phone);
         map.put("record_start",record_start);
         map.put("record_count",record_count);
         ParamsMapValidate.validate(map, platfromValidateManager.generateCreateDownUpValidate());
@@ -209,16 +209,16 @@ public class PlatfromController extends BaseController {
     @RequestMapping(value = "list/down", method = RequestMethod.GET)
     @ResponseBody
     public Result<Map<String,Object>> platformListDown( String ep_id,
-                                        String epName,
-                                        String epProvince,
-                                         String epCity,
-                                        String epPhone,Integer record_start,Integer record_count) {
+                                        String name,
+                                        String province,
+                                         String city,
+                                        String link_phone,Integer record_start,Integer record_count) {
         Map<String,Object> map = new HashMap<String,Object>();
         map.put("ep_id", ep_id);
-        map.put("epName", epName);
-        map.put("epProvince", epProvince);
-        map.put("epCity", epCity);
-        map.put("epPhone", epPhone);
+        map.put("name", name);
+        map.put("province", province);
+        map.put("city", city);
+        map.put("link_phone", link_phone);
         map.put("record_start",record_start);
         map.put("record_count",record_count);
         ParamsMapValidate.validate(map, platfromValidateManager.generateCreateDownUpValidate());
@@ -261,7 +261,7 @@ public class PlatfromController extends BaseController {
      * 所有平台上那个下拉框
      * @return
      */
-    @RequestMapping(value = "selectPlatform", method = RequestMethod.GET)
+    @RequestMapping(value = "select_platform", method = RequestMethod.GET)
     @ResponseBody
     public Result<Map<String,Object>> selectPlatform() {
         return epService.selectPlatform();

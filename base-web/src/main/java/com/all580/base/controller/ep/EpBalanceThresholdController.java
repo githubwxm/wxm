@@ -23,7 +23,7 @@ import java.util.Map;
  */
 
 @Controller
-@RequestMapping("api/ep/platform/balanceThreshold")
+@RequestMapping("api/ep/platform/balance_threshold")
 @Slf4j
 public class EpBalanceThresholdController extends BaseController {
     @Autowired
@@ -41,7 +41,7 @@ public class EpBalanceThresholdController extends BaseController {
     @ResponseBody
     public Result<Integer> update(@RequestBody Map<String,Object> map) {
             //core_ep_id
-             map.put(EpConstant.EpKey.CORE_EP_ID,getAttribute(EpConstant.EpKey.CORE_EP_ID)) ;
+            // map.put(EpConstant.EpKey.CORE_EP_ID,getAttribute(EpConstant.EpKey.CORE_EP_ID)) ;
             // map.put("id",map.get("id"));
             ParamsMapValidate.validate(map, generateEpBalanceThresholdUpdateValidate());
             //   Integer core_ep_id = Integer.parseInt(map.get("id").toString());

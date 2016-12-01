@@ -132,7 +132,7 @@ public class EpController extends BaseController {
      * @param
      * @return
      */
-    @RequestMapping(value = "selectEpList", method = RequestMethod.GET)
+    @RequestMapping(value = "select_ep_list", method = RequestMethod.GET)
     @ResponseBody
     public Result<Map<String,Object>> selectEpList(HttpServletRequest request,String name,String link_phone,
                                         Integer province,Integer city,Integer ep_type,Integer record_start,
@@ -151,7 +151,7 @@ public class EpController extends BaseController {
         return epService.select(map);
 
    }//
-    @RequestMapping(value = "updateEpRole", method = RequestMethod.POST)
+    @RequestMapping(value = "update_ep_role", method = RequestMethod.POST)
     @ResponseBody
     public Result<Integer> updateEpRole(@RequestBody Map<String,Object> map) {
         // 验证参数D  ep_role
@@ -167,7 +167,7 @@ public class EpController extends BaseController {
      * @param
      * @return
      */
-    @RequestMapping(value = "checkNamePhone", method = RequestMethod.GET)
+    @RequestMapping(value = "check_name_phone", method = RequestMethod.GET)
     @ResponseBody
    public Result<Boolean> checkNamePhone(String name,String link_phone,Integer id){
        //where name =#{name} or link_phone=#{link_phone}
@@ -183,7 +183,7 @@ public class EpController extends BaseController {
      * @param ep_id
      * @return
      */
-    @RequestMapping(value = "selectDownSupplier", method = RequestMethod.GET)
+    @RequestMapping(value = "select_down_supplier", method = RequestMethod.GET)
     @ResponseBody
    public Result<List<Map<String,Object>>> selectDownSupplier(String ep_id){
        Map<String,Object> map = new HashMap<>();

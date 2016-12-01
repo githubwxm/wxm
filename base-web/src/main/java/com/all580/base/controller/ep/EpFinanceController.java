@@ -44,8 +44,8 @@ public class EpFinanceController extends BaseController {
                                Integer province,
                                Integer city,
                                 Integer area,
-                               Integer limitStart,
-                                Integer limitEnd,
+                               Integer limit_start,
+                                Integer limit_end,
                                boolean credit,
                                Integer record_start,
                                Integer record_count
@@ -56,13 +56,13 @@ public class EpFinanceController extends BaseController {
         map.put("province", province);
         map.put("city", city);
         map.put("area", area);
-        map.put("limitStart", limitStart);
-        map.put("limitEnd", limitEnd);
+        map.put("limit_start", limit_start);
+        map.put("limit_end", limit_end==null?0:limit_end);
         map.put("credit", credit);
         map.put("record_start", record_start);
         map.put("record_count", record_count);
-        map.put("core_ep_id",request.getAttribute("core_ep_id"));
-        ParamsMapValidate.validate(map, generateCoreEpIdValidate());
+        //map.put("core_ep_id",request.getAttribute("core_ep_id"));
+       // ParamsMapValidate.validate(map, generateCoreEpIdValidate());
         return logCreditService.selectList(map);
     }
 
@@ -71,11 +71,11 @@ public class EpFinanceController extends BaseController {
      *
      * @return
      */
-    @RequestMapping(value = "credit/hostoryCredit", method = RequestMethod.GET)
+    @RequestMapping(value = "credit/hostory_credit", method = RequestMethod.GET)
     @ResponseBody
-    public Result<?> hostoryCredit(HttpServletRequest request,Integer epId) {
+    public Result<?> hostoryCredit(HttpServletRequest request,Integer ep_id) {
         Map<String,Object> map = new HashMap<>();
-        map.put("ep_id", epId);
+        map.put("ep_id", ep_id);
         map.put("core_ep_id", request.getAttribute("core_ep_id"));
         ParamsMapValidate.validate(map, generateCreateSelectValidate());
         return logCreditService.hostoryCredit(map);
@@ -89,7 +89,7 @@ public class EpFinanceController extends BaseController {
     @RequestMapping(value = "credit/set", method = RequestMethod.POST)
     @ResponseBody
     public Result<Integer> set(@RequestBody Map map) {
-        map.put("ep_id",map.get("epId"));
+       // map.put("ep_id",map.get("ep_id"));
             ParamsMapValidate.validate(map, generateCreateCreditValidate());
             return logCreditService.create(map);
     }//set
@@ -97,7 +97,7 @@ public class EpFinanceController extends BaseController {
      * 企业账户管理列表
      * @return
      */
-    @RequestMapping(value = "credit/getAccountInfoList", method = RequestMethod.GET)
+    @RequestMapping(value = "credit/get_account_info_list", method = RequestMethod.GET)
     @ResponseBody
     public Result<?> getAccountInfoList(HttpServletRequest request,Integer ep_id,String name,String link_phone,Integer ep_type,
     Integer province,Integer city){
@@ -115,32 +115,32 @@ public class EpFinanceController extends BaseController {
 
     @RequestMapping(value = "account/info", method = RequestMethod.GET)
     @ResponseBody
-    public Result<?> getAccountInfoList(@RequestParam(value = "epId") Integer epId){
+    public Result<?> getAccountInfoList(@RequestParam(value = "balance_ep_id") Integer balance_ep_id){
      Integer coreEpId = CommonUtil.objectParseInteger(getAttribute(EpConstant.EpKey.CORE_EP_ID));
-        return epFinanceService.getBalanceAccountInfo(epId,coreEpId);
+        return epFinanceService.getBalanceAccountInfo(balance_ep_id,coreEpId);
     }
-    @RequestMapping(value = "lstBalance", method = RequestMethod.GET)
+    @RequestMapping(value = "lst_balance", method = RequestMethod.GET)
     @ResponseBody
-    public Result<?> lstBalance(@RequestParam(value = "epId") Integer epId,
-                                String balanceSatatus,String startDate,String endDate,String ref_id,
+    public Result<?> lstBalance(@RequestParam(value = "balance_ep_id") Integer balance_ep_id,
+                                String balance_satatus,String start_date,String end_date,String ref_id,
                                 Integer record_start, Integer record_count){
         Integer coreEpId = CommonUtil.objectParseInteger(getAttribute(EpConstant.EpKey.CORE_EP_ID));
-        return epFinanceService.getBalanceSerialList(epId,coreEpId,balanceSatatus,
-                startDate,endDate,ref_id,record_start,record_count,null);
+        return epFinanceService.getBalanceSerialList(balance_ep_id,coreEpId,balance_satatus,
+                start_date,end_date,ref_id,record_start,record_count,null);
     }
 
     /**
      * 修改余额
-     * @param map
+     * @param params
      * @return
      */
     @RequestMapping(value = "balance/add", method = RequestMethod.POST)
     @ResponseBody
-    public Result<Integer> balanceAdd(HttpServletRequest request, @RequestBody Map<String,Object> map) {
-        ParamsMapValidate.validate(map, generateBalanceSelectValidate());//
-        Integer coreEpId=CommonUtil.objectParseInteger(request.getAttribute(EpConstant.EpKey.CORE_EP_ID) ) ;
-        Integer balance=CommonUtil.objectParseInteger(map.get("balance")) ;
-        Integer balanceEpId=CommonUtil.objectParseInteger(map.get("balanceEpId")) ;
+    public Result<Integer> balanceAdd(@RequestBody Map<String,Object> params) {
+        ParamsMapValidate.validate(params, generateBalanceSelectValidate());//
+        Integer coreEpId=CommonUtil.objectParseInteger(params.get(EpConstant.EpKey.CORE_EP_ID) ) ;
+        Integer balance=CommonUtil.objectParseInteger(params.get("balance")) ;
+        Integer balanceEpId=CommonUtil.objectParseInteger(params.get("balance_ep_id")) ;
         return epFinanceService.addBalance(balanceEpId,coreEpId,balance);
     }
 
@@ -167,13 +167,13 @@ public class EpFinanceController extends BaseController {
         Map<String[], ValidRule[]> rules = new HashMap<>();
         // 校验不为空的参数
         rules.put(new String[]{
-                "balanceEpId", //
+                "balance_ep_id", //
                 "balance",
         }, new ValidRule[]{new ValidRule.NotNull()});
 
         // 校验整数
         rules.put(new String[]{
-                "balanceEpId", //
+                "balance_ep_id", //
                 "balance",
         }, new ValidRule[]{new ValidRule.Digits()});
         return rules;
@@ -193,22 +193,6 @@ public class EpFinanceController extends BaseController {
         }, new ValidRule[]{new ValidRule.Digits()});
         return rules;
     }
-    /**
-     * 校验平台商id
-     * @return
-     */
-    public Map<String[], ValidRule[]> generateCoreEpIdValidate() {
-        Map<String[], ValidRule[]> rules = new HashMap<>();
-        // 校验不为空的参数
-        rules.put(new String[]{
-                "core_ep_id", //
-        }, new ValidRule[]{new ValidRule.NotNull()});
 
-        // 校验整数
-        rules.put(new String[]{
-                "core_ep_id" // 平台商id
-        }, new ValidRule[]{new ValidRule.Digits()});
-        return rules;
-    }
 
 }
