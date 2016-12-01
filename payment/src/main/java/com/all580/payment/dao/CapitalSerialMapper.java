@@ -18,7 +18,7 @@ public interface CapitalSerialMapper {
     CapitalSerial selectByPrimaryKey(Integer id);
 
     List<Map<String,String>> listByCapitalId(@Param("capital_id") Integer capital_id,
-                                             @Param("balance_satatus") String balance_satatus,
+                                             @Param("balance_status") String balance_status,
                                              @Param("start_date") String startDate,
                                              @Param("end_date") String endDate,
                                              @Param("ref_id") String ref_id,
@@ -26,7 +26,7 @@ public interface CapitalSerialMapper {
                                              @Param("max_records")Integer maxRecords);
 
     int countByCapitalId(@Param("capital_id") Integer capital_id,
-                         @Param("balance_satatus") String balance_satatus,
+                         @Param("balance_status") String balance_status,
                           @Param("start_date") String startDate,
                          @Param("end_date") String endDate,   @Param("ref_id") String ref_id);
 
