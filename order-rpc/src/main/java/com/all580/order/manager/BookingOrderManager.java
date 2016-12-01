@@ -338,8 +338,8 @@ public class BookingOrderManager extends BaseOrderManager {
             List<OrderItemAccount> orderItemAccounts = orderItemAccountMapper.selectByOrderItem(orderItem.getId());
             for (OrderItemAccount itemAccount : orderItemAccounts) {
                 BalanceChangeInfo info = new BalanceChangeInfo();
-                info.setEpId(itemAccount.getEp_id());
-                info.setCoreEpId(itemAccount.getCore_ep_id());
+                info.setEp_id(itemAccount.getEp_id());
+                info.setCore_ep_id(itemAccount.getCore_ep_id());
                 info.setBalance(itemAccount.getMoney());
                 infoList.add(info);
                 itemAccount.setStatus(OrderConstant.AccountSplitStatus.HAS);
@@ -380,22 +380,22 @@ public class BookingOrderManager extends BaseOrderManager {
             for (EpSalesInfo info : infoList) {
                 Integer buyCoreEpId = null;
                 // 叶子销售商门市价销售
-                if (info.getBuyEpId() == -1) {
-                    buyCoreEpId = getCoreEp(coreEpMap, info.getSaleEpId());
+                if (info.getEp_id() == -1) {
+                    buyCoreEpId = getCoreEp(coreEpMap, info.getSale_ep_id());
                     salePrice = info.getPrice();
                 } else {
-                    buyCoreEpId = getCoreEp(coreEpMap, info.getBuyEpId());
+                    buyCoreEpId = getCoreEp(coreEpMap, info.getEp_id());
                 }
-                Integer saleCoreEpId = getCoreEp(coreEpMap, info.getSaleEpId());
+                Integer saleCoreEpId = getCoreEp(coreEpMap, info.getSale_ep_id());
                 // 卖家 == 平台商 && 买家 == 平台商
-                if (info.getBuyEpId() == buyCoreEpId.intValue() && saleCoreEpId.intValue() == info.getSaleEpId()) {
+                if (info.getEp_id() == buyCoreEpId.intValue() && saleCoreEpId.intValue() == info.getSale_ep_id()) {
                     AccountDataDto dto = addDayAccount(dayAccountDataMap, saleCoreEpId, buyCoreEpId, infoList, day);
                     dto.setSaleCoreEpId(saleCoreEpId);
                 }
 
                 // 买家平台商ID == 卖家平台商ID && 卖家ID != 卖家平台商ID
                 if (buyCoreEpId.intValue() == saleCoreEpId/* && info.getSaleEpId() != saleCoreEpId*/) {
-                    AccountDataDto dto = addDayAccount(dayAccountDataMap, info.getSaleEpId(), info.getBuyEpId() == -1 ? info.getSaleEpId() : info.getBuyEpId(), infoList, day);
+                    AccountDataDto dto = addDayAccount(dayAccountDataMap, info.getSale_ep_id(), info.getEp_id() == -1 ? info.getSale_ep_id() : info.getEp_id(), infoList, day);
                     dto.setSaleCoreEpId(saleCoreEpId);
                 }
             }

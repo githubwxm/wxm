@@ -444,10 +444,10 @@ public class RefundOrderManager extends BaseOrderManager {
             List<BalanceChangeInfo> infoList = new ArrayList<>();
             for (RefundAccount refundAccount : accountList) {
                 BalanceChangeInfo info = new BalanceChangeInfo();
-                info.setEpId(refundAccount.getEp_id());
-                info.setCoreEpId(refundAccount.getCore_ep_id());
+                info.setEp_id(refundAccount.getEp_id());
+                info.setCore_ep_id(refundAccount.getCore_ep_id());
                 info.setBalance(refundAccount.getMoney());
-                info.setCanCash(refundAccount.getProfit());
+                info.setCan_cash(refundAccount.getProfit());
                 infoList.add(info);
                 refundAccount.setStatus(OrderConstant.AccountSplitStatus.HAS);
                 refundAccountMapper.updateByPrimaryKeySelective(refundAccount);
@@ -612,15 +612,15 @@ public class RefundOrderManager extends BaseOrderManager {
         // 余额退款
         if (order.getPayment_type() == PaymentConstant.PaymentType.BALANCE.intValue()) {
             BalanceChangeInfo payInfo = new BalanceChangeInfo();
-            payInfo.setEpId(coreEpId);
-            payInfo.setCoreEpId(coreEpId);
+            payInfo.setEp_id(coreEpId);
+            payInfo.setCore_ep_id(coreEpId);
             payInfo.setBalance(-money);
 
             BalanceChangeInfo saveInfo = new BalanceChangeInfo();
-            saveInfo.setEpId(order.getBuy_ep_id());
-            saveInfo.setCoreEpId(payInfo.getCoreEpId());
+            saveInfo.setEp_id(order.getBuy_ep_id());
+            saveInfo.setCore_ep_id(payInfo.getCore_ep_id());
             saveInfo.setBalance(money);
-            saveInfo.setCanCash(money);
+            saveInfo.setCan_cash(money);
             // 退款
             Result result = changeBalances(
                     PaymentConstant.BalanceChangeType.BALANCE_REFUND,
