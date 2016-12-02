@@ -21,20 +21,20 @@
 
 	<dubbo:service interface="com.all580.ep.api.service.CoreEpAccessService" ref="coreEpAccessService" />
 
-	<bean id="coreEpChannelServiceImpl" class="com.all580.ep.service.CoreEpChannelServiceImpl" />
+	<bean id="coreEpChannelService" class="com.all580.ep.service.CoreEpChannelServiceImpl" />
 
-	<dubbo:service interface="com.all580.ep.api.service.CoreEpChannelService" ref="coreEpChannelServiceImpl" />
+	<dubbo:service interface="com.all580.ep.api.service.CoreEpChannelService" ref="coreEpChannelService" />
 
-	<bean id="epBalanceThresholdServiceImpl" class="com.all580.ep.service.EpBalanceThresholdServiceImpl" />
+	<bean id="epBalanceThresholdService" class="com.all580.ep.service.EpBalanceThresholdServiceImpl" />
 
-	<dubbo:service interface="com.all580.ep.api.service.EpBalanceThresholdService" ref="epBalanceThresholdServiceImpl" />
+	<dubbo:service interface="com.all580.ep.api.service.EpBalanceThresholdService" ref="epBalanceThresholdService" />
 
 
-	<bean id="logCreditServiceImpl" class="com.all580.ep.service.LogCreditServiceImpl" />
-	<dubbo:service interface="com.all580.ep.api.service.LogCreditService" ref="logCreditServiceImpl" />
+	<bean id="logCreditService" class="com.all580.ep.service.LogCreditServiceImpl" />
+	<dubbo:service interface="com.all580.ep.api.service.LogCreditService" ref="logCreditService" />
 
-	<bean id="epFinanceServiceImpl" class="com.all580.ep.service.EpFinanceServiceImpl" />
-	<dubbo:service interface="com.all580.ep.api.service.EpFinanceService" ref="epFinanceServiceImpl" />
+	<bean id="epFinanceService" class="com.all580.ep.service.EpFinanceServiceImpl" />
+	<dubbo:service interface="com.all580.ep.api.service.EpFinanceService" ref="epFinanceService" />
 
 	<bean id="smsService" class="com.all580.notice.sms.service.SmsServiceImpl"/>
 	<dubbo:service interface="com.all580.notice.api.service.SmsService" ref="smsService"/>
