@@ -1,6 +1,7 @@
 package com.all580.order.service;
 
 import com.all580.ep.api.conf.EpConstant;
+import com.all580.order.api.OrderConstant;
 import com.all580.order.api.service.GroupService;
 import com.all580.order.dao.GroupMapper;
 import com.all580.order.dao.GroupMemberMapper;
@@ -13,6 +14,8 @@ import com.all580.order.manager.GroupSyncManager;
 import com.framework.common.Result;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.util.CommonUtil;
+import com.framework.common.validate.CheckIdCardUtils;
+import com.framework.common.validate.ValidRule;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -142,6 +145,11 @@ public class GroupServiceImpl implements GroupService {
             for (Object o : memberList) {
                 Map memberMap = (Map) o;
                 GroupMember member = JsonUtils.map2obj(memberMap, GroupMember.class);
+                if (member.getCard_type() == OrderConstant.CardType.ID) {
+                    if (!CheckIdCardUtils.validateCard(member.getCard())) {
+                        throw new ApiException(String.format("游客:%s 证件为身份证:%s 格式错误", member.getName(), member.getCard()));
+                    }
+                }
                 int ret = groupMemberMapper.insertSelective(member);
                 if (ret <= 0) {
                     throw new ApiException("保存团队成员失败:" + JsonUtils.toJson(o));
