@@ -227,7 +227,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
                 detailList.add(orderItemDetail);
                 // 创建游客信息
                 for (Map v : visitors) {
-                    Visitor visitor = bookingOrderManager.generateVisitor(v, orderItemDetail.getId());
+                    Visitor visitor = bookingOrderManager.generateVisitor(v, orderItemDetail.getId(), null);
                     visitorQuantity += visitor.getQuantity();
                     visitorList.add(visitor);
                 }
