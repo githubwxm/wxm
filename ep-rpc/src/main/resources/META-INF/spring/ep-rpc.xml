@@ -25,7 +25,7 @@
 
 	<dubbo:service interface="com.all580.ep.api.service.CoreEpChannelService" ref="coreEpChannelServiceImple" />
 
-	<bean id="epBalanceThresholdServiceImple" class="com.all580.ep.service.EpBalanceThresholdServiceImple" />
+	<bean id="epBalanceThresholdServiceImple" class="com.all580.ep.service.EpBalanceThresholdServiceImpl" />
 
 	<dubbo:service interface="com.all580.ep.api.service.EpBalanceThresholdService" ref="epBalanceThresholdServiceImple" />
 
@@ -33,7 +33,7 @@
 	<bean id="logCreditServiceImple" class="com.all580.ep.service.LogCreditServiceImpl" />
 	<dubbo:service interface="com.all580.ep.api.service.LogCreditService" ref="logCreditServiceImple" />
 
-	<bean id="epFinanceServiceImple" class="com.all580.ep.service.EpFinanceServiceImple" />
+	<bean id="epFinanceServiceImple" class="com.all580.ep.service.EpFinanceServiceImpl" />
 	<dubbo:service interface="com.all580.ep.api.service.EpFinanceService" ref="epFinanceServiceImple" />
 
 	<bean id="smsService" class="com.all580.notice.sms.service.SmsServiceImpl"/>
