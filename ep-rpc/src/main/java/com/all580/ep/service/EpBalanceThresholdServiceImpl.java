@@ -96,7 +96,7 @@ public class EpBalanceThresholdServiceImpl implements EpBalanceThresholdService 
 
     @Override
     public Result warn(Map<String,Object> map) {
-        Result returnResult = new Result();
+       // Result returnResult = new Result();
         try {
             Result<Map<String,Object>> result = select(map);
             Integer balance=Common.objectParseInteger(map.get("balance"));//传来的余额
