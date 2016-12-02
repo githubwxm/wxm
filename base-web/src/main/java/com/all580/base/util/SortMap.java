@@ -3,6 +3,7 @@ package com.all580.base.util;
 import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.util.CommonUtil;
+import org.apache.commons.lang.enums.Enum;
 
 import java.sql.Timestamp;
 import java.util.*;
