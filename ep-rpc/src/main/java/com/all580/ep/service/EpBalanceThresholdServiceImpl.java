@@ -23,7 +23,7 @@ import java.util.Map;
 @Service
 @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
 @Slf4j
-public class EpBalanceThresholdServiceImple implements EpBalanceThresholdService {
+public class EpBalanceThresholdServiceImpl implements EpBalanceThresholdService {
 
     @Autowired
     private EpBalanceThresholdMapper epBalanceThresholdMapper;
@@ -48,9 +48,11 @@ public class EpBalanceThresholdServiceImple implements EpBalanceThresholdService
                     map.put("threshold",num*100);
                 }
             }
-          Integer core_ep_id=  epMapper.selectPlatformId(CommonUtil.objectParseInteger(map.get("id")));
-            if(!core_ep_id.equals(map.get(EpConstant.EpKey.CORE_EP_ID))){
-                throw new ApiException("企业不属于该平台商");
+            if(map.get("isChannel")==null){
+                Integer core_ep_id=  epMapper.selectPlatformId(CommonUtil.objectParseInteger(map.get("id")));
+                if(!core_ep_id.equals(map.get(EpConstant.EpKey.CORE_EP_ID))){
+                    throw new ApiException("企业不属于该平台商");
+                }
             }
             result.put(epBalanceThresholdMapper.createOrUpdate(map));
             result.setSuccess();

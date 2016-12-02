@@ -47,6 +47,7 @@ public class CoreEpChannelServiceImpl implements CoreEpChannelService {
             balancePayService.createBalanceAccount(epId,coreEpId);//添加钱包
             params.put("id",epId);
             params.put("core_ep_id",coreEpId);
+            params.put("isChannel","true");
             epBalanceThresholdService.createOrUpdate(params);//添加余额阀值
         } catch (Exception e) {
             log.error(e.getMessage(), e);
