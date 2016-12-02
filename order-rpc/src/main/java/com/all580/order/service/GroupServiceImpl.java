@@ -57,22 +57,7 @@ public class GroupServiceImpl implements GroupService {
         if (ret <= 0) {
             throw new ApiException("新增团队失败");
         }
-        Guide guide = new Guide();
-        guide.setCore_ep_id(group.getCore_ep_id());
-        guide.setEp_id(group.getEp_id());
-        guide.setCreate_user_id(group.getCreate_user_id());
-        guide.setCreate_user_name(group.getCreate_user_name());
-        guide.setCreate_time(group.getCreate_time());
-
-        guide.setName(group.getGuide_name());
-        guide.setPhone(group.getGuide_phone());
-        guide.setSid(group.getGuide_sid());
-        guide.setCard(group.getGuide_card());
-        ret = guideMapper.insertSelective(guide);
-        if (ret <= 0) {
-            throw new ApiException("新增导游失败");
-        }
-        return new Result<>(true).putExt(Result.SYNC_DATA, groupSyncManager.syncGroup(group.getId(), guide.getId()));
+        return addOrUpdateGroup(group);
     }
 
     @Override
@@ -88,7 +73,10 @@ public class GroupServiceImpl implements GroupService {
         group.setCreate_user_name(null);
         group.setCreate_time(null);
         int ret = groupMapper.updateByPrimaryKeySelective(group);
-        return new Result<>(ret > 0).putExt(Result.SYNC_DATA, groupSyncManager.syncGroup(group.getId()));
+        if (ret <= 0) {
+            throw new ApiException("修改团队失败");
+        }
+        return addOrUpdateGroup(group);
     }
 
     @Override
@@ -207,5 +195,24 @@ public class GroupServiceImpl implements GroupService {
                 old.getCore_ep_id().intValue() != CommonUtil.objectParseInteger(EpConstant.EpKey.CORE_EP_ID)) {
             throw new ApiException("非法请求:当前企业没有该导游操作权限");
         }
+    }
+
+    private Result<?> addOrUpdateGroup(Group group) {
+        Guide guide = new Guide();
+        guide.setCore_ep_id(group.getCore_ep_id());
+        guide.setEp_id(group.getEp_id());
+        guide.setCreate_user_id(group.getCreate_user_id());
+        guide.setCreate_user_name(group.getCreate_user_name());
+        guide.setCreate_time(group.getCreate_time());
+
+        guide.setName(group.getGuide_name());
+        guide.setPhone(group.getGuide_phone());
+        guide.setSid(group.getGuide_sid());
+        guide.setCard(group.getGuide_card());
+        int ret = guideMapper.insertSelective(guide);
+        if (ret <= 0) {
+            throw new ApiException("新增导游失败");
+        }
+        return new Result<>(true).putExt(Result.SYNC_DATA, groupSyncManager.syncGroup(group.getId(), guide.getId()));
     }
 }
