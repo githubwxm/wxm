@@ -47,7 +47,7 @@ public class GroupSyncManager {
      * @param groupId 团队ID
      * @return
      */
-    public Map<String, Object> syncGroup(int groupId, Integer guideId) {
+    public Map syncGroup(int groupId, Integer guideId) {
         Group group = groupMapper.selectByPrimaryKey(groupId);
         if (group == null) {
             throw new ApiException("同步团队数据异常:null");
@@ -58,7 +58,7 @@ public class GroupSyncManager {
                 // 同步导游表
                 .put("t_guide", guideId != null ? Collections.singletonList(guideMapper.selectByPrimaryKey(guideId)) : Collections.EMPTY_LIST)
                 // 同步
-                .sync().getDataMap();
+                .sync().getDataMapForJsonMap();
     }
 
     /**
@@ -66,7 +66,7 @@ public class GroupSyncManager {
      * @param groupId 团队ID
      * @return
      */
-    public Map<String, Object> syncGroup(int groupId) {
+    public Map syncGroup(int groupId) {
         return syncGroup(groupId, null);
     }
 
@@ -75,7 +75,7 @@ public class GroupSyncManager {
      * @param groupId 要删除的团队
      * @return
      */
-    public Map<String, Object> syncDeleteGroup(int groupId, Set<Integer> members) {
+    public Map syncDeleteGroup(int groupId, Set<Integer> members) {
         Group group = groupMapper.selectByPrimaryKey(groupId);
         if (group == null) {
             throw new ApiException("同步团队数据异常:null");
@@ -85,7 +85,7 @@ public class GroupSyncManager {
                 .delete("t_group", groupId)
                 .delete("t_group_member", members)
                 // 同步
-                .sync().getDataMap();
+                .sync().getDataMapForJsonMap();
     }
 
     /**
@@ -93,7 +93,7 @@ public class GroupSyncManager {
      * @param guideId 导游ID
      * @return
      */
-    public Map<String, Object> syncGuide(int guideId) {
+    public Map syncGuide(int guideId) {
         Guide guide = guideMapper.selectByPrimaryKey(guideId);
         if (guide == null) {
             throw new ApiException("同步导游数据异常:null");
@@ -102,7 +102,7 @@ public class GroupSyncManager {
                 // 同步导游表
                 .put("t_guide", Collections.singletonList(guide))
                 // 同步
-                .sync().getDataMap();
+                .sync().getDataMapForJsonMap();
     }
 
     /**
@@ -110,7 +110,7 @@ public class GroupSyncManager {
      * @param guideId 要删除的导游
      * @return
      */
-    public Map<String, Object> syncDeleteGuide(int guideId) {
+    public Map syncDeleteGuide(int guideId) {
         Guide guide = guideMapper.selectByPrimaryKey(guideId);
         if (guide == null) {
             throw new ApiException("同步导游数据异常:null");
@@ -119,7 +119,7 @@ public class GroupSyncManager {
                 // 同步导游表
                 .delete("t_guide", guideId)
                 // 同步
-                .sync().getDataMap();
+                .sync().getDataMapForJsonMap();
     }
 
     /**
@@ -128,7 +128,7 @@ public class GroupSyncManager {
      * @param lastId 成员最后的ID（增量）
      * @return
      */
-    public Map<String, Object> syncAddGroupMember(int groupId, Integer lastId) {
+    public Map syncAddGroupMember(int groupId, Integer lastId) {
         Group group = groupMapper.selectByPrimaryKey(groupId);
         if (group == null) {
             throw new ApiException("同步团队成员数据异常:null");
@@ -137,7 +137,7 @@ public class GroupSyncManager {
                 // 同步团队成员表
                 .put("t_group_member", groupMemberMapper.selectByGroup(groupId, lastId))
                 // 同步
-                .sync().getDataMap();
+                .sync().getDataMapForJsonMap();
     }
 
     /**
@@ -146,7 +146,7 @@ public class GroupSyncManager {
      * @param memberId 要删除的成员ID
      * @return
      */
-    public Map<String, Object> syncDeleteMember(int groupId, int memberId) {
+    public Map syncDeleteMember(int groupId, int memberId) {
         Group group = groupMapper.selectByPrimaryKey(groupId);
         if (group == null) {
             throw new ApiException("同步团队成员数据异常:null");
@@ -155,7 +155,7 @@ public class GroupSyncManager {
                 // 同步团队成员表
                 .delete("t_group_member", memberId)
                 // 同步
-                .sync().getDataMap();
+                .sync().getDataMapForJsonMap();
     }
 
     public SynchronizeAction generateSyncByGroup(Group group) {
