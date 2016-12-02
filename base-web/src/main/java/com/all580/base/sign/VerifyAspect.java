@@ -1,6 +1,7 @@
 package com.all580.base.sign;
 
 import com.framework.common.Result;
+import com.framework.common.lang.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
@@ -22,10 +23,10 @@ public class VerifyAspect {
     private void controller() {}
 
     @AfterReturning(value = "controller()", returning = "result")
-    public void test(Result result) {
+    public void processResult(Result result) {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
         result.putExt("access_key", request.getAttribute("access_key"));
 
-        log.warn("after.....{}-->{}", result, request.getAttribute("core_ep_id"));
+        log.debug("processResult.....{}-->{}", JsonUtils.toJson(result), request.getAttribute("core_ep_id"));
     }
 }

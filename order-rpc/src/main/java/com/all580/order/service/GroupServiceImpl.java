@@ -3,13 +3,11 @@ package com.all580.order.service;
 import com.all580.ep.api.conf.EpConstant;
 import com.all580.order.api.OrderConstant;
 import com.all580.order.api.service.GroupService;
-import com.all580.order.dao.GroupMapper;
-import com.all580.order.dao.GroupMemberMapper;
-import com.all580.order.dao.GuideMapper;
-import com.all580.order.dao.OrderItemMapper;
+import com.all580.order.dao.*;
 import com.all580.order.entity.Group;
 import com.all580.order.entity.GroupMember;
 import com.all580.order.entity.Guide;
+import com.all580.order.entity.Visitor;
 import com.all580.order.manager.GroupSyncManager;
 import com.framework.common.Result;
 import com.framework.common.lang.JsonUtils;
@@ -46,6 +44,8 @@ public class GroupServiceImpl implements GroupService {
     private GroupMemberMapper groupMemberMapper;
     @Autowired
     private OrderItemMapper orderItemMapper;
+    @Autowired
+    private VisitorMapper visitorMapper;
 
     @Override
     public Result<?> addGroup(Map params) {
@@ -168,7 +168,16 @@ public class GroupServiceImpl implements GroupService {
         int groupId = CommonUtil.objectParseInteger(params.get("group_id"));
         // 检查团队操作权限
         checkGroupOperation(groupId);
+        // 检查是否下过单
         int memberId = CommonUtil.objectParseInteger(params.get("member_id"));
+        GroupMember member = groupMemberMapper.selectByPrimaryKey(memberId);
+        if (member == null) {
+            throw new ApiException("团队成员不存在");
+        }
+        Visitor visitor = visitorMapper.selectBySidAndGroup(member.getCard(), groupId);
+        if (visitor != null) {
+            throw new ApiException("该成员已下单,不允许删除");
+        }
         int ret = groupMemberMapper.deleteByPrimaryKey(memberId);
         return new Result<>(ret > 0);
     }

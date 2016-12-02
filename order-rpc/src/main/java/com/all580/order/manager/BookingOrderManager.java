@@ -275,13 +275,14 @@ public class BookingOrderManager extends BaseOrderManager {
      * @return
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public Visitor generateVisitor(Map v, int itemDetailId) {
+    public Visitor generateVisitor(Map v, int itemDetailId, Integer groupId) {
         Visitor visitor = new Visitor();
         visitor.setRef_id(itemDetailId);
         visitor.setName(CommonUtil.objectParseString(v.get("name")));
         visitor.setPhone(CommonUtil.objectParseString(v.get("phone")));
         visitor.setSid(CommonUtil.objectParseString(v.get("sid")));
         visitor.setQuantity(CommonUtil.objectParseInteger(v.get("quantity")));
+        visitor.setGroup_id(groupId);
         visitorMapper.insertSelective(visitor);
         return visitor;
     }
