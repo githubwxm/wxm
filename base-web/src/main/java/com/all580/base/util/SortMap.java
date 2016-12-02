@@ -39,6 +39,14 @@ public class SortMap {
                 sortMap.put(entry.getKey(), entry.getValue());
                 continue;
             }
+            if (entry.getValue() instanceof Date) {
+                sortMap.put(entry.getKey(), entry.getValue());
+                continue;
+            }
+            if (entry.getValue() instanceof Date) {
+                sortMap.put(entry.getKey(), entry.getValue());
+                continue;
+            }
             if (entry.getValue() instanceof Boolean) {
                 sortMap.put(entry.getKey(), entry.getValue().toString());
                 continue;
@@ -84,6 +92,14 @@ public class SortMap {
                 continue;
             }
             if (item instanceof String) {
+                sortList.add(item);
+                continue;
+            }
+            if (item instanceof Date) {
+                sortList.add(item);
+                continue;
+            }
+            if (item instanceof java.sql.Date) {
                 sortList.add(item);
                 continue;
             }
