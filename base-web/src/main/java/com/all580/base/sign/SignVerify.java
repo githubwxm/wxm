@@ -16,7 +16,7 @@ public class SignVerify {
 
     private static DecimalFormat df = null;
 
-    public static String charset = "utf-8";
+    public final static String charset = "utf-8";
 
 
     public static Map<String, Object> getParameterMap(HttpServletRequest request) {
@@ -62,7 +62,7 @@ public class SignVerify {
             //使用指定的字节数组更新摘要。
             md.update(plainText.getBytes("UTF-8"));
             //通过执行诸如填充之类的最终操作完成哈希计算。
-            byte b[] = md.digest(key.getBytes());
+            byte b[] = md.digest(key.getBytes(charset));
             //生成具体的md5密码到buf数组
             int i;
             StringBuffer buf = new StringBuffer("");
