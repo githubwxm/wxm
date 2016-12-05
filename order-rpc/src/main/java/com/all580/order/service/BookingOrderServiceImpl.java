@@ -13,7 +13,6 @@ import com.all580.order.manager.SmsManager;
 import com.all580.payment.api.conf.PaymentConstant;
 import com.all580.payment.api.model.BalanceChangeInfo;
 import com.all580.payment.api.service.ThirdPayService;
-import com.all580.product.api.consts.ProductConstants;
 import com.all580.product.api.model.EpSalesInfo;
 import com.all580.product.api.model.ProductSalesDayInfo;
 import com.all580.product.api.model.ProductSalesInfo;
@@ -66,6 +65,12 @@ public class BookingOrderServiceImpl implements BookingOrderService {
     private MaSendResponseMapper maSendResponseMapper;
     @Autowired
     private RefundOrderMapper refundOrderMapper;
+    @Autowired
+    private GroupMapper groupMapper;
+    @Autowired
+    private GuideMapper guideMapper;
+    @Autowired
+    private ShippingMapper shippingMapper;
 
     @Autowired
     private ProductSalesPlanRPCService productSalesPlanRPCService;
@@ -83,7 +88,9 @@ public class BookingOrderServiceImpl implements BookingOrderService {
     @Override
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public Result<?> create(Map params) throws Exception {
-        Integer buyEpId = CommonUtil.objectParseInteger(params.get("ep_id"));
+        Integer buyEpId = CommonUtil.objectParseInteger(params.get(EpConstant.EpKey.EP_ID));
+        // 获取平台商ID
+        Integer coreEpId = CommonUtil.objectParseInteger(params.get(EpConstant.EpKey.CORE_EP_ID));
         Integer from = CommonUtil.objectParseInteger(params.get("from"));
         String remark = CommonUtil.objectParseString(params.get("remark"));
         int totalPrice = 0;
@@ -100,8 +107,6 @@ public class BookingOrderServiceImpl implements BookingOrderService {
                 !bookingOrderManager.isEpType(epType, EpConstant.EpType.OTA)) {
             throw new ApiException("该企业不能购买产品");
         }
-        // 获取平台商ID
-        Integer coreEpId = bookingOrderManager.getCoreEpId(bookingOrderManager.getCoreEpId(buyEpId));
         // 锁定库存集合(统一锁定)
         Map<Integer, LockStockDto> lockStockDtoMap = new HashMap<>();
         List<ProductSearchParams> lockParams = new ArrayList<>();
@@ -154,26 +159,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
                 throw new ApiException("预定天数与获取产品天数不匹配");
             }
             // 验证预定时间限制
-            Date when = new Date();
-            for (ProductSalesDayInfo dayInfo : dayInfoList) {
-                if (dayInfo.isBooking_limit()) {
-                    int dayLimit = dayInfo.getBooking_day_limit();
-                    Date limit = DateUtils.addDays(bookingDate, -dayLimit);
-                    try {
-                        String time = dayInfo.getBooking_time_limit();
-                        if (time != null) {
-                            String[] timeArray = time.split(":");
-                            limit = DateUtils.setHours(limit, Integer.parseInt(timeArray[0]));
-                            limit = DateUtils.setMinutes(limit, Integer.parseInt(timeArray[1]));
-                        }
-                    } catch (Exception e) {
-                        throw new ApiException("预定时间限制数据不合法", e);
-                    }
-                    if (when.after(limit)) {
-                        throw new ApiException("预定时间限制,最晚预定时间:" + DateFormatUtils.parseDateToDatetimeString(limit));
-                    }
-                }
-            }
+            bookingOrderManager.validateBookingDate(bookingDate, dayInfoList);
 
             // 判断游客信息
             List<Map> visitors = (List<Map>) item.get("visitor");
@@ -189,34 +175,13 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             List<List<EpSalesInfo>> allDaysSales = salesInfo.getSales();
 
             // 子订单总进货价
-            int saleAmount = 0;
-            for (List<EpSalesInfo> daySales : allDaysSales) {
-                // 获取销售商价格
-                EpSalesInfo info = bookingOrderManager.getBuyingPrice(daySales, buyEpId);
-                if (info == null) {
-                    throw new ApiException("非法购买:该销售商未销售本产品");
-                }
-                saleAmount += info.getPrice() * quantity;
-                // 只计算预付的,到付不计算在内
-                if (salesInfo.getPay_type() == ProductConstants.PayType.PREPAY) {
-                    totalPayPrice += info.getPrice() * quantity; // 计算进货价
-                    totalPayShopPrice += (info.getShop_price() == null ? 0 : info.getShop_price()) * quantity; // 计算门市价
-                }
-
-                EpSalesInfo self = new EpSalesInfo();
-                self.setSale_ep_id(buyEpId);
-                self.setEp_id(-1);
-                // 代收:叶子销售商以门市价卖出
-                self.setPrice(from == OrderConstant.FromType.TRUST ? info.getShop_price() : info.getPrice());
-                if (self.getPrice() == null) {
-                    self.setPrice(0);
-                }
-                daySales.add(self);
-            }
-            totalPrice += saleAmount;
+            int[] priceArray = bookingOrderManager.calcSalesPrice(allDaysSales, buyEpId, quantity, salesInfo.getPay_type(), from);
+            totalPrice += priceArray[0];
+            totalPayPrice += priceArray[1];
+            totalPayShopPrice += priceArray[2];
 
             // 创建子订单
-            OrderItem orderItem = bookingOrderManager.generateItem(salesInfo, dayInfoList.get(dayInfoList.size() - 1).getEnd_time(), saleAmount, bookingDate, days, order.getId(), quantity, productSubId);
+            OrderItem orderItem = bookingOrderManager.generateItem(salesInfo, dayInfoList.get(dayInfoList.size() - 1).getEnd_time(), priceArray[0], bookingDate, days, order.getId(), quantity, productSubId);
 
             List<OrderItemDetail> detailList = new ArrayList<>();
             List<Visitor> visitorList = new ArrayList<>();
@@ -227,7 +192,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
                 detailList.add(orderItemDetail);
                 // 创建游客信息
                 for (Map v : visitors) {
-                    Visitor visitor = bookingOrderManager.generateVisitor(v, orderItemDetail.getId(), null);
+                    Visitor visitor = bookingOrderManager.generateVisitor(v, orderItemDetail.getId());
                     visitorQuantity += visitor.getQuantity();
                     visitorList.add(visitor);
                 }
@@ -266,31 +231,8 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         }
 
         List<OrderItem> orderItems = new ArrayList<>();
-        for (Integer itemId : listMap.keySet()) {
-            int i = 0;
-            // 判断是否需要审核
-            LockStockDto lockStockDto = lockStockDtoMap.get(itemId);
-            OrderItem item = lockStockDto.getOrderItem();
-            List<Boolean> booleanList = listMap.get(itemId);
-            List<OrderItemDetail> orderItemDetail = lockStockDto.getOrderItemDetail();
-            if (booleanList.size() != orderItemDetail.size()) {
-                throw new ApiException(String.format("锁库存天数:%d与购买天数:%d不匹配", booleanList.size(), orderItemDetail.size()));
-            }
-            for (Boolean oversell : booleanList) {
-                OrderItemDetail detail = orderItemDetail.get(i);
-                detail.setOversell(oversell);
-                // 如果是超卖则把子订单状态修改为待审
-                if (oversell && item.getStatus() == OrderConstant.OrderItemStatus.AUDIT_SUCCESS) {
-                    item.setStatus(OrderConstant.OrderItemStatus.AUDIT_WAIT);
-                    orderItemMapper.updateByPrimaryKeySelective(item);
-                    smsManager.sendAuditSms(item);
-                }
-                // 更新子订单详情
-                orderItemDetailMapper.updateByPrimaryKeySelective(detail);
-                i++;
-            }
-            orderItems.add(item);
-        }
+        // 检查是否待审核
+        checkCreateAudit(lockStockDtoMap, listMap, orderItems);
 
         // 更新订单状态
         for (OrderItem orderItem : orderItems) {
@@ -304,20 +246,14 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         order.setPay_amount(from == OrderConstant.FromType.TRUST ? totalPayShopPrice : totalPayPrice);
         order.setSale_amount(totalPrice);
 
-        // 到付
-        if (order.getStatus() != OrderConstant.OrderStatus.AUDIT_WAIT && order.getPay_amount() <= 0) {
-            order.setStatus(OrderConstant.OrderStatus.PAID_HANDLING); // 已支付,处理中
-            // 支付成功回调 记录任务
-            Map<String, String> jobParams = new HashMap<>();
-            jobParams.put("orderId", order.getId().toString());
-            bookingOrderManager.addJob(OrderConstant.Actions.PAYMENT_CALLBACK, jobParams);
-        }
-
         // 更新审核时间
         if (order.getStatus() != OrderConstant.OrderStatus.AUDIT_WAIT && order.getAudit_time() == null) {
             order.setAudit_time(new Date());
         }
         orderMapper.updateByPrimaryKeySelective(order);
+
+        // 到付
+        addPaymentCallbackJob(order);
 
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("order", JsonUtils.obj2map(order));
@@ -525,5 +461,249 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         jobParam.put("orderItemId", orderItem.getId().toString());
         bookingOrderManager.addJob(OrderConstant.Actions.SEND_TICKET, jobParam);
         return new Result<>(true);
+    }
+
+    @Override
+    public Result<?> createForGroup(Map params) throws Exception {
+        Integer buyEpId = CommonUtil.objectParseInteger(params.get(EpConstant.EpKey.EP_ID));
+        // 获取平台商ID
+        Integer coreEpId = CommonUtil.objectParseInteger(params.get(EpConstant.EpKey.CORE_EP_ID));
+        Integer from = CommonUtil.objectParseInteger(params.get("from"));
+        String remark = CommonUtil.objectParseString(params.get("remark"));
+        Integer groupId = CommonUtil.objectParseInteger(params.get("group_id"));
+        Integer guideId = CommonUtil.objectParseInteger(params.get("guide_id"));
+        int totalPrice = 0;
+        int totalPayPrice = 0;
+        int totalPayShopPrice = 0;
+
+        // 验证团队
+        Group group = groupMapper.selectByPrimaryKey(groupId);
+        if (group == null) {
+            throw new ApiException("团队不存在");
+        }
+        if (group.getCore_ep_id().intValue() != coreEpId) {
+            throw new ApiException("团队不属于本平台");
+        }
+
+        // 验证导游
+        Guide guide = guideMapper.selectByPrimaryKey(guideId);
+        if (guide == null) {
+            throw new ApiException("导游不存在");
+        }
+        if (guide.getCore_ep_id().intValue() != group.getCore_ep_id().intValue()) {
+            throw new ApiException("该导游不属于本平台");
+        }
+
+        // 判断销售商状态是否为已冻结
+        if (!bookingOrderManager.isEpStatus(epService.getEpStatus(buyEpId), EpConstant.EpStatus.ACTIVE)) {
+            throw new ApiException("销售商企业已冻结");
+        }
+        // 只有销售商可以下单
+        Result<Integer> epType = epService.selectEpType(buyEpId);
+        if (!bookingOrderManager.isEpType(epType, EpConstant.EpType.SELLER) &&
+                !bookingOrderManager.isEpType(epType, EpConstant.EpType.OTA)) {
+            throw new ApiException("该企业不能购买产品");
+        }
+
+        // 锁定库存集合(统一锁定)
+        Map<Integer, LockStockDto> lockStockDtoMap = new HashMap<>();
+        List<ProductSearchParams> lockParams = new ArrayList<>();
+
+        // 获取下单企业名称
+        String buyEpName = null;
+        Result<Map<String, Object>> epResult = epService.selectId(buyEpId);
+        if (epResult != null && epResult.isSuccess() && epResult.get() != null) {
+            buyEpName = String.valueOf(epResult.get().get("name"));
+        }
+
+        // 创建订单
+        Order order = bookingOrderManager.generateOrder(coreEpId, buyEpId, buyEpName,
+                CommonUtil.objectParseInteger(params.get("operator_id")),
+                CommonUtil.objectParseString(params.get("operator_name")), from, remark);
+
+        // 存储游客信息
+        Map<Integer, List<Visitor>> visitorMap = new HashMap<>();
+        // 获取子订单
+        List<Map> items = (List<Map>) params.get("items");
+        for (Map item : items) {
+            Integer productSubId = CommonUtil.objectParseInteger(item.get("product_sub_code"));
+            Integer quantity = CommonUtil.objectParseInteger(item.get("quantity"));
+            Integer days = CommonUtil.objectParseInteger(item.get("days"));
+            //预定日期
+            Date bookingDate = DateFormatUtils.parseString(DateFormatUtils.DATE_TIME_FORMAT, CommonUtil.objectParseString(item.get("start")));
+            // 验证出游日期
+            if (group.getStart_date().before(bookingDate)) {
+                throw new ApiException("团队出游日期不能小于预定日期");
+            }
+
+            // 验证是否可售
+            ProductSearchParams searchParams = new ProductSearchParams();
+            searchParams.setSubProductId(productSubId);
+            searchParams.setStartDate(bookingDate);
+            searchParams.setDays(days);
+            searchParams.setQuantity(quantity);
+            searchParams.setBuyEpId(buyEpId);
+            Result<ProductSalesInfo> salesInfoResult = productSalesPlanRPCService.validateProductSalesInfo(searchParams);
+            if (!salesInfoResult.isSuccess()) {
+                throw new ApiException(salesInfoResult.getError());
+            }
+            ProductSalesInfo salesInfo = salesInfoResult.get();
+            // 判断供应商状态是否为已冻结
+            if (!bookingOrderManager.isEpStatus(epService.getEpStatus(salesInfo.getEp_id()), EpConstant.EpStatus.ACTIVE)) {
+                throw new ApiException("供应商企业已冻结");
+            }
+
+            List<ProductSalesDayInfo> dayInfoList = salesInfo.getDay_info_list();
+
+            if (dayInfoList.size() != days) {
+                throw new ApiException("预定天数与获取产品天数不匹配");
+            }
+
+            // 验证预定时间限制
+            bookingOrderManager.validateBookingDate(bookingDate, dayInfoList);
+
+            // 验证最低购票
+            if (salesInfo.getMin_buy_quantity() != null && salesInfo.getMin_buy_quantity() > quantity) {
+                throw new ApiException("低于最低购买票数");
+            }
+
+            // 实名制验证
+            List visitors = (List) item.get("visitor");
+            Result<List<GroupMember>> validateResult = bookingOrderManager.validateGroupVisitor(visitors, salesInfo.getReal_name(), quantity, groupId);
+            if (!validateResult.isSuccess()) {
+                throw new ApiException(validateResult.getError());
+            }
+            List<GroupMember> groupMemberList = validateResult.get();
+
+            // 每天的价格
+            List<List<EpSalesInfo>> allDaysSales = salesInfo.getSales();
+
+            // 计算分销价格
+            int[] priceArray = bookingOrderManager.calcSalesPrice(allDaysSales, buyEpId, quantity, salesInfo.getPay_type(), from);
+            totalPrice += priceArray[0];
+            totalPayPrice += priceArray[1];
+            totalPayShopPrice += priceArray[2];
+
+            // 创建子订单
+            OrderItem orderItem = bookingOrderManager.generateItem(salesInfo, dayInfoList.get(dayInfoList.size() - 1).getEnd_time(), priceArray[0], bookingDate, days, order.getId(), quantity, productSubId);
+
+            List<OrderItemDetail> detailList = new ArrayList<>();
+            List<Visitor> visitorList = new ArrayList<>();
+            // 创建子订单详情
+            int i = 0;
+            for (ProductSalesDayInfo dayInfo : dayInfoList) {
+                OrderItemDetail orderItemDetail = bookingOrderManager.generateDetail(dayInfo, orderItem.getId(), DateUtils.addDays(bookingDate, i), quantity);
+                detailList.add(orderItemDetail);
+                // 创建游客信息
+                if (groupMemberList != null) {
+                    for (GroupMember member : groupMemberList) {
+                        visitorList.add(bookingOrderManager.generateGroupVisitor(member, orderItemDetail.getId(), groupId));
+                    }
+                }
+                i++;
+            }
+
+            lockStockDtoMap.put(orderItem.getId(), new LockStockDto(orderItem, detailList));
+            lockParams.add(bookingOrderManager.parseParams(orderItem));
+            visitorMap.put(orderItem.getId(), visitorList);
+
+            // 预分账记录
+            bookingOrderManager.preSplitAccount(allDaysSales, orderItem.getId(), quantity, salesInfo.getPay_type(), bookingDate);
+        }
+        // 创建订单联系人
+        Shipping shipping = new Shipping();
+        shipping.setOrder_id(order.getId());
+        shipping.setName(guide.getName());
+        shipping.setPhone(guide.getPhone());
+        shipping.setSid(guide.getSid());
+        shippingMapper.insertSelective(shipping);
+
+        // 锁定库存
+        Result<Map<Integer, List<Boolean>>> lockResult = productSalesPlanRPCService.lockProductStocks(lockParams);
+        if (!lockResult.isSuccess()) {
+            throw new ApiException(lockResult.getError());
+        }
+
+        Map<Integer, List<Boolean>> listMap = lockResult.get();
+        if (listMap.size() != lockStockDtoMap.size()) {
+            throw new ApiException("锁定库存异常");
+        }
+
+        List<OrderItem> orderItems = new ArrayList<>();
+        // 检查是否待审核
+        checkCreateAudit(lockStockDtoMap, listMap, orderItems);
+
+        // 更新订单状态
+        for (OrderItem orderItem : orderItems) {
+            if (orderItem.getStatus() == OrderConstant.OrderItemStatus.AUDIT_WAIT) {
+                order.setStatus(OrderConstant.OrderStatus.AUDIT_WAIT);
+                break;
+            }
+        }
+
+        // 更新订单金额
+        order.setPay_amount(from == OrderConstant.FromType.TRUST ? totalPayShopPrice : totalPayPrice);
+        order.setSale_amount(totalPrice);
+
+        // 更新审核时间
+        if (order.getStatus() != OrderConstant.OrderStatus.AUDIT_WAIT && order.getAudit_time() == null) {
+            order.setAudit_time(new Date());
+        }
+        orderMapper.updateByPrimaryKeySelective(order);
+
+        // 到付
+        addPaymentCallbackJob(order);
+
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("order", JsonUtils.obj2map(order));
+        resultMap.put("items", JsonUtils.json2List(JsonUtils.toJson(orderItems)));
+        resultMap.put("visitors", JsonUtils.obj2map(visitorMap));
+        Result<Object> result = new Result<>(true);
+        result.put(resultMap);
+
+        // 同步数据
+        Map syncData = bookingOrderManager.syncCreateOrderData(order.getId());
+        result.putExt(Result.SYNC_DATA, syncData);
+        return result;
+    }
+
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public void checkCreateAudit(Map<Integer, LockStockDto> lockStockDtoMap, Map<Integer, List<Boolean>> listMap, List<OrderItem> orderItems) {
+        for (Integer itemId : listMap.keySet()) {
+            int i = 0;
+            // 判断是否需要审核
+            LockStockDto lockStockDto = lockStockDtoMap.get(itemId);
+            OrderItem item = lockStockDto.getOrderItem();
+            List<Boolean> booleanList = listMap.get(itemId);
+            List<OrderItemDetail> orderItemDetail = lockStockDto.getOrderItemDetail();
+            if (booleanList.size() != orderItemDetail.size()) {
+                throw new ApiException(String.format("锁库存天数:%d与购买天数:%d不匹配", booleanList.size(), orderItemDetail.size()));
+            }
+            for (Boolean oversell : booleanList) {
+                OrderItemDetail detail = orderItemDetail.get(i);
+                detail.setOversell(oversell);
+                // 如果是超卖则把子订单状态修改为待审
+                if (oversell && item.getStatus() == OrderConstant.OrderItemStatus.AUDIT_SUCCESS) {
+                    item.setStatus(OrderConstant.OrderItemStatus.AUDIT_WAIT);
+                    orderItemMapper.updateByPrimaryKeySelective(item);
+                    smsManager.sendAuditSms(item);
+                }
+                // 更新子订单详情
+                orderItemDetailMapper.updateByPrimaryKeySelective(detail);
+                i++;
+            }
+            orderItems.add(item);
+        }
+    }
+
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public void addPaymentCallbackJob(Order order) {
+        if (order.getStatus() != OrderConstant.OrderStatus.AUDIT_WAIT && order.getPay_amount() <= 0) {
+            order.setStatus(OrderConstant.OrderStatus.PAID_HANDLING); // 已支付,处理中
+            // 支付成功回调 记录任务
+            Map<String, String> jobParams = new HashMap<>();
+            jobParams.put("orderId", order.getId().toString());
+            bookingOrderManager.addJob(OrderConstant.Actions.PAYMENT_CALLBACK, jobParams);
+        }
     }
 }

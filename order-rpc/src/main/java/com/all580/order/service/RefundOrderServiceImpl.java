@@ -88,6 +88,9 @@ public class RefundOrderServiceImpl implements RefundOrderService {
             throw new ApiException("订单不存在");
         }
 
+        // 供应侧/销售侧
+        Integer applyFrom = CommonUtil.objectParseInteger(params.get("apply_from"));
+
         // 分布式锁
         DistributedReentrantLock lock = distributedLockTemplate.execute(orderItemSn, lockTimeOut);
 
@@ -104,8 +107,16 @@ public class RefundOrderServiceImpl implements RefundOrderService {
             if (!params.containsKey(EpConstant.EpKey.EP_ID)) {
                 throw new ApiException("非法请求:企业ID为空");
             }
-            if (!String.valueOf(params.get(EpConstant.EpKey.EP_ID)).equals(String.valueOf(order.getBuy_ep_id()))) {
-                throw new ApiException("非法请求:当前企业不能退订该订单");
+
+            int epId = CommonUtil.objectParseInteger(params.get(EpConstant.EpKey.EP_ID));
+            if (applyFrom == ProductConstants.RefundEqType.SELLER) {
+                if (epId != order.getBuy_ep_id() && epId != order.getPayee_ep_id()) {
+                    throw new ApiException("非法请求:当前企业不能退订该订单");
+                }
+            } else {
+                if (epId != orderItem.getSupplier_ep_id() && epId != order.getPayee_ep_id()) {
+                    throw new ApiException("非法请求:当前企业不能退订该订单");
+                }
             }
 
             // 每日订单详情
@@ -125,7 +136,7 @@ public class RefundOrderServiceImpl implements RefundOrderService {
             int money = 0;
             // 到付不计算
             if (orderItem.getPayment_flag() != ProductConstants.PayType.PAYS) {
-                money = refundOrderManager.calcRefundMoney(daysList, detailList, orderItem.getId(), order.getBuy_ep_id(),
+                money = refundOrderManager.calcRefundMoney(applyFrom, daysList, detailList, orderItem.getId(), order.getBuy_ep_id(),
                         refundOrderManager.getCoreEpId(refundOrderManager.getCoreEpId(order.getBuy_ep_id())), refundDate);
             }
             if (money < 0) {

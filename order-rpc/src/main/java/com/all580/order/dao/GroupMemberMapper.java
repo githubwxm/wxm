@@ -63,6 +63,14 @@ public interface GroupMemberMapper {
     List<GroupMember> selectByGroup(@Param("groupId") Integer groupId, @Param("lastId") Integer lastId);
 
     /**
+     * 根据团队获取团队成员
+     * @param groupId
+     * @param ids
+     * @return
+     */
+    List<GroupMember> selectByIds(@Param("groupId") Integer groupId, @Param("ids") List<Integer> ids);
+
+    /**
      * 根据团队获取团队成员ID
      * @param groupId 团队ID
      * @return

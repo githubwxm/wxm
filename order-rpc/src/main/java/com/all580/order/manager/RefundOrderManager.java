@@ -284,6 +284,7 @@ public class RefundOrderManager extends BaseOrderManager {
 
     /**
      * 计算退支付金额
+     * @param from 供应侧/销售侧
      * @param daysList 每日退票详情
      * @param detailList 每日订单详情
      * @param itemId 子订单ID
@@ -291,7 +292,7 @@ public class RefundOrderManager extends BaseOrderManager {
      * @param coreEpId 支付企业余额托管平台商ID
      * @return
      */
-    public int calcRefundMoney(List daysList, List<OrderItemDetail> detailList, int itemId, int epId, int coreEpId, Date refundDate) throws Exception {
+    public int calcRefundMoney(int from, List daysList, List<OrderItemDetail> detailList, int itemId, int epId, int coreEpId, Date refundDate) throws Exception {
         OrderItemAccount account = orderItemAccountMapper.selectByOrderItemAndEp(itemId, epId, coreEpId);
         if (account == null) {
             throw new ApiException("数据异常,分账记录不存在");
@@ -319,7 +320,7 @@ public class RefundOrderManager extends BaseOrderManager {
             }
             int outPrice = dayData.getIntValue("outPrice");
             Integer quantity = CommonUtil.objectParseInteger(dayMap.get("quantity"));
-            Map<String, Integer> rate = ProductRules.calcRefund(detail.getCust_refund_rule(), detail.getDay(), refundDate);
+            Map<String, Integer> rate = ProductRules.calcRefund(from == ProductConstants.RefundEqType.SELLER ? detail.getCust_refund_rule() : detail.getSaler_refund_rule(), detail.getDay(), refundDate);
             if (rate.get("type") == ProductConstants.AddPriceType.FIX) {
                 money += (outPrice * quantity) - rate.get("fixed") * quantity;
             } else {

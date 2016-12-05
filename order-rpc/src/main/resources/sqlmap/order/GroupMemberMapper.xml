@@ -210,6 +210,16 @@
         </if>
     </select>
 
+    <select id="selectByIds" resultMap="BaseResultMap">
+        SELECT * FROM t_group_member
+        WHERE `group_id` = #{groupId,jdbcType=INTEGER}
+        AND `id` in
+        <foreach collection="ids" item="memberId" index="index"
+                 open="(" close=")" separator=",">
+          #{memberId}
+        </foreach>
+    </select>
+
     <select id="selectIdsByGroup" resultType="java.util.Set">
         SELECT id FROM t_group_member
         WHERE `group_id` = #{groupId,jdbcType=INTEGER}
