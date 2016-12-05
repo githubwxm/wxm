@@ -68,7 +68,8 @@ public class GroupServiceImpl implements GroupService {
     public Result<?> updateGroup(Map params) {
         int groupId = CommonUtil.objectParseInteger(params.get("group_id"));
         // 检查团队操作权限
-        checkGroupOperation(groupId, true);
+        checkGroupOperation(groupId, true, CommonUtil.objectParseInteger(params.get(EpConstant.EpKey.EP_ID)),
+                CommonUtil.objectParseInteger(params.get(EpConstant.EpKey.CORE_EP_ID)));
         Group group = JsonUtils.map2obj(params, Group.class, dateFormat);
         group.setId(groupId);
         group.setCore_ep_id(null);
@@ -87,7 +88,8 @@ public class GroupServiceImpl implements GroupService {
     public Result<?> delGroup(Map params) {
         int groupId = CommonUtil.objectParseInteger(params.get("group_id"));
         // 检查团队操作权限
-        checkGroupOperation(groupId, true);
+        checkGroupOperation(groupId, true, CommonUtil.objectParseInteger(params.get(EpConstant.EpKey.EP_ID)),
+                CommonUtil.objectParseInteger(params.get(EpConstant.EpKey.CORE_EP_ID)));
         Set<Integer> members = groupMemberMapper.selectIdsByGroup(groupId);
         int ret = groupMapper.deleteByPrimaryKey(groupId);
         int ret2 = groupMemberMapper.deleteByGroup(groupId);
@@ -114,7 +116,8 @@ public class GroupServiceImpl implements GroupService {
     public Result<?> updateGuide(Map params) {
         int guideId = CommonUtil.objectParseInteger(params.get("guide_id"));
         // 检查导游操作权限
-        checkGuideOperation(guideId);
+        checkGuideOperation(guideId, CommonUtil.objectParseInteger(params.get(EpConstant.EpKey.EP_ID)),
+                CommonUtil.objectParseInteger(params.get(EpConstant.EpKey.CORE_EP_ID)));
         Guide guide = JsonUtils.map2obj(params, Guide.class);
         guide.setId(guideId);
         guide.setCore_ep_id(null);
@@ -130,7 +133,8 @@ public class GroupServiceImpl implements GroupService {
     public Result<?> delGuide(Map params) {
         int guideId = CommonUtil.objectParseInteger(params.get("guide_id"));
         // 检查导游操作权限
-        checkGuideOperation(guideId);
+        checkGuideOperation(guideId, CommonUtil.objectParseInteger(params.get(EpConstant.EpKey.EP_ID)),
+                CommonUtil.objectParseInteger(params.get(EpConstant.EpKey.CORE_EP_ID)));
         int ret = guideMapper.deleteByPrimaryKey(guideId);
         return new Result<>(ret > 0).putExt(Result.SYNC_DATA, groupSyncManager.syncDeleteGuide(guideId));
     }
@@ -139,7 +143,8 @@ public class GroupServiceImpl implements GroupService {
     public Result<?> addGroupMember(Map params) {
         int groupId = CommonUtil.objectParseInteger(params.get("group_id"));
         // 检查团队操作权限
-        checkGroupOperation(groupId);
+        checkGroupOperation(groupId, CommonUtil.objectParseInteger(params.get(EpConstant.EpKey.EP_ID)),
+                CommonUtil.objectParseInteger(params.get(EpConstant.EpKey.CORE_EP_ID)));
         List memberList = (List) params.get("member");
         if (memberList != null) {
             Integer lastId = null;
@@ -168,7 +173,8 @@ public class GroupServiceImpl implements GroupService {
     public Result<?> delGroupMember(Map params) {
         int groupId = CommonUtil.objectParseInteger(params.get("group_id"));
         // 检查团队操作权限
-        checkGroupOperation(groupId);
+        checkGroupOperation(groupId, CommonUtil.objectParseInteger(params.get(EpConstant.EpKey.EP_ID)),
+                CommonUtil.objectParseInteger(params.get(EpConstant.EpKey.CORE_EP_ID)));
         // 检查是否下过单
         int memberId = CommonUtil.objectParseInteger(params.get("member_id"));
         GroupMember member = groupMemberMapper.selectByPrimaryKey(memberId);
@@ -183,13 +189,13 @@ public class GroupServiceImpl implements GroupService {
         return new Result<>(ret > 0);
     }
 
-    private void checkGroupOperation(int groupId, boolean isOrder) {
+    private void checkGroupOperation(int groupId, boolean isOrder, Integer epId, Integer coreEpId) {
         Group old = groupMapper.selectByPrimaryKey(groupId);
         if (old == null) {
             throw new ApiException("团队不存在");
         }
-        if (old.getEp_id().intValue() != CommonUtil.objectParseInteger(EpConstant.EpKey.EP_ID) ||
-                old.getCore_ep_id().intValue() != CommonUtil.objectParseInteger(EpConstant.EpKey.CORE_EP_ID)) {
+        if (old.getEp_id().intValue() != epId ||
+                old.getCore_ep_id().intValue() != coreEpId) {
             throw new ApiException("非法请求:当前企业没有该团队操作权限");
         }
         if (isOrder) {
@@ -200,17 +206,17 @@ public class GroupServiceImpl implements GroupService {
         }
     }
 
-    private void checkGroupOperation(int groupId) {
-        checkGroupOperation(groupId, false);
+    private void checkGroupOperation(int groupId, Integer epId, Integer coreEpId) {
+        checkGroupOperation(groupId, false, epId, coreEpId);
     }
 
-    private void checkGuideOperation(int guideId) {
+    private void checkGuideOperation(int guideId, Integer epId, Integer coreEpId) {
         Guide old = guideMapper.selectByPrimaryKey(guideId);
         if (old == null) {
             throw new ApiException("导游不存在");
         }
-        if (old.getEp_id().intValue() != CommonUtil.objectParseInteger(EpConstant.EpKey.EP_ID) ||
-                old.getCore_ep_id().intValue() != CommonUtil.objectParseInteger(EpConstant.EpKey.CORE_EP_ID)) {
+        if (old.getEp_id().intValue() != epId ||
+                old.getCore_ep_id().intValue() != coreEpId) {
             throw new ApiException("非法请求:当前企业没有该导游操作权限");
         }
     }
