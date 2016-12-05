@@ -80,6 +80,10 @@ public class GroupSyncManager {
         if (group == null) {
             throw new ApiException("同步团队数据异常:null");
         }
+        int ret = groupMapper.deleteByPrimaryKey(groupId);
+        if (ret <= 0) {
+            throw new ApiException("同步团队数据异常:删除团队失败");
+        }
         return generateSyncByGroup(group)
                 // 同步团队表
                 .delete("t_group", groupId)
@@ -114,6 +118,10 @@ public class GroupSyncManager {
         Guide guide = guideMapper.selectByPrimaryKey(guideId);
         if (guide == null) {
             throw new ApiException("同步导游数据异常:null");
+        }
+        int ret = guideMapper.deleteByPrimaryKey(guideId);
+        if (ret <= 0) {
+            throw new ApiException("同步导游数据异常:删除导游失败");
         }
         return generateSyncByGuide(guide)
                 // 同步导游表

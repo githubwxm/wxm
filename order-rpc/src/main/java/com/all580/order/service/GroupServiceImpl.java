@@ -61,7 +61,8 @@ public class GroupServiceImpl implements GroupService {
         if (ret <= 0) {
             throw new ApiException("新增团队失败");
         }
-        return addOrUpdateGroup(group);
+        Integer guideId = CommonUtil.objectParseInteger(params.get("guide_id"));
+        return addOrUpdateGroup(group, guideId);
     }
 
     @Override
@@ -81,7 +82,8 @@ public class GroupServiceImpl implements GroupService {
         if (ret <= 0) {
             throw new ApiException("修改团队失败");
         }
-        return addOrUpdateGroup(group);
+        Integer guideId = CommonUtil.objectParseInteger(params.get("guide_id"));
+        return addOrUpdateGroup(group, guideId);
     }
 
     @Override
@@ -91,9 +93,8 @@ public class GroupServiceImpl implements GroupService {
         checkGroupOperation(groupId, true, CommonUtil.objectParseInteger(params.get(EpConstant.EpKey.EP_ID)),
                 CommonUtil.objectParseInteger(params.get(EpConstant.EpKey.CORE_EP_ID)));
         Set<Integer> members = groupMemberMapper.selectIdsByGroup(groupId);
-        int ret = groupMapper.deleteByPrimaryKey(groupId);
-        int ret2 = groupMemberMapper.deleteByGroup(groupId);
-        if (ret <=0 || (members != null && ret2 != members.size())) {
+        int ret = groupMemberMapper.deleteByGroup(groupId);
+        if (members != null && ret != members.size()) {
             throw new ApiException("删除团队失败");
         }
         return new Result<>(true).putExt(Result.SYNC_DATA, groupSyncManager.syncDeleteGroup(groupId, members));
@@ -135,8 +136,7 @@ public class GroupServiceImpl implements GroupService {
         // 检查导游操作权限
         checkGuideOperation(guideId, CommonUtil.objectParseInteger(params.get(EpConstant.EpKey.EP_ID)),
                 CommonUtil.objectParseInteger(params.get(EpConstant.EpKey.CORE_EP_ID)));
-        int ret = guideMapper.deleteByPrimaryKey(guideId);
-        return new Result<>(ret > 0).putExt(Result.SYNC_DATA, groupSyncManager.syncDeleteGuide(guideId));
+        return new Result<>(true).putExt(Result.SYNC_DATA, groupSyncManager.syncDeleteGuide(guideId));
     }
 
     @Override
@@ -186,7 +186,7 @@ public class GroupServiceImpl implements GroupService {
             throw new ApiException("该成员已下单,不允许删除");
         }
         int ret = groupMemberMapper.deleteByPrimaryKey(memberId);
-        return new Result<>(ret > 0);
+        return new Result<>(ret > 0).putExt(Result.SYNC_DATA, groupSyncManager.syncDeleteMember(groupId, memberId));
     }
 
     private void checkGroupOperation(int groupId, boolean isOrder, Integer epId, Integer coreEpId) {
@@ -221,7 +221,14 @@ public class GroupServiceImpl implements GroupService {
         }
     }
 
-    private Result<?> addOrUpdateGroup(Group group) {
+    private Result<?> addOrUpdateGroup(Group group, Integer guideId) {
+        if (guideId != null) {
+            Guide guide = guideMapper.selectByPrimaryKey(guideId);
+            if (guide == null) {
+                throw new ApiException("导游不存在");
+            }
+            return new Result<>(true).putExt(Result.SYNC_DATA, groupSyncManager.syncGroup(group.getId()));
+        }
         Guide guide = new Guide();
         guide.setCore_ep_id(group.getCore_ep_id());
         guide.setEp_id(group.getEp_id());

@@ -2,6 +2,7 @@ package com.all580.order.api.service;
 
 import com.framework.common.Result;
 
+import java.text.ParseException;
 import java.util.Map;
 
 /**
@@ -38,4 +39,11 @@ public interface BookingOrderService {
      * @return
      */
     Result<?> resendTicket(Map params);
+
+    /**
+     * 团队下单
+     * @param params
+     * @return
+     */
+    Result<?> createForGroup(Map params) throws Exception;
 }

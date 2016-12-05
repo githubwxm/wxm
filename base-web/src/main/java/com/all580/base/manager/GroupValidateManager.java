@@ -43,6 +43,7 @@ public class GroupValidateManager {
                 "province", // 省
                 "city", // 市
                 "area", // 区
+                "guide_id", // 导游ID
                 "ep_id", // 企业ID
                 "operator_id" // 用户ID
         }, new ValidRule[]{new ValidRule.Digits()});

@@ -56,6 +56,8 @@ public class BookingOrderManager extends BaseOrderManager {
     private OrderClearanceDetailMapper orderClearanceDetailMapper;
     @Autowired
     private ClearanceWashedSerialMapper clearanceWashedSerialMapper;
+    @Autowired
+    private GroupMemberMapper groupMemberMapper;
 
     /**
      * 验证游客信息
@@ -93,6 +95,79 @@ public class BookingOrderManager extends BaseOrderManager {
             sids.add(sid);
         }
         return new Result(true);
+    }
+
+    /**
+     * 团队游客实名制信息验证
+     * @param visitors 游客
+     * @param realName 实名制
+     * @param quantity 票数
+     * @return
+     */
+    public Result<List<GroupMember>> validateGroupVisitor(List visitors, Integer realName, int quantity, int groupId) {
+        List<GroupMember> members = null;
+        if (realName != null && realName != ProductConstants.NeedRealNameState.NO_NEED) {
+            // 获取团队所有成员 如果这里不判断的话 可以不查 减轻压力
+            List<Integer> ids = new ArrayList<>();
+            for (Object o : visitors) {
+                Integer memberId = CommonUtil.objectParseInteger(o);
+                if (memberId == null) {
+                    return new Result<>(false, Result.PARAMS_ERROR, "团队成员不能为空");
+                }
+                boolean have = false;
+                for (Integer id : ids) {
+                    if (id.intValue() == memberId) {
+                        have = true;
+                        break;
+                    }
+                }
+                if (!have) {
+                    ids.add(memberId);
+                }
+            }
+            members = groupMemberMapper.selectByIds(groupId, ids);
+            if (members == null || members.isEmpty() || members.size() != ids.size()) {
+                return new Result<>(false, Result.PARAMS_ERROR, "团队成员不匹配");
+            }
+
+            if (realName == ProductConstants.NeedRealNameState.MUST && quantity != ids.size()) {
+                return new Result<>(false, Result.PARAMS_ERROR, "一证一票信息不符");
+            }
+            if (realName == ProductConstants.NeedRealNameState.MUCH && ids.size() == 0) {
+                return new Result<>(false, Result.PARAMS_ERROR, "一证多票信息不符");
+            }
+        }
+        Result<List<GroupMember>> result = new Result<>(true);
+        result.put(members);
+        return result;
+    }
+
+    /**
+     * 预定时间现在
+     * @param bookingDate 预定时间
+     * @param dayInfoList
+     */
+    public void validateBookingDate(Date bookingDate, List<ProductSalesDayInfo> dayInfoList) {
+        Date when = new Date();
+        for (ProductSalesDayInfo dayInfo : dayInfoList) {
+            if (dayInfo.isBooking_limit()) {
+                int dayLimit = dayInfo.getBooking_day_limit();
+                Date limit = DateUtils.addDays(bookingDate, -dayLimit);
+                try {
+                    String time = dayInfo.getBooking_time_limit();
+                    if (time != null) {
+                        String[] timeArray = time.split(":");
+                        limit = DateUtils.setHours(limit, Integer.parseInt(timeArray[0]));
+                        limit = DateUtils.setMinutes(limit, Integer.parseInt(timeArray[1]));
+                    }
+                } catch (Exception e) {
+                    throw new ApiException("预定时间限制数据不合法", e);
+                }
+                if (when.after(limit)) {
+                    throw new ApiException("预定时间限制,最晚预定时间:" + DateFormatUtils.parseDateToDatetimeString(limit));
+                }
+            }
+        }
     }
 
     /**
@@ -275,13 +350,31 @@ public class BookingOrderManager extends BaseOrderManager {
      * @return
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public Visitor generateVisitor(Map v, int itemDetailId, Integer groupId) {
+    public Visitor generateVisitor(Map v, int itemDetailId) {
         Visitor visitor = new Visitor();
         visitor.setRef_id(itemDetailId);
         visitor.setName(CommonUtil.objectParseString(v.get("name")));
         visitor.setPhone(CommonUtil.objectParseString(v.get("phone")));
         visitor.setSid(CommonUtil.objectParseString(v.get("sid")));
         visitor.setQuantity(CommonUtil.objectParseInteger(v.get("quantity")));
+        visitorMapper.insertSelective(visitor);
+        return visitor;
+    }
+
+    /**
+     * 创建子订单游客信息
+     * @param member
+     * @param itemDetailId
+     * @param groupId
+     * @return
+     */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public Visitor generateGroupVisitor(GroupMember member, int itemDetailId, Integer groupId) {
+        Visitor visitor = new Visitor();
+        visitor.setRef_id(itemDetailId);
+        visitor.setName(member.getName());
+        visitor.setPhone(member.getPhone());
+        visitor.setSid(member.getCard());
         visitor.setGroup_id(groupId);
         visitorMapper.insertSelective(visitor);
         return visitor;
@@ -321,6 +414,46 @@ public class BookingOrderManager extends BaseOrderManager {
             }
         }
         return true;
+    }
+
+    /**
+     * 计算分销价格
+     * @param allDaysSales
+     * @param buyEpId
+     * @param quantity
+     * @param payType
+     * @param from
+     * @return
+     */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public int[] calcSalesPrice(List<List<EpSalesInfo>> allDaysSales, int buyEpId, int quantity, int payType, int from) {
+        int saleAmount = 0;
+        int totalPayPrice = 0;
+        int totalPayShopPrice = 0;
+        for (List<EpSalesInfo> daySales : allDaysSales) {
+            // 获取销售商价格
+            EpSalesInfo info = getBuyingPrice(daySales, buyEpId);
+            if (info == null) {
+                throw new ApiException("非法购买:该销售商未销售本产品");
+            }
+            saleAmount += info.getPrice() * quantity;
+            // 只计算预付的,到付不计算在内
+            if (payType == ProductConstants.PayType.PREPAY) {
+                totalPayPrice += info.getPrice() * quantity; // 计算进货价
+                totalPayShopPrice += (info.getShop_price() == null ? 0 : info.getShop_price()) * quantity; // 计算门市价
+            }
+
+            EpSalesInfo self = new EpSalesInfo();
+            self.setSale_ep_id(buyEpId);
+            self.setEp_id(-1);
+            // 代收:叶子销售商以门市价卖出
+            self.setPrice(from == OrderConstant.FromType.TRUST ? info.getShop_price() : info.getPrice());
+            if (self.getPrice() == null) {
+                self.setPrice(0);
+            }
+            daySales.add(self);
+        }
+        return new int[]{saleAmount, totalPayPrice, totalPayShopPrice};
     }
 
     /**
