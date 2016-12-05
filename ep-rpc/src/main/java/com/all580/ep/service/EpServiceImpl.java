@@ -7,6 +7,7 @@ import com.all580.ep.api.service.EpService;
 import com.all580.ep.com.Common;
 import com.all580.ep.dao.CoreEpAccessMapper;
 import com.all580.ep.dao.EpMapper;
+import com.all580.manager.SyncEpData;
 import com.all580.notice.api.conf.SmsType;
 import com.all580.notice.api.service.SmsService;
 import com.all580.payment.api.conf.PaymentConstant;
@@ -58,7 +59,8 @@ public class EpServiceImpl implements EpService {
 
     @Autowired
     private CoreEpAccessMapper coreEpAccessMapper;//ddd
-
+    @Autowired
+    private SyncEpData syncEpData;
     @Autowired
     private SmsService smsService;
 
@@ -406,7 +408,7 @@ public class EpServiceImpl implements EpService {
             if (ref > 0) {
                 List<Map<String, String>> listMap = epMapper.selectSingleTable(params);
                 // int id = CommonUtil.objectParseInteger(params.get(EpConstant.EpKey.CORE_EP_ID));
-                Map<String,Object> syncData=  syncEpData(selectPlatformId(CommonUtil.objectParseInteger(params.get("id"))).get(), EpConstant.Table.T_EP, listMap);//同步数据
+                Map<String,Object> syncData=  syncEpData.syncEpData(selectPlatformId(CommonUtil.objectParseInteger(params.get("id"))).get(), EpConstant.Table.T_EP, listMap);//同步数据
                 result.put(ref);
                 result.putExt(Result.SYNC_DATA, syncData);
                 result.setSuccess();
@@ -468,7 +470,7 @@ public class EpServiceImpl implements EpService {
             Integer ref = updateStatus(params).get();
             if (ref > 0) {//是否有更新
                 List<Map<String, String>> listMap = epMapper.selectSingleTable(params);
-                Map<String,Object> syncData=  syncEpData(map.get("ep_id"), EpConstant.Table.T_EP, listMap);
+                Map<String,Object> syncData=  syncEpData.syncEpData(map.get("ep_id"), EpConstant.Table.T_EP, listMap);
                 result.setSuccess();
                 result.putExt(Result.SYNC_DATA, syncData);
             } else {
@@ -551,7 +553,7 @@ public class EpServiceImpl implements EpService {
             Map<String, Object> paramsMap = new HashMap<>();//数据同步条件
             paramsMap.put("core_ep_id", map.get("id"));
             List<Map<String, String>> listMap = epMapper.selectSingleTable(paramsMap);
-            Map<String,Object> syncData=  syncEpData(map.get("id"), EpConstant.Table.T_EP, listMap);
+            Map<String,Object> syncData=  syncEpData.syncEpData(map.get("id"), EpConstant.Table.T_EP, listMap);
             // result.putExt(Result.SYNC_DATA, syncData);
 //            String destPhoneNum = selectPhone(CommonUtil.objectParseInteger(map.get("id"))).get();
 //            int ep_id = CommonUtil.objectParseInteger(map.get("ep_id"));
@@ -599,7 +601,7 @@ public class EpServiceImpl implements EpService {
             Map<String, Object> paramsMap = new HashMap<>();
             paramsMap.put("core_ep_id", map.get("id"));
             List<Map<String, String>> listMap = epMapper.selectSingleTable(paramsMap);
-            Map<String,Object> syncData=   syncEpData(map.get("id"), EpConstant.Table.T_EP, listMap);
+            Map<String,Object> syncData=   syncEpData.syncEpData(map.get("id"), EpConstant.Table.T_EP, listMap);
             //result.putExt(Result.SYNC_DATA, syncData);
         } catch (ApiException e) {
             log.error(e.getMessage(), e);
@@ -644,7 +646,7 @@ public class EpServiceImpl implements EpService {
                 Map<String, Object> tempMap = new HashMap<>();
                 tempMap.put("id", map.get("id"));
                 List<Map<String, String>> listMap = epMapper.selectSingleTable(tempMap);
-                Map<String,Object> syncData=  syncEpData(selectPlatformId(CommonUtil.objectParseInteger(map.get("id"))).get(), EpConstant.Table.T_EP, listMap);
+                Map<String,Object> syncData=  syncEpData.syncEpData(selectPlatformId(CommonUtil.objectParseInteger(map.get("id"))).get(), EpConstant.Table.T_EP, listMap);
                 result.put(map);
                 result.setSuccess();
                 result.putExt(Result.SYNC_DATA, syncData);
@@ -811,7 +813,7 @@ public class EpServiceImpl implements EpService {
             if (ref > 0) {
                 Integer core_ep_id = selectPlatformId(epIds.get(0)).get();
                 List<Map<String, String>> listMap = epMapper.selectEpList(epIds);
-               Map<String,Object> syncData= syncEpData(core_ep_id, EpConstant.Table.T_EP, listMap);
+               Map<String,Object> syncData= syncEpData.syncEpData(core_ep_id, EpConstant.Table.T_EP, listMap);
                 return new Result(true).putExt(Result.SYNC_DATA, syncData);
             }
         } catch (ApiException e) {
@@ -1010,47 +1012,47 @@ public class EpServiceImpl implements EpService {
             Map<String, Object> map = new HashMap<>();
             map.put("id", params.get("id"));
             List<Map<String, String>> listMap = epMapper.selectSingleTable(map);
-            Map<String, Object> syncData = syncEpData(selectPlatformId(CommonUtil.objectParseInteger(params.get("id"))).get(), EpConstant.Table.T_EP, listMap);
+            Map<String, Object> syncData = syncEpData.syncEpData(selectPlatformId(CommonUtil.objectParseInteger(params.get("id"))).get(), EpConstant.Table.T_EP, listMap);
             return new Result(true).putExt(Result.SYNC_DATA, syncData);
         } catch (Exception e) {
             log.error("查询数据库异常", e);
             throw new ApiException("查询数据库异常", e);
         }
     }
-
-
-    /**
-     * 同步数据
-     *
-     * @param
-     */
-    public Map<String, Object> syncEpData(Object coreEpId, String table, List<?> data) {
-        try {
-            if (!CommonUtil.objectIsNumber(coreEpId)) {
-                log.error("同步数据平台商错误 {} {}", table, data);
-            }
-            if (data.isEmpty()) {
-                log.error("没有要同步的数据");
-            }
-            Map<String, Object> tempMap = new HashMap<>();
-            tempMap.put("id", coreEpId);
-            List<Map<String, Object>> keyList = coreEpAccessMapper.select(tempMap);
-            String key = "";
-            if (keyList.isEmpty()) {
-                log.error("未找到{} 对应的key", coreEpId);
-                throw new ApiException("未找到" + coreEpId + "对应的key");
-            } else {
-                key = CommonUtil.objectParseString(keyList.get(0).get(EpConstant.EpKey.ACCESS_KEY));
-            }
-            return synchronizeDataManager.generate(key)
-                    .put(table, data)
-                    .sync().getDataMap();
-        } catch (ApiException e) {
-            log.error(e.getMessage());
-            throw new ApiException(e.getMessage());
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            throw new ApiException("同步数据异常");
-        }
-    }
+//
+//
+//    /**
+//     * 同步数据
+//     *
+//     * @param
+//     */
+//    public Map<String, Object> syncEpData(Object coreEpId, String table, List<?> data) {
+//        try {
+//            if (!CommonUtil.objectIsNumber(coreEpId)) {
+//                log.error("同步数据平台商错误 {} {}", table, data);
+//            }
+//            if (data.isEmpty()) {
+//                log.error("没有要同步的数据");
+//            }
+//            Map<String, Object> tempMap = new HashMap<>();
+//            tempMap.put("id", coreEpId);
+//            List<Map<String, Object>> keyList = coreEpAccessMapper.select(tempMap);
+//            String key = "";
+//            if (keyList.isEmpty()) {
+//                log.error("未找到{} 对应的key", coreEpId);
+//                throw new ApiException("未找到" + coreEpId + "对应的key");
+//            } else {
+//                key = CommonUtil.objectParseString(keyList.get(0).get(EpConstant.EpKey.ACCESS_KEY));
+//            }
+//            return synchronizeDataManager.generate(key)
+//                    .put(table, data)
+//                    .sync().getDataMap();
+//        } catch (ApiException e) {
+//            log.error(e.getMessage());
+//            throw new ApiException(e.getMessage());
+//        } catch (Exception e) {
+//            log.error(e.getMessage());
+//            throw new ApiException("同步数据异常");
+//        }
+//    }
 }

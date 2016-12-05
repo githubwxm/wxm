@@ -1,5 +1,7 @@
 package com.all580.role.service;
 
+import com.all580.ep.api.conf.EpConstant;
+import com.all580.manager.SyncEpData;
 import com.all580.role.api.service.FuncService;
 import com.all580.role.dao.FuncMapper;
 import com.framework.common.Result;
@@ -23,7 +25,8 @@ public class FuncServiceImpl implements FuncService{
     @Autowired
     private FuncMapper funcMapper;
 
-
+    @Autowired
+    private SyncEpData syncEpData;
 
     @Override
     public Result<List<Map<String, Object>>> getAll() {
@@ -43,7 +46,7 @@ public class FuncServiceImpl implements FuncService{
         try{
             funcMapper.insertSelective(params);
             result.put(params.get("id"));
-            log.warn(result.get().toString());
+            syncEpData.syncEpAllData(EpConstant.Table.T_FUNC,params);
         }catch (Exception e){
             log.error("添加菜单功能异常",e);
             throw  new ApiException("添加菜单功能异常");
@@ -55,6 +58,7 @@ public class FuncServiceImpl implements FuncService{
     public Result updateByPrimaryKeySelective(Map<String, Object> params) {
         try{
             funcMapper.updateByPrimaryKeySelective(params);
+            syncEpData.syncEpAllData(EpConstant.Table.T_FUNC,params);
         }catch (Exception e){
             log.error("修改菜单功能异常",e);
             throw  new ApiException("修改菜单功能异常");
@@ -67,8 +71,9 @@ public class FuncServiceImpl implements FuncService{
         try{
             List<Integer> list = new ArrayList<>();
             list.add(id);
-         list.addAll(deletePid(list,null)) ;
+            list.addAll(deletePid(list,null)) ;
             funcMapper.deletePidAll(list);
+            syncEpData.syncDeleteAllData(EpConstant.Table.T_FUNC,(Integer [])list.toArray(new Integer[list.size()]) );
         }catch (Exception e){
             log.error("删除菜单功能异常",e);
             throw  new ApiException("删除菜单功能异常");

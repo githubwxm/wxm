@@ -44,7 +44,7 @@ public interface EpRoleFuncMapper {
      * @return
      */
     int updateEpRoleFuncIsNotDelete(@Param("ep_role_id") int ep_role_id,@Param("ids")List<Integer> ids);
-
+    int deleteEpFunc(@Param("ep_role_id") int ep_role_id,@Param("ids")List<Integer> ids);
     /**
      * 查询出已经存在需要重新插入的功能 id
      * @param ep_role_id
@@ -52,8 +52,8 @@ public interface EpRoleFuncMapper {
      * @return
      */
     List<Integer> selectEpRoleIdFuncId(@Param("ep_role_id") int ep_role_id,@Param("ids")List<Integer> ids);
-
-    List<Map<String,Object>> selectepRoleId(@Param("ep_role_id") int ep_role_id);
+    List<Integer> selectEpRoleIdId(@Param("ep_role_id") int ep_role_id,@Param("ids")List<Integer> ids);
+    List<Map<String,Object>> selectepRoleId(@Param("ep_role_id") int ep_role_id,@Param("ids")List<Integer> ids);
 
 
 

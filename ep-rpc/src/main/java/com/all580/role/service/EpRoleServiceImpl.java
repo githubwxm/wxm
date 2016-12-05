@@ -1,6 +1,8 @@
 package com.all580.role.service;
 
+import com.all580.ep.api.conf.EpConstant;
 import com.all580.ep.com.Common;
+import com.all580.manager.SyncEpData;
 import com.all580.role.api.service.EpRoleService;
 import com.all580.role.dao.EpRoleFuncMapper;
 import com.all580.role.dao.EpRoleMapper;
@@ -31,6 +33,9 @@ public class EpRoleServiceImpl implements EpRoleService {
     @Autowired
     private EpRoleFuncMapper epRoleFuncMapper;
 
+    @Autowired
+    private SyncEpData syncEpData;
+
     @Override
     public Result addEpRole(Map<String, Object> params) {
         Result result = new Result(true);
@@ -43,6 +48,7 @@ public class EpRoleServiceImpl implements EpRoleService {
             epRoleMapper.insertSelective(params);
             Integer ep_role_id = CommonUtil.objectParseInteger(params.get("id"));
             result.put(ep_role_id);
+            syncEpData.syncEpAllData(EpConstant.Table.T_EP_ROLE, params);
         } catch (ApiException e1) {
             throw new ApiException(e1.getMessage());
         } catch (Exception e) {
@@ -72,7 +78,10 @@ public class EpRoleServiceImpl implements EpRoleService {
                 log.error("角色名字已存在 {}", params.get("name"));
                 return new Result(false, "角色名字已存在");
             }
-            epRoleMapper.updateByPrimaryKeySelective(params);
+            ref = epRoleMapper.updateByPrimaryKeySelective(params);
+            if (ref > 1) {
+                syncEpData.syncEpAllData(EpConstant.Table.T_EP_ROLE, params);
+            }
         } catch (Exception e) {
             log.error("修改角色出错 {}", e.getMessage());
             return new Result(false, e.getMessage());
@@ -84,7 +93,7 @@ public class EpRoleServiceImpl implements EpRoleService {
     public Result selectepRoleId(int ep_role_id) {
         Result result = new Result(true);
         try {
-            result.put(epRoleFuncMapper.selectepRoleId(ep_role_id));
+            result.put(epRoleFuncMapper.selectepRoleId(ep_role_id,null));
         } catch (Exception e) {
             log.error("查询角色出错 {}", e.getMessage());
             return new Result(false, e.getMessage());
@@ -134,7 +143,15 @@ public class EpRoleServiceImpl implements EpRoleService {
             Integer ep_role_id = CommonUtil.objectParseInteger(params.get("ep_role_id"));
             Integer oper_id = CommonUtil.objectParseInteger(params.get("oper_id"));
             List<Integer> func_ids = (List<Integer>) params.get("func_ids");
-            epRoleFuncMapper.insertEpRoleFuncBatch(ep_role_id, oper_id, func_ids);
+            if(!(null == func_ids || func_ids.isEmpty())){
+                if(!"".equals(func_ids.get(0))){
+                    epRoleFuncMapper.insertEpRoleFuncBatch(ep_role_id, oper_id, func_ids);
+                    List list = epRoleFuncMapper.selectepRoleId(ep_role_id,func_ids);
+                        syncEpData.syncEpAllData(EpConstant.Table.T_EP_ROLE_FUNC , list);
+
+                }
+            }
+
         } catch (Exception e) {
             log.error("添加菜单出错 {}", e.getMessage());
             return new Result(false, e.getMessage());
@@ -142,9 +159,48 @@ public class EpRoleServiceImpl implements EpRoleService {
         return result;  //
     }
 
-
-    @Override
-    public Result updateEpRoleFunc(Map<String, Object> params) {
+    public Result updateEpRoleFunc(Map<String, Object> params) {//逻辑删除
+        try {
+            Integer ep_role_id = CommonUtil.objectParseInteger(params.get("ep_role_id"));//角色
+            Integer oper_id = CommonUtil.objectParseInteger(params.get("oper_id"));//操作人
+            List<Integer> func_ids = (List<Integer>) params.get("func_ids");//需要存在的id数据
+            // epRoleFuncMapper.updateEpRoleFuncIsDelete(ep_role_id, oper_id);//更新原始的 为delete状态
+            List<Integer> initFunc=null;
+             initFunc  = epRoleFuncMapper.selectEpRoleIdFuncId(ep_role_id, null);//已经存在的数据
+            if (!(null == initFunc || initFunc.isEmpty())) {//删除已经存在而不需要的数据
+                List<Integer> deleteList =deleteAllList(func_ids, initFunc);
+                if(!deleteList.isEmpty()){
+                    epRoleFuncMapper.deleteEpFunc(ep_role_id,deleteList );
+                    List<Integer> synDelete=  epRoleFuncMapper.selectEpRoleIdId(ep_role_id, deleteList);
+                    syncEpData.syncDeleteAllData(EpConstant.Table.T_EP_ROLE_FUNC,(Integer [])synDelete.toArray(new Integer[synDelete.size()]) );
+                }
+            }
+            if(!(null==func_ids||func_ids.isEmpty())){
+                initFunc  = epRoleFuncMapper.selectEpRoleIdFuncId(ep_role_id, func_ids);//已经存在的数据
+            }
+            if(!(null == initFunc || initFunc.isEmpty())){
+                removeAllList(func_ids, initFunc);//删除已经存在且需要添加的数据
+            }
+            if (!(null == func_ids || func_ids.isEmpty())) {//需要添加的数据
+                if(!"".equals(func_ids.get(0))){
+                    epRoleFuncMapper.insertEpRoleFuncBatch(ep_role_id, oper_id, func_ids);
+                    List list = epRoleFuncMapper.selectepRoleId(ep_role_id,func_ids);
+                    if (!list.isEmpty()) {
+                        syncEpData.syncEpAllData(EpConstant.Table.T_EP_ROLE_FUNC, list);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.error("修改菜单出错 {}", e.getMessage());
+            return new Result(false, e.getMessage());
+        }
+        return new Result(true);
+    }
+    /**
+     * 逻辑删除   先把原有状态置为删除状态  过滤出添加的状态已经存在的更新为正常状态 添加没有的数据
+     */
+  /*  @Override
+    public Result updateEpRoleFunc(Map<String, Object> params) {//
         try {
             Integer ep_role_id = CommonUtil.objectParseInteger(params.get("ep_role_id"));//角色
             Integer oper_id = CommonUtil.objectParseInteger(params.get("oper_id"));//操作人
@@ -158,29 +214,55 @@ public class EpRoleServiceImpl implements EpRoleService {
             if(!(null == func_ids || func_ids.isEmpty())){
                 epRoleFuncMapper.insertEpRoleFuncBatch(ep_role_id, oper_id, func_ids);
             }
-
         } catch (Exception e) {
             log.error("修改菜单出错 {}", e.getMessage());
             return new Result(false, e.getMessage());
         }
         return new Result(true);
-    }
+    }*/
 
     /**
-     * removeAll 前端传的类型不一致   删除
+     * removeAll 前端传的类型实际上不一致removeAll不掉   过滤掉已经存在的无需添加
+     *
      * @param func_ids
      * @param initFunc
      */
-    private void removeAllList(List<Integer> func_ids,List<Integer> initFunc) {
-           for(int i= func_ids.size()-1;i>-1;i--){
-               Integer id=CommonUtil.objectParseInteger( func_ids.get(i));
-               for(Integer temp :initFunc){
-                   if(temp.equals(id)){
-                       func_ids.remove(i);
-                       break;
-                   }
-               }
-           }
+    private void removeAllList(List<Integer> func_ids, List<Integer> initFunc) {
+        for (int i = func_ids.size() - 1; i > -1; i--) {
+            Integer id = CommonUtil.objectParseInteger(func_ids.get(i));//
+            for (Integer temp : initFunc) {
+                if (temp.equals(id)) {
+                    func_ids.remove(i);
+                    break;
+                }
+            }
+        }
     }
+
+    /**
+     * 把已经存在而用不到的数据删除掉
+     *
+     * @param func_ids
+     * @param initFunc
+     */
+    private List<Integer> deleteAllList(List<Integer> func_ids, List<Integer> initFunc) {
+        List<Integer> list = new ArrayList<>();
+        for (int i = initFunc.size() - 1; i > -1; i--) {
+            Integer id =initFunc.get(i) ;
+            boolean ref = true;
+            for (int j = func_ids.size() - 1; j > -1; j--) {
+               Integer temp= CommonUtil.objectParseInteger(func_ids.get(j));
+                if (id.equals(temp)) {
+                    ref = false;
+                    break;
+                }
+            }
+            if(ref){
+                list.add(id);
+            }
+        }
+        return list;
+    }
+
 
 }

@@ -1,6 +1,8 @@
 package com.all580.role.service;
 
+import com.all580.ep.api.conf.EpConstant;
 import com.all580.ep.com.Common;
+import com.all580.manager.SyncEpData;
 import com.all580.role.api.service.IntfService;
 import com.all580.role.dao.IntfMapper;
 import com.framework.common.Result;
@@ -26,7 +28,8 @@ public class IntfServiceImpl implements IntfService {
     @Autowired
     private IntfMapper intfMapper;
 
-
+    @Autowired
+    private SyncEpData syncEpData;
 
     @Override
     public Result insertInft(Map<String, Object> params) {
@@ -34,6 +37,7 @@ public class IntfServiceImpl implements IntfService {
         try {
             intfMapper.insertIntf(params);
             result.put(params.get("id"));
+            syncEpData.syncEpAllData(EpConstant.Table.T_INTF,params);
            // funcIntfMapper.insertFuncIntf(params);
         } catch (Exception e) {
             log.error("添加接口异常", e);
@@ -91,6 +95,7 @@ public class IntfServiceImpl implements IntfService {
            // funcIntfMapper.deleteFuncIntf(id);
 
             intfMapper.deleteByPrimaryKey(id);
+            syncEpData.syncDeleteAllData(EpConstant.Table.T_INTF,id);
         } catch (Exception e) {
             log.error("删除接口异常", e);
          throw    new ApiException("删除接口异常");
