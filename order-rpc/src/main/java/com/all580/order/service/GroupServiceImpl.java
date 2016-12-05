@@ -33,6 +33,7 @@ import java.util.Set;
 @Service
 @Slf4j
 public class GroupServiceImpl implements GroupService {
+    private String dateFormat = "yyyy-MM-dd";
     @Autowired
     private GroupSyncManager groupSyncManager;
 
@@ -49,7 +50,7 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     public Result<?> addGroup(Map params) {
-        Group group = JsonUtils.map2obj(params, Group.class);
+        Group group = JsonUtils.map2obj(params, Group.class, dateFormat);
         group.setId(null);
         group.setCore_ep_id(CommonUtil.objectParseInteger(params.get(EpConstant.EpKey.CORE_EP_ID)));
         group.setEp_id(CommonUtil.objectParseInteger(params.get(EpConstant.EpKey.EP_ID)));
@@ -68,7 +69,7 @@ public class GroupServiceImpl implements GroupService {
         int groupId = CommonUtil.objectParseInteger(params.get("group_id"));
         // 检查团队操作权限
         checkGroupOperation(groupId, true);
-        Group group = JsonUtils.map2obj(params, Group.class);
+        Group group = JsonUtils.map2obj(params, Group.class, dateFormat);
         group.setId(groupId);
         group.setCore_ep_id(null);
         group.setEp_id(null);
