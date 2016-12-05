@@ -181,7 +181,7 @@
        </foreach>
   </select>
   <update  id="deletePidAll">
-    update t_func set isdelete=1  where id in
+    delete from  t_func  where id in
     <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">
       #{item}
     </foreach>

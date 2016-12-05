@@ -12,7 +12,7 @@
     where id = #{id,jdbcType=BIGINT} and isdelete=0
   </select>
   <update id="deleteByPrimaryKey"  >
-    update t_intf set isdelete=1
+    delete from t_intf
     where id = #{id,jdbcType=BIGINT}
   </update>
 
