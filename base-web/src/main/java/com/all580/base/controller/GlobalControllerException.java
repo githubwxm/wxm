@@ -25,6 +25,12 @@ public class GlobalControllerException {
     @ExceptionHandler(Exception.class)
     @ResponseBody
     public Result processException(Exception e) {
+        if (e != null) {
+            String message = e.getMessage();
+            if (message.startsWith("org.springframework.dao.DuplicateKeyException:")) {
+                return processDuplicateKeyException(new DuplicateKeyException(message, e));
+            }
+        }
         log.error("网关未知异常", e);
         return new Result(false, Result.FAIL, "服务器异常");
     }
