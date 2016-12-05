@@ -40,7 +40,6 @@ public class GroupValidateManager {
 
         // 校验整数
         rules.put(new String[]{
-                "number", // 团号
                 "province", // 省
                 "city", // 市
                 "area", // 区

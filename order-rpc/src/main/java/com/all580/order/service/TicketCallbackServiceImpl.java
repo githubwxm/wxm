@@ -146,6 +146,9 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         // 设置核销人核销数量
         visitor.setUse_quantity(visitor.getUse_quantity() + info.getConsumeQuantity());
         visitorMapper.updateByPrimaryKeySelective(visitor);
+        // 修改已用数量
+        orderItem.setUsed_quantity(orderItem.getUsed_quantity() + info.getConsumeQuantity());
+        orderItemMapper.updateByPrimaryKeySelective(orderItem);
 
         // 发送短信
         smsManager.sendConsumeSms(orderItem, info.getConsumeQuantity());
@@ -204,6 +207,9 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         // 设置核销人核销数量
         visitor.setUse_quantity(visitor.getUse_quantity() - orderClearanceSerial.getQuantity());
         visitorMapper.updateByPrimaryKeySelective(visitor);
+        // 修改已用数量
+        orderItem.setUsed_quantity(orderItem.getUsed_quantity() - orderClearanceSerial.getQuantity());
+        orderItemMapper.updateByPrimaryKeySelective(orderItem);
 
         // 发送短信
         smsManager.sendReConsumeSms(orderItem, orderClearanceSerial.getQuantity(), orderClearanceSerial.getQuantity());

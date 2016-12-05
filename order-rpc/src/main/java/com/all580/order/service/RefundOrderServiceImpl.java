@@ -96,8 +96,7 @@ public class RefundOrderServiceImpl implements RefundOrderService {
             if (ArrayUtils.indexOf(new int[]{
                     OrderConstant.OrderItemStatus.SEND,
                     OrderConstant.OrderItemStatus.NON_SEND,
-                    OrderConstant.OrderItemStatus.TICKET_FAIL,
-                    OrderConstant.OrderItemStatus.TICKETING // TODO: 2016/11/18  目前凭证没做好，导致这里现在可以退订
+                    OrderConstant.OrderItemStatus.TICKET_FAIL
             }, orderItem.getStatus()) < 0 ||
                     order.getStatus() != OrderConstant.OrderStatus.PAID) {
                 throw new ApiException("订单不在可退订状态");
@@ -150,7 +149,7 @@ public class RefundOrderServiceImpl implements RefundOrderService {
                 refundOrderManager.auditSuccess(orderItem, refundOrder, order);
             }
             // 同步数据
-            Map<String, Object> syncData = refundOrderManager.syncRefundOrderApplyData(refundOrder.getId());
+            Map syncData = refundOrderManager.syncRefundOrderApplyData(refundOrder.getId());
             return new Result<>(true).putExt(Result.SYNC_DATA, syncData);
         } finally {
             lock.unlock();
@@ -221,7 +220,7 @@ public class RefundOrderServiceImpl implements RefundOrderService {
             smsManager.sendAuditRefuseSms(orderItem);
 
             // 同步数据
-            Map<String, Object> syncData = refundOrderManager.syncRefundOrderAuditRefuse(refundOrder.getId());
+            Map syncData = refundOrderManager.syncRefundOrderAuditRefuse(refundOrder.getId());
             return new Result<>(true).putExt(Result.SYNC_DATA, syncData);
         } finally {
             lock.unlock();

@@ -34,6 +34,7 @@ public class SetParamsAspect {
 
     @Before(value = "mapping(params)", argNames = "params")
     public void setParams(Map params) {
+        log.debug("params: {}", params);
         Object coreEpId = RequestContextHolder.getRequestAttributes().getAttribute(EpConstant.EpKey.CORE_EP_ID, ServletRequestAttributes.SCOPE_REQUEST);
         if (coreEpId != null && !params.containsKey(EpConstant.EpKey.CORE_EP_ID)) {
             params.put(EpConstant.EpKey.CORE_EP_ID, coreEpId);
