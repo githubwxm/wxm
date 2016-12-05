@@ -164,6 +164,7 @@ public class GroupServiceImpl implements GroupService {
                         throw new ApiException(String.format("游客:%s 证件为身份证:%s 格式错误", member.getName(), member.getCard()));
                     }
                 }
+                member.setGroup_id(groupId);
                 int ret = groupMemberMapper.insertSelective(member);
                 if (ret <= 0) {
                     throw new ApiException("保存团队成员失败:" + JsonUtils.toJson(o));
