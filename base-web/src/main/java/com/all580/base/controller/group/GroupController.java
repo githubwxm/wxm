@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.Map;
@@ -32,56 +33,56 @@ public class GroupController extends BaseController {
 
     @RequestMapping(value = "add", method = RequestMethod.POST)
     @ResponseBody
-    public Result<?> addGroup(Map params) {
+    public Result<?> addGroup(@RequestParam Map params) {
         ParamsMapValidate.validate(params, groupValidateManager.addGroupValidate());
         return groupService.addGroup(params);
     }
 
     @RequestMapping(value = "update", method = RequestMethod.POST)
     @ResponseBody
-    public Result<?> updateGroup(Map params) {
+    public Result<?> updateGroup(@RequestParam Map params) {
         ParamsMapValidate.validate(params, groupValidateManager.updateGroupValidate());
         return groupService.updateGroup(params);
     }
 
     @RequestMapping(value = "delete", method = RequestMethod.POST)
     @ResponseBody
-    public Result<?> deleteGroup(Map params) {
+    public Result<?> deleteGroup(@RequestParam Map params) {
         ParamsMapValidate.validate(params, groupValidateManager.deleteGroupValidate());
         return groupService.delGroup(params);
     }
 
     @RequestMapping(value = "guide/add", method = RequestMethod.POST)
     @ResponseBody
-    public Result<?> addGuide(Map params) {
+    public Result<?> addGuide(@RequestParam Map params) {
         ParamsMapValidate.validate(params, groupValidateManager.addGuideValidate());
         return groupService.addGuide(params);
     }
 
     @RequestMapping(value = "guide/update", method = RequestMethod.POST)
     @ResponseBody
-    public Result<?> updateGuide(Map params) {
+    public Result<?> updateGuide(@RequestParam Map params) {
         ParamsMapValidate.validate(params, groupValidateManager.updateGuideValidate());
         return groupService.updateGuide(params);
     }
 
     @RequestMapping(value = "guide/delete", method = RequestMethod.POST)
     @ResponseBody
-    public Result<?> deleteGuide(Map params) {
+    public Result<?> deleteGuide(@RequestParam Map params) {
         ParamsMapValidate.validate(params, groupValidateManager.deleteGuideValidate());
         return groupService.delGuide(params);
     }
 
     @RequestMapping(value = "member/add", method = RequestMethod.POST)
     @ResponseBody
-    public Result<?> addGroupMember(Map params) {
+    public Result<?> addGroupMember(@RequestParam Map params) {
         ParamsMapValidate.validate(params, groupValidateManager.addGroupMemberValidate());
         return groupService.addGroupMember(params);
     }
 
     @RequestMapping(value = "member/delete", method = RequestMethod.POST)
     @ResponseBody
-    public Result<?> deleteGroupMember(Map params) {
+    public Result<?> deleteGroupMember(@RequestParam Map params) {
         ParamsMapValidate.validate(params, groupValidateManager.deleteGroupMemberValidate());
         return groupService.delGroupMember(params);
     }
