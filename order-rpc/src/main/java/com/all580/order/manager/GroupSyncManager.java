@@ -12,6 +12,7 @@ import com.framework.common.synchronize.SynchronizeDataManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.lang.exception.ApiException;
 import java.util.Collections;
@@ -75,6 +76,7 @@ public class GroupSyncManager {
      * @param groupId 要删除的团队
      * @return
      */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public Map syncDeleteGroup(int groupId, Set<Integer> members) {
         Group group = groupMapper.selectByPrimaryKey(groupId);
         if (group == null) {
@@ -114,6 +116,7 @@ public class GroupSyncManager {
      * @param guideId 要删除的导游
      * @return
      */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public Map syncDeleteGuide(int guideId) {
         Guide guide = guideMapper.selectByPrimaryKey(guideId);
         if (guide == null) {

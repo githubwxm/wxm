@@ -3,6 +3,7 @@ package com.all580.order;
 import com.alibaba.fastjson.JSON;
 import com.aliyun.mns.model.Base64TopicMessage;
 import com.all580.order.api.OrderConstant;
+import com.all580.order.entity.Group;
 import com.all580.order.entity.Order;
 import com.all580.product.api.consts.ProductRules;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -23,6 +24,7 @@ import org.nustaq.serialization.FSTConfiguration;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -120,6 +122,33 @@ public class Test {
         base64Map.put("createTime", new Date());
         base64TopicMessage.setBaseMessageBody(JsonUtils.toJson(base64Map));
         System.out.println(base64TopicMessage.getMessageBodyAsBase64());
+
+
+        Map test1 = new HashMap();
+        test1.put("access_id", "14789195271477R2MCC3X");
+        test1.put("adult", "10");
+        test1.put("area", "430104");
+        test1.put("city", "430100");
+        test1.put("ep_id", "1139");
+        test1.put("guide_card", "");
+        test1.put("guide_name", "周老板");
+        test1.put("guide_phone", "18711154335");
+        test1.put("guide_sid", "360321199504152034");
+        test1.put("kid", "5");
+        test1.put("manager_name", "周老板");
+        test1.put("manager_phone", "");
+        test1.put("number", "TNT2016");
+        test1.put("operator_id", "42");
+        test1.put("operator_name", "老汉推车");
+        test1.put("province", "430000");
+        test1.put("sign", "0e66e0402de0cde9b632d026f9c83e8a");
+        test1.put("start_date", "2016-12-05");
+        test1.put("tour_name", "邹老板");
+        test1.put("tour_phone", "");
+        test1.put("travel_name", "畅旅啊");
+        Group group = JsonUtils.map2obj(test1, Group.class, "yyyy-MM-dd");
+        System.out.println(group);
+        group.setId(null);
     }
     public static void validateParams(Map params) {
         Map<String[], ValidRule[]> validRuleMap = new HashMap<>();

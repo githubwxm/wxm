@@ -464,6 +464,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public Result<?> createForGroup(Map params) throws Exception {
         Integer buyEpId = CommonUtil.objectParseInteger(params.get(EpConstant.EpKey.EP_ID));
         // 获取平台商ID

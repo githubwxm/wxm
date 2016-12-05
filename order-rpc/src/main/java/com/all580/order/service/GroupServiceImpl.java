@@ -17,6 +17,7 @@ import com.framework.common.validate.ValidRule;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.lang.exception.ApiException;
 import java.util.Date;
@@ -49,6 +50,7 @@ public class GroupServiceImpl implements GroupService {
     private VisitorMapper visitorMapper;
 
     @Override
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public Result<?> addGroup(Map params) {
         Group group = JsonUtils.map2obj(params, Group.class, dateFormat);
         group.setId(null);
@@ -66,6 +68,7 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public Result<?> updateGroup(Map params) {
         int groupId = CommonUtil.objectParseInteger(params.get("group_id"));
         // 检查团队操作权限
@@ -87,6 +90,7 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public Result<?> delGroup(Map params) {
         int groupId = CommonUtil.objectParseInteger(params.get("group_id"));
         // 检查团队操作权限
@@ -101,6 +105,7 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public Result<?> addGuide(Map params) {
         Guide guide = JsonUtils.map2obj(params, Guide.class);
         guide.setId(null);
@@ -114,6 +119,7 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public Result<?> updateGuide(Map params) {
         int guideId = CommonUtil.objectParseInteger(params.get("guide_id"));
         // 检查导游操作权限
@@ -131,6 +137,7 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public Result<?> delGuide(Map params) {
         int guideId = CommonUtil.objectParseInteger(params.get("guide_id"));
         // 检查导游操作权限
@@ -140,6 +147,7 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public Result<?> addGroupMember(Map params) {
         int groupId = CommonUtil.objectParseInteger(params.get("group_id"));
         // 检查团队操作权限
@@ -170,6 +178,7 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public Result<?> delGroupMember(Map params) {
         int groupId = CommonUtil.objectParseInteger(params.get("group_id"));
         // 检查团队操作权限
