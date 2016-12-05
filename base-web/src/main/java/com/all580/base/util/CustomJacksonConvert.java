@@ -68,6 +68,7 @@ public class CustomJacksonConvert extends MappingJackson2HttpMessageConverter {
 
 			String sign=CommonUtil.signForData(key,data);
 			result.put("sign",sign);
+			log.debug("result: {}", data);
 			super.writeInternal(result, outputMessage);
 			return;
 		}
