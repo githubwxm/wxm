@@ -6,6 +6,10 @@ package com.all580.ep.api.conf;
 public class EpConstant {
     public static class Table{
         public static final String T_EP="t_ep";//企业信息表
+        public static final String T_EP_ROLE_FUNC="t_ep_role_func";
+        public static final String T_EP_ROLE="t_ep_role";
+        public static final String T_FUNC="t_func";
+        public static final String T_INTF="t_intf";
         //public static final String T_CORE_EP_ACCESS="t_core_ep_access";//企业信息表
     }
     public static class EpKey{
