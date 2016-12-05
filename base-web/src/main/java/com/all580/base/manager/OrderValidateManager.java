@@ -69,6 +69,45 @@ public class OrderValidateManager {
     }
 
     /**
+     * 生成创建团队订单验证
+     * @return
+     */
+    public Map<String[], ValidRule[]> createGroupValidate() {
+        Map<String[], ValidRule[]> rules = new HashMap<>();
+        // 校验不为空的参数
+        rules.put(new String[]{
+                "group_id", // 团ID
+                "guide_id", // 导游ID
+                "items.product_sub_code", // 订单子产品CODE
+                "items.start", // 计划开始时间
+                "items.days", // 天数：景点固定1
+                "items.quantity", // 订票数量
+                "ep_id", // 订票企业ID
+                "operator_id", // 订票用户ID
+                "operator_name", // 订票用户名称
+                //"sale_amount", // 销售金额
+                "from", // 来源 0-平台下单 1-接口下单
+                "remark" // 备注
+        }, new ValidRule[]{new ValidRule.NotNull()});
+
+        // 校验整数
+        rules.put(new String[]{
+                "items.product_sub_code", // 订单子产品ID
+                "items.days", // 天数：景点固定1
+                "items.quantity", // 订票数量
+                "ep_id", // 订票企业ID
+                "operator_id" // 订票用户ID
+        }, new ValidRule[]{new ValidRule.Digits()});
+
+        // 校验日期
+        rules.put(new String[]{
+                "items.start" // 计划开始时间
+        }, new ValidRule[]{new ValidRule.Date()});
+
+        return rules;
+    }
+
+    /**
      * 生成订单审核验证
      * @return
      */

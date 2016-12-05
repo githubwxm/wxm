@@ -47,6 +47,14 @@ public class OrderController extends BaseController {
         return bookingOrderService.create(params);
     }
 
+    @RequestMapping(value = "group/create", method = RequestMethod.POST)
+    @ResponseBody
+    public Result<?> createForGroup(@RequestBody Map params) throws Exception {
+        // 验证参数
+        ParamsMapValidate.validate(params, orderValidateManager.createGroupValidate());
+        return bookingOrderService.createForGroup(params);
+    }
+
     @RequestMapping(value = "audit", method = RequestMethod.POST)
     @ResponseBody
     public Result<?> audit(@RequestBody Map params) {
