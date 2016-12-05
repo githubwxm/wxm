@@ -62,14 +62,7 @@ public class GroupServiceImpl implements GroupService {
             throw new ApiException("新增团队失败");
         }
         Integer guideId = CommonUtil.objectParseInteger(params.get("guide_id"));
-        if (guideId != null) {
-            Guide guide = guideMapper.selectByPrimaryKey(guideId);
-            if (guide == null) {
-                throw new ApiException("导游不存在");
-            }
-            return new Result<>(true).putExt(Result.SYNC_DATA, groupSyncManager.syncGroup(group.getId()));
-        }
-        return addOrUpdateGroup(group);
+        return addOrUpdateGroup(group, guideId);
     }
 
     @Override
@@ -89,7 +82,8 @@ public class GroupServiceImpl implements GroupService {
         if (ret <= 0) {
             throw new ApiException("修改团队失败");
         }
-        return addOrUpdateGroup(group);
+        Integer guideId = CommonUtil.objectParseInteger(params.get("guide_id"));
+        return addOrUpdateGroup(group, guideId);
     }
 
     @Override
@@ -227,7 +221,14 @@ public class GroupServiceImpl implements GroupService {
         }
     }
 
-    private Result<?> addOrUpdateGroup(Group group) {
+    private Result<?> addOrUpdateGroup(Group group, Integer guideId) {
+        if (guideId != null) {
+            Guide guide = guideMapper.selectByPrimaryKey(guideId);
+            if (guide == null) {
+                throw new ApiException("导游不存在");
+            }
+            return new Result<>(true).putExt(Result.SYNC_DATA, groupSyncManager.syncGroup(group.getId()));
+        }
         Guide guide = new Guide();
         guide.setCore_ep_id(group.getCore_ep_id());
         guide.setEp_id(group.getEp_id());

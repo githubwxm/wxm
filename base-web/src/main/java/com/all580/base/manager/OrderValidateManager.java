@@ -1,5 +1,6 @@
 package com.all580.base.manager;
 
+import com.all580.product.api.consts.ProductConstants;
 import com.framework.common.validate.ValidRule;
 import org.springframework.stereotype.Component;
 
@@ -110,7 +111,13 @@ public class OrderValidateManager {
                 "days.visitors.quantity", // 退票数量
                 "days.visitors.id", // 游客ID
                 "quantity", // 退票数量
+                "apply_from" // 来源 供应侧/销售侧
         }, new ValidRule[]{new ValidRule.NotNull(), new ValidRule.Digits()});
+
+        rules.put(new String[]{"apply_from"}, new ValidRule[]{
+                new ValidRule.Digits(new Long[]{
+                        Long.valueOf(ProductConstants.RefundEqType.SELLER), Long.valueOf(ProductConstants.RefundEqType.PROVIDER)
+                })});
 
         rules.put(new String[]{
                 "days.day" // 日期
