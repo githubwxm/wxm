@@ -256,4 +256,12 @@ public class BalancePayServiceImpl implements BalancePayService {
         result.put(record);
         return result;
     }
+
+    @Override
+    public Result<Integer> updateSummary(int id,String summary){
+        Result<Integer> result = new Result<>();
+        int ref= capitalSerialMapper.updateSummary(id,summary);
+        result.put(ref);
+        return result;
+    }
 }
