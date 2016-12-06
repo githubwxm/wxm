@@ -5,7 +5,7 @@ import java.io.Serializable;
 public class SmsAccountConf implements Serializable {
     private Integer id;
 
-    private Integer epId;
+    private Integer ep_id;
 
     private String url;
 
@@ -27,12 +27,12 @@ public class SmsAccountConf implements Serializable {
         this.id = id;
     }
 
-    public Integer getEpId() {
-        return epId;
+    public Integer getEp_id() {
+        return ep_id;
     }
 
-    public void setEpId(Integer epId) {
-        this.epId = epId;
+    public void setEp_id(Integer ep_id) {
+        this.ep_id = ep_id;
     }
 
     public String getUrl() {

@@ -12,19 +12,19 @@ public class SmsTmpl implements Serializable {
 
     private Integer status;
 
-    private Integer epId;
+    private Integer ep_id;
 
-    private Date createTime;
+    private Date create_time;
 
-    private Integer smsType;
+    private Integer sms_type;
 
-    private Date updateTime;
+    private Date update_time;
 
-    private Boolean allowAssociateEp;
+    private Boolean allow_associate_ep;
 
-    private Integer channelType;
+    private Integer channel_type;
 
-    private String outSmsTplId;
+    private String out_sms_tpl_id;
 
     private static final long serialVersionUID = 1L;
 
@@ -60,59 +60,59 @@ public class SmsTmpl implements Serializable {
         this.status = status;
     }
 
-    public Integer getEpId() {
-        return epId;
+    public Integer getEp_id() {
+        return ep_id;
     }
 
-    public void setEpId(Integer epId) {
-        this.epId = epId;
+    public void setEp_id(Integer ep_id) {
+        this.ep_id = ep_id;
     }
 
-    public Date getCreateTime() {
-        return createTime;
+    public Date getCreate_time() {
+        return create_time;
     }
 
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
+    public void setCreate_time(Date create_time) {
+        this.create_time = create_time;
     }
 
-    public Integer getSmsType() {
-        return smsType;
+    public Integer getSms_type() {
+        return sms_type;
     }
 
-    public void setSmsType(Integer smsType) {
-        this.smsType = smsType;
+    public void setSms_type(Integer sms_type) {
+        this.sms_type = sms_type;
     }
 
-    public Date getUpdateTime() {
-        return updateTime;
+    public Date getUpdate_time() {
+        return update_time;
     }
 
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
+    public void setUpdate_time(Date update_time) {
+        this.update_time = update_time;
     }
 
-    public Boolean getAllowAssociateEp() {
-        return allowAssociateEp;
+    public Boolean getAllow_associate_ep() {
+        return allow_associate_ep;
     }
 
-    public void setAllowAssociateEp(Boolean allowAssociateEp) {
-        this.allowAssociateEp = allowAssociateEp;
+    public void setAllow_associate_ep(Boolean allow_associate_ep) {
+        this.allow_associate_ep = allow_associate_ep;
     }
 
-    public Integer getChannelType() {
-        return channelType;
+    public Integer getChannel_type() {
+        return channel_type;
     }
 
-    public void setChannelType(Integer channelType) {
-        this.channelType = channelType;
+    public void setChannel_type(Integer channel_type) {
+        this.channel_type = channel_type;
     }
 
-    public String getOutSmsTplId() {
-        return outSmsTplId;
+    public String getOut_sms_tpl_id() {
+        return out_sms_tpl_id;
     }
 
-    public void setOutSmsTplId(String outSmsTplId) {
-        this.outSmsTplId = outSmsTplId == null ? null : outSmsTplId.trim();
+    public void setOut_sms_tpl_id(String out_sms_tpl_id) {
+        this.out_sms_tpl_id = out_sms_tpl_id;
     }
 }

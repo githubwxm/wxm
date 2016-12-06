@@ -51,7 +51,7 @@ public class SmsServiceImpl implements SmsService {
         Assert.notNull(smsTmpl, MessageFormat.format("找不到短信模板:epId={0}|smsType={1}", epId, smsType));
         SmsAccountConf smsAccountConf = smsAccountConfMapper.selectByEpId(epId);
         Assert.notNull(smsAccountConf, MessageFormat.format("找不到短信账号配置:epId={0}", epId));
-        return doSend(destPhoneNum, params, smsTmpl.getOutSmsTplId(), smsAccountConf);
+        return doSend(destPhoneNum, params, smsTmpl.getOut_sms_tpl_id(), smsAccountConf);
     }
 
     @Override
@@ -61,7 +61,7 @@ public class SmsServiceImpl implements SmsService {
 
         Result result = new Result();
         SmsAccountConf smsAccountConf = JsonUtils.map2obj(conf, SmsAccountConf.class);
-        smsAccountConf.setEpId(epId);
+        smsAccountConf.setEp_id(epId);
         smsAccountConfMapper.insertSelective(smsAccountConf);
         result.setSuccess();
         return result;
