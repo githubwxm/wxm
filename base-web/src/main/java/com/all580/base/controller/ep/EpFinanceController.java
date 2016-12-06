@@ -4,6 +4,7 @@ package com.all580.base.controller.ep;
 import com.all580.ep.api.conf.EpConstant;
 import com.all580.ep.api.service.EpFinanceService;
 import com.all580.ep.api.service.LogCreditService;
+import com.all580.payment.api.service.BalancePayService;
 import com.framework.common.BaseController;
 import com.framework.common.Result;
 import com.framework.common.util.CommonUtil;
@@ -31,6 +32,8 @@ public class EpFinanceController extends BaseController {
     @Autowired
     private EpFinanceService epFinanceService;
 
+    @Autowired
+    private BalancePayService balancePayService;
     /**
      * 查询授信列表
      * @param
@@ -113,6 +116,14 @@ public class EpFinanceController extends BaseController {
         return epFinanceService.getAccountInfoList(map);
     }
 
+    @RequestMapping(value = "update_summary", method = RequestMethod.POST)
+    @ResponseBody
+    public Result<?> updateSummary(@RequestBody Map map){
+        ParamsMapValidate.validate(map, generateSummaryValidate());
+        Integer id = CommonUtil.objectParseInteger(map.get("id"));
+        String summary = CommonUtil.objectParseString(map.get("summary"));
+        return balancePayService.updateSummary(id,summary);
+    }
     @RequestMapping(value = "account/info", method = RequestMethod.GET)
     @ResponseBody
     public Result<?> getAccountInfoList(@RequestParam(value = "balance_ep_id") Integer balance_ep_id){
@@ -145,6 +156,20 @@ public class EpFinanceController extends BaseController {
     }
 
 
+    public Map<String[], ValidRule[]> generateSummaryValidate() {
+        Map<String[], ValidRule[]> rules = new HashMap<>();
+        // 校验不为空的参数
+        rules.put(new String[]{
+                "id",
+                "summary", //
+        }, new ValidRule[]{new ValidRule.NotNull()});
+
+        // 校验整数
+        rules.put(new String[]{
+                "id",
+        }, new ValidRule[]{new ValidRule.Digits()});
+        return rules;
+    }
     public Map<String[], ValidRule[]> generateCreateCreditValidate() {
         Map<String[], ValidRule[]> rules = new HashMap<>();
         // 校验不为空的参数
