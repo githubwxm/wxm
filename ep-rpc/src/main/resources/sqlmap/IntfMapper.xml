@@ -3,7 +3,7 @@
 <mapper namespace="com.all580.role.dao.IntfMapper" >
 
   <sql id="Base_Column_List" >
-    id, name, auth, description, seq, status,isdelete, create_time,CONCAT('',update_time,'') update_time
+    id, name, auth, description, seq,func_id ,status,isdelete, create_time,CONCAT('',update_time,'') update_time
   </sql>
   <select id="selectByPrimaryKey" resultType="java.util.Map" >
     select 
