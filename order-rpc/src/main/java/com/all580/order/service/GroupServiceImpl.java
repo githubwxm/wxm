@@ -20,10 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.lang.exception.ApiException;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author zhouxianjun(Alone)
@@ -257,6 +254,8 @@ public class GroupServiceImpl implements GroupService {
         if (ret <= 0) {
             throw new ApiException("新增导游失败");
         }
-        return new Result<>(true).putExt(Result.SYNC_DATA, groupSyncManager.syncGroup(group.getId(), guide.getId()));
+        Result<Object> result = new Result<>(true);
+        result.put(Collections.singletonMap("id", group.getId()));
+        return result.putExt(Result.SYNC_DATA, groupSyncManager.syncGroup(group.getId(), guide.getId()));
     }
 }
