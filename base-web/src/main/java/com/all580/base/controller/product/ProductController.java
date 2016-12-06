@@ -16,6 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.lang.exception.ApiException;
 import java.util.List;
 import java.util.Map;
 
@@ -327,5 +328,18 @@ public class ProductController extends BaseController {
     @ResponseBody
     public Result<List<Map>> searchProductAuditInfo(@RequestParam("ep_id") Integer epId, @RequestParam(value = "supplier_id", required = false) Integer supplierId, @RequestParam(value = "product_name", required = false) String productName, @RequestParam(value = "product_sub_name", required = false) String productSubName, @RequestParam(value = "product_type", required = false) Integer productType) {
         return productService.searchProductAuditSettings(epId, supplierId, productName, productSubName, productType);
+    }
+
+    /**
+     * 平台商修改平台内底层供应商提供的产品退订退款审核配置
+     * @param params
+     * @return
+     */
+    @RequestMapping(value = "audit/update", method = RequestMethod.POST)
+    @ResponseBody
+    public Result updateAuditSettings(@RequestBody Map params) {
+        List<Map> auditSettings = (List<Map>) params.get("audit_settings");
+        if (auditSettings == null || auditSettings.isEmpty()) throw new ApiException("参数缺失");
+        return productService.updateAuditSettingsBatch(auditSettings);
     }
 }
