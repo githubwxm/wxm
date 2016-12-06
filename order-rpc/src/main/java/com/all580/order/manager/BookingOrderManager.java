@@ -252,6 +252,7 @@ public class BookingOrderManager extends BaseOrderManager {
         orderItem.setSupplier_ep_id(info.getEp_id());
         orderItem.setSupplier_core_ep_id(getCoreEpId(getCoreEpId(info.getEp_id())));
         orderItem.setSupplier_phone(info.getPhone());
+        orderItem.setLow_quantity(info.getMin_buy_quantity());
         orderItem.setEp_ma_id(info.getEp_ma_id());
         orderItem.setRefund_audit(info.getRefund_audit());
         orderItem.setRefund_money_audit(info.getRefund_money_audit());

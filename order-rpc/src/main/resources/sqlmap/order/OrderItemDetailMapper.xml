@@ -284,6 +284,7 @@
     <select id="selectByItemId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         SELECT * FROM t_order_item_detail
         WHERE `order_item_id` = #{itemId,jdbcType=INTEGER}
+        order by `day` asc
     </select>
 
     <select id="selectByOrderId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
@@ -292,4 +293,16 @@
         LEFT JOIN t_order o ON o.id = toi.order_id
         WHERE o.id = #{orderId}
     </select>
+
+    <update id="refundRemain">
+      UPDATE t_order_item_detail
+      SET `refund_quantity` = `quantity` - `used_quantity`
+      WHERE `order_item_id` = #{itemId}
+    </update>
+
+    <update id="resetRefundRemain">
+      UPDATE t_order_item_detail
+      SET `refund_quantity` = 0
+      WHERE `order_item_id` = #{itemId}
+    </update>
 </mapper>

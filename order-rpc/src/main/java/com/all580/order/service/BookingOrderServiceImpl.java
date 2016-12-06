@@ -521,6 +521,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             Integer productSubId = CommonUtil.objectParseInteger(item.get("product_sub_code"));
             Integer quantity = CommonUtil.objectParseInteger(item.get("quantity"));
             Integer days = CommonUtil.objectParseInteger(item.get("days"));
+            Integer allQuantity = quantity * days;
             //预定日期
             Date bookingDate = DateFormatUtils.parseString(DateFormatUtils.DATE_TIME_FORMAT, CommonUtil.objectParseString(item.get("start")));
             // 验证出游日期
@@ -555,7 +556,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             bookingOrderManager.validateBookingDate(bookingDate, dayInfoList);
 
             // 验证最低购票
-            if (salesInfo.getMin_buy_quantity() != null && salesInfo.getMin_buy_quantity() > quantity) {
+            if (salesInfo.getMin_buy_quantity() != null && salesInfo.getMin_buy_quantity() > allQuantity) {
                 throw new ApiException("低于最低购买票数");
             }
 

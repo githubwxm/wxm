@@ -109,15 +109,8 @@ public class RefundOrderServiceImpl implements RefundOrderService {
             }
 
             int epId = CommonUtil.objectParseInteger(params.get(EpConstant.EpKey.EP_ID));
-            if (applyFrom == ProductConstants.RefundEqType.SELLER) {
-                if (epId != order.getBuy_ep_id() && epId != order.getPayee_ep_id()) {
-                    throw new ApiException("非法请求:当前企业不能退订该订单");
-                }
-            } else {
-                if (epId != orderItem.getSupplier_ep_id() && epId != order.getPayee_ep_id()) {
-                    throw new ApiException("非法请求:当前企业不能退订该订单");
-                }
-            }
+            // 检查权限
+            refundOrderManager.checkApplyRefund(orderItem, order, applyFrom, epId);
 
             // 每日订单详情
             List<OrderItemDetail> detailList = orderItemDetailMapper.selectByItemId(orderItem.getId());
@@ -153,7 +146,108 @@ public class RefundOrderServiceImpl implements RefundOrderService {
             }
 
             // 退订分账
-            refundOrderManager.preRefundAccount(daysList, orderItem.getId(), refundOrder.getId(), detailList, refundDate, order);
+            refundOrderManager.preRefundAccount(daysList, applyFrom, orderItem.getId(), refundOrder.getId(), detailList, refundDate, order);
+
+            // 判断是否需要退订审核
+            if (orderItem.getRefund_audit() == ProductConstants.RefundAudit.NO) {
+                refundOrderManager.auditSuccess(orderItem, refundOrder, order);
+            }
+            // 同步数据
+            Map syncData = refundOrderManager.syncRefundOrderApplyData(refundOrder.getId());
+            return new Result<>(true).putExt(Result.SYNC_DATA, syncData);
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    @Override
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public Result<?> applyForGroup(Map params) throws Exception {
+        String orderItemSn = params.get("order_item_sn").toString();
+        OrderItem orderItem = orderItemMapper.selectBySN(Long.valueOf(orderItemSn));
+        if (orderItem == null) {
+            throw new ApiException("订单不存在");
+        }
+        Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
+        if (order == null) {
+            throw new ApiException("订单不存在");
+        }
+
+        // 供应侧/销售侧
+        Integer applyFrom = CommonUtil.objectParseInteger(params.get("apply_from"));
+
+        // 分布式锁
+        DistributedReentrantLock lock = distributedLockTemplate.execute(orderItemSn, lockTimeOut);
+
+        // 锁成功
+        try {
+            if (ArrayUtils.indexOf(new int[]{
+                    OrderConstant.OrderItemStatus.SEND,
+                    OrderConstant.OrderItemStatus.NON_SEND,
+                    OrderConstant.OrderItemStatus.TICKET_FAIL
+            }, orderItem.getStatus()) < 0 ||
+                    order.getStatus() != OrderConstant.OrderStatus.PAID) {
+                throw new ApiException("订单不在可退订状态");
+            }
+            if (!params.containsKey(EpConstant.EpKey.EP_ID)) {
+                throw new ApiException("非法请求:企业ID为空");
+            }
+
+            int epId = CommonUtil.objectParseInteger(params.get(EpConstant.EpKey.EP_ID));
+            // 检查权限
+            refundOrderManager.checkApplyRefund(orderItem, order, applyFrom, epId);
+
+            Date refundDate = new Date();
+
+            // 每日订单详情
+            List<OrderItemDetail> detailList = orderItemDetailMapper.selectByItemId(orderItem.getId());
+
+            // 退钱的票数
+            int realRefundQuantity = 0;
+            // 退票数量
+            int refundQuantity = 0;
+            // 已使用数量
+            Integer usedQuantity = orderItem.getUsed_quantity();
+            // 总数量
+            Integer quantity = orderItem.getQuantity() * orderItem.getDays();
+            // 使用方式退订
+            if (usedQuantity != null && usedQuantity > 0) {
+                Date expiryDate = detailList.get(detailList.size() - 1).getExpiry_date();
+                if (refundDate.before(expiryDate)) {
+                    throw new ApiException("已使用后的必须过期才能退订");
+                }
+                refundQuantity = quantity - usedQuantity;
+                if (orderItem.getLow_quantity() != null) {
+                    realRefundQuantity = usedQuantity < orderItem.getLow_quantity() ?
+                            quantity - orderItem.getLow_quantity() : refundQuantity;
+                }
+            } else {
+                // 未使用方式退订(全退)
+                realRefundQuantity = quantity;
+                refundQuantity = realRefundQuantity;
+            }
+
+            String cause = CommonUtil.objectParseString(params.get("cause"));
+
+            // 计算退款金额
+            int money = 0;
+            // 到付不计算
+            if (orderItem.getPayment_flag() != ProductConstants.PayType.PAYS) {
+                money = refundOrderManager.calcRefundMoneyForGroup(applyFrom, orderItem.getId(), realRefundQuantity, order.getBuy_ep_id(),
+                        refundOrderManager.getCoreEpId(refundOrderManager.getCoreEpId(order.getBuy_ep_id())), refundDate, detailList);
+            }
+            if (money < 0) {
+                throw new ApiException("销售价小于退货手续费");
+            }
+
+            // 创建退订订单
+            RefundOrder refundOrder = refundOrderManager.generateRefundOrder(orderItem.getId(), null, refundQuantity, money, cause);
+
+            // 修改明细退票数量
+            orderItemDetailMapper.refundRemain(orderItem.getId());
+
+            // 退订分账
+            refundOrderManager.preRefundAccountForGroup(applyFrom, orderItem.getId(), refundOrder.getId(), detailList, refundDate, order);
 
             // 判断是否需要退订审核
             if (orderItem.getRefund_audit() == ProductConstants.RefundAudit.NO) {

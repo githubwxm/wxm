@@ -2,7 +2,7 @@ package com.all580.base.controller.product;
 
 import com.all580.ep.api.service.EpService;
 import com.all580.product.api.model.AddProductPlanParams;
-import com.all580.product.api.model.CanSaleSubProductInfo;
+import com.all580.product.api.model.CanSaleOrderState;
 import com.all580.product.api.model.OnSalesParams;
 import com.all580.product.api.model.ProductPlanInfo;
 import com.all580.product.api.service.ProductRPCService;
@@ -10,19 +10,13 @@ import com.all580.product.api.service.ProductSalesPlanRPCService;
 import com.framework.common.BaseController;
 import com.framework.common.Result;
 import com.framework.common.lang.DateFormatUtils;
-import com.framework.common.lang.StringUtils;
 import com.framework.common.util.CommonUtil;
 import com.framework.common.vo.Paginator;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import javax.lang.exception.ApiException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 销售计划接口网关
@@ -88,7 +82,7 @@ public class PlanController extends BaseController {
     }
 
     /**
-     * 查询可售子产品列表
+     * 查询可售子产品列表(销售商）
      * @param epId
      * @param productName
      * @param productSubName
@@ -105,17 +99,37 @@ public class PlanController extends BaseController {
     @ResponseBody
     public Result<Paginator<Map<String, ?>>> canSaleSubProductList(
             @RequestParam("ep_id") Integer epId,
-            @RequestParam("product_name") String productName,
-            @RequestParam("product_sub_name") String productSubName,
-            @RequestParam("province") Integer province,
-            @RequestParam("city") Integer city,
-            @RequestParam("area") Integer area,
-            @RequestParam("ticket_flag") Integer ticketFlag,
-            @RequestParam("pay_type") Integer payType,
-            @RequestParam("ticket_dict") Integer ticketDict,
-            @RequestParam("record_start") Integer start,
-            @RequestParam("record_count") Integer count) {
-        return productSalesPlanService.selectCanSaleSubProduct(epId,productName,productSubName,province,city,area,ticketFlag,payType,ticketDict,start,count);
+            @RequestParam(value = "product_name", required = false) String productName,
+            @RequestParam(value = "product_sub_name", required = false) String productSubName,
+            @RequestParam(value = "province", required = false) Integer province,
+            @RequestParam(value = "city", required = false) Integer city,
+            @RequestParam(value = "area", required = false) Integer area,
+            @RequestParam(value = "ticket_flag", required = false) Integer ticketFlag,
+            @RequestParam(value = "pay_type", required = false) Integer payType,
+            @RequestParam(value = "ticket_dict", required = false) Integer ticketDict,
+            @RequestParam(value = "evl_level", required = false) Integer evlLevel,
+            @RequestParam(value = "types", required = false) String types,
+            @RequestParam(value = "sort", required = false) Integer sort,
+            @RequestParam(value = "record_start", required = false) Integer start,
+            @RequestParam(value = "record_count", required = false) Integer count) {
+        String sortStr = null;
+        if (sort != null) {
+            switch (CanSaleOrderState.getCanSaleOrderSate(sort)) {
+                case SOLD_QUANTITY_ASC: sortStr = CanSaleOrderState.SOLD_QUANTITY_ASC.getValue(); break;
+                case SOLD_QUANTITY_DESC: sortStr = CanSaleOrderState.SOLD_QUANTITY_DESC.getValue(); break;
+                case SALE_PRICE_ASC: sortStr = CanSaleOrderState.SALE_PRICE_ASC.getValue(); break;
+                case SALE_PRICE_DESC: sortStr = CanSaleOrderState.SALE_PRICE_DESC.getValue(); break;
+                case DISTRIBUTED_TIME_ASC: sortStr = CanSaleOrderState.DISTRIBUTED_TIME_ASC.getValue(); break;
+                case DISTRIBUTED_TIME_DESC: sortStr = CanSaleOrderState.DISTRIBUTED_TIME_DESC.getValue(); break;
+            }
+        }
+        List typeList = null;
+        if (types != null) {
+            String[] typeArray = types.split(",");
+            if (typeArray != null)
+            typeList = Arrays.asList(typeArray);
+        }
+        return productSalesPlanService.selectCanSaleSubProduct(epId,productName,productSubName,province,city,area,ticketFlag,payType,ticketDict,evlLevel, typeList, sortStr,start,count);
     }
 
     /**

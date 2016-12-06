@@ -313,4 +313,19 @@ public class ProductController extends BaseController {
     public Result<Map> searchPlanSaleAllPriceAndProfit(@RequestParam("plan_sale_id") Integer id) {
         return productService.searchPlanSaleAllPriceAndProfit(id);
     }
+
+    /**
+     * 平台商查询平台内底层供应商提供的产品退订退款审核配置
+     * @param epId
+     * @param supplierId
+     * @param productName
+     * @param productSubName
+     * @param productType
+     * @return
+     */
+    @RequestMapping("audit/list")
+    @ResponseBody
+    public Result<List<Map>> searchProductAuditInfo(@RequestParam("ep_id") Integer epId, @RequestParam(value = "supplier_id", required = false) Integer supplierId, @RequestParam(value = "product_name", required = false) String productName, @RequestParam(value = "product_sub_name", required = false) String productSubName, @RequestParam(value = "product_type", required = false) Integer productType) {
+        return productService.searchProductAuditSettings(epId, supplierId, productName, productSubName, productType);
+    }
 }
