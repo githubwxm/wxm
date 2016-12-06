@@ -6,6 +6,7 @@ import com.all580.manager.SyncEpData;
 import com.all580.role.api.service.IntfService;
 import com.all580.role.dao.IntfMapper;
 import com.framework.common.Result;
+import com.framework.common.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,8 +37,9 @@ public class IntfServiceImpl implements IntfService {
         Result result=  new Result(true);
         try {
             intfMapper.insertIntf(params);
-            result.put(params.get("id"));
-            syncEpData.syncEpAllData(EpConstant.Table.T_INTF,params);
+            Integer id = CommonUtil.objectParseInteger(params.get("id"));
+            result.put(id);
+            syncEpData.syncEpAllData(EpConstant.Table.T_INTF,intfMapper.selectByPrimaryKey(id));
            // funcIntfMapper.insertFuncIntf(params);
         } catch (Exception e) {
             log.error("添加接口异常", e);

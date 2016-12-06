@@ -5,6 +5,7 @@ import com.all580.manager.SyncEpData;
 import com.all580.role.api.service.FuncService;
 import com.all580.role.dao.FuncMapper;
 import com.framework.common.Result;
+import com.framework.common.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -45,8 +46,9 @@ public class FuncServiceImpl implements FuncService{
         Result result= new Result(true);
         try{
             funcMapper.insertSelective(params);
-            result.put(params.get("id"));
-            syncEpData.syncEpAllData(EpConstant.Table.T_FUNC,params);
+            Integer id = CommonUtil.objectParseInteger(params.get("id"));
+            result.put(id);
+            syncEpData.syncEpAllData(EpConstant.Table.T_FUNC,funcMapper.selectByPrimaryKey(id));
         }catch (Exception e){
             log.error("添加菜单功能异常",e);
             throw  new ApiException("添加菜单功能异常");
@@ -57,8 +59,11 @@ public class FuncServiceImpl implements FuncService{
     @Override
     public Result updateByPrimaryKeySelective(Map<String, Object> params) {
         try{
-            funcMapper.updateByPrimaryKeySelective(params);
-            syncEpData.syncEpAllData(EpConstant.Table.T_FUNC,params);
+          int ref=  funcMapper.updateByPrimaryKeySelective(params);
+            if(ref>0){
+                Integer id = CommonUtil.objectParseInteger(params.get("id"));
+                syncEpData.syncEpAllData(EpConstant.Table.T_FUNC, funcMapper.selectByPrimaryKey(id));
+            }
         }catch (Exception e){
             log.error("修改菜单功能异常",e);
             throw  new ApiException("修改菜单功能异常");

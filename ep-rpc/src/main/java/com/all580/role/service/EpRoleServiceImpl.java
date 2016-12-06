@@ -48,7 +48,7 @@ public class EpRoleServiceImpl implements EpRoleService {
             epRoleMapper.insertSelective(params);
             Integer ep_role_id = CommonUtil.objectParseInteger(params.get("id"));
             result.put(ep_role_id);
-            syncEpData.syncEpAllData(EpConstant.Table.T_EP_ROLE, params);
+            syncEpData.syncEpAllData(EpConstant.Table.T_EP_ROLE, epRoleMapper.select(ep_role_id));
         } catch (ApiException e1) {
             throw new ApiException(e1.getMessage());
         } catch (Exception e) {
@@ -79,8 +79,9 @@ public class EpRoleServiceImpl implements EpRoleService {
                 return new Result(false, "角色名字已存在");
             }
             ref = epRoleMapper.updateByPrimaryKeySelective(params);
-            if (ref > 1) {
-                syncEpData.syncEpAllData(EpConstant.Table.T_EP_ROLE, params);
+            if (ref >0) {
+                Integer id = CommonUtil.objectParseInteger(params.get("id"));
+                syncEpData.syncEpAllData(EpConstant.Table.T_EP_ROLE, epRoleMapper.select(id));
             }
         } catch (Exception e) {
             log.error("修改角色出错 {}", e.getMessage());
