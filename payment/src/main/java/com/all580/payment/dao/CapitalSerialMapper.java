@@ -10,7 +10,7 @@ public interface CapitalSerialMapper {
     int deleteByPrimaryKey(Integer id);
 
     int insert(CapitalSerial record);
-
+    int updateSummary(@Param("id")int id,@Param("summary")String summary);
     int insertBatch(@Param("records") List<CapitalSerial> records);
 
     int insertSelective(CapitalSerial record);

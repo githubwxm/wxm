@@ -21,6 +21,15 @@ public class CapitalSerial implements Serializable {
     private Integer new_can_cash;
 
     private Date create_time;
+    private String summary="";
+
+    public String getSummary() {
+        return summary;
+    }
+
+    public void setSummary(String summary) {
+        this.summary = summary;
+    }
 
     private static final long serialVersionUID = 1L;
 
