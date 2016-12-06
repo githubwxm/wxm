@@ -220,7 +220,7 @@
         </foreach>
     </select>
 
-    <select id="selectIdsByGroup" resultType="java.util.Set">
+    <select id="selectIdsByGroup" resultType="int">
         SELECT id FROM t_group_member
         WHERE `group_id` = #{groupId,jdbcType=INTEGER}
     </select>
