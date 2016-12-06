@@ -12,7 +12,7 @@ public interface SmsTmplMapper {
 
     SmsTmpl selectByPrimaryKey(Integer id);
 
-    SmsTmpl selectByEpIdAndType(@Param("epId") Integer epId, @Param("smsType") Integer smsType);
+    SmsTmpl selectByEpIdAndType(@Param("ep_id") Integer epId, @Param("sms_type") Integer smsType);
 
     int updateByPrimaryKeySelective(SmsTmpl record);
 
