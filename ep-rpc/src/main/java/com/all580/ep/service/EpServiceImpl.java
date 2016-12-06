@@ -193,6 +193,12 @@ public class EpServiceImpl implements EpService {
         }
     }
 
+    @Override
+    public Result<List<Integer>> selectSupplier(int coreEpId){
+        Result result = new Result(true);
+        result.put(epMapper.selectSupplier(coreEpId));
+        return result;
+    }
     /**
      * 验证平台商
      *
