@@ -11,6 +11,10 @@ public interface EpService {
 
 
     /**
+     * 查询平台商下的供应商
+     */
+    Result<List<Integer>> selectSupplier(int coreEpId);
+    /**
      * 查询 2者是否同属一个平台，一致返回null 否者返回ep_id的平台商名称
      * @param list map {ep_id}   main_ep_id  全部一致
      * @return
