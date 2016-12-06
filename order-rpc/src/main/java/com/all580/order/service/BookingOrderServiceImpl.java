@@ -486,15 +486,6 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             throw new ApiException("团队不属于本平台");
         }
 
-        // 验证导游
-        Guide guide = guideMapper.selectByPrimaryKey(guideId);
-        if (guide == null) {
-            throw new ApiException("导游不存在");
-        }
-        if (guide.getCore_ep_id().intValue() != group.getCore_ep_id().intValue()) {
-            throw new ApiException("该导游不属于本平台");
-        }
-
         // 判断销售商状态是否为已冻结
         if (!bookingOrderManager.isEpStatus(epService.getEpStatus(buyEpId), EpConstant.EpStatus.ACTIVE)) {
             throw new ApiException("销售商企业已冻结");
@@ -614,9 +605,9 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         // 创建订单联系人
         Shipping shipping = new Shipping();
         shipping.setOrder_id(order.getId());
-        shipping.setName(guide.getName());
-        shipping.setPhone(guide.getPhone());
-        shipping.setSid(guide.getSid());
+        shipping.setName(group.getGuide_name());
+        shipping.setPhone(group.getGuide_phone());
+        shipping.setSid(group.getGuide_sid());
         shippingMapper.insertSelective(shipping);
 
         // 锁定库存

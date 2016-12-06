@@ -77,7 +77,6 @@ public class OrderValidateManager {
         // 校验不为空的参数
         rules.put(new String[]{
                 "group_id", // 团ID
-                "guide_id", // 导游ID
                 "items.product_sub_code", // 订单子产品CODE
                 "items.start", // 计划开始时间
                 "items.days", // 天数：景点固定1
