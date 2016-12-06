@@ -54,4 +54,5 @@ public interface EpMapper {
     int updateEpRole(Map<String,Object> map);
 
     List<Map<String,String>> getCoreEpName(@Param("list") List<Integer> list,@Param("mainEpId") Integer mainEpId);
+    List<Integer> selectSupplier(Integer  coreEpId);
 }
