@@ -108,9 +108,10 @@ public class SyncEpData {
                 return null;
             }
             List<String> list  = coreEpAccessMapper.selectAll();
-            return synchronizeDataManager.generate((String[])list.toArray(new String[list.size()]))
+            Map<String, Object> map=    synchronizeDataManager.generate((String[])list.toArray(new String[list.size()]))
                     .delete(table, ids)
                     .sync().getDataMapForJsonMap();
+            return map;
         }  catch (Exception e) {
             log.error(e.getMessage());
             throw new ApiException("同步数据异常");
