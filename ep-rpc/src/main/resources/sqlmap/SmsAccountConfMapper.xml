@@ -3,7 +3,7 @@
 <mapper namespace="com.all580.notice.dao.SmsAccountConfMapper">
     <resultMap id="BaseResultMap" type="com.all580.notice.entity.SmsAccountConf">
         <id column="id" property="id" jdbcType="INTEGER"/>
-        <result column="ep_id" property="epId" jdbcType="INTEGER"/>
+        <result column="ep_id" property="ep_id" jdbcType="INTEGER"/>
         <result column="url" property="url" jdbcType="VARCHAR"/>
         <result column="app_id" property="appid" jdbcType="VARCHAR"/>
         <result column="app_pwd" property="apppwd" jdbcType="VARCHAR"/>
@@ -17,7 +17,7 @@
         select
         <include refid="Base_Column_List"/>
         from t_sms_account_conf
-        where ep_id = #{epId,jdbcType=INTEGER}
+        where ep_id = #{ep_id,jdbcType=INTEGER}
     </select>
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
         select
@@ -36,7 +36,7 @@
         insert into t_sms_account_conf (id, ep_id, url,
         app_id, app_pwd, sign,
         status)
-        values (#{id,jdbcType=INTEGER}, #{epId,jdbcType=INTEGER}, #{url,jdbcType=VARCHAR},
+        values (#{id,jdbcType=INTEGER}, #{ep_id,jdbcType=INTEGER}, #{url,jdbcType=VARCHAR},
         #{appId,jdbcType=VARCHAR}, #{appPwd,jdbcType=VARCHAR}, #{sign,jdbcType=VARCHAR},
         #{status,jdbcType=TINYINT})
     </insert>
@@ -47,7 +47,7 @@
         insert into t_sms_account_conf
         <trim prefix="(" suffix=")" suffixOverrides=",">
             id,
-            <if test="epId != null">
+            <if test="ep_id != null">
                 ep_id,
             </if>
             <if test="url != null">
@@ -68,8 +68,8 @@
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             #{id,jdbcType=INTEGER},
-            <if test="epId != null">
-                #{epId,jdbcType=INTEGER},
+            <if test="ep_id != null">
+                #{ep_id,jdbcType=INTEGER},
             </if>
             <if test="url != null">
                 #{url,jdbcType=VARCHAR},
@@ -91,8 +91,8 @@
     <update id="updateByPrimaryKeySelective" parameterType="com.all580.notice.entity.SmsAccountConf">
         update t_sms_account_conf
         <set>
-            <if test="epId != null">
-                ep_id = #{epId,jdbcType=INTEGER},
+            <if test="ep_id != null">
+                ep_id = #{ep_id,jdbcType=INTEGER},
             </if>
             <if test="url != null">
                 url = #{url,jdbcType=VARCHAR},
@@ -114,7 +114,7 @@
     </update>
     <update id="updateByPrimaryKey" parameterType="com.all580.notice.entity.SmsAccountConf">
     update t_sms_account_conf
-    set ep_id = #{epId,jdbcType=INTEGER},
+    set ep_id = #{ep_id,jdbcType=INTEGER},
       url = #{url,jdbcType=VARCHAR},
         app_id = #{appId,jdbcType=VARCHAR},
         app_pwd = #{appPwd,jdbcType=VARCHAR},

@@ -6,13 +6,13 @@
         <result column="name" jdbcType="VARCHAR" property="name"/>
         <result column="content" jdbcType="VARCHAR" property="content"/>
         <result column="status" jdbcType="INTEGER" property="status"/>
-        <result column="ep_id" jdbcType="INTEGER" property="epId"/>
-        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
-        <result column="sms_type" jdbcType="INTEGER" property="smsType"/>
-        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
-        <result column="allow_associate_ep" jdbcType="BIT" property="allowAssociateEp"/>
-        <result column="channel_type" jdbcType="INTEGER" property="channelType"/>
-        <result column="out_sms_tpl_id" jdbcType="VARCHAR" property="outSmsTplId"/>
+        <result column="ep_id" jdbcType="INTEGER" property="ep_id"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="create_time"/>
+        <result column="sms_type" jdbcType="INTEGER" property="sms_type"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="update_time"/>
+        <result column="allow_associate_ep" jdbcType="BIT" property="allow_associate_ep"/>
+        <result column="channel_type" jdbcType="INTEGER" property="channel_type"/>
+        <result column="out_sms_tpl_id" jdbcType="VARCHAR" property="out_sms_tpl_id"/>
     </resultMap>
     <sql id="Base_Column_List">
     id, name, content, status, ep_id, create_time, sms_type, update_time, allow_associate_ep, 
@@ -22,7 +22,7 @@
         select
         <include refid="Base_Column_List"/>
         from t_sms_tmpl
-        where ep_id = #{epId,jdbcType=INTEGER} and sms_type = #{smsType}
+        where ep_id = #{ep_id,jdbcType=INTEGER} and sms_type = #{sms_type}
     </select>
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         select
@@ -43,9 +43,9 @@
         sms_type, update_time, allow_associate_ep,
         channel_type, out_sms_tpl_id)
         values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{content,jdbcType=VARCHAR},
-        #{status,jdbcType=INTEGER}, #{epId,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP},
-        #{smsType,jdbcType=INTEGER}, #{updateTime,jdbcType=TIMESTAMP}, #{allowAssociateEp,jdbcType=BIT},
-        #{channelType,jdbcType=INTEGER}, #{outSmsTplId,jdbcType=VARCHAR})
+        #{status,jdbcType=INTEGER}, #{ep_id,jdbcType=INTEGER}, #{create_time,jdbcType=TIMESTAMP},
+        #{sms_type,jdbcType=INTEGER}, #{update_time,jdbcType=TIMESTAMP}, #{allow_associate_ep,jdbcType=BIT},
+        #{channel_type,jdbcType=INTEGER}, #{out_sms_tpl_id,jdbcType=VARCHAR})
     </insert>
     <insert id="insertSelective" parameterType="com.all580.notice.entity.SmsTmpl">
         <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
@@ -63,25 +63,25 @@
             <if test="status != null">
                 status,
             </if>
-            <if test="epId != null">
+            <if test="ep_id != null">
                 ep_id,
             </if>
-            <if test="createTime != null">
+            <if test="create_time != null">
                 create_time,
             </if>
-            <if test="smsType != null">
+            <if test="sms_type != null">
                 sms_type,
             </if>
-            <if test="updateTime != null">
+            <if test="update_time != null">
                 update_time,
             </if>
-            <if test="allowAssociateEp != null">
+            <if test="allow_associate_ep != null">
                 allow_associate_ep,
             </if>
-            <if test="channelType != null">
+            <if test="channel_type != null">
                 channel_type,
             </if>
-            <if test="outSmsTplId != null">
+            <if test="out_sms_tpl_id != null">
                 out_sms_tpl_id,
             </if>
         </trim>
@@ -96,26 +96,26 @@
             <if test="status != null">
                 #{status,jdbcType=INTEGER},
             </if>
-            <if test="epId != null">
-                #{epId,jdbcType=INTEGER},
+            <if test="ep_id != null">
+                #{ep_id,jdbcType=INTEGER},
             </if>
-            <if test="createTime != null">
-                #{createTime,jdbcType=TIMESTAMP},
+            <if test="create_time != null">
+                #{create_time,jdbcType=TIMESTAMP},
             </if>
-            <if test="smsType != null">
-                #{smsType,jdbcType=INTEGER},
+            <if test="sms_type != null">
+                #{sms_type,jdbcType=INTEGER},
             </if>
-            <if test="updateTime != null">
-                #{updateTime,jdbcType=TIMESTAMP},
+            <if test="update_time != null">
+                #{update_time,jdbcType=TIMESTAMP},
             </if>
-            <if test="allowAssociateEp != null">
-                #{allowAssociateEp,jdbcType=BIT},
+            <if test="allow_associate_ep != null">
+                #{allow_associate_ep,jdbcType=BIT},
             </if>
-            <if test="channelType != null">
-                #{channelType,jdbcType=INTEGER},
+            <if test="channel_type != null">
+                #{channel_type,jdbcType=INTEGER},
             </if>
-            <if test="outSmsTplId != null">
-                #{outSmsTplId,jdbcType=VARCHAR},
+            <if test="out_sms_tpl_id != null">
+                #{out_sms_tpl_id,jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>
@@ -131,26 +131,26 @@
             <if test="status != null">
                 status = #{status,jdbcType=INTEGER},
             </if>
-            <if test="epId != null">
-                ep_id = #{epId,jdbcType=INTEGER},
+            <if test="ep_id != null">
+                ep_id = #{ep_id,jdbcType=INTEGER},
             </if>
-            <if test="createTime != null">
-                create_time = #{createTime,jdbcType=TIMESTAMP},
+            <if test="create_time != null">
+                create_time = #{create_time,jdbcType=TIMESTAMP},
             </if>
-            <if test="smsType != null">
-                sms_type = #{smsType,jdbcType=INTEGER},
+            <if test="sms_type != null">
+                sms_type = #{sms_type,jdbcType=INTEGER},
             </if>
-            <if test="updateTime != null">
-                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            <if test="update_time != null">
+                update_time = #{update_time,jdbcType=TIMESTAMP},
             </if>
-            <if test="allowAssociateEp != null">
-                allow_associate_ep = #{allowAssociateEp,jdbcType=BIT},
+            <if test="allow_associate_ep != null">
+                allow_associate_ep = #{allow_associate_ep,jdbcType=BIT},
             </if>
-            <if test="channelType != null">
-                channel_type = #{channelType,jdbcType=INTEGER},
+            <if test="channel_type != null">
+                channel_type = #{channel_type,jdbcType=INTEGER},
             </if>
-            <if test="outSmsTplId != null">
-                out_sms_tpl_id = #{outSmsTplId,jdbcType=VARCHAR},
+            <if test="out_sms_tpl_id != null">
+                out_sms_tpl_id = #{out_sms_tpl_id,jdbcType=VARCHAR},
             </if>
         </set>
         where id = #{id,jdbcType=INTEGER}
@@ -160,13 +160,13 @@
     set name = #{name,jdbcType=VARCHAR},
       content = #{content,jdbcType=VARCHAR},
       status = #{status,jdbcType=INTEGER},
-      ep_id = #{epId,jdbcType=INTEGER},
-      create_time = #{createTime,jdbcType=TIMESTAMP},
-      sms_type = #{smsType,jdbcType=INTEGER},
-      update_time = #{updateTime,jdbcType=TIMESTAMP},
-      allow_associate_ep = #{allowAssociateEp,jdbcType=BIT},
-      channel_type = #{channelType,jdbcType=INTEGER},
-      out_sms_tpl_id = #{outSmsTplId,jdbcType=VARCHAR}
+      ep_id = #{ep_id,jdbcType=INTEGER},
+      create_time = #{create_time,jdbcType=TIMESTAMP},
+      sms_type = #{sms_type,jdbcType=INTEGER},
+      update_time = #{update_time,jdbcType=TIMESTAMP},
+      allow_associate_ep = #{allow_associate_ep,jdbcType=BIT},
+      channel_type = #{channel_type,jdbcType=INTEGER},
+      out_sms_tpl_id = #{out_sms_tpl_id,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>
