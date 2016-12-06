@@ -16,6 +16,13 @@ import java.util.Map;
 public interface BalancePayService {
 
     /**
+     * 修改流水备注
+     * @param id
+     * @param summary
+     * @return
+     */
+    Result<Integer> updateSummary(int id,String summary);
+    /**
      * 批量修改余额 - 1、分账（支付分账，核销分账，核销冲正分账，退票分账）;2、余额调整(提现，线下充值)
      *
      * @param balanceChangeInfoList [{epId:B平台商,coreEpId:B平台商,balance:0,canCash:15},
