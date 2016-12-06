@@ -77,4 +77,18 @@ public interface OrderItemDetailMapper {
      * @return
      */
     List<OrderItemDetail> selectByOrderId(@Param("orderId") Integer orderId);
+
+    /**
+     * 退订剩余的所有票
+     * @param itemId
+     * @return
+     */
+    int refundRemain(@Param("itemId") Integer itemId);
+
+    /**
+     * 还原退订剩余的所有票
+     * @param itemId
+     * @return
+     */
+    int resetRefundRemain(@Param("itemId") Integer itemId);
 }
