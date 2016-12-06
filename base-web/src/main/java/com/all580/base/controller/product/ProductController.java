@@ -313,4 +313,10 @@ public class ProductController extends BaseController {
     public Result<Map> searchPlanSaleAllPriceAndProfit(@RequestParam("plan_sale_id") Integer id) {
         return productService.searchPlanSaleAllPriceAndProfit(id);
     }
+
+    @RequestMapping("audit/list")
+    @ResponseBody
+    public Result<Map> searchProductAuditInfo(@RequestParam(value = "supplier_id", required = false) Integer supplierId, @RequestParam(value = "product_name", required = false) String productName, @RequestParam(value = "product_sub_name", required = false) String productSubName, @RequestParam(value = "product_type", required = false) Integer productType) {
+        return productService.searchProductAuditSettings(supplierId, productName, productSubName, productType);
+    }
 }
