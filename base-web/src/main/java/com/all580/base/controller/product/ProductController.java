@@ -19,6 +19,7 @@ import javax.annotation.Resource;
 import javax.lang.exception.ApiException;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * 产品，子产品，计划批次接口网关
@@ -326,7 +327,7 @@ public class ProductController extends BaseController {
      */
     @RequestMapping("audit/list")
     @ResponseBody
-    public Result<List<Map>> searchProductAuditInfo(@RequestParam("ep_id") Integer epId, @RequestParam(value = "supplier_id", required = false) Integer supplierId, @RequestParam(value = "product_name", required = false) String productName, @RequestParam(value = "product_sub_name", required = false) String productSubName, @RequestParam(value = "product_type", required = false) Integer productType) {
+    public Result<Set<Map>> searchProductAuditInfo(@RequestParam("ep_id") Integer epId, @RequestParam(value = "supplier_id", required = false) Integer supplierId, @RequestParam(value = "product_name", required = false) String productName, @RequestParam(value = "product_sub_name", required = false) String productSubName, @RequestParam(value = "product_type", required = false) Integer productType) {
         return productService.searchProductAuditSettings(epId, supplierId, productName, productSubName, productType);
     }
 
