@@ -517,7 +517,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         // 获取子订单
         List<Map> items = (List<Map>) params.get("items");
         for (Map item : items) {
-            Integer productSubId = CommonUtil.objectParseInteger(item.get("product_sub_code"));
+            Integer productSubId = CommonUtil.objectParseInteger(item.get("product_sub_id"));
             Integer quantity = CommonUtil.objectParseInteger(item.get("quantity"));
             Integer days = CommonUtil.objectParseInteger(item.get("days"));
             Integer allQuantity = quantity * days;
