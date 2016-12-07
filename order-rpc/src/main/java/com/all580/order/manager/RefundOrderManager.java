@@ -295,9 +295,9 @@ public class RefundOrderManager extends BaseOrderManager {
      * @param itemId 子订单ID
      * @param epId 支付企业ID
      * @param coreEpId 支付企业余额托管平台商ID
-     * @return
+     * @return 0:退支付金额 1:手续费
      */
-    public int calcRefundMoney(int from, List daysList, List<OrderItemDetail> detailList, int itemId, int epId, int coreEpId, Date refundDate) throws Exception {
+    public int[] calcRefundMoney(int from, List daysList, List<OrderItemDetail> detailList, int itemId, int epId, int coreEpId, Date refundDate) throws Exception {
         OrderItemAccount account = orderItemAccountMapper.selectByOrderItemAndEp(itemId, epId, coreEpId);
         if (account == null) {
             throw new ApiException("数据异常,分账记录不存在");
@@ -311,6 +311,7 @@ public class RefundOrderManager extends BaseOrderManager {
             throw new ApiException("数据异常,分账记录的每日单价与订单详情不匹配");
         }
         int money = 0;
+        int fee = 0;
         for (Object item : daysList) {
             Map dayMap = (Map) item;
             String day = CommonUtil.objectParseString(dayMap.get("day"));
@@ -326,13 +327,17 @@ public class RefundOrderManager extends BaseOrderManager {
             int outPrice = dayData.getIntValue("outPrice");
             Integer quantity = CommonUtil.objectParseInteger(dayMap.get("quantity"));
             Map<String, Integer> rate = ProductRules.calcRefund(from == ProductConstants.RefundEqType.SELLER ? detail.getCust_refund_rule() : detail.getSaler_refund_rule(), detail.getDay(), refundDate);
+            float feeTmp = 0f;
             if (rate.get("type") == ProductConstants.AddPriceType.FIX) {
-                money += (outPrice * quantity) - rate.get("fixed") * quantity;
+                feeTmp = rate.get("fixed") * quantity;
             } else {
-                money += outPrice - outPrice * quantity * (float)rate.get("percent") / 100;
+                feeTmp = outPrice * quantity * (float)rate.get("percent") / 100;
             }
+            fee += feeTmp;
+            money += outPrice * quantity - feeTmp;
+            dayMap.put("fee", feeTmp);
         }
-        return money;
+        return new int[]{money, fee};
     }
 
     /**
@@ -346,7 +351,7 @@ public class RefundOrderManager extends BaseOrderManager {
      * @param detailList 每日退票详情
      * @return
      */
-    public int calcRefundMoneyForGroup(int from, int itemId, int quantity, int epId, int coreEpId, Date refundDate, List<OrderItemDetail> detailList) {
+    public int[] calcRefundMoneyForGroup(int from, int itemId, int quantity, int epId, int coreEpId, Date refundDate, List<OrderItemDetail> detailList) {
         OrderItemAccount account = orderItemAccountMapper.selectByOrderItemAndEp(itemId, epId, coreEpId);
         if (account == null) {
             throw new ApiException("数据异常,分账记录不存在");
@@ -360,6 +365,7 @@ public class RefundOrderManager extends BaseOrderManager {
             throw new ApiException("数据异常,分账记录的每日单价与订单详情不匹配");
         }
         int money = 0;
+        int fee = 0;
         for (OrderItemDetail detail : detailList) {
             String day = DateFormatUtils.parseDateToDatetimeString(detail.getDay());
             JSONObject dayData = getAccountDataByDay(daysData, day);
@@ -368,13 +374,16 @@ public class RefundOrderManager extends BaseOrderManager {
             }
             int outPrice = dayData.getIntValue("outPrice");
             Map<String, Integer> rate = ProductRules.calcRefund(from == ProductConstants.RefundEqType.SELLER ? detail.getCust_refund_rule() : detail.getSaler_refund_rule(), detail.getDay(), refundDate);
+            float feeTmp = 0f;
             if (rate.get("type") == ProductConstants.AddPriceType.FIX) {
-                money += (outPrice * quantity) - rate.get("fixed") * quantity;
+                feeTmp = rate.get("fixed") * quantity;
             } else {
-                money += outPrice - outPrice * quantity * (float)rate.get("percent") / 100;
+                feeTmp = outPrice * quantity * (float)rate.get("percent") / 100;
             }
+            fee += feeTmp;
+            money += outPrice * quantity - feeTmp;
         }
-        return money;
+        return new int[]{money, fee};
     }
 
     /**
@@ -386,7 +395,7 @@ public class RefundOrderManager extends BaseOrderManager {
      * @return
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public RefundOrder generateRefundOrder(int itemId, List daysList, int quantity, int money, String cause) {
+    public RefundOrder generateRefundOrder(int itemId, List daysList, int quantity, int money, int fee, String cause) {
         RefundOrder refundOrder = new RefundOrder();
         refundOrder.setOrder_item_id(itemId);
         refundOrder.setNumber(UUIDGenerator.generateUUID());
@@ -395,6 +404,7 @@ public class RefundOrderManager extends BaseOrderManager {
         refundOrder.setStatus(OrderConstant.RefundOrderStatus.AUDIT_WAIT);
         refundOrder.setCreate_time(new Date());
         refundOrder.setMoney(money);
+        refundOrder.setFee(fee);
         refundOrder.setCause(cause);
         refundOrderMapper.insertSelective(refundOrder);
         return refundOrder;

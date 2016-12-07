@@ -149,6 +149,14 @@ public class Test {
         Group group = JsonUtils.map2obj(test1, Group.class, "yyyy-MM-dd");
         System.out.println(group);
         group.setId(null);
+
+        List daysList = JsonUtils.json2List("[{\"day\":\"2016-11-16 00:00:00\",\"quantity\":\"1\",\"visitors\":[{\"id\":\"223\",\"quantity\":\"1\"}]}]");
+        for (Object o : daysList) {
+            Map dayMap = (Map) o;
+            dayMap.put("xxxx", "xxx");
+            System.out.println(o);
+        }
+        System.out.println(daysList);
     }
     public static void validateParams(Map params) {
         Map<String[], ValidRule[]> validRuleMap = new HashMap<>();

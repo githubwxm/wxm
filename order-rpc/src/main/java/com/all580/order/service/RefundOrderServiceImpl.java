@@ -127,17 +127,21 @@ public class RefundOrderServiceImpl implements RefundOrderService {
             Date refundDate = new Date();
             // 计算退款金额
             int money = 0;
+            // 手续费
+            int fee = 0;
             // 到付不计算
             if (orderItem.getPayment_flag() != ProductConstants.PayType.PAYS) {
-                money = refundOrderManager.calcRefundMoney(applyFrom, daysList, detailList, orderItem.getId(), order.getBuy_ep_id(),
+                int[] calcResult = refundOrderManager.calcRefundMoney(applyFrom, daysList, detailList, orderItem.getId(), order.getBuy_ep_id(),
                         refundOrderManager.getCoreEpId(refundOrderManager.getCoreEpId(order.getBuy_ep_id())), refundDate);
+                money = calcResult[0];
+                fee = calcResult[1];
             }
             if (money < 0) {
                 throw new ApiException("销售价小于退货手续费");
             }
 
             // 创建退订订单
-            RefundOrder refundOrder = refundOrderManager.generateRefundOrder(orderItem.getId(), daysList, quantity, money, cause);
+            RefundOrder refundOrder = refundOrderManager.generateRefundOrder(orderItem.getId(), daysList, quantity, money, fee, cause);
 
             // 判断余票 并修改明细退票数量 创建游客退票信息
             int tmpQuantity = refundOrderManager.canRefundForDays(daysList, detailList, refundOrder.getOrder_item_id(), refundOrder.getId());
@@ -231,17 +235,21 @@ public class RefundOrderServiceImpl implements RefundOrderService {
 
             // 计算退款金额
             int money = 0;
+            // 手续费
+            int fee = 0;
             // 到付不计算
             if (orderItem.getPayment_flag() != ProductConstants.PayType.PAYS) {
-                money = refundOrderManager.calcRefundMoneyForGroup(applyFrom, orderItem.getId(), realRefundQuantity, order.getBuy_ep_id(),
+                int[] calcResult = refundOrderManager.calcRefundMoneyForGroup(applyFrom, orderItem.getId(), realRefundQuantity, order.getBuy_ep_id(),
                         refundOrderManager.getCoreEpId(refundOrderManager.getCoreEpId(order.getBuy_ep_id())), refundDate, detailList);
+                money = calcResult[0];
+                fee = calcResult[1];
             }
             if (money < 0) {
                 throw new ApiException("销售价小于退货手续费");
             }
 
             // 创建退订订单
-            RefundOrder refundOrder = refundOrderManager.generateRefundOrder(orderItem.getId(), null, refundQuantity, money, cause);
+            RefundOrder refundOrder = refundOrderManager.generateRefundOrder(orderItem.getId(), null, refundQuantity, money, fee, cause);
 
             // 修改明细退票数量
             orderItemDetailMapper.refundRemain(orderItem.getId());
