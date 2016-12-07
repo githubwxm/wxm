@@ -262,7 +262,7 @@ public class BalancePayServiceImpl implements BalancePayService {
         Result<Integer> result = new Result<>();
         int ref= capitalSerialMapper.updateSummary(id,summary);
         result.put(ref);
-        result.isSuccess();
+        result.setSuccess();
         return result;
     }
 }
