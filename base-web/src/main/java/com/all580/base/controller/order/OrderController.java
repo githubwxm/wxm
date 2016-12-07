@@ -79,6 +79,14 @@ public class OrderController extends BaseController {
         return refundOrderService.apply(params);
     }
 
+    @RequestMapping(value = "refund/group/apply", method = RequestMethod.POST)
+    @ResponseBody
+    public Result<?> refundApplyForGroup(@RequestBody Map params) throws Exception {
+        // 验证参数
+        ParamsMapValidate.validate(params, orderValidateManager.refundApplyForGroupValidate());
+        return refundOrderService.applyForGroup(params);
+    }
+
     @RequestMapping(value = "refund/audit", method = RequestMethod.POST)
     @ResponseBody
     public Result<?> refundAudit(@RequestBody Map params) throws Exception {

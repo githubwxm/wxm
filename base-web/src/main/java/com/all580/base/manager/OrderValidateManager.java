@@ -166,6 +166,26 @@ public class OrderValidateManager {
     }
 
     /**
+     * 团队订单退订申请验证
+     * @return
+     */
+    public Map<String[], ValidRule[]> refundApplyForGroupValidate() {
+        Map<String[], ValidRule[]> rules = new HashMap<>();
+        rules.put(new String[]{
+                "order_item_sn", // 订单编号(流水)
+                "apply_from" // 来源 供应侧/销售侧
+        }, new ValidRule[]{new ValidRule.NotNull(), new ValidRule.Digits()});
+
+        rules.put(new String[]{"apply_from"}, new ValidRule[]{
+                new ValidRule.Digits(new Long[]{
+                        Long.valueOf(ProductConstants.RefundEqType.SELLER), Long.valueOf(ProductConstants.RefundEqType.PROVIDER)
+                })});
+
+        rules.put(new String[]{"cause"}, new ValidRule[]{new ValidRule.NotNull()});
+        return rules;
+    }
+
+    /**
      * 订单退订审核验证
      * @return
      */
