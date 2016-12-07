@@ -144,7 +144,7 @@
     where id = #{id,jdbcType=INTEGER}
   </update>
     <update id="updateSummary">
-        update t_capital_serial set summary=#{summary} where id =#{summary}
+        update t_capital_serial set summary=#{summary} where id =#{id}
     </update>
     <insert id="insertBatch" parameterType="java.util.List" useGeneratedKeys="true">
         <selectKey keyProperty="id" order="AFTER" resultType="long">
