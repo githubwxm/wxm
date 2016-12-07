@@ -1,10 +1,7 @@
 package com.all580.order.service;
 
 import com.all580.order.api.OrderConstant;
-import com.all580.order.api.model.ConsumeTicketInfo;
-import com.all580.order.api.model.ReConsumeTicketInfo;
-import com.all580.order.api.model.RefundTicketInfo;
-import com.all580.order.api.model.SendTicketInfo;
+import com.all580.order.api.model.*;
 import com.all580.order.api.service.TicketCallbackService;
 import com.all580.order.dao.*;
 import com.all580.order.entity.*;
@@ -101,6 +98,11 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
     }
 
     @Override
+    public Result sendGroupTicket(Long orderSn, SendTicketInfo info, Date procTime) {
+        return null;
+    }
+
+    @Override
     public Result consumeTicket(Long orderSn, ConsumeTicketInfo info, Date procTime) {
         OrderItem orderItem = orderItemMapper.selectBySN(orderSn);
         if (orderItem == null) {
@@ -165,6 +167,11 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
     }
 
     @Override
+    public Result consumeGroupTicket(Long orderSn, ConsumeGroupTicketInfo info, Date procTime) {
+        return null;
+    }
+
+    @Override
     public Result reConsumeTicket(Long orderSn, ReConsumeTicketInfo info, Date procTime) {
         OrderItem orderItem = orderItemMapper.selectBySN(orderSn);
         if (orderItem == null) {
@@ -223,6 +230,11 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         // 同步数据
         bookingOrderManager.syncReConsumeData(orderItem.getId(), info.getReValidateSn());
         return new Result(true);
+    }
+
+    @Override
+    public Result reConsumeGroupTicket(Long orderSn, ReConsumeGroupTicketInfo info, Date procTime) {
+        return null;
     }
 
     @Override
@@ -292,6 +304,11 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         // 同步数据
         refundOrderManager.syncRefundTicketData(refundOrder.getId());
         return new Result(true);
+    }
+
+    @Override
+    public Result refundGroupTicket(Long orderSn, RefundGroupTicketInfo info, Date procTime) {
+        return null;
     }
 
     private MaSendResponse getMaSendResponse(List<MaSendResponse> list, int visitorId, int epMaId) {

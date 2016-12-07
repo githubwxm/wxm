@@ -1,9 +1,6 @@
 package com.all580.order.api.service;
 
-import com.all580.order.api.model.ConsumeTicketInfo;
-import com.all580.order.api.model.ReConsumeTicketInfo;
-import com.all580.order.api.model.RefundTicketInfo;
-import com.all580.order.api.model.SendTicketInfo;
+import com.all580.order.api.model.*;
 import com.framework.common.Result;
 
 import java.util.Date;
@@ -26,6 +23,15 @@ public interface TicketCallbackService {
     Result sendTicket(Long orderSn, List<SendTicketInfo> infoList, Date procTime);
 
     /**
+     * 出票回调
+     * @param orderSn 子订单流水编号
+     * @param info 票信息
+     * @param procTime 处理时间
+     * @return
+     */
+    Result sendGroupTicket(Long orderSn,SendTicketInfo info, Date procTime);
+
+    /**
      * 消费验票通知
      * @param orderSn 子订单流水编号
      * @param info 验票信息
@@ -33,6 +39,15 @@ public interface TicketCallbackService {
      * @return
      */
     Result consumeTicket(Long orderSn, ConsumeTicketInfo info, Date procTime);
+
+    /**
+     * 消费验票通知
+     * @param orderSn 子订单流水编号
+     * @param info 验票信息
+     * @param procTime 处理时间
+     * @return
+     */
+    Result consumeGroupTicket(Long orderSn, ConsumeGroupTicketInfo info, Date procTime);
 
     /**
      * 反核销通知
@@ -44,6 +59,15 @@ public interface TicketCallbackService {
     Result reConsumeTicket(Long orderSn, ReConsumeTicketInfo info, Date procTime);
 
     /**
+     * 反核销通知
+     * @param orderSn 子订单流水编号
+     * @param info 反核销信息
+     * @param procTime 处理时间
+     * @return
+     */
+    Result reConsumeGroupTicket(Long orderSn, ReConsumeGroupTicketInfo info, Date procTime);
+
+    /**
      * 退票回调
      * @param orderSn 子订单流水编号
      * @param info 退票信息
@@ -51,4 +75,13 @@ public interface TicketCallbackService {
      * @return
      */
     Result refundTicket(Long orderSn, RefundTicketInfo info, Date procTime);
+
+    /**
+     * 退票回调
+     * @param orderSn 子订单流水编号
+     * @param info 退票信息
+     * @param procTime 处理时间
+     * @return
+     */
+    Result refundGroupTicket(Long orderSn, RefundGroupTicketInfo info, Date procTime);
 }
