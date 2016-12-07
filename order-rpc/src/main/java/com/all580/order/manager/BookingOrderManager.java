@@ -235,14 +235,14 @@ public class BookingOrderManager extends BaseOrderManager {
      * @return
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public OrderItem generateItem(ProductSalesInfo info, Date endTime, int saleAmount, Date bookingDate, int days, int orderId, int quantity, Integer proSubId) {
+    public OrderItem generateItem(ProductSalesInfo info, Date endTime, int saleAmount, Date bookingDate, int days, int orderId, int quantity, Integer proSubId, Integer groupId) {
         OrderItem orderItem = new OrderItem();
         orderItem.setNumber(UUIDGenerator.generateUUID());
         orderItem.setStart(bookingDate);
         orderItem.setEnd(endTime);
         orderItem.setSale_amount(saleAmount); // 进货价
         orderItem.setDays(days);
-        orderItem.setGroup_id(0); // 散客为0
+        orderItem.setGroup_id(groupId == null ? 0 : groupId); // 散客为0
         orderItem.setOrder_id(orderId);
         orderItem.setPro_name(info.getProduct_name());
         orderItem.setPro_sub_name(info.getProduct_sub_name());

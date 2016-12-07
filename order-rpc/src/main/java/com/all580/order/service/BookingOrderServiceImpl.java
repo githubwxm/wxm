@@ -181,7 +181,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             totalPayShopPrice += priceArray[2];
 
             // 创建子订单
-            OrderItem orderItem = bookingOrderManager.generateItem(salesInfo, dayInfoList.get(dayInfoList.size() - 1).getEnd_time(), priceArray[0], bookingDate, days, order.getId(), quantity, productSubId);
+            OrderItem orderItem = bookingOrderManager.generateItem(salesInfo, dayInfoList.get(dayInfoList.size() - 1).getEnd_time(), priceArray[0], bookingDate, days, order.getId(), quantity, productSubId, null);
 
             List<OrderItemDetail> detailList = new ArrayList<>();
             List<Visitor> visitorList = new ArrayList<>();
@@ -577,7 +577,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             totalPayShopPrice += priceArray[2];
 
             // 创建子订单
-            OrderItem orderItem = bookingOrderManager.generateItem(salesInfo, dayInfoList.get(dayInfoList.size() - 1).getEnd_time(), priceArray[0], bookingDate, days, order.getId(), quantity, productSubId);
+            OrderItem orderItem = bookingOrderManager.generateItem(salesInfo, dayInfoList.get(dayInfoList.size() - 1).getEnd_time(), priceArray[0], bookingDate, days, order.getId(), quantity, productSubId, groupId);
 
             List<OrderItemDetail> detailList = new ArrayList<>();
             List<Visitor> visitorList = new ArrayList<>();
