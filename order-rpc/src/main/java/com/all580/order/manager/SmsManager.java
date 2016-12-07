@@ -270,7 +270,7 @@ public class SmsManager {
         sendSmsParams.put("date", DateFormatUtils.parseDateToDatetimeString(orderItem.getStart()));
         sendSmsParams.put("shuliang", String.valueOf(orderItem.getQuantity()));
         sendSmsParams.put("buydate", DateFormatUtils.parseDateToDatetimeString(date));
-        sendSmsParams.put("money", String.valueOf(order.getPay_amount()));
+        sendSmsParams.put("money", String.valueOf(order.getPay_amount() / 100.0));
         Result result = smsService.send(shipping.getPhone(), SmsType.Order.SUPPLIER_PAY, order.getPayee_ep_id(), sendSmsParams);//发送短信
         if (!result.isSuccess()) {
             throw new ApiException("发送审核通过待支付短信失败:" + result.getError());
