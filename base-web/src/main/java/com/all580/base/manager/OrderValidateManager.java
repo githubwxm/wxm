@@ -91,7 +91,7 @@ public class OrderValidateManager {
 
         // 校验整数
         rules.put(new String[]{
-                "items.product_sub_code", // 订单子产品ID
+                "items.product_sub_id", // 订单子产品ID
                 "items.days", // 天数：景点固定1
                 "items.quantity", // 订票数量
                 "ep_id", // 订票企业ID
