@@ -472,7 +472,6 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         Integer from = CommonUtil.objectParseInteger(params.get("from"));
         String remark = CommonUtil.objectParseString(params.get("remark"));
         Integer groupId = CommonUtil.objectParseInteger(params.get("group_id"));
-        Integer guideId = CommonUtil.objectParseInteger(params.get("guide_id"));
         int totalPrice = 0;
         int totalPayPrice = 0;
         int totalPayShopPrice = 0;
