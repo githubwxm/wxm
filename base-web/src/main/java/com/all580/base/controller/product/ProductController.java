@@ -178,6 +178,9 @@ public class ProductController extends BaseController {
         subProductInfo.setUse_hours_limit(CommonUtil.objectParseInteger(params.get("use_hours_limit")));
         subProductInfo.setUse_notes(CommonUtil.objectParseString(params.get("use_notes")));
         subProductInfo.setVoucher_msg(CommonUtil.objectParseString(params.get("voucher_msg")));
+        subProductInfo.setRefund_audit(CommonUtil.objectParseInteger(params.get("refund_audit")));
+        subProductInfo.setRefund_money_audit(CommonUtil.objectParseInteger(params.get("refund_money_audit")));
+        subProductInfo.setLow_use_quantity(CommonUtil.objectParseInteger(params.get("low_use_quantity")));
         return subProductInfo;
     }
 
