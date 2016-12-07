@@ -23,7 +23,7 @@
          values(#{ep_id},#{core_ep_id},#{credit_before},#{credit_after});
     </insert>
     <select id="selectList" resultType="java.util.HashMap">
-        select t.id,name,linkman,link_phone,province,city,area,credit_after,
+        select t.id,name,linkman,link_phone,province,city,area,credit_after,pic_address,address,
         DATE_FORMAT(credit_date,'%Y-%m-%d') as credit_date  from
         ( select * from( select  * from t_log_credit
         <if test="core_ep_id != null">
