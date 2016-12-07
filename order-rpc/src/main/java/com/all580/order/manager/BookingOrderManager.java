@@ -106,9 +106,9 @@ public class BookingOrderManager extends BaseOrderManager {
      */
     public Result<List<GroupMember>> validateGroupVisitor(List visitors, Integer realName, int quantity, int groupId) {
         List<GroupMember> members = null;
-        if (realName != null && realName != ProductConstants.NeedRealNameState.NO_NEED) {
+        List<Integer> ids = new ArrayList<>();
+        if (visitors != null) {
             // 获取团队所有成员 如果这里不判断的话 可以不查 减轻压力
-            List<Integer> ids = new ArrayList<>();
             for (Object o : visitors) {
                 Integer memberId = CommonUtil.objectParseInteger(o);
                 if (memberId == null) {
@@ -126,6 +126,8 @@ public class BookingOrderManager extends BaseOrderManager {
                 }
             }
             members = groupMemberMapper.selectByIds(groupId, ids);
+        }
+        if (realName != null && realName != ProductConstants.NeedRealNameState.NO_NEED) {
             if (members == null || members.isEmpty() || members.size() != ids.size()) {
                 return new Result<>(false, Result.PARAMS_ERROR, "团队成员不匹配");
             }
