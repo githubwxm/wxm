@@ -398,6 +398,7 @@ public class RefundOrderServiceImpl implements RefundOrderService {
         if (result == null) {
             throw new ApiException("调用退款返回null");
         }
-        return result;
+        Map syncData = refundOrderManager.syncRefundOrderMoney(refundOrder.getId());
+        return result.putExt(Result.SYNC_DATA, syncData);
     }
 }
