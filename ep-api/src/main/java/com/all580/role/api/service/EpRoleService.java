@@ -3,6 +3,7 @@ package com.all580.role.api.service;
 
 import com.framework.common.Result;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -44,5 +45,7 @@ public interface EpRoleService {
      * @return
      */
     Result selectRoleFunc(int ep_role_id);
+
+    Result deleteFuncIdsEpRole(List<Integer> list);
 
 }
