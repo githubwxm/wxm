@@ -17,6 +17,12 @@ public interface EpFinanceService {
      */
       Result<Map<String,Object>> getAccountInfoList(Map<String,Object> map);
 
+    /**
+     * 销售平台信息
+     * @param map
+     * @return
+     */
+    Result<Map<String,Object>> getSellerPlatfromAccuntInfo(Map<String,Object> map);
     Result<Map<String, String>> getBalanceAccountInfo(Integer epId, Integer coreEpId);
 
     Result addBalance(Integer epId,Integer coreEpId,Integer balance);
