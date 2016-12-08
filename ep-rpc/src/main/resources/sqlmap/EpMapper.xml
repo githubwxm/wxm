@@ -41,6 +41,28 @@
         select id,name from t_ep where ep_type=10001;
     </select>
 
+    <select id="getSellerPlatfromAccuntInfo" resultType="java.util.Map">
+        select  pic_address,ep.id ,ep.name,ep.linkman,ep.link_phone,ep.province,ep.city,ep.area,ep.address,ep.status,
+        date_format(ep.add_time,'%Y-%m-%d') add_time,param.`name` as ep_type_name  from
+        t_ep  ep left JOIN t_ep_param param on ep.`ep_type` = param.id
+        where
+        1=1  and ep.id in(
+        select DISTINCT(seller_core_ep_id) from t_core_ep_channel where supplier_core_ep_id=#{ep_id}
+        )
+        <include refid="ep_list_where"/>
+        <include refid="limit"/>
+    </select>
+    <select id="getSellerPlatfromAccuntInfoCount" resultType="java.lang.Integer">
+        select  count(1)  from
+        t_ep  ep left JOIN t_ep_param param on ep.`ep_type` = param.id
+        where
+        1=1  and ep.id in(
+        select DISTINCT(seller_core_ep_id) from t_core_ep_channel where supplier_core_ep_id=#{ep_id}
+        )
+        <include refid="ep_list_where"/>
+        <include refid="limit"/>
+    </select>
+
     <select id="getAccountInfoList" resultType="java.util.Map">
         select  pic_address,ep.id ,ep.name,ep.linkman,ep.link_phone,ep.province,ep.city,ep.area,ep.address,ep.status,
         date_format(ep.add_time,'%Y-%m-%d') add_time,param.`name` as ep_type_name  from

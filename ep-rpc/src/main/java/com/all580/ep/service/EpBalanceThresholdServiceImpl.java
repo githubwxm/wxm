@@ -48,10 +48,13 @@ public class EpBalanceThresholdServiceImpl implements EpBalanceThresholdService 
                     map.put("threshold",num*100);
                 }
             }
-            if(map.get("isChannel")==null){
-                Integer core_ep_id=  epMapper.selectPlatformId(CommonUtil.objectParseInteger(map.get("id")));
-                if(!core_ep_id.equals(map.get(EpConstant.EpKey.CORE_EP_ID))){
-                    throw new ApiException("企业不属于该平台商");
+            if(map.get("isChannel")==null){//添加通道汇率的时候不用检验是否一致
+                Integer id =CommonUtil.objectParseInteger(map.get("id")) ;
+                Integer core_ep_id=  epMapper.selectPlatformId(id);
+                if(!core_ep_id.equals(id)){
+                    if(!core_ep_id.equals(map.get(EpConstant.EpKey.CORE_EP_ID))){
+                        throw new ApiException("企业不属于该平台商");
+                    }
                 }
             }
             result.put(epBalanceThresholdMapper.createOrUpdate(map));

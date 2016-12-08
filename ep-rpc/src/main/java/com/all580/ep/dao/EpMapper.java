@@ -32,7 +32,10 @@ public interface EpMapper {
     int platformListUpCount(Map<String,Object> map);
     Map<String, Object> selectId(int id);
 
+    List<Map<String,Object>> getSellerPlatfromAccuntInfo(Map<String,Object> map);
+    int getSellerPlatfromAccuntInfoCount(Map<String,Object> map);
     List<Map<String,Object>> getAccountInfoList(Map<String,Object> map);
+
     int getAccountInfoListCount(Map<String,Object> map);
 
     Integer selectPlatformId(int id);

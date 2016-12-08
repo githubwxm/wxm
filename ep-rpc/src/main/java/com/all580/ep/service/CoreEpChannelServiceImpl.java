@@ -1,9 +1,12 @@
 package com.all580.ep.service;
 
+import com.all580.ep.api.conf.EpConstant;
 import com.all580.ep.api.service.CoreEpChannelService;
 import com.all580.ep.api.service.EpBalanceThresholdService;
 import com.all580.ep.com.Common;
 import com.all580.ep.dao.CoreEpChannelMapper;
+import com.all580.ep.dao.EpMapper;
+import com.all580.manager.SyncEpData;
 import com.all580.payment.api.service.BalancePayService;
 import com.framework.common.Result;
 import javax.lang.exception.ApiException;
@@ -16,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 @Service
 @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
@@ -29,7 +33,13 @@ public class CoreEpChannelServiceImpl implements CoreEpChannelService {
     private BalancePayService balancePayService;
 
     @Autowired
+    private EpMapper epMapper;
+
+    @Autowired
     private EpBalanceThresholdService epBalanceThresholdService;
+
+    @Autowired
+    private SyncEpData syncEpData;
 
     @Override   //// TODO: 2016/10/11 0011   上游下游供销关系同步 数据
     public Result<Integer> create(Map<String,Object> params) {
@@ -49,6 +59,13 @@ public class CoreEpChannelServiceImpl implements CoreEpChannelService {
             params.put("core_ep_id",coreEpId);
             params.put("isChannel","true");
             epBalanceThresholdService.createOrUpdate(params);//添加余额阀值
+            //同步数据   把销售平台商 同步到供应平台商
+                Map<String, Object> tempMap = new HashMap<>();
+                tempMap.put("id", epId);
+                List<Map<String, String>> listMap = epMapper.selectSingleTable(tempMap);
+                Map<String,Object> syncData=  syncEpData.syncEpData(coreEpId, EpConstant.Table.T_EP, listMap);
+                result.setSuccess();
+                result.putExt(Result.SYNC_DATA, syncData);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             throw new ApiException(e.getMessage(), e);

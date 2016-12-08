@@ -48,7 +48,7 @@ public class LogCreditServiceImpl implements LogCreditService{
     public Result<Integer> create(Map<String,Object> map) {
         Result<Integer> result = new Result<Integer>();
         try {
-            Integer ep_id = CommonUtil.objectParseInteger(map.get("ep_id")) ;
+            Integer ep_id = CommonUtil.objectParseInteger(map.get("credit_ep_id")) ;
             Integer core_ep_id=CommonUtil.objectParseInteger(map.get("core_ep_id")) ;
             Integer credit_before= logCreditMapper.select(ep_id,core_ep_id);
             map.put("credit_before",credit_before==null?0:credit_before);
