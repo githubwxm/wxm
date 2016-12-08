@@ -84,6 +84,21 @@ public class BaseOrderManager {
     }
 
     /**
+     * 获取卖家企业ID(null则返回自己)
+     * @param salesInfoList 销售链
+     * @param epId 企业
+     * @return
+     */
+    public Integer getSaleEpId(List<EpSalesInfo> salesInfoList, int epId) {
+        for (EpSalesInfo info : salesInfoList) {
+            if (info.getEp_id() == epId) {
+                return info.getSale_ep_id();
+            }
+        }
+        return epId;
+    }
+
+    /**
      * 获取进货结构
      * @param epSalesInfos 销售链
      * @param buyEpId 进货企业ID

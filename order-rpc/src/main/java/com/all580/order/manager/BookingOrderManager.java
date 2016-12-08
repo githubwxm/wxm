@@ -573,6 +573,7 @@ public class BookingOrderManager extends BaseOrderManager {
                 if (payType == ProductConstants.PayType.PREPAY) {
                     OrderItemAccount addAccount = new OrderItemAccount();
                     addAccount.setEp_id(saleEpId);
+                    addAccount.setSale_ep_id(getSaleEpId(daySalesList.get(0), saleEpId));
                     addAccount.setCore_ep_id(saleCoreEpId);
                     addAccount.setMoney(totalOutPrice * quantity);
                     addAccount.setProfit(totalOutPrice * quantity);
@@ -584,6 +585,7 @@ public class BookingOrderManager extends BaseOrderManager {
 
                     OrderItemAccount subAccount = new OrderItemAccount();
                     subAccount.setEp_id(buyEpId);
+                    subAccount.setSale_ep_id(getSaleEpId(daySalesList.get(0), buyEpId));
                     subAccount.setCore_ep_id(saleCoreEpId);
                     subAccount.setMoney(-(totalOutPrice * quantity));
                     subAccount.setProfit(-(totalOutPrice * quantity));
@@ -595,6 +597,7 @@ public class BookingOrderManager extends BaseOrderManager {
                 } else {
                     OrderItemAccount addAccount = new OrderItemAccount();
                     addAccount.setEp_id(buyEpId);
+                    addAccount.setSale_ep_id(getSaleEpId(daySalesList.get(0), buyEpId));
                     addAccount.setCore_ep_id(saleCoreEpId);
                     addAccount.setMoney((salePrice - totalOutPrice) * quantity);
                     addAccount.setProfit((salePrice - totalOutPrice) * quantity);
@@ -606,6 +609,7 @@ public class BookingOrderManager extends BaseOrderManager {
 
                     OrderItemAccount subAccount = new OrderItemAccount();
                     subAccount.setEp_id(saleCoreEpId);
+                    subAccount.setSale_ep_id(getSaleEpId(daySalesList.get(0), saleCoreEpId));
                     subAccount.setCore_ep_id(saleCoreEpId);
                     subAccount.setMoney(-((salePrice - totalOutPrice) * quantity));
                     subAccount.setProfit(0);
@@ -620,6 +624,7 @@ public class BookingOrderManager extends BaseOrderManager {
                 if (!saleEpId.equals(saleCoreEpId)) {
                     OrderItemAccount account = new OrderItemAccount();
                     account.setEp_id(saleEpId);
+                    account.setSale_ep_id(getSaleEpId(daySalesList.get(0), saleEpId));
                     account.setCore_ep_id(saleCoreEpId);
                     account.setMoney(totalProfit * quantity);
                     account.setProfit(totalProfit * quantity);
@@ -644,6 +649,7 @@ public class BookingOrderManager extends BaseOrderManager {
             }
             OrderItemAccount account = new OrderItemAccount();
             account.setEp_id(id);
+            account.setSale_ep_id(getSaleEpId(daySalesList.get(0), id));
             account.setCore_ep_id(id);
             account.setMoney(-coreSubMap.get(id));
             account.setProfit(getTotalProfit(dataDtoList) * quantity);
