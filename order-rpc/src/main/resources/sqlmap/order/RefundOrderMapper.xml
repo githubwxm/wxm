@@ -339,4 +339,9 @@
         WHERE tro.`order_item_id` = #{itemId,jdbcType=INTEGER}
         AND trv.visitor_id = #{visitorId}
     </select>
+
+    <select id="selectByItemId" resultMap="BaseResultMap">
+        SELECT * FROM t_refund_order
+        WHERE `order_item_id` = #{itemId,jdbcType=INTEGER}
+    </select>
 </mapper>

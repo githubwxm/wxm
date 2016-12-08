@@ -41,6 +41,13 @@ public interface BookingOrderService {
     Result<?> resendTicket(Map params);
 
     /**
+     * 重新发码
+     * @param params
+     * @return
+     */
+    Result<?> resendTicketForGroup(Map params);
+
+    /**
      * 团队下单
      * @param params
      * @return
