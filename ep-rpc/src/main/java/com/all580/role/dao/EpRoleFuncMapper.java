@@ -45,6 +45,21 @@ public interface EpRoleFuncMapper {
      */
     int updateEpRoleFuncIsNotDelete(@Param("ep_role_id") int ep_role_id,@Param("ids")List<Integer> ids);
     int deleteEpFunc(@Param("ep_role_id") int ep_role_id,@Param("ids")List<Integer> ids);
+
+    /**
+     * 查询这个菜单有那些角色用到
+     * @param func_id
+     * @return
+     */
+    List<Integer> selectFuncIdAllEpRole(int func_id);
+    List<Integer> selectFuncIdsAllEpRole(@Param("func_ids")List<Integer> func_ids);
+    List<Integer> selectFuncIdsAllEpRoleIds(@Param("func_ids")List<Integer> func_ids);
+    /**
+     * 删除菜单已经删除对应的角色关联菜单数据
+     * @param func_ids
+     * @return
+     */
+    int deleteFuncIdsEpRole(@Param("func_ids")List<Integer> func_ids);
     /**
      * 查询出已经存在需要重新插入的功能 id
      * @param ep_role_id

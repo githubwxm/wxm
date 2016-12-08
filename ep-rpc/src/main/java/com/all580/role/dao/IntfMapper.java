@@ -29,6 +29,6 @@ public interface IntfMapper {
     List<Map<String,Object>> selectFuncId(Map<String,Object> prarms);
      int selectFuncIdCount(Map<String,Object> prarms);
     int intListCount();
-
+    List<String> authIntf(int ep_role);
     List<Map<String,Object>> intfList(Map<String,Object> params);
 }

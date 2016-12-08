@@ -7,6 +7,8 @@ import com.all580.role.api.service.EpRoleService;
 import com.all580.role.dao.EpRoleFuncMapper;
 import com.all580.role.dao.EpRoleMapper;
 import com.framework.common.Result;
+import com.framework.common.io.cache.redis.RedisUtils;
+import com.framework.common.util.Auth;
 import com.framework.common.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +38,21 @@ public class EpRoleServiceImpl implements EpRoleService {
     @Autowired
     private SyncEpData syncEpData;
 
+    @Autowired
+    private RedisUtils redisUtils;
+
+    @Override
+    public Result deleteFuncIdsEpRole(List<Integer> list){
+        Result result = new Result();
+        if(list!=null&&!list.isEmpty()){
+          Auth.updateAuthMap(epRoleFuncMapper.selectFuncIdsAllEpRole(list),redisUtils);//更新鉴权数据
+          List<Integer>  synDate = epRoleFuncMapper.selectFuncIdsAllEpRoleIds(list);//同步删除数据
+            epRoleFuncMapper.deleteFuncIdsEpRole(list);//删除
+            syncEpData.syncDeleteAllData(EpConstant.Table.T_EP_ROLE_FUNC,(Integer [])synDate.toArray(new Integer[synDate.size()]) );
+            result.setSuccess();
+        }
+       return result;
+    }
     @Override
     public Result addEpRole(Map<String, Object> params) {
         Result result = new Result(true);
@@ -149,7 +166,6 @@ public class EpRoleServiceImpl implements EpRoleService {
                     epRoleFuncMapper.insertEpRoleFuncBatch(ep_role_id, oper_id, func_ids);
                     List list = epRoleFuncMapper.selectepRoleId(ep_role_id,func_ids);
                         syncEpData.syncEpAllData(EpConstant.Table.T_EP_ROLE_FUNC , list);
-
                 }
             }
 
@@ -160,7 +176,7 @@ public class EpRoleServiceImpl implements EpRoleService {
         return result;  //
     }
 
-    public Result updateEpRoleFunc(Map<String, Object> params) {//逻辑删除
+    public Result updateEpRoleFunc(Map<String, Object> params) {//物理删除
         try {
             Integer ep_role_id = CommonUtil.objectParseInteger(params.get("ep_role_id"));//角色
             Integer oper_id = CommonUtil.objectParseInteger(params.get("oper_id"));//操作人
@@ -185,12 +201,15 @@ public class EpRoleServiceImpl implements EpRoleService {
             if (!(null == func_ids || func_ids.isEmpty())) {//需要添加的数据
                 if(!"".equals(func_ids.get(0))){
                     epRoleFuncMapper.insertEpRoleFuncBatch(ep_role_id, oper_id, func_ids);
-                    List list = epRoleFuncMapper.selectepRoleId(ep_role_id,func_ids);
+                    List<Map<String,Object>>  list = epRoleFuncMapper.selectepRoleId(ep_role_id,func_ids);
                     if (!list.isEmpty()) {
                         syncEpData.syncEpAllData(EpConstant.Table.T_EP_ROLE_FUNC, list);
                     }
                 }
             }
+            List<Integer> tempList = new ArrayList<Integer>();
+            tempList.add(ep_role_id);
+            Auth.updateAuthMap(epRoleFuncMapper.selectFuncIdsAllEpRole(tempList),redisUtils);//更新鉴权数据
         } catch (Exception e) {
             log.error("修改菜单出错 {}", e.getMessage());
             return new Result(false, e.getMessage());

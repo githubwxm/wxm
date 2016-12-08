@@ -131,7 +131,10 @@
   <select id="intListCount" resultType="java.lang.Integer">
     select count(1) from t_intf;
   </select>
-
+  <select id="authIntf" resultType="java.lang.String">
+    select  DISTINCT(auth) from t_ep_role_func tf  JOIN t_intf ti on tf.func_id=ti.func_id
+    where ep_role_id=#{ep_role};
+  </select>
   <select id="intfList" resultType="java.util.Map">
      select * from t_intf  where isdelete=0  order by func_id
        <include refid="limit"/>

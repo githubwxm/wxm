@@ -2,9 +2,12 @@ package com.all580.role.service;
 
 import com.all580.ep.api.conf.EpConstant;
 import com.all580.manager.SyncEpData;
+import com.all580.role.api.service.EpRoleService;
 import com.all580.role.api.service.FuncService;
+import com.all580.role.dao.EpRoleFuncMapper;
 import com.all580.role.dao.FuncMapper;
 import com.framework.common.Result;
+import com.framework.common.util.Auth;
 import com.framework.common.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +31,9 @@ public class FuncServiceImpl implements FuncService{
 
     @Autowired
     private SyncEpData syncEpData;
+
+    @Autowired
+    private EpRoleService epRoleService;
 
     @Override
     public Result<List<Map<String, Object>>> getAll() {
@@ -79,6 +85,11 @@ public class FuncServiceImpl implements FuncService{
             list.addAll(deletePid(list,null)) ;
             funcMapper.deletePidAll(list);
             syncEpData.syncDeleteAllData(EpConstant.Table.T_FUNC,(Integer [])list.toArray(new Integer[list.size()]) );
+            // 查找  菜单对应的角色  同步到鉴权
+            // 同步删除角色对应菜单数据
+            epRoleService.deleteFuncIdsEpRole(list);
+
+
         }catch (Exception e){
             log.error("删除菜单功能异常",e);
             throw  new ApiException("删除菜单功能异常");

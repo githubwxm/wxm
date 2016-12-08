@@ -4,8 +4,11 @@ import com.all580.ep.api.conf.EpConstant;
 import com.all580.ep.com.Common;
 import com.all580.manager.SyncEpData;
 import com.all580.role.api.service.IntfService;
+import com.all580.role.dao.EpRoleFuncMapper;
 import com.all580.role.dao.IntfMapper;
 import com.framework.common.Result;
+import com.framework.common.io.cache.redis.RedisUtils;
+import com.framework.common.util.Auth;
 import com.framework.common.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +35,22 @@ public class IntfServiceImpl implements IntfService {
     @Autowired
     private SyncEpData syncEpData;
 
+    @Autowired
+    private EpRoleFuncMapper epRoleFuncMapper;
+
+    @Autowired
+    private RedisUtils redisUtils;
+
+    public Result<List<String>> authIntf(int epRole){
+        Result<List<String>> result=  new Result(true);
+        try {
+            result.put(intfMapper.authIntf(epRole));
+        } catch (Exception e) {
+            log.error("添加接口异常", e);
+            throw  new ApiException("添加接口异常");
+        }
+        return result;
+    }
     @Override
     public Result insertInft(Map<String, Object> params) {
         Result result=  new Result(true);
@@ -40,10 +59,13 @@ public class IntfServiceImpl implements IntfService {
             Integer id = CommonUtil.objectParseInteger(params.get("id"));
             result.put(id);
             syncEpData.syncEpAllData(EpConstant.Table.T_INTF,intfMapper.selectByPrimaryKey(id));
-           // funcIntfMapper.insertFuncIntf(params);
+            //  更新鉴权数据
+            Integer func_id = CommonUtil.objectParseInteger(params.get("func_id"));
+            List<Integer> list= epRoleFuncMapper.selectFuncIdAllEpRole(func_id);
+            Auth.updateAuthMap(list,redisUtils);
         } catch (Exception e) {
             log.error("添加接口异常", e);
-           throw  new ApiException("添加接口异常");
+            throw  new ApiException("添加接口异常");
         }
         return result;
     }
@@ -70,7 +92,7 @@ public class IntfServiceImpl implements IntfService {
         return result;
     }
     @Override
-   public Result intfList(Map<String,Object> params){
+    public Result intfList(Map<String,Object> params){
         Result result= new Result(true);
         Map<String,Object> resultMap = new HashMap<>();
         try {
@@ -90,17 +112,19 @@ public class IntfServiceImpl implements IntfService {
             throw   new ApiException("查询接口列表出错");
         }
         return result;
-   }
+    }
     @Override
     public Result deleteInft(int id) {
         try {
-           // funcIntfMapper.deleteFuncIntf(id);
-
+            // funcIntfMapper.deleteFuncIntf(id);
+            Integer func_id =CommonUtil.objectParseInteger(intfMapper.selectByPrimaryKey(id).get("func_id")) ;
+            List<Integer> list= epRoleFuncMapper.selectFuncIdAllEpRole(func_id);
+            Auth.updateAuthMap(list,redisUtils);
             intfMapper.deleteByPrimaryKey(id);
             syncEpData.syncDeleteAllData(EpConstant.Table.T_INTF,id);
         } catch (Exception e) {
             log.error("删除接口异常", e);
-         throw    new ApiException("删除接口异常");
+            throw    new ApiException("删除接口异常");
         }
         return new Result(true);
     }

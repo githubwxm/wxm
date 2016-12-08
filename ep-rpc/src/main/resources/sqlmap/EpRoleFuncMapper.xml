@@ -138,6 +138,33 @@
       #{item}
     </foreach>
   </delete>
+   <select id="selectFuncIdAllEpRole" resultType="java.lang.Integer">
+      select ep_role_id from t_ep_role_func where func_id=#{func_id}
+   </select>
+
+  <select id="selectFuncIdsAllEpRole" resultType="java.lang.Integer">
+    select DISTINCT(ep_role_id) from t_ep_role_func where func_id
+     in
+    <foreach item="item" index="index" collection="func_ids" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </select>
+  <select id="selectFuncIdsAllEpRoleIds" resultType="java.lang.Integer">
+    select id from t_ep_role_func where func_id
+    in
+    <foreach item="item" index="index" collection="func_ids" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </select>
+
+
+  <delete id="deleteFuncIdsEpRole" >
+    delete from t_ep_role_func where func_id
+    in
+    <foreach item="item" index="index" collection="func_ids" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </delete>
 
   <select id="selectEpRoleIdFuncId" resultType="java.lang.Integer">   <!-- and isdelete=0  去掉-->
     select func_id FROM t_ep_role_func where  ep_role_id = #{ep_role_id}
