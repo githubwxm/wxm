@@ -4,8 +4,12 @@ import com.alibaba.fastjson.JSON;
 import com.all580.base.manager.BeanUtil;
 import com.all580.ep.api.conf.EpConstant;
 import com.all580.ep.api.service.CoreEpAccessService;
+import com.all580.ep.api.service.EpService;
+import com.all580.role.api.service.IntfService;
 import com.framework.common.Result;
+import com.framework.common.io.cache.redis.RedisUtils;
 import com.framework.common.lang.JsonUtils;
+import com.framework.common.util.Auth;
 import com.framework.common.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.map.HashedMap;
@@ -16,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -23,7 +28,7 @@ import java.util.TreeMap;
  * Created by wxming on 2016/10/13 0013.
  */
 @Slf4j
-public class VerifyFilter implements  Filter{
+public class VerifyFilter implements  Filter {
 //    @Autowired
 //    private CoreEpAccessService coreEpAccessService;
 
@@ -42,7 +47,7 @@ public class VerifyFilter implements  Filter{
         ServletRequest requestWrapper = null;
         String postParams="";
         String currenttSing="";
-        //String url =httpRequest.getRequestURI(); // 访问url
+        String url =httpRequest.getRequestURI(); // 访问url
         CoreEpAccessService coreEpAccessService= BeanUtil.getBean("coreEpAccessService", CoreEpAccessService.class);
 
         if ("POST".equals(method)) {
@@ -93,11 +98,18 @@ public class VerifyFilter implements  Filter{
                     renderingByJsonPData(httpResponse, JSON.toJSONString(getOutPutMap(false,"签名校验失败", Result.SIGN_FAIL,null)));
                     return;
                 }else{
-                    if(null == requestWrapper) {
-                        chain.doFilter(request, response);
-                    } else {
-                        chain.doFilter(requestWrapper, response);
+                    Integer ep_id=CommonUtil.objectParseInteger(map.get("ep_id"));
+                    if(auth(url,ep_id)){
+                        if(null == requestWrapper) {
+                            chain.doFilter(request, response);
+                        } else {
+                            chain.doFilter(requestWrapper, response);
+                        }
+                    }else{
+                        log.error("权限校验失败url{},ep_id:{}",url,ep_id);
+                        renderingByJsonPData(httpResponse, JSON.toJSONString(getOutPutMap(false,"权限校验失败", Result.SIGN_FAIL,null)));
                     }
+
                 }
             }catch(Exception e){
                 e.printStackTrace();
@@ -139,7 +151,33 @@ public class VerifyFilter implements  Filter{
             }
         }
     }
+    public boolean auth(String url,Integer ep_id){
+        url = url.toLowerCase();
+        EpService epService= BeanUtil.getBean("epService", EpService.class);
+        Map<String,Object> map = epService.selectId(ep_id).get();
+        if(null!=map&&!map.isEmpty()){
+          Integer epRole=CommonUtil.objectParseInteger( map.get("ep_role")) ;
+            RedisUtils redisUtils= BeanUtil.getBean("redisUtils", RedisUtils.class);
+            List<String> auth=Auth.getAuthMap(redisUtils,epRole);
+            boolean ref = false;
+            if(auth!=null&&auth.size()==1){
+                ref=null== auth.get(0);
+                if(!ref){
+                    ref="".equals(auth.get(0));
+                }
+            }
+            if(null==auth||ref){
+                IntfService intfService= BeanUtil.getBean("intfService", IntfService.class);
+                 auth= intfService.authIntf(epRole).get();
+                Auth.setAuthMap(redisUtils,auth,epRole);
+                return auth.contains(url);
+            }else{
+              return  auth.get(0).contains(url);
+            }
+        }
 
+        return false;
+    }
 
     @Override
     public void destroy() {
