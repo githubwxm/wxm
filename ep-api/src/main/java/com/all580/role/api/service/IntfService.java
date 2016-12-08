@@ -2,6 +2,7 @@ package com.all580.role.api.service;
 
 import com.framework.common.Result;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -17,5 +18,5 @@ public interface IntfService {
 
     Result selectFuncId(Map<String,Object> params);
     Result intfList(Map<String,Object> params);
-
+    Result<List<String>> authIntf(int epRole);
 }
