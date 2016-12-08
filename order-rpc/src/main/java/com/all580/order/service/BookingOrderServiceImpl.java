@@ -464,6 +464,41 @@ public class BookingOrderServiceImpl implements BookingOrderService {
     }
 
     @Override
+    public Result<?> resendTicketForGroup(Map params) {
+        OrderItem orderItem = orderItemMapper.selectBySN(Long.valueOf(params.get("order_item_sn").toString()));
+        if (orderItem == null) {
+            throw new ApiException("子订单不存在");
+        }
+        if (ArrayUtils.indexOf(new int[]{
+                OrderConstant.OrderItemStatus.TICKET_FAIL,
+                OrderConstant.OrderItemStatus.SEND,
+                OrderConstant.OrderItemStatus.NON_SEND
+        }, orderItem.getStatus()) < 0) {
+            throw new ApiException("子订单不在可重新发票状态");
+        }
+
+        List<RefundOrder> refundOrderList = refundOrderMapper.selectByItemId(orderItem.getId());
+        if (refundOrderList != null && refundOrderList.size() > 0) {
+            throw new ApiException("该子订单已发起退票");
+        }
+
+        /*List<MaSendResponse> maSendResponseList = maSendResponseMapper.selectByOrderItemId(orderItem.getId());
+        if (orderItem.getStatus() == OrderConstant.OrderItemStatus.SEND && maSendResponseList != null && maSendResponseList.size() > 0) {
+            ReSendTicketParams reSendTicketParams = new ReSendTicketParams();
+            reSendTicketParams.setOrderSn(orderItem.getNumber());
+            reSendTicketParams.setVisitorId(visitorId);
+            reSendTicketParams.setMobile(params.get("phone").toString());
+            return voucherRPCService.resendTicket(orderItem.getEp_ma_id(), reSendTicketParams);
+        }*/
+        // 出票
+        // 记录任务
+        Map<String, String> jobParam = new HashMap<>();
+        jobParam.put("orderItemId", orderItem.getId().toString());
+        bookingOrderManager.addJob(OrderConstant.Actions.SEND_TICKET, jobParam);
+        return new Result<>(true);
+    }
+
+    @Override
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public Result<?> createForGroup(Map params) throws Exception {
         Integer buyEpId = CommonUtil.objectParseInteger(params.get(EpConstant.EpKey.EP_ID));
