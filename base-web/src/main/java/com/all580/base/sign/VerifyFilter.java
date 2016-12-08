@@ -99,7 +99,7 @@ public class VerifyFilter implements  Filter {
                     return;
                 }else{
                     Integer ep_id=CommonUtil.objectParseInteger(map.get("ep_id"));
-                    if(auth(url,ep_id)){
+                    if(auth(httpResponse,url,ep_id)){
                         if(null == requestWrapper) {
                             chain.doFilter(request, response);
                         } else {
@@ -108,6 +108,7 @@ public class VerifyFilter implements  Filter {
                     }else{
                         log.error("权限校验失败url{},ep_id:{}",url,ep_id);
                         renderingByJsonPData(httpResponse, JSON.toJSONString(getOutPutMap(false,"权限校验失败", Result.SIGN_FAIL,null)));
+                       // return;
                     }
 
                 }
@@ -151,32 +152,37 @@ public class VerifyFilter implements  Filter {
             }
         }
     }
-    public boolean auth(String url,Integer ep_id){
-        url = url.toLowerCase();
-        EpService epService= BeanUtil.getBean("epService", EpService.class);
-        Map<String,Object> map = epService.selectId(ep_id).get();
-        if(null!=map&&!map.isEmpty()){
-          Integer epRole=CommonUtil.objectParseInteger( map.get("ep_role")) ;
-            RedisUtils redisUtils= BeanUtil.getBean("redisUtils", RedisUtils.class);
-            List<String> auth=Auth.getAuthMap(redisUtils,epRole);
-            boolean ref = false;
-            if(auth!=null&&auth.size()==1){
-                ref=null== auth.get(0);
-                if(!ref){
-                    ref="".equals(auth.get(0));
-                }
-            }
-            if(null==auth||ref){
-                IntfService intfService= BeanUtil.getBean("intfService", IntfService.class);
+    public boolean auth( HttpServletResponse httpResponse,String url,Integer ep_id){
+     try {
+         url = url.toLowerCase();
+         EpService epService= BeanUtil.getBean("epService", EpService.class);
+         Map<String,Object> map = epService.selectId(ep_id).get();
+         if(null!=map&&!map.isEmpty()){
+             Integer epRole=CommonUtil.objectParseInteger( map.get("ep_role")) ;
+             RedisUtils redisUtils= BeanUtil.getBean("redisUtils", RedisUtils.class);
+             List<String> auth=Auth.getAuthMap(redisUtils,epRole);
+             boolean ref = false;
+             if(auth!=null&&auth.size()==1){
+                 ref=null== auth.get(0);
+                 if(!ref){
+                     ref="".equals(auth.get(0));
+                 }
+             }
+             if(null==auth||ref){
+                 IntfService intfService= BeanUtil.getBean("intfService", IntfService.class);
                  auth= intfService.authIntf(epRole).get();
-                Auth.setAuthMap(redisUtils,auth,epRole);
-                return auth.contains(url);
-            }else{
-              return  auth.get(0).contains(url);
-            }
-        }
-
-        return false;
+                 Auth.setAuthMap(redisUtils,auth,epRole);
+                 return auth.contains(url);
+             }else{
+                 return  auth.get(0).contains(url);
+             }
+         }
+     }catch(Exception e){
+         log.error("权限校验失败url{},ep_id:{}",url,ep_id);
+         renderingByJsonPData(httpResponse, JSON.toJSONString(getOutPutMap(false,"权限校验失败"+e.getMessage(), Result.SIGN_FAIL,null)));
+         return false;
+      }
+       return false;
     }
 
     @Override
