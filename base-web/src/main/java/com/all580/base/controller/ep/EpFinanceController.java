@@ -76,9 +76,9 @@ public class EpFinanceController extends BaseController {
      */
     @RequestMapping(value = "credit/hostory_credit", method = RequestMethod.GET)
     @ResponseBody
-    public Result<?> hostoryCredit(HttpServletRequest request,Integer ep_id) {
+    public Result<?> hostoryCredit(HttpServletRequest request,Integer credit_ep_id) {
         Map<String,Object> map = new HashMap<>();
-        map.put("ep_id", ep_id);
+        map.put("credit_ep_id", credit_ep_id);
         map.put("core_ep_id", request.getAttribute("core_ep_id"));
         ParamsMapValidate.validate(map, generateCreateSelectValidate());
         return logCreditService.hostoryCredit(map);
@@ -92,18 +92,35 @@ public class EpFinanceController extends BaseController {
     @RequestMapping(value = "credit/set", method = RequestMethod.POST)
     @ResponseBody
     public Result<Integer> set(@RequestBody Map map) {
-       // map.put("ep_id",map.get("ep_id"));
+
             ParamsMapValidate.validate(map, generateCreateCreditValidate());
             return logCreditService.create(map);
     }//set
+
+
+    /**
+     * 销售平台账户管理
+     */
+    @RequestMapping(value = "get_seller_platfrom_accunt_info", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<?> getSellerPlatfromAccuntInfo(HttpServletRequest request,Integer ep_id,String name,String link_phone
+            , Integer record_start, Integer record_count){
+        Map<String,Object> map = new HashMap<>();
+        map.put("ep_id",ep_id);
+        map.put("name",name);
+        map.put("link_phone",link_phone);
+        map.put("record_start",record_start);
+        map.put("record_count",record_count);
+        return epFinanceService.getSellerPlatfromAccuntInfo(map);
+    }
     /**
      * 企业账户管理列表
      * @return
      */
     @RequestMapping(value = "credit/get_account_info_list", method = RequestMethod.GET)
     @ResponseBody
-    public Result<?> getAccountInfoList(HttpServletRequest request,Integer ep_id,String name,String link_phone,Integer ep_type,
-    Integer province,Integer city){
+    public Result<?> getAccountInfoList(HttpServletRequest request,Integer ep_id,String name,String link_phone
+            ,Integer ep_type,Integer province,Integer city, Integer record_start, Integer record_count){
         Map<String,Object> map = new HashMap<>();
         map.put("ep_id",ep_id);  //todo 获取平台商id
         map.put("core_ep_id",ep_id);//
@@ -112,6 +129,8 @@ public class EpFinanceController extends BaseController {
         map.put("ep_type",ep_type);
         map.put("province",province);
         map.put("city",city);
+        map.put("record_start",record_start);
+        map.put("record_count",record_count);
         ParamsMapValidate.validate(map, generateCreateSelectValidate());
         return epFinanceService.getAccountInfoList(map);
     }
@@ -175,14 +194,14 @@ public class EpFinanceController extends BaseController {
         // 校验不为空的参数
         rules.put(new String[]{
                 "core_ep_id",
-                "ep_id", //
+                "credit_ep_id", //
                 "credit_after", //
         }, new ValidRule[]{new ValidRule.NotNull()});
 
         // 校验整数
         rules.put(new String[]{
                 "core_ep_id",
-                "ep_id", //
+                "credit_ep_id", //
                 "credit_after", //授信额度
         }, new ValidRule[]{new ValidRule.Digits()});
         return rules;

@@ -39,8 +39,8 @@ public class SmsController extends BaseController {
     @ResponseBody
     @RequestMapping(value = "send", method = RequestMethod.POST)
     public Result send(@RequestBody Map<String, Object> data) {
-        String destPhoneNum=CommonUtil.objectParseString(data.remove("destPhoneNum"));
-        Integer smsType=CommonUtil.objectParseInteger( data.remove("smsType"));
+        String destPhoneNum=CommonUtil.objectParseString(data.remove("dest_phone_num"));
+        Integer smsType=CommonUtil.objectParseInteger( data.remove("sms_type"));
         Integer coreEpId = CommonUtil.objectParseInteger(getAttribute(EpConstant.EpKey.CORE_EP_ID));
         Map<String, String> params=(Map<String, String>)data.get("params");
         return smsService.send(destPhoneNum, smsType, coreEpId,params );
