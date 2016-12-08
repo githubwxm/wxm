@@ -250,6 +250,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
                 groupConsume.setOrder_item_id(orderItem.getId());
                 groupConsume.setClearance_serial_id(serial.getId());
                 groupConsume.setSid(sid);
+                groupConsume.setCreate_time(new Date());
                 groupConsumeMapper.insertSelective(groupConsume);
             }
         }
