@@ -113,7 +113,6 @@ public class EpBalanceThresholdController extends BaseController {
         rules.put(new String[]{
                 "id", //
                 "core_ep_id", //
-                "threshold",
         }, new ValidRule[]{new ValidRule.Digits()});
         return rules;
     }
