@@ -67,7 +67,7 @@ public class EpFinanceServiceImpl implements EpFinanceService {
             }
 
             resultMap.put("list",balanceList);
-            resultMap.put("totalCount",epMapper.getAccountInfoListCount(map));
+            resultMap.put("totalCount",epMapper.getSellerPlatfromAccuntInfoCount(map));
             result.put(resultMap);
             result.setSuccess();
         } catch (Exception e) {
