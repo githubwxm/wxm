@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.all580.ep.dao.EpBankMapper" >
+
+  <insert id="insert"  >
+    insert into t_ep_bank (bank_ep_id, bank_username, bank_name_address, 
+      bank_num)
+    values (#{ep_id,jdbcType=INTEGER}, #{bank_username,jdbcType=VARCHAR}, #{bank_name_address,jdbcType=VARCHAR},
+      #{bank_num,jdbcType=VARCHAR})ON DUPLICATE KEY UPDATE
+       bank_username=#{bank_username},bank_name_address=#{bank_name_address},bank_num=#{bank_num} ;
+  </insert>
+  <select id="selectBank" resultType="java.util.Map">
+     select * from t_ep_bank where bank_ep_id=#{bank_ep_id}
+  </select>
+  <select id="selectBankEpSummary" resultType="java.util.Map">
+   select * from t_ep t JOIN t_ep_bank tb on t.id=tb.bank_ep_id where bank_ep_id=#{bank_ep_id}
+  </select>
+</mapper>

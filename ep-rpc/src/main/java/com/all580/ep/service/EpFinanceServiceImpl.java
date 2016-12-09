@@ -3,6 +3,7 @@ package com.all580.ep.service;
 import com.all580.ep.api.service.EpFinanceService;
 import com.all580.ep.api.service.EpService;
 import com.all580.ep.com.Common;
+import com.all580.ep.dao.EpBankMapper;
 import com.all580.ep.dao.EpMapper;
 import com.all580.payment.api.conf.PaymentConstant;
 import com.all580.payment.api.model.BalanceChangeInfo;
@@ -36,8 +37,35 @@ public class EpFinanceServiceImpl implements EpFinanceService {
     private EpMapper epMapper;
 
     @Autowired
-    private BalancePayService balancePayService;
+    private EpBankMapper epBankMapper;
 
+    @Autowired
+    private BalancePayService balancePayService;
+    @Override
+    public Result<Map<String,Object>> selectBank(int id){
+        Result<Map<String,Object>> result = new Result<>();
+        try{
+            result.put(epBankMapper.selectBank(id));
+            result.setSuccess();
+        }catch(Exception e){
+            throw new ApiException("添加银行卡信息异常", e);
+        }
+        return result;
+    }
+
+    @Override
+    public Result<Integer> addBank(Map<String,Object> map){
+        Result<Integer> result = new Result<>();
+        try{
+            result.put(epBankMapper.insert(map));
+            result.setSuccess();
+        }catch(Exception e){
+            throw new ApiException("添加银行卡信息异常", e);
+        }
+        return result;
+    }
+
+    @Override
     public Result<Map<String,Object>> getSellerPlatfromAccuntInfo(Map<String,Object> map){
         Result<Map<String,Object>> result = new Result<>();
         Map<String,Object> resultMap= new HashMap<>();
