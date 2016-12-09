@@ -23,7 +23,7 @@
          values(#{credit_ep_id},#{core_ep_id},#{credit_before},#{credit_after});
     </insert>
     <select id="selectList" resultType="java.util.Map">
-        select t.id,name,linkman,link_phone,province,city,area,credit_after,pic_address,address,
+        select t.id,name,linkman,link_phone,province,city,area,IFNULL(credit_after,0) credit_after,pic_address,address,
         DATE_FORMAT(credit_date,'%Y-%m-%d') as credit_date  from
         ( select * from( select  * from t_log_credit
         <if test="core_ep_id != null">
