@@ -154,7 +154,7 @@ public class EpFinanceController extends BaseController {
         map.put("city",city);
         map.put("record_start",record_start);
         map.put("record_count",record_count);
-        ParamsMapValidate.validate(map, generateCreateSelectValidate());
+       // ParamsMapValidate.validate(map, generateCreateSelectValidate());
         return epFinanceService.getAccountInfoList(map);
     }
 
