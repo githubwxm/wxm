@@ -226,13 +226,13 @@ public class EpFinanceController extends BaseController {
         Map<String[], ValidRule[]> rules = new HashMap<>();
         // 校验不为空的参数
         rules.put(new String[]{
-                "ep_id", //
+                "credit_ep_id", //
                 "core_ep_id",
         }, new ValidRule[]{new ValidRule.NotNull()});
 
         // 校验整数
         rules.put(new String[]{
-                "ep_id", //
+                "credit_ep_id", //
                 "core_ep_id",
         }, new ValidRule[]{new ValidRule.Digits()});
         return rules;
