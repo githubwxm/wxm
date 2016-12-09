@@ -33,8 +33,8 @@ public class BalanceChangeSubscribeServiceImpl implements BalanceChangeSubscribe
         for (Object o : list) {
             Map map = (Map) o;
             Map<String,Object> params = new HashMap<>();
-            params.put("id", map.get("epId"));
-            params.put(EpConstant.EpKey.CORE_EP_ID, map.get("coreEpId"));
+            params.put("id", map.get("ep_id"));
+            params.put(EpConstant.EpKey.CORE_EP_ID, map.get(EpConstant.EpKey.CORE_EP_ID));
             params.put("balance", map.get("balance"));
             epBalanceThresholdService.warn(params);
         }
