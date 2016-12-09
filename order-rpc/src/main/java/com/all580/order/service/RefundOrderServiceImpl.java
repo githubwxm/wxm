@@ -28,10 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.lang.exception.ApiException;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author zhouxianjun(Alone)
@@ -177,6 +174,10 @@ public class RefundOrderServiceImpl implements RefundOrderService {
             throw new ApiException("订单不存在");
         }
 
+        if (orderItem.getGroup_id() == null || orderItem.getGroup_id() == 0) {
+            throw new ApiException("该订单不是团队订单");
+        }
+
         // 供应侧/销售侧
         Integer applyFrom = CommonUtil.objectParseInteger(params.get("apply_from"));
 
@@ -248,8 +249,18 @@ public class RefundOrderServiceImpl implements RefundOrderService {
                 throw new ApiException("销售价小于退货手续费");
             }
 
+            List<Map<String, Object>> daysList = new ArrayList<>();
+            for (OrderItemDetail detail : detailList) {
+                Map<String, Object> dayMap = new HashMap<>();
+                dayMap.put("day", detail.getDay());
+                dayMap.put("quantity", detail.getQuantity() - detail.getUsed_quantity());
+                dayMap.put("visitors", Collections.emptyList());
+                dayMap.put("fee", fee);
+                daysList.add(dayMap);
+            }
+
             // 创建退订订单
-            RefundOrder refundOrder = refundOrderManager.generateRefundOrder(orderItem.getId(), null, refundQuantity, money, fee, cause);
+            RefundOrder refundOrder = refundOrderManager.generateRefundOrder(orderItem.getId(), daysList, refundQuantity, money, fee, cause, orderItem.getGroup_id());
 
             // 修改明细退票数量
             orderItemDetailMapper.refundRemain(orderItem.getId());
