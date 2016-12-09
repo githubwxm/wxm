@@ -335,7 +335,7 @@ public class RefundOrderManager extends BaseOrderManager {
             }
             fee += feeTmp;
             money += outPrice * quantity - feeTmp;
-            dayMap.put("fee", feeTmp);
+            dayMap.put("fee", (int)feeTmp);
         }
         return new int[]{money, fee};
     }
@@ -396,6 +396,19 @@ public class RefundOrderManager extends BaseOrderManager {
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public RefundOrder generateRefundOrder(int itemId, List daysList, int quantity, int money, int fee, String cause) {
+        return generateRefundOrder(itemId, daysList, quantity, money, fee, cause, 0);
+    }
+
+    /**
+     * 生成退订订单
+     * @param itemId 子订单ID
+     * @param daysList 每天退票数
+     * @param quantity 总退票数
+     * @param money 退支付金额
+     * @return
+     */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public RefundOrder generateRefundOrder(int itemId, List daysList, int quantity, int money, int fee, String cause, Integer groupId) {
         RefundOrder refundOrder = new RefundOrder();
         refundOrder.setOrder_item_id(itemId);
         refundOrder.setNumber(UUIDGenerator.generateUUID());
@@ -406,6 +419,7 @@ public class RefundOrderManager extends BaseOrderManager {
         refundOrder.setMoney(money);
         refundOrder.setFee(fee);
         refundOrder.setCause(cause);
+        refundOrder.setGroup_id(groupId == null ? 0 : groupId);
         refundOrderMapper.insertSelective(refundOrder);
         return refundOrder;
     }
@@ -630,14 +644,9 @@ public class RefundOrderManager extends BaseOrderManager {
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public void refundFail(RefundOrder refundOrder) throws Exception {
         refundOrder.setStatus(OrderConstant.RefundOrderStatus.FAIL);
-        // 团队票
-        if (StringUtils.isEmpty(refundOrder.getData())) {
-            orderItemDetailMapper.resetRefundRemain(refundOrder.getOrder_item_id());
-        } else {
-            List daysList = JsonUtils.json2List(refundOrder.getData());
-            List<OrderItemDetail> detailList = orderItemDetailMapper.selectByItemId(refundOrder.getOrder_item_id());
-            returnRefundForDays(daysList, detailList);
-        }
+        List daysList = JsonUtils.json2List(refundOrder.getData());
+        List<OrderItemDetail> detailList = orderItemDetailMapper.selectByItemId(refundOrder.getOrder_item_id());
+        returnRefundForDays(daysList, detailList);
         refundOrderMapper.updateByPrimaryKeySelective(refundOrder);
     }
 

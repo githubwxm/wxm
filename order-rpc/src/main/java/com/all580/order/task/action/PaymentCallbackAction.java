@@ -85,11 +85,17 @@ public class PaymentCallbackAction implements JobRunner {
         // 记录任务
         List<Map<String, String>> jobParams = new ArrayList<>();
         for (OrderItem orderItem : orderItems) {
+            // 团队票
+            if (orderItem.getGroup_id() != null && orderItem.getGroup_id() != 0) {
+                continue;
+            }
             Map<String, String> jobParam = new HashMap<>();
             jobParam.put("orderItemId", orderItem.getId().toString());
             jobParams.add(jobParam);
         }
-        bookingOrderManager.addJobs(OrderConstant.Actions.SEND_TICKET, jobParams);
+        if (jobParams.size() > 0) {
+            bookingOrderManager.addJobs(OrderConstant.Actions.SEND_TICKET, jobParams);
+        }
 
         // 同步数据
         bookingOrderManager.syncPaymentSuccessData(orderId);
