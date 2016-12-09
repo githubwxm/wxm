@@ -13,6 +13,7 @@ import com.framework.common.validate.ValidRule;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -34,6 +35,28 @@ public class EpFinanceController extends BaseController {
 
     @Autowired
     private BalancePayService balancePayService;
+
+
+    /**
+     * 查询银行卡信息余企业信息
+     * @return
+     */
+    @RequestMapping(value = "select/bank", method = RequestMethod.POST)
+    @ResponseBody
+    public Result<?> selectBank(Integer id) {
+        Assert.notNull(id, "参数【id】不能为空");
+        return epFinanceService.selectBank(id);
+    }
+    /**
+     * 添加银行卡信息
+     * @return
+     */
+    @RequestMapping(value = "add/bank", method = RequestMethod.POST)
+    @ResponseBody
+    public Result<?> addBank(Map param) {
+        ParamsMapValidate.validate(param, generateBankAddValidate());
+        return epFinanceService.addBank(param);
+    }
     /**
      * 查询授信列表
      * @param
@@ -235,6 +258,17 @@ public class EpFinanceController extends BaseController {
                 "credit_ep_id", //
                 "core_ep_id",
         }, new ValidRule[]{new ValidRule.Digits()});
+        return rules;
+    }
+
+    public Map<String[], ValidRule[]> generateBankAddValidate() {
+        Map<String[], ValidRule[]> rules = new HashMap<>();
+        // 校验不为空的参数
+        rules.put(new String[]{
+                "bank_username", //
+                "bank_name_address",
+                "bank_num",
+        }, new ValidRule[]{new ValidRule.NotNull()});
         return rules;
     }
 
