@@ -27,8 +27,11 @@ import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.lang.UUIDGenerator;
 import com.framework.common.util.CommonUtil;
+import com.framework.common.validate.ParamsMapValidate;
+import com.framework.common.validate.ValidRule;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -132,6 +135,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             Integer productSubId = CommonUtil.objectParseInteger(item.get("product_sub_id"));
             Integer quantity = CommonUtil.objectParseInteger(item.get("quantity"));
             Integer days = CommonUtil.objectParseInteger(item.get("days"));
+            Integer allQuantity = quantity * days;
             int visitorQuantity = 0; // 游客总票数
             //预定日期
             Date bookingDate = DateFormatUtils.parseString(DateFormatUtils.DATE_TIME_FORMAT, CommonUtil.objectParseString(item.get("start")));
@@ -200,7 +204,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             }
 
             // 判断总张数是否匹配
-            if (visitorQuantity != quantity) {
+            if (visitorQuantity != allQuantity) {
                 throw new ApiException("游客票数与总票数不符");
             }
             // 判断最高票数 散客
@@ -553,6 +557,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         List<Map> items = (List<Map>) params.get("items");
         for (Map item : items) {
             Integer productSubId = CommonUtil.objectParseInteger(item.get("product_sub_id"));
+            boolean special = BooleanUtils.toBoolean(CommonUtil.objectParseString(item.get("special")));
             Integer quantity = CommonUtil.objectParseInteger(item.get("quantity"));
             Integer days = CommonUtil.objectParseInteger(item.get("days"));
             Integer allQuantity = quantity * days;
@@ -595,12 +600,35 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             }
 
             // 实名制验证
+            List<GroupMember> groupMemberList = null;
             List visitors = (List) item.get("visitor");
-            Result<List<GroupMember>> validateResult = bookingOrderManager.validateGroupVisitor(visitors, salesInfo.getReal_name(), quantity, groupId);
-            if (!validateResult.isSuccess()) {
-                throw new ApiException(validateResult.getError());
+            if (special) {
+                // 团队买散客票 特殊处理
+                if (salesInfo.isRequire_sid()) {
+                    Map<String[], ValidRule[]> rules = new HashMap<>();
+                    // 校验不为空的参数
+                    rules.put(new String[]{
+                            "visitor.name", // 订单游客姓名
+                            "visitor.phone", // 订单游客手机号码
+                            "visitor.sid" // 订单游客身份证号码
+                    }, new ValidRule[]{new ValidRule.NotNull()});
+                    rules.put(new String[]{"visitor.sid"}, new ValidRule[]{new ValidRule.IdCard()});
+                    rules.put(new String[]{"visitor.phone"}, new ValidRule[]{new ValidRule.Pattern(ValidRule.MOBILE_PHONE)});
+                    ParamsMapValidate.validate(Collections.singletonMap("visitor", visitors), rules);
+
+                    Result visitorResult = bookingOrderManager.validateVisitor(
+                            visitors, salesInfo.getProduct_sub_code(), bookingDate, salesInfo.getSid_day_count(), salesInfo.getSid_day_quantity());
+                    if (!visitorResult.isSuccess()) {
+                        throw new ApiException(visitorResult.getError());
+                    }
+                }
+            } else {
+                Result<List<GroupMember>> validateResult = bookingOrderManager.validateGroupVisitor(visitors, salesInfo.getReal_name(), quantity, groupId);
+                if (!validateResult.isSuccess()) {
+                    throw new ApiException(validateResult.getError());
+                }
+                groupMemberList = validateResult.get();
             }
-            List<GroupMember> groupMemberList = validateResult.get();
 
             // 每天的价格
             List<List<EpSalesInfo>> allDaysSales = salesInfo.getSales();
@@ -618,16 +646,30 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             List<Visitor> visitorList = new ArrayList<>();
             // 创建子订单详情
             int i = 0;
+            int visitorQuantity = 0;
             for (ProductSalesDayInfo dayInfo : dayInfoList) {
                 OrderItemDetail orderItemDetail = bookingOrderManager.generateDetail(dayInfo, orderItem.getId(), DateUtils.addDays(bookingDate, i), quantity);
                 detailList.add(orderItemDetail);
                 // 创建游客信息
-                if (groupMemberList != null) {
-                    for (GroupMember member : groupMemberList) {
-                        visitorList.add(bookingOrderManager.generateGroupVisitor(member, orderItemDetail.getId(), groupId));
+                if (!special) {
+                    if (groupMemberList != null) {
+                        for (GroupMember member : groupMemberList) {
+                            visitorList.add(bookingOrderManager.generateGroupVisitor(member, orderItemDetail.getId(), groupId));
+                        }
+                    }
+                } else {
+                    for (Object v : visitors) {
+                        Visitor visitor = bookingOrderManager.generateVisitor((Map) v, orderItemDetail.getId());
+                        visitorQuantity += visitor.getQuantity();
+                        visitorList.add(visitor);
                     }
                 }
                 i++;
+            }
+
+            // 判断总张数是否匹配
+            if (special && visitorQuantity != allQuantity) {
+                throw new ApiException("游客票数与总票数不符");
             }
 
             lockStockDtoMap.put(orderItem.getId(), new LockStockDto(orderItem, detailList));
