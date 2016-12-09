@@ -50,6 +50,7 @@ public class VerifyFilter implements  Filter {
         String url =httpRequest.getRequestURI(); // 访问url
         CoreEpAccessService coreEpAccessService= BeanUtil.getBean("coreEpAccessService", CoreEpAccessService.class);
 
+
         if ("POST".equals(method)) {
             if(request instanceof HttpServletRequest) {
                 requestWrapper = new MyHttpServletRequest((HttpServletRequest) request);
@@ -107,7 +108,7 @@ public class VerifyFilter implements  Filter {
                         }
                     }else{
                         log.error("权限校验失败url{},ep_id:{}",url,ep_id);
-                        renderingByJsonPData(httpResponse, JSON.toJSONString(getOutPutMap(false,"权限校验失败", Result.SIGN_FAIL,null)));
+                        renderingByJsonPData(httpResponse, JSON.toJSONString(getOutPutMap(false,"权限校验失败", Result.NO_PERMISSION,null)));
                        // return;
                     }
 
@@ -174,7 +175,7 @@ public class VerifyFilter implements  Filter {
                  Auth.setAuthMap(redisUtils,auth,epRole);
                  return auth.contains(url);
              }else{
-                 return  auth.get(0).contains(url);
+                 return  CommonUtil.find(url+"[,\\]]",auth.get(0));
              }
          }
      }catch(Exception e){
