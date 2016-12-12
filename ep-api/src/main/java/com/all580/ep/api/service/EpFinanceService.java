@@ -41,6 +41,6 @@ public interface EpFinanceService {
     Result addBalance(Integer epId,Integer coreEpId,Integer balance);
 
     Result getBalanceSerialList(Integer epId, Integer coreEpId,
-                                String balanceSatatus,String startDate,String endDate,String ref_id,
+                                String balanceSatatus,String startDate,String endDate,String ref_id,Integer export ,
                                 Integer startRecord, Integer maxRecords,Integer changType);
 }
