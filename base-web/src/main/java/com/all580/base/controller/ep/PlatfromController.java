@@ -7,11 +7,13 @@ import com.all580.payment.api.service.EpPaymentConfService;
 import com.framework.common.BaseController;
 import com.framework.common.Result;
 
+import com.framework.common.util.CommonUtil;
 import com.framework.common.validate.ParamsMapValidate;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -266,4 +268,20 @@ public class PlatfromController extends BaseController {
     public Result<Map<String,Object>> selectPlatform() {
         return epService.selectPlatform();
     }
+
+    /**
+     * 所有平台上那个下拉框
+     * @return
+     */
+    @RequestMapping(value = "update_ep_note_status", method = RequestMethod.POST)
+    @ResponseBody
+    public Result<Integer> updateEpNoteStatus(Map<String,Object> params) {
+        Integer status = CommonUtil.objectParseInteger(params.get("status"));
+        if(null==status){
+            Assert.notNull(status, "参数【status】不能为空");
+        }
+        return epService.updateEpNoteStatus(status);
+    }
+
+
 }
