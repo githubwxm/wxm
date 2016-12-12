@@ -85,8 +85,8 @@ public class EpRoleController {
     @RequestMapping(value = "update/func", method = RequestMethod.POST)
     @ResponseBody
     public Result updateFunc(@RequestBody Map<String, Object> params) {
-        if(!params.get("ep_id").equals(1)){
-            new ApiException("没有权限");
+        if(!params.get("ep_id").equals("1")){
+          throw   new ApiException("没有权限");
         }
         params.put("oper_id",params.get("operator_id"));
         ParamsMapValidate.validate(params, generateUpdateEpRoleFuncValidate());

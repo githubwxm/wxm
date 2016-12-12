@@ -32,8 +32,8 @@ public class IntfController extends BaseController{
     @RequestMapping(value = "add", method = RequestMethod.POST)
     @ResponseBody
     public Result add(@RequestBody Map<String,Object> params) {
-        if(!params.get("ep_id").equals(1)){
-            new ApiException("没有权限");
+        if(!params.get("ep_id").equals("1")){
+          throw   new ApiException("没有权限");
         }
         ParamsMapValidate.validate(params, generateIntfValidate());
         return intfService.insertInft(params);
@@ -45,8 +45,8 @@ public class IntfController extends BaseController{
     @RequestMapping(value = "delete", method = RequestMethod.POST)
     @ResponseBody
     public Result delete(@RequestBody Map<String,Object> params) {
-        if(!params.get("ep_id").equals(1)){
-            new ApiException("没有权限");
+        if(!params.get("ep_id").equals("1")){
+           throw new ApiException("没有权限");
         }
         int id= CommonUtil.objectParseInteger(params.get("id"));
         return intfService.deleteInft(id);

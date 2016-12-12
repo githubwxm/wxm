@@ -50,8 +50,8 @@ public class FuncController extends BaseController {
     @ResponseBody
     public Result create(@RequestBody Map<String,Object> params) {
         //params.put("status",1);//添加默认状态
-        if(!params.get("ep_id").equals(1)){
-            new ApiException("没有权限");
+        if(!params.get("ep_id").equals("1")){
+          throw  new ApiException("没有权限");
         }
         ParamsMapValidate.validate(params, generateFuncValidate());
         return funcService.insertSelective(params);
