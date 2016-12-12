@@ -87,7 +87,7 @@ public class EpFinanceController extends BaseController {
         map.put("credit", credit);
         map.put("record_start", record_start);
         map.put("record_count", record_count);
-        //map.put("core_ep_id",request.getAttribute("core_ep_id"));
+        map.put("core_ep_id",request.getAttribute("core_ep_id"));
        // ParamsMapValidate.validate(map, generateCoreEpIdValidate());
         return logCreditService.selectList(map);
     }
