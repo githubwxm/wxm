@@ -165,9 +165,9 @@ public class EpFinanceServiceImpl implements EpFinanceService {
     }
     @Override
     public Result getBalanceSerialList(Integer epId, Integer coreEpId,
-                                       String balanceSatatus,String startDate,String endDate,String ref_id,
+                                       String balanceSatatus,String startDate,String endDate,String ref_id,Integer export ,
                                        Integer startRecord, Integer maxRecords,Integer changType) {
 //changType   用余提现  暂时未用到
-        return balancePayService.getBalanceSerialList(epId,coreEpId,balanceSatatus,startDate,endDate,ref_id,startRecord,maxRecords);
+        return balancePayService.getBalanceSerialList(epId,coreEpId,balanceSatatus,startDate,endDate,ref_id,export,startRecord,maxRecords);
     }
 }
