@@ -15,6 +15,7 @@ import com.all580.order.manager.RefundOrderManager;
 import com.all580.order.manager.SmsManager;
 import com.all580.payment.api.conf.PaymentConstant;
 import com.all580.product.api.consts.ProductConstants;
+import com.all580.product.api.service.ProductSalesPlanRPCService;
 import com.framework.common.Result;
 import com.framework.common.distributed.lock.DistributedLockTemplate;
 import com.framework.common.distributed.lock.DistributedReentrantLock;
@@ -54,6 +55,9 @@ public class RefundOrderServiceImpl implements RefundOrderService {
     private RefundOrderMapper refundOrderMapper;
     @Autowired
     private DistributedLockTemplate distributedLockTemplate;
+
+    @Autowired
+    private ProductSalesPlanRPCService productSalesPlanRPCService;
 
     @Value("${lock.timeout}")
     private int lockTimeOut = 3;
@@ -137,8 +141,18 @@ public class RefundOrderServiceImpl implements RefundOrderService {
                 throw new ApiException("销售价小于退货手续费");
             }
 
+            // 获取退订审核
+            int[] auditSupplierConfig = getAuditConfig(orderItem.getPro_sub_id(), orderItem.getSupplier_core_ep_id());
+            int auditTicket = auditSupplierConfig[0];
+            // 获取退款审核
+            int auditMoney = 0;
+            if (orderItem.getSupplier_core_ep_id() == order.getPayee_ep_id().intValue()) {
+                auditMoney = auditSupplierConfig[1];
+            } else {
+                auditMoney =  getAuditConfig(orderItem.getPro_sub_id(), order.getPayee_ep_id())[1];
+            }
             // 创建退订订单
-            RefundOrder refundOrder = refundOrderManager.generateRefundOrder(orderItem.getId(), daysList, quantity, money, fee, cause);
+            RefundOrder refundOrder = refundOrderManager.generateRefundOrder(orderItem.getId(), daysList, quantity, money, fee, cause, auditTicket, auditMoney);
 
             // 判断余票 并修改明细退票数量 创建游客退票信息
             int tmpQuantity = refundOrderManager.canRefundForDays(daysList, detailList, refundOrder.getOrder_item_id(), refundOrder.getId());
@@ -150,7 +164,7 @@ public class RefundOrderServiceImpl implements RefundOrderService {
             refundOrderManager.preRefundAccount(daysList, applyFrom, orderItem.getId(), refundOrder.getId(), detailList, refundDate, order);
 
             // 判断是否需要退订审核
-            if (orderItem.getRefund_audit() == ProductConstants.RefundAudit.NO) {
+            if (refundOrder.getAudit_ticket() == ProductConstants.RefundAudit.NO) {
                 refundOrderManager.auditSuccess(orderItem, refundOrder, order);
             }
             // 同步数据
@@ -259,8 +273,18 @@ public class RefundOrderServiceImpl implements RefundOrderService {
                 daysList.add(dayMap);
             }
 
+            // 获取退订审核
+            int[] auditSupplierConfig = getAuditConfig(orderItem.getPro_sub_id(), orderItem.getSupplier_core_ep_id());
+            int auditTicket = auditSupplierConfig[0];
+            // 获取退款审核
+            int auditMoney = 0;
+            if (orderItem.getSupplier_core_ep_id() == order.getPayee_ep_id().intValue()) {
+                auditMoney = auditSupplierConfig[1];
+            } else {
+                auditMoney =  getAuditConfig(orderItem.getPro_sub_id(), order.getPayee_ep_id())[1];
+            }
             // 创建退订订单
-            RefundOrder refundOrder = refundOrderManager.generateRefundOrder(orderItem.getId(), daysList, refundQuantity, money, fee, cause, orderItem.getGroup_id());
+            RefundOrder refundOrder = refundOrderManager.generateRefundOrder(orderItem.getId(), daysList, refundQuantity, money, fee, cause, orderItem.getGroup_id(), auditTicket, auditMoney);
 
             // 修改明细退票数量
             orderItemDetailMapper.refundRemain(orderItem.getId());
@@ -269,7 +293,7 @@ public class RefundOrderServiceImpl implements RefundOrderService {
             refundOrderManager.preRefundAccountForGroup(applyFrom, orderItem.getId(), refundOrder.getId(), detailList, refundDate, order);
 
             // 判断是否需要退订审核
-            if (orderItem.getRefund_audit() == ProductConstants.RefundAudit.NO) {
+            if (refundOrder.getAudit_ticket() == ProductConstants.RefundAudit.NO) {
                 refundOrderManager.auditSuccess(orderItem, refundOrder, order);
             }
             // 同步数据
@@ -405,11 +429,25 @@ public class RefundOrderServiceImpl implements RefundOrderService {
         refundOrder.setAudit_money_user_id(CommonUtil.objectParseInteger(params.get("operator_id")));
         refundOrder.setAudit_money_user_name(CommonUtil.objectParseString(params.get("operator_name")));
         // 退款
-        Result result = refundOrderManager.refundMoney(order, refundOrder.getMoney(), String.valueOf(refundOrder.getNumber()), orderItem, refundOrder);
+        Result result = refundOrderManager.refundMoney(order, refundOrder.getMoney(), String.valueOf(refundOrder.getNumber()), refundOrder);
         if (result == null) {
             throw new ApiException("调用退款返回null");
         }
         Map syncData = refundOrderManager.syncRefundOrderMoney(refundOrder.getId());
         return result.putExt(Result.SYNC_DATA, syncData);
+    }
+
+    private int[] getAuditConfig(int productSubId, int coreEpId) {
+        int auditTicket = ProductConstants.RefundAudit.YES;
+        int auditMoney = ProductConstants.RefundMoneyAudit.YES;
+        Result<Map> platFormConfig = productSalesPlanRPCService.getPlatformConfig(productSubId, coreEpId);
+        if (platFormConfig != null && platFormConfig.get() != null && platFormConfig.isSuccess()) {
+            Map map = platFormConfig.get();
+            Integer tmpTicket = CommonUtil.objectParseInteger(map.get("audit_ticket"));
+            Integer tmpMoney = CommonUtil.objectParseInteger(map.get("audit_money"));
+            auditTicket = tmpTicket == null ? auditTicket : tmpTicket;
+            auditMoney = tmpMoney == null ? auditMoney : tmpMoney;
+        }
+        return new int[]{auditTicket, auditMoney};
     }
 }

@@ -439,7 +439,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
 
         // 退款
         Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
-        refundOrderManager.refundMoney(order, refundOrder.getMoney(), String.valueOf(refundOrder.getNumber()), orderItem, refundOrder);
+        refundOrderManager.refundMoney(order, refundOrder.getMoney(), String.valueOf(refundOrder.getNumber()), refundOrder);
 
         // 还库存 记录任务
         Map<String, String> jobParams = new HashMap<>();
@@ -493,7 +493,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
 
         // 退款
         Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
-        refundOrderManager.refundMoney(order, refundOrder.getMoney(), String.valueOf(refundOrder.getNumber()), orderItem, refundOrder);
+        refundOrderManager.refundMoney(order, refundOrder.getMoney(), String.valueOf(refundOrder.getNumber()), refundOrder);
 
         // 还库存 记录任务
         Map<String, String> jobParams = new HashMap<>();
