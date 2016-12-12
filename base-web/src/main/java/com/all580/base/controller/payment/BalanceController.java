@@ -55,7 +55,7 @@ public class BalanceController extends BaseController {
                 result.setFail();
                 result.setError("缺少参数");
             } else {
-                result = balancePayService.getBalanceSerialList(epId, coreEpId,null,null,null,null, recordStart, recordCount);
+                result = balancePayService.getBalanceSerialList(epId, coreEpId,null,null,null,null,null, recordStart, recordCount);
                 result.setSuccess();
             }
         } catch (Exception e) {
