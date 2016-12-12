@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.lang.exception.ApiException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -84,6 +85,9 @@ public class EpRoleController {
     @RequestMapping(value = "update/func", method = RequestMethod.POST)
     @ResponseBody
     public Result updateFunc(@RequestBody Map<String, Object> params) {
+        if(!params.get("ep_id").equals(1)){
+            new ApiException("没有权限");
+        }
         params.put("oper_id",params.get("operator_id"));
         ParamsMapValidate.validate(params, generateUpdateEpRoleFuncValidate());
         return epRoleService.updateEpRoleFunc(params);
