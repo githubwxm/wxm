@@ -164,7 +164,7 @@
         select * from(
         select
         c.id,c.ref_id,c.ref_type, c.create_time as create_time, truncate((c.new_balance-c.old_balance)/100,2) as balance_add,truncate(( c.new_can_cash-c.old_can_cash)/100,2) as
-        can_cash_add,p.name as change_type ,truncate(new_balance/100,2) , CASE WHEN c.new_balance-c.old_balance >0 THEN '收入' else '支出' end as balance_status
+        can_cash_add,p.name as change_type ,truncate(new_balance/100,2) new_balance, CASE WHEN c.new_balance-c.old_balance >0 THEN '收入' else '支出' end as balance_status
         ,CASE WHEN c.new_balance-c.old_balance >0 THEN '0' else '1' end as balance_status_code,IFNULL(summary,'') as summary
         from t_capital_serial c
         LEFT JOIN t_payment_param p on c.ref_type=p.id
