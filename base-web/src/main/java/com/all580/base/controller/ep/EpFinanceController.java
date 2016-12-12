@@ -41,7 +41,7 @@ public class EpFinanceController extends BaseController {
      * 查询银行卡信息余企业信息
      * @return
      */
-    @RequestMapping(value = "select/bank", method = RequestMethod.POST)
+    @RequestMapping(value = "select/bank", method = RequestMethod.GET)
     @ResponseBody
     public Result<?> selectBank(Integer id) {
         Assert.notNull(id, "参数【id】不能为空");
@@ -53,7 +53,7 @@ public class EpFinanceController extends BaseController {
      */
     @RequestMapping(value = "add/bank", method = RequestMethod.POST)
     @ResponseBody
-    public Result<?> addBank(Map param) {
+    public Result<?> addBank(@RequestBody Map<String,Object> param) {
         ParamsMapValidate.validate(param, generateBankAddValidate());
         return epFinanceService.addBank(param);
     }
@@ -114,7 +114,7 @@ public class EpFinanceController extends BaseController {
      */
     @RequestMapping(value = "credit/set", method = RequestMethod.POST)
     @ResponseBody
-    public Result<Integer> set(@RequestBody Map map) {
+    public Result<Integer> set(@RequestBody Map<String,Object> map) {
 
             ParamsMapValidate.validate(map, generateCreateCreditValidate());
             return logCreditService.create(map);
