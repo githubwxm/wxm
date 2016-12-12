@@ -29,9 +29,6 @@
     where id = #{id,jdbcType=INTEGER}
   </delete>
     <insert id="insert" parameterType="com.all580.payment.entity.CapitalSerial">
-        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
-            SELECT LAST_INSERT_ID()
-        </selectKey>
         insert into t_capital_serial (id, ref_id, ref_type,
         capital_id, old_balance, old_can_cash,
         new_balance, new_can_cash, create_time
@@ -40,6 +37,9 @@
         #{capital_id,jdbcType=INTEGER}, #{old_balance,jdbcType=INTEGER}, #{old_can_cash,jdbcType=INTEGER},
         #{new_balance,jdbcType=INTEGER}, #{new_can_cash,jdbcType=INTEGER}, #{create_time,jdbcType=TIMESTAMP}
         )
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
     </insert>
     <insert id="insertSelective" parameterType="com.all580.payment.entity.CapitalSerial">
         <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
@@ -147,7 +147,7 @@
         update t_capital_serial set summary=#{summary} where id =#{id}
     </update>
     <insert id="insertBatch" parameterType="java.util.List" useGeneratedKeys="true">
-        <selectKey keyProperty="id" order="AFTER" resultType="long">
+        <selectKey keyProperty="id" order="AFTER" resultType="int">
             SELECT
             LAST_INSERT_ID()
         </selectKey>
@@ -160,6 +160,33 @@
         </foreach>
     </insert>
 
+    <select id="listByCapitalIdExport" parameterType="java.lang.Integer" resultType="map">
+        select * from(
+        select
+        c.id,c.ref_id,c.ref_type, c.create_time as create_time, truncate((c.new_balance-c.old_balance)/100,2) as balance_add,truncate(( c.new_can_cash-c.old_can_cash)/100,2) as
+        can_cash_add,p.name as change_type ,truncate(new_balance/100,2) new_balance, CASE WHEN c.new_balance-c.old_balance >0 THEN '收入' else '支出' end as balance_status
+        ,CASE WHEN c.new_balance-c.old_balance >0 THEN '0' else '1' end as balance_status_code,IFNULL(summary,'') as summary
+        from t_capital_serial c
+        LEFT JOIN t_payment_param p on c.ref_type=p.id
+        where capital_id = #{capital_id,jdbcType=INTEGER}
+        ) f  where 1=1 and balance_add !=0
+        <if test="balance_status != null  and balance_status != ''">
+            and   f.balance_status= #{balance_status}
+        </if>
+        <if test="start_date != null and end_date != null ">
+            and create_time between  #{start_date} and #{end_date}
+        </if>
+        <if test="ref_id != null  and ref_id != ''">
+            and   ref_id=#{ref_id}
+        </if>
+        order by id desc
+        <if test="start_record != null">
+            limit #{start_record}
+        </if>
+        <if test="max_records != null">
+            , #{max_records}
+        </if>
+    </select>
     <select id="listByCapitalId" parameterType="java.lang.Integer" resultType="map">
         select * from(
         select

@@ -244,12 +244,19 @@ public class BalancePayServiceImpl implements BalancePayService {
     @Override
     public Result<PageRecord<Map<String, String>>> getBalanceSerialList(Integer epId, Integer coreEpId,
                                                                         String balanceSatatus,String startDate,String endDate,String ref_id,
-                                                                        Integer startRecord, Integer maxRecords) {
+                                                                        Integer export ,    Integer startRecord, Integer maxRecords) {
         Result<PageRecord<Map<String, String>>> result = new Result<>();
         Capital capital = capitalMapper.selectByEpIdAndCoreEpId(epId, coreEpId);
         Assert.notNull(capital, MessageFormat.format("没有找到余额账户:epId={0}|coreEpId={1}", epId, coreEpId));
-        List<Map<String, String>> capitalSerials = capitalSerialMapper.listByCapitalId(capital.getId(),
-                balanceSatatus ,startDate,endDate,ref_id,startRecord, maxRecords);
+        List<Map<String, String>> capitalSerials=null;
+        if(null==export){
+           capitalSerials = capitalSerialMapper.listByCapitalId(capital.getId(),
+                    balanceSatatus ,startDate,endDate,ref_id,startRecord, maxRecords);
+        }else{
+            capitalSerials = capitalSerialMapper.listByCapitalIdExport(capital.getId(),
+                    balanceSatatus ,startDate,endDate,ref_id,startRecord, maxRecords);
+        }
+
         int count = capitalSerialMapper.countByCapitalId(capital.getId(), balanceSatatus ,startDate,endDate,ref_id);
         PageRecord<Map<String, String>> record = new PageRecord<>(count, capitalSerials);
         result.setSuccess();

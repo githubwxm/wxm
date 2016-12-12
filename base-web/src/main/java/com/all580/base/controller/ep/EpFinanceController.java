@@ -13,6 +13,7 @@ import com.framework.common.validate.ValidRule;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -34,6 +35,28 @@ public class EpFinanceController extends BaseController {
 
     @Autowired
     private BalancePayService balancePayService;
+
+
+    /**
+     * 查询银行卡信息余企业信息
+     * @return
+     */
+    @RequestMapping(value = "select/bank", method = RequestMethod.POST)
+    @ResponseBody
+    public Result<?> selectBank(Integer id) {
+        Assert.notNull(id, "参数【id】不能为空");
+        return epFinanceService.selectBank(id);
+    }
+    /**
+     * 添加银行卡信息
+     * @return
+     */
+    @RequestMapping(value = "add/bank", method = RequestMethod.POST)
+    @ResponseBody
+    public Result<?> addBank(Map param) {
+        ParamsMapValidate.validate(param, generateBankAddValidate());
+        return epFinanceService.addBank(param);
+    }
     /**
      * 查询授信列表
      * @param
@@ -131,7 +154,7 @@ public class EpFinanceController extends BaseController {
         map.put("city",city);
         map.put("record_start",record_start);
         map.put("record_count",record_count);
-        ParamsMapValidate.validate(map, generateCreateSelectValidate());
+       // ParamsMapValidate.validate(map, generateCreateSelectValidate());
         return epFinanceService.getAccountInfoList(map);
     }
 
@@ -152,11 +175,11 @@ public class EpFinanceController extends BaseController {
     @RequestMapping(value = "lst_balance", method = RequestMethod.GET)
     @ResponseBody
     public Result<?> lstBalance(@RequestParam(value = "balance_ep_id") Integer balance_ep_id,
-                                String balance_status,String start_date,String end_date,String ref_id,
+                                String balance_status,String start_date,String end_date,String ref_id,Integer export ,
                                 Integer record_start, Integer record_count){
         Integer coreEpId = CommonUtil.objectParseInteger(getAttribute(EpConstant.EpKey.CORE_EP_ID));
         return epFinanceService.getBalanceSerialList(balance_ep_id,coreEpId,balance_status,
-                start_date,end_date,ref_id,record_start,record_count,null);
+                start_date,end_date,ref_id,export,record_start,record_count,null);
     }
 
     /**
@@ -226,15 +249,26 @@ public class EpFinanceController extends BaseController {
         Map<String[], ValidRule[]> rules = new HashMap<>();
         // 校验不为空的参数
         rules.put(new String[]{
-                "ep_id", //
+                "credit_ep_id", //
                 "core_ep_id",
         }, new ValidRule[]{new ValidRule.NotNull()});
 
         // 校验整数
         rules.put(new String[]{
-                "ep_id", //
+                "credit_ep_id", //
                 "core_ep_id",
         }, new ValidRule[]{new ValidRule.Digits()});
+        return rules;
+    }
+
+    public Map<String[], ValidRule[]> generateBankAddValidate() {
+        Map<String[], ValidRule[]> rules = new HashMap<>();
+        // 校验不为空的参数
+        rules.put(new String[]{
+                "bank_username", //
+                "bank_name_address",
+                "bank_num",
+        }, new ValidRule[]{new ValidRule.NotNull()});
         return rules;
     }
 

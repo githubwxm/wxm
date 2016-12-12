@@ -210,5 +210,10 @@ public interface EpService {
      pic_address   企业  省市区   湖南省长沙市岳麓区
      }
      * */
-
+    /**
+     * 余额阀值是否发送短信   1  发  0 不发
+     * @param status
+     * @return
+     */
+    Result<Integer>updateEpNoteStatus(int status);
 }

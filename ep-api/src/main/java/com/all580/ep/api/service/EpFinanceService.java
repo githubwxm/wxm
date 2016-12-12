@@ -8,6 +8,19 @@ import java.util.Map;
  * Created by wxming on 2016/10/21 0021.
  */
 public interface EpFinanceService {
+
+
+    /**
+     * 获取企业信息及银行卡信息
+     * @param id
+     * @return
+     */
+    Result<Map<String,Object>> selectBank(int id);
+    /**
+     *  添加银行信息
+     *  ep_id bank_username  bank_name_address  bank_num
+     */
+    Result<Integer> addBank(Map<String,Object> map);
     /**
      * 查询企业信息合并余额信息
      * @param map
@@ -28,6 +41,6 @@ public interface EpFinanceService {
     Result addBalance(Integer epId,Integer coreEpId,Integer balance);
 
     Result getBalanceSerialList(Integer epId, Integer coreEpId,
-                                String balanceSatatus,String startDate,String endDate,String ref_id,
+                                String balanceSatatus,String startDate,String endDate,String ref_id,Integer export ,
                                 Integer startRecord, Integer maxRecords,Integer changType);
 }

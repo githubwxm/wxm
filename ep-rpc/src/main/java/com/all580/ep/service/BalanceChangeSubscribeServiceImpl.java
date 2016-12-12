@@ -2,6 +2,7 @@ package com.all580.ep.service;
 
 import com.all580.ep.api.conf.EpConstant;
 import com.all580.ep.api.service.EpBalanceThresholdService;
+import com.all580.ep.dao.EpParamMapper;
 import com.all580.notice.api.service.BalanceChangeSubscribeService;
 import com.framework.common.Result;
 import com.framework.common.lang.JsonUtils;
@@ -23,9 +24,16 @@ public class BalanceChangeSubscribeServiceImpl implements BalanceChangeSubscribe
     @Autowired
     private EpBalanceThresholdService epBalanceThresholdService;
 
+    @Autowired
+    private EpParamMapper epParamMapper;
+
     @Override
     public Result process(String mnsMsgId, String content, Date createDate) {
         //[{id, epId, }]  epId，coreEpId，balance
+        Integer status= epParamMapper.selectEpNoteStatus();
+        if(status.equals(0)){//  查询是否需要发送短信
+            return new Result(true);
+        }
         List list = JsonUtils.json2List(content);
         if (list == null) {
             return new Result(true);
@@ -33,8 +41,8 @@ public class BalanceChangeSubscribeServiceImpl implements BalanceChangeSubscribe
         for (Object o : list) {
             Map map = (Map) o;
             Map<String,Object> params = new HashMap<>();
-            params.put("id", map.get("epId"));
-            params.put(EpConstant.EpKey.CORE_EP_ID, map.get("coreEpId"));
+            params.put("id", map.get("ep_id"));
+            params.put(EpConstant.EpKey.CORE_EP_ID, map.get(EpConstant.EpKey.CORE_EP_ID));
             params.put("balance", map.get("balance"));
             epBalanceThresholdService.warn(params);
         }
