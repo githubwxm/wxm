@@ -7,6 +7,7 @@ import com.all580.ep.api.service.EpService;
 import com.all580.ep.com.Common;
 import com.all580.ep.dao.CoreEpAccessMapper;
 import com.all580.ep.dao.EpMapper;
+import com.all580.ep.dao.EpParamMapper;
 import com.all580.manager.SyncEpData;
 import com.all580.notice.api.conf.SmsType;
 import com.all580.notice.api.service.SmsService;
@@ -41,6 +42,9 @@ public class EpServiceImpl implements EpService {
 
     @Autowired
     private EpMapper epMapper;
+
+    @Autowired
+    private EpParamMapper epParamMapper;
 
     @Autowired
     private CoreEpAccessService coreEpAccessService;
@@ -982,6 +986,20 @@ public class EpServiceImpl implements EpService {
         }
         return result;
     }
+
+    @Override
+    public Result<Integer> updateEpNoteStatus(int status) {
+        Result<Integer> result = new Result<>();
+        try {
+                result.put(epParamMapper.updateEpNoteStatus(status));
+                result.setSuccess();
+        } catch (Exception e) {
+            log.error("修改是否发短信异常", e);
+            throw new ApiException("修改是否发短信异常", e);
+        }
+        return result;
+    }
+
 
     /**
      * 获取企业基本信息接口
