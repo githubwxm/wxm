@@ -108,7 +108,7 @@ public class VerifyFilter implements  Filter {
                         }
                     }else{
                         log.error("权限校验失败url{},ep_id:{}",url,ep_id);
-                        renderingByJsonPData(httpResponse, JSON.toJSONString(getOutPutMap(false,"权限校验失败", Result.NO_PERMISSION,null)));
+                        renderingByJsonPData(httpResponse, JSON.toJSONString(getOutPutMap(false,"权限校验失败"+url, Result.NO_PERMISSION,null)));
                        // return;
                     }
 
@@ -180,7 +180,7 @@ public class VerifyFilter implements  Filter {
          }
      }catch(Exception e){
          log.error("权限校验失败url{},ep_id:{}",url,ep_id);
-         renderingByJsonPData(httpResponse, JSON.toJSONString(getOutPutMap(false,"权限校验失败"+e.getMessage(), Result.SIGN_FAIL,null)));
+         renderingByJsonPData(httpResponse, JSON.toJSONString(getOutPutMap(false,"权限校验失败 url"+url+" ep_id"+ep_id, Result.SIGN_FAIL,null)));
          return false;
       }
        return false;
