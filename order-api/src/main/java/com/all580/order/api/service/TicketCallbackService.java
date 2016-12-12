@@ -84,4 +84,12 @@ public interface TicketCallbackService {
      * @return
      */
     Result refundGroupTicket(Long orderSn, RefundGroupTicketInfo info, Date procTime);
+
+    /**
+     * 修改回调
+     * @param orderSn 子订单流水编号
+     * @param success 成功与否
+     * @return
+     */
+    Result modifyGroupTicket(Long orderSn, boolean success);
 }
