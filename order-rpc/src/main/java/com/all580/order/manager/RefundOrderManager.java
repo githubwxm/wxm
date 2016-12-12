@@ -145,7 +145,7 @@ public class RefundOrderManager extends BaseOrderManager {
             }
             orderItemMapper.updateByPrimaryKeySelective(orderItem);
             // 退款
-            refundMoney(order, refundOrder.getMoney(), String.valueOf(refundOrder.getNumber()), orderItem, refundOrder);
+            refundMoney(order, refundOrder.getMoney(), String.valueOf(refundOrder.getNumber()), refundOrder);
         }
 
         // 同步数据
@@ -395,8 +395,9 @@ public class RefundOrderManager extends BaseOrderManager {
      * @return
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public RefundOrder generateRefundOrder(int itemId, List daysList, int quantity, int money, int fee, String cause) {
-        return generateRefundOrder(itemId, daysList, quantity, money, fee, cause, 0);
+    public RefundOrder generateRefundOrder(int itemId, List daysList, int quantity, int money, int fee, String cause,
+                                           Integer auditTicket, Integer auditMoney) {
+        return generateRefundOrder(itemId, daysList, quantity, money, fee, cause, 0, auditTicket, auditMoney);
     }
 
     /**
@@ -408,7 +409,8 @@ public class RefundOrderManager extends BaseOrderManager {
      * @return
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public RefundOrder generateRefundOrder(int itemId, List daysList, int quantity, int money, int fee, String cause, Integer groupId) {
+    public RefundOrder generateRefundOrder(int itemId, List daysList, int quantity, int money, int fee, String cause,
+                                           Integer groupId, Integer auditTicket, Integer auditMoney) {
         RefundOrder refundOrder = new RefundOrder();
         refundOrder.setOrder_item_id(itemId);
         refundOrder.setNumber(UUIDGenerator.generateUUID());
@@ -420,6 +422,8 @@ public class RefundOrderManager extends BaseOrderManager {
         refundOrder.setFee(fee);
         refundOrder.setCause(cause);
         refundOrder.setGroup_id(groupId == null ? 0 : groupId);
+        refundOrder.setAudit_ticket(auditTicket);
+        refundOrder.setAudit_money(auditMoney);
         refundOrderMapper.insertSelective(refundOrder);
         return refundOrder;
     }
@@ -702,14 +706,13 @@ public class RefundOrderManager extends BaseOrderManager {
      * @param order
      * @param money
      * @param sn
-     * @param orderItem
      * @param refundOrder
      * @return
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public Result refundMoney(Order order, int money, String sn, OrderItem orderItem, RefundOrder refundOrder) {
+    public Result refundMoney(Order order, int money, String sn, RefundOrder refundOrder) {
         // 需要审核
-        if (orderItem != null && orderItem.getRefund_money_audit() == ProductConstants.RefundMoneyAudit.YES &&
+        if (refundOrder.getAudit_money() == ProductConstants.RefundMoneyAudit.YES &&
                 refundOrder.getStatus() != OrderConstant.RefundOrderStatus.REFUND_MONEY_AUDITING) {
             refundOrder.setStatus(OrderConstant.RefundOrderStatus.REFUND_MONEY_AUDITING);
             refundOrderMapper.updateByPrimaryKeySelective(refundOrder);
