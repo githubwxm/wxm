@@ -8,7 +8,6 @@ import com.all580.order.entity.*;
 import com.all580.order.manager.BookingOrderManager;
 import com.all580.order.manager.RefundOrderManager;
 import com.all580.order.manager.SmsManager;
-import com.all580.payment.api.conf.PaymentConstant;
 import com.framework.common.Result;
 import com.framework.common.lang.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -417,17 +416,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
 
         // 退票失败
         if (!info.isSuccess()) {
-            try {
-                refundOrderManager.refundFail(refundOrder);
-            } catch (Exception e) {
-                throw new ApiException("退票失败还原状态异常", e);
-            }
-
-            // 发送短信
-            smsManager.sendRefundFailSms(orderItem);
-
-            refundOrderManager.syncRefundOrderAuditRefuse(refundOrder.getId());
-            return new Result(true);
+            return refundFail(refundOrder, orderItem);
         }
 
         refundOrder.setRefund_ticket_time(procTime);
@@ -490,17 +479,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
 
         // 退票失败
         if (!info.isSuccess()) {
-            try {
-                refundOrderManager.refundFail(refundOrder);
-            } catch (Exception e) {
-                throw new ApiException("退票失败还原状态异常", e);
-            }
-
-            // 发送短信
-            smsManager.sendRefundFailSms(orderItem);
-
-            refundOrderManager.syncRefundOrderAuditRefuse(refundOrder.getId());
-            return new Result(true);
+            return refundFail(refundOrder, orderItem);
         }
 
         refundOrder.setRefund_ticket_time(procTime);
@@ -527,6 +506,27 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         return new Result(true);
     }
 
+    @Override
+    public Result modifyGroupTicket(Long orderSn, boolean success) {
+        OrderItem orderItem = orderItemMapper.selectBySN(orderSn);
+        if (orderItem == null) {
+            return new Result(false, "订单不存在");
+        }
+        if (orderItem.getGroup_id() == null || orderItem.getGroup_id() == 0) {
+            return new Result(false, "该订单不是团队订单");
+        }
+        if (orderItem.getStatus() != OrderConstant.OrderItemStatus.MODIFYING) {
+            return new Result(false, "该订单不在修改中状态");
+        }
+
+        orderItem.setStatus(success ? OrderConstant.OrderItemStatus.MODIFY : OrderConstant.OrderItemStatus.MODIFY_FAIL);
+        orderItemMapper.updateByPrimaryKeySelective(orderItem);
+
+        // 同步数据
+        bookingOrderManager.syncSendingData(orderItem.getId());
+        return new Result(true);
+    }
+
     private MaSendResponse getMaSendResponse(List<MaSendResponse> list, int visitorId, int epMaId) {
         if (list == null) {
             return null;
@@ -538,5 +538,19 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
             }
         }
         return null;
+    }
+
+    private Result refundFail(RefundOrder refundOrder, OrderItem orderItem) {
+        try {
+            refundOrderManager.refundFail(refundOrder);
+        } catch (Exception e) {
+            throw new ApiException("退票失败还原状态异常", e);
+        }
+
+        // 发送短信
+        smsManager.sendRefundFailSms(orderItem);
+
+        refundOrderManager.syncRefundOrderAuditRefuse(refundOrder.getId());
+        return new Result(true);
     }
 }

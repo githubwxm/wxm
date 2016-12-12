@@ -71,8 +71,6 @@ public class BookingOrderServiceImpl implements BookingOrderService {
     @Autowired
     private GroupMapper groupMapper;
     @Autowired
-    private GuideMapper guideMapper;
-    @Autowired
     private ShippingMapper shippingMapper;
 
     @Autowired
@@ -498,7 +496,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         // 记录任务
         Map<String, String> jobParam = new HashMap<>();
         jobParam.put("orderItemId", orderItem.getId().toString());
-        bookingOrderManager.addJob(OrderConstant.Actions.SEND_TICKET, jobParam);
+        //bookingOrderManager.addJob(OrderConstant.Actions.SEND_TICKET, jobParam);
         return new Result<>(true);
     }
 
@@ -610,9 +608,11 @@ public class BookingOrderServiceImpl implements BookingOrderService {
                     rules.put(new String[]{
                             "visitor.name", // 订单游客姓名
                             "visitor.phone", // 订单游客手机号码
-                            "visitor.sid" // 订单游客身份证号码
+                            "visitor.sid", // 订单游客身份证号码
+                            "visitor.quantity" // 张数
                     }, new ValidRule[]{new ValidRule.NotNull()});
                     rules.put(new String[]{"visitor.sid"}, new ValidRule[]{new ValidRule.IdCard()});
+                    rules.put(new String[]{"visitor.quantity"}, new ValidRule[]{new ValidRule.Digits()});
                     rules.put(new String[]{"visitor.phone"}, new ValidRule[]{new ValidRule.Pattern(ValidRule.MOBILE_PHONE)});
                     ParamsMapValidate.validate(Collections.singletonMap("visitor", visitors), rules);
 

@@ -157,6 +157,11 @@ public class Test {
             System.out.println(o);
         }
         System.out.println(daysList);
+
+        List<String> test2 = new ArrayList<>();
+        test2.add("123");
+        System.out.println(ParamsMapValidate.getValue(Collections.singletonMap("test", test2), "test"));
+        ParamsMapValidate.validate(Collections.singletonMap("test", test2), Collections.singletonMap(new String[]{"test"}, new ValidRule[]{new ValidRule.IdCard()}));
     }
     public static void validateParams(Map params) {
         Map<String[], ValidRule[]> validRuleMap = new HashMap<>();

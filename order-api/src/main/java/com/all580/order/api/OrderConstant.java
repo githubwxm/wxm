@@ -31,6 +31,9 @@ public class OrderConstant {
         public static final int TICKETING = 324; // 出票中
         public static final int SEND = 325; // 已出票
         public static final int CANCEL = 326; // 已取消
+        public static final int MODIFYING = 327; // 修改中
+        public static final int MODIFY = 328; // 已修改
+        public static final int MODIFY_FAIL = 329; // 修改失败
     }
 
     /**
