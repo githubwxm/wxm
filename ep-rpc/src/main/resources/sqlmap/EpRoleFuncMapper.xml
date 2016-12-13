@@ -188,7 +188,7 @@
   <select id="selectepRoleId" resultType="java.util.Map">
   select <include refid="Base_Column_List" /> from t_ep_role_func
     where ep_role_id=#{ep_role_id} and isdelete=0
-    <if test="ids !=ids">
+    <if test="ids != null">
       and `func_id`  in
       <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">
         #{item}
