@@ -275,7 +275,7 @@ public class PlatfromController extends BaseController {
      */
     @RequestMapping(value = "update_ep_note_status", method = RequestMethod.POST)
     @ResponseBody
-    public Result<Integer> updateEpNoteStatus(Map<String,Object> params) {
+    public Result<Integer> updateEpNoteStatus(@RequestBody Map<String,Object> params) {
         Integer status = CommonUtil.objectParseInteger(params.get("status"));
         if(null==status){
             Assert.notNull(status, "参数【status】不能为空");
