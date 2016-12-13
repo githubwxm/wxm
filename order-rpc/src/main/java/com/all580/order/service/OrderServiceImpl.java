@@ -1,20 +1,20 @@
 package com.all580.order.service;
 
+import com.all580.ep.api.service.EpService;
 import com.all580.order.api.service.OrderService;
 import com.all580.order.dao.OrderClearanceSerialMapper;
 import com.all580.order.dao.OrderItemMapper;
 import com.all580.order.dao.OrderMapper;
 import com.all580.order.entity.Order;
 import com.framework.common.Result;
+import com.framework.common.lang.JsonUtils;
+import com.framework.common.util.CommonUtil;
 import com.framework.common.vo.PageRecord;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author zhouxianjun(Alone)
@@ -31,6 +31,8 @@ public class OrderServiceImpl implements OrderService {
     private OrderItemMapper orderItemMapper;
     @Autowired
     private OrderClearanceSerialMapper orderClearanceSerialMapper;
+    @Autowired
+    private EpService epService;
 
     @Override
     public Result<Integer> getPayeeEpIdByOutTransId(String outTranId) {
@@ -78,9 +80,40 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Result<List<Map>> selectChannelBill(Integer coreEpId, Date start, Date end, Boolean settled) {
         List<Map> list = orderClearanceSerialMapper.selectChannelBill(coreEpId, start, end, settled);
+        if (list != null) {
+            Set<Integer> epIds = new HashSet<>();
+            for (Map map : list) {
+                Integer epId = CommonUtil.objectParseInteger(map.get("supplier_core_ep_id"));
+                if (epId != null) {
+                    epIds.add(epId);
+                }
+            }
+            if (epIds.size() > 0) {
+                Result<List<Map<String,Object>>> epResult = epService.getEp(epIds.toArray(new Integer[epIds.size()]), new String[]{"id", "name"});
+                if (epResult != null && epResult.isSuccess()) {
+                    setEpName(list, epResult.get(), "supplier_core_ep_id", "supplier_core_ep_name");
+                } else {
+                    log.warn("获取企业:{}名称异常:{}", JsonUtils.toJson(epIds), epResult == null ? "null" : epResult.getError());
+                }
+            }
+        }
         Result<List<Map>> result = new Result<>(true);
         result.put(list);
         return result;
+    }
+
+    private void setEpName(List<Map> list, List<Map<String, Object>> epList, String key, String putKey) {
+        if (epList != null) {
+            for (Map<String, Object> epMap : epList) {
+                Integer id = CommonUtil.objectParseInteger(epMap.get("id"));
+                for (Map map : list) {
+                    Integer epId = CommonUtil.objectParseInteger(map.get(key));
+                    if (epId != null && epId.equals(id)) {
+                        map.put(putKey, CommonUtil.objectParseString(epMap.get("name")));
+                    }
+                }
+            }
+        }
     }
 
     @Override
