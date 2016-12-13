@@ -209,7 +209,8 @@ public class EpRoleServiceImpl implements EpRoleService {
             }
             List<Integer> tempList = new ArrayList<Integer>();
             tempList.add(ep_role_id);
-            Auth.updateAuthMap(epRoleFuncMapper.selectFuncIdsAllEpRole(tempList),redisUtils);//更新鉴权数据
+            //epRoleFuncMapper.selectFuncIdsAllEpRole(tempList)
+            Auth.updateAuthMap( tempList,redisUtils);//更新鉴权数据
         } catch (Exception e) {
             log.error("修改菜单出错 {}", e.getMessage());
             return new Result(false, e.getMessage());
