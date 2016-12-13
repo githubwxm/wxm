@@ -17,6 +17,8 @@
 					 interface="com.all580.ep.api.service.EpService"/>
 	<dubbo:reference id="coreEpAccessService"
 					 interface="com.all580.ep.api.service.CoreEpAccessService"/>
+	<dubbo:reference id="coreEpChannelService"
+					 interface="com.all580.ep.api.service.CoreEpChannelService"/>
 
 	<dubbo:reference id="balancePayService"
 					 interface="com.all580.payment.api.service.BalancePayService"/>

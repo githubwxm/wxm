@@ -306,6 +306,27 @@ public class BaseOrderManager {
     }
 
     /**
+     * 获取某天消费利润金额
+     * @param orderItemId 子订单ID
+     * @param epId 企业ID
+     * @param coreEpId 平台商ID
+     * @param day 天
+     * @param consumeQuantity 消费张数
+     * @return
+     */
+    public int getMoneyForEp(int orderItemId, int epId, int coreEpId, Date day, int consumeQuantity) {
+        int money = 0;
+        OrderItemAccount account = orderItemAccountMapper.selectByOrderItemAndEp(orderItemId, epId, coreEpId);
+        if (account != null && day != null) {
+            JSONArray daysData = JSONArray.parseArray(account.getData());
+            // 获取核销日期的单价利润
+            JSONObject dayData = getAccountDataByDay(daysData, DateFormatUtils.parseDateToDatetimeString(day));
+            money = getMoney(consumeQuantity, dayData);
+        }
+        return money;
+    }
+
+    /**
      * 核销反核销分账
      * @param orderItem 子订单
      * @param day 日期
@@ -320,7 +341,7 @@ public class BaseOrderManager {
         // 存储调用余额分账的数据
         List<BalanceChangeInfo> balanceChangeInfoList = new ArrayList<>();
         // 预付
-        if (orderItem.getPayment_flag() == ProductConstants.PayType.PREPAY) {
+        //if (orderItem.getPayment_flag() == ProductConstants.PayType.PREPAY) {
             Set<String> uk = new HashSet<>();
             for (OrderItemAccount account : accounts) {
                 // 每天的单价利润数据
@@ -349,7 +370,7 @@ public class BaseOrderManager {
                 account.setSettled_money(consume ? account.getSettled_money() + money : account.getSettled_money() - money); // 设置已结算金额
                 orderItemAccountMapper.updateByPrimaryKeySelective(account);
             }
-        }
+        //}
         // 调用分账
         Result<BalanceChangeRsp> result = changeBalances(PaymentConstant.BalanceChangeType.CONSUME_SPLIT, sn, balanceChangeInfoList);
         if (!result.isSuccess()) {
