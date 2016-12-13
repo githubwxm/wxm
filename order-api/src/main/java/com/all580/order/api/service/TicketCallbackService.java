@@ -91,5 +91,5 @@ public interface TicketCallbackService {
      * @param success 成功与否
      * @return
      */
-    Result modifyGroupTicket(Long orderSn, boolean success);
+    Result modifyGroupTicket(Long orderSn, boolean success, Date procTime);
 }
