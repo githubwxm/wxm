@@ -133,7 +133,7 @@ public class PlanController extends BaseController {
     }
 
     /**
-     * 对组分销
+     * 对多个组分销单个产品批次
      * @param params
      * @return
      */
@@ -141,6 +141,32 @@ public class PlanController extends BaseController {
     @ResponseBody
     public Result productSubDistributionGroup(@RequestBody Map params) {
         return productService.productOnSaleToGroup(initGroupOnsalesParams(params));
+    }
+
+    /**
+     * 对单个组分销多个产品批次
+     * @param params
+     * @return
+     */
+    @RequestMapping(value = "sale_batch/group", method = RequestMethod.POST)
+    @ResponseBody
+    public Result ProductSubBatchDistributionGroup(@RequestBody  Map params) {
+        return productService.productBatchOnSaleToGroup(initGroupPlanSalesParams(params));
+    }
+
+    private List<Map<String, Object>> initGroupPlanSalesParams(Map params) {
+        List<Map<String, Object>> onSales = (List<Map<String, Object>>) params.get("saled_array");
+        for (Map<String, Object> planSale : onSales) {
+            planSale.put("sale_ep_id", params.get("ep_id"));
+            planSale.put("group_id", params.get("group_id"));
+            // planSale内有product_sub_id
+            // planSale内有batch_id
+            // planSale内有price
+            // planSale内有price_type
+            // planSale内有price_pixed
+            // planSale内有price_percent
+        }
+        return onSales;
     }
 
     @RequestMapping(value = "sale/ep/creator", method = RequestMethod.POST)
@@ -217,9 +243,7 @@ public class PlanController extends BaseController {
         if(ep_id==null){
             return null;
         }
-        Map<String,Object> mapId  = new HashMap();
-        mapId.put("id", ep_id);
-        Result<Map<String,Object>> ep=  epService.selectId(ep_id);//获取企业信息
+        Result<Map<String,Object>> ep = epService.selectId(ep_id);//获取企业信息
         List<Map> list = new ArrayList<>();
         String name = CommonUtil.objectParseString(ep.get().get("name"));
         Map map = new HashMap();
@@ -233,6 +257,7 @@ public class PlanController extends BaseController {
         list.add(map);
         return list;
     }
+
     private List<Map> initEpOnsalesParams (Map params) {
         List<Map> onSalesEps = (List<Map>) params.get("saled_array");
         for (Map ep : onSalesEps) {
@@ -283,7 +308,7 @@ public class PlanController extends BaseController {
     }
 
     /**
-     * 对组下架
+     * 对多组下架单个产品批次
      * @param params
      * @return
      */
@@ -293,6 +318,17 @@ public class PlanController extends BaseController {
         List<Map> paramList = (List<Map>) params.get("off_sale_array");
         if (paramList == null || paramList.isEmpty()) return new Result(false, "参数错误");
         return productService.productOffSaleGroup(params);
+    }
+
+    /**
+     * 组对多产品批次下架
+     * @param params
+     * @return
+     */
+    @RequestMapping("off_sale_batch/group")
+    @ResponseBody
+    public Result productSubBatchOffSaleGroup(@RequestBody Map params) {
+        return productService.productBatchOffSaleGroup(params);
     }
 
     /**

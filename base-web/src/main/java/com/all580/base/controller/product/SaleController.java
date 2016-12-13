@@ -187,4 +187,18 @@ public class SaleController extends BaseController {
         result.put(returnList);
         return result;
     }
+
+    @RequestMapping(value = "seller_price/list")
+    @ResponseBody
+    public Result<List<Map<String, Object>>> searchProductAllPrice(@RequestParam("ep_id") Integer epId, @RequestParam(value = "product_name", required = false) String productName) {
+        return productSalesPlanService.searchProductAllPrice(epId, productName);
+    }
+
+    @RequestMapping(value = "seller_price/update", method = RequestMethod.POST)
+    @ResponseBody
+    public Result updateSalePriceAndRebateBatch(@RequestBody Map params) {
+        //TODO 数据验证
+        return productSalesPlanService.updateSalePriceAndRebateBatch(params);
+    }
+
 }
