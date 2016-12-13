@@ -507,7 +507,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
     }
 
     @Override
-    public Result modifyGroupTicket(Long orderSn, boolean success) {
+    public Result modifyGroupTicket(Long orderSn, boolean success, Date procTime) {
         OrderItem orderItem = orderItemMapper.selectBySN(orderSn);
         if (orderItem == null) {
             return new Result(false, "订单不存在");
