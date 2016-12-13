@@ -4,6 +4,7 @@ import com.framework.common.Result;
 import com.framework.common.vo.PageRecord;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -73,4 +74,21 @@ public interface OrderService {
                                                      Long productSubNumber,
                                                      Integer recordStart,
                                                      Integer recordCount);
+
+    /**
+     * 查询通道费账单
+     * @param coreEpId 供应平台商ID null则所有
+     * @param start 开始时间
+     * @param end 结束时间
+     * @param settled 是否已结清
+     * @return
+     */
+    Result<List<Map>> selectChannelBill(Integer coreEpId, Date start, Date end, Boolean settled);
+
+    /**
+     * 设置某月账单为已结算
+     * @param params
+     * @return
+     */
+    Result settledChannelBill(Map params);
 }

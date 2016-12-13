@@ -1,6 +1,7 @@
 package com.all580.order.service;
 
 import com.all580.order.api.service.OrderService;
+import com.all580.order.dao.OrderClearanceSerialMapper;
 import com.all580.order.dao.OrderItemMapper;
 import com.all580.order.dao.OrderMapper;
 import com.all580.order.entity.Order;
@@ -28,6 +29,8 @@ public class OrderServiceImpl implements OrderService {
     private OrderMapper orderMapper;
     @Autowired
     private OrderItemMapper orderItemMapper;
+    @Autowired
+    private OrderClearanceSerialMapper orderClearanceSerialMapper;
 
     @Override
     public Result<Integer> getPayeeEpIdByOutTransId(String outTranId) {
@@ -70,5 +73,19 @@ public class OrderServiceImpl implements OrderService {
         Result<PageRecord<Map>> result = new Result<>(true);
         result.put(record);
         return result;
+    }
+
+    @Override
+    public Result<List<Map>> selectChannelBill(Integer coreEpId, Date start, Date end, Boolean settled) {
+        List<Map> list = orderClearanceSerialMapper.selectChannelBill(coreEpId, start, end, settled);
+        Result<List<Map>> result = new Result<>(true);
+        result.put(list);
+        return result;
+    }
+
+    @Override
+    public Result settledChannelBill(Map params) {
+
+        return new Result(true);
     }
 }

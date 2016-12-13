@@ -195,4 +195,94 @@
         SELECT * FROM t_order_clearance_serial
         WHERE `serial_no` = #{sn,jdbcType=VARCHAR}
     </select>
+
+    <select id="selectChannelBill" resultType="map">
+      SELECT
+          a.clearance_month,
+          SUM(a.total_money) bill_money,
+          SUM(a.total_fee) fee,
+          a.channel_fee,
+          a.supplier_core_ep_id,
+          IFNULL(tcb.settled,0) settled
+      FROM
+          (
+              SELECT
+                  tocs.channel_fee,
+                  SUM(tocs.supplier_money) total_money,
+                  SUM(
+                      tocs.supplier_money * (
+                          IFNULL(tocs.channel_fee, 0) / 10000
+                      )
+                  ) total_fee,
+                  DATE_FORMAT(
+                      tocs.clearance_time,
+                      '%Y%m'
+                  ) AS clearance_month,
+                  toi.supplier_core_ep_id
+              FROM
+                  t_order_clearance_serial tocs
+                  LEFT JOIN t_order_item toi ON toi.id = tocs.order_item_id
+              WHERE
+                  1 = 1
+                  <if test="coreEpId != null">
+                    AND toi.supplier_core_ep_id = #{coreEpId}
+                  </if>
+                  <if test="start != null">
+                    AND tocs.clearance_time &gt;= #{start}
+                  </if>
+                  <if test="end != null">
+                    AND tocs.clearance_time &lt;= #{end}
+                  </if>
+              GROUP BY
+                  toi.supplier_core_ep_id,
+                  clearance_month,
+                  tocs.channel_fee
+              UNION
+                  SELECT
+                      tcws.channel_fee,
+                      - SUM(tcws.supplier_money) total_money,
+                      - SUM(
+                          tcws.supplier_money * (
+                              IFNULL(tcws.channel_fee, 0) / 10000
+                          )
+                      ) total_fee,
+                      DATE_FORMAT(
+                          tcws.clearance_washed_time,
+                          '%Y%m'
+                      ) AS clearance_month,
+                      toi.supplier_core_ep_id
+                  FROM
+                      t_clearance_washed_serial tcws
+                      LEFT JOIN t_order_clearance_serial tocs ON tocs.serial_no = tcws.clearance_serial_no
+                      LEFT JOIN t_order_item toi ON toi.id = tocs.order_item_id
+                  WHERE
+                      1 = 1
+                      <if test="coreEpId != null">
+                        AND toi.supplier_core_ep_id = #{coreEpId}
+                      </if>
+                      <if test="start != null">
+                        AND tcws.clearance_washed_time &gt;= #{start}
+                      </if>
+                      <if test="end != null">
+                        AND tcws.clearance_washed_time &lt;= #{end}
+                      </if>
+                  GROUP BY
+                      toi.supplier_core_ep_id,
+                      clearance_month,
+                      tcws.channel_fee
+          ) a
+      LEFT JOIN t_channel_bill tcb ON tcb.supplier_core_ep_id = a.supplier_core_ep_id AND tcb.bill_month = a.clearance_month AND tcb.channel_fee = a.channel_fee
+      WHERE
+          1 = 1
+          <if test="settled != null and settled">
+              AND tcb.settled = 1
+          </if>
+          <if test="settled != null and !settled">
+              AND tcb.settled is null
+          </if>
+      GROUP BY
+          a.supplier_core_ep_id,
+          a.clearance_month,
+          channel_fee
+    </select>
 </mapper>

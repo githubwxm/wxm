@@ -1,6 +1,11 @@
 package com.all580.order.dao;
 
 import com.all580.order.entity.OrderClearanceSerial;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 public interface OrderClearanceSerialMapper {
     /**
@@ -57,4 +62,14 @@ public interface OrderClearanceSerialMapper {
      * @return
      */
     OrderClearanceSerial selectBySn(String sn);
+
+    /**
+     * 查询通道费账单
+     * @param coreEpId 供应平台商ID
+     * @param start 开始时间
+     * @param end 结束时间
+     * @param settled 是否已结
+     * @return
+     */
+    List<Map> selectChannelBill(@Param("coreEpId") Integer coreEpId, @Param("start") Date start, @Param("end") Date end, @Param("settled") Boolean settled);
 }
