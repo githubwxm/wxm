@@ -187,8 +187,8 @@ public class EpRoleServiceImpl implements EpRoleService {
             if (!(null == initFunc || initFunc.isEmpty())) {//删除已经存在而不需要的数据
                 List<Integer> deleteList =deleteAllList(func_ids, initFunc);
                 if(!deleteList.isEmpty()){
-                    epRoleFuncMapper.deleteEpFunc(ep_role_id,deleteList );
                     List<Integer> synDelete=  epRoleFuncMapper.selectEpRoleIdId(ep_role_id, deleteList);
+                    epRoleFuncMapper.deleteEpFunc(ep_role_id,deleteList );
                     syncEpData.syncDeleteAllData(EpConstant.Table.T_EP_ROLE_FUNC,(Integer [])synDelete.toArray(new Integer[synDelete.size()]) );
                 }
             }
