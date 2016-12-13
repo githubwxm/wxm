@@ -62,7 +62,7 @@ public class EpChannelController extends BaseController {   //倒萨
 
             ParamsMapValidate.validate(params, generateCreateEpChannelValidate());
             String rate = params.get("rate").toString();
-            if (CommonUtil.isTrue(rate, "\\d{1,2}\\.\\d{1,2}$|\\d{1,2}")) {//校验汇率在0 - 9.99之间 乘100 取整
+            if (CommonUtil.isTrue(rate, "\\d{1,2}\\.\\d{1,2}$|\\d{1,2}")) {//校验汇率在0 - 99.99之间 乘100 取整
                 Double temp = Double.parseDouble(rate) * 100;
                 params.put("rate", temp.intValue());
             } else {
