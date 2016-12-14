@@ -330,7 +330,7 @@
         SELECT
             a.clearance_month,
             SUM(a.total_money) bill_money,
-            SUM(a.total_fee) fee,
+            TRUNCATE(SUM(a.total_fee), 0) fee,
             a.supplier_core_ep_id,
             IFNULL(tcb.settled, 0) settled
         FROM
