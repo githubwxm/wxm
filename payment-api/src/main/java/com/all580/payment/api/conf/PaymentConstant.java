@@ -1,5 +1,8 @@
 package com.all580.payment.api.conf;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * 支付模块常量类
  *
@@ -7,6 +10,18 @@ package com.all580.payment.api.conf;
  */
 public class PaymentConstant {
     public static final String EVENT_NAME_BALANCE_CHANGE = "mnsBalanceChangeAction"; // 事件名称-余额变更
+    private static List<Integer> list = new ArrayList<Integer>();
+    static{
+        list.add(BalanceChangeType.THIRD_PAY_FOR_ORDER);
+
+    }
+    public static List<Integer> getList() {
+        return list;
+    }
+
+    public static void setList(List<Integer> list) {
+        PaymentConstant.list = list;
+    }
 
     public static class Status {
         public static final int DISABLED = 0;
