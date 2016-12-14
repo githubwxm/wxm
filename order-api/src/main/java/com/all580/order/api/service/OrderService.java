@@ -85,6 +85,23 @@ public interface OrderService {
      */
     Result<List<Map>> selectChannelBill(Integer coreEpId, Date start, Date end, Boolean settled);
 
+    /**
+     * 查询通道费账单明细
+     * @param coreEpId 供应平台商ID null则所有
+     * @param saleCoreEpId 销售平台商ID
+     * @param month 月份
+     * @return
+     */
+    Result<List<Map>> selectChannelBillDetail(Integer coreEpId, Integer saleCoreEpId, Integer month);
+
+    /**
+     * 查询供应平台通道费账单
+     * @param coreEpId 供应平台商ID null则所有
+     * @param start 开始时间
+     * @param end 结束时间
+     * @param settled 是否已结清
+     * @return
+     */
     Result<List<Map>> selectChannelBillForSupplier(Integer coreEpId, Date start, Date end, Boolean settled);
 
     /**

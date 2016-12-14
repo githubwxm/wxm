@@ -87,6 +87,14 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public Result<List<Map>> selectChannelBillDetail(Integer coreEpId, Integer saleCoreEpId, Integer month) {
+        List<Map> list = orderClearanceSerialMapper.selectChannelBillDetail(coreEpId, saleCoreEpId, month);
+        Result<List<Map>> result = new Result<>(true);
+        result.put(list);
+        return result;
+    }
+
+    @Override
     public Result<List<Map>> selectChannelBillForSupplier(Integer coreEpId, Date start, Date end, Boolean settled) {
         List<Map> list = orderClearanceSerialMapper.selectChannelBillForSupplier(coreEpId, start, end, settled);
         setEpNameForList(list);
