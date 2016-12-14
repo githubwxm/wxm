@@ -15,6 +15,8 @@
     <bean id="balancePayService" class="com.all580.payment.service.BalancePayServiceImpl"/>
     <bean id="thirdPayService" class="com.all580.payment.service.ThirdPayServiceImpl"/>
     <bean id="epPaymentConfService" class="com.all580.payment.service.EpPaymentConfServiceImpl"/>
+    <bean id="fundSerialService" class="com.all580.ep.service.FundSerialServiceImpl"/>
+    <bean id="platfromFundService" class="com.all580.ep.service.PlatfromFundServiceImpl"/>
 
     <bean id="topicPushManager" class="com.framework.common.mns.TopicPushManager">
         <property name="accessId" value="${mns.access.id}"/>
@@ -26,5 +28,6 @@
     <dubbo:service interface="com.all580.payment.api.service.BalancePayService" ref="balancePayService"/>
     <dubbo:service interface="com.all580.payment.api.service.ThirdPayService" ref="thirdPayService"/>
     <dubbo:service interface="com.all580.payment.api.service.EpPaymentConfService" ref="epPaymentConfService"/>
-
+    <dubbo:service interface="com.all580.payment.api.service.FundSerialService" ref="fundSerialService"/>
+    <dubbo:service interface="com.all580.payment.api.service.PlatfromFundService" ref="platfromFundService"/>
 </beans>

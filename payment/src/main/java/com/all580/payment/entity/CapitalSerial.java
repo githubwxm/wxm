@@ -22,6 +22,15 @@ public class CapitalSerial implements Serializable {
 
     private Date create_time;
     private String summary="";
+    private Integer core_ep_id;
+
+    public Integer getCore_ep_id() {
+        return core_ep_id;
+    }
+
+    public void setCore_ep_id(Integer core_ep_id) {
+        this.core_ep_id = core_ep_id;
+    }
 
     public String getSummary() {
         return summary;

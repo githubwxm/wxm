@@ -3,6 +3,8 @@ package com.all580.payment.service;
 import com.all580.payment.api.model.BalanceChangeInfo;
 import com.all580.payment.api.model.BalanceChangeRsp;
 import com.all580.payment.api.service.BalancePayService;
+import com.all580.payment.api.service.FundSerialService;
+import com.all580.payment.api.service.PlatfromFundService;
 import com.framework.common.Result;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,24 @@ import java.util.Map;
 public class BalancePayServiceTest extends BaseTest {
     @Autowired
     private BalancePayService balancePayService;
+
+    @Autowired
+    private PlatfromFundService platfromFundService;
+
+    @Autowired
+    private FundSerialService fundSerialService;
+
+    @Test
+    public void t(){
+
+        //print(platfromFundService.insertPlatfromFund(4).get().toString());
+       // platfromFundService.exitFund(500,4);
+       //platfromFundService.addFund(-600,4);
+        print(fundSerialService.selectFundSerial(1,null,null,null,null,null,null,null).get().toString());
+    }
+    private void print(String str){
+        System.out.println(str);
+    }
 
     @Test
     public void changeBalancesForAddOrdTest() {

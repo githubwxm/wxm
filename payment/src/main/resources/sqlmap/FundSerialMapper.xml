@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.all580.ep.dao.FundSerialMapper" >
+
+    <update id="updateFundSerialSummary">
+        update t_fund_serial set summary=#{summary} where id=#{id}
+    </update>
+  <insert id="insertFundSerial">
+    insert into t_fund_serial(core_ep_id,ref_id,ref_type,change_money,current_total_fund,status)
+     values(#{core_ep_id},#{ref_id},#{ref_type},#{money},(select total_fund from t_platfrom_fund where core_ep_id=#{core_ep_id})+#{money});
+  </insert>
+  <select id="selectFundSerialExport" resultType="java.util.Map" >
+    select tf.id,ref_id,truncate(change_money/100,2),truncate(current_total_fund/100,2),tf.create_time,summary,
+     CASE WHEN tf.status >0 THEN '收入' else '支出' end as status,
+    tp.`name`
+    from t_fund_serial  tf join t_payment_param tp  on tf.ref_type=tp.id
+    where core_ep_id=#{core_ep_id}
+     <include refid="selectFundSerial" />
+  </select>
+    <select id="selectFundSerial" resultType="java.util.Map" >
+        select tf.id,ref_id,change_money,current_total_fund,tf.create_time,summary,
+        CASE WHEN tf.status >0 THEN '收入' else '支出' end as status,
+        tp.`name`
+        from t_fund_serial  tf join t_payment_param tp  on tf.ref_type=tp.id
+        where core_ep_id=#{core_ep_id}
+        <include refid="selectFundSerial" />
+    </select>
+    <select id="selectFundSerialCount" resultType="java.lang.Integer" >
+        select count(1)
+        from t_fund_serial  tf join t_payment_param tp  on tf.ref_type=tp.id
+        where core_ep_id=#{core_ep_id}
+        <include refid="selectFundSerial" />
+    </select>
+    <sql id="selectFundSerial">
+        <if test="status != null  and status != ''">
+            and   tf.status= #{status}
+        </if>
+        <if test="start_date != null and end_date != null ">
+            and create_time between  #{start_date} and #{end_date}
+        </if>
+        <if test="ref_id != null  and ref_id != ''">
+            and   ref_id=#{ref_id}
+        </if>
+        order by tf.id desc
+        <if test="start_record != null">
+            limit #{start_record}
+        </if>
+        <if test="max_records != null">
+            , #{max_records}
+        </if>
+    </sql>
+</mapper>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.all580.ep.dao.PlatfromFundMapper" >
+
+
+
+
+  <select id="selectPlatfromFund" resultType="java.util.Map">
+    select * from t_platfrom_fund where core_ep_id=#{core_ep_id};
+  </select>
+  <insert id="insertPlatfromFund">
+      insert into t_platfrom_fund (core_ep_id)values (#{core_ep_id});
+  </insert>
+  <update id="exitFund">
+    update t_platfrom_fund set exit_fund=exit_fund+#{money},total_fund=total_fund+#{money} where core_ep_id=#{core_ep_id};
+  </update>
+  <update id="addFund">
+    update t_platfrom_fund set add_fund=exit_fund+#{money},total_fund=total_fund+#{money} where core_ep_id=#{core_ep_id};
+  </update>
+
+</mapper>

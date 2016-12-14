@@ -45,7 +45,7 @@
 
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
         <property name="sqlSessionFactoryBeanName" value="baseSessionFactory"/>
-        <property name="basePackage" value="com.all580.payment.dao"/>
+        <property name="basePackage" value="com.all580.payment.dao,com.all580.ep.dao"/>
     </bean>
 
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
