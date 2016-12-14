@@ -18,6 +18,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
+import javax.lang.exception.ApiException;
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
@@ -238,6 +239,9 @@ public class EpFinanceController extends BaseController {
         ParamsMapValidate.validate(params, generateBalanceSelectValidate());//
         Integer coreEpId=CommonUtil.objectParseInteger(params.get(EpConstant.EpKey.CORE_EP_ID) ) ;
         Integer balance=CommonUtil.objectParseInteger(params.get("balance")) ;
+        if(null==balance){
+            throw new ApiException("充值金额过大或过小");
+        }
         Integer balanceEpId=CommonUtil.objectParseInteger(params.get("balance_ep_id")) ;
         return epFinanceService.addBalance(balanceEpId,coreEpId,balance);
     }
