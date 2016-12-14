@@ -181,10 +181,14 @@ public class BalancePayServiceImpl implements BalancePayService {
         Assert.notNull(epId, "参数【epId】不能为空");
         Assert.notNull(coreEpId, "参数【coreEpId】不能为空");
         Result result = new Result();
-        Capital capital = new Capital();
-        capital.setEp_id(epId);
-        capital.setCore_ep_id(coreEpId);
-        capitalMapper.insertSelective(capital);
+        Capital capital = null;
+        capital= capitalMapper.selectByEpIdAndCoreEpId(epId,coreEpId);
+        if(null==capital){
+            new Capital();
+            capital.setEp_id(epId);
+            capital.setCore_ep_id(coreEpId);
+            capitalMapper.insertSelective(capital);
+        }
         result.setSuccess();
         return result;
     }
