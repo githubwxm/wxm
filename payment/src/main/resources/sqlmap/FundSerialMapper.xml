@@ -7,10 +7,10 @@
     </update>
   <insert id="insertFundSerial">
     insert into t_fund_serial(core_ep_id,ref_id,ref_type,change_money,current_total_fund,status)
-     values(#{core_ep_id},#{ref_id},#{ref_type},#{money},(select total_fund from t_platfrom_fund where core_ep_id=#{core_ep_id})+#{money});
+     values(#{core_ep_id},#{ref_id},#{ref_type},#{money},(select total_fund from t_platfrom_fund where core_ep_id=#{core_ep_id})+#{money},#{money}>0 );
   </insert>
   <select id="selectFundSerialExport" resultType="java.util.Map" >
-    select tf.id,ref_id,truncate(change_money/100,2),truncate(current_total_fund/100,2),tf.create_time,summary,
+    select tf.id,ref_id,truncate(change_money/100,2),truncate(current_total_fund/100,2),tf.ref_type,tf.create_time,summary,
      CASE WHEN tf.status >0 THEN '收入' else '支出' end as status,
     tp.`name`
     from t_fund_serial  tf join t_payment_param tp  on tf.ref_type=tp.id
@@ -18,7 +18,7 @@
      <include refid="selectFundSerial" />
   </select>
     <select id="selectFundSerial" resultType="java.util.Map" >
-        select tf.id,ref_id,change_money,current_total_fund,tf.create_time,summary,
+        select tf.id,ref_id,change_money,current_total_fund,tf.ref_type,tf.create_time,summary,
         CASE WHEN tf.status >0 THEN '收入' else '支出' end as status,
         tp.`name`
         from t_fund_serial  tf join t_payment_param tp  on tf.ref_type=tp.id
