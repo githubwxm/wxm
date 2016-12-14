@@ -7,8 +7,10 @@ import com.all580.notice.api.service.BalanceChangeSubscribeService;
 import com.framework.common.Result;
 import com.framework.common.lang.JsonUtils;
 import com.github.ltsopensource.core.json.JSONArray;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -19,6 +21,8 @@ import java.util.Map;
  * Created by wxming on 2016/11/23 0023.
  */
 @Service
+@Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+@Slf4j
 public class BalanceChangeSubscribeServiceImpl implements BalanceChangeSubscribeService {
 
     @Autowired
