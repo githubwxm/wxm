@@ -5,6 +5,8 @@ import com.all580.ep.api.conf.EpConstant;
 import com.all580.ep.api.service.EpFinanceService;
 import com.all580.ep.api.service.LogCreditService;
 import com.all580.payment.api.service.BalancePayService;
+import com.all580.payment.api.service.FundSerialService;
+import com.all580.payment.api.service.PlatfromFundService;
 import com.framework.common.BaseController;
 import com.framework.common.Result;
 import com.framework.common.util.CommonUtil;
@@ -36,6 +38,49 @@ public class EpFinanceController extends BaseController {
     @Autowired
     private BalancePayService balancePayService;
 
+    @Autowired
+    private PlatfromFundService platfromFundService;
+
+    @Autowired
+    private FundSerialService fundSerialService;
+    /**
+     * 查询平台总资金流水
+     * @return
+     */
+    @RequestMapping(value = "select_fund_serial", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<?> selectFundSerial(Integer ep_id,
+                                      String status,
+                                      String start_date,
+                                      String end_date,
+                                      String ref_id,
+                                      Integer start_record,
+                                      Integer max_records, Integer export) {
+        Assert.notNull(ep_id, "参数【ep_id】不能为空");
+        return fundSerialService.selectFundSerial( ep_id,
+                 status,
+                 start_date,
+                 end_date,
+                 ref_id,
+                 start_record,
+                 max_records,  export);
+    }//
+    @RequestMapping(value = "update_fund_serial_summary", method = RequestMethod.POST)
+    @ResponseBody
+    public Result<?> updateFundSerialSummary(@RequestBody Map<String,Object> param) {
+        ParamsMapValidate.validate(param, generateupdateFundSerialSummaryValidate());
+        return fundSerialService.updateFundSerialSummary(param);
+    }
+    /**
+     * 查询平台总资金
+     * @return
+     */
+    @RequestMapping(value = "select_platfrom_fund", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<?> selectPlatfromFund(Integer ep_id) {
+        Assert.notNull(ep_id, "参数【ep_id】不能为空");
+        return platfromFundService.selectPlatfromFund(ep_id);
+    }
 
     /**
      * 查询银行卡信息余企业信息
@@ -268,6 +313,15 @@ public class EpFinanceController extends BaseController {
                 "bank_username", //
                 "bank_name_address",
                 "bank_num",
+        }, new ValidRule[]{new ValidRule.NotNull()});
+        return rules;
+    }
+    public Map<String[], ValidRule[]> generateupdateFundSerialSummaryValidate() {
+        Map<String[], ValidRule[]> rules = new HashMap<>();
+        // 校验不为空的参数
+        rules.put(new String[]{
+                "id", //
+                "summary",
         }, new ValidRule[]{new ValidRule.NotNull()});
         return rules;
     }
