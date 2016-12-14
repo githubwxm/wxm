@@ -40,9 +40,10 @@ public class FundChangSubscribeServiceImpl implements FundChangeSubscribeService
      */
     @Override
     public Result process(String s, String content, Date date) {
-     log.error("   content:"+content);
+     log.error(" map  content:"+content);
         Map<String,Object> map = JsonUtils.obj2map(content);
-        ParamsMapValidate.validate(map, generateCreateCreditValidate());//
+        //ParamsMapValidate.validate(map, generateCreateCreditValidate());//
+        log.error(" content map  :"+map.toString());
        Integer core_ep_id = CommonUtil.objectParseInteger(map.get(EpConstant.EpKey.CORE_EP_ID));
        Integer moeny = CommonUtil.objectParseInteger( map.get("money"));
         if(moeny>0){
