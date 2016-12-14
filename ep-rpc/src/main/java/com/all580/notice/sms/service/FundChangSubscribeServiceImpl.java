@@ -45,12 +45,12 @@ public class FundChangSubscribeServiceImpl implements FundChangeSubscribeService
         log.error(" content map  :"+map.toString());
        Integer core_ep_id = CommonUtil.objectParseInteger(map.get(EpConstant.EpKey.CORE_EP_ID));
        Integer moeny = CommonUtil.objectParseInteger( map.get("money"));
+        fundSerialService.insertFundSerial(map);//必须先插入流水再修改总资金
         if(moeny>0){
             platfromFundService.addFund(moeny,core_ep_id);
         }else{
             platfromFundService.exitFund(moeny,core_ep_id);
         }
-        fundSerialService.insertFundSerial(map);
         return new Result(true);
     }
     public Map<String[], ValidRule[]> generateCreateCreditValidate() {
