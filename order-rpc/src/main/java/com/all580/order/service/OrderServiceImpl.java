@@ -80,6 +80,22 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Result<List<Map>> selectChannelBill(Integer coreEpId, Date start, Date end, Boolean settled) {
         List<Map> list = orderClearanceSerialMapper.selectChannelBill(coreEpId, start, end, settled);
+        setEpNameForList(list);
+        Result<List<Map>> result = new Result<>(true);
+        result.put(list);
+        return result;
+    }
+
+    @Override
+    public Result<List<Map>> selectChannelBillForSupplier(Integer coreEpId, Date start, Date end, Boolean settled) {
+        List<Map> list = orderClearanceSerialMapper.selectChannelBillForSupplier(coreEpId, start, end, settled);
+        setEpNameForList(list);
+        Result<List<Map>> result = new Result<>(true);
+        result.put(list);
+        return result;
+    }
+
+    private void setEpNameForList(List<Map> list) {
         if (list != null) {
             Set<Integer> epIds = new HashSet<>();
             for (Map map : list) {
@@ -87,29 +103,34 @@ public class OrderServiceImpl implements OrderService {
                 if (epId != null) {
                     epIds.add(epId);
                 }
+                epId = CommonUtil.objectParseInteger(map.get("sale_core_ep_id"));
+                if (epId != null) {
+                    epIds.add(epId);
+                }
             }
             if (epIds.size() > 0) {
                 Result<List<Map<String,Object>>> epResult = epService.getEp(epIds.toArray(new Integer[epIds.size()]), new String[]{"id", "name"});
                 if (epResult != null && epResult.isSuccess()) {
-                    setEpName(list, epResult.get(), "supplier_core_ep_id", "supplier_core_ep_name");
+                    setEpName(list, epResult.get());
                 } else {
                     log.warn("获取企业:{}名称异常:{}", JsonUtils.toJson(epIds), epResult == null ? "null" : epResult.getError());
                 }
             }
         }
-        Result<List<Map>> result = new Result<>(true);
-        result.put(list);
-        return result;
     }
 
-    private void setEpName(List<Map> list, List<Map<String, Object>> epList, String key, String putKey) {
+    private void setEpName(List<Map> list, List<Map<String, Object>> epList) {
         if (epList != null) {
             for (Map<String, Object> epMap : epList) {
                 Integer id = CommonUtil.objectParseInteger(epMap.get("id"));
                 for (Map map : list) {
-                    Integer epId = CommonUtil.objectParseInteger(map.get(key));
+                    Integer epId = CommonUtil.objectParseInteger(map.get("supplier_core_ep_id"));
                     if (epId != null && epId.equals(id)) {
-                        map.put(putKey, CommonUtil.objectParseString(epMap.get("name")));
+                        map.put("supplier_core_ep_name", CommonUtil.objectParseString(epMap.get("name")));
+                    }
+                    epId = CommonUtil.objectParseInteger(map.get("sale_core_ep_id"));
+                    if (epId != null && epId.equals(id)) {
+                        map.put("sale_core_ep_name", CommonUtil.objectParseString(epMap.get("name")));
                     }
                 }
             }

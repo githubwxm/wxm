@@ -307,8 +307,8 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         orderItemDetailMapper.updateByPrimaryKeySelective(itemDetail);
 
         // 保存冲正流水
-        ClearanceWashedSerial serial = saveWashedSerial(orderItem, orderClearanceSerial,
-                orderClearanceSerial.getQuantity(), info.getReValidateSn(), procTime);
+        ClearanceWashedSerial serial = saveWashedSerial(orderItem, order.getPayee_ep_id(),
+                orderClearanceSerial.getQuantity(), info.getReValidateSn(), info.getValidateSn(), procTime);
 
         // 获取核销人信息
         Visitor visitor = visitorMapper.selectByPrimaryKey(info.getVisitorSeqId());
@@ -371,8 +371,8 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         orderItemDetailMapper.updateByPrimaryKeySelective(itemDetail);
 
         // 保存冲正流水
-        ClearanceWashedSerial serial = saveWashedSerial(orderItem, orderClearanceSerial,
-                orderClearanceSerial.getQuantity(), info.getReValidateSn(), procTime);
+        ClearanceWashedSerial serial = saveWashedSerial(orderItem, order.getPayee_ep_id(),
+                orderClearanceSerial.getQuantity(), info.getReValidateSn(), info.getValidateSn(), procTime);
 
         // 修改已用数量
         orderItem.setUsed_quantity(orderItem.getUsed_quantity() - info.getQuantity());
@@ -562,7 +562,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         serial.setQuantity(quantity);
         serial.setSerial_no(sn);
         // 获取本次核销 供应平台商应得金额
-        int money = bookingOrderManager.getMoneyForEp(orderItem.getId(), orderItem.getSupplier_core_ep_id(),
+        int money = bookingOrderManager.getOutPriceForEp(orderItem.getId(), orderItem.getSupplier_core_ep_id(),
                 orderItem.getSupplier_core_ep_id(), serial.getDay(), serial.getQuantity());
         serial.setSupplier_money(money);
         // 获取平台商通道费率
@@ -575,19 +575,24 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         return serial;
     }
 
-    private ClearanceWashedSerial saveWashedSerial(OrderItem orderItem, OrderClearanceSerial clearanceSerial, int quantity, String sn, Date procTime) {
+    private ClearanceWashedSerial saveWashedSerial(OrderItem orderItem, int saleCoreEpId, int quantity, String sn, String clearanceSn, Date procTime) {
         ClearanceWashedSerial serial = new ClearanceWashedSerial();
         serial.setSerial_no(sn);
-        serial.setClearance_serial_no(clearanceSerial.getSerial_no());
+        serial.setClearance_serial_no(clearanceSn);
         serial.setClearance_washed_time(procTime);
         serial.setCreate_time(new Date());
         serial.setDay(orderItem.getStart());
         serial.setQuantity(quantity);
         // 获取本次核销 供应平台商应得金额
-        int money = bookingOrderManager.getMoneyForEp(orderItem.getId(), orderItem.getSupplier_core_ep_id(),
+        int money = bookingOrderManager.getOutPriceForEp(orderItem.getId(), orderItem.getSupplier_core_ep_id(),
                 orderItem.getSupplier_core_ep_id(), serial.getDay(), serial.getQuantity());
         serial.setSupplier_money(money);
-        serial.setChannel_fee(clearanceSerial.getChannel_fee());
+        // 获取平台商通道费率
+        Result<Integer> channelResult = coreEpChannelService.selectPlatfromRate(orderItem.getSupplier_core_ep_id(), saleCoreEpId);
+        if (!channelResult.isSuccess()) {
+            throw new ApiException("获取平台商通道费率失败:" + channelResult.getError());
+        }
+        serial.setChannel_fee(channelResult.get());
         clearanceWashedSerialMapper.insertSelective(serial);
         return serial;
     }

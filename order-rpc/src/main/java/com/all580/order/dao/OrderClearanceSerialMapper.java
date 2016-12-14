@@ -72,4 +72,14 @@ public interface OrderClearanceSerialMapper {
      * @return
      */
     List<Map> selectChannelBill(@Param("coreEpId") Integer coreEpId, @Param("start") Date start, @Param("end") Date end, @Param("settled") Boolean settled);
+
+    /**
+     * 查询供应商通道费账单
+     * @param coreEpId 供应平台商ID
+     * @param start 开始时间
+     * @param end 结束时间
+     * @param settled 是否已结
+     * @return
+     */
+    List<Map> selectChannelBillForSupplier(@Param("coreEpId") Integer coreEpId, @Param("start") Date start, @Param("end") Date end, @Param("settled") Boolean settled);
 }

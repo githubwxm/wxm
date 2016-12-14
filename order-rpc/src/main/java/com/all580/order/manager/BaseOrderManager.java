@@ -314,14 +314,15 @@ public class BaseOrderManager {
      * @param consumeQuantity 消费张数
      * @return
      */
-    public int getMoneyForEp(int orderItemId, int epId, int coreEpId, Date day, int consumeQuantity) {
+    public int getOutPriceForEp(int orderItemId, int epId, int coreEpId, Date day, int consumeQuantity) {
         int money = 0;
         OrderItemAccount account = orderItemAccountMapper.selectByOrderItemAndEp(orderItemId, epId, coreEpId);
         if (account != null && day != null) {
             JSONArray daysData = JSONArray.parseArray(account.getData());
             // 获取核销日期的单价利润
             JSONObject dayData = getAccountDataByDay(daysData, DateFormatUtils.parseDateToDatetimeString(day));
-            money = getMoney(consumeQuantity, dayData);
+            int outPrice = dayData.getIntValue("outPrice");
+            money = consumeQuantity * outPrice;
         }
         return money;
     }

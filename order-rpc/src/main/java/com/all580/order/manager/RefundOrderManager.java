@@ -2,6 +2,7 @@ package com.all580.order.manager;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.all580.ep.api.service.CoreEpChannelService;
 import com.all580.order.api.OrderConstant;
 import com.all580.order.dao.*;
 import com.all580.order.entity.*;
@@ -65,6 +66,8 @@ public class RefundOrderManager extends BaseOrderManager {
     private VoucherRPCService voucherRPCService;
     @Autowired
     private ThirdPayService thirdPayService;
+    @Autowired
+    private CoreEpChannelService coreEpChannelService;
     @Autowired
     private SmsManager smsManager;
 
@@ -388,31 +391,36 @@ public class RefundOrderManager extends BaseOrderManager {
 
     /**
      * 生成退订订单
-     * @param itemId 子订单ID
+     * @param item 子订单
      * @param daysList 每天退票数
      * @param quantity 总退票数
      * @param money 退支付金额
      * @return
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public RefundOrder generateRefundOrder(int itemId, List daysList, int quantity, int money, int fee, String cause,
-                                           Integer auditTicket, Integer auditMoney) {
-        return generateRefundOrder(itemId, daysList, quantity, money, fee, cause, 0, auditTicket, auditMoney);
+    public RefundOrder generateRefundOrder(OrderItem item, List daysList, int quantity, int money, int fee, String cause,
+                                           Integer auditTicket, Integer auditMoney, int saleCoreEpId) {
+        return generateRefundOrder(item, daysList, quantity, money, fee, cause, 0, auditTicket, auditMoney, saleCoreEpId);
     }
 
     /**
      * 生成退订订单
-     * @param itemId 子订单ID
+     * @param item 子订单
      * @param daysList 每天退票数
      * @param quantity 总退票数
      * @param money 退支付金额
      * @return
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public RefundOrder generateRefundOrder(int itemId, List daysList, int quantity, int money, int fee, String cause,
-                                           Integer groupId, Integer auditTicket, Integer auditMoney) {
+    public RefundOrder generateRefundOrder(OrderItem item, List daysList, int quantity, int money, int fee, String cause,
+                                           Integer groupId, Integer auditTicket, Integer auditMoney, int saleCoreEpId) {
+        // 获取平台商通道费率
+        Result<Integer> channelResult = coreEpChannelService.selectPlatfromRate(item.getSupplier_core_ep_id(), saleCoreEpId);
+        if (!channelResult.isSuccess()) {
+            throw new ApiException("获取平台商通道费率失败:" + channelResult.getError());
+        }
         RefundOrder refundOrder = new RefundOrder();
-        refundOrder.setOrder_item_id(itemId);
+        refundOrder.setOrder_item_id(item.getId());
         refundOrder.setNumber(UUIDGenerator.generateUUID());
         refundOrder.setQuantity(quantity);
         refundOrder.setData(JsonUtils.toJson(daysList));
