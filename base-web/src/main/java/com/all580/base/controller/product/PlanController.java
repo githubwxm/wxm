@@ -109,6 +109,7 @@ public class PlanController extends BaseController {
             @RequestParam(value = "ticket_dict", required = false) Integer ticketDict,
             @RequestParam(value = "evl_level", required = false) Integer evlLevel,
             @RequestParam(value = "types", required = false) String types,
+            @RequestParam(value = "from", required = false) String from,
             @RequestParam(value = "sort", required = false) Integer sort,
             @RequestParam(value = "record_start", required = false) Integer start,
             @RequestParam(value = "record_count", required = false) Integer count) {
@@ -129,7 +130,7 @@ public class PlanController extends BaseController {
             if (typeArray != null)
             typeList = Arrays.asList(typeArray);
         }
-        return productSalesPlanService.selectCanSaleSubProduct(epId,productName,productSubName,province,city,area,ticketFlag,payType,ticketDict,evlLevel, typeList, sortStr,start,count);
+        return productSalesPlanService.selectCanSaleSubProduct(epId,productName,productSubName,province,city,area,ticketFlag,payType,ticketDict,evlLevel, typeList, from, sortStr,start,count);
     }
 
     /**
