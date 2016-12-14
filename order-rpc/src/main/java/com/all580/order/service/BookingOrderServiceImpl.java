@@ -97,7 +97,6 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         String remark = CommonUtil.objectParseString(params.get("remark"));
         int totalSalePrice = 0;
         int totalPayPrice = 0;
-        int totalPayShopPrice = 0;
 
         // 判断销售商状态是否为已冻结
         if (!bookingOrderManager.isEpStatus(epService.getEpStatus(buyEpId), EpConstant.EpStatus.ACTIVE)) {

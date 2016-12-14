@@ -13,13 +13,11 @@ import com.all580.order.entity.OrderItemDetail;
 import com.all580.order.entity.RefundOrder;
 import com.all580.order.manager.RefundOrderManager;
 import com.all580.order.manager.SmsManager;
-import com.all580.payment.api.conf.PaymentConstant;
 import com.all580.product.api.consts.ProductConstants;
 import com.all580.product.api.service.ProductSalesPlanRPCService;
 import com.framework.common.Result;
 import com.framework.common.distributed.lock.DistributedLockTemplate;
 import com.framework.common.distributed.lock.DistributedReentrantLock;
-import com.framework.common.lang.JsonUtils;
 import com.framework.common.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.ArrayUtils;
@@ -152,7 +150,7 @@ public class RefundOrderServiceImpl implements RefundOrderService {
                 auditMoney =  getAuditConfig(orderItem.getPro_sub_id(), order.getPayee_ep_id())[1];
             }
             // 创建退订订单
-            RefundOrder refundOrder = refundOrderManager.generateRefundOrder(orderItem.getId(), daysList, quantity, money, fee, cause, auditTicket, auditMoney);
+            RefundOrder refundOrder = refundOrderManager.generateRefundOrder(orderItem, daysList, quantity, money, fee, cause, auditTicket, auditMoney, order.getPayee_ep_id());
 
             // 判断余票 并修改明细退票数量 创建游客退票信息
             int tmpQuantity = refundOrderManager.canRefundForDays(daysList, detailList, refundOrder.getOrder_item_id(), refundOrder.getId());
@@ -284,7 +282,7 @@ public class RefundOrderServiceImpl implements RefundOrderService {
                 auditMoney =  getAuditConfig(orderItem.getPro_sub_id(), order.getPayee_ep_id())[1];
             }
             // 创建退订订单
-            RefundOrder refundOrder = refundOrderManager.generateRefundOrder(orderItem.getId(), daysList, refundQuantity, money, fee, cause, orderItem.getGroup_id(), auditTicket, auditMoney);
+            RefundOrder refundOrder = refundOrderManager.generateRefundOrder(orderItem, daysList, refundQuantity, money, fee, cause, orderItem.getGroup_id(), auditTicket, auditMoney, order.getPayee_ep_id());
 
             // 修改明细退票数量
             orderItemDetailMapper.refundRemain(orderItem.getId());

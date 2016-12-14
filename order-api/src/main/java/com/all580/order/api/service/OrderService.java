@@ -85,6 +85,8 @@ public interface OrderService {
      */
     Result<List<Map>> selectChannelBill(Integer coreEpId, Date start, Date end, Boolean settled);
 
+    Result<List<Map>> selectChannelBillForSupplier(Integer coreEpId, Date start, Date end, Boolean settled);
+
     /**
      * 设置某月账单为已结算
      * @param params
