@@ -35,8 +35,8 @@
         <if test="status != null  and status != ''">
             and   tf.status= #{status}
         </if>
-        <if test="start_date != null and end_date != null ">
-            and create_time between  #{start_date} and #{end_date}
+        <if test="start_date != null and end_date != null and start_date!='' ">
+            and tf.create_time between  #{start_date} and #{end_date}
         </if>
         <if test="ref_id != null  and ref_id != ''">
             and   ref_id=#{ref_id}
