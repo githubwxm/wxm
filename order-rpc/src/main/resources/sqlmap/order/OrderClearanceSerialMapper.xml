@@ -201,7 +201,6 @@
           a.clearance_month,
           SUM(a.total_money) bill_money,
           TRUNCATE(SUM(a.total_fee), 0) fee,
-          a.channel_fee,
           a.supplier_core_ep_id,
           a.sale_core_ep_id,
           IFNULL(tcb.settled,0) settled
