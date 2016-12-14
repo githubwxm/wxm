@@ -30,7 +30,6 @@ public class FundChangSubscribeServiceImpl implements FundChangeSubscribeService
     private FundSerialService fundSerialService;
     @Autowired
     private PlatfromFundService platfromFundService;
-
     /**
      *
      * @param s
@@ -41,7 +40,7 @@ public class FundChangSubscribeServiceImpl implements FundChangeSubscribeService
     @Override
     public Result process(String s, String content, Date date) {
      log.error(" map  content:"+content);
-        Map<String,Object> map = JsonUtils.obj2map(content);
+        Map<String,Object> map = JsonUtils.json2Map(content);
         //ParamsMapValidate.validate(map, generateCreateCreditValidate());//
         log.error(" content map  :"+map.toString());
        Integer core_ep_id = CommonUtil.objectParseInteger(map.get(EpConstant.EpKey.CORE_EP_ID));
