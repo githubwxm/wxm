@@ -1,5 +1,6 @@
 package com.all580.order.service;
 
+import com.all580.ep.api.service.CoreEpChannelService;
 import com.all580.order.api.OrderConstant;
 import com.all580.order.api.model.*;
 import com.all580.order.api.service.TicketCallbackService;
@@ -60,6 +61,9 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
     private BookingOrderManager bookingOrderManager;
     @Autowired
     private SmsManager smsManager;
+
+    @Autowired
+    private CoreEpChannelService coreEpChannelService;
 
     @Override
     public Result sendTicket(Long orderSn, List<SendTicketInfo> infoList, Date procTime) {
@@ -157,20 +161,19 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
             return new Result(false, "核销流水:" + info.getValidateSn() + "重复核销");
         }
 
+        Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
+        if (order == null) {
+            return new Result(false, "订单不存在");
+        }
+
+
         // 目前景点只有一天
         OrderItemDetail itemDetail = detailList.get(0);
         itemDetail.setUsed_quantity(itemDetail.getUsed_quantity() + info.getConsumeQuantity());
         orderItemDetailMapper.updateByPrimaryKeySelective(itemDetail);
 
         // 保存核销流水
-        OrderClearanceSerial serial = new OrderClearanceSerial();
-        serial.setOrder_item_id(orderItem.getId());
-        serial.setClearance_time(procTime);
-        serial.setCreate_time(new Date());
-        serial.setDay(orderItem.getStart());
-        serial.setQuantity(info.getConsumeQuantity());
-        serial.setSerial_no(info.getValidateSn());
-        orderClearanceSerialMapper.insertSelective(serial);
+        OrderClearanceSerial serial = saveClearanceSerial(orderItem, order.getPayee_ep_id(), info.getConsumeQuantity(), info.getValidateSn(), procTime);
 
         // 获取核销人信息
         Visitor visitor = visitorMapper.selectByPrimaryKey(info.getVisitorSeqId());
@@ -225,20 +228,18 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
             return new Result(false, "该订单不是团队订单");
         }
 
+        Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
+        if (order == null) {
+            return new Result(false, "订单不存在");
+        }
+
         // 目前景点只有一天
         OrderItemDetail itemDetail = detailList.get(0);
         itemDetail.setUsed_quantity(itemDetail.getUsed_quantity() + info.getConsumeQuantity());
         orderItemDetailMapper.updateByPrimaryKeySelective(itemDetail);
 
         // 保存核销流水
-        OrderClearanceSerial serial = new OrderClearanceSerial();
-        serial.setOrder_item_id(orderItem.getId());
-        serial.setClearance_time(procTime);
-        serial.setCreate_time(new Date());
-        serial.setDay(orderItem.getStart());
-        serial.setQuantity(info.getConsumeQuantity());
-        serial.setSerial_no(info.getValidateSn());
-        orderClearanceSerialMapper.insertSelective(serial);
+        OrderClearanceSerial serial = saveClearanceSerial(orderItem, order.getPayee_ep_id(), info.getConsumeQuantity(), info.getValidateSn(), procTime);
 
         // 保存核销明细
         List<String> sids = info.getSids();
@@ -295,20 +296,19 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
             return new Result(false, "反核销流水:" + info.getReValidateSn() + "重复冲正");
         }
 
+        Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
+        if (order == null) {
+            return new Result(false, "订单不存在");
+        }
+
         // 目前景点只有一天
         OrderItemDetail itemDetail = detailList.get(0);
         itemDetail.setUsed_quantity(itemDetail.getUsed_quantity() - orderClearanceSerial.getQuantity());
         orderItemDetailMapper.updateByPrimaryKeySelective(itemDetail);
 
         // 保存冲正流水
-        ClearanceWashedSerial serial = new ClearanceWashedSerial();
-        serial.setSerial_no(info.getReValidateSn());
-        serial.setClearance_serial_no(info.getValidateSn());
-        serial.setClearance_washed_time(procTime);
-        serial.setCreate_time(new Date());
-        serial.setDay(orderItem.getStart());
-        serial.setQuantity(orderClearanceSerial.getQuantity());
-        clearanceWashedSerialMapper.insertSelective(serial);
+        ClearanceWashedSerial serial = saveWashedSerial(orderItem, orderClearanceSerial,
+                orderClearanceSerial.getQuantity(), info.getReValidateSn(), procTime);
 
         // 获取核销人信息
         Visitor visitor = visitorMapper.selectByPrimaryKey(info.getVisitorSeqId());
@@ -360,20 +360,19 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
             return new Result(false, "该订单不是团队订单");
         }
 
+        Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
+        if (order == null) {
+            return new Result(false, "订单不存在");
+        }
+
         // 目前景点只有一天
         OrderItemDetail itemDetail = detailList.get(0);
         itemDetail.setUsed_quantity(itemDetail.getUsed_quantity() - info.getQuantity());
         orderItemDetailMapper.updateByPrimaryKeySelective(itemDetail);
 
         // 保存冲正流水
-        ClearanceWashedSerial serial = new ClearanceWashedSerial();
-        serial.setSerial_no(info.getReValidateSn());
-        serial.setClearance_serial_no(info.getValidateSn());
-        serial.setClearance_washed_time(procTime);
-        serial.setCreate_time(new Date());
-        serial.setDay(orderItem.getStart());
-        serial.setQuantity(info.getQuantity());
-        clearanceWashedSerialMapper.insertSelective(serial);
+        ClearanceWashedSerial serial = saveWashedSerial(orderItem, orderClearanceSerial,
+                orderClearanceSerial.getQuantity(), info.getReValidateSn(), procTime);
 
         // 修改已用数量
         orderItem.setUsed_quantity(orderItem.getUsed_quantity() - info.getQuantity());
@@ -552,5 +551,44 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
 
         refundOrderManager.syncRefundOrderAuditRefuse(refundOrder.getId());
         return new Result(true);
+    }
+
+    private OrderClearanceSerial saveClearanceSerial(OrderItem orderItem, int saleCoreEpId, int quantity, String sn, Date procTime) {
+        OrderClearanceSerial serial = new OrderClearanceSerial();
+        serial.setOrder_item_id(orderItem.getId());
+        serial.setClearance_time(procTime);
+        serial.setCreate_time(new Date());
+        serial.setDay(orderItem.getStart());
+        serial.setQuantity(quantity);
+        serial.setSerial_no(sn);
+        // 获取本次核销 供应平台商应得金额
+        int money = bookingOrderManager.getMoneyForEp(orderItem.getId(), orderItem.getSupplier_core_ep_id(),
+                orderItem.getSupplier_core_ep_id(), serial.getDay(), serial.getQuantity());
+        serial.setSupplier_money(money);
+        // 获取平台商通道费率
+        Result<Integer> channelResult = coreEpChannelService.selectPlatfromRate(orderItem.getSupplier_core_ep_id(), saleCoreEpId);
+        if (!channelResult.isSuccess()) {
+            throw new ApiException("获取平台商通道费率失败:" + channelResult.getError());
+        }
+        serial.setChannel_fee(channelResult.get());
+        orderClearanceSerialMapper.insertSelective(serial);
+        return serial;
+    }
+
+    private ClearanceWashedSerial saveWashedSerial(OrderItem orderItem, OrderClearanceSerial clearanceSerial, int quantity, String sn, Date procTime) {
+        ClearanceWashedSerial serial = new ClearanceWashedSerial();
+        serial.setSerial_no(sn);
+        serial.setClearance_serial_no(clearanceSerial.getSerial_no());
+        serial.setClearance_washed_time(procTime);
+        serial.setCreate_time(new Date());
+        serial.setDay(orderItem.getStart());
+        serial.setQuantity(quantity);
+        // 获取本次核销 供应平台商应得金额
+        int money = bookingOrderManager.getMoneyForEp(orderItem.getId(), orderItem.getSupplier_core_ep_id(),
+                orderItem.getSupplier_core_ep_id(), serial.getDay(), serial.getQuantity());
+        serial.setSupplier_money(money);
+        serial.setChannel_fee(clearanceSerial.getChannel_fee());
+        clearanceWashedSerialMapper.insertSelective(serial);
+        return serial;
     }
 }

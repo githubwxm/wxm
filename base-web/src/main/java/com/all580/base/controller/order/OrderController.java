@@ -173,6 +173,14 @@ public class OrderController extends BaseController {
                 dates[0], dates[1], order_status, order_item_status, phone, order_item_number, self, product_sub_number, record_start, record_count);
     }
 
+    @RequestMapping(value = "list/channel/bill")
+    @ResponseBody
+    public Result<?> listChannelBill(Integer supplier_core_ep_id, String start, String end, Boolean settled) throws Exception {
+        Date start_time = start == null ? null : DateFormatUtils.parseString(DateFormatUtils.DATE_TIME_FORMAT, start);
+        Date end_time = end == null ? null : DateFormatUtils.parseString(DateFormatUtils.DATE_TIME_FORMAT, end);
+        return orderService.selectChannelBill(supplier_core_ep_id, start_time, end_time, settled);
+    }
+
     private Date[] checkDate(String start_time, String end_time) {
         Date[] result = new Date[]{null, null};
         try {

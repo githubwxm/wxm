@@ -346,4 +346,32 @@ public class ProductController extends BaseController {
         if (auditSettings == null || auditSettings.isEmpty()) throw new ApiException("参数缺失");
         return productService.updateAuditSettingsBatch(auditSettings);
     }
+
+    /**
+     * 已分销产品列表
+     * @param epId
+     * @param subEpId
+     * @return
+     */
+    @RequestMapping(value = "ep_distributed/list")
+    @ResponseBody
+    public Result<List<Map<String, Object>>> searchDistributedProduct(
+            @RequestParam("ep_id") Integer epId,
+            @RequestParam("sub_ep_id") Integer subEpId) {
+        return productDistributionService.searchAlreadyDistributionProductSubEp(subEpId, epId);
+    }
+
+    /**
+     * 未分销产品列表
+     * @param epId
+     * @param subEpId
+     * @return
+     */
+    @RequestMapping(value = "ep_distribute/list")
+    @ResponseBody
+    public Result<List<Map<String, Object>>> searchDistributeProduct(
+            @RequestParam("ep_id") Integer epId,
+            @RequestParam("sub_ep_id") Integer subEpId) {
+        return productDistributionService.searchNotDistributionProductSubEp(subEpId, epId);
+    }
 }

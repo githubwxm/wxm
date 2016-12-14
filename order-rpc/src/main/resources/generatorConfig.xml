@@ -257,5 +257,16 @@
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
             <columnOverride column="update_time" javaType="java.lang.String"/>
         </table>
+        <table tableName="t_channel_bill"
+               enableCountByExample="false"
+               enableUpdateByExample="false"
+               enableDeleteByExample="false"
+               enableSelectByExample="false"
+               selectByExampleQueryId="false"
+               delimitAllColumns="true"
+               domainObjectName="ChannelBill">
+            <property name="useActualColumnNames" value="true"/>
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+        </table>
     </context>
 </generatorConfiguration>

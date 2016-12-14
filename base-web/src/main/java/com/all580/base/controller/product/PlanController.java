@@ -194,14 +194,20 @@ public class PlanController extends BaseController {
     @RequestMapping(value = "on_sale/platform_ep", method = RequestMethod.POST)
     @ResponseBody
     public Result productSubsDistributionPlatformEp(@RequestBody Map params) {
-        return productService.productOnSaleProductBatch(initPlatformPlanSalesParams(params));
+        return productService.productOnSaleProductBatch(initPlanSalesParams(CommonUtil.objectParseInteger(params.get("platform_ep_id")), CommonUtil.objectParseInteger(params.get("ep_id")),  (List<Map<String, Object>>) params.get("saled_array")));
     }
 
-    private List<Map<String, Object>> initPlatformPlanSalesParams(Map params) {
-        Map<String, Object> ep = epService.selectId(CommonUtil.objectParseInteger(params.get("platform_ep_id"))).get();
-        List<Map<String, Object>> onSales = (List<Map<String, Object>>) params.get("saled_array");
+    @RequestMapping(value = "on_sale/products/ep", method = RequestMethod.POST)
+    @ResponseBody
+    public Result productSubsDistributionEp(@RequestBody Map params) {
+        return productService.productOnSaleProductBatch(initPlanSalesParams(CommonUtil.objectParseInteger(params.get("sale_ep_id")), CommonUtil.objectParseInteger(params.get("ep_id")),  (List<Map<String, Object>>) params.get("saled_array")));
+    }
+
+    private List<Map<String, Object>> initPlanSalesParams(Integer epId, Integer saleEpId, List<Map<String, Object>> saledArray) {
+        Map<String, Object> ep = epService.selectId(epId).get();
+        List<Map<String, Object>> onSales = saledArray;
         for (Map<String, Object> planSale : onSales) {
-            planSale.put("sale_ep_id", params.get("ep_id"));
+            planSale.put("sale_ep_id", saleEpId);
             planSale.put("ep_id", ep.get("id"));
             planSale.put("name", ep.get("name"));
             // planSale内有product_sub_id
@@ -214,13 +220,16 @@ public class PlanController extends BaseController {
         return onSales;
     }
 
-    private List<Map<String, Object>> initPlatformPlanOffSalesParams(Map params) {
-        List<String> batches = (List<String>) params.get("off_sale_array");
+//    private List<Map<String, Object>> initPlanOffSalesParams(Map params) {
+    private List<Map<String, Object>> initPlanOffSalesParams(List<String> batches, Integer saleEpId, Integer epId) {
+//        List<String> batches = (List<String>) params.get("off_sale_array");
         List<Map<String, Object>> offSales = new ArrayList<>();
         for (String batch_id : batches) {
             Map<String, Object> ep = new HashMap<>();
-            ep.put("sale_ep_id", params.get("ep_id"));
-            ep.put("ep_id", params.get("platform_ep_id"));
+//            ep.put("sale_ep_id", params.get("ep_id"));
+            ep.put("sale_ep_id", saleEpId);
+//            ep.put("ep_id", params.get("platform_ep_id"));
+            ep.put("ep_id", epId);
             ep.put("batch_id", CommonUtil.objectParseInteger(batch_id));
             offSales.add(ep);
         }
@@ -235,7 +244,15 @@ public class PlanController extends BaseController {
     @RequestMapping(value = "off_sale/platform_ep", method = RequestMethod.POST)
     @ResponseBody
     public Result productSubsOffDistributionPlatformEp(@RequestBody Map params) {
-        return productService.productOffSaleProductBatch(initPlatformPlanOffSalesParams(params));
+        List<String> batchIds = (List<String>) params.get("off_sale_array");
+        return productService.productOffSaleProductBatch(initPlanOffSalesParams(batchIds, CommonUtil.objectParseInteger(params.get("ep_id")), CommonUtil.objectParseInteger(params.get("platform_ep_id"))));
+    }
+
+    @RequestMapping(value = "off_sale/products/ep", method = RequestMethod.POST)
+    @ResponseBody
+    public Result productSubsOffDistributionEp(@RequestBody Map params) {
+        List<String> batchIds = (List<String>) params.get("off_sale_array");
+        return productService.productOffSaleProductBatch(initPlanOffSalesParams(batchIds, CommonUtil.objectParseInteger(params.get("ep_id")), CommonUtil.objectParseInteger(params.get("sub_ep_id"))));
     }
 
     private List<Map> updateEpOnsalesParams(Map params){
