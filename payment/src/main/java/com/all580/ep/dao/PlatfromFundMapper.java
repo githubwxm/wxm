@@ -1,6 +1,5 @@
 package com.all580.ep.dao;
 
-import com.all580.ep.entity.PlatfromFund;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Map;
