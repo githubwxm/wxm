@@ -13,6 +13,7 @@ import com.all580.order.manager.SmsManager;
 import com.all580.payment.api.conf.PaymentConstant;
 import com.all580.payment.api.model.BalanceChangeInfo;
 import com.all580.payment.api.service.ThirdPayService;
+import com.all580.product.api.consts.ProductConstants;
 import com.all580.product.api.model.EpSalesInfo;
 import com.all580.product.api.model.ProductSalesDayInfo;
 import com.all580.product.api.model.ProductSalesInfo;
@@ -94,7 +95,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         Integer coreEpId = CommonUtil.objectParseInteger(params.get(EpConstant.EpKey.CORE_EP_ID));
         Integer from = CommonUtil.objectParseInteger(params.get("from"));
         String remark = CommonUtil.objectParseString(params.get("remark"));
-        int totalPrice = 0;
+        int totalSalePrice = 0;
         int totalPayPrice = 0;
         int totalPayShopPrice = 0;
 
@@ -177,13 +178,16 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             List<List<EpSalesInfo>> allDaysSales = salesInfo.getSales();
 
             // 子订单总进货价
-            int[] priceArray = bookingOrderManager.calcSalesPrice(allDaysSales, buyEpId, quantity, salesInfo.getPay_type(), from);
-            totalPrice += priceArray[0];
-            totalPayPrice += priceArray[1];
-            totalPayShopPrice += priceArray[2];
+            int[] priceArray = bookingOrderManager.calcSalesPrice(allDaysSales, buyEpId, quantity, from);
+            int salePrice = priceArray[0]; // 销售价
+            totalSalePrice += salePrice;
+            // 只计算预付的,到付不计算在内
+            if (salesInfo.getPay_type() == ProductConstants.PayType.PREPAY) {
+                totalPayPrice += salePrice;
+            }
 
             // 创建子订单
-            OrderItem orderItem = bookingOrderManager.generateItem(salesInfo, dayInfoList.get(dayInfoList.size() - 1).getEnd_time(), priceArray[0], bookingDate, days, order.getId(), quantity, productSubId, null);
+            OrderItem orderItem = bookingOrderManager.generateItem(salesInfo, dayInfoList.get(dayInfoList.size() - 1).getEnd_time(), salePrice, bookingDate, days, order.getId(), quantity, productSubId, null);
 
             List<OrderItemDetail> detailList = new ArrayList<>();
             List<Visitor> visitorList = new ArrayList<>();
@@ -245,8 +249,8 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         }
 
         // 更新订单金额
-        order.setPay_amount(from == OrderConstant.FromType.TRUST ? totalPayShopPrice : totalPayPrice);
-        order.setSale_amount(totalPrice);
+        order.setPay_amount(totalPayPrice);
+        order.setSale_amount(totalSalePrice);
 
         // 更新审核时间
         if (order.getStatus() != OrderConstant.OrderStatus.AUDIT_WAIT && order.getAudit_time() == null) {
@@ -509,9 +513,8 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         Integer from = CommonUtil.objectParseInteger(params.get("from"));
         String remark = CommonUtil.objectParseString(params.get("remark"));
         Integer groupId = CommonUtil.objectParseInteger(params.get("group_id"));
-        int totalPrice = 0;
+        int totalSalePrice = 0;
         int totalPayPrice = 0;
-        int totalPayShopPrice = 0;
 
         // 验证团队
         Group group = groupMapper.selectByPrimaryKey(groupId);
@@ -634,13 +637,16 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             List<List<EpSalesInfo>> allDaysSales = salesInfo.getSales();
 
             // 计算分销价格
-            int[] priceArray = bookingOrderManager.calcSalesPrice(allDaysSales, buyEpId, quantity, salesInfo.getPay_type(), from);
-            totalPrice += priceArray[0];
-            totalPayPrice += priceArray[1];
-            totalPayShopPrice += priceArray[2];
+            int[] priceArray = bookingOrderManager.calcSalesPrice(allDaysSales, buyEpId, quantity, from);
+            int salePrice = priceArray[0]; // 销售价
+            totalSalePrice += salePrice;
+            // 只计算预付的,到付不计算在内
+            if (salesInfo.getPay_type() == ProductConstants.PayType.PREPAY) {
+                totalPayPrice += salePrice;
+            }
 
             // 创建子订单
-            OrderItem orderItem = bookingOrderManager.generateItem(salesInfo, dayInfoList.get(dayInfoList.size() - 1).getEnd_time(), priceArray[0], bookingDate, days, order.getId(), quantity, productSubId, groupId);
+            OrderItem orderItem = bookingOrderManager.generateItem(salesInfo, dayInfoList.get(dayInfoList.size() - 1).getEnd_time(), salePrice, bookingDate, days, order.getId(), quantity, productSubId, groupId);
 
             List<OrderItemDetail> detailList = new ArrayList<>();
             List<Visitor> visitorList = new ArrayList<>();
@@ -711,8 +717,8 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         }
 
         // 更新订单金额
-        order.setPay_amount(from == OrderConstant.FromType.TRUST ? totalPayShopPrice : totalPayPrice);
-        order.setSale_amount(totalPrice);
+        order.setPay_amount(totalPayPrice);
+        order.setSale_amount(totalSalePrice);
 
         // 更新审核时间
         if (order.getStatus() != OrderConstant.OrderStatus.AUDIT_WAIT && order.getAudit_time() == null) {

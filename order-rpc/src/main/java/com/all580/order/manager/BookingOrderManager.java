@@ -242,7 +242,7 @@ public class BookingOrderManager extends BaseOrderManager {
         orderItem.setNumber(UUIDGenerator.generateUUID());
         orderItem.setStart(bookingDate);
         orderItem.setEnd(endTime);
-        orderItem.setSale_amount(saleAmount); // 进货价
+        orderItem.setSale_amount(saleAmount); // 销售价
         orderItem.setDays(days);
         orderItem.setGroup_id(groupId == null ? 0 : groupId); // 散客为0
         orderItem.setOrder_id(orderId);
@@ -426,27 +426,22 @@ public class BookingOrderManager extends BaseOrderManager {
      * @param allDaysSales
      * @param buyEpId
      * @param quantity
-     * @param payType
      * @param from
      * @return
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public int[] calcSalesPrice(List<List<EpSalesInfo>> allDaysSales, int buyEpId, int quantity, int payType, int from) {
-        int saleAmount = 0;
-        int totalPayPrice = 0;
-        int totalPayShopPrice = 0;
+    public int[] calcSalesPrice(List<List<EpSalesInfo>> allDaysSales, int buyEpId, int quantity, int from) {
+        int salePrice = 0;
+        int buyingPrice = 0;
+        int shopPrice = 0;
         for (List<EpSalesInfo> daySales : allDaysSales) {
             // 获取销售商价格
             EpSalesInfo info = getBuyingPrice(daySales, buyEpId);
             if (info == null) {
                 throw new ApiException("非法购买:该销售商未销售本产品");
             }
-            saleAmount += info.getPrice() * quantity;
-            // 只计算预付的,到付不计算在内
-            if (payType == ProductConstants.PayType.PREPAY) {
-                totalPayPrice += info.getPrice() * quantity; // 计算进货价
-                totalPayShopPrice += (info.getShop_price() == null ? 0 : info.getShop_price()) * quantity; // 计算门市价
-            }
+            buyingPrice += info.getPrice() * quantity; // 计算进货价
+            shopPrice += (info.getShop_price() == null ? 0 : info.getShop_price()) * quantity; // 计算门市价
 
             EpSalesInfo self = new EpSalesInfo();
             self.setSale_ep_id(buyEpId);
@@ -457,8 +452,9 @@ public class BookingOrderManager extends BaseOrderManager {
                 self.setPrice(0);
             }
             daySales.add(self);
+            salePrice += self.getPrice() * quantity;
         }
-        return new int[]{saleAmount, totalPayPrice, totalPayShopPrice};
+        return new int[]{salePrice, buyingPrice, shopPrice};
     }
 
     /**
