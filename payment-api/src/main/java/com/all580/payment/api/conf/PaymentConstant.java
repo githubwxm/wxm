@@ -10,6 +10,7 @@ import java.util.List;
  */
 public class PaymentConstant {
     public static final String EVENT_NAME_BALANCE_CHANGE = "mnsBalanceChangeAction"; // 事件名称-余额变更
+    public static final String EVENT_NAME_FUND_CHANGE="mnsFundChangeAction";
     private static List<Integer> list = new ArrayList<Integer>();
     static{
         list.add(BalanceChangeType.THIRD_PAY_FOR_ORDER);
@@ -39,6 +40,8 @@ public class PaymentConstant {
         public static final Integer REVERSE_SPLIT = 7005; // 核销冲正分账
         public static final Integer REFUND_PAY = 7006; // 退票分账
         public static final Integer MANUAL_CHANGE_BALANCE = 7007; // 余额调整
+        public static final Integer MANUAL_CHANGE_BALANCE_ADD = 7009; // 余额充值
+        public static final Integer MANUAL_CHANGE_BALANCE_EXIT = 7010; // 余额提现
         public static final Integer THIRD_PAY_FOR_ORDER = 7008; // 下单第三方支付
     }
 

@@ -13,6 +13,7 @@ import com.all580.notice.api.conf.SmsType;
 import com.all580.notice.api.service.SmsService;
 import com.all580.payment.api.conf.PaymentConstant;
 import com.all580.payment.api.service.BalancePayService;
+import com.all580.payment.api.service.PlatfromFundService;
 import com.all580.payment.api.service.EpPaymentConfService;
 import com.all580.product.api.service.PlanGroupRPCService;
 import com.framework.common.Result;
@@ -61,6 +62,8 @@ public class EpServiceImpl implements EpService {
     @Autowired
     private SynchronizeDataManager synchronizeDataManager;
 
+    @Autowired
+    private PlatfromFundService platfromFundService;
     @Autowired
     private CoreEpAccessMapper coreEpAccessMapper;//ddd
     @Autowired
@@ -151,6 +154,7 @@ public class EpServiceImpl implements EpService {
 
             try {
                 epMapper.updateCoreEpId(map);//TODO  所属平台商企业id为平台商时是否指定
+                platfromFundService.insertPlatfromFund(coreEpId);//添加总资金账户
                 coreEpAccessService.create(accessMap);
                 //epPaymentConfService.create(map);//添加支付方式
                 balancePayService.createBalanceAccount(coreEpId, coreEpId);//添加余额d

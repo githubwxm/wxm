@@ -17,6 +17,10 @@
 
 	<dubbo:reference id="planGroupService"
 					 interface="com.all580.product.api.service.PlanGroupRPCService"/>
+	<dubbo:reference id="platfromFundService"
+					 interface="com.all580.payment.api.service.PlatfromFundService"/>
+	<dubbo:reference id="fundSerialService"
+					 interface="com.all580.payment.api.service.FundSerialService"/>
 
 
 </beans>

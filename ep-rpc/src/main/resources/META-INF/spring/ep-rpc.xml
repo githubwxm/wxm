@@ -53,4 +53,6 @@
 
 	<bean id="mnsBalanceChangeAction"  class="com.all580.ep.service.BalanceChangeSubscribeServiceImpl" />
 	<dubbo:service interface="com.all580.notice.api.service.BalanceChangeSubscribeService" ref="mnsBalanceChangeAction"/>
+	<bean id="mnsFundChangeAction"  class="com.all580.notice.sms.service.FundChangSubscribeServiceImpl" />
+	<dubbo:service interface="com.all580.notice.api.service.FundChangeSubscribeService" ref="mnsFundChangeAction"/>
 </beans>

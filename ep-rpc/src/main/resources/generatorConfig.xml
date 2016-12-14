@@ -21,7 +21,7 @@
                         userId="root"
                         password="abcd1234"/>
 
-        <javaModelGenerator targetPackage="com.all580.role.entity"
+        <javaModelGenerator targetPackage="com.all580.ep.entity"
                             targetProject="D:\java\3.0\base\ep-rpc\src\main\java">
             <property name="enableSubPackages" value="true"/>
             <property name="trimStrings" value="true"/>
@@ -32,14 +32,14 @@
             <property name="enableSubPackages" value="true"/>
         </sqlMapGenerator>
 
-        <javaClientGenerator targetPackage="com.all580.role.dao"
+        <javaClientGenerator targetPackage="com.all580.ep.dao"
                              targetProject="D:\java\3.0\base\ep-rpc\src\main\java" type="XMLMAPPER">
             <property name="enableSubPackages" value="true"/>
         </javaClientGenerator>
 
-        <table tableName="t_ep_role_func" enableCountByExample="false" enableUpdateByExample="false"
+        <table tableName="t_ep_param" enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"
-               domainObjectName="EpRoleFunc">
+               domainObjectName="EpParam">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
         </table>
 

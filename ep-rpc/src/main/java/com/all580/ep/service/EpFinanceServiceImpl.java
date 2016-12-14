@@ -1,5 +1,6 @@
 package com.all580.ep.service;
 
+import com.all580.ep.api.conf.EpConstant;
 import com.all580.ep.api.service.EpFinanceService;
 import com.all580.ep.api.service.EpService;
 import com.all580.ep.com.Common;
@@ -12,9 +13,12 @@ import com.framework.common.Result;
 import javax.lang.exception.ApiException;
 
 import com.framework.common.lang.StringUtils;
+import com.framework.common.mns.TopicPushManager;
 import com.framework.common.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,7 +36,10 @@ import java.util.Map;
 @Slf4j
 public class EpFinanceServiceImpl implements EpFinanceService {
 
-
+    @Autowired
+    private TopicPushManager topicPushManager;
+    @Value("${mns.topic}")
+    private String topicName;
     @Autowired
     private EpMapper epMapper;
 
@@ -161,7 +168,22 @@ public class EpFinanceServiceImpl implements EpFinanceService {
         b.setCore_ep_id(coreEpId);
         balanceList.add(b);
         String  serialNum=System.currentTimeMillis()+"";
-        return balancePayService.changeBalances(balanceList, PaymentConstant.BalanceChangeType.MANUAL_CHANGE_BALANCE,serialNum);
+        Map<String,Object> map = new HashMap<>();
+        map.put("ref_id",serialNum);
+        map.put(EpConstant.EpKey.CORE_EP_ID,coreEpId);
+        map.put("money",balance);
+        map.put("ref_type",PaymentConstant.BalanceChangeType.MANUAL_CHANGE_BALANCE_ADD);
+        fireBalanceChangedEvent(map);
+        return balancePayService.changeBalances(balanceList, PaymentConstant.BalanceChangeType.MANUAL_CHANGE_BALANCE_ADD,serialNum);
+    }
+    /**
+     * 发布余额变更事件
+     */
+    private void fireBalanceChangedEvent(Map<String,Object> map) {
+        log.info("余额充值变更事件----->开始");
+        String tag = "core";
+        topicPushManager.asyncFireEvent(topicName, tag, PaymentConstant.EVENT_NAME_FUND_CHANGE, map);
+        log.info("余额充值变更事件----->成功");
     }
     @Override
     public Result getBalanceSerialList(Integer epId, Integer coreEpId,
