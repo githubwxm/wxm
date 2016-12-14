@@ -42,6 +42,7 @@ public class PaymentConstant {
         public static final Integer MANUAL_CHANGE_BALANCE = 7007; // 余额调整
         public static final Integer MANUAL_CHANGE_BALANCE_ADD = 7009; // 余额充值
         public static final Integer MANUAL_CHANGE_BALANCE_EXIT = 7010; // 余额提现
+        public static final Integer THIRD_QUIT_FOR_ORDER = 7011; // 下单第三方退订
         public static final Integer THIRD_PAY_FOR_ORDER = 7008; // 下单第三方支付
     }
 
