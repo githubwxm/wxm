@@ -200,7 +200,7 @@ public class PlanController extends BaseController {
     @RequestMapping(value = "on_sale/products/ep", method = RequestMethod.POST)
     @ResponseBody
     public Result productSubsDistributionEp(@RequestBody Map params) {
-        return productService.productOnSaleProductBatch(initPlanSalesParams(CommonUtil.objectParseInteger(params.get("sale_ep_id")), CommonUtil.objectParseInteger(params.get("ep_id")),  (List<Map<String, Object>>) params.get("saled_array")));
+        return productService.productOnSaleProductBatch(initPlanSalesParams(CommonUtil.objectParseInteger(params.get("sub_ep_id")), CommonUtil.objectParseInteger(params.get("ep_id")),  (List<Map<String, Object>>) params.get("saled_array")));
     }
 
     private List<Map<String, Object>> initPlanSalesParams(Integer epId, Integer saleEpId, List<Map<String, Object>> saledArray) {
