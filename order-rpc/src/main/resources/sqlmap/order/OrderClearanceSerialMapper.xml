@@ -439,4 +439,97 @@
             a.supplier_core_ep_id,
             a.clearance_month
     </select>
+
+    <select id="selectChannelBillDetail" resultType="map">
+        SELECT
+            toi.number,
+            toi.pro_name,
+            toi.pro_sub_name,
+            IFNULL(tocs.clearance_month,tra.refund_month) clearance_month,
+            IFNULL(tocs.total_money,0) + IFNULL(tcws.total_money,0) clearance_money,
+            TRUNCATE(IFNULL(tocs.total_fee,0) + IFNULL(tcws.total_fee,0),0) clearance_fee,
+            IFNULL(tra.total_money,0) refund_money,
+            TRUNCATE(IFNULL(tra.total_fee,0),0) refund_fee,
+            TRUNCATE(IFNULL(tocs.total_fee,0) + IFNULL(tcws.total_fee,0) + IFNULL(tra.total_fee,0),0) fee
+        FROM
+            t_order_item toi
+        LEFT JOIN (
+            SELECT
+                order_item_id,
+                SUM(supplier_money) total_money,
+                SUM(
+                    supplier_money * (
+                        IFNULL(channel_fee, 0) / 10000
+                    )
+                ) total_fee,
+                DATE_FORMAT(clearance_time, '%Y%m') AS clearance_month
+            FROM
+                t_order_clearance_serial
+            GROUP BY
+                order_item_id,
+                clearance_month
+        ) tocs ON tocs.order_item_id = toi.id
+        LEFT JOIN (
+            SELECT
+                tocs.order_item_id,
+                - SUM(tcws.supplier_money) total_money,
+                - SUM(
+                    tcws.supplier_money * (
+                        IFNULL(tcws.channel_fee, 0) / 10000
+                    )
+                ) total_fee,
+                DATE_FORMAT(
+                    tcws.clearance_washed_time,
+                    '%Y%m'
+                ) AS washed_month
+            FROM
+                t_clearance_washed_serial tcws
+            LEFT JOIN t_order_clearance_serial tocs ON tocs.serial_no = tcws.clearance_serial_no
+            GROUP BY
+                tocs.order_item_id,
+                washed_month
+        ) tcws ON tcws.order_item_id = toi.id
+        LEFT JOIN (
+            SELECT
+                tro.order_item_id,
+                SUM(tra.profit) total_money,
+                SUM(
+                    tra.profit * (
+                        IFNULL(tro.channel_fee, 0) / 10000
+                    )
+                ) total_fee,
+                DATE_FORMAT(
+                    tro.refund_money_time,
+                    '%Y%m'
+                ) AS refund_month
+            FROM
+                t_refund_account tra
+            LEFT JOIN t_refund_order tro ON tro.id = tra.refund_order_id
+            LEFT JOIN t_order_item toi ON toi.id = tro.order_item_id
+            WHERE
+                1 = 1
+            AND tra.`status` = 331
+            AND tra.profit > 0
+            AND toi.supplier_core_ep_id = tra.core_ep_id
+            GROUP BY
+                tro.order_item_id,
+                refund_month
+        ) tra ON tra.order_item_id = toi.id
+        LEFT JOIN t_refund_order tro ON tro.order_item_id = toi.id
+        WHERE
+            1 = 1
+        AND IFNULL(tocs.total_fee,0) + IFNULL(tcws.total_fee,0) + IFNULL(tra.total_fee,0) > 0
+        <if test="coreEpId != null">
+            AND toi.supplier_core_ep_id = #{coreEpId}
+        </if>
+        <if test="saleCoreEpId != null">
+            AND o.payee_ep_id = #{saleCoreEpId}
+        </if>
+        <if test="selectMonth != null">
+            AND IFNULL(tocs.clearance_month,tra.refund_month) = #{selectMonth}
+        </if>
+        GROUP BY
+            toi.id,
+            tocs.clearance_month
+    </select>
 </mapper>
