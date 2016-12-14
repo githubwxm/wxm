@@ -176,9 +176,21 @@ public class OrderController extends BaseController {
     @RequestMapping(value = "list/channel/bill")
     @ResponseBody
     public Result<?> listChannelBill(Integer supplier_core_ep_id, String start, String end, Boolean settled) throws Exception {
-        Date start_time = start == null ? null : DateFormatUtils.parseString(DateFormatUtils.DATE_TIME_FORMAT, start);
-        Date end_time = end == null ? null : DateFormatUtils.parseString(DateFormatUtils.DATE_TIME_FORMAT, end);
+        Date start_time = start == null ? null : DateFormatUtils.parseString(DateFormatUtils.DATE_FORMAT, start);
+        Date end_time = end == null ? null : DateFormatUtils.parseString(DateFormatUtils.DATE_FORMAT, end);
+        start_time = start_time == null ? null : DateFormatUtils.setHms(start_time, "00:00:00");
+        end_time = end_time == null ? null : DateFormatUtils.setHms(end_time, "23:59:59");
         return orderService.selectChannelBill(supplier_core_ep_id, start_time, end_time, settled);
+    }
+
+    @RequestMapping(value = "list/channel/bill/supplier")
+    @ResponseBody
+    public Result<?> listChannelBillForSupplier(Integer supplier_core_ep_id, String start, String end, Boolean settled) throws Exception {
+        Date start_time = start == null ? null : DateFormatUtils.parseString(DateFormatUtils.DATE_FORMAT, start);
+        Date end_time = end == null ? null : DateFormatUtils.parseString(DateFormatUtils.DATE_FORMAT, end);
+        start_time = start_time == null ? null : DateFormatUtils.setHms(start_time, "00:00:00");
+        end_time = end_time == null ? null : DateFormatUtils.setHms(end_time, "23:59:59");
+        return orderService.selectChannelBillForSupplier(supplier_core_ep_id, start_time, end_time, settled);
     }
 
     private Date[] checkDate(String start_time, String end_time) {
