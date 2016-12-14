@@ -374,4 +374,33 @@ public class ProductController extends BaseController {
             @RequestParam("sub_ep_id") Integer subEpId) {
         return productDistributionService.searchNotDistributionProductSubEp(subEpId, epId);
     }
+
+    /**
+     * 查询对组已分销产品信息
+     * @param epId
+     * @param groupId
+     * @return
+     */
+    @RequestMapping(value = "group_distributed/list")
+    @ResponseBody
+    public Result<List<Map<String, Object>>> searchGroupDistributedProduct(
+            @RequestParam("ep_id") Integer epId,
+            @RequestParam("group_id") Integer groupId) {
+        return productDistributionService.searchAlreadyDistributionProductSubGroup(epId, groupId);
+    }
+
+    /**
+     * 查询对组未分销产品信息
+     * @param epId
+     * @param groupId
+     * @return
+     */
+    @RequestMapping(value = "group_distribute/list")
+    @ResponseBody
+    public Result<List<Map<String, Object>>> searchGroupDistributeProduct(
+            @RequestParam("ep_id") Integer epId,
+            @RequestParam("group_id") Integer groupId) {
+        return productDistributionService.searchNotDistributionProductSubGroup(epId, groupId);
+    }
+
 }
