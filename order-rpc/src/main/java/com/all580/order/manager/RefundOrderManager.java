@@ -67,8 +67,6 @@ public class RefundOrderManager extends BaseOrderManager {
     @Autowired
     private ThirdPayService thirdPayService;
     @Autowired
-    private CoreEpChannelService coreEpChannelService;
-    @Autowired
     private SmsManager smsManager;
 
     /**
@@ -414,12 +412,9 @@ public class RefundOrderManager extends BaseOrderManager {
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public RefundOrder generateRefundOrder(OrderItem item, List daysList, int quantity, int money, int fee, String cause,
                                            Integer groupId, Integer auditTicket, Integer auditMoney, int saleCoreEpId) {
-        // 获取平台商通道费率
-        Result<Integer> channelResult = coreEpChannelService.selectPlatfromRate(item.getSupplier_core_ep_id(), saleCoreEpId);
-        if (!channelResult.isSuccess()) {
-            throw new ApiException("获取平台商通道费率失败:" + channelResult.getError());
-        }
         RefundOrder refundOrder = new RefundOrder();
+        // 获取平台商通道费率
+        refundOrder.setChannel_fee(getChannelRate(item.getSupplier_core_ep_id(), saleCoreEpId));
         refundOrder.setOrder_item_id(item.getId());
         refundOrder.setNumber(UUIDGenerator.generateUUID());
         refundOrder.setQuantity(quantity);
@@ -777,7 +772,7 @@ public class RefundOrderManager extends BaseOrderManager {
         Map<String, Object> payParams = new HashMap<>();
         payParams.put("totalFee", order.getPay_amount());
         payParams.put("refundFee", money);
-        payParams.put("serialNum", sn == null ? order.getLocal_payment_serial_no() : sn);
+        payParams.put("serialNum", sn == null ? order.getNumber().toString() : sn);
         payParams.put("outTransId", order.getThird_serial_no());
         Result result = thirdPayService.reqRefund(order.getNumber(), coreEpId, order.getPayment_type(), payParams);
         if (!result.isSuccess()) {

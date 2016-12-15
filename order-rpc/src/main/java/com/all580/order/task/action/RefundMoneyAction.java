@@ -47,8 +47,9 @@ public class RefundMoneyAction implements JobRunner {
             log.warn("退款失败任务,订单不存在");
             throw new Exception("订单不存在");
         }
-        RefundOrder refundOrder = refundOrderMapper.selectBySN(Long.valueOf(params.get("serialNum")));
-        if (refundOrder == null) {
+        Long serialNum = Long.valueOf(params.get("serialNum"));
+        RefundOrder refundOrder = refundOrderMapper.selectBySN(serialNum);
+        if (refundOrder == null && serialNum.longValue() != order.getNumber()) {
             log.warn("退款失败任务,退订订单不存在");
             throw new Exception("退订订单不存在");
         }

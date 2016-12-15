@@ -566,11 +566,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
                 orderItem.getSupplier_core_ep_id(), serial.getDay(), serial.getQuantity());
         serial.setSupplier_money(money);
         // 获取平台商通道费率
-        Result<Integer> channelResult = coreEpChannelService.selectPlatfromRate(orderItem.getSupplier_core_ep_id(), saleCoreEpId);
-        if (!channelResult.isSuccess()) {
-            throw new ApiException("获取平台商通道费率失败:" + channelResult.getError());
-        }
-        serial.setChannel_fee(channelResult.get());
+        serial.setChannel_fee(bookingOrderManager.getChannelRate(orderItem.getSupplier_core_ep_id(), saleCoreEpId));
         orderClearanceSerialMapper.insertSelective(serial);
         return serial;
     }
@@ -588,11 +584,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
                 orderItem.getSupplier_core_ep_id(), serial.getDay(), serial.getQuantity());
         serial.setSupplier_money(money);
         // 获取平台商通道费率
-        Result<Integer> channelResult = coreEpChannelService.selectPlatfromRate(orderItem.getSupplier_core_ep_id(), saleCoreEpId);
-        if (!channelResult.isSuccess()) {
-            throw new ApiException("获取平台商通道费率失败:" + channelResult.getError());
-        }
-        serial.setChannel_fee(channelResult.get());
+        serial.setChannel_fee(bookingOrderManager.getChannelRate(orderItem.getSupplier_core_ep_id(), saleCoreEpId));
         clearanceWashedSerialMapper.insertSelective(serial);
         return serial;
     }
