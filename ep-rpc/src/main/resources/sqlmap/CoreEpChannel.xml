@@ -26,7 +26,7 @@
           delete from t_core_ep_channel where `id`=#{id};
     </delete>
 
-    <select id="select" resultType="java.util.HashMap">
+    <select id="select" resultType="java.util.Map">
         <!--select * from (-->
         <!--select id,-->
         <!--supplier_core_ep_id,-->
@@ -71,5 +71,12 @@
         <if test="limit != null">
             limit #{record_start},#{record_count}
         </if>
+    </select>
+
+    <select id="selectSupplierCoreEpId" resultType="java.util.Map">
+        select tc.supplier_core_ep_id,
+        t1.name supplier_name from t_core_ep_channel tc
+        left join t_ep t1 on tc.supplier_core_ep_id=t1.id
+        GROUP BY supplier_core_ep_id,name
     </select>
 </mapper>
