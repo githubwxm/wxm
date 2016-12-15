@@ -48,7 +48,7 @@ public class FundChangSubscribeServiceImpl implements FundChangeSubscribeService
        Integer core_ep_id = CommonUtil.objectParseInteger(map.get(EpConstant.EpKey.CORE_EP_ID));
        Integer moeny = CommonUtil.objectParseInteger( map.get("money"));
        int ref= fundSerialService.selectExists(map).get();
-        if(ref<0){
+        if(ref==0){
             fundSerialService.insertFundSerial(map);//必须先插入流水再修改总资金
             if(moeny>0){
                 platfromFundService.addFund(moeny,core_ep_id);
