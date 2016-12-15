@@ -174,7 +174,7 @@ public class OrderController extends BaseController {
 
     @RequestMapping(value = "list/channel/bill")
     @ResponseBody
-    public Result<?> listChannelBill(Integer supplier_core_ep_id, String start, String end, Boolean settled) throws Exception {
+    public Result<?> listChannelBill(@RequestParam Integer supplier_core_ep_id, String start, String end, Boolean settled) throws Exception {
         Date[] array = checkDateTime(start, end);
         Date start_time = array[0];
         Date end_time = array[1];
