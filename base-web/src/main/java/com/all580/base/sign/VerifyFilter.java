@@ -156,6 +156,7 @@ public class VerifyFilter implements  Filter {
          List<String> list = new ArrayList<String>();
          list.add("/api/balance/info");
          list.add("/api/ep/platform/validate");
+         list.add("/api/sms/send");
          if(list.contains(url)){
              return true;
          }
