@@ -22,10 +22,10 @@ public class TicketOrderController {
     public Result<Map<String, Object>> searchTicketOrderBySupplier(
             @RequestParam("ep_id") Integer epId,
             @RequestParam("time_type") Integer timeType,
-            @RequestParam("start") String startDate,
-            @RequestParam("end") String endDate,
-            @RequestParam("ticket_type") Integer ticketType,
-            @RequestParam("payment_flag") Integer paymentFlag,
+            @RequestParam(value = "start", required = false) String startDate,
+            @RequestParam(value = "end", required = false) String endDate,
+            @RequestParam(value = "ticket_type", required = false) Integer ticketType,
+            @RequestParam(value = "payment_flag", required = false) Integer paymentFlag,
             @RequestParam("record_start") Integer start,
             @RequestParam("record_count") Integer count
     ) {
