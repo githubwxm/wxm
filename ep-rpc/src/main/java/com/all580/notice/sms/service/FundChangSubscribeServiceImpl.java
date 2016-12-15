@@ -30,6 +30,8 @@ public class FundChangSubscribeServiceImpl implements FundChangeSubscribeService
     private FundSerialService fundSerialService;
     @Autowired
     private PlatfromFundService platfromFundService;
+
+
     /**
      *
      * @param s
@@ -45,11 +47,14 @@ public class FundChangSubscribeServiceImpl implements FundChangeSubscribeService
         log.info(" content map  {}",map.toString());
        Integer core_ep_id = CommonUtil.objectParseInteger(map.get(EpConstant.EpKey.CORE_EP_ID));
        Integer moeny = CommonUtil.objectParseInteger( map.get("money"));
-        fundSerialService.insertFundSerial(map);//必须先插入流水再修改总资金
-        if(moeny>0){
-            platfromFundService.addFund(moeny,core_ep_id);
-        }else{
-            platfromFundService.exitFund(moeny,core_ep_id);
+       int ref= fundSerialService.selectExists(map).get();
+        if(ref>0){
+            fundSerialService.insertFundSerial(map);//必须先插入流水再修改总资金
+            if(moeny>0){
+                platfromFundService.addFund(moeny,core_ep_id);
+            }else{
+                platfromFundService.exitFund(moeny,core_ep_id);
+            }
         }
         return new Result(true);
     }
