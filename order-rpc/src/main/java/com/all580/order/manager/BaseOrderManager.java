@@ -3,6 +3,7 @@ package com.all580.order.manager;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.all580.ep.api.service.CoreEpAccessService;
+import com.all580.ep.api.service.CoreEpChannelService;
 import com.all580.ep.api.service.EpService;
 import com.all580.order.dao.OrderItemAccountMapper;
 import com.all580.order.dto.AccountDataDto;
@@ -53,6 +54,8 @@ public class BaseOrderManager {
 
     @Autowired
     private CoreEpAccessService coreEpAccessService;
+    @Autowired
+    private CoreEpChannelService coreEpChannelService;
 
     @Autowired
     private JobClient jobClient;
@@ -378,6 +381,24 @@ public class BaseOrderManager {
             log.warn("核销OR反核销:{},分账失败:{}", consume, result.get());
             throw new ApiException(result.getError());
         }
+    }
+
+    /**
+     * 获取平台商通道费率
+     * @param supplier 供应侧
+     * @param sale 销售侧
+     * @return
+     */
+    public int getChannelRate(int supplier, int sale) {
+        if (supplier == sale) {
+            return 0;
+        }
+        // 获取平台商通道费率
+        Result<Integer> channelResult = coreEpChannelService.selectPlatfromRate(supplier, sale);
+        if (!channelResult.isSuccess()) {
+            throw new ApiException("获取平台商通道费率失败:" + channelResult.getError());
+        }
+        return channelResult.get();
     }
 
     /**
