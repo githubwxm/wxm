@@ -107,6 +107,17 @@ public class EpChannelController extends BaseController {   //倒萨
         return coreEpChannelService.select(map);
     }
 
+    /**
+     * 查找平台商供应平台方
+     * @param
+     * @return
+     */
+    @RequestMapping(value = "supplier_core_ep_id_list", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<?> selectSupplierCoreEpId() {
+        return coreEpChannelService.selectSupplierCoreEpId();
+    }
+
     private Map<String[], ValidRule[]> generateCreateEpChannelValidate() {
         Map<String[], ValidRule[]> rules = new HashMap<>();
         // 校验不为空的参数
