@@ -19,10 +19,7 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * Created by wxming on 2016/10/13 0013.
@@ -156,6 +153,12 @@ public class VerifyFilter implements  Filter {
     public boolean auth( HttpServletResponse httpResponse,String url,Integer ep_id){
      try {
          url = url.toLowerCase();
+         List<String> list = new ArrayList<String>();
+         list.add("/api/balance/info");
+         list.add("/api/ep/platform/validate");
+         if(list.contains(url)){
+             return true;
+         }
          EpService epService= BeanUtil.getBean("epService", EpService.class);
          Map<String,Object> map = epService.selectId(ep_id).get();
          if(null!=map&&!map.isEmpty()){
