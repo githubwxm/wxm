@@ -777,7 +777,7 @@ public class RefundOrderManager extends BaseOrderManager {
         Map<String, Object> payParams = new HashMap<>();
         payParams.put("totalFee", order.getPay_amount());
         payParams.put("refundFee", money);
-        payParams.put("serialNum", sn == null ? order.getLocal_payment_serial_no() : sn);
+        payParams.put("serialNum", sn == null ? order.getNumber().toString() : sn);
         payParams.put("outTransId", order.getThird_serial_no());
         Result result = thirdPayService.reqRefund(order.getNumber(), coreEpId, order.getPayment_type(), payParams);
         if (!result.isSuccess()) {
