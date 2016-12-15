@@ -47,6 +47,19 @@ public class FundSerialServiceImpl implements FundSerialService{
             throw new ApiException("添加平台资金流水异常", e);
         }
     }
+
+    @Override
+    public Result<Integer> selectExists(Map<String,Object> params){
+        Result<Integer> result = new  Result(true);
+        try {
+
+            result.put( fundSerialMapper.selectExists(params));
+            return result;
+        } catch (Exception e) {
+            log.error("添加平台资金流水异常", e);
+            throw new ApiException("添加平台资金流水异常", e);
+        }
+    }
     @Override
     public  Result<PageRecord<Map<String, Object>>> selectFundSerial( Integer core_ep_id,
                                               String status,
