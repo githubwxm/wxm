@@ -15,7 +15,7 @@
     update t_platfrom_fund set exit_fund=exit_fund+#{money},total_fund=total_fund+#{money} where core_ep_id=#{core_ep_id};
   </update>
   <update id="addFund">
-    update t_platfrom_fund set add_fund=exit_fund+#{money},total_fund=total_fund+#{money} where core_ep_id=#{core_ep_id};
+    update t_platfrom_fund set add_fund=add_fund+#{money},total_fund=total_fund+#{money} where core_ep_id=#{core_ep_id};
   </update>
 
 </mapper>
