@@ -75,13 +75,12 @@ public class ThirdPayServiceImpl implements ThirdPayService {
     /**
      * 发布余额变更事件
      */
-    private void fireBalanceChangedEvent(Integer coreEpId,Object ordCode,Object money,Integer refType ) {
+    private void fireBalanceChangedEvent(Integer coreEpId,Object ordCode,Integer money,Integer refType ) {
         Map<String,Object> map = new HashMap<>();
         try{
             map.put("ref_id",ordCode);
             map.put("core_ep_id",coreEpId);
-            Double m = Double.parseDouble(CommonUtil.objectParseString(money))*100;
-            map.put("money",m.intValue());
+            map.put("money",money);
             map.put("ref_type",refType );//PaymentConstant.BalanceChangeType.THIRD_PAY_FOR_ORDER
             logger.info("第三方金额变更事件----->开始");
             String tag = "core";
@@ -125,7 +124,7 @@ public class ThirdPayServiceImpl implements ThirdPayService {
                 RefundRsp refundRsp = getWxPayService(coreEpId, payType).reqRefund(ordCode, params, coreEpId);
                 logger.info("微信退款结果：" + refundRsp.getResult_code());
                 result.setSuccess();
-                fireBalanceChangedEvent(coreEpId,ordCode,params.get("total_fee"),PaymentConstant.BalanceChangeType.THIRD_QUIT_FOR_ORDER);
+                fireBalanceChangedEvent(coreEpId,ordCode,CommonUtil.objectParseInteger(params.get("total_fee")),PaymentConstant.BalanceChangeType.THIRD_QUIT_FOR_ORDER);
                 result.put(refundRsp.getTransaction_id());
                 // TODO panyi 异步回调订单-> 记录任务
                 final String serialNum = String.valueOf(params.get("serialNum"));
@@ -162,7 +161,8 @@ public class ThirdPayServiceImpl implements ThirdPayService {
             if (payCallback.isSuccess()) {
                 // 支付成功事件，参数:订单号，支付金额，流水号，收款平台商企业ID
                 Result result = paymentCallbackService.payCallback(Long.valueOf(ordId), ordId, trade_no);
-                fireBalanceChangedEvent(coreEpId,ordId,params.get("total_fee"),PaymentConstant.BalanceChangeType.THIRD_PAY_FOR_ORDER);
+
+                fireBalanceChangedEvent(coreEpId,ordId, CommonUtil.objectParseInteger(params.get("total_fee")),PaymentConstant.BalanceChangeType.THIRD_PAY_FOR_ORDER);
                 if (result.isFault()) {
                     logger.error("微信支付回调.回调订单失败");
                 }
@@ -173,7 +173,8 @@ public class ThirdPayServiceImpl implements ThirdPayService {
             int coreEpId = Integer.parseInt(extraStr);
             Result<Map<String, String>> result = getAliPayService(coreEpId, payType).payCallback(params, coreEpId);
             if (result.isSuccess()) {
-                fireBalanceChangedEvent(coreEpId,ordId,params.get("total_fee"),PaymentConstant.BalanceChangeType.THIRD_PAY_FOR_ORDER);
+                Double m = Double.parseDouble(CommonUtil.objectParseString(params.get("total_fee")))*100;
+                fireBalanceChangedEvent(coreEpId,ordId,m.intValue(),PaymentConstant.BalanceChangeType.THIRD_PAY_FOR_ORDER);
                 Result callResult = paymentCallbackService.payCallback(Long.valueOf(ordId), ordId, trade_no);
                 if (callResult.isFault()) {
                     logger.error("支付宝支付回调.回调订单失败");
@@ -206,7 +207,8 @@ public class ThirdPayServiceImpl implements ThirdPayService {
             String serialNum = batchNo.substring(8);
             Result result1 = paymentCallbackService.refundCallback(null, serialNum, outTransId, isSuccess);
             if (result1.isSuccess()) {
-                fireBalanceChangedEvent(coreEpId,serialNum,split[1],PaymentConstant.BalanceChangeType.THIRD_QUIT_FOR_ORDER);
+                Double m = Double.parseDouble(CommonUtil.objectParseString(split[1]))*100;
+                fireBalanceChangedEvent(coreEpId,serialNum,m.intValue() ,PaymentConstant.BalanceChangeType.THIRD_QUIT_FOR_ORDER);
                 rst.setSuccess();
             } else {
                 // ....................
