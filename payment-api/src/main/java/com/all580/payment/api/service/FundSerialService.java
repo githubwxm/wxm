@@ -11,6 +11,7 @@ import java.util.Map;
 public interface FundSerialService {
     Result updateFundSerialSummary(Map<String,Object> params);
     Result insertFundSerial(Map<String,Object> params);
+    Result<Integer> selectExists(Map<String,Object> params);
     Result<PageRecord<Map<String, Object>>> selectFundSerial(Integer core_ep_id,
                                                              String status,
                                                              String start_date,
