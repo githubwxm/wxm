@@ -2,6 +2,7 @@ package com.all580.ep.api.service;
 
 import com.framework.common.Result;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -20,6 +21,12 @@ public interface CoreEpChannelService {
      * @return
      */
     Result<Integer> update(Map<String,Object> params);
+
+    /**
+     * supplier_core_ep_id  supplier_name
+     * @return
+     */
+    Result<List<Map<String,Object>>> selectSupplierCoreEpId();
 
     /**
      *
