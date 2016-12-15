@@ -125,12 +125,13 @@ public class ThirdPayServiceImpl implements ThirdPayService {
                 logger.info("微信退款结果：" + refundRsp.getResult_code());
                 result.setSuccess();
                 logger.info("微信退款参数：" + params.toString());
+                final String serialNum = String.valueOf(params.get("serialNum"));
                 Integer money=CommonUtil.objectParseInteger(params.get("totalFee"));
                 money=money==null?0:money;
-                fireBalanceChangedEvent(coreEpId,ordCode,-money,PaymentConstant.BalanceChangeType.THIRD_QUIT_FOR_ORDER);
+                fireBalanceChangedEvent(coreEpId,serialNum,-money,PaymentConstant.BalanceChangeType.THIRD_QUIT_FOR_ORDER);
                 result.put(refundRsp.getTransaction_id());
                 // TODO panyi 异步回调订单-> 记录任务
-                final String serialNum = String.valueOf(params.get("serialNum"));
+
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
