@@ -184,7 +184,7 @@ public class BalancePayServiceImpl implements BalancePayService {
         Capital capital = null;
         capital= capitalMapper.selectByEpIdAndCoreEpId(epId,coreEpId);
         if(null==capital){
-            new Capital();
+            capital=  new Capital();
             capital.setEp_id(epId);
             capital.setCore_ep_id(coreEpId);
             capitalMapper.insertSelective(capital);
