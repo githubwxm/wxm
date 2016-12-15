@@ -1,0 +1,65 @@
+package com.all580.base.controller.report;
+
+import com.all580.report.api.service.TicketOrderReportRPCService;
+import com.framework.common.Result;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.annotation.Resource;
+import java.util.Map;
+
+@Controller
+@RequestMapping("api/report/ticket")
+public class TicketOrderController {
+
+    @Resource
+    TicketOrderReportRPCService ticketOrderReportRPCService;
+
+    @RequestMapping("order/list")
+    @ResponseBody
+    public Result<Map<String, Object>> searchTicketOrderBySupplier(
+            @RequestParam("ep_id") Integer epId,
+            @RequestParam("time_type") Integer timeType,
+            @RequestParam("start") String startDate,
+            @RequestParam("end") String endDate,
+            @RequestParam("ticket_type") Integer ticketType,
+            @RequestParam("payment_flag") Integer paymentFlag,
+            @RequestParam("record_start") Integer start,
+            @RequestParam("record_count") Integer count
+    ) {
+
+        return ticketOrderReportRPCService.searchTicketOrderBySupplier(
+                epId,
+                timeType,
+                startDate,
+                endDate,
+                ticketType,
+                paymentFlag,
+                start,
+                count
+        );
+    }
+
+    @RequestMapping("order/report")
+    @ResponseBody
+    public Result<Map<String, Object>> searchTicketOrderBySupplierReport(
+            @RequestParam("ep_id") Integer epId,
+            @RequestParam("time_type") Integer timeType,
+            @RequestParam("start") String startDate,
+            @RequestParam("end") String endDate,
+            @RequestParam("ticket_type") Integer ticketType,
+            @RequestParam("payment_flag") Integer paymentFlag
+    ) {
+
+        return ticketOrderReportRPCService.searchTicketOrderBySupplierReport(
+                epId,
+                timeType,
+                startDate,
+                endDate,
+                ticketType,
+                paymentFlag
+        );
+    }
+}
