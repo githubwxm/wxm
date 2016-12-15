@@ -87,10 +87,18 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Result<List<Map>> selectChannelBillDetail(Integer coreEpId, Integer saleCoreEpId, Integer month) {
-        List<Map> list = orderClearanceSerialMapper.selectChannelBillDetail(coreEpId, saleCoreEpId, month);
-        Result<List<Map>> result = new Result<>(true);
-        result.put(list);
+    public Result<PageRecord<Map>> selectChannelBillDetail(Integer coreEpId, Integer saleCoreEpId, Integer month, Integer recordStart, Integer recordCount) {
+        PageRecord<Map> record = new PageRecord<>();
+        int count = orderClearanceSerialMapper.selectChannelBillDetailCount(coreEpId, saleCoreEpId, month);
+        record.setTotalCount(count);
+        if (count > 0) {
+            List<Map> list = orderClearanceSerialMapper.selectChannelBillDetail(coreEpId, saleCoreEpId, month, recordStart, recordCount);
+            record.setList(list);
+        } else {
+            record.setList(new ArrayList<Map>());
+        }
+        Result<PageRecord<Map>> result = new Result<>(true);
+        result.put(record);
         return result;
     }
 
