@@ -39,10 +39,10 @@ public class FundChangSubscribeServiceImpl implements FundChangeSubscribeService
      */
     @Override
     public Result process(String s, String content, Date date) {
-     log.error(" map  content:"+content);
+     log.info(" map  content:",content);
         Map<String,Object> map = JsonUtils.json2Map(content);
         //ParamsMapValidate.validate(map, generateCreateCreditValidate());//
-        log.error(" content map  :"+map.toString());
+        log.info(" content map  {}",map.toString());
        Integer core_ep_id = CommonUtil.objectParseInteger(map.get(EpConstant.EpKey.CORE_EP_ID));
        Integer moeny = CommonUtil.objectParseInteger( map.get("money"));
         fundSerialService.insertFundSerial(map);//必须先插入流水再修改总资金
