@@ -124,6 +124,7 @@ public class ThirdPayServiceImpl implements ThirdPayService {
                 RefundRsp refundRsp = getWxPayService(coreEpId, payType).reqRefund(ordCode, params, coreEpId);
                 logger.info("微信退款结果：" + refundRsp.getResult_code());
                 result.setSuccess();
+                logger.info("微信退款参数：" + params.toString());
                 fireBalanceChangedEvent(coreEpId,ordCode,CommonUtil.objectParseInteger(params.get("total_fee")),PaymentConstant.BalanceChangeType.THIRD_QUIT_FOR_ORDER);
                 result.put(refundRsp.getTransaction_id());
                 // TODO panyi 异步回调订单-> 记录任务
