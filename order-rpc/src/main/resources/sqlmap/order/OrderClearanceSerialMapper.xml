@@ -453,6 +453,7 @@
             TRUNCATE(IFNULL(tocs.total_fee,0) + IFNULL(tcws.total_fee,0) + IFNULL(tra.total_fee,0),0) fee
         FROM
             t_order_item toi
+        LEFT JOIN t_order o ON o.id = toi.order_id
         LEFT JOIN (
             SELECT
                 order_item_id,
