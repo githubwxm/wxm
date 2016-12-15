@@ -92,7 +92,7 @@ public interface OrderService {
      * @param month 月份
      * @return
      */
-    Result<List<Map>> selectChannelBillDetail(Integer coreEpId, Integer saleCoreEpId, Integer month);
+    Result<PageRecord<Map>> selectChannelBillDetail(Integer coreEpId, Integer saleCoreEpId, Integer month, Integer recordStart, Integer recordCount);
 
     /**
      * 查询供应平台通道费账单

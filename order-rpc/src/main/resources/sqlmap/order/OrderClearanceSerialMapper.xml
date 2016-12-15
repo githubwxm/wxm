@@ -440,7 +440,7 @@
             a.clearance_month
     </select>
 
-    <select id="selectChannelBillDetail" resultType="map">
+    <sql id="channelBillDetail">
         SELECT
             toi.number,
             toi.pro_name,
@@ -515,7 +515,6 @@
                 tro.order_item_id,
                 refund_month
         ) tra ON tra.order_item_id = toi.id
-        LEFT JOIN t_refund_order tro ON tro.order_item_id = toi.id
         WHERE
             1 = 1
         AND IFNULL(tocs.total_fee,0) + IFNULL(tcws.total_fee,0) + IFNULL(tra.total_fee,0) > 0
@@ -531,5 +530,28 @@
         GROUP BY
             toi.id,
             tocs.clearance_month
+    </sql>
+
+    <select id="selectChannelBillDetail" resultType="map">
+        <include refid="channelBillDetail"/>
+        <include refid="limit" />
     </select>
+
+    <select id="selectChannelBillDetailCount" resultType="int">
+        SELECT count(*) FROM (
+        <include refid="channelBillDetail"/>
+        ) a
+    </select>
+
+    <sql id="limit">
+        <if test="record_start != null and record_count != null">
+            limit #{record_start},#{record_count}
+        </if>
+        <if test="record_start != null and record_count == null">
+            limit #{record_start}
+        </if>
+        <if test="record_start == null and record_count != null">
+            limit 0,#{record_count}
+        </if>
+    </sql>
 </mapper>

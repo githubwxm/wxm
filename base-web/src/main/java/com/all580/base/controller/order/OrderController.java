@@ -183,8 +183,12 @@ public class OrderController extends BaseController {
 
     @RequestMapping(value = "list/channel/bill/detail")
     @ResponseBody
-    public Result<?> listChannelBillDetail(@RequestParam Integer supplier_core_ep_id, @RequestParam Integer sale_core_ep_id, Integer month) {
-        return orderService.selectChannelBillDetail(supplier_core_ep_id, sale_core_ep_id, month);
+    public Result<?> listChannelBillDetail(@RequestParam Integer supplier_core_ep_id,
+                                           @RequestParam Integer sale_core_ep_id,
+                                           Integer month,
+                                           @RequestParam(defaultValue = "0") Integer record_start,
+                                           @RequestParam(defaultValue = "20") Integer record_count) {
+        return orderService.selectChannelBillDetail(supplier_core_ep_id, sale_core_ep_id, month, record_start, record_count);
     }
 
     @RequestMapping(value = "list/channel/bill/supplier")

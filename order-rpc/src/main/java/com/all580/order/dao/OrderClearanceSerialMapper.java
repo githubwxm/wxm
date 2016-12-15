@@ -90,5 +90,18 @@ public interface OrderClearanceSerialMapper {
      * @param selectMonth 月份
      * @return
      */
-    List<Map> selectChannelBillDetail(@Param("coreEpId") Integer coreEpId, @Param("saleCoreEpId") Integer saleCoreEpId, @Param("selectMonth") Integer selectMonth);
+    List<Map> selectChannelBillDetail(@Param("coreEpId") Integer coreEpId,
+                                      @Param("saleCoreEpId") Integer saleCoreEpId,
+                                      @Param("selectMonth") Integer selectMonth,
+                                      @Param("record_start") Integer recordStart,
+                                      @Param("record_count") Integer recordCount);
+
+    /**
+     * 查询通道费账单详情总条数
+     * @param coreEpId 供应平台商ID
+     * @param saleCoreEpId 销售平台商ID
+     * @param selectMonth 月份
+     * @return
+     */
+    int selectChannelBillDetailCount(@Param("coreEpId") Integer coreEpId, @Param("saleCoreEpId") Integer saleCoreEpId, @Param("selectMonth") Integer selectMonth);
 }
