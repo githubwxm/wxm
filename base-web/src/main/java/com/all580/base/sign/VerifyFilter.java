@@ -153,13 +153,9 @@ public class VerifyFilter implements  Filter {
     public boolean auth( HttpServletResponse httpResponse,String url,Integer ep_id){
      try {
          url = url.toLowerCase();
-         List<String> list = new ArrayList<String>();
-         list.add("/api/balance/info");
-         list.add("/api/ep/platform/validate");
-         list.add("/api/sms/send");
-         if(list.contains(url)){
-             return true;
-         }
+        if(Auth.isNotAuth(url)){// 如果是不需要鉴权的地址直接返回真
+              return true;
+        }
          EpService epService= BeanUtil.getBean("epService", EpService.class);
          Map<String,Object> map = epService.selectId(ep_id).get();
          if(null!=map&&!map.isEmpty()){
