@@ -579,6 +579,7 @@ public class BookingOrderManager extends BaseOrderManager {
                     addAccount.setSettled_money(0);
                     addAccount.setStatus(OrderConstant.AccountSplitStatus.NOT);
                     orderItemAccountMapper.insertSelective(addAccount);
+                    accounts.add(addAccount);
 
                     OrderItemAccount subAccount = new OrderItemAccount();
                     subAccount.setEp_id(buyEpId);
@@ -591,30 +592,34 @@ public class BookingOrderManager extends BaseOrderManager {
                     subAccount.setSettled_money(0);
                     subAccount.setStatus(OrderConstant.AccountSplitStatus.NOT);
                     orderItemAccountMapper.insertSelective(subAccount);
+                    accounts.add(subAccount);
                 } else {
+                    List<AccountDataDto> buyDataDtoList = getDataDtoList(daysAccountDataMap, buyEpId);
                     OrderItemAccount addAccount = new OrderItemAccount();
                     addAccount.setEp_id(buyEpId);
                     addAccount.setSale_ep_id(getSaleEpId(daySalesList.get(0), buyEpId));
                     addAccount.setCore_ep_id(saleCoreEpId);
                     addAccount.setMoney((salePrice - totalOutPrice) * quantity);
-                    addAccount.setProfit((salePrice - totalOutPrice) * quantity);
+                    addAccount.setProfit(getTotalProfit(buyDataDtoList) * quantity);
                     addAccount.setOrder_item_id(itemId);
-                    addAccount.setData(null);
+                    addAccount.setData(JsonUtils.toJson(buyDataDtoList));
                     addAccount.setSettled_money(0);
                     addAccount.setStatus(OrderConstant.AccountSplitStatus.NOT);
                     orderItemAccountMapper.insertSelective(addAccount);
+                    accounts.add(addAccount);
 
                     OrderItemAccount subAccount = new OrderItemAccount();
                     subAccount.setEp_id(saleCoreEpId);
                     subAccount.setSale_ep_id(getSaleEpId(daySalesList.get(0), saleCoreEpId));
                     subAccount.setCore_ep_id(saleCoreEpId);
                     subAccount.setMoney(-((salePrice - totalOutPrice) * quantity));
-                    subAccount.setProfit(0);
+                    subAccount.setProfit(totalProfit * quantity);
                     subAccount.setOrder_item_id(itemId);
-                    subAccount.setData(null);
+                    subAccount.setData(JsonUtils.toJson(dataDtoList));
                     subAccount.setSettled_money(0);
                     subAccount.setStatus(OrderConstant.AccountSplitStatus.NOT);
                     orderItemAccountMapper.insertSelective(subAccount);
+                    accounts.add(subAccount);
                 }
             } else {
                 // 平台内部企业分账(利润)
@@ -631,19 +636,15 @@ public class BookingOrderManager extends BaseOrderManager {
                     account.setStatus(OrderConstant.AccountSplitStatus.NOT);
                     orderItemAccountMapper.insertSelective(account);
                     accounts.add(account);
-                    Integer val = coreSubMap.get(saleCoreEpId);
-                    coreSubMap.put(saleCoreEpId, val == null ? account.getMoney() : val + account.getMoney());
+                    if (payType == ProductConstants.PayType.PREPAY) {
+                        Integer val = coreSubMap.get(saleCoreEpId);
+                        coreSubMap.put(saleCoreEpId, val == null ? account.getMoney() : val + account.getMoney());
+                    }
                 }
             }
         }
         for (Integer id : coreSubMap.keySet()) {
-            List<AccountDataDto> dataDtoList = null;
-            for (String key : daysAccountDataMap.keySet()) {
-                if (key.startsWith(id + "#")) {
-                    dataDtoList = daysAccountDataMap.get(key);
-                    break;
-                }
-            }
+            List<AccountDataDto> dataDtoList = getDataDtoList(daysAccountDataMap, id);
             OrderItemAccount account = new OrderItemAccount();
             account.setEp_id(id);
             account.setSale_ep_id(getSaleEpId(daySalesList.get(0), id));
@@ -678,6 +679,19 @@ public class BookingOrderManager extends BaseOrderManager {
             totalAddProfit += dataDto.getProfit();
         }
         return totalAddProfit;
+    }
+
+    private int getTotalProfit(Map<String, List<AccountDataDto>> daysAccountDataMap, int epId) {
+        return getTotalProfit(getDataDtoList(daysAccountDataMap, epId));
+    }
+
+    private List<AccountDataDto> getDataDtoList(Map<String, List<AccountDataDto>> daysAccountDataMap, int epId) {
+        for (String key : daysAccountDataMap.keySet()) {
+            if (key.startsWith(epId + "#")) {
+                return daysAccountDataMap.get(key);
+            }
+        }
+        return null;
     }
 
     /**

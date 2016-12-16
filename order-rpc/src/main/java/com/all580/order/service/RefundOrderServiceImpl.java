@@ -158,8 +158,10 @@ public class RefundOrderServiceImpl implements RefundOrderService {
                 throw new ApiException("退票总数与每天退票数不符");
             }
 
-            // 退订分账
-            refundOrderManager.preRefundAccount(daysList, applyFrom, orderItem.getId(), refundOrder.getId(), detailList, refundDate, order);
+            // 退订分账 到付退订不分帐
+            if (orderItem.getPayment_flag() != ProductConstants.PayType.PAYS) {
+                refundOrderManager.preRefundAccount(daysList, applyFrom, orderItem.getId(), refundOrder.getId(), detailList, refundDate, order);
+            }
 
             // 判断是否需要退订审核
             if (refundOrder.getAudit_ticket() == ProductConstants.RefundAudit.NO) {
