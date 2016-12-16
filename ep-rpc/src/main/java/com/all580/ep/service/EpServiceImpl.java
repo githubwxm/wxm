@@ -569,16 +569,15 @@ public class EpServiceImpl implements EpService {
             List<Map<String, String>> listMap = epMapper.selectSingleTable(paramsMap);
             Map<String,Object> syncData=  syncEpData.syncEpData(map.get("id"), EpConstant.Table.T_EP, listMap);
             // result.putExt(Result.SYNC_DATA, syncData);
-//            String destPhoneNum = selectPhone(CommonUtil.objectParseInteger(map.get("id"))).get();
-//            int ep_id = CommonUtil.objectParseInteger(map.get("ep_id"));
-//            Map<String, String> smsParams = new HashMap<>();
-//            smsParams.put("dianhuahaoma",SmsType.Ep.CHANGLV_SERVICE_PHONE);//客户
-//            Result r = smsService.send(destPhoneNum, SmsType.Ep.PLATFORM_ACTIVE, ep_id, smsParams);//发送短信
-//            if (!r.isSuccess()) {
-//                log.warn("激活平台商发送消息失败");
-//                throw new ApiException("激活平台商发送消息失败");
-//            }
-
+            String destPhoneNum = selectPhone(CommonUtil.objectParseInteger(map.get("id"))).get();
+            int ep_id = CommonUtil.objectParseInteger(map.get("ep_id"));
+            Map<String, String> smsParams = new HashMap<>();
+            smsParams.put("dianhuahaoma",SmsType.Ep.CHANGLV_SERVICE_PHONE);//客户
+            Result r = smsService.send(destPhoneNum, SmsType.Ep.PLATFORM_ACTIVE, ep_id, smsParams);//发送短信
+            if (!r.isSuccess()) {
+                log.warn("激活平台商发送消息失败");
+                throw new ApiException("激活平台商发送消息失败");
+            }
         } catch (ApiException e) {
             log.error(e.getMessage(), e);
             throw new ApiException(e.getMessage(), e);
