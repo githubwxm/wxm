@@ -19,6 +19,7 @@ import com.all580.product.api.model.EpSalesInfo;
 import com.all580.product.api.model.ProductSearchParams;
 import com.framework.common.Result;
 import com.framework.common.lang.DateFormatUtils;
+import com.framework.common.lang.JsonUtils;
 import com.framework.common.lang.UUIDGenerator;
 import com.framework.common.synchronize.SynchronizeAction;
 import com.framework.common.synchronize.SynchronizeDataManager;
@@ -342,10 +343,15 @@ public class BaseOrderManager {
     public void consumeOrReConsumeSplitAccount(OrderItem orderItem, Date day, int consumeQuantity, String sn, boolean consume) {
         // 获取子订单的分账记录
         List<OrderItemAccount> accounts = orderItemAccountMapper.selectByOrderItem(orderItem.getId());
+        consumeOrReConsumeSplitAccount(accounts, orderItem.getPayment_flag(), day, consumeQuantity, sn, consume, false);
+    }
+
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public void consumeOrReConsumeSplitAccount(List<OrderItemAccount> accounts, int paymentFlag, Date day, int consumeQuantity, String sn, boolean consume, boolean test) {
         // 存储调用余额分账的数据
         List<BalanceChangeInfo> balanceChangeInfoList = new ArrayList<>();
         // 预付
-        //if (orderItem.getPayment_flag() == ProductConstants.PayType.PREPAY) {
+        if (paymentFlag == ProductConstants.PayType.PREPAY) {
             Set<String> uk = new HashSet<>();
             for (OrderItemAccount account : accounts) {
                 // 每天的单价利润数据
@@ -370,14 +376,81 @@ public class BaseOrderManager {
                 }
                 // 核销分账可提现金额
                 changeInfo.setCan_cash(consume ? money : -money);
-                if (orderItem.getPayment_flag() == ProductConstants.PayType.PAYS) {
-                    changeInfo.setBalance(consume ? money : -money);
-                }
                 balanceChangeInfoList.add(changeInfo);
                 account.setSettled_money(consume ? account.getSettled_money() + money : account.getSettled_money() - money); // 设置已结算金额
                 orderItemAccountMapper.updateByPrimaryKeySelective(account);
             }
-        //}
+        } else {
+            Map<Integer, Integer> coreSubMap = new HashMap<>();
+            Map<Integer, OrderItemAccount> coreAccountMap = new HashMap<>();
+            Set<String> uk = new HashSet<>();
+            for (OrderItemAccount account : accounts) {
+                // 每天的单价利润数据
+                String data = account.getData();
+                if (StringUtils.isEmpty(data)) {
+                    continue;
+                }
+                String key = account.getEp_id() + "#" + account.getCore_ep_id();
+                if (uk.contains(key)) {
+                    continue;
+                }
+                uk.add(key);
+                JSONArray daysData = JSONArray.parseArray(data);
+                // 获取核销日期的单价利润
+                JSONObject dayData = getAccountDataByDay(daysData, DateFormatUtils.parseDateToDatetimeString(day));
+                int money = getMoney(consumeQuantity, dayData);
+                if (money == 0) {
+                    continue;
+                }
+                // 不是供应侧的平台商 或者 销售侧的平台内企业
+                Integer coreEpId = getCoreEpId(getCoreEpId(account.getEp_id()));
+                if ((account.getEp_id().intValue() == coreEpId && account.getCore_ep_id().intValue() != coreEpId) ||
+                        (account.getEp_id().intValue() != coreEpId && account.getCore_ep_id().intValue() == coreEpId)) {
+                    Integer value = coreSubMap.get(coreEpId);
+                    coreSubMap.put(coreEpId, value == null ? money : value + money);
+                    if (account.getCore_ep_id().intValue() != coreEpId) {
+                        coreAccountMap.put(coreEpId, account);
+                    }
+                }
+                // 核销分账
+                if (!coreAccountMap.containsKey(account.getEp_id())) {
+                    BalanceChangeInfo changeInfo = new BalanceChangeInfo();
+                    changeInfo.setEp_id(account.getEp_id());
+                    changeInfo.setCore_ep_id(account.getCore_ep_id());
+                    changeInfo.setCan_cash(consume ? money : -money);
+                    changeInfo.setBalance(consume ? money : -money);
+                    balanceChangeInfoList.add(changeInfo);
+                }
+                account.setSettled_money(consume ? account.getSettled_money() + money : account.getSettled_money() - money); // 设置已结算金额
+                orderItemAccountMapper.updateByPrimaryKeySelective(account);
+            }
+            for (Integer id : coreSubMap.keySet()) {
+                OrderItemAccount account = coreAccountMap.get(id);
+                JSONArray daysData = JSONArray.parseArray(account.getData());
+                // 获取核销日期的单价利润
+                JSONObject dayData = getAccountDataByDay(daysData, DateFormatUtils.parseDateToDatetimeString(day));
+                BalanceChangeInfo changeInfo = new BalanceChangeInfo();
+                changeInfo.setEp_id(id);
+                changeInfo.setCore_ep_id(account.getCore_ep_id());
+                Integer money = coreSubMap.get(id);
+                changeInfo.setCan_cash(consume ? money : -money);
+                changeInfo.setBalance(consume ? money : -money);
+                balanceChangeInfoList.add(changeInfo);
+                // 把本平台下的企业所有要收的钱从本平台减去 = 本平台收的钱 - 本平台利润
+                BalanceChangeInfo changeInfo2 = new BalanceChangeInfo();
+                changeInfo2.setEp_id(id);
+                changeInfo2.setCore_ep_id(id);
+                int sub = money - getMoney(consumeQuantity, dayData);
+                changeInfo2.setCan_cash(consume ? -sub : sub);
+                changeInfo2.setBalance(consume ? -sub : sub);
+                balanceChangeInfoList.add(changeInfo2);
+
+            }
+        }
+        if (test) {
+            System.out.println(JsonUtils.toJson(balanceChangeInfoList));
+            return;
+        }
         // 调用分账
         Result<BalanceChangeRsp> result = changeBalances(PaymentConstant.BalanceChangeType.CONSUME_SPLIT, sn, balanceChangeInfoList);
         if (!result.isSuccess()) {

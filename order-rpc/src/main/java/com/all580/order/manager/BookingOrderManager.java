@@ -636,10 +636,8 @@ public class BookingOrderManager extends BaseOrderManager {
                     account.setStatus(OrderConstant.AccountSplitStatus.NOT);
                     orderItemAccountMapper.insertSelective(account);
                     accounts.add(account);
-                    if (payType == ProductConstants.PayType.PREPAY) {
-                        Integer val = coreSubMap.get(saleCoreEpId);
-                        coreSubMap.put(saleCoreEpId, val == null ? account.getMoney() : val + account.getMoney());
-                    }
+                    Integer val = coreSubMap.get(saleCoreEpId);
+                    coreSubMap.put(saleCoreEpId, val == null ? account.getMoney() : val + account.getMoney());
                 }
             }
         }

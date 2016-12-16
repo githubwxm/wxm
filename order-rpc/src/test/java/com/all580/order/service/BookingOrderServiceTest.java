@@ -74,10 +74,11 @@ public class BookingOrderServiceTest extends AbstractTransactionalJUnit4SpringCo
         ProductSalesInfo salesInfo = salesInfoResult.get();
         // 每天的价格
         List<List<EpSalesInfo>> allDaysSales = salesInfo.getSales();
-        bookingOrderManager.calcSalesPrice(allDaysSales, 1141, quantity, 351);
+        bookingOrderManager.calcSalesPrice(allDaysSales, 1141, quantity, 350);
 
         List<OrderItemAccount> list = bookingOrderManager.preSplitAccount(allDaysSales, 999999, quantity, salesInfo.getPay_type(), bookingDate);
         System.out.println(JsonUtils.toJson(list));
+        bookingOrderManager.consumeOrReConsumeSplitAccount(list, 5012, bookingDate, quantity, "ssssss", true, true);
         throw new ApiException("hahhah");
     }
 
