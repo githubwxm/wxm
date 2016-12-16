@@ -62,4 +62,67 @@ public class TicketOrderController {
                 paymentFlag
         );
     }
+
+    @RequestMapping("order/detail/list")
+    @ResponseBody
+    public Result<Map<String, Object>> searchTicketOrderDetailBySupplier(
+            @RequestParam("ep_id") Integer epId,
+            @RequestParam("time_type") Integer timeType,
+            @RequestParam(value = "start", required = false) String startDate,
+            @RequestParam(value = "end", required = false) String endDate,
+            @RequestParam(value = "phone", required = false) String phone,
+            @RequestParam(value = "status", required = false) Integer status,
+            @RequestParam(value = "pro_sub_ticket_type", required = false) Integer proSubTicketType,
+            @RequestParam(value = "payment_flag", required = false) Integer paymentFlag,
+            @RequestParam(value = "number", required = false) Integer number,
+            @RequestParam(value = "prod_from", required = false) Integer prodFrom,
+            @RequestParam(value = "prod_name", required = false) String prodName,
+            @RequestParam("record_start") Integer recordStart,
+            @RequestParam("record_count") Integer recordCount
+    ) {
+        return ticketOrderReportRPCService.selectTicketOrderDetailBySupplier(
+                epId,
+                timeType,
+                startDate,
+                endDate,
+                phone,
+                status,
+                proSubTicketType,
+                paymentFlag,
+                number,
+                prodFrom,
+                prodName,
+                recordStart,
+                recordCount
+        );
+    }
+    @RequestMapping("order/detail/report")
+    @ResponseBody
+    public Result<Map<String, Object>> searchTicketOrderDetailReportBySupplier(
+            @RequestParam("ep_id") Integer epId,
+            @RequestParam("time_type") Integer timeType,
+            @RequestParam(value = "start", required = false) String startDate,
+            @RequestParam(value = "end", required = false) String endDate,
+            @RequestParam(value = "phone", required = false) String phone,
+            @RequestParam(value = "status", required = false) Integer status,
+            @RequestParam(value = "pro_sub_ticket_type", required = false) Integer proSubTicketType,
+            @RequestParam(value = "payment_flag", required = false) Integer paymentFlag,
+            @RequestParam(value = "number", required = false) Integer number,
+            @RequestParam(value = "prod_from", required = false) Integer prodFrom,
+            @RequestParam(value = "prod_name", required = false) String prodName
+    ) {
+        return ticketOrderReportRPCService.selectTicketOrderDetailReportBySupplier(
+                epId,
+                timeType,
+                startDate,
+                endDate,
+                phone,
+                status,
+                proSubTicketType,
+                paymentFlag,
+                number,
+                prodFrom,
+                prodName
+        );
+    }
 }
