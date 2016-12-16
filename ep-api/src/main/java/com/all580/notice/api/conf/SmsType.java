@@ -23,6 +23,7 @@ public class SmsType {
         public static final int SUPPLIER_SELLER_FREEZE =12012;//销售商或供应商被冻结
         public static final int USER_STOP = 12013; // 员工账号 禁用（不可恢复
         public static final int PLATFORM_ACTIVE = 12014; //平台商激活
+        public static final int PLATFORM_ACTIVE_SINGLE =12114;//平台商激活
         public static final int SUPPLIER_SELLER_ACTIVE = 12015; // 销售商、供应商激活
         public static final int USER_ACTIVE= 12016; // 员工账号激活
         public static final int USER_AUDIT= 12017; // 企业审核申请
