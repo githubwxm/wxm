@@ -49,7 +49,7 @@ public class EpController extends BaseController {
             return epService.createEp(map);
     }
 
-    @RequestMapping(value = "updateEpRemoveGroup", method = RequestMethod.POST)
+    @RequestMapping(value = "update_ep_remove_group", method = RequestMethod.POST)
     @ResponseBody
     public Result updateEpRemoveGroup(@RequestBody Map<String,Object> map){
         //creator_ep_id
