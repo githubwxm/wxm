@@ -370,6 +370,9 @@ public class BaseOrderManager {
                 }
                 // 核销分账可提现金额
                 changeInfo.setCan_cash(consume ? money : -money);
+                if (orderItem.getPayment_flag() == ProductConstants.PayType.PAYS) {
+                    changeInfo.setBalance(consume ? money : -money);
+                }
                 balanceChangeInfoList.add(changeInfo);
                 account.setSettled_money(consume ? account.getSettled_money() + money : account.getSettled_money() - money); // 设置已结算金额
                 orderItemAccountMapper.updateByPrimaryKeySelective(account);
