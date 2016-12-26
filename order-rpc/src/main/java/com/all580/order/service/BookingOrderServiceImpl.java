@@ -487,19 +487,12 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             throw new ApiException("该子订单已发起退票");
         }
 
-        /*List<MaSendResponse> maSendResponseList = maSendResponseMapper.selectByOrderItemId(orderItem.getId());
-        if (orderItem.getStatus() == OrderConstant.OrderItemStatus.SEND && maSendResponseList != null && maSendResponseList.size() > 0) {
-            ReSendTicketParams reSendTicketParams = new ReSendTicketParams();
-            reSendTicketParams.setOrderSn(orderItem.getNumber());
-            reSendTicketParams.setVisitorId(visitorId);
-            reSendTicketParams.setMobile(params.get("phone").toString());
-            return voucherRPCService.resendTicket(orderItem.getEp_ma_id(), reSendTicketParams);
-        }*/
+        if (orderItem.getStatus() == OrderConstant.OrderItemStatus.SEND) {
+            return voucherRPCService.resendGroupTicket(orderItem.getEp_ma_id(), orderItem.getNumber());
+        }
         // 出票
         // 记录任务
-        Map<String, String> jobParam = new HashMap<>();
-        jobParam.put("orderItemId", orderItem.getId().toString());
-        //bookingOrderManager.addJob(OrderConstant.Actions.SEND_TICKET, jobParam);
+        bookingOrderManager.addJob(OrderConstant.Actions.SEND_GROUP_TICKET, Collections.singletonMap("orderItemId", orderItem.getId().toString()));
         return new Result<>(true);
     }
 
@@ -564,8 +557,8 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             //预定日期
             Date bookingDate = DateFormatUtils.parseString(DateFormatUtils.DATE_TIME_FORMAT, CommonUtil.objectParseString(item.get("start")));
             // 验证出游日期
-            if (group.getStart_date().before(bookingDate)) {
-                throw new ApiException("团队出游日期不能小于预定日期");
+            if (bookingDate.before(group.getStart_date())) {
+                throw new ApiException("预定日期不能小于团队出游日期");
             }
 
             // 验证是否可售
