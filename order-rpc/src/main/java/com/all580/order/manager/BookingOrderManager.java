@@ -251,6 +251,7 @@ public class BookingOrderManager extends BaseOrderManager {
         orderItem.setPro_sub_number(info.getProduct_sub_code());
         orderItem.setPro_sub_id(proSubId);
         orderItem.setPro_type(info.getProduct_type());
+        orderItem.setMa_product_id(info.getMa_product_id());
         orderItem.setQuantity(quantity);
         orderItem.setPayment_flag(info.getPay_type());
         orderItem.setStatus(OrderConstant.OrderItemStatus.AUDIT_SUCCESS);

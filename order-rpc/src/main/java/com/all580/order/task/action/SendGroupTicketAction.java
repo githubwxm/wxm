@@ -111,6 +111,7 @@ public class SendGroupTicketAction implements JobRunner {
                 order.getStatus() == OrderConstant.OrderStatus.PAID) {
             sendGroupTicketParams.setPayTime(order.getPay_time());
         }
+        sendGroupTicketParams.setMaProductId(orderItem.getMa_product_id());
         sendGroupTicketParams.setSendSms(true);
 
         List<Visitor> visitorList = visitorMapper.selectByOrderDetailId(detail.getId());
