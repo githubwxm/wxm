@@ -7,6 +7,7 @@ import com.all580.ep.api.service.LogCreditService;
 import com.all580.payment.api.service.BalancePayService;
 import com.all580.payment.api.service.FundSerialService;
 import com.all580.payment.api.service.PlatfromFundService;
+import com.all580.report.api.service.EpInfoService;
 import com.framework.common.BaseController;
 import com.framework.common.Result;
 import com.framework.common.util.CommonUtil;
@@ -33,6 +34,8 @@ public class EpFinanceController extends BaseController {
     @Autowired
     private LogCreditService logCreditService;
 
+    @Autowired
+    private EpInfoService epInfoService;
     @Autowired
     private EpFinanceService epFinanceService;
 
@@ -189,7 +192,7 @@ public class EpFinanceController extends BaseController {
     @RequestMapping(value = "credit/get_account_info_list", method = RequestMethod.GET)
     @ResponseBody
     public Result<?> getAccountInfoList(HttpServletRequest request,Integer ep_id,String name,String link_phone
-            ,Integer ep_type,Integer province,Integer city, Integer record_start, Integer record_count){
+            ,Integer ep_type,Integer province,Integer city,Integer min_balance, Integer max_balance, Integer record_start, Integer record_count){
         Map<String,Object> map = new HashMap<>();
         map.put("ep_id",ep_id);  //todo 获取平台商id
         map.put("core_ep_id",ep_id);//
@@ -200,8 +203,10 @@ public class EpFinanceController extends BaseController {
         map.put("city",city);
         map.put("record_start",record_start);
         map.put("record_count",record_count);
+        map.put("min_balance",min_balance);
+        map.put("max_balance",max_balance);
        // ParamsMapValidate.validate(map, generateCreateSelectValidate());
-        return epFinanceService.getAccountInfoList(map);
+        return epInfoService.getAccountInfoList(map);
     }
 
     @RequestMapping(value = "update_summary", method = RequestMethod.POST)
