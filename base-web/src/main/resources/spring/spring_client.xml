@@ -69,6 +69,7 @@
 	<dubbo:reference id="fundSerialService" interface="com.all580.payment.api.service.FundSerialService"/>
 
 	<dubbo:reference id="ticketOrderReportService" interface="com.all580.report.api.service.TicketOrderReportRPCService" />
+	<dubbo:reference id="epInfoService" interface="com.all580.report.api.service.EpInfoService" />
 
 
 </beans>
