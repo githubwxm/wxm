@@ -20,7 +20,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author zhouxianjun(Alone)
@@ -83,12 +86,14 @@ public class PaymentCallbackAction implements JobRunner {
         List<Map<String, String>> jobParams = new ArrayList<>();
         List<Map<String, String>> jobGroupParams = new ArrayList<>();
         for (OrderItem orderItem : orderItems) {
+            Map<String, String> jobParam = new HashMap<>();
+            jobParam.put("orderItemId", orderItem.getId().toString());
             // 团队票
             if (orderItem.getGroup_id() != null && orderItem.getGroup_id() != 0) {
-                jobGroupParams.add(Collections.singletonMap("orderItemId", orderItem.getId().toString()));
+                jobGroupParams.add(jobParam);
                 continue;
             }
-            jobParams.add(Collections.singletonMap("orderItemId", orderItem.getId().toString()));
+            jobParams.add(jobParam);
         }
         if (jobParams.size() > 0) {
             bookingOrderManager.addJobs(OrderConstant.Actions.SEND_TICKET, jobParams);
