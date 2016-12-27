@@ -142,6 +142,14 @@ public class OrderController extends BaseController {
         return bookingOrderService.resendTicketForGroup(params);
     }
 
+    @RequestMapping(value = "modify/group/ticket", method = RequestMethod.POST)
+    @ResponseBody
+    public Result<?> modifyTicketForGroup(@RequestBody Map params) throws Exception {
+        // 验证参数
+        ParamsMapValidate.validate(params, orderValidateManager.modifyTicketForGroupValidate());
+        return bookingOrderService.modifyTicketForGroup(params);
+    }
+
     @RequestMapping(value = "platform/list/supplier")
     @ResponseBody
     public Result<?> listPlatformOrderBySupplierCore(@RequestParam Integer supplier_core_ep_id,
