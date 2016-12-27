@@ -737,6 +737,19 @@ public class EpServiceImpl implements EpService {
     }
 
     @Override
+    public Result<List<Integer>> getSeller(List<Integer> ids) {
+        Result<List<Integer>> result = new Result<>();
+        if(ids!=null){
+            result.put(epMapper.getSeller(ids));
+            result.setSuccess();
+        }else{
+            result.put(null);
+            result.setSuccess();
+        }
+        return result;
+    }
+
+    @Override
     public Result<Integer> selectCreatorEpId(Integer id) {
         return selectField(id, EpConstant.EpKey.CREATOR_EP_ID);
     }

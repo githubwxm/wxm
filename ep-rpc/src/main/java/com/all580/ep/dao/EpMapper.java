@@ -58,4 +58,5 @@ public interface EpMapper {
 
     List<Map<String,String>> getCoreEpName(@Param("list") List<Integer> list,@Param("mainEpId") Integer mainEpId);
     List<Integer> selectSupplier(Integer  coreEpId);
+    List<Integer> getSeller(@Param("list") List<Integer> list);
 }
