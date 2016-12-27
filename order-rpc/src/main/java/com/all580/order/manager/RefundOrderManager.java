@@ -15,6 +15,7 @@ import com.all580.product.api.consts.ProductRules;
 import com.all580.product.api.model.ProductSearchParams;
 import com.all580.product.api.service.ProductSalesPlanRPCService;
 import com.all580.voucher.api.model.RefundTicketParams;
+import com.all580.voucher.api.model.group.RefundGroupTicketParams;
 import com.all580.voucher.api.service.VoucherRPCService;
 import com.framework.common.Result;
 import com.framework.common.lang.Arith;
@@ -701,6 +702,14 @@ public class RefundOrderManager extends BaseOrderManager {
             if (i != refundVisitorList.size()) {
                 log.warn("*****退票发起部分成功*****");
             }
+        } else {
+            RefundGroupTicketParams ticketParams = new RefundGroupTicketParams();
+            ticketParams.setOrderSn(orderItem.getNumber());
+            ticketParams.setRefundSn(String.valueOf(refundSerial.getLocal_serial_no()));
+            ticketParams.setQuantity(refundOrder.getQuantity());
+            ticketParams.setReason(refundOrder.getCause());
+            ticketParams.setApplyTime(refundOrder.getAudit_time());
+            voucherRPCService.refundGroupTicket(orderItem.getEp_ma_id(), ticketParams);
         }
     }
 
