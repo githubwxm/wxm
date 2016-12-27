@@ -87,6 +87,11 @@ public class BookingOrderManager extends BaseOrderManager {
             }
             if (maxQuantity > 0) {
                 Integer qty = CommonUtil.objectParseInteger(visitorMap.get("quantity"));
+                if (qty <= 0) {
+                    return new Result<>(false, Result.PARAMS_ERROR,
+                            String.format("身份证:%s预定张数%d 不能小于1",
+                                    sid, qty));
+                }
                 int quantity = getOrderByQuantity(productSubCode, sid, bookingDate);
                 if (quantity + qty > maxQuantity) {
                     return new Result<>(false, Result.PARAMS_ERROR,

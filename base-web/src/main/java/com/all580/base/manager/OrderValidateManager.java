@@ -49,6 +49,11 @@ public class OrderValidateManager {
                 "operator_id" // 订票用户ID
         }, new ValidRule[]{new ValidRule.Digits()});
 
+        rules.put(new String[]{
+                "items.days", // 天数：景点固定1
+                "items.quantity" // 订票数量
+        }, new ValidRule[]{new ValidRule.Digits(1L, 10000L)});
+
         // 校验身份证
         rules.put(new String[]{
                 "items.visitor.sid" // 订单游客身份证号码
