@@ -53,4 +53,11 @@ public interface BookingOrderService {
      * @return
      */
     Result<?> createForGroup(Map params) throws Exception;
+
+    /**
+     * 修改票据
+     * @param params
+     * @return
+     */
+    Result<?> modifyTicketForGroup(Map params);
 }

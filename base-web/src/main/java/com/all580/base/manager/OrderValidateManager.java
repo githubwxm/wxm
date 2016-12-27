@@ -270,6 +270,41 @@ public class OrderValidateManager {
     }
 
     /**
+     * 订单重新发票验证
+     * @return
+     */
+    public Map<String[], ValidRule[]> resendTicketForGroupValidate() {
+        Map<String[], ValidRule[]> rules = new HashMap<>();
+        rules.put(new String[]{
+                "order_item_sn" // 子订单编号(流水)
+        }, new ValidRule[]{new ValidRule.NotNull(), new ValidRule.Digits()});
+
+        return rules;
+    }
+
+    /**
+     * 修改团队票据
+     * @return
+     */
+    public Map<String[], ValidRule[]> modifyTicketForGroupValidate() {
+        Map<String[], ValidRule[]> rules = new HashMap<>();
+        rules.put(new String[]{
+                "order_item_sn" // 子订单编号(流水)
+        }, new ValidRule[]{new ValidRule.NotNull(), new ValidRule.Digits()});
+
+        rules.put(new String[]{
+                "guide_phone",
+                "visitors.phone"
+        }, new ValidRule[]{new ValidRule.Pattern(ValidRule.MOBILE_PHONE)});
+
+        rules.put(new String[]{
+                "guide_sid",
+                "visitors.sid"
+        }, new ValidRule[]{new ValidRule.IdCard()});
+        return rules;
+    }
+
+    /**
      * 平台商订单列表验证
      * @return
      */

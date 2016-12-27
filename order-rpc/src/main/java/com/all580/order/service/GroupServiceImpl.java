@@ -237,7 +237,9 @@ public class GroupServiceImpl implements GroupService {
             if (guide == null) {
                 throw new ApiException("导游不存在");
             }
-            return new Result<>(true).putExt(Result.SYNC_DATA, groupSyncManager.syncGroup(group.getId()));
+            Result<Object> result = new Result<>(true);
+            result.put(Collections.singletonMap("id", group.getId()));
+            return result.putExt(Result.SYNC_DATA, groupSyncManager.syncGroup(group.getId()));
         }
         Guide guide = new Guide();
         guide.setCore_ep_id(group.getCore_ep_id());

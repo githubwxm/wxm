@@ -7,6 +7,7 @@ import com.all580.order.api.service.BookingOrderService;
 import com.all580.order.dao.*;
 import com.all580.order.dto.LockStockDto;
 import com.all580.order.entity.*;
+import com.all580.order.entity.Visitor;
 import com.all580.order.manager.BookingOrderManager;
 import com.all580.order.manager.RefundOrderManager;
 import com.all580.order.manager.SmsManager;
@@ -19,7 +20,8 @@ import com.all580.product.api.model.ProductSalesDayInfo;
 import com.all580.product.api.model.ProductSalesInfo;
 import com.all580.product.api.model.ProductSearchParams;
 import com.all580.product.api.service.ProductSalesPlanRPCService;
-import com.all580.voucher.api.model.ReSendTicketParams;
+import com.all580.voucher.api.model.*;
+import com.all580.voucher.api.model.group.ModifyGroupTicketParams;
 import com.all580.voucher.api.service.VoucherRPCService;
 import com.framework.common.Result;
 import com.framework.common.distributed.lock.DistributedLockTemplate;
@@ -487,19 +489,14 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             throw new ApiException("该子订单已发起退票");
         }
 
-        /*List<MaSendResponse> maSendResponseList = maSendResponseMapper.selectByOrderItemId(orderItem.getId());
-        if (orderItem.getStatus() == OrderConstant.OrderItemStatus.SEND && maSendResponseList != null && maSendResponseList.size() > 0) {
-            ReSendTicketParams reSendTicketParams = new ReSendTicketParams();
-            reSendTicketParams.setOrderSn(orderItem.getNumber());
-            reSendTicketParams.setVisitorId(visitorId);
-            reSendTicketParams.setMobile(params.get("phone").toString());
-            return voucherRPCService.resendTicket(orderItem.getEp_ma_id(), reSendTicketParams);
-        }*/
+        if (orderItem.getStatus() == OrderConstant.OrderItemStatus.SEND) {
+            return voucherRPCService.resendGroupTicket(orderItem.getEp_ma_id(), orderItem.getNumber());
+        }
         // 出票
         // 记录任务
-        Map<String, String> jobParam = new HashMap<>();
-        jobParam.put("orderItemId", orderItem.getId().toString());
-        //bookingOrderManager.addJob(OrderConstant.Actions.SEND_TICKET, jobParam);
+        Map<String, String> jobMap = new HashMap<>();
+        jobMap.put("orderItemId", orderItem.getId().toString());
+        bookingOrderManager.addJob(OrderConstant.Actions.SEND_GROUP_TICKET, jobMap);
         return new Result<>(true);
     }
 
@@ -564,8 +561,8 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             //预定日期
             Date bookingDate = DateFormatUtils.parseString(DateFormatUtils.DATE_TIME_FORMAT, CommonUtil.objectParseString(item.get("start")));
             // 验证出游日期
-            if (group.getStart_date().before(bookingDate)) {
-                throw new ApiException("团队出游日期不能小于预定日期");
+            if (bookingDate.before(group.getStart_date())) {
+                throw new ApiException("预定日期不能小于团队出游日期");
             }
 
             // 验证是否可售
@@ -739,6 +736,59 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         Map syncData = bookingOrderManager.syncCreateOrderData(order.getId());
         result.putExt(Result.SYNC_DATA, syncData);
         return result;
+    }
+
+    @Override
+    public Result<?> modifyTicketForGroup(Map params) {
+        OrderItem orderItem = orderItemMapper.selectBySN(Long.valueOf(params.get("order_item_sn").toString()));
+        if (orderItem == null) {
+            return new Result(false, "订单不存在");
+        }
+        if (orderItem.getGroup_id() == null || orderItem.getGroup_id() == 0) {
+            return new Result(false, "该订单不是团队订单");
+        }
+        if ((orderItem.getStatus() != OrderConstant.OrderItemStatus.SEND &&
+                orderItem.getStatus() != OrderConstant.OrderItemStatus.MODIFY &&
+                orderItem.getStatus() != OrderConstant.OrderItemStatus.MODIFY_FAIL) ||
+                (orderItem.getUsed_quantity() != null && orderItem.getUsed_quantity() > 0)) {
+            return new Result(false, "该订单不在可修改状态");
+        }
+
+        ModifyGroupTicketParams ticketParams = new ModifyGroupTicketParams();
+        ticketParams.setOrderSn(orderItem.getNumber());
+        String guideName = CommonUtil.objectParseString(params.get("guide_name"));
+        if (StringUtils.isNotEmpty(guideName)) {
+            ticketParams.setGuideName(guideName);
+        }
+        String guidePhone = CommonUtil.objectParseString(params.get("guide_phone"));
+        if (StringUtils.isNotEmpty(guidePhone)) {
+            ticketParams.setGuidePhone(guidePhone);
+        }
+        String guideSid = CommonUtil.objectParseString(params.get("guide_sid"));
+        if (StringUtils.isNotEmpty(guideSid)) {
+            ticketParams.setGuideSid(guideSid);
+        }
+        String guideCard = CommonUtil.objectParseString(params.get("guide_card"));
+        if (StringUtils.isNotEmpty(guideCard)) {
+            ticketParams.setGuideCard(guideCard);
+        }
+        List visitors = (List) params.get("visitors");
+        if (visitors != null && visitors.size() > 0) {
+            List<com.all580.voucher.api.model.Visitor> vs = new ArrayList<>();
+            for (Object o : visitors) {
+                Map visitor = (Map) o;
+                String name = CommonUtil.objectParseString(visitor.get("name"));
+                if (StringUtils.isNotEmpty(name)) {
+                    com.all580.voucher.api.model.Visitor v = new com.all580.voucher.api.model.Visitor();
+                    v.setName(name);
+                    v.setPhone(visitor.get("phone").toString());
+                    v.setSid(visitor.get("sid").toString());
+                    vs.add(v);
+                }
+            }
+            ticketParams.setVisitors(vs);
+        }
+        return voucherRPCService.modifyGroupTicket(orderItem.getEp_ma_id(), ticketParams);
     }
 
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
