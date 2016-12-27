@@ -63,7 +63,7 @@ public class SendTicketAction implements JobRunner {
             log.warn("出票任务,子订单不存在");
             throw new Exception("子订单不存在");
         }
-        if (orderItem.getGroup_id() != null && orderItem.getGroup_id() != 0) {
+        if (orderItem.getPro_sub_ticket_type() != null && orderItem.getPro_sub_ticket_type() != ProductConstants.TeamTicketType.INDIVIDUAL) {
             log.warn("出票任务,该订单不是散客订单");
             throw new Exception("该订单不是散客订单");
         }

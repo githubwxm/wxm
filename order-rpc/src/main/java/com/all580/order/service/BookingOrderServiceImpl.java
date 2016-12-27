@@ -484,6 +484,11 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             throw new ApiException("子订单不在可重新发票状态");
         }
 
+        if (!(orderItem.getGroup_id() != null && orderItem.getGroup_id() != 0 &&
+                orderItem.getPro_sub_ticket_type() != null && orderItem.getPro_sub_ticket_type() == ProductConstants.TeamTicketType.TEAM)) {
+            return new Result(false, "该订单不是团队订单");
+        }
+
         List<RefundOrder> refundOrderList = refundOrderMapper.selectByItemId(orderItem.getId());
         if (refundOrderList != null && refundOrderList.size() > 0) {
             throw new ApiException("该子订单已发起退票");
@@ -744,7 +749,8 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         if (orderItem == null) {
             return new Result(false, "订单不存在");
         }
-        if (orderItem.getGroup_id() == null || orderItem.getGroup_id() == 0) {
+        if (!(orderItem.getGroup_id() != null && orderItem.getGroup_id() != 0 &&
+                orderItem.getPro_sub_ticket_type() != null && orderItem.getPro_sub_ticket_type() == ProductConstants.TeamTicketType.TEAM)) {
             return new Result(false, "该订单不是团队订单");
         }
         if ((orderItem.getStatus() != OrderConstant.OrderItemStatus.SEND &&

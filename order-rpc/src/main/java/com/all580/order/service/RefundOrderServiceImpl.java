@@ -188,7 +188,8 @@ public class RefundOrderServiceImpl implements RefundOrderService {
             throw new ApiException("订单不存在");
         }
 
-        if (orderItem.getGroup_id() == null || orderItem.getGroup_id() == 0) {
+        if (!(orderItem.getGroup_id() != null && orderItem.getGroup_id() != 0 &&
+                orderItem.getPro_sub_ticket_type() != null && orderItem.getPro_sub_ticket_type() == ProductConstants.TeamTicketType.TEAM)) {
             throw new ApiException("该订单不是团队订单");
         }
 

@@ -7,6 +7,7 @@ import com.all580.order.entity.Order;
 import com.all580.order.entity.OrderItem;
 import com.all580.order.manager.BookingOrderManager;
 import com.all580.order.manager.SmsManager;
+import com.all580.product.api.consts.ProductConstants;
 import com.all580.product.api.model.ProductSearchParams;
 import com.all580.product.api.service.ProductSalesPlanRPCService;
 import com.framework.common.validate.ParamsMapValidate;
@@ -89,7 +90,8 @@ public class PaymentCallbackAction implements JobRunner {
             Map<String, String> jobParam = new HashMap<>();
             jobParam.put("orderItemId", orderItem.getId().toString());
             // 团队票
-            if (orderItem.getGroup_id() != null && orderItem.getGroup_id() != 0) {
+            if (orderItem.getGroup_id() != null && orderItem.getGroup_id() != 0 &&
+                    orderItem.getPro_sub_ticket_type() != null && orderItem.getPro_sub_ticket_type() == ProductConstants.TeamTicketType.TEAM) {
                 jobGroupParams.add(jobParam);
                 continue;
             }

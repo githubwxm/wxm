@@ -64,7 +64,8 @@ public class SendGroupTicketAction implements JobRunner {
             log.warn("出票任务,子订单不存在");
             throw new Exception("子订单不存在");
         }
-        if (orderItem.getGroup_id() == null || orderItem.getGroup_id() == 0) {
+        if (!(orderItem.getGroup_id() != null && orderItem.getGroup_id() != 0 &&
+                orderItem.getPro_sub_ticket_type() != null && orderItem.getPro_sub_ticket_type() == ProductConstants.TeamTicketType.TEAM)) {
             log.warn("出票任务,该订单不是团队订单");
             throw new Exception("该订单不是团队订单");
         }

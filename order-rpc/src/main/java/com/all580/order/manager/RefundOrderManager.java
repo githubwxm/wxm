@@ -138,7 +138,8 @@ public class RefundOrderManager extends BaseOrderManager {
             refundOrderMapper.updateByPrimaryKeySelective(refundOrder);
         } else {
             // 没有出票直接退款
-            if (orderItem.getGroup_id() != null && orderItem.getGroup_id() != 0) {
+            if (orderItem.getGroup_id() != null && orderItem.getGroup_id() != 0 &&
+                    orderItem.getPro_sub_ticket_type() != null && orderItem.getPro_sub_ticket_type() == ProductConstants.TeamTicketType.TEAM) {
                 nonSendTicketRefundForGroup(refundOrder, orderItem.getGroup_id());
                 orderItem.setRefund_quantity(refundOrder.getQuantity());
             } else {
