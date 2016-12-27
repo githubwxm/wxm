@@ -127,7 +127,9 @@ public class BookingOrderManager extends BaseOrderManager {
                     ids.add(memberId);
                 }
             }
-            members = groupMemberMapper.selectByIds(groupId, ids);
+            if (ids.size() > 0) {
+                members = groupMemberMapper.selectByIds(groupId, ids);
+            }
         }
         if (realName != null && realName != ProductConstants.NeedRealNameState.NO_NEED) {
             if (members == null || members.isEmpty() || members.size() != ids.size()) {
