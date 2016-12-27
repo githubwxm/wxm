@@ -492,7 +492,9 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         }
         // 出票
         // 记录任务
-        bookingOrderManager.addJob(OrderConstant.Actions.SEND_GROUP_TICKET, Collections.singletonMap("orderItemId", orderItem.getId().toString()));
+        Map<String, String> jobMap = new HashMap<>();
+        jobMap.put("orderItemId", orderItem.getId().toString());
+        bookingOrderManager.addJob(OrderConstant.Actions.SEND_GROUP_TICKET, jobMap);
         return new Result<>(true);
     }
 
