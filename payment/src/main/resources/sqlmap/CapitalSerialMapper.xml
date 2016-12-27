@@ -200,7 +200,7 @@
         <if test="balance_status != null  and balance_status != ''">
           and   f.balance_status= #{balance_status}
         </if>
-        <if test="start_date != null and end_date != null ">
+        <if test="start_date != null and end_date != null and start_date != '' and end_date != ''">
             and create_time between  #{start_date} and #{end_date}
         </if>
         <if test="ref_id != null  and ref_id != ''">
@@ -226,7 +226,7 @@
         <if test="balance_status != null  and balance_status != ''">
             and   f.balance_status= #{balance_status}
         </if>
-        <if test="start_date != null and end_date != null ">
+        <if test="start_date != null and end_date != null and start_date != '' and end_date != ''">
             and create_time between  #{start_date} and #{end_date}
         </if>
         <if test="ref_id != null  and ref_id != ''">
