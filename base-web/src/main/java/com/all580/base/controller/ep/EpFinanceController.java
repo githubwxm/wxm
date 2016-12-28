@@ -248,7 +248,7 @@ public class EpFinanceController extends BaseController {
             throw new ApiException("充值金额过大或过小");
         }
         Integer balanceEpId=CommonUtil.objectParseInteger(params.get("balance_ep_id")) ;
-        return epFinanceService.addBalance(balanceEpId,coreEpId,balance);
+        return epFinanceService.addBalance(balanceEpId,coreEpId,balance,params.get("operator_name"));
     }
 
 
