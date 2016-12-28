@@ -38,7 +38,7 @@ public interface EpFinanceService {
     Result<Map<String,Object>> getSellerPlatfromAccuntInfo(Map<String,Object> map);
     Result<Map<String, String>> getBalanceAccountInfo(Integer epId, Integer coreEpId);
 
-    Result addBalance(Integer epId,Integer coreEpId,Integer balance);
+    Result addBalance(Integer epId,Integer coreEpId,Integer balance,Object operator_name);
 
     Result getBalanceSerialList(Integer epId, Integer coreEpId,
                                 String balanceSatatus,String startDate,String endDate,String ref_id,Integer export ,
