@@ -6,7 +6,7 @@
     <!-- 远程rpc类声明 -->
     <!-- 提供方应用信息，用于计算依赖关系 -->
     <dubbo:application name="payment-provider"/>
-
+    <dubbo:monitor protocol="registry" />
     <!---->
     <!-- 使用zookeeper广播注册中心暴露服务地址 -->
     <dubbo:registry address="${dubbo.registry.zk}"/>
