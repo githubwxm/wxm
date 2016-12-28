@@ -597,8 +597,12 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             bookingOrderManager.validateBookingDate(bookingDate, dayInfoList);
 
             // 验证最低购票
-            if (salesInfo.getMin_buy_quantity() != null && salesInfo.getMin_buy_quantity() > allQuantity) {
+            if (salesInfo.getProduct_sub_ticket_type() == ProductConstants.TeamTicketType.TEAM && salesInfo.getMin_buy_quantity() != null && salesInfo.getMin_buy_quantity() > allQuantity) {
                 throw new ApiException("低于最低购买票数");
+            }
+            // 判断最高票数 散客
+            if (salesInfo.getProduct_sub_ticket_type() == ProductConstants.TeamTicketType.INDIVIDUAL && salesInfo.getMax_buy_quantity() != null && allQuantity > salesInfo.getMax_buy_quantity()) {
+                throw new ApiException(String.format("超过订单最高购买限制: 当前购买:%d, 最大购买:%d", allQuantity, salesInfo.getMax_buy_quantity()));
             }
 
             // 实名制验证

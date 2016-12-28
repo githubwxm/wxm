@@ -679,7 +679,16 @@ public class RefundOrderManager extends BaseOrderManager {
 
         int i = 0;
         OrderItem orderItem = orderItemMapper.selectByPrimaryKey(refundOrder.getOrder_item_id());
-        if (orderItem.getGroup_id() == null || orderItem.getGroup_id() == 0) {
+        if (orderItem.getGroup_id() != null && orderItem.getGroup_id() != 0 &&
+                orderItem.getPro_sub_ticket_type() != null && orderItem.getPro_sub_ticket_type() == ProductConstants.TeamTicketType.TEAM) {
+            RefundGroupTicketParams ticketParams = new RefundGroupTicketParams();
+            ticketParams.setOrderSn(orderItem.getNumber());
+            ticketParams.setRefundSn(String.valueOf(refundSerial.getLocal_serial_no()));
+            ticketParams.setQuantity(refundOrder.getQuantity());
+            ticketParams.setReason(refundOrder.getCause());
+            ticketParams.setApplyTime(refundOrder.getAudit_time());
+            voucherRPCService.refundGroupTicket(orderItem.getEp_ma_id(), ticketParams);
+        } else {
             List<RefundVisitor> refundVisitorList = refundVisitorMapper.selectByRefundId(refundOrder.getId());
             for (RefundVisitor refundVisitor : refundVisitorList) {
                 RefundTicketParams ticketParams = new RefundTicketParams();
@@ -703,14 +712,6 @@ public class RefundOrderManager extends BaseOrderManager {
             if (i != refundVisitorList.size()) {
                 log.warn("*****退票发起部分成功*****");
             }
-        } else {
-            RefundGroupTicketParams ticketParams = new RefundGroupTicketParams();
-            ticketParams.setOrderSn(orderItem.getNumber());
-            ticketParams.setRefundSn(String.valueOf(refundSerial.getLocal_serial_no()));
-            ticketParams.setQuantity(refundOrder.getQuantity());
-            ticketParams.setReason(refundOrder.getCause());
-            ticketParams.setApplyTime(refundOrder.getAudit_time());
-            voucherRPCService.refundGroupTicket(orderItem.getEp_ma_id(), ticketParams);
         }
     }
 
