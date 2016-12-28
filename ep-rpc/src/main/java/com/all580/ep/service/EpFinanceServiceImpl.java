@@ -159,7 +159,7 @@ public class EpFinanceServiceImpl implements EpFinanceService {
     }
 
     @Override
-    public Result addBalance(Integer epId,Integer coreEpId,Integer balance){
+    public Result addBalance(Integer epId,Integer coreEpId,Integer balance,Object operator_name){
         List<BalanceChangeInfo> balanceList=new ArrayList<>();
         BalanceChangeInfo b= new BalanceChangeInfo();
         b.setBalance(balance);
@@ -173,6 +173,7 @@ public class EpFinanceServiceImpl implements EpFinanceService {
         map.put(EpConstant.EpKey.CORE_EP_ID,coreEpId);
         map.put("money",balance);
         map.put("ref_type",PaymentConstant.BalanceChangeType.MANUAL_CHANGE_BALANCE_ADD);
+        map.put("operator_name",operator_name);
         fireBalanceChangedEvent(map);
         return balancePayService.changeBalances(balanceList, PaymentConstant.BalanceChangeType.MANUAL_CHANGE_BALANCE_ADD,serialNum);
     }
