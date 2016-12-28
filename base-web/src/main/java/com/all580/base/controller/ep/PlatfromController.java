@@ -146,7 +146,7 @@ public class PlatfromController extends BaseController {
     }
     @RequestMapping(value = "payment/select", method = RequestMethod.GET)
     @ResponseBody
-    public Result<Integer> paymentAdd(@RequestParam(value="id") Integer id) {
+    public Result<Integer> paymentSelect(@RequestParam(value="id") Integer id) {
         return     epPaymentConfService.selectByPrimaryKey(id);
     }
     /**
