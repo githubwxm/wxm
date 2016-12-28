@@ -10,9 +10,12 @@ import com.all580.order.manager.BookingOrderManager;
 import com.all580.order.manager.RefundOrderManager;
 import com.all580.order.manager.SmsManager;
 import com.framework.common.Result;
+import com.framework.common.distributed.lock.DistributedLockTemplate;
+import com.framework.common.distributed.lock.DistributedReentrantLock;
 import com.framework.common.lang.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.lang.exception.ApiException;
@@ -63,7 +66,9 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
     private SmsManager smsManager;
 
     @Autowired
-    private CoreEpChannelService coreEpChannelService;
+    private DistributedLockTemplate distributedLockTemplate;
+    @Value("${lock.timeout}")
+    private int lockTimeOut = 3;
 
     @Override
     public Result sendTicket(Long orderSn, List<SendTicketInfo> infoList, Date procTime) {
@@ -351,11 +356,6 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
             return new Result(false, "订单详情不存在");
         }
 
-        ClearanceWashedSerial oldSerial = clearanceWashedSerialMapper.selectBySn(info.getReValidateSn());
-        if (oldSerial != null) {
-            return new Result(false, "反核销流水:" + info.getReValidateSn() + "重复冲正");
-        }
-
         if (orderItem.getGroup_id() == null || orderItem.getGroup_id() == 0) {
             return new Result(false, "该订单不是团队订单");
         }
@@ -363,6 +363,11 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
         if (order == null) {
             return new Result(false, "订单不存在");
+        }
+
+        ClearanceWashedSerial oldSerial = clearanceWashedSerialMapper.selectBySn(info.getReValidateSn());
+        if (oldSerial != null) {
+            return new Result(false, "反核销流水:" + info.getReValidateSn() + "重复冲正");
         }
 
         // 目前景点只有一天
@@ -399,56 +404,65 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
             return new Result(false, "订单不存在");
         }
 
-        RefundSerial refundSerial = refundSerialMapper.selectByLocalSn(Long.valueOf(info.getRefId()));
-        if (refundSerial == null) {
-            return new Result(false, "退票流水错误");
-        }
-
-        if (refundSerial.getRefund_time() != null) {
-            return new Result(false, "退票流水:" + info.getRefId() + "重复操作");
-        }
 
         RefundOrder refundOrder = refundOrderMapper.selectByItemIdAndRefundSn(orderItem.getId(), Long.valueOf(info.getRefId()));
         if (refundOrder == null) {
             return new Result(false, "退订订单不存在");
         }
 
-        // 退票失败
-        if (!info.isSuccess()) {
-            return refundFail(refundOrder, orderItem);
+        // 分布式锁
+        DistributedReentrantLock lock = distributedLockTemplate.execute(info.getRefId(), lockTimeOut);
+
+        // 锁成功
+        try {
+            RefundSerial refundSerial = refundSerialMapper.selectByLocalSn(Long.valueOf(info.getRefId()));
+            if (refundSerial == null) {
+                return new Result(false, "退票流水错误");
+            }
+
+            if (refundSerial.getRefund_time() != null) {
+                return new Result(false, "退票流水:" + info.getRefId() + "重复操作");
+            }
+
+            // 退票失败
+            if (!info.isSuccess()) {
+                return refundFail(refundOrder, orderItem);
+            }
+
+            refundOrder.setRefund_ticket_time(procTime);
+
+            //refundSerial.setRemoteSerialNo(refundSn);
+            refundSerial.setRefund_time(procTime);
+
+            // 获取核销人信息
+            Visitor visitor = visitorMapper.selectByPrimaryKey(info.getVisitorSeqId());
+            visitor.setReturn_quantity(visitor.getReturn_quantity() + refundSerial.getQuantity());
+            visitorMapper.updateByPrimaryKeySelective(visitor);
+
+            RefundVisitor refundVisitor = refundVisitorMapper.selectByRefundIdAndVisitorId(refundOrder.getId(), info.getVisitorSeqId());
+            refundVisitor.setReturn_quantity(refundVisitor.getReturn_quantity() + refundSerial.getQuantity());
+            refundVisitor.setPre_quantity(0);
+            refundVisitorMapper.updateByPrimaryKeySelective(refundVisitor);
+            orderItem.setRefund_quantity(orderItem.getRefund_quantity() + refundSerial.getQuantity());
+            orderItemMapper.updateByPrimaryKeySelective(orderItem);
+            refundSerialMapper.updateByPrimaryKeySelective(refundSerial);
+
+            // 退款
+            Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
+            refundOrderManager.refundMoney(order, refundOrder.getMoney(), String.valueOf(refundOrder.getNumber()), refundOrder);
+
+            // 还库存 记录任务
+            Map<String, String> jobParams = new HashMap<>();
+            jobParams.put("orderItemId", String.valueOf(refundOrder.getOrder_item_id()));
+            jobParams.put("check", "false");
+            bookingOrderManager.addJob(OrderConstant.Actions.REFUND_STOCK, jobParams);
+
+            // 同步数据
+            refundOrderManager.syncRefundTicketData(refundOrder.getId());
+            return new Result(true);
+        } finally {
+            lock.unlock();
         }
-
-        refundOrder.setRefund_ticket_time(procTime);
-
-        //refundSerial.setRemoteSerialNo(refundSn);
-        refundSerial.setRefund_time(procTime);
-
-        // 获取核销人信息
-        Visitor visitor = visitorMapper.selectByPrimaryKey(info.getVisitorSeqId());
-        visitor.setReturn_quantity(visitor.getReturn_quantity() + refundSerial.getQuantity());
-        visitorMapper.updateByPrimaryKeySelective(visitor);
-
-        RefundVisitor refundVisitor = refundVisitorMapper.selectByRefundIdAndVisitorId(refundOrder.getId(), info.getVisitorSeqId());
-        refundVisitor.setReturn_quantity(refundVisitor.getReturn_quantity() + refundSerial.getQuantity());
-        refundVisitor.setPre_quantity(0);
-        refundVisitorMapper.updateByPrimaryKeySelective(refundVisitor);
-        orderItem.setRefund_quantity(orderItem.getRefund_quantity() + refundSerial.getQuantity());
-        orderItemMapper.updateByPrimaryKeySelective(orderItem);
-        refundSerialMapper.updateByPrimaryKeySelective(refundSerial);
-
-        // 退款
-        Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
-        refundOrderManager.refundMoney(order, refundOrder.getMoney(), String.valueOf(refundOrder.getNumber()), refundOrder);
-
-        // 还库存 记录任务
-        Map<String, String> jobParams = new HashMap<>();
-        jobParams.put("orderItemId", String.valueOf(refundOrder.getOrder_item_id()));
-        jobParams.put("check", "false");
-        bookingOrderManager.addJob(OrderConstant.Actions.REFUND_STOCK, jobParams);
-
-        // 同步数据
-        refundOrderManager.syncRefundTicketData(refundOrder.getId());
-        return new Result(true);
     }
 
     @Override
@@ -456,15 +470,6 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         OrderItem orderItem = orderItemMapper.selectBySN(orderSn);
         if (orderItem == null) {
             return new Result(false, "订单不存在");
-        }
-
-        RefundSerial refundSerial = refundSerialMapper.selectByLocalSn(Long.valueOf(info.getRefId()));
-        if (refundSerial == null) {
-            return new Result(false, "退票流水错误");
-        }
-
-        if (refundSerial.getRefund_time() != null) {
-            return new Result(false, "退票流水:" + info.getRefId() + "重复操作");
         }
 
         RefundOrder refundOrder = refundOrderMapper.selectByItemIdAndRefundSn(orderItem.getId(), Long.valueOf(info.getRefId()));
@@ -476,33 +481,49 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
             return new Result(false, "该订单不是团队订单");
         }
 
-        // 退票失败
-        if (!info.isSuccess()) {
-            return refundFail(refundOrder, orderItem);
+        // 分布式锁
+        DistributedReentrantLock lock = distributedLockTemplate.execute(info.getRefId(), lockTimeOut);
+
+        // 锁成功
+        try {
+            RefundSerial refundSerial = refundSerialMapper.selectByLocalSn(Long.valueOf(info.getRefId()));
+            if (refundSerial == null) {
+                return new Result(false, "退票流水错误");
+            }
+
+            if (refundSerial.getRefund_time() != null) {
+                return new Result(false, "退票流水:" + info.getRefId() + "重复操作");
+            }
+            // 退票失败
+            if (!info.isSuccess()) {
+                return refundFail(refundOrder, orderItem);
+            }
+
+            refundOrder.setRefund_ticket_time(procTime);
+
+            //refundSerial.setRemoteSerialNo(refundSn);
+            refundSerial.setRefund_time(procTime);
+
+            orderItem.setRefund_quantity(orderItem.getRefund_quantity() + refundSerial.getQuantity());
+            orderItemMapper.updateByPrimaryKeySelective(orderItem);
+            refundSerialMapper.updateByPrimaryKeySelective(refundSerial);
+
+            // 退款
+            Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
+            refundOrderManager.refundMoney(order, refundOrder.getMoney(), String.valueOf(refundOrder.getNumber()), refundOrder);
+
+            // 还库存 记录任务
+            Map<String, String> jobParams = new HashMap<>();
+            jobParams.put("orderItemId", String.valueOf(refundOrder.getOrder_item_id()));
+            jobParams.put("check", "false");
+            bookingOrderManager.addJob(OrderConstant.Actions.REFUND_STOCK, jobParams);
+
+            // 同步数据
+            refundOrderManager.syncRefundTicketData(refundOrder.getId());
+            return new Result(true);
+        } finally {
+            lock.unlock();
         }
-
-        refundOrder.setRefund_ticket_time(procTime);
-
-        //refundSerial.setRemoteSerialNo(refundSn);
-        refundSerial.setRefund_time(procTime);
-
-        orderItem.setRefund_quantity(orderItem.getRefund_quantity() + refundSerial.getQuantity());
-        orderItemMapper.updateByPrimaryKeySelective(orderItem);
-        refundSerialMapper.updateByPrimaryKeySelective(refundSerial);
-
-        // 退款
-        Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
-        refundOrderManager.refundMoney(order, refundOrder.getMoney(), String.valueOf(refundOrder.getNumber()), refundOrder);
-
-        // 还库存 记录任务
-        Map<String, String> jobParams = new HashMap<>();
-        jobParams.put("orderItemId", String.valueOf(refundOrder.getOrder_item_id()));
-        jobParams.put("check", "false");
-        bookingOrderManager.addJob(OrderConstant.Actions.REFUND_STOCK, jobParams);
-
-        // 同步数据
-        refundOrderManager.syncRefundTicketData(refundOrder.getId());
-        return new Result(true);
     }
 
     @Override

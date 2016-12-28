@@ -12,6 +12,7 @@
 	<!-- 使用zookeeper广播注册中心暴露服务地址 -->
 	<dubbo:registry address="${dubbo.registry.zk}" />
 	<dubbo:protocol name="dubbo" port="${dubbo.port}" />
+	<dubbo:monitor protocol="registry" />
 
 	<bean id="bookingOrderService" class="com.all580.order.service.BookingOrderServiceImpl" />
 	<bean id="refundOrderService" class="com.all580.order.service.RefundOrderServiceImpl" />
