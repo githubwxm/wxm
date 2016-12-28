@@ -74,7 +74,7 @@ public class TicketOrderController {
             @RequestParam(value = "status", required = false) Integer status,
             @RequestParam(value = "pro_sub_ticket_type", required = false) Integer proSubTicketType,
             @RequestParam(value = "payment_flag", required = false) Integer paymentFlag,
-            @RequestParam(value = "number", required = false) Integer number,
+            @RequestParam(value = "number", required = false) String number,
             @RequestParam(value = "prod_from", required = false) Integer prodFrom,
             @RequestParam(value = "prod_name", required = false) String prodName,
             @RequestParam("record_start") Integer recordStart,
@@ -107,7 +107,7 @@ public class TicketOrderController {
             @RequestParam(value = "status", required = false) Integer status,
             @RequestParam(value = "pro_sub_ticket_type", required = false) Integer proSubTicketType,
             @RequestParam(value = "payment_flag", required = false) Integer paymentFlag,
-            @RequestParam(value = "number", required = false) Integer number,
+            @RequestParam(value = "number", required = false) String number,
             @RequestParam(value = "prod_from", required = false) Integer prodFrom,
             @RequestParam(value = "prod_name", required = false) String prodName
     ) {
