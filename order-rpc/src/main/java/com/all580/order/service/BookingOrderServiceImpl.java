@@ -179,7 +179,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             List<List<EpSalesInfo>> allDaysSales = salesInfo.getSales();
 
             // 子订单总进货价
-            int[] priceArray = bookingOrderManager.calcSalesPrice(allDaysSales, buyEpId, quantity, from);
+            int[] priceArray = bookingOrderManager.calcSalesPrice(allDaysSales, salesInfo, buyEpId, quantity, from);
             int salePrice = priceArray[0]; // 销售价
             totalSalePrice += salePrice;
             // 只计算预付的,到付不计算在内
@@ -642,7 +642,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             List<List<EpSalesInfo>> allDaysSales = salesInfo.getSales();
 
             // 计算分销价格
-            int[] priceArray = bookingOrderManager.calcSalesPrice(allDaysSales, buyEpId, quantity, from);
+            int[] priceArray = bookingOrderManager.calcSalesPrice(allDaysSales, salesInfo, buyEpId, quantity, from);
             int salePrice = priceArray[0]; // 销售价
             totalSalePrice += salePrice;
             // 只计算预付的,到付不计算在内

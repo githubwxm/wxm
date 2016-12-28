@@ -438,7 +438,7 @@ public class BookingOrderManager extends BaseOrderManager {
      * @return
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public int[] calcSalesPrice(List<List<EpSalesInfo>> allDaysSales, int buyEpId, int quantity, int from) {
+    public int[] calcSalesPrice(List<List<EpSalesInfo>> allDaysSales, ProductSalesInfo salesInfo, int buyEpId, int quantity, int from) {
         int salePrice = 0;
         int buyingPrice = 0;
         int shopPrice = 0;
@@ -458,6 +458,16 @@ public class BookingOrderManager extends BaseOrderManager {
             self.setPrice(from == OrderConstant.FromType.TRUST ? info.getShop_price() : info.getPrice());
             if (self.getPrice() == null) {
                 self.setPrice(0);
+            }
+            // 判断最低零售价
+            if (from == OrderConstant.FromType.TRUST && self.getPrice() < salesInfo.getMin_price()) {
+                throw new ApiException(String.format("产品:%s不能低于最低零售价:%d,当前售卖价格:%d",
+                        salesInfo.getProduct_sub_name(), salesInfo.getMin_price(), self.getPrice()));
+            }
+            // 判断最高市场价
+            if (self.getPrice() > salesInfo.getMarket_price()) {
+                throw new ApiException(String.format("产品:%s不能高于市场价:%d,当前售卖价格:%d",
+                        salesInfo.getProduct_sub_name(), salesInfo.getMarket_price(), self.getPrice()));
             }
             daySales.add(self);
             salePrice += self.getPrice() * quantity;
