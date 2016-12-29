@@ -211,7 +211,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
                 throw new ApiException("游客票数与总票数不符");
             }
             // 判断最高票数 散客
-            if (salesInfo.getMax_buy_quantity() != null && visitorQuantity > salesInfo.getMax_buy_quantity()) {
+            if (salesInfo.getMax_buy_quantity() != null && salesInfo.getMax_buy_quantity() > 0 && visitorQuantity > salesInfo.getMax_buy_quantity()) {
                 throw new ApiException(String.format("超过订单最高购买限制: 当前购买:%d, 最大购买:%d", visitorQuantity, salesInfo.getMax_buy_quantity()));
             }
             lockStockDtoMap.put(orderItem.getId(), new LockStockDto(orderItem, detailList, dayInfoList));
@@ -601,7 +601,8 @@ public class BookingOrderServiceImpl implements BookingOrderService {
                 throw new ApiException("低于最低购买票数");
             }
             // 判断最高票数 散客
-            if (salesInfo.getProduct_sub_ticket_type() == ProductConstants.TeamTicketType.INDIVIDUAL && salesInfo.getMax_buy_quantity() != null && allQuantity > salesInfo.getMax_buy_quantity()) {
+            if (salesInfo.getProduct_sub_ticket_type() == ProductConstants.TeamTicketType.INDIVIDUAL &&
+                    salesInfo.getMax_buy_quantity() != null && salesInfo.getMax_buy_quantity() > 0 && allQuantity > salesInfo.getMax_buy_quantity()) {
                 throw new ApiException(String.format("超过订单最高购买限制: 当前购买:%d, 最大购买:%d", allQuantity, salesInfo.getMax_buy_quantity()));
             }
 
