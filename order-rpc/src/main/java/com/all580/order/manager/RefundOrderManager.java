@@ -241,6 +241,9 @@ public class RefundOrderManager extends BaseOrderManager {
             if (visitor.getQuantity() < vQuantity) {
                 throw new ApiException(String.format("游客:%s 票不足", new Object[]{visitor.getName()}));
             }
+            if (vQuantity <= 0) {
+                throw new ApiException(String.format("游客:%s 退票数量必须大于0", visitor.getName()));
+            }
             // 判断余票
             RefundVisitor upRefundVisitor = getRefundVisitorById(refundVisitorList, id);
             if (upRefundVisitor != null &&
