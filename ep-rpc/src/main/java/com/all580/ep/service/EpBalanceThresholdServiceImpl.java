@@ -44,8 +44,15 @@ public class EpBalanceThresholdServiceImpl implements EpBalanceThresholdService 
                 if(threshold.length()>7){
                     throw new ApiException("余额阀值太大超出范围");
                 }else{
-                    Integer num = CommonUtil.objectParseInteger(threshold);
-                    map.put("threshold",num*100);
+                   // Integer num = CommonUtil.objectParseInteger(threshold);
+                    try{
+                        double m = Double.parseDouble(CommonUtil.objectParseString(threshold))*100;
+                        int num =(int)m;
+                        map.put("threshold",num);
+                    }catch (NumberFormatException e){
+                        throw new ApiException("余额阀值格式错误");
+                    }
+
                 }
             }
             if(map.get("isChannel")==null){//添加通道汇率的时候不用检验是否一致
