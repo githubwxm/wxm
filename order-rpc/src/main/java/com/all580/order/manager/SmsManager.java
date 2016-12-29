@@ -241,7 +241,7 @@ public class SmsManager {
         sendSmsParams.put("date", DateFormatUtils.parseDateToDatetimeString(orderItem.getStart()));
         sendSmsParams.put("shuliang", String.valueOf(orderItem.getQuantity()));
         // TODO: 2016/11/8 找不到电话号码
-        //sendSmsParams.put("dianhuahaoma", null);
+        sendSmsParams.put("dianhuahaoma", "123456789");
         Result result = smsService.send(shipping.getPhone(), SmsType.Order.SUPPLIER_ORDER_REFUSE, order.getPayee_ep_id(), sendSmsParams);//发送短信
         if (!result.isSuccess()) {
             throw new ApiException("发送预定审核失败短信失败:" + result.getError());
