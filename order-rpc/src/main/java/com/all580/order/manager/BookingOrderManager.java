@@ -370,6 +370,7 @@ public class BookingOrderManager extends BaseOrderManager {
         visitor.setPhone(CommonUtil.objectParseString(v.get("phone")));
         visitor.setSid(CommonUtil.objectParseString(v.get("sid")));
         visitor.setQuantity(CommonUtil.objectParseInteger(v.get("quantity")));
+        visitor.setCard_type(OrderConstant.CardType.ID);
         visitorMapper.insertSelective(visitor);
         return visitor;
     }
@@ -389,6 +390,7 @@ public class BookingOrderManager extends BaseOrderManager {
         visitor.setPhone(member.getPhone());
         visitor.setSid(member.getCard());
         visitor.setGroup_id(groupId);
+        visitor.setCard_type(member.getCard_type());
         visitorMapper.insertSelective(visitor);
         return visitor;
     }
