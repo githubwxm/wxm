@@ -2,6 +2,7 @@ package com.all580.order.dto;
 
 import com.all580.order.entity.OrderItem;
 import com.all580.order.entity.OrderItemDetail;
+import com.all580.product.api.model.ProductSalesDayInfo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,4 +22,6 @@ public class LockStockDto {
     private OrderItem orderItem;
 
     private List<OrderItemDetail> orderItemDetail;
+
+    private List<ProductSalesDayInfo> dayInfoList;
 }

@@ -214,7 +214,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             if (salesInfo.getMax_buy_quantity() != null && visitorQuantity > salesInfo.getMax_buy_quantity()) {
                 throw new ApiException(String.format("超过订单最高购买限制: 当前购买:%d, 最大购买:%d", visitorQuantity, salesInfo.getMax_buy_quantity()));
             }
-            lockStockDtoMap.put(orderItem.getId(), new LockStockDto(orderItem, detailList));
+            lockStockDtoMap.put(orderItem.getId(), new LockStockDto(orderItem, detailList, dayInfoList));
             lockParams.add(bookingOrderManager.parseParams(orderItem));
             visitorMap.put(orderItem.getId(), visitorList);
 
@@ -683,7 +683,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
                 throw new ApiException("游客票数与总票数不符");
             }
 
-            lockStockDtoMap.put(orderItem.getId(), new LockStockDto(orderItem, detailList));
+            lockStockDtoMap.put(orderItem.getId(), new LockStockDto(orderItem, detailList, dayInfoList));
             lockParams.add(bookingOrderManager.parseParams(orderItem));
             visitorMap.put(orderItem.getId(), visitorList);
 
@@ -810,14 +810,19 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             OrderItem item = lockStockDto.getOrderItem();
             List<Boolean> booleanList = listMap.get(itemId);
             List<OrderItemDetail> orderItemDetail = lockStockDto.getOrderItemDetail();
-            if (booleanList.size() != orderItemDetail.size()) {
+            List<ProductSalesDayInfo> dayInfoList = lockStockDto.getDayInfoList();
+            if (booleanList.size() != orderItemDetail.size() || booleanList.size() != dayInfoList.size()) {
                 throw new ApiException(String.format("锁库存天数:%d与购买天数:%d不匹配", booleanList.size(), orderItemDetail.size()));
             }
             for (Boolean oversell : booleanList) {
                 OrderItemDetail detail = orderItemDetail.get(i);
+                ProductSalesDayInfo dayInfo = dayInfoList.get(i);
                 detail.setOversell(oversell);
                 // 如果是超卖则把子订单状态修改为待审
-                if (oversell && item.getStatus() == OrderConstant.OrderItemStatus.AUDIT_SUCCESS) {
+                if (oversell &&
+                        (dayInfo.getSale_rule_type() == ProductConstants.SalesRuleType.OVERSELL_NEED_AUDIT ||
+                                dayInfo.getSale_rule_type() == ProductConstants.SalesRuleType.ANYWAY_NEED_AUDIT) &&
+                        item.getStatus() == OrderConstant.OrderItemStatus.AUDIT_SUCCESS) {
                     item.setStatus(OrderConstant.OrderItemStatus.AUDIT_WAIT);
                     orderItemMapper.updateByPrimaryKeySelective(item);
                     smsManager.sendAuditSms(item);
