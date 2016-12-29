@@ -157,6 +157,12 @@ public class OrderValidateManager {
                 "apply_from" // 来源 供应侧/销售侧
         }, new ValidRule[]{new ValidRule.NotNull(), new ValidRule.Digits()});
 
+        rules.put(new String[]{
+                "days.quantity", // 退票数量
+                "days.visitors.quantity", // 退票数量
+                "quantity" // 退票数量
+        }, new ValidRule[]{new ValidRule.Digits(1L, 100000L)});
+
         rules.put(new String[]{"apply_from"}, new ValidRule[]{
                 new ValidRule.Digits(new Long[]{
                         Long.valueOf(ProductConstants.RefundEqType.SELLER), Long.valueOf(ProductConstants.RefundEqType.PROVIDER)
