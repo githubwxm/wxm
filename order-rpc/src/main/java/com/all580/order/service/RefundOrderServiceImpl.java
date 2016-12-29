@@ -160,7 +160,7 @@ public class RefundOrderServiceImpl implements RefundOrderService {
 
             // 退订分账 到付退订不分帐
             if (orderItem.getPayment_flag() != ProductConstants.PayType.PAYS) {
-                refundOrderManager.preRefundAccount(daysList, applyFrom, orderItem.getId(), refundOrder.getId(), detailList, refundDate, order);
+                refundOrderManager.preRefundAccount(daysList, applyFrom, orderItem, refundOrder.getId(), detailList, refundDate, order);
             }
 
             // 判断是否需要退订审核
@@ -291,7 +291,7 @@ public class RefundOrderServiceImpl implements RefundOrderService {
             orderItemDetailMapper.refundRemain(orderItem.getId());
 
             // 退订分账
-            refundOrderManager.preRefundAccountForGroup(applyFrom, orderItem.getId(), refundOrder.getId(), detailList, refundDate, order);
+            refundOrderManager.preRefundAccountForGroup(applyFrom, orderItem, refundOrder.getId(), detailList, refundDate, order);
 
             // 判断是否需要退订审核
             if (refundOrder.getAudit_ticket() == ProductConstants.RefundAudit.NO) {

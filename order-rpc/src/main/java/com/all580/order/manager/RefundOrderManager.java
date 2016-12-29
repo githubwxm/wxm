@@ -435,14 +435,14 @@ public class RefundOrderManager extends BaseOrderManager {
 
     /**
      * 退货预分账
-     * @param itemId 子订单ID
+     * @param orderItem 子订单
      * @param refundOrderId 退订订单ID
      * @param detailList 每天详情
      * @param refundDate 退订时间
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public void preRefundAccount(List daysList, int from, int itemId, int refundOrderId, List<OrderItemDetail> detailList, Date refundDate, Order order) throws Exception {
-        List<OrderItemAccount> accounts = orderItemAccountMapper.selectByOrderItem(itemId);
+    public void preRefundAccount(List daysList, int from, OrderItem orderItem, int refundOrderId, List<OrderItemDetail> detailList, Date refundDate, Order order) throws Exception {
+        List<OrderItemAccount> accounts = orderItemAccountMapper.selectByOrderItem(orderItem.getId());
         JSONArray priceDaysData = checkGetPriceDayData(order, accounts);
         if (priceDaysData == null) {
             throw new ApiException("分账单价数据异常");
@@ -478,8 +478,16 @@ public class RefundOrderManager extends BaseOrderManager {
                 // 利润
                 int profit = dayData.getIntValue("profit");
                 double percent = getPercent(priceDaysData, day, rate);
+                // 退余额(出货价*1-手续费)
                 money += Arith.round(Arith.mul(profit * quantity, 1 - percent), 0);
+                // 进可提现(出货价*手续费)
                 cash += Arith.round(Arith.mul(profit * quantity, percent), 0);
+            }
+            // 自供平台商并且是收款商则分账不退钱,因为退票的时候已经退了钱
+            if (account.getEp_id().intValue() == account.getCore_ep_id() &&
+                    account.getCore_ep_id().intValue() == order.getPayee_ep_id() &&
+                    orderItem.getSupplier_core_ep_id().intValue() == order.getPayee_ep_id()) {
+                money = 0;
             }
             RefundAccount refundAccount = new RefundAccount();
             refundAccount.setEp_id(account.getEp_id());
@@ -496,7 +504,7 @@ public class RefundOrderManager extends BaseOrderManager {
     /**
      * 退货预分账
      * @param from
-     * @param itemId 子订单ID
+     * @param item 子订单
      * @param refundOrderId 退订订单ID
      * @param detailList 每天详情
      * @param refundDate 退订时间
@@ -504,8 +512,8 @@ public class RefundOrderManager extends BaseOrderManager {
      * @throws Exception
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public void preRefundAccountForGroup(int from, int itemId, int refundOrderId, List<OrderItemDetail> detailList, Date refundDate, Order order) throws Exception {
-        List<OrderItemAccount> accounts = orderItemAccountMapper.selectByOrderItem(itemId);
+    public void preRefundAccountForGroup(int from, OrderItem item, int refundOrderId, List<OrderItemDetail> detailList, Date refundDate, Order order) throws Exception {
+        List<OrderItemAccount> accounts = orderItemAccountMapper.selectByOrderItem(item.getId());
         JSONArray priceDaysData = checkGetPriceDayData(order, accounts);
         if (priceDaysData == null) {
             throw new ApiException("分账单价数据异常");
@@ -535,8 +543,16 @@ public class RefundOrderManager extends BaseOrderManager {
                 // 利润
                 int profit = dayData.getIntValue("profit");
                 double percent = getPercent(priceDaysData, day, rate);
+                // 退余额(出货价*1-手续费)
                 money += Arith.round(Arith.mul(profit * quantity, 1 - percent), 0);
+                // 进可提现(出货价*手续费)
                 cash += Arith.round(Arith.mul(profit * quantity, percent), 0);
+            }
+            // 自供平台商并且是收款商则分账不退钱,因为退票的时候已经退了钱
+            if (account.getEp_id().intValue() == account.getCore_ep_id() &&
+                    account.getCore_ep_id().intValue() == order.getPayee_ep_id() &&
+                    item.getSupplier_core_ep_id().intValue() == order.getPayee_ep_id()) {
+                money = 0;
             }
             RefundAccount refundAccount = new RefundAccount();
             refundAccount.setEp_id(account.getEp_id());
