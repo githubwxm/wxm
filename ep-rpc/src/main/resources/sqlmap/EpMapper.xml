@@ -300,7 +300,7 @@
     </select>
 
     <select id="getCoreEpName" resultType="java.util.Map">
-      select a.id, case  when a.id=b.id then null else a.name end as name   from (
+        select a.id, case  when a.id=b.id then null else (select name from t_ep  where id =( select core_ep_id from t_ep where a.id=id) ) end as name   from (
         select id,name from t_ep
          where id in
         <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
