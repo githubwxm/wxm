@@ -166,7 +166,6 @@ public class PaymentCallbackAction implements JobRunner {
                 "orderId" // 订单ID
         }, new ValidRule[]{new ValidRule.NotNull(), new ValidRule.Digits()});
         rules.put(new String[]{
-                "outTransId",
                 "serialNum"
         }, new ValidRule[]{new ValidRule.NotNull()});
 

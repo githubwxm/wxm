@@ -113,9 +113,6 @@ public class RefundMoneyCallbackAction implements JobRunner {
                 "ordCode"
         }, new ValidRule[]{new ValidRule.NotNull(), new ValidRule.Digits()});
         rules.put(new String[]{
-                "serialNum"
-        }, new ValidRule[]{new ValidRule.NotNull()});
-        rules.put(new String[]{
                 "success"
         }, new ValidRule[]{new ValidRule.NotNull(), new ValidRule.Boolean()});
 
