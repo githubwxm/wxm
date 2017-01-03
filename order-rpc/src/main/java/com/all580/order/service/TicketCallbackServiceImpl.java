@@ -7,6 +7,7 @@ import com.all580.order.api.service.TicketCallbackService;
 import com.all580.order.dao.*;
 import com.all580.order.entity.*;
 import com.all580.order.manager.BookingOrderManager;
+import com.all580.order.manager.LockTransactionManager;
 import com.all580.order.manager.RefundOrderManager;
 import com.all580.order.manager.SmsManager;
 import com.framework.common.Result;
@@ -70,6 +71,9 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
     private DistributedLockTemplate distributedLockTemplate;
     @Value("${lock.timeout}")
     private int lockTimeOut = 3;
+
+    @Autowired
+    private LockTransactionManager lockTransactionManager;
 
     @Override
     public Result sendTicket(Long orderSn, List<SendTicketInfo> infoList, Date procTime) {
@@ -415,59 +419,10 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
 
         // 锁成功
         try {
-            return refundTicket(info, procTime, orderItem, refundOrder);
+            return lockTransactionManager.refundTicket(info, procTime, orderItem, refundOrder);
         } finally {
             lock.unlock();
         }
-    }
-
-    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public Result refundTicket(RefundTicketInfo info, Date procTime, OrderItem orderItem, RefundOrder refundOrder) {
-        RefundSerial refundSerial = refundSerialMapper.selectByLocalSn(Long.valueOf(info.getRefId()));
-        if (refundSerial == null) {
-            return new Result(false, "退票流水错误");
-        }
-
-        if (refundSerial.getRefund_time() != null) {
-            return new Result(false, "退票流水:" + info.getRefId() + "重复操作");
-        }
-
-        // 退票失败
-        if (!info.isSuccess()) {
-            return refundFail(refundOrder, orderItem);
-        }
-
-        refundOrder.setRefund_ticket_time(procTime);
-
-        //refundSerial.setRemoteSerialNo(refundSn);
-        refundSerial.setRefund_time(procTime);
-
-        // 获取核销人信息
-        Visitor visitor = visitorMapper.selectByPrimaryKey(info.getVisitorSeqId());
-        visitor.setReturn_quantity(visitor.getReturn_quantity() + refundSerial.getQuantity());
-        visitorMapper.updateByPrimaryKeySelective(visitor);
-
-        RefundVisitor refundVisitor = refundVisitorMapper.selectByRefundIdAndVisitorId(refundOrder.getId(), info.getVisitorSeqId());
-        refundVisitor.setReturn_quantity(refundVisitor.getReturn_quantity() + refundSerial.getQuantity());
-        refundVisitor.setPre_quantity(0);
-        refundVisitorMapper.updateByPrimaryKeySelective(refundVisitor);
-        orderItem.setRefund_quantity(orderItem.getRefund_quantity() + refundSerial.getQuantity());
-        orderItemMapper.updateByPrimaryKeySelective(orderItem);
-        refundSerialMapper.updateByPrimaryKeySelective(refundSerial);
-
-        // 退款
-        Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
-        refundOrderManager.refundMoney(order, refundOrder.getMoney(), String.valueOf(refundOrder.getNumber()), refundOrder);
-
-        // 还库存 记录任务
-        Map<String, String> jobParams = new HashMap<>();
-        jobParams.put("orderItemId", String.valueOf(refundOrder.getOrder_item_id()));
-        jobParams.put("check", "false");
-        bookingOrderManager.addJob(OrderConstant.Actions.REFUND_STOCK, jobParams);
-
-        // 同步数据
-        refundOrderManager.syncRefundTicketData(refundOrder.getId());
-        return new Result(true);
     }
 
     @Override
@@ -491,49 +446,10 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
 
         // 锁成功
         try {
-            return refundGroupTicket(info, procTime, orderItem, refundOrder);
+            return lockTransactionManager.refundGroupTicket(info, procTime, orderItem, refundOrder);
         } finally {
             lock.unlock();
         }
-    }
-
-    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public Result refundGroupTicket(RefundGroupTicketInfo info, Date procTime, OrderItem orderItem, RefundOrder refundOrder) {
-        RefundSerial refundSerial = refundSerialMapper.selectByLocalSn(Long.valueOf(info.getRefId()));
-        if (refundSerial == null) {
-            return new Result(false, "退票流水错误");
-        }
-
-        if (refundSerial.getRefund_time() != null) {
-            return new Result(false, "退票流水:" + info.getRefId() + "重复操作");
-        }
-        // 退票失败
-        if (!info.isSuccess()) {
-            return refundFail(refundOrder, orderItem);
-        }
-
-        refundOrder.setRefund_ticket_time(procTime);
-
-        //refundSerial.setRemoteSerialNo(refundSn);
-        refundSerial.setRefund_time(procTime);
-
-        orderItem.setRefund_quantity(orderItem.getRefund_quantity() + refundSerial.getQuantity());
-        orderItemMapper.updateByPrimaryKeySelective(orderItem);
-        refundSerialMapper.updateByPrimaryKeySelective(refundSerial);
-
-        // 退款
-        Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
-        refundOrderManager.refundMoney(order, refundOrder.getMoney(), String.valueOf(refundOrder.getNumber()), refundOrder);
-
-        // 还库存 记录任务
-        Map<String, String> jobParams = new HashMap<>();
-        jobParams.put("orderItemId", String.valueOf(refundOrder.getOrder_item_id()));
-        jobParams.put("check", "false");
-        bookingOrderManager.addJob(OrderConstant.Actions.REFUND_STOCK, jobParams);
-
-        // 同步数据
-        refundOrderManager.syncRefundTicketData(refundOrder.getId());
-        return new Result(true);
     }
 
     @Override
@@ -568,20 +484,6 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
             }
         }
         return null;
-    }
-
-    private Result refundFail(RefundOrder refundOrder, OrderItem orderItem) {
-        try {
-            refundOrderManager.refundFail(refundOrder);
-        } catch (Exception e) {
-            throw new ApiException("退票失败还原状态异常", e);
-        }
-
-        // 发送短信
-        smsManager.sendRefundFailSms(orderItem);
-
-        refundOrderManager.syncRefundOrderAuditRefuse(refundOrder.getId());
-        return new Result(true);
     }
 
     private OrderClearanceSerial saveClearanceSerial(OrderItem orderItem, int saleCoreEpId, int quantity, String sn, Date procTime) {

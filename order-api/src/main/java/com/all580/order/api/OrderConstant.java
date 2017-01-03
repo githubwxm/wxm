@@ -87,6 +87,7 @@ public class OrderConstant {
      */
     public static class Actions {
         public static final String PAYMENT_CALLBACK = "PAYMENT_CALLBACK"; // 支付回调
+        public static final String PAYMENT_SPLIT_ACCOUNT = "PAYMENT_SPLIT_ACCOUNT"; // 支付分账
         public static final String REFUND_MONEY_CALLBACK = "REFUND_MONEY_CALLBACK"; // 退款回调
         public static final String CANCEL_CALLBACK = "CANCEL_CALLBACK"; // 取消回调
         public static final String REFUND_MONEY = "REFUND_MONEY";   // 退款

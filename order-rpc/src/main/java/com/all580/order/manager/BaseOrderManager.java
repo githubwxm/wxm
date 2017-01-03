@@ -17,12 +17,14 @@ import com.all580.payment.api.service.BalancePayService;
 import com.all580.product.api.consts.ProductConstants;
 import com.all580.product.api.model.EpSalesInfo;
 import com.all580.product.api.model.ProductSearchParams;
+import com.all580.product.api.service.ProductSalesPlanRPCService;
 import com.framework.common.Result;
 import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.lang.UUIDGenerator;
 import com.framework.common.synchronize.SynchronizeAction;
 import com.framework.common.synchronize.SynchronizeDataManager;
+import com.framework.common.util.CommonUtil;
 import com.github.ltsopensource.core.domain.Job;
 import com.github.ltsopensource.jobclient.JobClient;
 import lombok.extern.slf4j.Slf4j;
@@ -57,6 +59,8 @@ public class BaseOrderManager {
     private CoreEpAccessService coreEpAccessService;
     @Autowired
     private CoreEpChannelService coreEpChannelService;
+    @Autowired
+    private ProductSalesPlanRPCService productSalesPlanRPCService;
 
     @Autowired
     private JobClient jobClient;
@@ -475,6 +479,20 @@ public class BaseOrderManager {
             throw new ApiException("获取平台商通道费率失败:" + channelResult.getError());
         }
         return channelResult.get();
+    }
+
+    public int[] getAuditConfig(int productSubId, int coreEpId) {
+        int auditTicket = ProductConstants.RefundAudit.YES;
+        int auditMoney = ProductConstants.RefundMoneyAudit.YES;
+        Result<Map> platFormConfig = productSalesPlanRPCService.getPlatformConfig(productSubId, coreEpId);
+        if (platFormConfig != null && platFormConfig.get() != null && platFormConfig.isSuccess()) {
+            Map map = platFormConfig.get();
+            Integer tmpTicket = CommonUtil.objectParseInteger(map.get("audit_ticket"));
+            Integer tmpMoney = CommonUtil.objectParseInteger(map.get("audit_money"));
+            auditTicket = tmpTicket == null ? auditTicket : tmpTicket;
+            auditMoney = tmpMoney == null ? auditMoney : tmpMoney;
+        }
+        return new int[]{auditTicket, auditMoney};
     }
 
     /**

@@ -504,7 +504,7 @@ public class BookingOrderManager extends BaseOrderManager {
         // 调用分账
         Result<BalanceChangeRsp> result = changeBalances(PaymentConstant.BalanceChangeType.PAY_SPLIT, String.valueOf(order.getNumber()), infoList);
         if (!result.isSuccess()) {
-            log.warn("支付分账失败:{}", result.get());
+            log.warn("支付分账失败:{}", JsonUtils.toJson(result.get()));
             throw new ApiException(result.getError());
         }
     }
@@ -823,6 +823,16 @@ public class BookingOrderManager extends BaseOrderManager {
         return generateSyncByOrder(orderId)
                 .put("t_order", CommonUtil.oneToList(orderMapper.selectByPrimaryKey(orderId)))
                 .put("t_order_item", orderItemMapper.selectByOrderId(orderId))
+                .sync().getDataMapForJsonMap();
+    }
+
+    /**
+     * 同步支付分账数据
+     * @param orderId 订单ID
+     */
+    public Map syncPaymentSplitAccountData(int orderId) {
+        return generateSyncByOrder(orderId)
+                .put("t_order", CommonUtil.oneToList(orderMapper.selectByPrimaryKey(orderId)))
                 .put("t_order_item_account", orderItemAccountMapper.selectByOrder(orderId))
                 .sync().getDataMapForJsonMap();
     }
