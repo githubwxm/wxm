@@ -437,7 +437,7 @@ public class BookingOrderManager extends BaseOrderManager {
      * @param buyEpId
      * @param quantity
      * @param from
-     * @return
+     * @return {0:销售价,1:进货价,2:门市价}
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public int[] calcSalesPrice(List<List<EpSalesInfo>> allDaysSales, ProductSalesInfo salesInfo, int buyEpId, int quantity, int from) {

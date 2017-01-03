@@ -225,6 +225,7 @@
                   LEFT JOIN t_order o ON o.id = toi.order_id
               WHERE
                   1 = 1
+                  AND toi.supplier_core_ep_id != o.payee_ep_id
                   <if test="coreEpId != null">
                     AND toi.supplier_core_ep_id = #{coreEpId}
                   </if>
@@ -259,6 +260,7 @@
                       LEFT JOIN t_order o ON o.id = toi.order_id
                   WHERE
                       1 = 1
+                      AND toi.supplier_core_ep_id != o.payee_ep_id
                       <if test="coreEpId != null">
                         AND toi.supplier_core_ep_id = #{coreEpId}
                       </if>
@@ -295,6 +297,7 @@
                       1 = 1
                       AND tra.`status` = 331
                       AND tra.profit > 0
+                      AND toi.supplier_core_ep_id != o.payee_ep_id
                       AND toi.supplier_core_ep_id = tra.core_ep_id
                       <if test="coreEpId != null">
                           AND toi.supplier_core_ep_id = #{coreEpId}
@@ -346,8 +349,10 @@
                 FROM
                     t_order_clearance_serial tocs
                 LEFT JOIN t_order_item toi ON toi.id = tocs.order_item_id
+                LEFT JOIN t_order o ON o.id = toi.order_id
                 WHERE
                     1 = 1
+                    AND toi.supplier_core_ep_id != o.payee_ep_id
                     <if test="coreEpId != null">
                         AND toi.supplier_core_ep_id = #{coreEpId}
                     </if>
@@ -377,8 +382,10 @@
                         t_clearance_washed_serial tcws
                     LEFT JOIN t_order_clearance_serial tocs ON tocs.serial_no = tcws.clearance_serial_no
                     LEFT JOIN t_order_item toi ON toi.id = tocs.order_item_id
+                    LEFT JOIN t_order o ON o.id = toi.order_id
                     WHERE
                         1 = 1
+                        AND toi.supplier_core_ep_id != o.payee_ep_id
                         <if test="coreEpId != null">
                             AND toi.supplier_core_ep_id = #{coreEpId}
                         </if>
@@ -408,11 +415,13 @@
                       t_refund_account tra
                     LEFT JOIN t_refund_order tro ON tro.id = tra.refund_order_id
                     LEFT JOIN t_order_item toi ON toi.id = tro.order_item_id
+                    LEFT JOIN t_order o ON o.id = toi.order_id
                     WHERE
                         1 = 1
                         AND tra.`status` = 331
                         AND tra.profit > 0
                         AND toi.supplier_core_ep_id = tra.core_ep_id
+                        AND toi.supplier_core_ep_id != o.payee_ep_id
                         <if test="coreEpId != null">
                             AND toi.supplier_core_ep_id = #{coreEpId}
                         </if>
