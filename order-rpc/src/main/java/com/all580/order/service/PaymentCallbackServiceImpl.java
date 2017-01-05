@@ -46,9 +46,6 @@ public class PaymentCallbackServiceImpl implements PaymentCallbackService {
         jobParams.put("outTransId", outTransId);
         jobParams.put("serialNum", serialNum);
         bookingOrderManager.addJob(OrderConstant.Actions.PAYMENT_CALLBACK, jobParams);
-
-        // 同步数据
-        bookingOrderManager.syncOrderPaymentData(order.getId());
         return new Result(true);
     }
 
