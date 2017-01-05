@@ -175,10 +175,6 @@ public class LockTransactionManager {
             throw new ApiException("订单不在分账中状态");
         }
 
-        if (order.getPay_amount() <= 0) {
-            return new com.github.ltsopensource.tasktracker.Result(Action.EXECUTE_SUCCESS, "该订单金额为小于0不予分账");
-        }
-
         List<OrderItem> orderItems = orderItemMapper.selectByOrderId(orderId);
         bookingOrderManager.paySplitAccount(order, orderItems);
         // 更新状态已支付
