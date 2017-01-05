@@ -451,6 +451,8 @@ public class RefundOrderManager extends BaseOrderManager {
             throw new ApiException("分账单价数据异常");
         }
         Set<String> uk = new HashSet<>();
+        int payeeReceivableMoney = 0;
+        RefundAccount payeeRefundAccount = null;
         for (OrderItemAccount account : accounts) {
             String data = account.getData();
             if (StringUtils.isEmpty(data)) {
@@ -486,13 +488,13 @@ public class RefundOrderManager extends BaseOrderManager {
                 // 进可提现(出货价*手续费)
                 cash += Arith.round(Arith.mul(profit * quantity, percent), 0);
             }
-            // 自供平台商并且是收款商则分账不退钱,因为退票的时候已经退了钱
-            if (account.getEp_id().intValue() == account.getCore_ep_id() &&
-                    account.getCore_ep_id().intValue() == order.getPayee_ep_id() &&
-                    orderItem.getSupplier_core_ep_id().intValue() == order.getPayee_ep_id()) {
-                money = 0;
-            }
             RefundAccount refundAccount = new RefundAccount();
+            // 收款方平台商分账不退钱,因为退票的时候已经退了钱
+            if (account.getEp_id().intValue() == account.getCore_ep_id() &&
+                    account.getCore_ep_id().intValue() == order.getPayee_ep_id()) {
+                money = 0;
+                payeeRefundAccount = refundAccount;
+            }
             refundAccount.setEp_id(account.getEp_id());
             refundAccount.setCore_ep_id(account.getCore_ep_id());
             refundAccount.setMoney(money == 0 ? 0 : -money);
@@ -501,6 +503,19 @@ public class RefundOrderManager extends BaseOrderManager {
             refundAccount.setRefund_order_id(refundOrderId);
             refundAccount.setData(data);
             refundAccountMapper.insertSelective(refundAccount);
+
+            // 由于收款方平台商一次性把该退的钱全退了,so 收款方平台商下的企业退的钱应该退给收款方平台商
+            if (account.getCore_ep_id() == order.getPayee_ep_id().intValue()) {
+                payeeReceivableMoney += money;
+            }
+        }
+
+        if (payeeReceivableMoney > 0) {
+            // 收款方平台商肯定有分账记录所以 这里不用else
+            if (payeeRefundAccount != null) {
+                payeeRefundAccount.setMoney(payeeRefundAccount.getMoney() + payeeReceivableMoney);
+                refundAccountMapper.updateByPrimaryKeySelective(payeeRefundAccount);
+            }
         }
     }
 
@@ -522,6 +537,8 @@ public class RefundOrderManager extends BaseOrderManager {
             throw new ApiException("分账单价数据异常");
         }
         Set<String> uk = new HashSet<>();
+        int payeeReceivableMoney = 0;
+        RefundAccount payeeRefundAccount = null;
         for (OrderItemAccount account : accounts) {
             String data = account.getData();
             if (StringUtils.isEmpty(data)) {
@@ -551,13 +568,13 @@ public class RefundOrderManager extends BaseOrderManager {
                 // 进可提现(出货价*手续费)
                 cash += Arith.round(Arith.mul(profit * quantity, percent), 0);
             }
-            // 自供平台商并且是收款商则分账不退钱,因为退票的时候已经退了钱
-            if (account.getEp_id().intValue() == account.getCore_ep_id() &&
-                    account.getCore_ep_id().intValue() == order.getPayee_ep_id() &&
-                    item.getSupplier_core_ep_id().intValue() == order.getPayee_ep_id()) {
-                money = 0;
-            }
             RefundAccount refundAccount = new RefundAccount();
+            // 收款方平台商分账不退钱,因为退票的时候已经退了钱
+            if (account.getEp_id().intValue() == account.getCore_ep_id() &&
+                    account.getCore_ep_id().intValue() == order.getPayee_ep_id()) {
+                money = 0;
+                payeeRefundAccount = refundAccount;
+            }
             refundAccount.setEp_id(account.getEp_id());
             refundAccount.setCore_ep_id(account.getCore_ep_id());
             refundAccount.setMoney(money == 0 ? 0 : -money);
@@ -566,6 +583,19 @@ public class RefundOrderManager extends BaseOrderManager {
             refundAccount.setRefund_order_id(refundOrderId);
             refundAccount.setData(data);
             refundAccountMapper.insertSelective(refundAccount);
+
+            // 由于收款方平台商一次性把该退的钱全退了,so 收款方平台商下的企业退的钱应该退给收款方平台商
+            if (account.getCore_ep_id() == order.getPayee_ep_id().intValue()) {
+                payeeReceivableMoney += money;
+            }
+        }
+
+        if (payeeReceivableMoney > 0) {
+            // 收款方平台商肯定有分账记录所以 这里不用else
+            if (payeeRefundAccount != null) {
+                payeeRefundAccount.setMoney(payeeRefundAccount.getMoney() + payeeReceivableMoney);
+                refundAccountMapper.updateByPrimaryKeySelective(payeeRefundAccount);
+            }
         }
     }
 
