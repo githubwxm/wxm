@@ -43,7 +43,6 @@ public class SmsController extends BaseController {
         Integer smsType=CommonUtil.objectParseInteger( data.remove("smsType"));
         Integer coreEpId = CommonUtil.objectParseInteger(getAttribute(EpConstant.EpKey.CORE_EP_ID));
         Map<String, String> params=(Map<String, String>)data.get("params");
-        return new Result(true);
-        //return smsService.send(destPhoneNum, smsType, coreEpId,params );
+        return smsService.send(destPhoneNum, smsType, coreEpId,params );
     }
 }
