@@ -46,7 +46,9 @@ public class SmsServiceImpl implements SmsService {
         Assert.notNull(destPhoneNum, "参数【destPhoneNum】不能为空");
         Assert.notNull(smsType, "参数【smsType】不能为空");
         Assert.notNull(epId, "参数【epId】不能为空");
-
+        if(1==1){
+            return   new Result(true);
+        }
         SmsTmpl smsTmpl = smsTmplMapper.selectByEpIdAndType(epId, smsType);
         Assert.notNull(smsTmpl, MessageFormat.format("找不到短信模板:epId={0}|smsType={1}", epId, smsType));
         SmsAccountConf smsAccountConf = smsAccountConfMapper.selectByEpId(epId);
