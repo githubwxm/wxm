@@ -290,7 +290,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         Map syncData = bookingOrderManager.syncCreateOrderData(order.getId());
         result.putExt(Result.SYNC_DATA, syncData);
         TimeConsum.how().print("同步数据");
-        total.how().print("下单总");
+        total.how().print(order.getNumber() + " 下单总");
         return result;
     }
 
