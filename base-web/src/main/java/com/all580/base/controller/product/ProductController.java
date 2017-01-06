@@ -54,14 +54,14 @@ public class ProductController extends BaseController {
         return productService.updateProductSubBatch(map);
     }
     /**
-     * 查询景区子主产品
-     * @param  productSubId  主产品id
+     * 查询景区子产品
+     * @param  productSubId  子产品id
      * @return
      */
     @RequestMapping(value = "sub", method = RequestMethod.GET)
     @ResponseBody
-    public Result<?> selectProductSubBatch(@RequestParam("product_sub_id") Integer productSubId){
-        return productService.selectProductSubBatch(productSubId);
+    public Result<?> selectProductSubBatch(@RequestParam("product_sub_id") Integer productSubId, @RequestParam("ep_id") Integer epId){
+        return productService.selectProductSubBatch(productSubId, epId);
     }
     /**
      * 查询景区主产品

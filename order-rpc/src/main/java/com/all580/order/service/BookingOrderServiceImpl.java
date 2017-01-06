@@ -290,7 +290,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         Map syncData = bookingOrderManager.syncCreateOrderData(order.getId());
         result.putExt(Result.SYNC_DATA, syncData);
         TimeConsum.how().print("同步数据");
-        total.how().print("下单总");
+        total.how().print(order.getNumber() + " 下单总");
         return result;
     }
 
@@ -735,6 +735,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             // 支付成功回调 记录任务
             Map<String, String> jobParams = new HashMap<>();
             jobParams.put("orderId", order.getId().toString());
+            jobParams.put("serialNum", "-1"); // 到付
             bookingOrderManager.addJob(OrderConstant.Actions.PAYMENT_CALLBACK, jobParams);
         }
     }
