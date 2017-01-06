@@ -78,8 +78,7 @@ public class LockTransactionManager {
             throw new ApiException("订单不存在");
         }
 
-        if (order.getStatus() != OrderConstant.OrderStatus.PAYING ||
-                (order.getStatus() == OrderConstant.OrderStatus.PAID_HANDLING && !"-1".equals(serialNum))) {
+        if (order.getStatus() != OrderConstant.OrderStatus.PAYING) {
             log.warn("支付成功回调,订单:{}状态:{}不是支付中", order.getNumber(), order.getStatus());
             throw new ApiException("订单不在支付中状态");
         }

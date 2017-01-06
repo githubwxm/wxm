@@ -273,10 +273,10 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         if (order.getStatus() != OrderConstant.OrderStatus.AUDIT_WAIT && order.getAudit_time() == null) {
             order.setAudit_time(new Date());
         }
-        orderMapper.updateByPrimaryKeySelective(order);
 
         // 到付
         addPaymentCallbackJob(order);
+        orderMapper.updateByPrimaryKeySelective(order);
 
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("order", JsonUtils.obj2map(order));
@@ -731,7 +731,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public void addPaymentCallbackJob(Order order) {
         if (order.getStatus() != OrderConstant.OrderStatus.AUDIT_WAIT && order.getPay_amount() <= 0) {
-            order.setStatus(OrderConstant.OrderStatus.PAID_HANDLING); // 已支付,处理中
+            order.setStatus(OrderConstant.OrderStatus.PAYING); // 支付中
             // 支付成功回调 记录任务
             Map<String, String> jobParams = new HashMap<>();
             jobParams.put("orderId", order.getId().toString());
