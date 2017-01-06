@@ -112,6 +112,18 @@ public class CoreEpChannelServiceImpl implements CoreEpChannelService {
         }
         return result;
     }
+    @Override
+    public Result<Map<String, Object>> selectById(int id) {
+        Result<Map<String,Object>> result = new Result<>();
+        try {
+            result.put(coreEpChannelMapper.selectById(id));
+            result.setSuccess();
+        } catch (Exception e) {
+            log.error("数据库查询出错", e);
+            throw new ApiException("数据库查询出错", e);
+        }
+        return result;
+    }
     @Override  //EpChannelRep
     public Result<Map<String,Object>> select(Map<String,Object> params) {
         Map<String,Object> resultMap = new HashMap<>();

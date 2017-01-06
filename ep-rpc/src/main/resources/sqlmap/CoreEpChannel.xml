@@ -18,9 +18,11 @@
        insert into t_core_ep_channel(supplier_core_ep_id ,seller_core_ep_id,rate,remark)
        values(#{supplier_core_ep_id} ,#{seller_core_ep_id},#{rate},#{remark});
     </insert>
-
+     <select id="selectById" resultType="java.util.Map">
+         select id,supplier_core_ep_id,seller_core_ep_id, truncate(rate/100,2) as rate,remark from t_core_ep_channel where `id`=#{id};
+     </select>
     <update id="update">
-        update t_core_ep_channel set rate=#{rate} where `id`=#{id};
+        update t_core_ep_channel set rate=#{rate},remark=#{remark} where `id`=#{id};
     </update>
     <delete id="cancel">
           delete from t_core_ep_channel where `id`=#{id};

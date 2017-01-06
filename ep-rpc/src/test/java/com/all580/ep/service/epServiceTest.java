@@ -2,7 +2,9 @@ package com.all580.ep.service;
 
 import com.all580.ep.api.service.*;
 
+import com.all580.ep.dao.CoreEpAccessMapper;
 import com.all580.ep.dao.EpBalanceThresholdMapper;
+import com.all580.ep.dao.EpBankMapper;
 import com.all580.ep.dao.EpMapper;
 import com.all580.notice.api.conf.SmsType;
 import com.all580.notice.api.service.BalanceChangeSubscribeService;
@@ -18,6 +20,7 @@ import com.all580.role.dao.FuncMapper;
 import com.all580.role.dao.IntfMapper;
 import com.framework.common.Result;
 
+import com.framework.common.lang.JsonUtils;
 import com.framework.common.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
@@ -57,6 +60,9 @@ public class epServiceTest {
 
     @Resource
     private EpMapper epMapper;
+
+    @Resource
+    private EpBankMapper epBankMapper;
     @Resource
     private FuncMapper funcMapper;
     @Resource
@@ -64,6 +70,8 @@ public class epServiceTest {
     @Resource
     private EpBalanceThresholdMapper epBalanceThresholdMapper;
 
+    @Resource
+    private CoreEpAccessMapper coreEpAccessMapper;
     @Resource
     private CoreEpChannelService coreEpChannelService ;
 //    @Autowired
@@ -83,30 +91,46 @@ public class epServiceTest {
     @Resource
     private FuncService funcService;
     @Autowired
-    private IntfMapper intfMapper;//ddd
-
-    @Autowired
     private EpRoleMapper epRoleMapper;
 
-    @Autowired
-    private BalanceChangeSubscribeService balanceChangeSubscribeService;
+   // @Autowired
+  //  private BalanceChangeSubscribeService balanceChangeSubscribeService;
 
     @Test
+    public void testEpBank(){
+//        Map map = new HashMap();
+//        map.put("ep_id",1);
+//        map.put("bank_username","333");
+//        map.put("bank_name_address","3333");
+//        map.put("bank_num","3333");
+//        epBankMapper.insert(map);
+//        print(epBankMapper.selectBank(1));
+        List<Integer> list = new ArrayList<>();
+        list.add(1);
+        print(epMapper.getSeller(list));
+    }
+    @Test
     public void testEp(){
-        balanceChangeSubscribeService.process(null,null,null);
+      //  balanceChangeSubscribeService.process(null,null,null);
+        print(coreEpAccessMapper.selectAll()+"      ******");
         Map<String,Object> map = new HashMap<>();
         map.put("creator_ep_id","12");
         map.put("group_id","21");
-        map.put("id","1151");
+        map.put("id","1186");
         List<Integer> list=new ArrayList<>();Integer mainEpId=1139;
         list.add(1139);
         list.add(1);
         list.add(1140);
+        epService.freeze(map);
         print(epService.getCoreEpName(list,mainEpId).get()+"    123456");
         //epService.updateEpRemoveGroup(map.g);
     }
+
     @Test
     public void testEpRoleService(){
+
+        print(epService.selectId(1).get());
+        print("*******");
         Map map = new HashMap();
         map.put("name","test");
         map.put("user_id","11");
@@ -134,12 +158,11 @@ public class epServiceTest {
 //
 //        // name , user_id 创建人,   func_ids 功能集合list<Integer>
 //        Result r =epRoleService.updateEpRole(map);
-        //funcService.insertSelective(map);
+        funcService.insertSelective(map);
         funcService.deleteByPrimaryKey(4);
       print(funcService.getAll().get());
 
     }
-
     @Test
     public void EpFinanceServiceImple() {
         Integer epId = 30;
@@ -202,8 +225,12 @@ public class epServiceTest {
     @Test
     public void createChannel() {
         Map map = new HashMap();
-        map.put("ep_id", "1");
-//        map.put("core_ep_id", "-1");
+        map.put("id", "18");
+        map.put("seller_core_ep_id", "1139");
+        map.put("supplier_core_ep_id", "1");
+        map.put("rate", "99");
+        coreEpChannelService.update(map);
+        print(coreEpChannelService.selectById(18).get());
         // log.info("132132");
        // print(epService.platformListDown(map));
 
@@ -212,7 +239,7 @@ public class epServiceTest {
 //        print(epService.select(map).get().isEmpty());
 
         //  print(cpBalanceThresholdService.createOrUpdate(map));
-        System.out.println(coreEpChannelService.selectPlatfromRate(1145,11399).get()+"         ***");
+        //System.out.println(coreEpChannelService.selectPlatfromRate(1145,11399).get()+"         ***");
     }
 
     @Test
@@ -310,7 +337,21 @@ public class epServiceTest {
 //        epService.validate(null);
     }
 
+    @Autowired
+    private IntfMapper intfMapper;//ddd
+
     public void print(Object obj) {
         System.out.println(obj);
+    }
+
+    @Test
+    public void test(){
+        Map<String,Object> map = new HashMap<>();
+        map.put("c",null);
+        map.put("b","cafd");
+        map.put("a","cafd");
+        TreeMap tree=new TreeMap(map);
+        String postParams = JsonUtils.toJson(tree);
+        print(postParams);
     }
 }
