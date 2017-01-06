@@ -735,6 +735,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             // 支付成功回调 记录任务
             Map<String, String> jobParams = new HashMap<>();
             jobParams.put("orderId", order.getId().toString());
+            jobParams.put("serialNum", "-1"); // 到付
             bookingOrderManager.addJob(OrderConstant.Actions.PAYMENT_CALLBACK, jobParams);
         }
     }
