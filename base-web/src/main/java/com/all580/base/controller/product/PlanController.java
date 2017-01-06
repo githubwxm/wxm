@@ -16,6 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.lang.exception.ApiException;
 import java.util.*;
 
 /**
@@ -262,6 +263,7 @@ public class PlanController extends BaseController {
             return null;
         }
         Result<Map<String,Object>> ep = epService.selectId(ep_id);//获取企业信息
+        if(ep == null || ep.get() == null) throw new ApiException();
         List<Map> list = new ArrayList<>();
         String name = CommonUtil.objectParseString(ep.get().get("name"));
         Map map = new HashMap();
