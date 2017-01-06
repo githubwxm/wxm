@@ -27,7 +27,7 @@ public interface CoreEpChannelService {
      * @return
      */
     Result<List<Map<String,Object>>> selectSupplierCoreEpId();
-
+    Result<Map<String,Object>> selectById(int id);
     /**
      *
      * @param params  ｛supplier_name：非必填  供应侧平台商名字模糊查询，
