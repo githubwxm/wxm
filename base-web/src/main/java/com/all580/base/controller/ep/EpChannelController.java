@@ -79,7 +79,7 @@ public class EpChannelController extends BaseController {   //倒萨
      * @param
      * @return
      */
-    @RequestMapping(value = "cancel", method = RequestMethod.GET)
+    @RequestMapping(value = "cancel", method = RequestMethod.POST)
     @ResponseBody
     public Result<Integer> cancel( Integer ep_id ) {
             if(null==ep_id){
@@ -88,6 +88,22 @@ public class EpChannelController extends BaseController {   //倒萨
             return coreEpChannelService.cancel(ep_id);
 
     }//
+
+    /**
+     * 取消通道汇率   现在是删除，
+     *
+     * @param
+     * @return
+     */
+    @RequestMapping(value = "select_by_id", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<Map<String,Object>> selectById( Integer id ) {
+        if(null==id){
+            throw new ParamsMapValidationException("请传入id");
+        }
+        return coreEpChannelService.selectById(id);
+
+    }
 
     /**
      * 查找通道汇率
