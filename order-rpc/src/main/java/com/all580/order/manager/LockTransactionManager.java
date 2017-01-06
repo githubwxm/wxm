@@ -88,7 +88,7 @@ public class LockTransactionManager {
         orderMapper.updateByPrimaryKeySelective(order);
 
         // 支付成功后加平台商余额(平帐),余额支付不做平帐
-        if (order.getPayment_type() != PaymentConstant.PaymentType.BALANCE.intValue()) {
+        if (order.getPayment_type() != null && order.getPayment_type() != PaymentConstant.PaymentType.BALANCE.intValue()) {
             BalanceChangeInfo info = new BalanceChangeInfo();
             info.setEp_id(bookingOrderManager.getCoreEpId(bookingOrderManager.getCoreEpId(order.getBuy_ep_id())));
             info.setCore_ep_id(info.getEp_id());
