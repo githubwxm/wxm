@@ -45,13 +45,9 @@ public class BalancePayServiceImpl implements BalancePayService {
     @Autowired
     private CapitalSerialMapper capitalSerialMapper;
 
-
-
     @Override
     public Result<BalanceChangeRsp> changeBalances(List<BalanceChangeInfo> balanceChangeInfoList, Integer type,
                                                    final String serialNum) {
-
-
         List<DistributedReentrantLock> listLock= new ArrayList<>();
         try{
             Set<String> set = new HashSet<>();
@@ -67,16 +63,11 @@ public class BalancePayServiceImpl implements BalancePayService {
                 listLock.add(distributedLockTemplate.execute( temp, lockTimeOut));
             }
             return   lockPayManagerService.changeBalances(balanceChangeInfoList,type,serialNum);
-        }catch (Exception e){
-
         }finally {
             for(DistributedReentrantLock disLock:listLock){
                 disLock.unlock();
             }
         }
-        return null;
-
-
     }
 
 
