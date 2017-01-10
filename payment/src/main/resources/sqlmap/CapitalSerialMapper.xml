@@ -18,6 +18,10 @@
     id, ref_id, ref_type, capital_id, old_balance, old_can_cash, new_balance, new_can_cash, 
     create_time,summary
   </sql>
+
+    <select id="selectSerialNumExists"  resultType="java.lang.Integer">
+        select count(1) from t_capital_serial where ref_type=#{type} and ref_id=#{serial_num};
+    </select>
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>

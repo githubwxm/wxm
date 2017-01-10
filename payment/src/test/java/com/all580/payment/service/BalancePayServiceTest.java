@@ -5,15 +5,14 @@ import com.all580.payment.api.model.BalanceChangeRsp;
 import com.all580.payment.api.service.BalancePayService;
 import com.all580.payment.api.service.FundSerialService;
 import com.all580.payment.api.service.PlatfromFundService;
+import com.all580.payment.dao.CapitalMapper;
+import com.all580.payment.entity.Capital;
 import com.framework.common.Result;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 余额支付测试
@@ -29,6 +28,8 @@ public class BalancePayServiceTest extends BaseTest {
 
     @Autowired
     private FundSerialService fundSerialService;
+    @Autowired
+    private CapitalMapper capitalMapper;
 
     @Test
     public void t(){
@@ -36,7 +37,15 @@ public class BalancePayServiceTest extends BaseTest {
         //print(platfromFundService.insertPlatfromFund(4).get().toString());
        // platfromFundService.exitFund(500,4);
        //platfromFundService.addFund(-600,4);
-        print(fundSerialService.selectFundSerial(1,null,null,null,null,null,null,null).get().toString());
+        //print(fundSerialService.selectFundSerial(1,null,null,null,null,null,null,null).get().toString());
+        Capital capital = null;
+        Map map = new HashMap();
+        map.put("id",6);
+        map.put("summary","adfasdfds");
+        fundSerialService.updateFundSerialSummary(map);
+        capital= capitalMapper.selectByEpIdAndCoreEpId(1,11);
+        System.out.println(null==capital );
+
     }
     private void print(String str){
         System.out.println(str);

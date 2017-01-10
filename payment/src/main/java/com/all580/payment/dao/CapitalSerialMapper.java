@@ -16,7 +16,7 @@ public interface CapitalSerialMapper {
     int insertSelective(CapitalSerial record);
 
     CapitalSerial selectByPrimaryKey(Integer id);
-
+    int selectSerialNumExists(@Param("type")int type,@Param("serial_num") String serialNum);
     List<Map<String,String>> listByCapitalId(@Param("capital_id") Integer capital_id,
                                              @Param("balance_status") String balance_status,
                                              @Param("start_date") String startDate,
