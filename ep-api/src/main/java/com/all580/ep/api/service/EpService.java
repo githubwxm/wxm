@@ -4,12 +4,14 @@ package com.all580.ep.api.service;
 
 import com.framework.common.Result;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 public interface EpService {
 
 
+    Result<Map<Integer,Integer>> selectCoreEpId(Collection<Integer> list);
     /**
      * 查询平台商下的供应商
      */
