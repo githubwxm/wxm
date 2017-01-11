@@ -30,10 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.lang.exception.ApiException;
 import javax.lang.exception.ParamsMapValidationException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
@@ -199,6 +196,29 @@ public class EpServiceImpl implements EpService {
             log.error("查询数据库错误", e);
             throw new ApiException("查询数据库错误", e);
         }
+    }
+
+    @Override
+    public Result<Map<Integer, Integer>> selectCoreEpId(Collection<Integer> list) {
+        if(null ==list ||list.isEmpty()){
+           return new   Result<>(true);
+        }
+        Result<Map<Integer, Integer>> result = new Result<>();
+        try {
+            Map<Integer, Integer> map = new HashMap();
+            List<Map<String,String>> resultList= epMapper.selectCoreEpId(list);
+            for(Map<String,String> m:resultList){
+                map.put(CommonUtil.objectParseInteger(m.get("id")),CommonUtil.objectParseInteger(m.get("core_ep_id")));
+            }
+            result.setCode(200);
+            result.put(map);
+            result.setSuccess();
+            return result;
+        } catch (Exception e) {
+            log.error("查询数据库错误", e);
+            throw new ApiException("查询数据库错误", e);
+        }
+
     }
 
     @Override

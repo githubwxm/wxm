@@ -5,6 +5,7 @@ package com.all580.ep.dao;
 
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -59,4 +60,6 @@ public interface EpMapper {
     List<Map<String,String>> getCoreEpName(@Param("list") List<Integer> list,@Param("mainEpId") Integer mainEpId);
     List<Integer> selectSupplier(Integer  coreEpId);
     List<Integer> getSeller(@Param("list") List<Integer> list);
+
+    List<Map<String,String>> selectCoreEpId(Collection<Integer> list);
 }

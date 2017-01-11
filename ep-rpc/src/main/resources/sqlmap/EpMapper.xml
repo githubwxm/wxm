@@ -323,4 +323,10 @@
             #{item}
         </foreach>;
     </select>
+    <select id="selectCoreEpId" resultType="java.util.HashMap">
+        select id,core_ep_id from t_ep where id in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>;
+    </select>
 </mapper>
