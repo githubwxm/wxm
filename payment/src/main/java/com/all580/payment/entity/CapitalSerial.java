@@ -19,6 +19,24 @@ public class CapitalSerial implements Serializable {
     private Integer new_balance;
 
     private Integer new_can_cash;
+    private Integer balance_type; // 余额变更类型
+    private Integer can_cash_type; // 可提现金额类型
+
+    public Integer getBalance_type() {
+        return balance_type;
+    }
+
+    public void setBalance_type(Integer balance_type) {
+        this.balance_type = balance_type;
+    }
+
+    public Integer getCan_cash_type() {
+        return can_cash_type;
+    }
+
+    public void setCan_cash_type(Integer can_cash_type) {
+        this.can_cash_type = can_cash_type;
+    }
 
     private Date create_time;
     private String summary="";

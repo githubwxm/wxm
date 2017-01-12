@@ -12,6 +12,8 @@
         <result column="new_can_cash" jdbcType="INTEGER" property="new_can_cash"/>
         <result column="create_time" jdbcType="TIMESTAMP" property="create_time"/>
         <result column="summary" jdbcType="TIMESTAMP" property="summary"/>
+        <result column="balance_type" jdbcType="INTEGER" property="balance_type"/>
+        <result column="can_cash_type" jdbcType="INTEGER" property="can_cash_type"/>
 
     </resultMap>
     <sql id="Base_Column_List">
@@ -156,11 +158,11 @@
             LAST_INSERT_ID()
         </selectKey>
         insert into t_capital_serial (id, ref_id, ref_type,capital_id, old_balance, old_can_cash,
-        new_balance, new_can_cash)
+        new_balance, new_can_cash,balance_type,can_cash_type)
         values
         <foreach collection="records" index="index" item="item" separator=",">
             (#{item.id}, #{item.ref_id}, #{item.ref_type},#{item.capital_id}, #{item.old_balance}, #{item.old_can_cash},
-            #{item.new_balance}, #{item.new_can_cash})
+            #{item.new_balance}, #{item.new_can_cash}, #{item.balance_type}, #{item.can_cash_type})
         </foreach>
     </insert>
 
