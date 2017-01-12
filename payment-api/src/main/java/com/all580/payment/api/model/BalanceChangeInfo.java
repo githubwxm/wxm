@@ -12,14 +12,28 @@ public class BalanceChangeInfo implements Serializable {
     private Integer core_ep_id; // 平台商ID
     private Integer balance; // 余额
     private Integer can_cash; // 可提现金额
+    private Integer balance_type; // 余额
+    private Integer can_cash_type; // 可提现金额
 
     public BalanceChangeInfo() {
     }
 
 
+    public Integer getBalance_type() {
+        return balance_type;
+    }
 
+    public void setBalance_type(Integer balance_type) {
+        this.balance_type = balance_type;
+    }
 
+    public Integer getCan_cash_type() {
+        return can_cash_type;
+    }
 
+    public void setCan_cash_type(Integer can_cash_type) {
+        this.can_cash_type = can_cash_type;
+    }
 
     public Integer getBalance() {
         return balance = balance == null ? 0 : balance;
