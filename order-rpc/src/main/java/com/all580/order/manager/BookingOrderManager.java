@@ -419,7 +419,7 @@ public class BookingOrderManager extends BaseOrderManager {
 
             EpSalesInfo self = new EpSalesInfo();
             self.setSale_ep_id(buyEpId);
-            self.setEp_id(-1);
+            self.setEp_id(buyEpId);
             // 代收:叶子销售商以门市价卖出
             self.setPrice(from == OrderConstant.FromType.TRUST ? info.getShop_price() : info.getPrice());
             if (self.getPrice() == null) {
