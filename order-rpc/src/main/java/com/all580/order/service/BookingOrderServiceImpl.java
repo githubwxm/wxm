@@ -206,7 +206,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             // 创建子订单详情
             int i = 0;
             for (ProductSalesDayInfo dayInfo : dayInfoList) {
-                OrderItemDetail orderItemDetail = bookingOrderManager.generateDetail(dayInfo, orderItem.getId(), DateUtils.addDays(bookingDate, i), quantity);
+                OrderItemDetail orderItemDetail = bookingOrderManager.generateDetail(dayInfo, orderItem.getId(), DateUtils.addDays(bookingDate, i), quantity, salesInfo.getLow_use_quantity());
                 detailList.add(orderItemDetail);
                 // 创建游客信息
                 for (Map v : visitors) {
@@ -552,7 +552,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             int i = 0;
             int visitorQuantity = 0;
             for (ProductSalesDayInfo dayInfo : dayInfoList) {
-                OrderItemDetail orderItemDetail = bookingOrderManager.generateDetail(dayInfo, orderItem.getId(), DateUtils.addDays(bookingDate, i), quantity);
+                OrderItemDetail orderItemDetail = bookingOrderManager.generateDetail(dayInfo, orderItem.getId(), DateUtils.addDays(bookingDate, i), quantity, salesInfo.getLow_use_quantity());
                 detailList.add(orderItemDetail);
                 // 创建游客信息
                 if (!special) {
