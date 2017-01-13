@@ -55,6 +55,8 @@ public class PaymentConstant {
         public static final Integer REFUND_TICKET= 7028;//门票退订
         public static final Integer PRODUCT_REFUND_FEE= 7029;//产品退票手续费
         public static final Integer PRODUCT_SALES_PROFIT= 7030;//产品销售利润
+        public static final Integer FREIGHT_PAY= 7031;//到付支付
+        public static final Integer FREIGHT_ROUTING= 7032;//到付分账
     }
 
     /**
