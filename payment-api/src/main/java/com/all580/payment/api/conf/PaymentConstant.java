@@ -51,13 +51,14 @@ public class PaymentConstant {
         public static final Integer PRODUCT_SALES= 7024;//产品销售
         public static final Integer ORDER_REFUND = 7025;//退订退款
         public static final Integer ORDER_CANCEL = 7026;//订单核销
-        public static final Integer REFUND_FEE= 7027;//退订手续费
-        public static final Integer REFUND_TICKET= 7028;//门票退订
-        public static final Integer PRODUCT_REFUND_FEE= 7029;//产品退票手续费
-        public static final Integer PRODUCT_SALES_PROFIT= 7030;//产品销售利润
-        public static final Integer FREIGHT_PAY= 7031;//到付支付
-        public static final Integer FREIGHT_ROUTING= 7032;//到付分账
-        public static final Integer THIRD_PAYMENT_REFUND= 7033;//第三方支付退款
+        public static final Integer ORDER_REVERSE  = 7027;//订单冲正
+        public static final Integer REFUND_FEE= 7028;//退订手续费
+        public static final Integer REFUND_TICKET= 7029;//门票退订
+        public static final Integer PRODUCT_REFUND_FEE= 7030;//产品退票手续费
+        public static final Integer PRODUCT_SALES_PROFIT= 7031;//产品销售利润
+        public static final Integer FREIGHT_PAY= 7032;//到付支付
+        public static final Integer FREIGHT_ROUTING= 7033;//到付分账
+        public static final Integer THIRD_PAYMENT_REFUND= 7034;//第三方支付退款
     }
 
     /**
