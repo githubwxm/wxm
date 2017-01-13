@@ -46,10 +46,10 @@ public class PaymentConstant {
         public static final Integer THIRD_PAY_FOR_ORDER = 7008; // 下单第三方支付
 
         public static final Integer SALES_PROFIT = 7021; //销售分润
-        public static final Integer CANCEL_THE_REFUND = 7022; //退订退款//
+        public static final Integer CANCEL_THE_REFUND = 7022; //退订返回//
         public static final Integer THIRD_PAYMENT_PROFIT= 7023;//第三方支付分润
         public static final Integer PRODUCT_SALES= 7024;//产品销售
-        public static final Integer ORDER_REFUND = 7025;//订单退款
+        public static final Integer ORDER_REFUND = 7025;//退订退款
         public static final Integer ORDER_CANCEL = 7026;//订单核销
         public static final Integer REFUND_FEE= 7027;//退订手续费
         public static final Integer REFUND_TICKET= 7028;//门票退订
