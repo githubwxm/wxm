@@ -1,6 +1,5 @@
 package com.all580.order.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,6 +24,9 @@ public class AccountDataDto {
 
     private Date day;
 
-    @JsonIgnore
+    private int saleEpId;
+
+    private int coreEpId;
+
     private Integer saleCoreEpId;
 }

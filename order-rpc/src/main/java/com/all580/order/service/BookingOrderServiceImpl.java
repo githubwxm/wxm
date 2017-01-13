@@ -232,7 +232,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
 
             TimeConsum.maker();
             // 预分账记录
-            bookingOrderManager.preSplitAccount(allDaysSales, orderItem.getId(), quantity, salesInfo.getPay_type(), bookingDate);
+            bookingOrderManager.prePaySplitAccount(allDaysSales, orderItem, buyEpId);
             TimeConsum.how().print("预分账");
         }
 
@@ -581,7 +581,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             visitorMap.put(orderItem.getId(), visitorList);
 
             // 预分账记录
-            bookingOrderManager.preSplitAccount(allDaysSales, orderItem.getId(), quantity, salesInfo.getPay_type(), bookingDate);
+            bookingOrderManager.prePaySplitAccount(allDaysSales, orderItem, order.getBuy_ep_id());
         }
         // 创建订单联系人
         Shipping shipping = new Shipping();

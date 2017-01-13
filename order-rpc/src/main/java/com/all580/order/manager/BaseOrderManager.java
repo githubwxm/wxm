@@ -6,10 +6,13 @@ import com.all580.ep.api.service.CoreEpAccessService;
 import com.all580.ep.api.service.CoreEpChannelService;
 import com.all580.ep.api.service.EpService;
 import com.all580.order.dao.OrderItemAccountMapper;
+import com.all580.order.dao.OrderMapper;
 import com.all580.order.dto.AccountDataDto;
+import com.all580.order.entity.Order;
 import com.all580.order.entity.OrderItem;
 import com.all580.order.entity.OrderItemAccount;
 import com.all580.order.entity.OrderItemDetail;
+import com.all580.order.util.AccountUtil;
 import com.all580.payment.api.conf.PaymentConstant;
 import com.all580.payment.api.model.BalanceChangeInfo;
 import com.all580.payment.api.model.BalanceChangeRsp;
@@ -53,6 +56,8 @@ public class BaseOrderManager {
     @Autowired
     private OrderItemAccountMapper orderItemAccountMapper;
     @Autowired
+    private OrderMapper orderMapper;
+    @Autowired
     private SynchronizeDataManager synchronizeDataManager;
 
     @Autowired
@@ -70,26 +75,6 @@ public class BaseOrderManager {
 
     @Value("${task.maxRetryTimes}")
     private Integer maxRetryTimes;
-
-    /**
-     * 获取利润
-     * @param salesInfoList 销售链
-     * @param epId 企业
-     * @return
-     */
-    public AccountDataDto getProfit(List<EpSalesInfo> salesInfoList, int epId) {
-        int salePrice = 0;
-        int buyPrice = 0;
-        for (EpSalesInfo info : salesInfoList) {
-            if (info.getSale_ep_id() == epId) {
-                salePrice = info.getPrice();
-            }
-            if (info.getEp_id() == epId) {
-                buyPrice = info.getPrice();
-            }
-        }
-        return new AccountDataDto(salePrice, buyPrice, salePrice - buyPrice, null, null);
-    }
 
     /**
      * 获取卖家企业ID(null则返回自己)
@@ -160,6 +145,14 @@ public class BaseOrderManager {
 
     public Result<Integer> getCoreEpId(int epId) {
         return epService.selectPlatformId(epId);
+    }
+
+    public Map<Integer, Integer> getCoreEpIds(Collection<Integer> ids) {
+        Result<Map<Integer, Integer>> result = epService.selectCoreEpId(ids);
+        if (result == null || result.isNULL()) {
+            return null;
+        }
+        return result.get();
     }
 
     public Integer getCoreEp(Map<Integer, Integer> coreEpMap, Integer epId) {
@@ -263,24 +256,6 @@ public class BaseOrderManager {
 
     /**
      * 获取某天详情
-     * @param detailList 天数据
-     * @param day 某一天
-     * @return
-     */
-    public OrderItemDetail getDetailByDay(List<OrderItemDetail> detailList, Date day) {
-        if (detailList == null || day == null) {
-            return null;
-        }
-        for (OrderItemDetail detail : detailList) {
-            if (detail.getDay().equals(day)) {
-                return detail;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * 获取某天详情
      * @param daysData 天数据
      * @param day 某一天
      * @return
@@ -347,114 +322,15 @@ public class BaseOrderManager {
     public void consumeOrReConsumeSplitAccount(OrderItem orderItem, Date day, int consumeQuantity, String sn, boolean consume) {
         // 获取子订单的分账记录
         List<OrderItemAccount> accounts = orderItemAccountMapper.selectByOrderItem(orderItem.getId());
-        consumeOrReConsumeSplitAccount(accounts, orderItem.getPayment_flag(), day, consumeQuantity, sn, consume, false);
-    }
+        List<BalanceChangeInfo> balanceChangeInfoList;
 
-    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public void consumeOrReConsumeSplitAccount(List<OrderItemAccount> accounts, int paymentFlag, Date day, int consumeQuantity, String sn, boolean consume, boolean test) {
-        // 存储调用余额分账的数据
-        List<BalanceChangeInfo> balanceChangeInfoList = new ArrayList<>();
-        // 预付
-        if (paymentFlag == ProductConstants.PayType.PREPAY) {
-            Set<String> uk = new HashSet<>();
-            for (OrderItemAccount account : accounts) {
-                // 每天的单价利润数据
-                String data = account.getData();
-                if (StringUtils.isEmpty(data)) {
-                    continue;
-                }
-                String key = account.getEp_id() + "#" + account.getCore_ep_id();
-                if (uk.contains(key)) {
-                    continue;
-                }
-                uk.add(key);
-                JSONArray daysData = JSONArray.parseArray(data);
-                // 获取核销日期的单价利润
-                JSONObject dayData = getAccountDataByDay(daysData, DateFormatUtils.parseDateToDatetimeString(day));
-                BalanceChangeInfo changeInfo = new BalanceChangeInfo();
-                changeInfo.setEp_id(account.getEp_id());
-                changeInfo.setCore_ep_id(account.getCore_ep_id());
-                int money = getMoney(consumeQuantity, dayData);
-                if (money == 0) {
-                    continue;
-                }
-                // 核销分账可提现金额
-                changeInfo.setCan_cash(consume ? money : -money);
-                balanceChangeInfoList.add(changeInfo);
-                account.setSettled_money(consume ? account.getSettled_money() + money : account.getSettled_money() - money); // 设置已结算金额
-                orderItemAccountMapper.updateByPrimaryKeySelective(account);
-            }
+        if (orderItem.getPayment_flag() == ProductConstants.PayType.PAYS) {
+            Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
+            balanceChangeInfoList =  AccountUtil.makerCashConsumeOrReConsumeBalanceChangeInfo(accounts, day, consumeQuantity, order.getBuy_ep_id(), order.getPayee_ep_id(), consume);
         } else {
-            Map<Integer, Integer> coreSubMap = new HashMap<>();
-            Map<Integer, OrderItemAccount> coreAccountMap = new HashMap<>();
-            Set<String> uk = new HashSet<>();
-            for (OrderItemAccount account : accounts) {
-                // 每天的单价利润数据
-                String data = account.getData();
-                if (StringUtils.isEmpty(data)) {
-                    continue;
-                }
-                String key = account.getEp_id() + "#" + account.getCore_ep_id();
-                if (uk.contains(key)) {
-                    continue;
-                }
-                uk.add(key);
-                JSONArray daysData = JSONArray.parseArray(data);
-                // 获取核销日期的单价利润
-                JSONObject dayData = getAccountDataByDay(daysData, DateFormatUtils.parseDateToDatetimeString(day));
-                int money = getMoney(consumeQuantity, dayData);
-                if (money == 0) {
-                    continue;
-                }
-                // 不是供应侧的平台商 或者 销售侧的平台内企业
-                Integer coreEpId = getCoreEpId(getCoreEpId(account.getEp_id()));
-                if ((account.getEp_id().intValue() == coreEpId && account.getCore_ep_id().intValue() != coreEpId) ||
-                        (account.getEp_id().intValue() != coreEpId && account.getCore_ep_id().intValue() == coreEpId)) {
-                    Integer value = coreSubMap.get(coreEpId);
-                    coreSubMap.put(coreEpId, value == null ? money : value + money);
-                    if (account.getCore_ep_id().intValue() != coreEpId) {
-                        coreAccountMap.put(coreEpId, account);
-                    }
-                }
-                // 核销分账
-                if (!coreAccountMap.containsKey(account.getEp_id())) {
-                    BalanceChangeInfo changeInfo = new BalanceChangeInfo();
-                    changeInfo.setEp_id(account.getEp_id());
-                    changeInfo.setCore_ep_id(account.getCore_ep_id());
-                    changeInfo.setCan_cash(consume ? money : -money);
-                    changeInfo.setBalance(consume ? money : -money);
-                    balanceChangeInfoList.add(changeInfo);
-                }
-                account.setSettled_money(consume ? account.getSettled_money() + money : account.getSettled_money() - money); // 设置已结算金额
-                orderItemAccountMapper.updateByPrimaryKeySelective(account);
-            }
-            for (Integer id : coreSubMap.keySet()) {
-                OrderItemAccount account = coreAccountMap.get(id);
-                JSONArray daysData = JSONArray.parseArray(account.getData());
-                // 获取核销日期的单价利润
-                JSONObject dayData = getAccountDataByDay(daysData, DateFormatUtils.parseDateToDatetimeString(day));
-                BalanceChangeInfo changeInfo = new BalanceChangeInfo();
-                changeInfo.setEp_id(id);
-                changeInfo.setCore_ep_id(account.getCore_ep_id());
-                Integer money = coreSubMap.get(id);
-                changeInfo.setCan_cash(consume ? money : -money);
-                changeInfo.setBalance(consume ? money : -money);
-                balanceChangeInfoList.add(changeInfo);
-                // 把本平台下的企业所有要收的钱从本平台减去 = 本平台收的钱 - 本平台利润
-                BalanceChangeInfo changeInfo2 = new BalanceChangeInfo();
-                changeInfo2.setEp_id(id);
-                changeInfo2.setCore_ep_id(id);
-                int sub = money - getMoney(consumeQuantity, dayData);
-                changeInfo2.setCan_cash(consume ? -sub : sub);
-                changeInfo2.setBalance(consume ? -sub : sub);
-                balanceChangeInfoList.add(changeInfo2);
+            balanceChangeInfoList = AccountUtil.makerConsumeOrReConsumeBalanceChangeInfo(accounts, day, consumeQuantity, consume);
+        }
 
-            }
-        }
-        if (test) {
-            System.out.println(JsonUtils.toJson(balanceChangeInfoList));
-            return;
-        }
         // 调用分账
         Result<BalanceChangeRsp> result = changeBalances(PaymentConstant.BalanceChangeType.CONSUME_SPLIT, sn, balanceChangeInfoList);
         if (!result.isSuccess()) {

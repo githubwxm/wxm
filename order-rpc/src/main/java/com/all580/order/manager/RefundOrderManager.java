@@ -5,7 +5,9 @@ import com.alibaba.fastjson.JSONObject;
 import com.all580.ep.api.service.CoreEpChannelService;
 import com.all580.order.api.OrderConstant;
 import com.all580.order.dao.*;
+import com.all580.order.dto.RefundDay;
 import com.all580.order.entity.*;
+import com.all580.order.util.AccountUtil;
 import com.all580.payment.api.conf.PaymentConstant;
 import com.all580.payment.api.model.BalanceChangeInfo;
 import com.all580.payment.api.model.BalanceChangeRsp;
@@ -157,110 +159,68 @@ public class RefundOrderManager extends BaseOrderManager {
     }
 
     /**
-     * 判断是否可退 并更新退票数
-     * @param daysList 每天数据
-     * @param detailList 订单详情
-     * @throws Exception
-     */
-    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public int canRefundForDays(List daysList, List<OrderItemDetail> detailList, int itemId, int refundId) throws Exception {
-        int total = 0;
-        List<Visitor> visitorList = visitorMapper.selectByOrderItem(itemId);
-        List<RefundVisitor> refundVisitorList = refundVisitorMapper.selectByItemId(itemId);
-        List<Map> visitors = new ArrayList<>();
-        for (Object item : daysList) {
-            Map dayMap = (Map) item;
-            String day = CommonUtil.objectParseString(dayMap.get("day"));
-            Date date = DateFormatUtils.parseString(DateFormatUtils.DATE_TIME_FORMAT, day);
-            OrderItemDetail detail = getDetailByDay(detailList, date);
-            if (detail == null) {
-                throw new ApiException(String.format("日期:%s没有订单数据", day));
-            }
-            Integer quantity = CommonUtil.objectParseInteger(dayMap.get("quantity"));
-            if (detail.getQuantity() - detail.getUsed_quantity() - detail.getRefund_quantity() < quantity) {
-                throw new ApiException(
-                        String.format("日期:%s余票不足,已用:%s,已退:%s",
-                                new Object[]{day, detail.getUsed_quantity(), detail.getRefund_quantity()}));
-            }
-            total += quantity;
-            // 修改退票数
-            detail.setRefund_quantity(detail.getRefund_quantity() + quantity);
-            orderItemDetailMapper.updateByPrimaryKeySelective(detail);
-
-            int tmpVisitorQuantity = 0;
-            for (Object o : ((List) dayMap.get("visitors"))) {
-                Map vMap = (Map) o;
-                Integer id = CommonUtil.objectParseInteger(vMap.get("id"));
-                Integer vQuantity = CommonUtil.objectParseInteger(vMap.get("quantity"));
-                boolean have = false;
-                for (Map visitor : visitors) {
-                    if (visitor.get("id").equals(id)) {
-                        Integer tmp = CommonUtil.objectParseInteger(visitor.get("quantity"));
-                        visitor.put("quantity", tmp + vQuantity);
-                        have = true;
-                        break;
-                    }
-                }
-                if (!have) {
-                    visitors.add(vMap);
-                }
-                tmpVisitorQuantity += vQuantity;
-            }
-            if (tmpVisitorQuantity != quantity) {
-                throw new ApiException(String.format("日期:%s游客退票数不符",
-                        new Object[]{day}));
-            }
-        }
-        // 判断游客余票
-        int v = canVisitorRefund(visitors, visitorList, refundVisitorList, itemId, refundId);
-        if (v != total) {
-            throw new ApiException("总退票数与游客每日退票数不符");
-        }
-        return total;
-    }
-
-    /**
-     * 判断游客余票退票 并插入游客退票信息
-     * @param visitors 退票申请游客信息
-     * @param visitorList 订单游客信息
-     * @param refundVisitorList 订单之前游客退票信息
-     * @param itemId 订单ID
-     * @param refundId 退票订单ID
+     * 判断是否可退 并设置订单详情已退数量 && 创建退订游客信息
+     * @param refundDays 退票信息
+     * @param details 订单详情
+     * @param itemId 子订单ID
+     * @param refundId 退订订单ID
      * @return
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public int canVisitorRefund(List<Map> visitors, List<Visitor> visitorList, List<RefundVisitor> refundVisitorList, int itemId, int refundId) {
-        int total = 0;
-        for (Map vMap : visitors) {
-            Integer id = CommonUtil.objectParseInteger(vMap.get("id"));
-            Integer vQuantity = CommonUtil.objectParseInteger(vMap.get("quantity"));
-            Visitor visitor = getVisitorById(visitorList, id);
-            if (visitor == null) {
-                throw new ApiException(String.format("游客:%d 不存在", id));
+    public int canRefundForDays(Collection<RefundDay> refundDays, Collection<OrderItemDetail> details, int itemId, int refundId) {
+        int totalRefundQuantity = 0;
+        List<Visitor> visitorList = visitorMapper.selectByOrderItem(itemId);
+        List<RefundVisitor> refundVisitorList = refundVisitorMapper.selectByItemId(itemId);
+        List<Visitor> totalVisitorList = new ArrayList<>();
+        for (RefundDay refundDay : refundDays) {
+            OrderItemDetail detail = AccountUtil.getDetailByDay(details, refundDay.getDay());
+            if (detail == null) {
+                throw new ApiException(String.format("日期:%s没有订单数据", refundDay.getDay()));
             }
-            if (visitor.getQuantity() < vQuantity) {
+            if (detail.getQuantity() - detail.getUsed_quantity() - detail.getRefund_quantity() < refundDay.getQuantity()) {
+                throw new ApiException(
+                        String.format("日期:%s余票不足,已用:%s,已退(含预退):%s",
+                                new Object[]{JsonUtils.toJson(refundDay.getDay()), detail.getUsed_quantity(), detail.getRefund_quantity()}));
+            }
+            totalRefundQuantity += refundDay.getQuantity();
+            // 修改退票数
+            detail.setRefund_quantity(detail.getRefund_quantity() + refundDay.getQuantity());
+            orderItemDetailMapper.updateByPrimaryKeySelective(detail);
+
+            // 把该天的游客张数融合到总张数里面
+            AccountUtil.parseTotalVisitorQuantityForEveryDay(totalVisitorList, refundDay.getVisitors());
+        }
+
+        // 遍历游客
+        for (Visitor visitor : totalVisitorList) {
+            Visitor v = getVisitorById(visitorList, visitor.getId());
+            if (v == null) {
+                throw new ApiException(String.format("游客:%d 不存在", visitor.getId()));
+            }
+            if (v.getQuantity() < visitor.getQuantity()) {
                 throw new ApiException(String.format("游客:%s 票不足", new Object[]{visitor.getName()}));
             }
-            if (vQuantity <= 0) {
+            if (visitor.getQuantity() <= 0) {
                 throw new ApiException(String.format("游客:%s 退票数量必须大于0", visitor.getName()));
             }
             // 判断余票
-            RefundVisitor upRefundVisitor = getRefundVisitorById(refundVisitorList, id);
+            RefundVisitor upRefundVisitor = getRefundVisitorById(refundVisitorList, visitor.getId());
+            // 有退票信息 && 预退票 + 已退票 + 本次退票 > 游客总票数 则错误
             if (upRefundVisitor != null &&
-                    upRefundVisitor.getPre_quantity() + upRefundVisitor.getReturn_quantity() + vQuantity > visitor.getQuantity() ) {
+                    upRefundVisitor.getPre_quantity() + upRefundVisitor.getReturn_quantity() + visitor.getQuantity() > v.getQuantity() ) {
                 throw new ApiException(String.format("游客:%s 余票不足.总票数:%d 已退票:%d 已预退票:%d 本次预退票:%d",
                         new Object[]{visitor.getName(),
-                                visitor.getQuantity(), upRefundVisitor.getReturn_quantity(), upRefundVisitor.getPre_quantity(), vQuantity}));
+                                v.getQuantity(), upRefundVisitor.getReturn_quantity(), upRefundVisitor.getPre_quantity(), visitor.getQuantity()}));
             }
             RefundVisitor refundVisitor = new RefundVisitor();
-            refundVisitor.setVisitor_id(id);
-            refundVisitor.setPre_quantity(vQuantity);
+            refundVisitor.setVisitor_id(visitor.getId());
+            refundVisitor.setPre_quantity(visitor.getQuantity());
             refundVisitor.setRefund_order_id(refundId);
             refundVisitor.setOrder_item_id(itemId);
             refundVisitorMapper.insertSelective(refundVisitor);
-            total += vQuantity;
+            totalRefundQuantity += visitor.getQuantity();
         }
-        return total;
+        return totalRefundQuantity;
     }
 
     /**
@@ -269,7 +229,7 @@ public class RefundOrderManager extends BaseOrderManager {
      * @param id 游客ID
      * @return
      */
-    public Visitor getVisitorById(List<Visitor> visitorList, Integer id) {
+    private Visitor getVisitorById(List<Visitor> visitorList, Integer id) {
         if (visitorList == null || id == null) {
             return null;
         }
@@ -281,7 +241,7 @@ public class RefundOrderManager extends BaseOrderManager {
         return null;
     }
 
-    public RefundVisitor getRefundVisitorById(List<RefundVisitor> visitorList, Integer id) {
+    private RefundVisitor getRefundVisitorById(List<RefundVisitor> visitorList, Integer id) {
         if (visitorList == null || id == null) {
             return null;
         }
@@ -295,127 +255,54 @@ public class RefundOrderManager extends BaseOrderManager {
 
     /**
      * 计算退支付金额
-     * @param from 供应侧/销售侧
-     * @param daysList 每日退票详情
-     * @param detailList 每日订单详情
-     * @param itemId 子订单ID
-     * @param epId 支付企业ID
-     * @param coreEpId 支付企业余额托管平台商ID
-     * @return 0:退支付金额 1:手续费
-     */
-    public int[] calcRefundMoney(int from, List daysList, List<OrderItemDetail> detailList, int itemId, int epId, int coreEpId, Date refundDate) throws Exception {
-        OrderItemAccount account = orderItemAccountMapper.selectByOrderItemAndEp(itemId, epId, coreEpId);
-        if (account == null) {
-            throw new ApiException("数据异常,分账记录不存在");
-        }
-        String data = account.getData();
-        if (StringUtils.isEmpty(data)) {
-            throw new ApiException("数据异常,分账记录的每日单价不存在");
-        }
-        JSONArray daysData = JSONArray.parseArray(data);
-        if (daysData.size() != detailList.size()) {
-            throw new ApiException("数据异常,分账记录的每日单价与订单详情不匹配");
-        }
-        int money = 0;
-        int fee = 0;
-        for (Object item : daysList) {
-            Map dayMap = (Map) item;
-            String day = CommonUtil.objectParseString(dayMap.get("day"));
-            Date date = DateFormatUtils.parseString(DateFormatUtils.DATE_TIME_FORMAT, day);
-            OrderItemDetail detail = getDetailByDay(detailList, date);
-            if (detail == null) {
-                throw new ApiException(String.format("日期:%s没有订单数据", day));
-            }
-            JSONObject dayData = getAccountDataByDay(daysData, day);
-            if (dayData == null) {
-                throw new ApiException(String.format("日期:%s没有利润数据", day));
-            }
-            int outPrice = dayData.getIntValue("outPrice");
-            Integer quantity = CommonUtil.objectParseInteger(dayMap.get("quantity"));
-            Map<String, Integer> rate = ProductRules.calcRefund(from == ProductConstants.RefundEqType.SELLER ? detail.getCust_refund_rule() : detail.getSaler_refund_rule(), detail.getDay(), refundDate);
-            float feeTmp = 0f;
-            if (rate.get("type") == ProductConstants.AddPriceType.FIX) {
-                feeTmp = rate.get("fixed") * quantity;
-            } else {
-                feeTmp = outPrice * quantity * (float)rate.get("percent") / 100;
-            }
-            fee += feeTmp;
-            money += outPrice * quantity - feeTmp;
-            dayMap.put("fee", (int)feeTmp);
-        }
-        return new int[]{money, fee};
-    }
-
-    /**
-     * 计算退支付金额
-     * @param from 供应侧/销售侧
-     * @param itemId 子订单ID
-     * @param quantity 退款钱的票
-     * @param epId 支付企业ID
-     * @param coreEpId 支付企业余额托管平台商ID
+     * @param orderItem 子订单
+     * @param order 订单
+     * @param applyFrom 申请来源
+     * @param refundDays 退票信息
+     * @param details 订单详情
      * @param refundDate 退订时间
-     * @param detailList 每日退票详情
      * @return
      */
-    public int[] calcRefundMoneyForGroup(int from, int itemId, int quantity, int epId, int coreEpId, Date refundDate, List<OrderItemDetail> detailList) {
-        OrderItemAccount account = orderItemAccountMapper.selectByOrderItemAndEp(itemId, epId, coreEpId);
-        if (account == null) {
-            throw new ApiException("数据异常,分账记录不存在");
-        }
-        String data = account.getData();
-        if (StringUtils.isEmpty(data)) {
-            throw new ApiException("数据异常,分账记录的每日单价不存在");
-        }
-        JSONArray daysData = JSONArray.parseArray(data);
-        if (daysData.size() != detailList.size()) {
-            throw new ApiException("数据异常,分账记录的每日单价与订单详情不匹配");
-        }
-        int money = 0;
-        int fee = 0;
-        for (OrderItemDetail detail : detailList) {
-            String day = DateFormatUtils.parseDateToDatetimeString(detail.getDay());
-            JSONObject dayData = getAccountDataByDay(daysData, day);
-            if (dayData == null) {
-                throw new ApiException(String.format("日期:%s没有利润数据", day));
+    public int[] calcRefundMoneyAndFee(OrderItem orderItem, Order order, int applyFrom, Collection<RefundDay> refundDays, Collection<OrderItemDetail> details, Date refundDate) {
+        int [] calcResult = new int[]{0, 0};
+        // 到付不计算
+        if (orderItem.getPayment_flag() != ProductConstants.PayType.PAYS) {
+            OrderItemAccount account = orderItemAccountMapper.selectByOrderItemAndEp(orderItem.getId(), order.getBuy_ep_id(), order.getPayee_ep_id());
+            if (account == null) {
+                throw new ApiException("数据异常,分账记录不存在");
             }
-            int outPrice = dayData.getIntValue("outPrice");
-            Map<String, Integer> rate = ProductRules.calcRefund(from == ProductConstants.RefundEqType.SELLER ? detail.getCust_refund_rule() : detail.getSaler_refund_rule(), detail.getDay(), refundDate);
-            float feeTmp = 0f;
-            if (rate.get("type") == ProductConstants.AddPriceType.FIX) {
-                feeTmp = rate.get("fixed") * quantity;
-            } else {
-                feeTmp = outPrice * quantity * (float)rate.get("percent") / 100;
-            }
-            fee += feeTmp;
-            money += outPrice * quantity - feeTmp;
+            calcResult = AccountUtil.calcRefundMoneyAndFee(account, applyFrom, refundDays, details, refundDate);
         }
-        return new int[]{money, fee};
+        if (calcResult[0] < 0) {
+            throw new ApiException("销售价小于退货手续费");
+        }
+        return calcResult;
     }
 
     /**
      * 生成退订订单
      * @param item 子订单
-     * @param daysList 每天退票数
+     * @param refundDays 每天退票数
      * @param quantity 总退票数
      * @param money 退支付金额
      * @return
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public RefundOrder generateRefundOrder(OrderItem item, List daysList, int quantity, int money, int fee, String cause,
+    public RefundOrder generateRefundOrder(OrderItem item, Collection<RefundDay> refundDays, int quantity, int money, int fee, String cause,
                                            Integer auditTicket, Integer auditMoney, int saleCoreEpId) {
-        return generateRefundOrder(item, daysList, quantity, money, fee, cause, 0, auditTicket, auditMoney, saleCoreEpId);
+        return generateRefundOrder(item, refundDays, quantity, money, fee, cause, 0, auditTicket, auditMoney, saleCoreEpId);
     }
 
     /**
      * 生成退订订单
      * @param item 子订单
-     * @param daysList 每天退票数
+     * @param refundDays 每天退票数
      * @param quantity 总退票数
      * @param money 退支付金额
      * @return
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public RefundOrder generateRefundOrder(OrderItem item, List daysList, int quantity, int money, int fee, String cause,
+    public RefundOrder generateRefundOrder(OrderItem item, Collection<RefundDay> refundDays, int quantity, int money, int fee, String cause,
                                            Integer groupId, Integer auditTicket, Integer auditMoney, int saleCoreEpId) {
         RefundOrder refundOrder = new RefundOrder();
         // 获取平台商通道费率
@@ -423,7 +310,7 @@ public class RefundOrderManager extends BaseOrderManager {
         refundOrder.setOrder_item_id(item.getId());
         refundOrder.setNumber(UUIDGenerator.generateUUID());
         refundOrder.setQuantity(quantity);
-        refundOrder.setData(JsonUtils.toJson(daysList));
+        refundOrder.setData(JsonUtils.toJson(refundDays));
         refundOrder.setStatus(OrderConstant.RefundOrderStatus.AUDIT_WAIT);
         refundOrder.setCreate_time(new Date());
         refundOrder.setMoney(money);
@@ -437,166 +324,24 @@ public class RefundOrderManager extends BaseOrderManager {
     }
 
     /**
-     * 退货预分账
-     * @param orderItem 子订单
+     * 退订预分账
+     * @param from 申请来源
      * @param refundOrderId 退订订单ID
-     * @param detailList 每天详情
+     * @param order 订单
      * @param refundDate 退订时间
+     * @param itemId 子订单ID
+     * @param details 订单详情
+     * @param refundDays 退订信息
+     * @return
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public void preRefundAccount(List daysList, int from, OrderItem orderItem, int refundOrderId, List<OrderItemDetail> detailList, Date refundDate, Order order) throws Exception {
-        List<OrderItemAccount> accounts = orderItemAccountMapper.selectByOrderItem(orderItem.getId());
-        JSONArray priceDaysData = checkGetPriceDayData(order, accounts);
-        if (priceDaysData == null) {
-            throw new ApiException("分账单价数据异常");
-        }
-        Set<String> uk = new HashSet<>();
-        int payeeReceivableMoney = 0;
-        RefundAccount payeeRefundAccount = null;
-        for (OrderItemAccount account : accounts) {
-            String data = account.getData();
-            if (StringUtils.isEmpty(data)) {
-                continue;
-            }
-            String key = account.getEp_id() + "#" + account.getCore_ep_id();
-            if (uk.contains(key)) {
-                continue;
-            }
-            uk.add(key);
-            JSONArray daysData = JSONArray.parseArray(data);
-            int money = 0;
-            int cash = 0;
-            for (Object item : daysList) {
-                Map dayMap = (Map) item;
-                String day = CommonUtil.objectParseString(dayMap.get("day"));
-                Date date = DateFormatUtils.parseString(DateFormatUtils.DATE_TIME_FORMAT, day);
-                int quantity = CommonUtil.objectParseInteger(dayMap.get("quantity"));
-                OrderItemDetail detail = getDetailByDay(detailList, date);
-                if (detail == null) {
-                    throw new ApiException(String.format("日期:%s没有订单数据,数据异常", day));
-                }
-                JSONObject dayData = getAccountDataByDay(daysData, day);
-                if (dayData == null) {
-                    throw new ApiException(String.format("日期:%s没有利润数据,数据异常", day));
-                }
-                Map<String, Integer> rate = ProductRules.calcRefund(from == ProductConstants.RefundEqType.SELLER ? detail.getCust_refund_rule() : detail.getSaler_refund_rule(), detail.getDay(), refundDate);
-                // 利润
-                int profit = dayData.getIntValue("profit");
-                double percent = getPercent(priceDaysData, day, rate);
-                // 退余额(出货价*1-手续费)
-                money += Arith.round(Arith.mul(profit * quantity, 1 - percent), 0);
-                // 进可提现(出货价*手续费)
-                cash += Arith.round(Arith.mul(profit * quantity, percent), 0);
-            }
-            RefundAccount refundAccount = new RefundAccount();
-            // 收款方平台商分账不退钱,因为退票的时候已经退了钱
-            if (account.getEp_id().intValue() == account.getCore_ep_id() &&
-                    account.getCore_ep_id().intValue() == order.getPayee_ep_id()) {
-                money = 0;
-                payeeRefundAccount = refundAccount;
-            }
-            refundAccount.setEp_id(account.getEp_id());
-            refundAccount.setCore_ep_id(account.getCore_ep_id());
-            refundAccount.setMoney(money == 0 ? 0 : -money);
-            refundAccount.setProfit(cash == 0 ? 0 : cash);
-            refundAccount.setStatus(OrderConstant.AccountSplitStatus.NOT);
-            refundAccount.setRefund_order_id(refundOrderId);
-            refundAccount.setData(data);
+    public List<RefundAccount> preRefundSplitAccount(int from, int refundOrderId, Order order, Date refundDate, int itemId, Collection<OrderItemDetail> details, Collection<RefundDay> refundDays) {
+        List<OrderItemAccount> accounts = orderItemAccountMapper.selectByOrderItem(itemId);
+        List<RefundAccount> refundAccounts = AccountUtil.refundSplitAccount(order, accounts, details, refundDays, from, refundOrderId, refundDate);
+        for (RefundAccount refundAccount : refundAccounts) {
             refundAccountMapper.insertSelective(refundAccount);
-
-            // 由于收款方平台商一次性把该退的钱全退了,so 收款方平台商下的企业退的钱应该退给收款方平台商
-            if (account.getCore_ep_id() == order.getPayee_ep_id().intValue()) {
-                payeeReceivableMoney += money;
-            }
         }
-
-        if (payeeReceivableMoney > 0) {
-            // 收款方平台商肯定有分账记录所以 这里不用else
-            if (payeeRefundAccount != null) {
-                payeeRefundAccount.setMoney(payeeRefundAccount.getMoney() + payeeReceivableMoney);
-                refundAccountMapper.updateByPrimaryKeySelective(payeeRefundAccount);
-            }
-        }
-    }
-
-    /**
-     * 退货预分账
-     * @param from
-     * @param item 子订单
-     * @param refundOrderId 退订订单ID
-     * @param detailList 每天详情
-     * @param refundDate 退订时间
-     * @param order
-     * @throws Exception
-     */
-    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public void preRefundAccountForGroup(int from, OrderItem item, int refundOrderId, List<OrderItemDetail> detailList, Date refundDate, Order order) throws Exception {
-        List<OrderItemAccount> accounts = orderItemAccountMapper.selectByOrderItem(item.getId());
-        JSONArray priceDaysData = checkGetPriceDayData(order, accounts);
-        if (priceDaysData == null) {
-            throw new ApiException("分账单价数据异常");
-        }
-        Set<String> uk = new HashSet<>();
-        int payeeReceivableMoney = 0;
-        RefundAccount payeeRefundAccount = null;
-        for (OrderItemAccount account : accounts) {
-            String data = account.getData();
-            if (StringUtils.isEmpty(data)) {
-                continue;
-            }
-            String key = account.getEp_id() + "#" + account.getCore_ep_id();
-            if (uk.contains(key)) {
-                continue;
-            }
-            uk.add(key);
-            JSONArray daysData = JSONArray.parseArray(data);
-            int money = 0;
-            int cash = 0;
-            for (OrderItemDetail detail : detailList) {
-                String day = DateFormatUtils.parseDateToDatetimeString(detail.getDay());
-                JSONObject dayData = getAccountDataByDay(daysData, day);
-                if (dayData == null) {
-                    throw new ApiException(String.format("日期:%s没有利润数据,数据异常", day));
-                }
-                int quantity = detail.getQuantity() - detail.getUsed_quantity();
-                Map<String, Integer> rate = ProductRules.calcRefund(from == ProductConstants.RefundEqType.SELLER ? detail.getCust_refund_rule() : detail.getSaler_refund_rule(), detail.getDay(), refundDate);
-                // 利润
-                int profit = dayData.getIntValue("profit");
-                double percent = getPercent(priceDaysData, day, rate);
-                // 退余额(出货价*1-手续费)
-                money += Arith.round(Arith.mul(profit * quantity, 1 - percent), 0);
-                // 进可提现(出货价*手续费)
-                cash += Arith.round(Arith.mul(profit * quantity, percent), 0);
-            }
-            RefundAccount refundAccount = new RefundAccount();
-            // 收款方平台商分账不退钱,因为退票的时候已经退了钱
-            if (account.getEp_id().intValue() == account.getCore_ep_id() &&
-                    account.getCore_ep_id().intValue() == order.getPayee_ep_id()) {
-                money = 0;
-                payeeRefundAccount = refundAccount;
-            }
-            refundAccount.setEp_id(account.getEp_id());
-            refundAccount.setCore_ep_id(account.getCore_ep_id());
-            refundAccount.setMoney(money == 0 ? 0 : -money);
-            refundAccount.setProfit(cash == 0 ? 0 : cash);
-            refundAccount.setStatus(OrderConstant.AccountSplitStatus.NOT);
-            refundAccount.setRefund_order_id(refundOrderId);
-            refundAccount.setData(data);
-            refundAccountMapper.insertSelective(refundAccount);
-
-            // 由于收款方平台商一次性把该退的钱全退了,so 收款方平台商下的企业退的钱应该退给收款方平台商
-            if (account.getCore_ep_id() == order.getPayee_ep_id().intValue()) {
-                payeeReceivableMoney += money;
-            }
-        }
-
-        if (payeeReceivableMoney > 0) {
-            // 收款方平台商肯定有分账记录所以 这里不用else
-            if (payeeRefundAccount != null) {
-                payeeRefundAccount.setMoney(payeeRefundAccount.getMoney() + payeeReceivableMoney);
-                refundAccountMapper.updateByPrimaryKeySelective(payeeRefundAccount);
-            }
-        }
+        return refundAccounts;
     }
 
     /**
@@ -609,15 +354,8 @@ public class RefundOrderManager extends BaseOrderManager {
         RefundOrder refundOrder = refundOrderMapper.selectByPrimaryKey(refundId);
         List<RefundAccount> accountList = refundAccountMapper.selectByRefundId(refundOrder.getId());
         if (accountList != null) {
-            List<BalanceChangeInfo> infoList = new ArrayList<>();
+            List<BalanceChangeInfo> infoList = AccountUtil.makerRefundBalanceChangeInfo(accountList);
             for (RefundAccount refundAccount : accountList) {
-                BalanceChangeInfo info = new BalanceChangeInfo();
-                info.setEp_id(refundAccount.getEp_id());
-                info.setCore_ep_id(refundAccount.getCore_ep_id());
-                info.setBalance(refundAccount.getMoney());
-                info.setCan_cash(refundAccount.getProfit());
-                infoList.add(info);
-                refundAccount.setStatus(OrderConstant.AccountSplitStatus.HAS);
                 refundAccountMapper.updateByPrimaryKeySelective(refundAccount);
             }
             // 调用分账
@@ -631,24 +369,20 @@ public class RefundOrderManager extends BaseOrderManager {
 
     /**
      * 退订失败把之前的预退票信息退回
-     * @param daysList
+     * @param refundDays
      * @param detailList
      * @return
      * @throws Exception
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public void returnRefundForDays(List daysList, List<OrderItemDetail> detailList) throws Exception {
-        for (Object item : daysList) {
-            Map dayMap = (Map) item;
-            String day = CommonUtil.objectParseString(dayMap.get("day"));
-            Date date = DateFormatUtils.parseString(DateFormatUtils.DATE_TIME_FORMAT, day);
-            OrderItemDetail detail = getDetailByDay(detailList, date);
+    public void returnRefundForDays(Collection<RefundDay> refundDays, List<OrderItemDetail> detailList) throws Exception {
+        for (RefundDay refundDay : refundDays) {
+            OrderItemDetail detail = AccountUtil.getDetailByDay(detailList, refundDay.getDay());
             if (detail == null) {
-                throw new ApiException(String.format("日期:%s没有订单数据,数据异常", day));
+                throw new ApiException(String.format("日期:%s没有订单数据,数据异常", refundDay.getDay()));
             }
-            Integer quantity = CommonUtil.objectParseInteger(dayMap.get("quantity"));
             // 修改退票数
-            detail.setRefund_quantity(detail.getRefund_quantity() - quantity);
+            detail.setRefund_quantity(detail.getRefund_quantity() - refundDay.getQuantity());
             orderItemDetailMapper.updateByPrimaryKeySelective(detail);
         }
     }
@@ -702,9 +436,9 @@ public class RefundOrderManager extends BaseOrderManager {
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public void refundFail(RefundOrder refundOrder) throws Exception {
         refundOrder.setStatus(OrderConstant.RefundOrderStatus.FAIL);
-        List daysList = JsonUtils.json2List(refundOrder.getData());
         List<OrderItemDetail> detailList = orderItemDetailMapper.selectByItemId(refundOrder.getOrder_item_id());
-        returnRefundForDays(daysList, detailList);
+        Collection<RefundDay> refundDays = AccountUtil.decompileRefundDay(refundOrder.getData());
+        returnRefundForDays(refundDays, detailList);
         refundOrderMapper.updateByPrimaryKeySelective(refundOrder);
     }
 
@@ -787,7 +521,7 @@ public class RefundOrderManager extends BaseOrderManager {
         // 非支付宝
         if (order.getPayment_type() == null || order.getPayment_type() != PaymentConstant.PaymentType.ALI_PAY.intValue()) {
             // 退款
-            return refundMoney(order, money, sn);
+            return refundMoney(order, money, sn, refundOrder.getId());
         }
         return new Result(true);
     }
@@ -797,7 +531,7 @@ public class RefundOrderManager extends BaseOrderManager {
      * @param order 订单
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public Result refundMoney(Order order, int money, String sn) {
+    public Result refundMoney(Order order, int money, String sn, int refundOrderId) {
         log.debug("订单:{} 发起退款:{}", order.getNumber(), money);
         if (money == 0 && sn != null) {
             log.debug("订单:{} 退款为0元,直接调用退款成功.", order.getNumber());
@@ -808,20 +542,13 @@ public class RefundOrderManager extends BaseOrderManager {
         // 退款
         // 余额退款
         if (order.getPayment_type() == PaymentConstant.PaymentType.BALANCE.intValue()) {
-            BalanceChangeInfo payInfo = new BalanceChangeInfo();
-            payInfo.setEp_id(coreEpId);
-            payInfo.setCore_ep_id(coreEpId);
-            payInfo.setBalance(-money);
-
-            BalanceChangeInfo saveInfo = new BalanceChangeInfo();
-            saveInfo.setEp_id(order.getBuy_ep_id());
-            saveInfo.setCore_ep_id(payInfo.getCore_ep_id());
-            saveInfo.setBalance(money);
-            saveInfo.setCan_cash(money);
+            List<RefundAccount> accountList = refundAccountMapper.selectByRefundId(refundOrderId);
+            // 获取余额变动信息
+            List<BalanceChangeInfo> balanceChangeInfoList = AccountUtil.makerRefundBalanceChangeInfo(accountList);
             // 退款
             Result result = changeBalances(
                     PaymentConstant.BalanceChangeType.BALANCE_REFUND,
-                    sn == null ? order.getNumber().toString() : sn, payInfo, saveInfo);
+                    sn == null ? order.getNumber().toString() : sn, balanceChangeInfoList);
             if (!result.isSuccess()) {
                 log.warn("余额退款失败:{}", result.get());
                 throw new ApiException(result.getError());
@@ -895,6 +622,10 @@ public class RefundOrderManager extends BaseOrderManager {
         if (refundOrder == null) {
             throw new ApiException("退订订单不存在");
         }
+        Order order = orderMapper.selectByRefundSn(refundOrder.getNumber());
+        if (refundOrder == null) {
+            throw new ApiException("订单不存在");
+        }
         refundOrder.setRefund_money_time(new Date());
         refundOrder.setStatus(success ? OrderConstant.RefundOrderStatus.REFUND_SUCCESS : OrderConstant.RefundOrderStatus.REFUND_MONEY_FAIL);
         refundOrderMapper.updateByPrimaryKeySelective(refundOrder);
@@ -912,12 +643,15 @@ public class RefundOrderManager extends BaseOrderManager {
             jobParams.put("check", "true");
             Job stockJob = createJob(OrderConstant.Actions.REFUND_STOCK, jobParams, false);
 
-            // 退款分账 记录任务
-            Map<String, String> moneyJobParams = new HashMap<>();
-            moneyJobParams.put("refundId", String.valueOf(refundOrder.getId()));
-            Job moneyJob = createJob(OrderConstant.Actions.REFUND_MONEY_SPLIT_ACCOUNT, moneyJobParams, false);
-
-            addJobs(stockJob, moneyJob);
+            // 退款分账 记录任务 余额不做后续分账(和支付的时候一起)
+            if (order.getPayment_type() != null && order.getPayment_type() != PaymentConstant.PaymentType.BALANCE.intValue()) {
+                Map<String, String> moneyJobParams = new HashMap<>();
+                moneyJobParams.put("refundId", String.valueOf(refundOrder.getId()));
+                Job moneyJob = createJob(OrderConstant.Actions.REFUND_MONEY_SPLIT_ACCOUNT, moneyJobParams, false);
+                addJobs(stockJob, moneyJob);
+            } else {
+                addJobs(stockJob);
+            }
         }
         // 同步数据
         syncRefundOrderMoney(refundOrder.getId());
@@ -941,46 +675,6 @@ public class RefundOrderManager extends BaseOrderManager {
                 throw new ApiException("非法请求:当前企业不能退订该订单");
             }
         }
-    }
-
-    /**
-     * 检查分账数据并返回单价分账数据
-     * @param order 订单
-     * @param accounts 分账数据
-     * @return
-     */
-    private JSONArray checkGetPriceDayData(Order order, List<OrderItemAccount> accounts) {
-        for (OrderItemAccount account : accounts) {
-            if (account.getEp_id().intValue() == order.getBuy_ep_id() && account.getCore_ep_id().intValue() == order.getPayee_ep_id()) {
-                String data = account.getData();
-                if (StringUtils.isEmpty(data)) {
-                    throw new ApiException("分账数据异常");
-                }
-                return JSONArray.parseArray(data);
-            }
-        }
-        return null;
-    }
-
-    /**
-     * 获取利润百分比
-     * @param priceDaysData
-     * @param day
-     * @param rate
-     * @return
-     */
-    private double getPercent(JSONArray priceDaysData, String day, Map<String, Integer> rate) {
-        double percent = 1.0;
-        if (rate.get("type") == ProductConstants.AddPriceType.FIX) {
-            JSONObject priceDayData = getAccountDataByDay(priceDaysData, day);
-            if (priceDayData == null) {
-                throw new ApiException("日期:"+day+"分账单价数据异常");
-            }
-            percent = Arith.div(rate.get("fixed"), priceDayData.getIntValue("outPrice"), 4);
-        } else {
-            percent = Arith.div(rate.get("percent"), 100, 4);
-        }
-        return percent;
     }
 
     /**

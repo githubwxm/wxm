@@ -6,9 +6,13 @@ import com.all580.order.api.OrderConstant;
 import com.all580.order.api.model.RefundGroupTicketInfo;
 import com.all580.order.api.model.RefundTicketInfo;
 import com.all580.order.dao.*;
+import com.all580.order.dto.AccountDataDto;
+import com.all580.order.dto.RefundDay;
 import com.all580.order.entity.*;
+import com.all580.order.util.AccountUtil;
 import com.all580.payment.api.conf.PaymentConstant;
 import com.all580.payment.api.model.BalanceChangeInfo;
+import com.all580.payment.api.model.BalanceChangeRsp;
 import com.all580.payment.api.service.ThirdPayService;
 import com.all580.product.api.consts.ProductConstants;
 import com.all580.product.api.model.ProductSearchParams;
@@ -40,6 +44,8 @@ import java.util.*;
 public class LockTransactionManager {
     @Autowired
     private OrderItemMapper orderItemMapper;
+    @Autowired
+    private OrderItemAccountMapper orderItemAccountMapper;
     @Autowired
     private OrderMapper orderMapper;
     @Autowired
@@ -74,26 +80,17 @@ public class LockTransactionManager {
     public void paymentCallback(int orderId, String outTransId, String serialNum) {
         Order order = orderMapper.selectByPrimaryKey(orderId);
         if (order == null) {
-            log.warn("支付成功回调,订单不存在");
+            log.warn("支付成功任务,订单不存在");
             throw new ApiException("订单不存在");
         }
 
         if (order.getStatus() != OrderConstant.OrderStatus.PAYING) {
-            log.warn("支付成功回调,订单:{}状态:{}不是支付中", order.getNumber(), order.getStatus());
+            log.warn("支付成功任务,订单:{}状态:{}不是支付中", order.getNumber(), order.getStatus());
             throw new ApiException("订单不在支付中状态");
         }
         order.setThird_serial_no(outTransId);
         order.setStatus(OrderConstant.OrderStatus.PAID_HANDLING); // 已支付,处理中
         orderMapper.updateByPrimaryKeySelective(order);
-
-        // 支付成功后加平台商余额(平帐),余额支付不做平帐
-        if (order.getPayment_type() != null && order.getPayment_type() != PaymentConstant.PaymentType.BALANCE.intValue()) {
-            BalanceChangeInfo info = new BalanceChangeInfo();
-            info.setEp_id(bookingOrderManager.getCoreEpId(bookingOrderManager.getCoreEpId(order.getBuy_ep_id())));
-            info.setCore_ep_id(info.getEp_id());
-            info.setBalance(order.getPay_amount());
-            bookingOrderManager.changeBalances(PaymentConstant.BalanceChangeType.THIRD_PAY_FOR_ORDER, serialNum, info);
-        }
 
         List<OrderItem> orderItems = orderItemMapper.selectByOrderId(orderId);
         List<ProductSearchParams> lockParams = new ArrayList<>();
@@ -118,10 +115,12 @@ public class LockTransactionManager {
         // TODO: 2016/11/16  目前只支持单子订单发送
         smsManager.sendPaymentSuccess(orderItems.get(0));
 
-        // 添加分账任务
-        Map<String, String> jobParam = new HashMap<>();
-        jobParam.put("orderId", String.valueOf(orderId));
-        bookingOrderManager.addJob(OrderConstant.Actions.PAYMENT_SPLIT_ACCOUNT, jobParam);
+        // 添加分账任务 余额不做后续分账(和支付的时候一起)
+        if (order.getPayment_type() != null && order.getPayment_type() != PaymentConstant.PaymentType.BALANCE.intValue()) {
+            Map<String, String> jobParam = new HashMap<>();
+            jobParam.put("orderId", String.valueOf(orderId));
+            bookingOrderManager.addJob(OrderConstant.Actions.PAYMENT_SPLIT_ACCOUNT, jobParam);
+        }
     }
 
     /**
@@ -175,11 +174,17 @@ public class LockTransactionManager {
             throw new ApiException("订单不在分账中状态");
         }
 
-        List<OrderItem> orderItems = orderItemMapper.selectByOrderId(orderId);
-        bookingOrderManager.paySplitAccount(order, orderItems);
         // 更新状态已支付
         order.setStatus(OrderConstant.OrderStatus.PAID);
         orderMapper.updateByPrimaryKeySelective(order);
+        // 分账
+        List<OrderItem> orderItems = orderItemMapper.selectByOrderId(orderId);
+        List<BalanceChangeInfo> balanceChangeInfoList = bookingOrderManager.packagingPaySplitAccount(order, orderItems);
+        Result<BalanceChangeRsp> result = bookingOrderManager.changeBalances(PaymentConstant.BalanceChangeType.PAY_SPLIT, String.valueOf(order.getNumber()), balanceChangeInfoList);
+        if (!result.isSuccess()) {
+            log.warn("支付分账失败:{}", JsonUtils.toJson(result.get()));
+            throw new ApiException(result.getError());
+        }
 
         // 出票
         // 记录任务
@@ -237,30 +242,21 @@ public class LockTransactionManager {
         // 每日订单详情
         List<OrderItemDetail> detailList = orderItemDetailMapper.selectByItemId(orderItem.getId());
         // 每日退票详情
-        List daysList = (List) params.get("days");
+        Collection<RefundDay> refundDays = AccountUtil.decompileRefundDay((List) params.get("days"));
         // 总退票数量
         Integer quantity = CommonUtil.objectParseInteger(params.get("quantity"));
         String cause = CommonUtil.objectParseString(params.get("cause"));
 
-        if (daysList == null) {
+        if (refundDays == null) {
             throw new ApiException("缺少退票详情");
         }
 
         Date refundDate = new Date();
+        int[] calcResult = refundOrderManager.calcRefundMoneyAndFee(orderItem, order, applyFrom, refundDays, detailList, refundDate);
         // 计算退款金额
-        int money = 0;
+        int money = calcResult[0];
         // 手续费
-        int fee = 0;
-        // 到付不计算
-        if (orderItem.getPayment_flag() != ProductConstants.PayType.PAYS) {
-            int[] calcResult = refundOrderManager.calcRefundMoney(applyFrom, daysList, detailList, orderItem.getId(), order.getBuy_ep_id(),
-                    refundOrderManager.getCoreEpId(refundOrderManager.getCoreEpId(order.getBuy_ep_id())), refundDate);
-            money = calcResult[0];
-            fee = calcResult[1];
-        }
-        if (money < 0) {
-            throw new ApiException("销售价小于退货手续费");
-        }
+        int fee = calcResult[1];
 
         // 获取退订审核
         int[] auditSupplierConfig = refundOrderManager.getAuditConfig(orderItem.getPro_sub_id(), orderItem.getSupplier_core_ep_id());
@@ -273,17 +269,17 @@ public class LockTransactionManager {
             auditMoney = refundOrderManager.getAuditConfig(orderItem.getPro_sub_id(), order.getPayee_ep_id())[1];
         }
         // 创建退订订单
-        RefundOrder refundOrder = refundOrderManager.generateRefundOrder(orderItem, daysList, quantity, money, fee, cause, auditTicket, auditMoney, order.getPayee_ep_id());
+        RefundOrder refundOrder = refundOrderManager.generateRefundOrder(orderItem, refundDays, quantity, money, fee, cause, auditTicket, auditMoney, order.getPayee_ep_id());
 
         // 判断余票 并修改明细退票数量 创建游客退票信息
-        int tmpQuantity = refundOrderManager.canRefundForDays(daysList, detailList, refundOrder.getOrder_item_id(), refundOrder.getId());
+        int tmpQuantity = refundOrderManager.canRefundForDays(refundDays, detailList, refundOrder.getOrder_item_id(), refundOrder.getId());
         if (tmpQuantity != quantity) {
             throw new ApiException("退票总数与每天退票数不符");
         }
 
         // 退订分账 到付退订不分帐
         if (orderItem.getPayment_flag() != ProductConstants.PayType.PAYS) {
-            refundOrderManager.preRefundAccount(daysList, applyFrom, orderItem, refundOrder.getId(), detailList, refundDate, order);
+            refundOrderManager.preRefundSplitAccount(applyFrom, refundOrder.getId(), order, refundDate, refundOrder.getOrder_item_id(), detailList, refundDays);
         }
 
         // 判断是否需要退订审核
@@ -326,57 +322,29 @@ public class LockTransactionManager {
         // 每日订单详情
         List<OrderItemDetail> detailList = orderItemDetailMapper.selectByItemId(orderItem.getId());
 
-        // 退钱的票数
-        int realRefundQuantity = 0;
-        // 退票数量
-        int refundQuantity = 0;
-        // 已使用数量
-        Integer usedQuantity = orderItem.getUsed_quantity();
-        // 总数量
-        Integer quantity = orderItem.getQuantity() * orderItem.getDays();
-        // 使用方式退订
-        if (usedQuantity != null && usedQuantity > 0) {
+        // 使用后退订
+        if (orderItem.getUsed_quantity() != null && orderItem.getUsed_quantity() > 0) {
             Date expiryDate = detailList.get(detailList.size() - 1).getExpiry_date();
             if (refundDate.before(expiryDate)) {
                 throw new ApiException("已使用后的必须过期才能退订");
             }
-            refundQuantity = quantity - usedQuantity;
-            if (orderItem.getLow_quantity() != null) {
-                realRefundQuantity = usedQuantity < orderItem.getLow_quantity() ?
-                        quantity - orderItem.getLow_quantity() : refundQuantity;
-            }
-        } else {
-            // 未使用方式退订(全退)
-            realRefundQuantity = quantity;
-            refundQuantity = realRefundQuantity;
         }
 
         String cause = CommonUtil.objectParseString(params.get("cause"));
 
-        // 计算退款金额
-        int money = 0;
-        // 手续费
-        int fee = 0;
-        // 到付不计算
-        if (orderItem.getPayment_flag() != ProductConstants.PayType.PAYS) {
-            int[] calcResult = refundOrderManager.calcRefundMoneyForGroup(applyFrom, orderItem.getId(), realRefundQuantity, order.getBuy_ep_id(),
-                    refundOrderManager.getCoreEpId(refundOrderManager.getCoreEpId(order.getBuy_ep_id())), refundDate, detailList);
-            money = calcResult[0];
-            fee = calcResult[1];
-        }
-        if (money < 0) {
-            throw new ApiException("销售价小于退货手续费");
+        // 伪装每天退票信息
+        Collection<RefundDay> refundDays = AccountUtil.parseRefundDayForDetail(detailList);
+        // 计算一共退多少张
+        int totalRefundQuantity = 0;
+        for (RefundDay refundDay : refundDays) {
+            totalRefundQuantity += refundDay.getQuantity();
         }
 
-        List<Map<String, Object>> daysList = new ArrayList<>();
-        for (OrderItemDetail detail : detailList) {
-            Map<String, Object> dayMap = new HashMap<>();
-            dayMap.put("day", detail.getDay());
-            dayMap.put("quantity", detail.getQuantity() - detail.getUsed_quantity());
-            dayMap.put("visitors", Collections.emptyList());
-            dayMap.put("fee", fee);
-            daysList.add(dayMap);
-        }
+        int[] calcResult = refundOrderManager.calcRefundMoneyAndFee(orderItem, order, applyFrom, refundDays, detailList, refundDate);
+        // 计算退款金额
+        int money = calcResult[0];
+        // 手续费
+        int fee = calcResult[1];
 
         // 获取退订审核
         int[] auditSupplierConfig = refundOrderManager.getAuditConfig(orderItem.getPro_sub_id(), orderItem.getSupplier_core_ep_id());
@@ -389,13 +357,13 @@ public class LockTransactionManager {
             auditMoney = refundOrderManager.getAuditConfig(orderItem.getPro_sub_id(), order.getPayee_ep_id())[1];
         }
         // 创建退订订单
-        RefundOrder refundOrder = refundOrderManager.generateRefundOrder(orderItem, daysList, refundQuantity, money, fee, cause, orderItem.getGroup_id(), auditTicket, auditMoney, order.getPayee_ep_id());
+        RefundOrder refundOrder = refundOrderManager.generateRefundOrder(orderItem, refundDays, totalRefundQuantity, money, fee, cause, orderItem.getGroup_id(), auditTicket, auditMoney, order.getPayee_ep_id());
 
         // 修改明细退票数量
         orderItemDetailMapper.refundRemain(orderItem.getId());
 
         // 退订分账
-        refundOrderManager.preRefundAccountForGroup(applyFrom, orderItem, refundOrder.getId(), detailList, refundDate, order);
+        refundOrderManager.preRefundSplitAccount(applyFrom, refundOrder.getId(), order, refundDate, refundOrder.getOrder_item_id(), detailList, refundDays);
 
         // 判断是否需要退订审核
         if (refundOrder.getAudit_ticket() == ProductConstants.RefundAudit.NO) {
@@ -420,7 +388,7 @@ public class LockTransactionManager {
             throw new ApiException("订单不在已支付处理中状态");
         }
         // 退款,取消在退款回调中执行
-        refundOrderManager.refundMoney(order, order.getPay_amount(), null);
+        refundOrderManager.refundMoney(order, order.getPay_amount(), null, -1);
         return new Result<>(true);
     }
 
@@ -569,20 +537,25 @@ public class LockTransactionManager {
         // 调用支付RPC
         // 余额支付
         if (payType == PaymentConstant.PaymentType.BALANCE.intValue()) {
-            BalanceChangeInfo payInfo = new BalanceChangeInfo();
-            payInfo.setEp_id(order.getBuy_ep_id());
-            payInfo.setCore_ep_id(bookingOrderManager.getCoreEpId(bookingOrderManager.getCoreEpId(order.getBuy_ep_id())));
-            payInfo.setBalance(-order.getPay_amount());
-            payInfo.setCan_cash(-order.getPay_amount());
+            // 余额支付需要扣除销售商的钱
+            List<OrderItemAccount> accounts = orderItemAccountMapper.selectByOrderAnEp(order.getId(), order.getBuy_ep_id(), order.getPayee_ep_id());
+            for (OrderItemAccount account : accounts) {
+                // 把data JSON 反编译为JAVA类型
+                Collection<AccountDataDto> dataDtoList = AccountUtil.decompileAccountData(account.getData());
+                // 获取总出货价
+                int totalOutPrice = AccountUtil.getTotalOutPrice(dataDtoList);
+                account.setMoney(account.getMoney() + (-totalOutPrice));
+                account.setProfit(account.getMoney());
+                orderItemAccountMapper.updateByPrimaryKeySelective(account);
+            }
 
-            BalanceChangeInfo saveInfo = new BalanceChangeInfo();
-            saveInfo.setEp_id(payInfo.getCore_ep_id());
-            saveInfo.setCore_ep_id(payInfo.getCore_ep_id());
-            saveInfo.setBalance(order.getPay_amount());
+            // 获取余额变动信息
+            List<BalanceChangeInfo> balanceChangeInfoList = bookingOrderManager.packagingPaySplitAccount(order);
+
             // 支付
             Result result = bookingOrderManager.changeBalances(
                     PaymentConstant.BalanceChangeType.BALANCE_PAY,
-                    order.getNumber().toString(), payInfo, saveInfo);
+                    order.getNumber().toString(), balanceChangeInfoList);
             if (!result.isSuccess()) {
                 log.warn("余额支付失败:{}", JsonUtils.toJson(result));
                 throw new ApiException(result.getError());

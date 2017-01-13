@@ -3,18 +3,15 @@ package com.all580.order.manager;
 import com.all580.order.api.OrderConstant;
 import com.all580.order.dao.*;
 import com.all580.order.dto.AccountDataDto;
-import com.all580.order.dto.GenerateAccountDto;
 import com.all580.order.entity.*;
-import com.all580.payment.api.conf.PaymentConstant;
+import com.all580.order.util.AccountUtil;
 import com.all580.payment.api.model.BalanceChangeInfo;
-import com.all580.payment.api.model.BalanceChangeRsp;
 import com.all580.product.api.consts.ProductConstants;
 import com.all580.product.api.model.EpSalesInfo;
 import com.all580.product.api.model.ProductSalesDayInfo;
 import com.all580.product.api.model.ProductSalesInfo;
 import com.framework.common.Result;
 import com.framework.common.lang.DateFormatUtils;
-import com.framework.common.lang.JsonUtils;
 import com.framework.common.lang.UUIDGenerator;
 import com.framework.common.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -273,40 +270,6 @@ public class BookingOrderManager extends BaseOrderManager {
     }
 
     /**
-     * 生成分账（平账）
-     * @param dto
-     * @return
-     */
-    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public List<OrderItemAccount> generateAccount(GenerateAccountDto dto) {
-        List<OrderItemAccount> accounts = new ArrayList<>();
-        OrderItemAccount subtractAccount = new OrderItemAccount();
-        subtractAccount.setEp_id(dto.getSubtractEpId());
-        subtractAccount.setCore_ep_id(dto.getSubtractCoreId());
-        subtractAccount.setOrder_item_id(dto.getOrderItemId());
-        subtractAccount.setMoney(-dto.getMoney());
-        subtractAccount.setProfit(dto.getSubtractProfit());
-        subtractAccount.setSettled_money(0);
-        subtractAccount.setStatus(OrderConstant.AccountSplitStatus.NOT);
-        subtractAccount.setData(dto.getSubtractData() == null ? null : JsonUtils.toJson(dto.getSubtractData()));
-        accounts.add(subtractAccount);
-        orderItemAccountMapper.insertSelective(subtractAccount);
-
-        OrderItemAccount addAccount = new OrderItemAccount();
-        addAccount.setEp_id(dto.getAddEpId());
-        addAccount.setCore_ep_id(dto.getAddCoreId());
-        addAccount.setOrder_item_id(dto.getOrderItemId());
-        addAccount.setMoney(dto.getMoney());
-        addAccount.setProfit(dto.getAddProfit());
-        addAccount.setSettled_money(0);
-        addAccount.setStatus(OrderConstant.AccountSplitStatus.NOT);
-        addAccount.setData(dto.getAddData() == null ? null : JsonUtils.toJson(dto.getAddData()));
-        accounts.add(addAccount);
-        orderItemAccountMapper.insertSelective(addAccount);
-        return accounts;
-    }
-
-    /**
      * 创建子订单详情
      * @param info 产品信息
      * @param itemId 子订单ID
@@ -478,238 +441,43 @@ public class BookingOrderManager extends BaseOrderManager {
     }
 
     /**
-     * 支付分账
-     * @param orderItems 子订单
+     * 支付预分账
+     * @param daySalesList 每天销售链
+     * @param orderItem 子订单
+     * @param finalEpId 最终售卖企业
      * @return
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public void paySplitAccount(Order order, List<OrderItem> orderItems) {
-        if (orderItems == null) {
-            orderItems = orderItemMapper.selectByOrderId(order.getId());
-        }
-        // 遍历所有子订单封装分账数据统一分账
-        List<BalanceChangeInfo> infoList = new ArrayList<>();
-        for (OrderItem orderItem : orderItems) {
-            List<OrderItemAccount> orderItemAccounts = orderItemAccountMapper.selectByOrderItem(orderItem.getId());
-            for (OrderItemAccount itemAccount : orderItemAccounts) {
-                BalanceChangeInfo info = new BalanceChangeInfo();
-                info.setEp_id(itemAccount.getEp_id());
-                info.setCore_ep_id(itemAccount.getCore_ep_id());
-                info.setBalance(itemAccount.getMoney());
-                infoList.add(info);
-                itemAccount.setStatus(OrderConstant.AccountSplitStatus.HAS);
-                orderItemAccountMapper.updateByPrimaryKeySelective(itemAccount);
-            }
-        }
-        // 调用分账
-        Result<BalanceChangeRsp> result = changeBalances(PaymentConstant.BalanceChangeType.PAY_SPLIT, String.valueOf(order.getNumber()), infoList);
-        if (!result.isSuccess()) {
-            log.warn("支付分账失败:{}", JsonUtils.toJson(result.get()));
-            throw new ApiException(result.getError());
-        }
-    }
-
-    /**
-     * 预分账
-     * @param daySalesList 每天的销售链
-     * @param itemId 子订单ID
-     * @param quantity 每天(时间段)票数
-     * @return
-     */
-    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public List<OrderItemAccount> preSplitAccount(List<List<EpSalesInfo>> daySalesList, int itemId, int quantity, int payType, Date bookingDate) {
-        // 预分账记录
-        List<OrderItemAccount> accounts = new ArrayList<>();
-        // 缓存平台商ID
-        Map<Integer, Integer> coreEpMap = new HashMap<>();
-        // 每个企业所有天的利润
-        Map<String, List<AccountDataDto>> daysAccountDataMap = new HashMap<>();
-        // 叶子销售商最终卖价
-        int salePrice = 0;
-        // 遍历每天的销售链
-        int i = 0;
-        for (List<EpSalesInfo> infoList : daySalesList) {
-            // 一天的利润单价
-            Map<String, AccountDataDto> dayAccountDataMap = new HashMap<>();
-            Date day = DateUtils.addDays(bookingDate, i);
-            for (EpSalesInfo info : infoList) {
-                Integer buyCoreEpId = null;
-                // 叶子销售商门市价销售
-                if (info.getEp_id() == -1) {
-                    buyCoreEpId = getCoreEp(coreEpMap, info.getSale_ep_id());
-                    salePrice = info.getPrice();
-                } else {
-                    buyCoreEpId = getCoreEp(coreEpMap, info.getEp_id());
-                }
-                Integer saleCoreEpId = getCoreEp(coreEpMap, info.getSale_ep_id());
-                // 卖家 == 平台商 && 买家 == 平台商
-                if (info.getEp_id() == buyCoreEpId.intValue() && saleCoreEpId.intValue() == info.getSale_ep_id()) {
-                    AccountDataDto dto = addDayAccount(dayAccountDataMap, saleCoreEpId, buyCoreEpId, infoList, day);
-                    dto.setSaleCoreEpId(saleCoreEpId);
-                }
-
-                // 买家平台商ID == 卖家平台商ID && 卖家ID != 卖家平台商ID
-                if (buyCoreEpId.intValue() == saleCoreEpId/* && info.getSaleEpId() != saleCoreEpId*/) {
-                    AccountDataDto dto = addDayAccount(dayAccountDataMap, info.getSale_ep_id(), info.getEp_id() == -1 ? info.getSale_ep_id() : info.getEp_id(), infoList, day);
-                    dto.setSaleCoreEpId(saleCoreEpId);
-                }
-            }
-
-            // 把一天的利润添加到所有天当中
-            for (String key : dayAccountDataMap.keySet()) {
-                List<AccountDataDto> accountDataDtoList = daysAccountDataMap.get(key);
-                if (accountDataDtoList == null) {
-                    accountDataDtoList = new ArrayList<>();
-                    daysAccountDataMap.put(key, accountDataDtoList);
-                }
-                accountDataDtoList.add(dayAccountDataMap.get(key));
-            }
-            i++;
-        }
-
-        // 把每天的利润集合做分账
-        // 平台商本企业内部分账一次扣款
-        Map<Integer, Integer> coreSubMap = new HashMap<>();
-        for (String key : daysAccountDataMap.keySet()) {
-            String[] keyArray = key.split("#");
-            Integer saleEpId = Integer.parseInt(keyArray[0]);
-            Integer buyEpId = Integer.parseInt(keyArray[1]);
-            Integer saleCoreEpId = getCoreEp(coreEpMap, saleEpId);
-            Integer buyCoreEpId = getCoreEp(coreEpMap, buyEpId);
-
-            List<AccountDataDto> dataDtoList = daysAccountDataMap.get(key);
-            int totalOutPrice = 0;
-            int totalProfit = 0;
-            for (AccountDataDto dataDto : dataDtoList) {
-                totalOutPrice += dataDto.getOutPrice();
-                totalProfit += dataDto.getProfit();
-            }
-            // 平台商
-            if (saleCoreEpId.equals(saleEpId) && buyCoreEpId.equals(buyEpId)) {
-                // 预付
-                if (payType == ProductConstants.PayType.PREPAY) {
-                    OrderItemAccount addAccount = new OrderItemAccount();
-                    addAccount.setEp_id(saleEpId);
-                    addAccount.setSale_ep_id(getSaleEpId(daySalesList.get(0), saleEpId));
-                    addAccount.setCore_ep_id(saleCoreEpId);
-                    addAccount.setMoney(totalOutPrice * quantity);
-                    addAccount.setProfit(totalOutPrice * quantity);
-                    addAccount.setOrder_item_id(itemId);
-                    addAccount.setData(JsonUtils.toJson(dataDtoList));
-                    addAccount.setSettled_money(0);
-                    addAccount.setStatus(OrderConstant.AccountSplitStatus.NOT);
-                    orderItemAccountMapper.insertSelective(addAccount);
-                    accounts.add(addAccount);
-
-                    OrderItemAccount subAccount = new OrderItemAccount();
-                    subAccount.setEp_id(buyEpId);
-                    subAccount.setSale_ep_id(getSaleEpId(daySalesList.get(0), buyEpId));
-                    subAccount.setCore_ep_id(saleCoreEpId);
-                    subAccount.setMoney(-(totalOutPrice * quantity));
-                    subAccount.setProfit(-(totalOutPrice * quantity));
-                    subAccount.setOrder_item_id(itemId);
-                    subAccount.setData(null);
-                    subAccount.setSettled_money(0);
-                    subAccount.setStatus(OrderConstant.AccountSplitStatus.NOT);
-                    orderItemAccountMapper.insertSelective(subAccount);
-                    accounts.add(subAccount);
-                } else {
-                    List<AccountDataDto> buyDataDtoList = getDataDtoList(daysAccountDataMap, buyEpId);
-                    OrderItemAccount addAccount = new OrderItemAccount();
-                    addAccount.setEp_id(buyEpId);
-                    addAccount.setSale_ep_id(getSaleEpId(daySalesList.get(0), buyEpId));
-                    addAccount.setCore_ep_id(saleCoreEpId);
-                    addAccount.setMoney((salePrice - totalOutPrice) * quantity);
-                    addAccount.setProfit(getTotalProfit(buyDataDtoList) * quantity);
-                    addAccount.setOrder_item_id(itemId);
-                    addAccount.setData(JsonUtils.toJson(buyDataDtoList));
-                    addAccount.setSettled_money(0);
-                    addAccount.setStatus(OrderConstant.AccountSplitStatus.NOT);
-                    orderItemAccountMapper.insertSelective(addAccount);
-                    accounts.add(addAccount);
-
-                    OrderItemAccount subAccount = new OrderItemAccount();
-                    subAccount.setEp_id(saleCoreEpId);
-                    subAccount.setSale_ep_id(getSaleEpId(daySalesList.get(0), saleCoreEpId));
-                    subAccount.setCore_ep_id(saleCoreEpId);
-                    subAccount.setMoney(-((salePrice - totalOutPrice) * quantity));
-                    subAccount.setProfit(totalProfit * quantity);
-                    subAccount.setOrder_item_id(itemId);
-                    subAccount.setData(JsonUtils.toJson(dataDtoList));
-                    subAccount.setSettled_money(0);
-                    subAccount.setStatus(OrderConstant.AccountSplitStatus.NOT);
-                    orderItemAccountMapper.insertSelective(subAccount);
-                    accounts.add(subAccount);
-                }
-            } else {
-                // 平台内部企业分账(利润)
-                if (!saleEpId.equals(saleCoreEpId)) {
-                    OrderItemAccount account = new OrderItemAccount();
-                    account.setEp_id(saleEpId);
-                    account.setSale_ep_id(getSaleEpId(daySalesList.get(0), saleEpId));
-                    account.setCore_ep_id(saleCoreEpId);
-                    account.setMoney(totalProfit * quantity);
-                    account.setProfit(totalProfit * quantity);
-                    account.setOrder_item_id(itemId);
-                    account.setData(JsonUtils.toJson(dataDtoList));
-                    account.setSettled_money(0);
-                    account.setStatus(OrderConstant.AccountSplitStatus.NOT);
-                    orderItemAccountMapper.insertSelective(account);
-                    accounts.add(account);
-                    Integer val = coreSubMap.get(saleCoreEpId);
-                    coreSubMap.put(saleCoreEpId, val == null ? account.getMoney() : val + account.getMoney());
-                }
-            }
-        }
-        for (Integer id : coreSubMap.keySet()) {
-            List<AccountDataDto> dataDtoList = getDataDtoList(daysAccountDataMap, id);
-            OrderItemAccount account = new OrderItemAccount();
-            account.setEp_id(id);
-            account.setSale_ep_id(getSaleEpId(daySalesList.get(0), id));
-            account.setCore_ep_id(id);
-            account.setMoney(-coreSubMap.get(id));
-            account.setProfit(getTotalProfit(dataDtoList) * quantity);
-            account.setOrder_item_id(itemId);
-            account.setData(JsonUtils.toJson(dataDtoList));
-            account.setSettled_money(0);
-            account.setStatus(OrderConstant.AccountSplitStatus.NOT);
+    public List<OrderItemAccount> prePaySplitAccount(List<List<EpSalesInfo>> daySalesList, OrderItem orderItem, int finalEpId) {
+        Map<Integer, Collection<AccountDataDto>> salesMap = AccountUtil.parseEpSales(daySalesList, orderItem.getStart());
+        AccountUtil.setAccountDataCoreEpId(getCoreEpIds(salesMap.keySet()), salesMap);
+        List<OrderItemAccount> accounts = AccountUtil.paySplitAccount(salesMap, orderItem, finalEpId);
+        for (OrderItemAccount account : accounts) {
             orderItemAccountMapper.insertSelective(account);
-            accounts.add(account);
         }
         return accounts;
     }
 
-    private AccountDataDto addDayAccount(Map<String, AccountDataDto> dayAccountDataMap, Integer saleEpId, Integer buyEpId, List<EpSalesInfo> infoList, Date day) {
-        String key = saleEpId + "#" + buyEpId;
-        AccountDataDto accountDataDto = dayAccountDataMap.get(key);
-        if (accountDataDto == null) {
-            accountDataDto = getProfit(infoList, saleEpId);
-            accountDataDto.setDay(day);
-            dayAccountDataMap.put(key, accountDataDto);
-        }
-        return accountDataDto;
+    /**
+     * 组装支付分账信息
+     * @param order
+     */
+    public List<BalanceChangeInfo> packagingPaySplitAccount(Order order) {
+        return packagingPaySplitAccount(order, orderItemMapper.selectByOrderId(order.getId()));
     }
 
-    private int getTotalProfit(List<AccountDataDto> dataDtos) {
-        int totalAddProfit = 0;
-        // 卖家平台商每天的利润
-        for (AccountDataDto dataDto : dataDtos) {
-            totalAddProfit += dataDto.getProfit();
+    /**
+     * 组装支付分账信息
+     * @param order
+     */
+    public List<BalanceChangeInfo> packagingPaySplitAccount(Order order, List<OrderItem> orderItems) {
+        List<BalanceChangeInfo> balanceChangeInfoList = new ArrayList<>();
+        for (OrderItem orderItem : orderItems) {
+            List<OrderItemAccount> accountList = orderItemAccountMapper.selectByOrderItem(orderItem.getId());
+            List<BalanceChangeInfo> itemInfoList = AccountUtil.makerPayBalanceChangeInfo(accountList, orderItem.getPayment_flag(), orderItem.getSupplier_ep_id(), orderItem.getSupplier_core_ep_id(), order.getBuy_ep_id());
+            balanceChangeInfoList.addAll(itemInfoList);
         }
-        return totalAddProfit;
-    }
-
-    private int getTotalProfit(Map<String, List<AccountDataDto>> daysAccountDataMap, int epId) {
-        return getTotalProfit(getDataDtoList(daysAccountDataMap, epId));
-    }
-
-    private List<AccountDataDto> getDataDtoList(Map<String, List<AccountDataDto>> daysAccountDataMap, int epId) {
-        for (String key : daysAccountDataMap.keySet()) {
-            if (key.startsWith(epId + "#")) {
-                return daysAccountDataMap.get(key);
-            }
-        }
-        return null;
+        return balanceChangeInfoList;
     }
 
     /**
