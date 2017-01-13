@@ -10,7 +10,7 @@
 	<dubbo:monitor protocol="registry" />
 	<!---->
 	<!-- 使用zookeeper广播注册中心暴露服务地址 -->
-	<dubbo:registry address="${dubbo.registry.zk}" />
+	<dubbo:registry address="${dubbo.registry.zk}" file="${ep.dubbo.cache}" />
 	<dubbo:protocol name="dubbo" port="${dubbo.port}" />
 
 	<bean id="epService" class="com.all580.ep.service.EpServiceImpl" />
