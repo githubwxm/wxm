@@ -17,7 +17,7 @@
 
 	<bean id="dbPlaceholderConfigurer"
 		class="com.framework.common.ext.spring.config.DBPlaceholderConfigurer">
-		<property name="appName" value="base" />
+		<property name="appName" value="gateway" />
 		<property name="profileName" value="${active.profilename}" />
 		<property name="name" value="${active.name}" />
 		<property name="pwd" value="${active.pwd}" />
