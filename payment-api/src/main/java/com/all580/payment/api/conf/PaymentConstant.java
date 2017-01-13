@@ -57,6 +57,7 @@ public class PaymentConstant {
         public static final Integer PRODUCT_SALES_PROFIT= 7030;//产品销售利润
         public static final Integer FREIGHT_PAY= 7031;//到付支付
         public static final Integer FREIGHT_ROUTING= 7032;//到付分账
+        public static final Integer THIRD_PAYMENT_REFUND= 7033;//第三方支付退款
     }
 
     /**
