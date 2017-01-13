@@ -9,7 +9,7 @@
     <dubbo:monitor protocol="registry" />
     <!---->
     <!-- 使用zookeeper广播注册中心暴露服务地址 -->
-    <dubbo:registry address="${dubbo.registry.zk}"/>
+    <dubbo:registry address="${dubbo.registry.zk}" file="${payment.dubbo.cache}" />
     <dubbo:protocol name="dubbo" port="${dubbo.port}"/>
 
     <bean id="balancePayService" class="com.all580.payment.service.BalancePayServiceImpl"/>
