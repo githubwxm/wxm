@@ -11,7 +11,7 @@
 
 	<!---->
 	<!-- 使用zookeeper广播注册中心暴露服务地址 -->
-	<dubbo:registry address="${dubbo.registry.zk}" />
+	<dubbo:registry address="${dubbo.registry.zk}" file="${gateway.dubbo.cache}" />
 	<dubbo:protocol name="dubbo" port="${dubbo.port}" />
 
 	<dubbo:consumer check="false" retries="0" timeout="60000"/>
