@@ -236,6 +236,12 @@
         LEFT JOIN t_payment_param p on c.ref_type=p.id
         where capital_id = #{capital_id,jdbcType=INTEGER}
         ) f  where 1=1 and balance_add !=0
+        <if test="type = 0">
+            and balance_add !=0
+        </if>
+        <if test="type = 1">
+            and can_cash_add !=0
+        </if>
         <if test="balance_status != null  and balance_status != ''">
             and   f.balance_status= #{balance_status}
         </if>
@@ -244,6 +250,13 @@
         </if>
         <if test="ref_id != null  and ref_id != ''">
             and   ref_id=#{ref_id}
+        </if>
+        order by id desc
+        <if test="start_record != null">
+            limit #{start_record}
+        </if>
+        <if test="max_records != null">
+            , #{max_records}
         </if>
     </select>
 </mapper>
