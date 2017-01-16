@@ -5,6 +5,7 @@ import com.framework.common.BaseController;
 import com.framework.common.Result;
 import com.framework.common.util.CommonUtil;
 import com.framework.common.vo.PageRecord;
+import org.apache.commons.lang.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -55,7 +56,7 @@ public class BalanceController extends BaseController {
                 result.setFail();
                 result.setError("缺少参数");
             } else {
-                result = balancePayService.getBalanceSerialList(epId, coreEpId,null,null,null,null,null, recordStart, recordCount);
+                result = balancePayService.getBalanceSerialList(epId, coreEpId,null,null,null,null,null, recordStart, recordCount,null);
                 result.setSuccess();
             }
         } catch (Exception e) {
