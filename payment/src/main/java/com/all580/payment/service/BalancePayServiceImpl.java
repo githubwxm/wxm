@@ -157,7 +157,7 @@ public class BalancePayServiceImpl implements BalancePayService {
                     balanceSatatus ,startDate,endDate,ref_id,startRecord, maxRecords,type);
         }else{
             capitalSerials = capitalSerialMapper.listByCapitalIdExport(capital.getId(),
-                    balanceSatatus ,startDate,endDate,ref_id,startRecord, maxRecords);
+                    balanceSatatus ,startDate,endDate,ref_id,startRecord, maxRecords,type);
         }
 
         int count = capitalSerialMapper.countByCapitalId(capital.getId(), balanceSatatus ,startDate,endDate,ref_id);
