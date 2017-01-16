@@ -622,10 +622,10 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         if (order.getStatus() != OrderConstant.OrderStatus.AUDIT_WAIT && order.getAudit_time() == null) {
             order.setAudit_time(new Date());
         }
-        orderMapper.updateByPrimaryKeySelective(order);
 
         // 到付
         addPaymentCallbackJob(order);
+        orderMapper.updateByPrimaryKeySelective(order);
 
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("order", JsonUtils.obj2map(order));
