@@ -427,13 +427,13 @@ public class BookingOrderManager extends BaseOrderManager {
             }
             // 判断最低零售价
             if (from == OrderConstant.FromType.TRUST && self.getPrice() < salesInfo.getMin_price()) {
-                throw new ApiException(String.format("产品:%s不能低于最低零售价:%d,当前售卖价格:%d",
-                        salesInfo.getProduct_sub_name(), salesInfo.getMin_price()/100, self.getPrice()/100));
+                throw new ApiException(String.format("产品:%s不能低于最低零售价:%f,当前售卖价格:%f",
+                        salesInfo.getProduct_sub_name(), salesInfo.getMin_price()/100f, self.getPrice()/100f));
             }
             // 判断最高市场价
             if (self.getPrice() > salesInfo.getMarket_price()) {
-                throw new ApiException(String.format("产品:%s不能高于市场价:%d,当前售卖价格:%d",
-                        salesInfo.getProduct_sub_name(), salesInfo.getMarket_price()/100, self.getPrice()/100));
+                throw new ApiException(String.format("产品:%s不能高于市场价:%f,当前售卖价格:%f",
+                        salesInfo.getProduct_sub_name(), salesInfo.getMarket_price()/100f, self.getPrice()/100f));
             }
             daySales.add(self);
             salePrice += self.getPrice() * quantity;
