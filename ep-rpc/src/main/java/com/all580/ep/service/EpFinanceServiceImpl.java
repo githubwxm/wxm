@@ -166,6 +166,8 @@ public class EpFinanceServiceImpl implements EpFinanceService {
         b.setCan_cash(balance);
         b.setEp_id(epId);
         b.setCore_ep_id(coreEpId);
+        b.setBalance_type(PaymentConstant.BalanceChangeType.MANUAL_CHANGE_BALANCE_ADD);
+        b.setCan_cash_type(PaymentConstant.BalanceChangeType.MANUAL_CHANGE_BALANCE_ADD);
         balanceList.add(b);
         String  serialNum=System.currentTimeMillis()+"";
         Map<String,Object> map = new HashMap<>();
@@ -189,8 +191,8 @@ public class EpFinanceServiceImpl implements EpFinanceService {
     @Override
     public Result getBalanceSerialList(Integer epId, Integer coreEpId,
                                        String balanceSatatus,String startDate,String endDate,String ref_id,Integer export ,
-                                       Integer startRecord, Integer maxRecords,Integer changType) {
+                                       Integer startRecord, Integer maxRecords,Integer type) {
 //changType   用余提现  暂时未用到
-        return balancePayService.getBalanceSerialList(epId,coreEpId,balanceSatatus,startDate,endDate,ref_id,export,startRecord,maxRecords);
+        return balancePayService.getBalanceSerialList(epId,coreEpId,balanceSatatus,startDate,endDate,ref_id,export,startRecord,maxRecords,type);
     }
 }
