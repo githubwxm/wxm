@@ -90,6 +90,11 @@ public class LockTransactionManager {
         }
         order.setThird_serial_no(outTransId);
         order.setStatus(OrderConstant.OrderStatus.PAID_HANDLING); // 已支付,处理中
+        // 到付 和 余额支付直接支付成功 其它的在分账的时候设置
+        if (order.getPayment_type() == null && order.getPay_amount() == 0 ||
+                (order.getPayment_type() != null && order.getPayment_type() == PaymentConstant.PaymentType.BALANCE.intValue())) {
+            order.setStatus(OrderConstant.OrderStatus.PAID); // 已支付
+        }
         orderMapper.updateByPrimaryKeySelective(order);
 
         List<OrderItem> orderItems = orderItemMapper.selectByOrderId(orderId);
@@ -120,6 +125,11 @@ public class LockTransactionManager {
             Map<String, String> jobParam = new HashMap<>();
             jobParam.put("orderId", String.valueOf(orderId));
             bookingOrderManager.addJob(OrderConstant.Actions.PAYMENT_SPLIT_ACCOUNT, jobParam);
+        }
+        if (order.getStatus() == OrderConstant.OrderStatus.PAID) {
+            // 出票
+            // 记录任务
+            sendTicket(orderItems);
         }
     }
 
@@ -188,25 +198,7 @@ public class LockTransactionManager {
 
         // 出票
         // 记录任务
-        List<Map<String, String>> jobParams = new ArrayList<>();
-        List<Map<String, String>> jobGroupParams = new ArrayList<>();
-        for (OrderItem orderItem : orderItems) {
-            Map<String, String> jobParam = new HashMap<>();
-            jobParam.put("orderItemId", orderItem.getId().toString());
-            // 团队票
-            if (orderItem.getGroup_id() != null && orderItem.getGroup_id() != 0 &&
-                    orderItem.getPro_sub_ticket_type() != null && orderItem.getPro_sub_ticket_type() == ProductConstants.TeamTicketType.TEAM) {
-                jobGroupParams.add(jobParam);
-                continue;
-            }
-            jobParams.add(jobParam);
-        }
-        if (jobParams.size() > 0) {
-            bookingOrderManager.addJobs(OrderConstant.Actions.SEND_TICKET, jobParams);
-        }
-        if (jobGroupParams.size() > 0) {
-            bookingOrderManager.addJobs(OrderConstant.Actions.SEND_GROUP_TICKET, jobGroupParams);
-        }
+        sendTicket(orderItems);
 
         // 同步数据
         bookingOrderManager.syncPaymentSplitAccountData(orderId);
@@ -709,5 +701,27 @@ public class LockTransactionManager {
 
         refundOrderManager.syncRefundOrderAuditRefuse(refundOrder.getId());
         return new Result(true);
+    }
+
+    private void sendTicket(List<OrderItem> orderItems) {
+        List<Map<String, String>> jobParams = new ArrayList<>();
+        List<Map<String, String>> jobGroupParams = new ArrayList<>();
+        for (OrderItem orderItem : orderItems) {
+            Map<String, String> jobParam = new HashMap<>();
+            jobParam.put("orderItemId", orderItem.getId().toString());
+            // 团队票
+            if (orderItem.getGroup_id() != null && orderItem.getGroup_id() != 0 &&
+                    orderItem.getPro_sub_ticket_type() != null && orderItem.getPro_sub_ticket_type() == ProductConstants.TeamTicketType.TEAM) {
+                jobGroupParams.add(jobParam);
+                continue;
+            }
+            jobParams.add(jobParam);
+        }
+        if (jobParams.size() > 0) {
+            bookingOrderManager.addJobs(OrderConstant.Actions.SEND_TICKET, jobParams);
+        }
+        if (jobGroupParams.size() > 0) {
+            bookingOrderManager.addJobs(OrderConstant.Actions.SEND_GROUP_TICKET, jobGroupParams);
+        }
     }
 }
