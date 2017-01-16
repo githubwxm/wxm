@@ -126,6 +126,11 @@ public class LockTransactionManager {
             jobParam.put("orderId", String.valueOf(orderId));
             bookingOrderManager.addJob(OrderConstant.Actions.PAYMENT_SPLIT_ACCOUNT, jobParam);
         }
+        if (order.getStatus() == OrderConstant.OrderStatus.PAID) {
+            // 出票
+            // 记录任务
+            sendTicket(orderItems);
+        }
     }
 
     /**
@@ -193,25 +198,7 @@ public class LockTransactionManager {
 
         // 出票
         // 记录任务
-        List<Map<String, String>> jobParams = new ArrayList<>();
-        List<Map<String, String>> jobGroupParams = new ArrayList<>();
-        for (OrderItem orderItem : orderItems) {
-            Map<String, String> jobParam = new HashMap<>();
-            jobParam.put("orderItemId", orderItem.getId().toString());
-            // 团队票
-            if (orderItem.getGroup_id() != null && orderItem.getGroup_id() != 0 &&
-                    orderItem.getPro_sub_ticket_type() != null && orderItem.getPro_sub_ticket_type() == ProductConstants.TeamTicketType.TEAM) {
-                jobGroupParams.add(jobParam);
-                continue;
-            }
-            jobParams.add(jobParam);
-        }
-        if (jobParams.size() > 0) {
-            bookingOrderManager.addJobs(OrderConstant.Actions.SEND_TICKET, jobParams);
-        }
-        if (jobGroupParams.size() > 0) {
-            bookingOrderManager.addJobs(OrderConstant.Actions.SEND_GROUP_TICKET, jobGroupParams);
-        }
+        sendTicket(orderItems);
 
         // 同步数据
         bookingOrderManager.syncPaymentSplitAccountData(orderId);
@@ -714,5 +701,27 @@ public class LockTransactionManager {
 
         refundOrderManager.syncRefundOrderAuditRefuse(refundOrder.getId());
         return new Result(true);
+    }
+
+    private void sendTicket(List<OrderItem> orderItems) {
+        List<Map<String, String>> jobParams = new ArrayList<>();
+        List<Map<String, String>> jobGroupParams = new ArrayList<>();
+        for (OrderItem orderItem : orderItems) {
+            Map<String, String> jobParam = new HashMap<>();
+            jobParam.put("orderItemId", orderItem.getId().toString());
+            // 团队票
+            if (orderItem.getGroup_id() != null && orderItem.getGroup_id() != 0 &&
+                    orderItem.getPro_sub_ticket_type() != null && orderItem.getPro_sub_ticket_type() == ProductConstants.TeamTicketType.TEAM) {
+                jobGroupParams.add(jobParam);
+                continue;
+            }
+            jobParams.add(jobParam);
+        }
+        if (jobParams.size() > 0) {
+            bookingOrderManager.addJobs(OrderConstant.Actions.SEND_TICKET, jobParams);
+        }
+        if (jobGroupParams.size() > 0) {
+            bookingOrderManager.addJobs(OrderConstant.Actions.SEND_GROUP_TICKET, jobGroupParams);
+        }
     }
 }
