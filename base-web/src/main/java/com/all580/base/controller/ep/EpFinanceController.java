@@ -227,10 +227,13 @@ public class EpFinanceController extends BaseController {
     @ResponseBody
     public Result<?> lstBalance(@RequestParam(value = "balance_ep_id") Integer balance_ep_id,
                                 String balance_status,String start_date,String end_date,String ref_id,Integer export ,
-                                Integer record_start, Integer record_count){
+                                Integer record_start, Integer record_count,Integer type){
         Integer coreEpId = CommonUtil.objectParseInteger(getAttribute(EpConstant.EpKey.CORE_EP_ID));
+        if(type==null||type.equals("")){
+            type=0;
+        }
         return epFinanceService.getBalanceSerialList(balance_ep_id,coreEpId,balance_status,
-                start_date,end_date,ref_id,export,record_start,record_count,null);
+                start_date,end_date,ref_id,export,record_start,record_count,type);
     }
 
     /**
