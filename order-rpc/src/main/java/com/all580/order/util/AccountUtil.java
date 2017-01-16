@@ -314,6 +314,7 @@ public class AccountUtil {
             if (account.getMoney() < 0) {
                 info.setCan_cash(account.getMoney());
             }
+            infoList.add(info);
             // 设置变动类型
             // 到付
             if (payType == ProductConstants.PayType.PAYS) {
@@ -355,7 +356,6 @@ public class AccountUtil {
             }
             // 销售分润
             info.setBalance_type(PaymentConstant.BalanceChangeType.SALES_PROFIT);
-            infoList.add(info);
         }
         return infoList;
     }
