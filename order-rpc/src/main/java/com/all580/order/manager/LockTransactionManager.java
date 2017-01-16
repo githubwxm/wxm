@@ -90,6 +90,11 @@ public class LockTransactionManager {
         }
         order.setThird_serial_no(outTransId);
         order.setStatus(OrderConstant.OrderStatus.PAID_HANDLING); // 已支付,处理中
+        // 到付 和 余额支付直接支付成功 其它的在分账的时候设置
+        if (order.getPayment_type() == null && order.getPay_amount() == 0 ||
+                (order.getPayment_type() != null && order.getPayment_type() == PaymentConstant.PaymentType.BALANCE.intValue())) {
+            order.setStatus(OrderConstant.OrderStatus.PAID); // 已支付
+        }
         orderMapper.updateByPrimaryKeySelective(order);
 
         List<OrderItem> orderItems = orderItemMapper.selectByOrderId(orderId);
