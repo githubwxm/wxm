@@ -23,14 +23,16 @@ public interface CapitalSerialMapper {
                                              @Param("end_date") String endDate,
                                              @Param("ref_id") String ref_id,
                                              @Param("start_record")Integer startRecord,
-                                             @Param("max_records")Integer maxRecords);
+                                             @Param("max_records")Integer maxRecords,
+                                             @Param("type")Integer type);
     List<Map<String,String>> listByCapitalIdExport (@Param("capital_id") Integer capital_id,
                                              @Param("balance_status") String balance_status,
                                              @Param("start_date") String startDate,
                                              @Param("end_date") String endDate,
                                              @Param("ref_id") String ref_id,
                                              @Param("start_record")Integer startRecord,
-                                             @Param("max_records")Integer maxRecords);
+                                             @Param("max_records")Integer maxRecords,
+                                             @Param("type")Integer type);
 
     int countByCapitalId(@Param("capital_id") Integer capital_id,
                          @Param("balance_status") String balance_status,
