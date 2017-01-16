@@ -176,6 +176,12 @@
         LEFT JOIN t_payment_param p on c.ref_type=p.id
         where capital_id = #{capital_id,jdbcType=INTEGER}
         ) f  where 1=1 and balance_add !=0
+        <if test="type = 0">
+            and balance_add !=0
+        </if>
+        <if test="type = 1">
+            and can_cash_add !=0
+        </if>
         <if test="balance_status != null  and balance_status != ''">
             and   f.balance_status= #{balance_status}
         </if>
