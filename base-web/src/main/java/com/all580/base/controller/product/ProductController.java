@@ -298,10 +298,10 @@ public class ProductController extends BaseController {
     @RequestMapping(value = "other/list")
     @ResponseBody
     public Result<?> searchOtherProdiverProduct(@RequestParam("ep_id") Integer epId,
-                                                @RequestParam("product_name") String productName,
-                                                @RequestParam("supplier_id") Integer supplierId,
-                                                @RequestParam("product_type") Integer productType,
-                                                @RequestParam("sale") Integer sale,
+                                                @RequestParam(value = "product_name", required = false) String productName,
+                                                @RequestParam(value = "supplier_id", required = false) Integer supplierId,
+                                                @RequestParam(value = "product_type", required = false) Integer productType,
+                                                @RequestParam(value = "sale", required = false) Integer sale,
                                                 @RequestParam("record_start") Integer recordStart,
                                                 @RequestParam("record_count") Integer recordCount) {
         return productService.searchOtherProviderProductList(epId, productName, supplierId, productType, sale, recordStart, recordCount);
