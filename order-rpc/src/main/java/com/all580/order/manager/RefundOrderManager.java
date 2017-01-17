@@ -182,7 +182,6 @@ public class RefundOrderManager extends BaseOrderManager {
                         String.format("日期:%s余票不足,已用:%s,已退(含预退):%s",
                                 new Object[]{JsonUtils.toJson(refundDay.getDay()), detail.getUsed_quantity(), detail.getRefund_quantity()}));
             }
-            totalRefundQuantity += refundDay.getQuantity();
             // 修改退票数
             detail.setRefund_quantity(detail.getRefund_quantity() + refundDay.getQuantity());
             orderItemDetailMapper.updateByPrimaryKeySelective(detail);

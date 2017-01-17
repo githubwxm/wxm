@@ -130,7 +130,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         // 创建订单
         Order order = bookingOrderManager.generateOrder(coreEpId, buyEpId, buyEpName,
                 CommonUtil.objectParseInteger(params.get("operator_id")),
-                CommonUtil.objectParseString(params.get("operator_name")), from, remark);
+                CommonUtil.objectParseString(params.get("operator_name")), from, remark, CommonUtil.objectParseString(params.get("outer_id")));
 
         // 存储游客信息
         Map<Integer, List<Visitor>> visitorMap = new HashMap<>();
@@ -443,7 +443,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         // 创建订单
         Order order = bookingOrderManager.generateOrder(coreEpId, buyEpId, buyEpName,
                 CommonUtil.objectParseInteger(params.get("operator_id")),
-                CommonUtil.objectParseString(params.get("operator_name")), from, remark);
+                CommonUtil.objectParseString(params.get("operator_name")), from, remark, CommonUtil.objectParseString(params.get("outer_id")));
 
         // 存储游客信息
         Map<Integer, List<Visitor>> visitorMap = new HashMap<>();
