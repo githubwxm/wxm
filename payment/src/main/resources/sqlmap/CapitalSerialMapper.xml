@@ -258,11 +258,6 @@
             and   ref_id=#{ref_id}
         </if>
         order by id desc
-        <if test="start_record != null">
-            limit #{start_record}
-        </if>
-        <if test="max_records != null">
-            , #{max_records}
-        </if>
+
     </select>
 </mapper>
