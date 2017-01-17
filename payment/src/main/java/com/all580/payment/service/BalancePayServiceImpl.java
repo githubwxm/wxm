@@ -160,7 +160,7 @@ public class BalancePayServiceImpl implements BalancePayService {
                     balanceSatatus ,startDate,endDate,ref_id,startRecord, maxRecords,type);
         }
 
-        int count = capitalSerialMapper.countByCapitalId(capital.getId(), balanceSatatus ,startDate,endDate,ref_id);
+        int count = capitalSerialMapper.countByCapitalId(capital.getId(), balanceSatatus ,startDate,endDate,ref_id,type);
         PageRecord<Map<String, String>> record = new PageRecord<>(count, capitalSerials);
         result.setSuccess();
         result.put(record);
