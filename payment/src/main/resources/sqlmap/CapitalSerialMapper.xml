@@ -166,7 +166,7 @@
         </foreach>
     </insert>
 
-    <select id="listByCapitalIdExport" parameterType="java.lang.Integer" resultType="map">
+    <select id="listByCapitalIdExport"  resultType="map">
         select * from(
         select
         c.id,c.ref_id,c.ref_type, c.create_time as create_time, truncate((c.new_balance-c.old_balance)/100,2) as balance_add,truncate(( c.new_can_cash-c.old_can_cash)/100,2) as
@@ -199,7 +199,7 @@
             , #{max_records}
         </if>
     </select>
-    <select id="listByCapitalId" parameterType="java.lang.Integer" resultType="map">
+    <select id="listByCapitalId"  resultType="map">
         select * from(
         select
         c.id,c.ref_id,c.ref_type, c.create_time as create_time,c.new_balance-c.old_balance as balance_add,c.new_can_cash-c.old_can_cash as
