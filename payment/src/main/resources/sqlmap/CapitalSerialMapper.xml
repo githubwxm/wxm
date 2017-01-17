@@ -174,6 +174,8 @@
         ,CASE WHEN c.new_balance-c.old_balance >0 THEN '0' else '1' end as balance_status_code,IFNULL(summary,'') as summary
         ,(select name from t_payment_param tpp where tpp.id=balance_type ) as balance_type
         ,(select name from t_payment_param tppp where tppp.id=can_cash_type ) as can_cash_type
+        , CASE WHEN c.new_can_cash-c.old_can_cash >0 THEN '收入' else '支出' end as can_cash_status
+        ,c.new_can_cash
         from t_capital_serial c
         LEFT JOIN t_payment_param p on c.ref_type=p.id
         where capital_id = #{capital_id,jdbcType=INTEGER}
@@ -209,6 +211,8 @@
         ,CASE WHEN c.new_balance-c.old_balance >0 THEN '0' else '1' end as balance_status_code,IFNULL(summary,'') as summary
         ,(select name from t_payment_param tpp where tpp.id=balance_type ) as balance_type
         ,(select name from t_payment_param tppp where tppp.id=can_cash_type ) as can_cash_type
+        , CASE WHEN c.new_can_cash-c.old_can_cash >0 THEN '收入' else '支出' end as can_cash_status
+        ,c.new_can_cash
         from t_capital_serial c
         LEFT JOIN t_payment_param p on c.ref_type=p.id
         where capital_id = #{capital_id,jdbcType=INTEGER}
