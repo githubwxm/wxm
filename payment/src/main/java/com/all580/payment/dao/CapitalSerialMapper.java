@@ -37,7 +37,7 @@ public interface CapitalSerialMapper {
     int countByCapitalId(@Param("capital_id") Integer capital_id,
                          @Param("balance_status") String balance_status,
                           @Param("start_date") String startDate,
-                         @Param("end_date") String endDate,   @Param("ref_id") String ref_id);
+                         @Param("end_date") String endDate,   @Param("ref_id") String ref_id,@Param("type")Integer type);
 
     int updateByPrimaryKeySelective(CapitalSerial record);
 
