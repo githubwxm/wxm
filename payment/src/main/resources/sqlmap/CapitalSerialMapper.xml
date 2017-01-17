@@ -257,7 +257,5 @@
         <if test="ref_id != null  and ref_id != ''">
             and   ref_id=#{ref_id}
         </if>
-        order by id desc
-
     </select>
 </mapper>
