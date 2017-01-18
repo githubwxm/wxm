@@ -581,7 +581,7 @@ public class RefundOrderManager extends BaseOrderManager {
                 for (OrderItemDetail detail : detailList) {
                     if (!detail.getOversell()) {
                         ProductSearchParams p = new ProductSearchParams();
-                        p.setSubProductId(orderItem.getPro_sub_id());
+                        p.setSubProductCode(orderItem.getPro_sub_number());
                         p.setStartDate(detail.getDay());
                         p.setDays(1);
                         p.setQuantity(detail.getQuantity());

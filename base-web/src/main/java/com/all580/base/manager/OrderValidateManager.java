@@ -28,7 +28,7 @@ public class OrderValidateManager {
                 "items.visitor.name", // 订单游客姓名
                 "items.visitor.phone", // 订单游客手机号码
                 //"items.visitor.sid", // 订单游客身份证号码
-                "items.product_sub_id", // 订单子产品ID
+                "items.product_sub_code", // 订单子产品CODE
                 "items.start", // 计划开始时间
                 "items.days", // 天数：景点固定1
                 "items.quantity", // 订票数量
@@ -42,7 +42,7 @@ public class OrderValidateManager {
 
         // 校验整数
         rules.put(new String[]{
-                "items.product_sub_id", // 订单子产品ID
+                "items.product_sub_code", // 订单子产品CODE
                 "items.days", // 天数：景点固定1
                 "items.quantity", // 订票数量
                 "ep_id", // 订票企业ID
@@ -82,7 +82,7 @@ public class OrderValidateManager {
         // 校验不为空的参数
         rules.put(new String[]{
                 "group_id", // 团ID
-                "items.product_sub_id", // 订单子产品ID
+                "items.product_sub_code", // 订单子产品ID
                 "items.start", // 计划开始时间
                 "items.days", // 天数：景点固定1
                 "items.quantity", // 订票数量
@@ -96,7 +96,7 @@ public class OrderValidateManager {
 
         // 校验整数
         rules.put(new String[]{
-                "items.product_sub_id", // 订单子产品ID
+                "items.product_sub_code", // 订单子产品ID
                 "items.days", // 天数：景点固定1
                 "items.quantity", // 订票数量
                 "ep_id", // 订票企业ID
@@ -271,11 +271,17 @@ public class OrderValidateManager {
         rules.put(new String[]{
                 "order_item_sn", // 子订单编号(流水)
                 "visitor_id" // 游客ID
-        }, new ValidRule[]{new ValidRule.NotNull(), new ValidRule.Digits()});
+        }, new ValidRule[]{new ValidRule.Digits()});
 
         rules.put(new String[]{
                 "phone" // 游客手机号码
-        }, new ValidRule[]{new ValidRule.NotNull(), new ValidRule.Pattern(ValidRule.MOBILE_PHONE)});
+        }, new ValidRule[]{new ValidRule.Pattern(ValidRule.MOBILE_PHONE)});
+        rules.put(new String[]{
+                "all" // 是否全部重新发票
+        }, new ValidRule[]{new ValidRule.Boolean()});
+        rules.put(new String[]{
+                "order_item_sn" // 子订单编号(流水)
+        }, new ValidRule[]{new ValidRule.NotNull()});
 
         return rules;
     }

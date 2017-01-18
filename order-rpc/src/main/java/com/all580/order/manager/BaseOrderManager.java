@@ -174,7 +174,7 @@ public class BaseOrderManager {
      */
     public ProductSearchParams parseParams(OrderItem orderItem) {
         ProductSearchParams params = new ProductSearchParams();
-        params.setSubProductId(orderItem.getPro_sub_id());
+        params.setSubProductCode(orderItem.getPro_sub_number());
         params.setStartDate(orderItem.getStart());
         params.setDays(orderItem.getDays());
         params.setQuantity(orderItem.getQuantity());

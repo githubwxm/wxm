@@ -242,7 +242,7 @@ public class BookingOrderManager extends BaseOrderManager {
      * @return
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public OrderItem generateItem(ProductSalesInfo info, Date endTime, int saleAmount, Date bookingDate, int days, int orderId, int quantity, Integer proSubId, Integer groupId) {
+    public OrderItem generateItem(ProductSalesInfo info, Date endTime, int saleAmount, Date bookingDate, int days, int orderId, int quantity, Integer groupId) {
         OrderItem orderItem = new OrderItem();
         orderItem.setNumber(UUIDGenerator.generateUUID());
         orderItem.setStart(bookingDate);
@@ -254,7 +254,7 @@ public class BookingOrderManager extends BaseOrderManager {
         orderItem.setPro_name(info.getProduct_name());
         orderItem.setPro_sub_name(info.getProduct_sub_name());
         orderItem.setPro_sub_number(info.getProduct_sub_code());
-        orderItem.setPro_sub_id(proSubId);
+        orderItem.setPro_sub_id(info.getProduct_sub_id());
         orderItem.setPro_type(info.getProduct_type());
         orderItem.setMa_product_id(info.getMa_product_id());
         orderItem.setQuantity(quantity);

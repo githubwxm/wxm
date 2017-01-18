@@ -73,13 +73,13 @@ public class BookingOrderServiceImpl implements BookingOrderService {
     private GroupMapper groupMapper;
     @Autowired
     private ShippingMapper shippingMapper;
+    @Autowired
+    private VisitorMapper visitorMapper;
 
     @Autowired
     private ProductSalesPlanRPCService productSalesPlanRPCService;
     @Autowired
     private EpService epService;
-    @Autowired
-    private ThirdPayService thirdPayService;
     @Autowired
     private VoucherRPCService voucherRPCService;
     @Autowired
@@ -137,8 +137,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         // 获取子订单
         List<Map> items = (List<Map>) params.get("items");
         for (Map item : items) {
-            // TODO: 2016/11/2 这里应该是productSubCode
-            Integer productSubId = CommonUtil.objectParseInteger(item.get("product_sub_id"));
+            Long productSubCode = Long.parseLong(item.get("product_sub_code").toString());
             Integer quantity = CommonUtil.objectParseInteger(item.get("quantity"));
             Integer days = CommonUtil.objectParseInteger(item.get("days"));
             Integer allQuantity = quantity * days;
@@ -149,7 +148,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             TimeConsum.maker();
             // 验证是否可售
             ProductSearchParams searchParams = new ProductSearchParams();
-            searchParams.setSubProductId(productSubId);
+            searchParams.setSubProductCode(productSubCode);
             searchParams.setStartDate(bookingDate);
             searchParams.setDays(days);
             searchParams.setQuantity(quantity);
@@ -199,7 +198,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             TimeConsum.how(true).print("计算价格");
 
             // 创建子订单
-            OrderItem orderItem = bookingOrderManager.generateItem(salesInfo, dayInfoList.get(dayInfoList.size() - 1).getEnd_time(), salePrice, bookingDate, days, order.getId(), quantity, productSubId, null);
+            OrderItem orderItem = bookingOrderManager.generateItem(salesInfo, dayInfoList.get(dayInfoList.size() - 1).getEnd_time(), salePrice, bookingDate, days, order.getId(), quantity, null);
 
             List<OrderItemDetail> detailList = new ArrayList<>();
             List<Visitor> visitorList = new ArrayList<>();
@@ -340,25 +339,20 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             throw new ApiException("子订单不在可重新发票状态");
         }
 
-        Integer visitorId = CommonUtil.objectParseInteger(params.get("visitor_id"));
-        RefundOrder refundOrder = refundOrderMapper.selectByItemIdAndVisitor(orderItem.getId(), visitorId);
-        if (refundOrder != null) {
-            throw new ApiException("该子订单已发起退票");
+        // 是否全部重新发票
+        Boolean all = Boolean.parseBoolean(CommonUtil.objectParseString(params.get("all")));
+        if (all) {
+            List<Visitor> visitors = visitorMapper.selectByOrderItem(orderItem.getId());
+            for (Visitor visitor : visitors) {
+                reSendTicket(orderItem, visitor.getId(), visitor.getPhone());
+            }
+        } else {
+            Integer visitorId = CommonUtil.objectParseInteger(params.get("visitor_id"));
+            Result result = reSendTicket(orderItem, visitorId, CommonUtil.objectParseString(params.get("phone")));
+            if (!result.isSuccess()) {
+                throw new ApiException(result.getError());
+            }
         }
-
-        MaSendResponse response = maSendResponseMapper.selectByVisitorId(orderItem.getId(), visitorId, orderItem.getEp_ma_id());
-        if (orderItem.getStatus() == OrderConstant.OrderItemStatus.SEND && response != null) {
-            ReSendTicketParams reSendTicketParams = new ReSendTicketParams();
-            reSendTicketParams.setOrderSn(orderItem.getNumber());
-            reSendTicketParams.setVisitorId(visitorId);
-            reSendTicketParams.setMobile(params.get("phone").toString());
-            return voucherRPCService.resendTicket(orderItem.getEp_ma_id(), reSendTicketParams);
-        }
-        // 出票
-        // 记录任务
-        Map<String, String> jobParam = new HashMap<>();
-        jobParam.put("orderItemId", orderItem.getId().toString());
-        bookingOrderManager.addJob(OrderConstant.Actions.SEND_TICKET, jobParam);
         return new Result<>(true);
     }
 
@@ -450,7 +444,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         // 获取子订单
         List<Map> items = (List<Map>) params.get("items");
         for (Map item : items) {
-            Integer productSubId = CommonUtil.objectParseInteger(item.get("product_sub_id"));
+            Long productSubCode = Long.parseLong(item.get("product_sub_code").toString());
             boolean special = BooleanUtils.toBoolean(CommonUtil.objectParseString(item.get("special")));
             Integer quantity = CommonUtil.objectParseInteger(item.get("quantity"));
             Integer days = CommonUtil.objectParseInteger(item.get("days"));
@@ -464,7 +458,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
 
             // 验证是否可售
             ProductSearchParams searchParams = new ProductSearchParams();
-            searchParams.setSubProductId(productSubId);
+            searchParams.setSubProductCode(productSubCode);
             searchParams.setStartDate(bookingDate);
             searchParams.setDays(days);
             searchParams.setQuantity(quantity);
@@ -544,7 +538,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             }
 
             // 创建子订单
-            OrderItem orderItem = bookingOrderManager.generateItem(salesInfo, dayInfoList.get(dayInfoList.size() - 1).getEnd_time(), salePrice, bookingDate, days, order.getId(), quantity, productSubId, groupId);
+            OrderItem orderItem = bookingOrderManager.generateItem(salesInfo, dayInfoList.get(dayInfoList.size() - 1).getEnd_time(), salePrice, bookingDate, days, order.getId(), quantity, groupId);
 
             List<OrderItemDetail> detailList = new ArrayList<>();
             List<Visitor> visitorList = new ArrayList<>();
@@ -738,5 +732,26 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             jobParams.put("serialNum", "-1"); // 到付
             bookingOrderManager.addJob(OrderConstant.Actions.PAYMENT_CALLBACK, jobParams);
         }
+    }
+
+    private Result reSendTicket(OrderItem orderItem, Integer visitorId, String phone) {
+        RefundOrder refundOrder = refundOrderMapper.selectByItemIdAndVisitor(orderItem.getId(), visitorId);
+        if (refundOrder != null) {
+            return new Result(false, "该子订单已发起退票");
+        }
+        MaSendResponse response = maSendResponseMapper.selectByVisitorId(orderItem.getId(), visitorId, orderItem.getEp_ma_id());
+        if (orderItem.getStatus() == OrderConstant.OrderItemStatus.SEND && response != null) {
+            ReSendTicketParams reSendTicketParams = new ReSendTicketParams();
+            reSendTicketParams.setOrderSn(orderItem.getNumber());
+            reSendTicketParams.setVisitorId(visitorId);
+            reSendTicketParams.setMobile(phone);
+            return voucherRPCService.resendTicket(orderItem.getEp_ma_id(), reSendTicketParams);
+        }
+        // 出票
+        // 记录任务
+        Map<String, String> jobParam = new HashMap<>();
+        jobParam.put("orderItemId", orderItem.getId().toString());
+        bookingOrderManager.addJob(OrderConstant.Actions.SEND_TICKET, jobParam);
+        return new Result(true);
     }
 }
