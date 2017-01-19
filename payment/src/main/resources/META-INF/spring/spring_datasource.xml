@@ -52,5 +52,5 @@
         <property name="dataSource" ref="baseBaseDS"/>
     </bean>
 
-    <tx:annotation-driven transaction-manager="transactionManager"/>
+    <tx:annotation-driven transaction-manager="transactionManager"  order="2"/>
 </beans>

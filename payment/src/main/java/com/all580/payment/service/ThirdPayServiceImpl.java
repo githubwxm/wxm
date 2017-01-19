@@ -10,6 +10,8 @@ import com.all580.payment.thirdpay.ali.service.AliPayService;
 import com.all580.payment.thirdpay.wx.model.RefundRsp;
 import com.all580.payment.thirdpay.wx.service.WxPayService;
 import com.framework.common.Result;
+import com.framework.common.event.MnsEvent;
+import com.framework.common.event.MnsEventManager;
 import com.framework.common.mns.TopicPushManager;
 import com.framework.common.util.CommonUtil;
 import org.apache.commons.lang.StringUtils;
@@ -84,7 +86,8 @@ public class ThirdPayServiceImpl implements ThirdPayService {
             map.put("ref_type",refType );//PaymentConstant.BalanceChangeType.THIRD_PAY_FOR_ORDER
             logger.info("第三方金额变更事件----->开始");
             String tag = "core";
-            topicPushManager.asyncFireEvent(topicName, tag, PaymentConstant.EVENT_NAME_FUND_CHANGE, map);
+            //topicPushManager.asyncFireEvent(topicName, tag, PaymentConstant.EVENT_NAME_FUND_CHANGE, map);
+            MnsEventManager.addEvent("FUND_CHANGE", map);
             logger.info("第三方金额变更事件----->成功");
         }catch (Exception e){
             logger.error("第三方金额变更事件 异常{}  ",map.toString());
@@ -116,6 +119,7 @@ public class ThirdPayServiceImpl implements ThirdPayService {
     }
 
     @Override
+    @MnsEvent
     public Result<String> reqRefund(final long ordCode, int coreEpId, int payType, Map<String, Object> params) {
         Result<String> result = new Result<>();
         if (PaymentConstant.PaymentType.WX_PAY == payType) {
@@ -156,6 +160,7 @@ public class ThirdPayServiceImpl implements ThirdPayService {
     }
 
     @Override
+    @MnsEvent
     public Result<Map<String, String>> payCallback(String ordId, String trade_no, Map<String, String> params, int payType) {
         // 根据企业获取配置信息
         if (PaymentConstant.PaymentType.WX_PAY == payType) {
@@ -191,6 +196,7 @@ public class ThirdPayServiceImpl implements ThirdPayService {
     }
 
     @Override
+    @MnsEvent
     public Result refundCallback(Map<String, String> params, int payType) {
         Result rst = new Result();
         // 根据企业获取配置信息

@@ -14,6 +14,8 @@ import com.all580.payment.exception.BusinessException;
 import com.framework.common.Result;
 import com.framework.common.distributed.lock.DistributedLockTemplate;
 import com.framework.common.distributed.lock.DistributedReentrantLock;
+import com.framework.common.event.MnsEvent;
+import com.framework.common.event.MnsEventManager;
 import com.framework.common.mns.TopicPushManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,6 +48,7 @@ public class LockPayManagerServiceImpl implements LockPayManagerService {
 
     @Override
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    @MnsEvent
     public Result<BalanceChangeRsp> changeBalances(List<BalanceChangeInfo> balanceChangeInfoList, Integer type,final String serialNum) {
         Assert.notNull(balanceChangeInfoList, "参数【balanceChangeInfoList】不能为空");
         Assert.notNull(type, "参数【type】不能为空");
@@ -63,7 +66,8 @@ public class LockPayManagerServiceImpl implements LockPayManagerService {
             // 变更余额
             changeBalances(capitals);
             // 发布余额变更事件
-            fireBalanceChangedEvent(capitals);
+            MnsEventManager.addEvent("BALANCE_CHANGE", capitals);
+            //fireBalanceChangedEvent(capitals);
 
             // 回调订单模块-余额支付
             if (PaymentConstant.BalanceChangeType.BALANCE_PAY.equals(type)) {
