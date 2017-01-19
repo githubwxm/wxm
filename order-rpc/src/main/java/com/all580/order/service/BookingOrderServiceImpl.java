@@ -41,6 +41,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.lang.exception.ApiException;
+import javax.lang.exception.ParamsMapValidationException;
 import java.util.*;
 
 /**
@@ -348,6 +349,9 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             }
         } else {
             Integer visitorId = CommonUtil.objectParseInteger(params.get("visitor_id"));
+            if (visitorId == null) {
+                throw new ParamsMapValidationException("visitor_id", "游客ID不能为空");
+            }
             Result result = reSendTicket(orderItem, visitorId, CommonUtil.objectParseString(params.get("phone")));
             if (!result.isSuccess()) {
                 throw new ApiException(result.getError());
