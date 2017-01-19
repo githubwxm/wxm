@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop-4.3.xsd">
+
+    <!-- **************************** 加载配置文件 **************************** -->
+    <!--<context:property-placeholder location="classpath:config/*.properties"/>-->
+    <bean id="dbPlaceholderConfigurer"
+          class="com.framework.common.ext.spring.config.DBPlaceholderConfigurer">
+        <property name="appName" value="payment"/>
+        <property name="profileName" value="${active.profilename}"/>
+        <property name="name" value="${active.name}"/>
+        <property name="pwd" value="${active.pwd}"/>
+        <property name="url" value="${active.url}"/>
+        <property name="locations">
+            <list>
+                <value>classpath:config/*.properties</value>
+            </list>
+        </property>
+    </bean>
+    <!-- **************************** 注解扫描 **************************** -->
+    <context:component-scan base-package="com.all580.ep.service,com.all580.payment.service,com.all580.payment.thirdpay.wx.service,
+    com.all580.payment.thirdpay.wx.model com.all580.payment.thirdpay.ali.service"/>
+    <!-- **************************** /注解扫描 **************************** -->
+
+    <!-- **************************** 导入其他XML文件 **************************** -->
+    <!--<import resource="spring-provider.xml"/>-->
+    <!-- **************************** /导入其他XML文件 **************************** -->
+
+    <!-- aop配置 -->
+    <bean id="eventAspect" class="com.framework.common.event.MnsEventAspect">
+        <property name="mns" ref="topicPushManager"/>
+        <property name="topicName" value="${mns.topic}"/>
+        <property name="tag" value="core_events"/>
+    </bean>
+    <aop:config proxy-target-class="true">
+        <!--切面 -->
+        <aop:aspect ref="eventAspect" order="1">
+            <!-- 切点 -->
+            <aop:pointcut expression="@annotation(com.framework.common.event.MnsEvent)" id="event"/>
+            <!--连接通知方法与切点 -->
+            <aop:before method="before" pointcut-ref="event"/>
+            <aop:after-returning method="afterReturn" pointcut-ref="event"/>
+        </aop:aspect>
+    </aop:config>
+</beans>

@@ -32,32 +32,8 @@ public class FundChangSubscribeServiceImpl implements FundChangeSubscribeService
     private PlatfromFundService platfromFundService;
 
 
-    /**
-     *
-     * @param s
-     * @param content  ref_id   ref_type   money  core_ep_id
-     * @param date
-     * @return
-     */
-    @Override
-    public Result process(String s, String content, Date date) {
-     log.info(" map  content:",content);
-        Map<String,Object> map = JsonUtils.json2Map(content);
-        //ParamsMapValidate.validate(map, generateCreateCreditValidate());//
-        log.info(" content map  {}",map.toString());
-       Integer core_ep_id = CommonUtil.objectParseInteger(map.get(EpConstant.EpKey.CORE_EP_ID));
-       Integer moeny = CommonUtil.objectParseInteger( map.get("money"));
-       int ref= fundSerialService.selectExists(map).get();
-        if(ref==0){
-            fundSerialService.insertFundSerial(map);//必须先插入流水再修改总资金
-            if(moeny>0){
-                platfromFundService.addFund(moeny,core_ep_id);
-            }else{
-                platfromFundService.exitFund(moeny,core_ep_id);
-            }
-        }
-        return new Result(true);
-    }
+
+
     public Map<String[], ValidRule[]> generateCreateCreditValidate() {
         Map<String[], ValidRule[]> rules = new HashMap<>();
         // 校验不为空的参数
@@ -74,5 +50,24 @@ public class FundChangSubscribeServiceImpl implements FundChangeSubscribeService
                 "ref_type", //
         }, new ValidRule[]{new ValidRule.Digits()});
         return rules;
+    }
+
+    @Override
+    public  Result process(String s, Object o, Date date) {
+        Map<String,Object> map = (Map)o;
+        //ParamsMapValidate.validate(map, generateCreateCreditValidate());//
+        log.info(" content map  {}",map.toString());
+        Integer core_ep_id = CommonUtil.objectParseInteger(map.get(EpConstant.EpKey.CORE_EP_ID));
+        Integer moeny = CommonUtil.objectParseInteger( map.get("money"));
+        int ref= fundSerialService.selectExists(map).get();
+        if(ref==0){
+            fundSerialService.insertFundSerial(map);//必须先插入流水再修改总资金
+            if(moeny>0){
+                platfromFundService.addFund(moeny,core_ep_id);
+            }else{
+                platfromFundService.exitFund(moeny,core_ep_id);
+            }
+        }
+        return new Result(true);
     }
 }

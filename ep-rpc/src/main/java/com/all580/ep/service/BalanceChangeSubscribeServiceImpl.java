@@ -31,14 +31,15 @@ public class BalanceChangeSubscribeServiceImpl implements BalanceChangeSubscribe
     @Autowired
     private EpParamMapper epParamMapper;
 
+
+
     @Override
-    public Result process(String mnsMsgId, String content, Date createDate) {
-        //[{id, epId, }]  epId，coreEpId，balance
+    public  Result process(String s, Object t, Date date) {
         Integer status= epParamMapper.selectEpNoteStatus();
         if(status.equals(0)){//  查询是否需要发送短信
             return new Result(true);
         }
-        List list = JsonUtils.json2List(content);
+        List list =(List) t;
         if (list == null) {
             return new Result(true);
         }
@@ -51,5 +52,6 @@ public class BalanceChangeSubscribeServiceImpl implements BalanceChangeSubscribe
             epBalanceThresholdService.warn(params);
         }
         return new Result(true);
+
     }
 }

@@ -12,6 +12,8 @@ import com.all580.payment.api.service.BalancePayService;
 import com.framework.common.Result;
 import javax.lang.exception.ApiException;
 
+import com.framework.common.event.MnsEvent;
+import com.framework.common.event.MnsEventManager;
 import com.framework.common.lang.StringUtils;
 import com.framework.common.mns.TopicPushManager;
 import com.framework.common.util.CommonUtil;
@@ -159,6 +161,7 @@ public class EpFinanceServiceImpl implements EpFinanceService {
     }
 
     @Override
+    @MnsEvent
     public Result addBalance(Integer epId,Integer coreEpId,Integer balance,Object operator_name){
         List<BalanceChangeInfo> balanceList=new ArrayList<>();
         BalanceChangeInfo b= new BalanceChangeInfo();
@@ -176,7 +179,8 @@ public class EpFinanceServiceImpl implements EpFinanceService {
         map.put("money",balance);
         map.put("ref_type",PaymentConstant.BalanceChangeType.MANUAL_CHANGE_BALANCE_ADD);
         map.put("operator_name",operator_name);
-        fireBalanceChangedEvent(map);
+        //fireBalanceChangedEvent(map);
+        MnsEventManager.addEvent("FUND_CHANGE", map);
         return balancePayService.changeBalances(balanceList, PaymentConstant.BalanceChangeType.MANUAL_CHANGE_BALANCE_ADD,serialNum);
     }
     /**
