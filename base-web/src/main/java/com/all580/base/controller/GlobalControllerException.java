@@ -27,7 +27,7 @@ public class GlobalControllerException {
     public Result processException(Exception e) {
         if (e != null) {
             String message = e.getMessage();
-            if (message.startsWith("org.springframework.dao.DuplicateKeyException:")) {
+            if (message != null && message.startsWith("org.springframework.dao.DuplicateKeyException:")) {
                 return processDuplicateKeyException(new DuplicateKeyException(message, e));
             }
         }

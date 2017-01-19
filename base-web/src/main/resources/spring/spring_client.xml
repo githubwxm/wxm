@@ -48,10 +48,6 @@
 					 interface="com.all580.role.api.service.EpRoleService"/>
 	<dubbo:reference id="smsService"
 					 interface="com.all580.notice.api.service.SmsService"/>
-	<dubbo:reference id="mnsBalanceChangeAction"
-					 interface="com.all580.notice.api.service.BalanceChangeSubscribeService"/>
-	<dubbo:reference id="mnsFundChangeAction"
-					 interface="com.all580.notice.api.service.FundChangeSubscribeService"/>
 
 	<dubbo:reference id="planGroupService" interface="com.all580.product.api.service.PlanGroupRPCService" />
 	<dubbo:reference id="productDistributionService" interface="com.all580.product.api.service.ProductDistributionRPCService" />
@@ -71,5 +67,7 @@
 	<dubbo:reference id="ticketOrderReportService" interface="com.all580.report.api.service.TicketOrderReportRPCService" />
 	<dubbo:reference id="epInfoService" interface="com.all580.report.api.service.EpInfoService" />
 
-
+	<!--事件订阅器-->
+	<dubbo:reference id="balanceChangeSubscribeService" interface="com.all580.notice.api.service.BalanceChangeSubscribeService"/>
+	<dubbo:reference id="fundChangeSubscribeService" interface="com.all580.notice.api.service.FundChangeSubscribeService"/>
 </beans>
