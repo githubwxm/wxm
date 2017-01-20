@@ -2,12 +2,17 @@ package com.all580.base.controller.mns;
 
 import com.alibaba.fastjson.JSONObject;
 import com.all580.base.aop.MnsSubscribeAspect;
+import com.all580.base.task.action.EventRetryAction;
 import com.framework.common.Result;
 import com.framework.common.lang.DateFormatUtils;
+import com.framework.common.lang.UUIDGenerator;
 import com.framework.common.lang.codec.TranscodeUtil;
 import com.framework.common.mns.MnsSubscribeAction;
 import com.framework.common.synchronize.LTSStatic;
+import com.github.ltsopensource.core.domain.Job;
+import com.github.ltsopensource.jobclient.JobClient;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -17,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.lang.exception.ApiException;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -35,8 +41,17 @@ public class CoreEventSubscribeController extends AbstractSubscribeController {
     private static final String CONTENT = "content";
     private static final String CREATE_TIME = "createTime";
 
+    @Value("${task.tracker}")
+    private String taskTracker;
+
+    @Value("${task.maxRetryTimes}")
+    private Integer maxRetryTimes;
+
     @Value("#{events}")
     private Map<String, List<MnsSubscribeAction>> events;
+
+    @Autowired
+    private JobClient jobClient;
 
     @RequestMapping(value = "core/events", method = RequestMethod.POST)
     public void coreEvents(HttpServletResponse response, ModelMap model) throws Exception {
@@ -48,7 +63,7 @@ public class CoreEventSubscribeController extends AbstractSubscribeController {
             String action = map.get(ACTION).toString();
             String content = map.get(CONTENT).toString();
             Object time = map.get(CREATE_TIME);
-            Date createTime = time == null ? null : DateFormatUtils.converToDateTime(time.toString());
+            Date createTime = DateFormatUtils.converToDateTime(time.toString());
             Object object = LTSStatic.SyncData.JSON_MAPPER.readValue(TranscodeUtil.base64StrToByteArray(content), Object.class);
             // 获取事件订阅器
             List<MnsSubscribeAction> actions = events.get(action);
@@ -57,6 +72,7 @@ public class CoreEventSubscribeController extends AbstractSubscribeController {
                 responseWrite(response, "OK");
                 return;
             }
+            List<Job> jobs = new ArrayList<>();
             for (MnsSubscribeAction subscribeAction : actions) {
                 String name = subscribeAction.getClass().getName();
                 try {
@@ -65,12 +81,28 @@ public class CoreEventSubscribeController extends AbstractSubscribeController {
                     if (!result.isSuccess()) {
                         throw new Exception(result.getError());
                     }
-                    responseWrite(response, "OK");
                 } catch (Exception e) {
-                    // 后面做任务处理
                     log.error("MNS: "+action+", Class: " + name + " 订阅器执行异常", e);
+                    Job job = new Job();
+                    job.setTaskId("EVENT-RETRY-JOB-" + UUIDGenerator.getUUID());
+                    job.setParam("msgId", id);
+                    job.setParam("content", content);
+                    job.setParam("time", time.toString());
+                    job.setParam("class", name);
+                    job.setParam("action", action);
+                    job.setParam("$ACTION$", EventRetryAction.NAME);
+                    job.setTaskTrackerNodeGroup(taskTracker);
+                    if (maxRetryTimes != null) {
+                        job.setMaxRetryTimes(maxRetryTimes);
+                    }
+                    job.setNeedFeedback(false);
+                    jobs.add(job);
                 }
             }
+            if (!jobs.isEmpty() && jobs.size() > 0) {
+                jobClient.submitJob(jobs);
+            }
+            responseWrite(response, "OK");
         }
     }
 }

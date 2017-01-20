@@ -56,8 +56,6 @@ public class BookingOrderServiceImpl implements BookingOrderService {
     @Autowired
     private BookingOrderManager bookingOrderManager;
     @Autowired
-    private RefundOrderManager refundOrderManager;
-    @Autowired
     private SmsManager smsManager;
 
     @Autowired
