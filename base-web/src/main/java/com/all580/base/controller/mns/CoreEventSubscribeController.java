@@ -9,6 +9,7 @@ import com.framework.common.lang.UUIDGenerator;
 import com.framework.common.lang.codec.TranscodeUtil;
 import com.framework.common.mns.MnsSubscribeAction;
 import com.framework.common.synchronize.LTSStatic;
+import com.framework.common.util.CommonUtil;
 import com.github.ltsopensource.core.domain.Job;
 import com.github.ltsopensource.jobclient.JobClient;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +21,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import javax.lang.exception.ApiException;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.Date;
@@ -74,7 +74,7 @@ public class CoreEventSubscribeController extends AbstractSubscribeController {
             }
             List<Job> jobs = new ArrayList<>();
             for (MnsSubscribeAction subscribeAction : actions) {
-                String name = subscribeAction.getClass().getName();
+                String name = CommonUtil.getProxyClassForInterface(subscribeAction, MnsSubscribeAction.class).getName();
                 try {
                     Result result = subscribeAction.process(id, object, createTime);
                     log.debug("调用订阅器回调Action:{}, Class:{}, Result:{}", new Object[]{action, name, result.toJsonString()});

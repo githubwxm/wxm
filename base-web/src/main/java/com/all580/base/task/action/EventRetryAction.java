@@ -1,10 +1,10 @@
 package com.all580.base.task.action;
 
-import com.all580.order.api.OrderConstant;
 import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.codec.TranscodeUtil;
 import com.framework.common.mns.MnsSubscribeAction;
 import com.framework.common.synchronize.LTSStatic;
+import com.framework.common.util.CommonUtil;
 import com.framework.common.validate.ParamsMapValidate;
 import com.framework.common.validate.ValidRule;
 import com.github.ltsopensource.core.domain.Action;
@@ -47,7 +47,7 @@ public class EventRetryAction implements JobRunner {
         Date createTime = DateFormatUtils.converToDateTime(params.get("time"));
         Object object = LTSStatic.SyncData.JSON_MAPPER.readValue(TranscodeUtil.base64StrToByteArray(params.get("content")), Object.class);
         for (MnsSubscribeAction subscribeAction : actions) {
-            String name = subscribeAction.getClass().getName();
+            String name = CommonUtil.getProxyClassForInterface(subscribeAction, MnsSubscribeAction.class).getName();
             if (name.equals(params.get("class"))) {
                 com.framework.common.Result result = subscribeAction.process(params.get("msgId"), object, createTime);
                 log.debug("事件重试Action:{}, Class:{}, Result:{}", new Object[]{action, name, result.toJsonString()});
