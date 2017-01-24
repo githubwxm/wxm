@@ -2,6 +2,7 @@ package com.all580.base.controller.mns;
 
 import com.alibaba.fastjson.JSONObject;
 import com.all580.base.aop.MnsSubscribeAspect;
+import com.all580.base.manager.MnsEventCache;
 import com.all580.base.task.action.EventRetryAction;
 import com.framework.common.Result;
 import com.framework.common.lang.DateFormatUtils;
@@ -22,10 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author zhouxianjun(Alone)
@@ -41,14 +39,14 @@ public class CoreEventSubscribeController extends AbstractSubscribeController {
     private static final String CONTENT = "content";
     private static final String CREATE_TIME = "createTime";
 
+    @Autowired
+    private MnsEventCache mnsEventCache;
+
     @Value("${task.tracker}")
     private String taskTracker;
 
     @Value("${task.maxRetryTimes}")
     private Integer maxRetryTimes;
-
-    @Value("#{events}")
-    private Map<String, List<MnsSubscribeAction>> events;
 
     @Autowired
     private JobClient jobClient;
@@ -66,7 +64,7 @@ public class CoreEventSubscribeController extends AbstractSubscribeController {
             Date createTime = DateFormatUtils.converToDateTime(time.toString());
             Object object = LTSStatic.SyncData.JSON_MAPPER.readValue(TranscodeUtil.base64StrToByteArray(content), Object.class);
             // 获取事件订阅器
-            List<MnsSubscribeAction> actions = events.get(action);
+            Collection<MnsSubscribeAction> actions = mnsEventCache.getProcess(action);
             if (actions == null || actions.size() == 0) {
                 log.warn("MNS:{}, Action:{} 事件,没有订阅器.", id, action);
                 responseWrite(response, "OK");
