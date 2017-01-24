@@ -4,6 +4,10 @@ package com.all580.ep.api.conf;
  * Created by Administrator on 2016/10/8 0008.
  */
 public class EpConstant {
+    public static class Event{
+        public static final String BALANCE_CHANGE="BALANCE_CHANGE";
+        public static final String FUND_CHANGE="FUND_CHANGE";
+    }
     public static class Table{
         public static final String T_EP="t_ep";//企业信息表
         public static final String T_EP_ROLE_FUNC="t_ep_role_func";
