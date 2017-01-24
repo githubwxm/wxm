@@ -400,4 +400,13 @@ public class BaseOrderManager {
         List<String> accessKeyList = accessKeyResult.get();
         return synchronizeDataManager.generate(accessKeyList.toArray(new String[accessKeyList.size()]));
     }
+
+    public String getAccessKey(Integer coreEpId) {
+        Result<List<String>> accessKeyResult = coreEpAccessService.selectAccessList(CommonUtil.oneToList(coreEpId));
+        if (!accessKeyResult.isSuccess()) {
+            throw new ApiException(accessKeyResult.getError());
+        }
+        List<String> accessKeyList = accessKeyResult.get();
+        return accessKeyList.get(0);
+    }
 }
