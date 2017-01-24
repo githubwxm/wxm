@@ -54,4 +54,9 @@ public class BalanceChangeSubscribeServiceImpl implements BalanceChangeSubscribe
         return new Result(true);
 
     }
+
+    @Override
+    public String key() {
+        return EpConstant.Event.BALANCE_CHANGE;
+    }
 }
