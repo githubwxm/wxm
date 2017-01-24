@@ -3,6 +3,7 @@ package com.all580.order.manager;
 import com.all580.ep.api.conf.EpConstant;
 import com.all580.ep.api.service.EpService;
 import com.all580.order.api.OrderConstant;
+import com.all580.order.api.model.OrderAuditEventParam;
 import com.all580.order.api.model.RefundGroupTicketInfo;
 import com.all580.order.api.model.RefundTicketInfo;
 import com.all580.order.dao.*;
@@ -18,6 +19,8 @@ import com.all580.product.api.consts.ProductConstants;
 import com.all580.product.api.model.ProductSearchParams;
 import com.all580.product.api.service.ProductSalesPlanRPCService;
 import com.framework.common.Result;
+import com.framework.common.event.MnsEvent;
+import com.framework.common.event.MnsEventManager;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.lang.UUIDGenerator;
 import com.framework.common.util.CommonUtil;
@@ -77,6 +80,7 @@ public class LockTransactionManager {
      * @param outTransId
      * @param serialNum
      */
+    @MnsEvent
     public void paymentCallback(int orderId, String outTransId, String serialNum) {
         Order order = orderMapper.selectByPrimaryKey(orderId);
         if (order == null) {
@@ -113,23 +117,12 @@ public class LockTransactionManager {
         // 子订单状态为未出票
         orderItemMapper.setStatusByOrderId(orderId, OrderConstant.OrderItemStatus.NON_SEND);
 
-        // 同步数据
-        bookingOrderManager.syncPaymentSuccessData(orderId);
+        // 触发事件
+        MnsEventManager.addEvent(OrderConstant.EventType.PAID, order.getId());
 
-        // 发送短信
-        // TODO: 2016/11/16  目前只支持单子订单发送
-        smsManager.sendPaymentSuccess(orderItems.get(0));
-
-        // 添加分账任务 余额不做后续分账(和支付的时候一起)
-        if (order.getPayment_type() != null && order.getPayment_type() != PaymentConstant.PaymentType.BALANCE.intValue()) {
-            Map<String, String> jobParam = new HashMap<>();
-            jobParam.put("orderId", String.valueOf(orderId));
-            bookingOrderManager.addJob(OrderConstant.Actions.PAYMENT_SPLIT_ACCOUNT, jobParam);
-        }
         if (order.getStatus() == OrderConstant.OrderStatus.PAID) {
             // 出票
-            // 记录任务
-            sendTicket(orderItems);
+            MnsEventManager.addEvent(OrderConstant.EventType.SPLIT_CREATE_ACCOUNT, order.getId());
         }
     }
 
@@ -172,6 +165,7 @@ public class LockTransactionManager {
      * @param orderId
      * @return
      */
+    @MnsEvent
     public com.github.ltsopensource.tasktracker.Result paymentSplitAccount(int orderId) {
         Order order = orderMapper.selectByPrimaryKey(orderId);
         if (order == null) {
@@ -197,11 +191,7 @@ public class LockTransactionManager {
         }
 
         // 出票
-        // 记录任务
-        sendTicket(orderItems);
-
-        // 同步数据
-        bookingOrderManager.syncPaymentSplitAccountData(orderId);
+        MnsEventManager.addEvent(OrderConstant.EventType.SPLIT_CREATE_ACCOUNT, order.getId());
         return new com.github.ltsopensource.tasktracker.Result(Action.EXECUTE_SUCCESS);
     }
 
@@ -433,6 +423,7 @@ public class LockTransactionManager {
      * @param orderItemSn
      * @return
      */
+    @MnsEvent
     public Result<?> auditBooking(Map params, long orderItemSn) {
         OrderItem orderItem = orderItemMapper.selectBySN(orderItemSn);
         if (orderItem == null) {
@@ -460,37 +451,22 @@ public class LockTransactionManager {
         orderItem.setAudit_user_name(CommonUtil.objectParseString(params.get("operator_name")));
         orderItem.setAudit_time(new Date());
         boolean status = Boolean.parseBoolean(params.get("status").toString());
-        // 通过
         if (status) {
             orderItem.setStatus(OrderConstant.OrderItemStatus.AUDIT_SUCCESS);
-            orderItemMapper.updateByPrimaryKeySelective(orderItem);
             boolean allAudit = bookingOrderManager.isOrderAllAudit(orderItem.getOrder_id(), orderItem.getId());
             if (allAudit) {
                 order.setStatus(OrderConstant.OrderStatus.PAY_WAIT);
                 order.setAudit_time(new Date());
                 // 判断是否需要支付
                 if (order.getPay_amount() <= 0) { // 不需要支付
-                    order.setStatus(OrderConstant.OrderStatus.PAID_HANDLING); // 已支付,处理中
-                    // 支付成功回调 记录任务
-                    Map<String, String> jobParams = new HashMap<>();
-                    jobParams.put("orderId", order.getId().toString());
-                    bookingOrderManager.addJob(OrderConstant.Actions.PAYMENT_CALLBACK, jobParams);
+                    bookingOrderManager.addPaymentCallback(order);
                 }
                 orderMapper.updateByPrimaryKeySelective(order);
-                // TODO: 2016/11/16  目前只支持单子订单发送
-                smsManager.sendAuditSuccess(orderItem);
             }
-            // 同步数据
-            Map syncData = bookingOrderManager.syncOrderAuditAcceptData(order.getId(), orderItem.getId());
-            Result<?> result = new Result<>(true);
-            result.putExt(Result.SYNC_DATA, syncData);
-            return result;
         }
         orderItemMapper.updateByPrimaryKeySelective(orderItem);
-
-        // 不通过
-        // 取消订单 会自动同步数据
-        return refundOrderManager.cancel(order.getNumber());
+        MnsEventManager.addEvent(OrderConstant.EventType.ORDER_AUDIT, new OrderAuditEventParam(orderItem.getId(), status));
+        return new Result<>(true);
     }
 
     /**
@@ -552,9 +528,7 @@ public class LockTransactionManager {
                 log.warn("余额支付失败:{}", JsonUtils.toJson(result));
                 throw new ApiException(result.getError());
             }
-            // 同步数据
-            Map syncData = bookingOrderManager.syncOrderPaymentData(order.getId());
-            return new Result<>(true).putExt(Result.SYNC_DATA, syncData);
+            return new Result<>(true);
         }
         // 第三方支付
         // 获取商品名称
@@ -573,9 +547,7 @@ public class LockTransactionManager {
             log.warn("第三方支付异常:{}", JsonUtils.toJson(result));
             throw new ApiException(result.getError());
         }
-        // 同步数据
-        Map syncData = bookingOrderManager.syncOrderPaymentData(order.getId());
-        return result.putExt(Result.SYNC_DATA, syncData);
+        return result;
     }
 
     /**
@@ -701,27 +673,5 @@ public class LockTransactionManager {
 
         refundOrderManager.syncRefundOrderAuditRefuse(refundOrder.getId());
         return new Result(true);
-    }
-
-    private void sendTicket(List<OrderItem> orderItems) {
-        List<Map<String, String>> jobParams = new ArrayList<>();
-        List<Map<String, String>> jobGroupParams = new ArrayList<>();
-        for (OrderItem orderItem : orderItems) {
-            Map<String, String> jobParam = new HashMap<>();
-            jobParam.put("orderItemId", orderItem.getId().toString());
-            // 团队票
-            if (orderItem.getGroup_id() != null && orderItem.getGroup_id() != 0 &&
-                    orderItem.getPro_sub_ticket_type() != null && orderItem.getPro_sub_ticket_type() == ProductConstants.TeamTicketType.TEAM) {
-                jobGroupParams.add(jobParam);
-                continue;
-            }
-            jobParams.add(jobParam);
-        }
-        if (jobParams.size() > 0) {
-            bookingOrderManager.addJobs(OrderConstant.Actions.SEND_TICKET, jobParams);
-        }
-        if (jobGroupParams.size() > 0) {
-            bookingOrderManager.addJobs(OrderConstant.Actions.SEND_GROUP_TICKET, jobGroupParams);
-        }
     }
 }

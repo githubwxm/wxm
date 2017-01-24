@@ -98,4 +98,16 @@ public class OrderConstant {
         public static final String REFUND_STOCK = "REFUND_STOCK"; // 还库存
         public static final String REFUND_MONEY_SPLIT_ACCOUNT = "REFUND_MONEY_SPLIT_ACCOUNT"; // 退款分账
     }
+
+    public static class EventType {
+        public static final String ORDER_CREATE = "ORDER_CREATE"; // 订单创建成功
+        public static final String ORDER_AUDIT = "ORDER_AUDIT"; // 订单审核
+        public static final String PAID = "PAID"; // 支付成功
+        public static final String SPLIT_CREATE_ACCOUNT = "SPLIT_CREATE_ACCOUNT"; // 创建订单分账
+        public static final String SEND_TICKET_RESULT = "SEND_TICKET_RESULT"; // 出票结果
+        public static final String ORDER_REFUND_APPLY = "ORDER_REFUND_APPLY"; // 订单退订申请成功
+        public static final String ORDER_REFUND_AUDIT = "ORDER_REFUND_AUDIT"; // 订单退订审核
+        public static final String REFUND_TICKET = "REFUND_TICKET"; // 订单退订审核
+        public static final String ORDER_CANCEL = "ORDER_CANCEL"; // 订单取消
+    }
 }

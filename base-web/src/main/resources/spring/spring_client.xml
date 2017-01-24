@@ -70,4 +70,5 @@
 	<!--事件订阅器-->
 	<dubbo:reference id="balanceChangeSubscribeService" interface="com.all580.notice.api.service.BalanceChangeSubscribeService"/>
 	<dubbo:reference id="fundChangeSubscribeService" interface="com.all580.notice.api.service.FundChangeSubscribeService"/>
+	<dubbo:reference id="orderCreateEvent" interface="com.all580.order.api.service.event.OrderCreateSyncDataEvent"/>
 </beans>

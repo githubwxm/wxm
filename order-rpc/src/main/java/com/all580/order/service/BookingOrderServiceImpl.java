@@ -9,9 +9,7 @@ import com.all580.order.dto.LockStockDto;
 import com.all580.order.entity.*;
 import com.all580.order.manager.BookingOrderManager;
 import com.all580.order.manager.LockTransactionManager;
-import com.all580.order.manager.RefundOrderManager;
 import com.all580.order.manager.SmsManager;
-import com.all580.payment.api.service.ThirdPayService;
 import com.all580.product.api.consts.ProductConstants;
 import com.all580.product.api.model.EpSalesInfo;
 import com.all580.product.api.model.ProductSalesDayInfo;
@@ -24,10 +22,11 @@ import com.all580.voucher.api.service.VoucherRPCService;
 import com.framework.common.Result;
 import com.framework.common.distributed.lock.DistributedLockTemplate;
 import com.framework.common.distributed.lock.DistributedReentrantLock;
+import com.framework.common.event.MnsEvent;
+import com.framework.common.event.MnsEventManager;
 import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.util.CommonUtil;
-import com.framework.common.util.TimeConsum;
 import com.framework.common.validate.ParamsMapValidate;
 import com.framework.common.validate.ValidRule;
 import lombok.extern.slf4j.Slf4j;
@@ -91,8 +90,8 @@ public class BookingOrderServiceImpl implements BookingOrderService {
 
     @Override
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    @MnsEvent
     public Result<?> create(Map params) throws Exception {
-        TimeConsum.MakerTime total = TimeConsum.maker();
         Integer buyEpId = CommonUtil.objectParseInteger(params.get(EpConstant.EpKey.EP_ID));
         // 获取平台商ID
         Integer coreEpId = CommonUtil.objectParseInteger(params.get(EpConstant.EpKey.CORE_EP_ID));
@@ -101,19 +100,16 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         int totalSalePrice = 0;
         int totalPayPrice = 0;
 
-        TimeConsum.maker();
         // 判断销售商状态是否为已冻结
         if (!bookingOrderManager.isEpStatus(epService.getEpStatus(buyEpId), EpConstant.EpStatus.ACTIVE)) {
             throw new ApiException("销售商企业已冻结");
         }
-        TimeConsum.how(true).print("判断销售商冻结");
         // 只有销售商可以下单
         Result<Integer> epType = epService.selectEpType(buyEpId);
         if (!bookingOrderManager.isEpType(epType, EpConstant.EpType.SELLER) &&
                 !bookingOrderManager.isEpType(epType, EpConstant.EpType.OTA)) {
             throw new ApiException("该企业不能购买产品");
         }
-        TimeConsum.how(true).print("判断企业类型");
         // 锁定库存集合(统一锁定)
         Map<Integer, LockStockDto> lockStockDtoMap = new HashMap<>();
         List<ProductSearchParams> lockParams = new ArrayList<>();
@@ -124,7 +120,6 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         if (epResult != null && epResult.isSuccess() && epResult.get() != null) {
             buyEpName = String.valueOf(epResult.get().get("name"));
         }
-        TimeConsum.how().print("获取下单企业名称");
 
         // 创建订单
         Order order = bookingOrderManager.generateOrder(coreEpId, buyEpId, buyEpName,
@@ -144,7 +139,6 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             //预定日期
             Date bookingDate = DateFormatUtils.parseString(DateFormatUtils.DATE_TIME_FORMAT, CommonUtil.objectParseString(item.get("start")));
 
-            TimeConsum.maker();
             // 验证是否可售
             ProductSearchParams searchParams = new ProductSearchParams();
             searchParams.setSubProductCode(productSubCode);
@@ -156,7 +150,6 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             if (!salesInfoResult.isSuccess()) {
                 throw new ApiException(salesInfoResult.getError());
             }
-            TimeConsum.how().print("验证是否可售");
             ProductSalesInfo salesInfo = salesInfoResult.get();
             // 判断供应商状态是否为已冻结
             if (!bookingOrderManager.isEpStatus(epService.getEpStatus(salesInfo.getEp_id()), EpConstant.EpStatus.ACTIVE)) {
@@ -171,7 +164,6 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             // 验证预定时间限制
             bookingOrderManager.validateBookingDate(bookingDate, dayInfoList);
 
-            TimeConsum.maker();
             // 判断游客信息
             List<Map> visitors = (List<Map>) item.get("visitor");
             if (salesInfo.isRequire_sid()) {
@@ -181,7 +173,6 @@ public class BookingOrderServiceImpl implements BookingOrderService {
                     throw new ApiException(visitorResult.getError());
                 }
             }
-            TimeConsum.how(true).print("验证游客信息");
 
             // 每天的价格
             List<List<EpSalesInfo>> allDaysSales = salesInfo.getSales();
@@ -194,7 +185,6 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             if (salesInfo.getPay_type() == ProductConstants.PayType.PREPAY) {
                 totalPayPrice += salePrice;
             }
-            TimeConsum.how(true).print("计算价格");
 
             // 创建子订单
             OrderItem orderItem = bookingOrderManager.generateItem(salesInfo, dayInfoList.get(dayInfoList.size() - 1).getEnd_time(), salePrice, bookingDate, days, order.getId(), quantity, null);
@@ -214,7 +204,6 @@ public class BookingOrderServiceImpl implements BookingOrderService {
                 }
                 i++;
             }
-            TimeConsum.how().print("创建子订单、详情、游客");
 
             // 判断总张数是否匹配
             if (visitorQuantity != allQuantity) {
@@ -228,23 +217,19 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             lockParams.add(bookingOrderManager.parseParams(orderItem));
             visitorMap.put(orderItem.getId(), visitorList);
 
-            TimeConsum.maker();
             // 预分账记录
             bookingOrderManager.prePaySplitAccount(allDaysSales, orderItem, buyEpId);
-            TimeConsum.how().print("预分账");
         }
 
         // 创建订单联系人
         Map shippingMap = (Map) params.get("shipping");
         bookingOrderManager.generateShipping(shippingMap, order.getId());
 
-        TimeConsum.maker();
         // 锁定库存
         Result<Map<Integer, List<Boolean>>> lockResult = productSalesPlanRPCService.lockProductStocks(lockParams);
         if (!lockResult.isSuccess()) {
             throw new ApiException(lockResult.getError());
         }
-        TimeConsum.how().print("锁定库存");
 
         Map<Integer, List<Boolean>> listMap = lockResult.get();
         if (listMap.size() != lockStockDtoMap.size()) {
@@ -272,23 +257,16 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             order.setAudit_time(new Date());
         }
 
-        // 到付
-        addPaymentCallbackJob(order);
         orderMapper.updateByPrimaryKeySelective(order);
 
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("order", JsonUtils.obj2map(order));
         resultMap.put("items", JsonUtils.json2List(JsonUtils.toJson(orderItems)));
-        resultMap.put("visitors", JsonUtils.obj2map(visitorMap));
         Result<Object> result = new Result<>(true);
         result.put(resultMap);
 
-        TimeConsum.maker();
-        // 同步数据
-        Map syncData = bookingOrderManager.syncCreateOrderData(order.getId());
-        result.putExt(Result.SYNC_DATA, syncData);
-        TimeConsum.how().print("同步数据");
-        total.how().print(order.getNumber() + " 下单总");
+        // 触发事件
+        MnsEventManager.addEvent(OrderConstant.EventType.ORDER_CREATE, order.getId());
         return result;
     }
 
@@ -395,6 +373,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
 
     @Override
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    @MnsEvent
     public Result<?> createForGroup(Map params) throws Exception {
         Integer buyEpId = CommonUtil.objectParseInteger(params.get(EpConstant.EpKey.EP_ID));
         // 获取平台商ID
@@ -619,20 +598,16 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             order.setAudit_time(new Date());
         }
 
-        // 到付
-        addPaymentCallbackJob(order);
         orderMapper.updateByPrimaryKeySelective(order);
 
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("order", JsonUtils.obj2map(order));
         resultMap.put("items", JsonUtils.json2List(JsonUtils.toJson(orderItems)));
-        resultMap.put("visitors", JsonUtils.obj2map(visitorMap));
         Result<Object> result = new Result<>(true);
         result.put(resultMap);
 
-        // 同步数据
-        Map syncData = bookingOrderManager.syncCreateOrderData(order.getId());
-        result.putExt(Result.SYNC_DATA, syncData);
+        // 触发事件
+        MnsEventManager.addEvent(OrderConstant.EventType.ORDER_CREATE, order.getId());
         return result;
     }
 
@@ -721,18 +696,6 @@ public class BookingOrderServiceImpl implements BookingOrderService {
                 i++;
             }
             orderItems.add(item);
-        }
-    }
-
-    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public void addPaymentCallbackJob(Order order) {
-        if (order.getStatus() != OrderConstant.OrderStatus.AUDIT_WAIT && order.getPay_amount() <= 0) {
-            order.setStatus(OrderConstant.OrderStatus.PAYING); // 支付中
-            // 支付成功回调 记录任务
-            Map<String, String> jobParams = new HashMap<>();
-            jobParams.put("orderId", order.getId().toString());
-            jobParams.put("serialNum", "-1"); // 到付
-            bookingOrderManager.addJob(OrderConstant.Actions.PAYMENT_CALLBACK, jobParams);
         }
     }
 

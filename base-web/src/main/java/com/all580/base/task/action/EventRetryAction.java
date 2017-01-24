@@ -1,5 +1,6 @@
 package com.all580.base.task.action;
 
+import com.all580.base.manager.MnsEventCache;
 import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.codec.TranscodeUtil;
 import com.framework.common.mns.MnsSubscribeAction;
@@ -12,13 +13,11 @@ import com.github.ltsopensource.tasktracker.Result;
 import com.github.ltsopensource.tasktracker.runner.JobContext;
 import com.github.ltsopensource.tasktracker.runner.JobRunner;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author zhouxianjun(Alone)
@@ -30,8 +29,8 @@ import java.util.Map;
 @Slf4j
 public class EventRetryAction implements JobRunner {
     public static final String NAME = "EVENT_RETRY_ACTION";
-    @Value("#{events}")
-    private Map<String, List<MnsSubscribeAction>> events;
+    @Autowired
+    private MnsEventCache mnsEventCache;
 
     @Override
     public Result run(JobContext jobContext) throws Throwable {
@@ -39,7 +38,7 @@ public class EventRetryAction implements JobRunner {
         validateParams(params);
 
         String action = params.get("action");
-        List<MnsSubscribeAction> actions = events.get(action);
+        Collection<MnsSubscribeAction> actions = mnsEventCache.getProcess(action);
         if (actions == null || actions.size() == 0) {
             log.warn("MNS:{}, Action:{} 事件,没有订阅器.", params.get("msgId"), action);
             return new Result(Action.EXECUTE_SUCCESS, "没有订阅器");

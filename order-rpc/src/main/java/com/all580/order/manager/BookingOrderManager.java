@@ -482,6 +482,15 @@ public class BookingOrderManager extends BaseOrderManager {
         return balanceChangeInfoList;
     }
 
+    public void addPaymentCallback(Order order) {
+        order.setStatus(OrderConstant.OrderStatus.PAYING); // 支付中
+        // 支付成功回调 记录任务
+        Map<String, String> jobParams = new HashMap<>();
+        jobParams.put("orderId", order.getId().toString());
+        jobParams.put("serialNum", "-1"); // 到付
+        addJob(OrderConstant.Actions.PAYMENT_CALLBACK, jobParams);
+    }
+
     /**
      * 同步创建订单数据
      * @param orderId 订单ID

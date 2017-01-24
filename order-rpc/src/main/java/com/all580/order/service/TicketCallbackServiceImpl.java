@@ -1,6 +1,5 @@
 package com.all580.order.service;
 
-import com.all580.ep.api.service.CoreEpChannelService;
 import com.all580.order.api.OrderConstant;
 import com.all580.order.api.model.*;
 import com.all580.order.api.service.TicketCallbackService;
@@ -18,9 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import javax.lang.exception.ApiException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -52,11 +49,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
     @Autowired
     private VisitorMapper visitorMapper;
     @Autowired
-    private RefundVisitorMapper refundVisitorMapper;
-    @Autowired
     private RefundOrderMapper refundOrderMapper;
-    @Autowired
-    private RefundSerialMapper refundSerialMapper;
     @Autowired
     private GroupConsumeMapper groupConsumeMapper;
 

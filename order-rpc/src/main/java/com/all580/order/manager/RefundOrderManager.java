@@ -1,8 +1,5 @@
 package com.all580.order.manager;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import com.all580.ep.api.service.CoreEpChannelService;
 import com.all580.order.api.OrderConstant;
 import com.all580.order.dao.*;
 import com.all580.order.dto.RefundDay;
@@ -13,21 +10,17 @@ import com.all580.payment.api.model.BalanceChangeInfo;
 import com.all580.payment.api.model.BalanceChangeRsp;
 import com.all580.payment.api.service.ThirdPayService;
 import com.all580.product.api.consts.ProductConstants;
-import com.all580.product.api.consts.ProductRules;
 import com.all580.product.api.model.ProductSearchParams;
 import com.all580.product.api.service.ProductSalesPlanRPCService;
 import com.all580.voucher.api.model.RefundTicketParams;
 import com.all580.voucher.api.model.group.RefundGroupTicketParams;
 import com.all580.voucher.api.service.VoucherRPCService;
 import com.framework.common.Result;
-import com.framework.common.lang.Arith;
-import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.lang.UUIDGenerator;
 import com.framework.common.util.CommonUtil;
 import com.github.ltsopensource.core.domain.Job;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -118,8 +111,7 @@ public class RefundOrderManager extends BaseOrderManager {
         // 还库存
         refundStock(orderItems);
         // 同步数据
-        Map syncData = syncOrderCancelData(order.getId());
-        return new Result(true).putExt(Result.SYNC_DATA, syncData);
+        return new Result(true);
     }
 
     /**
