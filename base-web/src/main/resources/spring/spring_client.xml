@@ -75,5 +75,13 @@
 	<!--事件订阅器-->
 	<dubbo:reference id="balanceChangeSubscribeService" interface="com.all580.notice.api.service.BalanceChangeSubscribeService"/>
 	<dubbo:reference id="fundChangeSubscribeService" interface="com.all580.notice.api.service.FundChangeSubscribeService"/>
-	<dubbo:reference id="orderCreateEvent" interface="com.all580.order.api.service.event.OrderCreateSyncDataEvent"/>
+	<dubbo:reference id="orderCreateSyncDataEvent" interface="com.all580.order.api.service.event.OrderCreateSyncDataEvent"/>
+	<dubbo:reference id="orderCreateEvent" interface="com.all580.order.api.service.event.OrderCreateEvent"/>
+	<dubbo:reference id="splitCreateOrderEvent" interface="com.all580.order.api.service.event.SplitCreateOrderEvent"/>
+	<dubbo:reference id="splitCreateOrderSyncDataEvent" interface="com.all580.order.api.service.event.SplitCreateOrderSyncDataEvent"/>
+	<dubbo:reference id="paidEvent" interface="com.all580.order.api.service.event.PaidEvent"/>
+	<dubbo:reference id="paidSyncDataEvent" interface="com.all580.order.api.service.event.PaidSyncDataEvent"/>
+	<dubbo:reference id="orderAuditEvent" interface="com.all580.order.api.service.event.OrderAuditEvent"/>
+	<dubbo:reference id="orderAuditSyncDataEvent" interface="com.all580.order.api.service.event.OrderAuditSyncDataEvent"/>
+	<dubbo:reference id="orderCancelSyncDataEvent" interface="com.all580.order.api.service.event.OrderCancelSyncDataEvent"/>
 </beans>
