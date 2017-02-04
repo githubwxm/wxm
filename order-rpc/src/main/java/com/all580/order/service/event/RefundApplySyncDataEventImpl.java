@@ -2,6 +2,7 @@ package com.all580.order.service.event;
 
 import com.all580.order.api.OrderConstant;
 import com.all580.order.api.service.event.RefundApplyEvent;
+import com.all580.order.api.service.event.RefundApplySyncDataEvent;
 import com.all580.order.dao.*;
 import com.all580.order.entity.Order;
 import com.all580.order.entity.RefundOrder;
@@ -25,7 +26,7 @@ import java.util.Date;
  * @date 2017/2/4 15:35
  */
 @Service
-public class RefundApplySyncDataEventImpl implements RefundApplyEvent {
+public class RefundApplySyncDataEventImpl implements RefundApplySyncDataEvent {
     @Autowired
     private RefundOrderMapper refundOrderMapper;
     @Autowired
