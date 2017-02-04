@@ -88,4 +88,9 @@
 	<dubbo:reference id="orderAuditEvent" interface="com.all580.order.api.service.event.OrderAuditEvent"/>
 	<dubbo:reference id="orderAuditSyncDataEvent" interface="com.all580.order.api.service.event.OrderAuditSyncDataEvent"/>
 	<dubbo:reference id="orderCancelSyncDataEvent" interface="com.all580.order.api.service.event.OrderCancelSyncDataEvent"/>
+	<dubbo:reference id="sendTicketSyncDataEvent" interface="com.all580.order.api.service.event.SendTicketSyncDataEvent"/>
+	<dubbo:reference id="refundApplyEvent" interface="com.all580.order.api.service.event.RefundApplyEvent"/>
+	<dubbo:reference id="refundApplySyncDataEvent" interface="com.all580.order.api.service.event.RefundApplySyncDataEvent"/>
+	<dubbo:reference id="refundAuditEvent" interface="com.all580.order.api.service.event.RefundAuditEvent"/>
+	<dubbo:reference id="refundAuditSyncDataEvent" interface="com.all580.order.api.service.event.RefundAuditSyncDataEvent"/>
 </beans>

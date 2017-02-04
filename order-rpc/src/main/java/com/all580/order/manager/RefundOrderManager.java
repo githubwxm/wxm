@@ -120,9 +120,8 @@ public class RefundOrderManager extends BaseOrderManager {
      * @param refundOrder 退订订单
      * @param order 订单
      * @return
-     * @throws Exception
      */
-    public Result auditSuccess(OrderItem orderItem, RefundOrder refundOrder, Order order) throws Exception {
+    public void auditSuccess(OrderItem orderItem, RefundOrder refundOrder, Order order) {
         if (refundOrder.getAudit_time() == null) {
             refundOrder.setAudit_time(new Date());
         }
@@ -144,10 +143,6 @@ public class RefundOrderManager extends BaseOrderManager {
             // 退款
             refundMoney(order, refundOrder.getMoney(), String.valueOf(refundOrder.getNumber()), refundOrder);
         }
-
-        // 同步数据
-        Map syncData = syncRefundOrderAuditAcceptData(refundOrder.getId());
-        return new Result<>(true).putExt(Result.SYNC_DATA, syncData);
     }
 
     /**
@@ -366,7 +361,7 @@ public class RefundOrderManager extends BaseOrderManager {
      * @throws Exception
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public void returnRefundForDays(Collection<RefundDay> refundDays, List<OrderItemDetail> detailList) throws Exception {
+    public void returnRefundForDays(Collection<RefundDay> refundDays, List<OrderItemDetail> detailList) {
         for (RefundDay refundDay : refundDays) {
             OrderItemDetail detail = AccountUtil.getDetailByDay(detailList, refundDay.getDay());
             if (detail == null) {
@@ -382,10 +377,9 @@ public class RefundOrderManager extends BaseOrderManager {
      * 已支付未出票的订单退订 更新游客退票数据
      * @param refundOrder
      * @return
-     * @throws Exception
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public int nonSendTicketRefund(RefundOrder refundOrder) throws Exception {
+    public int nonSendTicketRefund(RefundOrder refundOrder) {
         int total = 0;
         List<RefundVisitor> refundVisitorList = refundVisitorMapper.selectByRefundId(refundOrder.getId());
         List<Visitor> visitorList = visitorMapper.selectByOrderItem(refundOrder.getOrder_item_id());
@@ -404,10 +398,9 @@ public class RefundOrderManager extends BaseOrderManager {
     /**
      * 已支付未出票的订单退订 更新游客退票数据
      * @param refundOrder
-     * @throws Exception
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public void nonSendTicketRefundForGroup(RefundOrder refundOrder, int groupId) throws Exception {
+    public void nonSendTicketRefundForGroup(RefundOrder refundOrder, int groupId) {
         List<Visitor> visitorList = visitorMapper.selectByOrderItem(refundOrder.getOrder_item_id());
         for (Visitor visitor : visitorList) {
             if (visitor.getGroup_id() == groupId) {
@@ -422,10 +415,9 @@ public class RefundOrderManager extends BaseOrderManager {
     /**
      * 退票失败
      * @param refundOrder
-     * @throws Exception
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public void refundFail(RefundOrder refundOrder) throws Exception {
+    public void refundFail(RefundOrder refundOrder) {
         refundOrder.setStatus(OrderConstant.RefundOrderStatus.FAIL);
         List<OrderItemDetail> detailList = orderItemDetailMapper.selectByItemId(refundOrder.getOrder_item_id());
         Collection<RefundDay> refundDays = AccountUtil.decompileRefundDay(refundOrder.getData());

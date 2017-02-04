@@ -4,6 +4,7 @@ import com.all580.ep.api.conf.EpConstant;
 import com.all580.ep.api.service.EpService;
 import com.all580.order.api.OrderConstant;
 import com.all580.order.api.model.OrderAuditEventParam;
+import com.all580.order.api.model.RefundAuditEventParam;
 import com.all580.order.api.model.RefundGroupTicketInfo;
 import com.all580.order.api.model.RefundTicketInfo;
 import com.all580.order.dao.*;
@@ -204,6 +205,7 @@ public class LockTransactionManager {
      * @return
      * @throws Exception
      */
+    @MnsEvent
     public Result<?> applyRefund(Map params, OrderItem orderItem, Order order, Integer applyFrom) throws Exception {
         if (ArrayUtils.indexOf(new int[]{
                 OrderConstant.OrderItemStatus.SEND,
@@ -264,13 +266,9 @@ public class LockTransactionManager {
             refundOrderManager.preRefundSplitAccount(applyFrom, refundOrder.getId(), order, refundDate, refundOrder.getOrder_item_id(), detailList, refundDays);
         }
 
-        // 判断是否需要退订审核
-        if (refundOrder.getAudit_ticket() == ProductConstants.RefundAudit.NO) {
-            refundOrderManager.auditSuccess(orderItem, refundOrder, order);
-        }
-        // 同步数据
-        Map syncData = refundOrderManager.syncRefundOrderApplyData(refundOrder.getId());
-        return new Result<>(true).putExt(Result.SYNC_DATA, syncData);
+        // 触发事件
+        MnsEventManager.addEvent(OrderConstant.EventType.ORDER_REFUND_APPLY, refundOrder.getId());
+        return new Result<>(true);
     }
 
     /**
@@ -347,13 +345,9 @@ public class LockTransactionManager {
         // 退订分账
         refundOrderManager.preRefundSplitAccount(applyFrom, refundOrder.getId(), order, refundDate, refundOrder.getOrder_item_id(), detailList, refundDays);
 
-        // 判断是否需要退订审核
-        if (refundOrder.getAudit_ticket() == ProductConstants.RefundAudit.NO) {
-            refundOrderManager.auditSuccess(orderItem, refundOrder, order);
-        }
-        // 同步数据
-        Map syncData = refundOrderManager.syncRefundOrderApplyData(refundOrder.getId());
-        return new Result<>(true).putExt(Result.SYNC_DATA, syncData);
+        // 触发事件
+        MnsEventManager.addEvent(OrderConstant.EventType.ORDER_REFUND_APPLY, refundOrder.getId());
+        return new Result<>(true);
     }
 
     /**
@@ -381,6 +375,7 @@ public class LockTransactionManager {
      * @return
      * @throws Exception
      */
+    @MnsEvent
     public Result<?> auditRefund(Map params, String refundSn) throws Exception {
         RefundOrder refundOrder = refundOrderMapper.selectBySN(Long.valueOf(refundSn));
         if (refundOrder == null) {
@@ -404,17 +399,10 @@ public class LockTransactionManager {
             throw new ApiException("非法请求:当前企业不能审核该退订订单");
         }
         boolean status = Boolean.parseBoolean(params.get("status").toString());
-        // 通过
-        if (status) {
-            return refundOrderManager.auditSuccess(orderItem, refundOrder, order);
-        }
-        refundOrderManager.refundFail(refundOrder);
-        // 发送短信
-        smsManager.sendAuditRefuseSms(orderItem);
 
-        // 同步数据
-        Map syncData = refundOrderManager.syncRefundOrderAuditRefuse(refundOrder.getId());
-        return new Result<>(true).putExt(Result.SYNC_DATA, syncData);
+        refundOrderMapper.updateByPrimaryKeySelective(refundOrder);
+        MnsEventManager.addEvent(OrderConstant.EventType.ORDER_REFUND_AUDIT, new RefundAuditEventParam(refundOrder.getId(), status));
+        return new Result<>(true);
     }
 
     /**

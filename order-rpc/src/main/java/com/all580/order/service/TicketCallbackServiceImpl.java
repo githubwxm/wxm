@@ -12,6 +12,8 @@ import com.all580.order.manager.SmsManager;
 import com.framework.common.Result;
 import com.framework.common.distributed.lock.DistributedLockTemplate;
 import com.framework.common.distributed.lock.DistributedReentrantLock;
+import com.framework.common.event.MnsEvent;
+import com.framework.common.event.MnsEventManager;
 import com.framework.common.lang.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,6 +71,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
     private LockTransactionManager lockTransactionManager;
 
     @Override
+    @MnsEvent
     public Result sendTicket(Long orderSn, List<SendTicketInfo> infoList, Date procTime) {
         OrderItem orderItem = orderItemMapper.selectBySN(orderSn);
         if (orderItem == null) {
@@ -101,8 +104,8 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
             maSendResponseMapper.insertSelective(response);
         }
 
-        // 同步数据
-        bookingOrderManager.syncSendTicketData(orderItem.getId());
+        // 触发事件
+        MnsEventManager.addEvent(OrderConstant.EventType.SEND_TICKET, orderItem.getId());
         return new Result(true);
     }
 
@@ -141,8 +144,8 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         response.setCreate_time(procTime);
         maSendResponseMapper.insertSelective(response);
 
-        // 同步数据
-        bookingOrderManager.syncSendTicketData(orderItem.getId());
+        // 触发事件
+        MnsEventManager.addEvent(OrderConstant.EventType.SEND_TICKET, orderItem.getId());
         return new Result(true);
     }
 

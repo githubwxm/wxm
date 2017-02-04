@@ -104,7 +104,7 @@ public class OrderConstant {
         public static final String ORDER_AUDIT = "ORDER_AUDIT"; // 订单审核
         public static final String PAID = "PAID"; // 支付成功
         public static final String SPLIT_CREATE_ACCOUNT = "SPLIT_CREATE_ACCOUNT"; // 创建订单分账
-        public static final String SEND_TICKET_RESULT = "SEND_TICKET_RESULT"; // 出票结果
+        public static final String SEND_TICKET = "SEND_TICKET"; // 出票结果
         public static final String ORDER_REFUND_APPLY = "ORDER_REFUND_APPLY"; // 订单退订申请成功
         public static final String ORDER_REFUND_AUDIT = "ORDER_REFUND_AUDIT"; // 订单退订审核
         public static final String REFUND_TICKET = "REFUND_TICKET"; // 订单退订审核

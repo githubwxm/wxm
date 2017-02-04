@@ -3,32 +3,28 @@ package com.all580.order.service;
 import com.all580.ep.api.conf.EpConstant;
 import com.all580.order.api.OrderConstant;
 import com.all580.order.api.service.RefundOrderService;
-import com.all580.order.dao.OrderItemDetailMapper;
 import com.all580.order.dao.OrderItemMapper;
 import com.all580.order.dao.OrderMapper;
 import com.all580.order.dao.RefundOrderMapper;
 import com.all580.order.entity.Order;
 import com.all580.order.entity.OrderItem;
-import com.all580.order.entity.OrderItemDetail;
 import com.all580.order.entity.RefundOrder;
 import com.all580.order.manager.LockTransactionManager;
 import com.all580.order.manager.RefundOrderManager;
-import com.all580.order.manager.SmsManager;
 import com.all580.product.api.consts.ProductConstants;
-import com.all580.product.api.service.ProductSalesPlanRPCService;
 import com.framework.common.Result;
 import com.framework.common.distributed.lock.DistributedLockTemplate;
 import com.framework.common.distributed.lock.DistributedReentrantLock;
 import com.framework.common.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.lang.exception.ApiException;
-import java.util.*;
+import java.util.Date;
+import java.util.Map;
 
 /**
  * @author zhouxianjun(Alone)
@@ -41,15 +37,11 @@ import java.util.*;
 public class RefundOrderServiceImpl implements RefundOrderService {
     @Autowired
     private RefundOrderManager refundOrderManager;
-    @Autowired
-    private SmsManager smsManager;
 
     @Autowired
     private OrderItemMapper orderItemMapper;
     @Autowired
     private OrderMapper orderMapper;
-    @Autowired
-    private OrderItemDetailMapper orderItemDetailMapper;
     @Autowired
     private RefundOrderMapper refundOrderMapper;
     @Autowired

@@ -2,16 +2,19 @@ package com.all580.base.manager;
 
 import com.alibaba.dubbo.config.spring.ReferenceBean;
 import com.framework.common.mns.MnsSubscribeAction;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
+import com.google.common.collect.Ordering;
+import com.google.common.collect.TreeMultimap;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.config.InstantiationAwareBeanPostProcessorAdapter;
 import org.springframework.stereotype.Component;
 
+import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.Comparator;
 
 /**
  * @author zhouxianjun(Alone)
@@ -23,7 +26,21 @@ import java.util.Collection;
 @Slf4j
 public class MnsEventCache extends InstantiationAwareBeanPostProcessorAdapter {
     @Getter
-    private Multimap<String, MnsSubscribeAction> cacheEvents = ArrayListMultimap.create();
+    private TreeMultimap<String, MnsSubscribeAction> cacheEvents = TreeMultimap.create(Ordering.natural(), new Comparator<MnsSubscribeAction>() {
+        @Override
+        public int compare(MnsSubscribeAction o1, MnsSubscribeAction o2) {
+            try {
+                Method orderMethod1 = BeanUtils.findMethod(o1.getClass(), "order");
+                Method orderMethod2 = BeanUtils.findMethod(o2.getClass(), "order");
+                if (orderMethod1 != null && orderMethod2 != null) {
+                    int order1 = (int) orderMethod1.invoke(o1);
+                    int order2 = (int) orderMethod2.invoke(o2);
+                    return order1 < order2 ? -1 : order1 > order2 ? 1 : 0;
+                }
+            } catch (Exception ignored) {}
+            return 0;
+        }
+    });
 
     @Override
     public Object postProcessAfterInitialization(Object o, String s) throws BeansException {
