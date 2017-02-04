@@ -32,7 +32,6 @@
 	<import resource="classpath:spring/spring_servlet.xml" />
 	<import resource="classpath:spring/spring_client.xml" />
 	<import resource="classpath:spring/spring_cache.xml" />
-	<import resource="classpath:spring/spring-events.xml"/>
 	<import resource="classpath:spring/spring_schedule.xml"/>
 	<aop:aspectj-autoproxy/>
 </beans>  
