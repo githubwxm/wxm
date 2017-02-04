@@ -21,6 +21,10 @@
 					 interface="com.all580.product.api.hotel.service.HotelService" />
 	<dubbo:reference id="hotelSubService"
 					 interface="com.all580.product.api.hotel.service.HotelSubService" />
+	<dubbo:reference id="hotelBatchService"
+					 interface="com.all580.product.api.hotel.service.HotelBatchService" />
+
+
 	<dubbo:reference id="bookingOrderService"
 					 interface="com.all580.order.api.service.BookingOrderService" />
 	<dubbo:reference id="refundOrderService"
