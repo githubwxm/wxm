@@ -1,7 +1,7 @@
 package com.all580.order.service.event;
 
 import com.all580.order.api.OrderConstant;
-import com.all580.order.api.service.event.OrderCreateSyncDataEvent;
+import com.all580.order.api.service.event.OrderCreateEvent;
 import com.all580.order.dao.OrderMapper;
 import com.all580.order.entity.Order;
 import com.all580.order.manager.BookingOrderManager;
@@ -12,8 +12,6 @@ import org.springframework.stereotype.Service;
 
 import javax.lang.exception.ApiException;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author zhouxianjun(Alone)
@@ -23,7 +21,7 @@ import java.util.Map;
  */
 @Slf4j
 @Service
-public class OrderCreateEventImpl implements OrderCreateSyncDataEvent {
+public class OrderCreateEventImpl implements OrderCreateEvent {
     @Autowired
     private OrderMapper orderMapper;
     @Autowired
