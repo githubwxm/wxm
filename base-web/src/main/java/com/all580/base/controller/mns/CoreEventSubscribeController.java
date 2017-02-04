@@ -62,7 +62,7 @@ public class CoreEventSubscribeController extends AbstractSubscribeController {
             String content = map.get(CONTENT).toString();
             Object time = map.get(CREATE_TIME);
             Date createTime = DateFormatUtils.converToDateTime(time.toString());
-            Object object = LTSStatic.SyncData.asObject(TranscodeUtil.base64StrToByteArray(content), Object.class);
+            Object object = LTSStatic.SyncData.asObject(TranscodeUtil.base64StrToByteArray(content));
             // 获取事件订阅器
             Collection<MnsSubscribeAction> actions = mnsEventCache.getProcess(action);
             if (actions == null || actions.size() == 0) {
