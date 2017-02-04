@@ -53,7 +53,7 @@ public class MnsEventCache extends InstantiationAwareBeanPostProcessorAdapter {
             if (!cacheEvents.put(key, action)) {
                 throw new BeanCreationException(s, "事件添加缓存失败:" + key);
             }
-            log.info("事件注册:Key:{}, Event:{}", key, aClass);
+            log.info("事件注册:Key:{}, Event:{}, 当前事件列表:{}", new Object[]{key, aClass, cacheEvents.asMap()});
         }
         return o;
     }
