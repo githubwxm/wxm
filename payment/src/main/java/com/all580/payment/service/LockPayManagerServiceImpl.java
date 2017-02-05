@@ -66,7 +66,15 @@ public class LockPayManagerServiceImpl implements LockPayManagerService {
             // 变更余额
             changeBalances(capitals);
             // 发布余额变更事件
-            MnsEventManager.addEvent("BALANCE_CHANGE", capitals);
+            List<Map<String,Object>> tempList= new ArrayList<>();
+            for(Capital c:capitals){
+                Map<String,Object> map = new HashMap();
+                map.put("ep_id",c.getEp_id());
+                map.put("core_ep_id",c.getCore_ep_id());
+                map.put("balance",c.getBalance());
+                tempList.add(map);
+            }
+            MnsEventManager.addEvent("BALANCE_CHANGE", tempList);
             //fireBalanceChangedEvent(capitals);
 
             // 回调订单模块-余额支付
