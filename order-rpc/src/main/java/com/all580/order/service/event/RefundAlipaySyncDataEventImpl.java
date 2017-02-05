@@ -1,6 +1,6 @@
 package com.all580.order.service.event;
 
-import com.all580.order.api.service.event.RefundAlipaySyncDataEvent;
+import com.all580.order.api.service.event.RefundAliPaySyncDataEvent;
 import com.all580.order.dao.OrderMapper;
 import com.all580.order.dao.RefundOrderMapper;
 import com.all580.order.entity.Order;
@@ -24,7 +24,7 @@ import java.util.Date;
  * @date 2017/2/5 10:35
  */
 @Service
-public class RefundAlipaySyncDataEventImpl implements RefundAlipaySyncDataEvent {
+public class RefundAliPaySyncDataEventImpl implements RefundAliPaySyncDataEvent {
     @Autowired
     private RefundOrderMapper refundOrderMapper;
     @Autowired

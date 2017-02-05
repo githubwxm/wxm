@@ -11,5 +11,5 @@ import com.framework.common.mns.MnsSubscribeAction;
  * @date 2017/2/5 10:34
  */
 @EventService(OrderConstant.EventType.REFUND_ALI_PAY_AUDIT)
-public interface RefundAlipaySyncDataEvent extends MnsSubscribeAction<Integer> {
+public interface RefundAliPaySyncDataEvent extends MnsSubscribeAction<Integer> {
 }
