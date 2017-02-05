@@ -13,7 +13,6 @@ import com.all580.payment.api.conf.PaymentConstant;
 import com.framework.common.Result;
 import com.framework.common.event.MnsEvent;
 import com.framework.common.event.MnsEventManager;
-import com.github.ltsopensource.core.domain.Job;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -64,10 +63,5 @@ public class RefundMoneyEventImpl implements RefundMoneyEvent {
             }
         }
         return new Result(true);
-    }
-
-    @Override
-    public String key() {
-        return OrderConstant.EventType.REFUND_MONEY;
     }
 }

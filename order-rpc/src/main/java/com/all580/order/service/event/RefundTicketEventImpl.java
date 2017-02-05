@@ -52,9 +52,4 @@ public class RefundTicketEventImpl implements RefundTicketEvent {
         }
         return new Result(true);
     }
-
-    @Override
-    public String key() {
-        return OrderConstant.EventType.REFUND_TICKET;
-    }
 }

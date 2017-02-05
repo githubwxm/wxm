@@ -1,8 +1,6 @@
 package com.all580.order.service.event;
 
-import com.all580.order.api.OrderConstant;
 import com.all580.order.api.service.event.SplitCreateOrderSyncDataEvent;
-import com.all580.order.dao.OrderItemAccountMapper;
 import com.all580.order.dao.OrderMapper;
 import com.all580.order.entity.Order;
 import com.all580.order.manager.BookingOrderManager;
@@ -52,10 +50,5 @@ public class SplitCreateOrderSyncDataEventImpl implements SplitCreateOrderSyncDa
             throw new ApiException("同步数据异常", e);
         }
         return new Result(true);
-    }
-
-    @Override
-    public String key() {
-        return OrderConstant.EventType.SPLIT_CREATE_ACCOUNT;
     }
 }

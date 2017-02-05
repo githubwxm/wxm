@@ -59,9 +59,4 @@ public class SplitCreateOrderEventImpl implements SplitCreateOrderEvent {
         }
         return new Result(true);
     }
-
-    @Override
-    public String key() {
-        return OrderConstant.EventType.SPLIT_CREATE_ACCOUNT;
-    }
 }

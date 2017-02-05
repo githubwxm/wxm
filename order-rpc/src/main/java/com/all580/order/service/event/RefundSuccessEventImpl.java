@@ -1,6 +1,5 @@
 package com.all580.order.service.event;
 
-import com.all580.order.api.OrderConstant;
 import com.all580.order.api.service.event.RefundSuccessEvent;
 import com.all580.order.dao.RefundOrderMapper;
 import com.all580.order.entity.RefundOrder;
@@ -34,10 +33,5 @@ public class RefundSuccessEventImpl implements RefundSuccessEvent {
         // 发送短信 退订
         smsManager.sendRefundSuccessSms(refundOrder);
         return new Result(true);
-    }
-
-    @Override
-    public String key() {
-        return OrderConstant.EventType.REFUND_SUCCESS;
     }
 }

@@ -1,6 +1,5 @@
 package com.all580.order.service.event;
 
-import com.all580.order.api.OrderConstant;
 import com.all580.order.api.model.RefundMoneyEventParam;
 import com.all580.order.api.service.event.RefundMoneySyncDataEvent;
 import com.all580.order.dao.OrderMapper;
@@ -56,10 +55,5 @@ public class RefundMoneySyncDataEventImpl implements RefundMoneySyncDataEvent {
             throw new ApiException("同步数据异常", e);
         }
         return new Result(true);
-    }
-
-    @Override
-    public String key() {
-        return OrderConstant.EventType.REFUND_MONEY;
     }
 }

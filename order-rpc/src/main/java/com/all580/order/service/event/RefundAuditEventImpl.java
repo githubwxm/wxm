@@ -1,6 +1,5 @@
 package com.all580.order.service.event;
 
-import com.all580.order.api.OrderConstant;
 import com.all580.order.api.model.RefundAuditEventParam;
 import com.all580.order.api.service.event.RefundAuditEvent;
 import com.all580.order.dao.OrderItemMapper;
@@ -60,15 +59,5 @@ public class RefundAuditEventImpl implements RefundAuditEvent {
         Assert.notNull(orderItem, "子订单不存在");
         smsManager.sendAuditRefuseSms(orderItem);
         return new Result(true);
-    }
-
-    @Override
-    public String key() {
-        return OrderConstant.EventType.ORDER_REFUND_AUDIT;
-    }
-
-    @Override
-    public int order() {
-        return 1;
     }
 }

@@ -58,9 +58,4 @@ public class PaidEventImpl implements PaidEvent {
         }
         return new Result(true);
     }
-
-    @Override
-    public String key() {
-        return OrderConstant.EventType.PAID;
-    }
 }

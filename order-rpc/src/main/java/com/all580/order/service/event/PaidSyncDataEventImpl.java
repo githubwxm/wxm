@@ -1,6 +1,5 @@
 package com.all580.order.service.event;
 
-import com.all580.order.api.OrderConstant;
 import com.all580.order.api.service.event.PaidSyncDataEvent;
 import com.all580.order.dao.OrderItemMapper;
 import com.all580.order.dao.OrderMapper;
@@ -55,10 +54,5 @@ public class PaidSyncDataEventImpl implements PaidSyncDataEvent {
             throw new ApiException("同步数据异常", e);
         }
         return new Result(true);
-    }
-
-    @Override
-    public String key() {
-        return OrderConstant.EventType.PAID;
     }
 }

@@ -1,7 +1,5 @@
 package com.all580.order.service.event;
 
-import com.all580.order.api.OrderConstant;
-import com.all580.order.api.service.event.RefundApplyEvent;
 import com.all580.order.api.service.event.RefundApplySyncDataEvent;
 import com.all580.order.dao.*;
 import com.all580.order.entity.Order;
@@ -65,10 +63,5 @@ public class RefundApplySyncDataEventImpl implements RefundApplySyncDataEvent {
             throw new ApiException("同步数据异常", e);
         }
         return new Result(true);
-    }
-
-    @Override
-    public String key() {
-        return OrderConstant.EventType.ORDER_REFUND_APPLY;
     }
 }

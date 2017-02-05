@@ -39,9 +39,4 @@ public class OrderCreateEventImpl implements OrderCreateEvent {
         }
         return new Result(true);
     }
-
-    @Override
-    public String key() {
-        return OrderConstant.EventType.ORDER_CREATE;
-    }
 }

@@ -1,6 +1,5 @@
 package com.all580.order.service.event;
 
-import com.all580.order.api.OrderConstant;
 import com.all580.order.api.service.event.SendTicketSyncDataEvent;
 import com.all580.order.dao.MaSendResponseMapper;
 import com.all580.order.dao.OrderItemMapper;
@@ -63,10 +62,5 @@ public class SendTicketSyncDataEventImpl implements SendTicketSyncDataEvent {
             throw new ApiException("同步数据异常", e);
         }
         return new Result(true);
-    }
-
-    @Override
-    public String key() {
-        return OrderConstant.EventType.SEND_TICKET;
     }
 }

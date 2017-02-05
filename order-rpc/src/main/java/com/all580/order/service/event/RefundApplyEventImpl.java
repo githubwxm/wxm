@@ -37,9 +37,4 @@ public class RefundApplyEventImpl implements RefundApplyEvent {
         }
         return new Result(true);
     }
-
-    @Override
-    public String key() {
-        return OrderConstant.EventType.ORDER_REFUND_APPLY;
-    }
 }

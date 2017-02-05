@@ -1,14 +1,11 @@
 package com.all580.order.service.event;
 
-import com.all580.order.api.OrderConstant;
-import com.all580.order.api.service.event.RefundSuccessEvent;
 import com.all580.order.api.service.event.RefundSuccessSyncDataEvent;
 import com.all580.order.dao.OrderMapper;
 import com.all580.order.dao.RefundOrderMapper;
 import com.all580.order.entity.Order;
 import com.all580.order.entity.RefundOrder;
 import com.all580.order.manager.RefundOrderManager;
-import com.all580.order.manager.SmsManager;
 import com.framework.common.Result;
 import com.framework.common.mns.TopicPushManager;
 import com.framework.common.synchronize.SynchronizeDataMap;
@@ -19,8 +16,6 @@ import org.springframework.util.Assert;
 
 import javax.lang.exception.ApiException;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author zhouxianjun(Alone)
@@ -59,10 +54,5 @@ public class RefundSuccessSyncDataEventImpl implements RefundSuccessSyncDataEven
             throw new ApiException("同步数据异常", e);
         }
         return new Result(true);
-    }
-
-    @Override
-    public String key() {
-        return OrderConstant.EventType.REFUND_SUCCESS;
     }
 }
