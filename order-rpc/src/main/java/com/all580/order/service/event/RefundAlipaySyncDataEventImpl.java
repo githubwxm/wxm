@@ -1,7 +1,6 @@
 package com.all580.order.service.event;
 
-import com.all580.order.api.OrderConstant;
-import com.all580.order.api.service.event.RefundAliPaySyncDataEvent;
+import com.all580.order.api.service.event.RefundAlipaySyncDataEvent;
 import com.all580.order.dao.OrderMapper;
 import com.all580.order.dao.RefundOrderMapper;
 import com.all580.order.entity.Order;
@@ -25,7 +24,7 @@ import java.util.Date;
  * @date 2017/2/5 10:35
  */
 @Service
-public class RefundAliPaySyncDataEventImpl implements RefundAliPaySyncDataEvent {
+public class RefundAlipaySyncDataEventImpl implements RefundAlipaySyncDataEvent {
     @Autowired
     private RefundOrderMapper refundOrderMapper;
     @Autowired
@@ -54,10 +53,5 @@ public class RefundAliPaySyncDataEventImpl implements RefundAliPaySyncDataEvent 
             throw new ApiException("同步数据异常", e);
         }
         return null;
-    }
-
-    @Override
-    public String key() {
-        return OrderConstant.EventType.REFUND_ALI_PAY_AUDIT;
     }
 }
