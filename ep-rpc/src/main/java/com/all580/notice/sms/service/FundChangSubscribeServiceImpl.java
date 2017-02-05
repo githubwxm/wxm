@@ -71,8 +71,5 @@ public class FundChangSubscribeServiceImpl implements FundChangeSubscribeService
         return new Result(true);
     }
 
-    @Override
-    public String key() {
-        return EpConstant.Event.FUND_CHANGE;
-    }
+
 }
