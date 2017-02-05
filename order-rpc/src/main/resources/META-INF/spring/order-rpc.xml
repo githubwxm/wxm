@@ -42,7 +42,7 @@
 	<dubbo:service interface="com.all580.order.api.service.event.RefundApplySyncDataEvent" ref="refundApplySyncDataEventImpl" />
 	<dubbo:service interface="com.all580.order.api.service.event.RefundAuditEvent" ref="refundAuditEventImpl" />
 	<dubbo:service interface="com.all580.order.api.service.event.RefundAuditSyncDataEvent" ref="refundAuditSyncDataEventImpl" />
-	<dubbo:service interface="com.all580.order.api.service.event.RefundAliPaySyncDataEvent" ref="RefundAliPaySyncDataEventImpl" />
+	<dubbo:service interface="com.all580.order.api.service.event.RefundAliPaySyncDataEvent" ref="refundAliPaySyncDataEventImpl" />
 	<dubbo:service interface="com.all580.order.api.service.event.RefundTicketEvent" ref="refundTicketEventImpl" />
 	<dubbo:service interface="com.all580.order.api.service.event.RefundTicketSyncDataEvent" ref="refundTicketSyncDataEventImpl" />
 	<dubbo:service interface="com.all580.order.api.service.event.RefundMoneyEvent" ref="refundMoneyEventImpl" />
