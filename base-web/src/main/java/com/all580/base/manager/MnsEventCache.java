@@ -35,10 +35,10 @@ public class MnsEventCache extends InstantiationAwareBeanPostProcessorAdapter {
                 if (orderMethod1 != null && orderMethod2 != null) {
                     int order1 = (int) orderMethod1.invoke(o1);
                     int order2 = (int) orderMethod2.invoke(o2);
-                    return order1 < order2 ? -1 : order1 > order2 ? 1 : 0;
+                    return order1 < order2 ? -1 : 1;
                 }
             } catch (Exception ignored) {}
-            return 0;
+            return 1;
         }
     });
 
@@ -51,6 +51,7 @@ public class MnsEventCache extends InstantiationAwareBeanPostProcessorAdapter {
             String key = action.key();
             key = key == null ? s : key;
             if (!cacheEvents.put(key, action)) {
+                System.exit(0);
                 throw new BeanCreationException(s, "事件添加缓存失败:" + key);
             }
             log.info("事件注册:Key:{}, Event:{}, 当前事件列表:{}", new Object[]{key, aClass, cacheEvents.asMap()});
