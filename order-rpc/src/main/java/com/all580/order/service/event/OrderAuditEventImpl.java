@@ -62,9 +62,4 @@ public class OrderAuditEventImpl implements OrderAuditEvent {
         refundOrderManager.cancel(order);
         return new Result(true);
     }
-
-    @Override
-    public String key() {
-        return OrderConstant.EventType.ORDER_AUDIT;
-    }
 }
