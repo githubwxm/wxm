@@ -55,8 +55,5 @@ public class BalanceChangeSubscribeServiceImpl implements BalanceChangeSubscribe
 
     }
 
-    @Override
-    public String key() {
-        return EpConstant.Event.BALANCE_CHANGE;
-    }
+
 }
