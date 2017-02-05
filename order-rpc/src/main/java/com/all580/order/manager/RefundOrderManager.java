@@ -1,6 +1,7 @@
 package com.all580.order.manager;
 
 import com.all580.order.api.OrderConstant;
+import com.all580.order.api.model.RefundTicketEventParam;
 import com.all580.order.dao.*;
 import com.all580.order.dto.RefundDay;
 import com.all580.order.entity.*;
@@ -16,10 +17,11 @@ import com.all580.voucher.api.model.RefundTicketParams;
 import com.all580.voucher.api.model.group.RefundGroupTicketParams;
 import com.all580.voucher.api.service.VoucherRPCService;
 import com.framework.common.Result;
+import com.framework.common.event.MnsEvent;
+import com.framework.common.event.MnsEventManager;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.lang.UUIDGenerator;
 import com.framework.common.util.CommonUtil;
-import com.github.ltsopensource.core.domain.Job;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -121,6 +123,7 @@ public class RefundOrderManager extends BaseOrderManager {
      * @param order 订单
      * @return
      */
+    @MnsEvent
     public void auditSuccess(OrderItem orderItem, RefundOrder refundOrder, Order order) {
         if (refundOrder.getAudit_time() == null) {
             refundOrder.setAudit_time(new Date());
@@ -130,6 +133,8 @@ public class RefundOrderManager extends BaseOrderManager {
             refundTicket(refundOrder);
             refundOrderMapper.updateByPrimaryKeySelective(refundOrder);
         } else {
+            // 触发退票成功事件
+            MnsEventManager.addEvent(OrderConstant.EventType.REFUND_TICKET, new RefundTicketEventParam(refundOrder.getId(), true));
             // 没有出票直接退款
             if (orderItem.getGroup_id() != null && orderItem.getGroup_id() != 0 &&
                     orderItem.getPro_sub_ticket_type() != null && orderItem.getPro_sub_ticket_type() == ProductConstants.TeamTicketType.TEAM) {
@@ -490,6 +495,7 @@ public class RefundOrderManager extends BaseOrderManager {
      * @return
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    @MnsEvent
     public Result refundMoney(Order order, int money, String sn, RefundOrder refundOrder) {
         // 需要审核
         if (refundOrder.getAudit_money() == ProductConstants.RefundMoneyAudit.YES &&
@@ -506,6 +512,10 @@ public class RefundOrderManager extends BaseOrderManager {
             // 退款
             return refundMoney(order, money, sn, refundOrder.getId());
         }
+
+        if (order.getPayment_type() != null && order.getPayment_type() == PaymentConstant.PaymentType.ALI_PAY.intValue()) {
+            MnsEventManager.addEvent(OrderConstant.EventType.REFUND_ALI_PAY_AUDIT, refundOrder.getId());
+        }
         return new Result(true);
     }
 
@@ -514,11 +524,13 @@ public class RefundOrderManager extends BaseOrderManager {
      * @param order 订单
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    @MnsEvent
     public Result refundMoney(Order order, int money, String sn, int refundOrderId) {
         log.debug("订单:{} 发起退款:{}", order.getNumber(), money);
         if (money == 0 && sn != null) {
             log.debug("订单:{} 退款为0元,直接调用退款成功.", order.getNumber());
             refundMoneyAfter(Long.valueOf(sn), true);
+            MnsEventManager.addEvent(OrderConstant.EventType.REFUND_SUCCESS, refundOrderId);
             return new Result(true);
         }
         Integer coreEpId = getCoreEpId(getCoreEpId(order.getBuy_ep_id()));
@@ -606,38 +618,12 @@ public class RefundOrderManager extends BaseOrderManager {
             throw new ApiException("退订订单不存在");
         }
         Order order = orderMapper.selectByRefundSn(refundOrder.getNumber());
-        if (refundOrder == null) {
+        if (order == null) {
             throw new ApiException("订单不存在");
         }
         refundOrder.setRefund_money_time(new Date());
         refundOrder.setStatus(success ? OrderConstant.RefundOrderStatus.REFUND_SUCCESS : OrderConstant.RefundOrderStatus.REFUND_MONEY_FAIL);
         refundOrderMapper.updateByPrimaryKeySelective(refundOrder);
-
-        if (success) {
-            // 发送短信 退款
-            if (refundOrder.getMoney() > 0) {
-                smsManager.sendRefundMoneySuccessSms(refundOrder);
-            }
-            // 发送短信 退订
-            smsManager.sendRefundSuccessSms(refundOrder);
-            // 还库存 记录任务
-            Map<String, String> jobParams = new HashMap<>();
-            jobParams.put("orderItemId", String.valueOf(refundOrder.getOrder_item_id()));
-            jobParams.put("check", "true");
-            Job stockJob = createJob(OrderConstant.Actions.REFUND_STOCK, jobParams, false);
-
-            // 退款分账 记录任务 余额不做后续分账(和支付的时候一起)
-            if (order.getPayment_type() != null && order.getPayment_type() != PaymentConstant.PaymentType.BALANCE.intValue()) {
-                Map<String, String> moneyJobParams = new HashMap<>();
-                moneyJobParams.put("refundId", String.valueOf(refundOrder.getId()));
-                Job moneyJob = createJob(OrderConstant.Actions.REFUND_MONEY_SPLIT_ACCOUNT, moneyJobParams, false);
-                addJobs(stockJob, moneyJob);
-            } else {
-                addJobs(stockJob);
-            }
-        }
-        // 同步数据
-        syncRefundOrderMoney(refundOrder.getId());
     }
 
     /**

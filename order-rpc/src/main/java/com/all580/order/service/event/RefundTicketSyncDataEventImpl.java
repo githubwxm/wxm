@@ -1,16 +1,18 @@
 package com.all580.order.service.event;
 
 import com.all580.order.api.OrderConstant;
-import com.all580.order.api.model.RefundAuditEventParam;
-import com.all580.order.api.service.event.RefundAuditEvent;
-import com.all580.order.api.service.event.RefundAuditSyncDataEvent;
+import com.all580.order.api.model.RefundTicketEventParam;
+import com.all580.order.api.service.event.RefundTicketEvent;
+import com.all580.order.api.service.event.RefundTicketSyncDataEvent;
 import com.all580.order.dao.*;
 import com.all580.order.entity.Order;
 import com.all580.order.entity.RefundOrder;
 import com.all580.order.manager.RefundOrderManager;
+import com.all580.order.manager.SmsManager;
 import com.framework.common.Result;
 import com.framework.common.mns.TopicPushManager;
 import com.framework.common.synchronize.SynchronizeDataMap;
+import com.framework.common.util.CommonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -18,25 +20,29 @@ import org.springframework.util.Assert;
 
 import javax.lang.exception.ApiException;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author zhouxianjun(Alone)
  * @ClassName:
  * @Description:
- * @date 2017/2/4 16:29
+ * @date 2017/2/5 9:54
  */
 @Service
-public class RefundAuditSyncDataEventImpl implements RefundAuditSyncDataEvent {
+public class RefundTicketSyncDataEventImpl implements RefundTicketSyncDataEvent {
     @Autowired
     private RefundOrderMapper refundOrderMapper;
     @Autowired
-    private OrderItemMapper orderItemMapper;
-    @Autowired
     private OrderMapper orderMapper;
     @Autowired
-    private RefundVisitorMapper refundVisitorMapper;
+    private OrderItemMapper orderItemMapper;
+    @Autowired
+    private RefundSerialMapper refundSerialMapper;
     @Autowired
     private VisitorMapper visitorMapper;
+    @Autowired
+    private RefundVisitorMapper refundVisitorMapper;
     @Autowired
     private OrderItemDetailMapper orderItemDetailMapper;
 
@@ -48,7 +54,7 @@ public class RefundAuditSyncDataEventImpl implements RefundAuditSyncDataEvent {
     private String topicName;
 
     @Override
-    public Result process(String msgId, RefundAuditEventParam content, Date createDate) {
+    public Result process(String msgId, RefundTicketEventParam content, Date createDate) {
         RefundOrder refundOrder = refundOrderMapper.selectByPrimaryKey(content.getRefundId());
         Assert.notNull(refundOrder, "退订订单不存在");
         Order order = orderMapper.selectByRefundSn(refundOrder.getNumber());
@@ -58,11 +64,12 @@ public class RefundAuditSyncDataEventImpl implements RefundAuditSyncDataEvent {
         SynchronizeDataMap dataMap = new SynchronizeDataMap(accessKey);
         if (content.isStatus()) {
             dataMap.add("t_refund_order", refundOrder)
-                    .add("t_refund_visitor", refundVisitorMapper.selectByRefundId(refundOrder.getId()))
+                    .add("t_order_item", orderItemMapper.selectByPrimaryKey(refundOrder.getOrder_item_id()))
+                    .add("t_refund_serial", refundSerialMapper.selectByRefundOrder(refundOrder.getId()))
                     .add("t_visitor", visitorMapper.selectByOrderItem(refundOrder.getOrder_item_id()))
-                    .add("t_order_item", orderItemMapper.selectByPrimaryKey(refundOrder.getOrder_item_id()));
+                    .add("t_refund_visitor", refundVisitorMapper.selectByRefundId(refundOrder.getId()));
+
         } else {
-            // 拒绝
             dataMap.add("t_refund_order", refundOrder)
                     .add("t_order_item_detail", orderItemDetailMapper.selectByItemId(refundOrder.getOrder_item_id()));
         }
@@ -76,11 +83,6 @@ public class RefundAuditSyncDataEventImpl implements RefundAuditSyncDataEvent {
 
     @Override
     public String key() {
-        return OrderConstant.EventType.ORDER_REFUND_AUDIT;
-    }
-
-    @Override
-    public int order() {
-        return 2;
+        return OrderConstant.EventType.REFUND_TICKET;
     }
 }

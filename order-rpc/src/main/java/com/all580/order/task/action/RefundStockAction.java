@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -42,15 +43,11 @@ public class RefundStockAction implements JobRunner {
         Map<String, String> params = jobContext.getJob().getExtParams();
         validateParams(params);
 
-        Integer orderItemId = CommonUtil.objectParseInteger(params.get("orderItemId"));
         boolean check = Boolean.parseBoolean(params.get("check"));
-        if (orderItemId == null) {
-            throw new Exception("还库存ID为空");
-        }
+        Integer orderItemId = CommonUtil.objectParseInteger(params.get("orderItemId"));
+        Assert.notNull(orderItemId);
         OrderItem orderItem = orderItemMapper.selectByPrimaryKey(orderItemId);
-        if (orderItem == null) {
-            throw new Exception("还库存:子订单不存在");
-        }
+        Assert.notNull(orderItem);
         if (check) {
             if (orderItem.getStatus() != OrderConstant.OrderItemStatus.NON_SEND &&
                     orderItem.getStatus() != OrderConstant.OrderItemStatus.TICKET_FAIL) {

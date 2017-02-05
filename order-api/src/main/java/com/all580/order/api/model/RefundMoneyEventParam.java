@@ -15,9 +15,10 @@ import java.io.Serializable;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class RefundAuditEventParam implements Serializable {
-    private static final long serialVersionUID = 4241014262026210321L;
-    private Integer refundId;
+public class RefundMoneyEventParam implements Serializable {
+    private static final long serialVersionUID = 5750609567252494716L;
+    private Integer orderId;
+    private String serialNo;
 
-    private boolean status;
+    private boolean success;
 }

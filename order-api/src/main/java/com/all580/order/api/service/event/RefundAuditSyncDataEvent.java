@@ -10,4 +10,5 @@ import com.framework.common.mns.MnsSubscribeAction;
  * @date 2017/2/4 15:27
  */
 public interface RefundAuditSyncDataEvent extends MnsSubscribeAction<RefundAuditEventParam> {
+    int order();
 }

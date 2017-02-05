@@ -3,10 +3,7 @@ package com.all580.order.manager;
 import com.all580.ep.api.conf.EpConstant;
 import com.all580.ep.api.service.EpService;
 import com.all580.order.api.OrderConstant;
-import com.all580.order.api.model.OrderAuditEventParam;
-import com.all580.order.api.model.RefundAuditEventParam;
-import com.all580.order.api.model.RefundGroupTicketInfo;
-import com.all580.order.api.model.RefundTicketInfo;
+import com.all580.order.api.model.*;
 import com.all580.order.dao.*;
 import com.all580.order.dto.AccountDataDto;
 import com.all580.order.dto.RefundDay;
@@ -135,6 +132,7 @@ public class LockTransactionManager {
      * @param success
      * @throws Exception
      */
+    @MnsEvent
     public void refundMoneyCallback(int orderId, Long ordCode, String serialNum, boolean success) throws Exception {
         Order order = orderMapper.selectByPrimaryKey(orderId);
         if (order == null) {
@@ -142,6 +140,7 @@ public class LockTransactionManager {
             throw new Exception("订单不存在");
         }
 
+        MnsEventManager.addEvent(OrderConstant.EventType.REFUND_MONEY, new RefundMoneyEventParam(orderId, serialNum, success));
         if (order.getStatus() == OrderConstant.OrderStatus.PAID_HANDLING) {
             if (!success) {
                 addRefundMoneyJob(ordCode, serialNum);
@@ -546,6 +545,7 @@ public class LockTransactionManager {
      * @param refundOrder
      * @return
      */
+    @MnsEvent
     public Result refundTicket(RefundTicketInfo info, Date procTime, OrderItem orderItem, RefundOrder refundOrder) {
         RefundSerial refundSerial = refundSerialMapper.selectByLocalSn(Long.valueOf(info.getRefId()));
         if (refundSerial == null) {
@@ -558,7 +558,7 @@ public class LockTransactionManager {
 
         // 退票失败
         if (!info.isSuccess()) {
-            return refundFail(refundOrder, orderItem);
+            return refundFail(refundOrder);
         }
 
         refundOrder.setRefund_ticket_time(procTime);
@@ -583,14 +583,7 @@ public class LockTransactionManager {
         Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
         refundOrderManager.refundMoney(order, refundOrder.getMoney(), String.valueOf(refundOrder.getNumber()), refundOrder);
 
-        // 还库存 记录任务
-        Map<String, String> jobParams = new HashMap<>();
-        jobParams.put("orderItemId", String.valueOf(refundOrder.getOrder_item_id()));
-        jobParams.put("check", "false");
-        bookingOrderManager.addJob(OrderConstant.Actions.REFUND_STOCK, jobParams);
-
-        // 同步数据
-        refundOrderManager.syncRefundTicketData(refundOrder.getId());
+        MnsEventManager.addEvent(OrderConstant.EventType.REFUND_TICKET, new RefundTicketEventParam(refundOrder.getId(), info.isSuccess()));
         return new Result(true);
     }
 
@@ -602,6 +595,7 @@ public class LockTransactionManager {
      * @param refundOrder
      * @return
      */
+    @MnsEvent
     public Result refundGroupTicket(RefundGroupTicketInfo info, Date procTime, OrderItem orderItem, RefundOrder refundOrder) {
         RefundSerial refundSerial = refundSerialMapper.selectByLocalSn(Long.valueOf(info.getRefId()));
         if (refundSerial == null) {
@@ -613,7 +607,7 @@ public class LockTransactionManager {
         }
         // 退票失败
         if (!info.isSuccess()) {
-            return refundFail(refundOrder, orderItem);
+            return refundFail(refundOrder);
         }
 
         refundOrder.setRefund_ticket_time(procTime);
@@ -629,14 +623,7 @@ public class LockTransactionManager {
         Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
         refundOrderManager.refundMoney(order, refundOrder.getMoney(), String.valueOf(refundOrder.getNumber()), refundOrder);
 
-        // 还库存 记录任务
-        Map<String, String> jobParams = new HashMap<>();
-        jobParams.put("orderItemId", String.valueOf(refundOrder.getOrder_item_id()));
-        jobParams.put("check", "false");
-        bookingOrderManager.addJob(OrderConstant.Actions.REFUND_STOCK, jobParams);
-
-        // 同步数据
-        refundOrderManager.syncRefundTicketData(refundOrder.getId());
+        MnsEventManager.addEvent(OrderConstant.EventType.REFUND_TICKET, new RefundTicketEventParam(refundOrder.getId(), info.isSuccess()));
         return new Result(true);
     }
 
@@ -649,17 +636,12 @@ public class LockTransactionManager {
         bookingOrderManager.addJob(OrderConstant.Actions.REFUND_MONEY, jobParams, true);
     }
 
-    private Result refundFail(RefundOrder refundOrder, OrderItem orderItem) {
+    private Result refundFail(RefundOrder refundOrder) {
         try {
             refundOrderManager.refundFail(refundOrder);
         } catch (Exception e) {
             throw new ApiException("退票失败还原状态异常", e);
         }
-
-        // 发送短信
-        smsManager.sendRefundFailSms(orderItem);
-
-        refundOrderManager.syncRefundOrderAuditRefuse(refundOrder.getId());
         return new Result(true);
     }
 }

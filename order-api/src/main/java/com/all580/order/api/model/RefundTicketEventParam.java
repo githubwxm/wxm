@@ -15,8 +15,8 @@ import java.io.Serializable;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class RefundAuditEventParam implements Serializable {
-    private static final long serialVersionUID = 4241014262026210321L;
+public class RefundTicketEventParam implements Serializable {
+    private static final long serialVersionUID = -3837989019273220270L;
     private Integer refundId;
 
     private boolean status;

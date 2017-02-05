@@ -93,4 +93,11 @@
 	<dubbo:reference id="refundApplySyncDataEvent" interface="com.all580.order.api.service.event.RefundApplySyncDataEvent"/>
 	<dubbo:reference id="refundAuditEvent" interface="com.all580.order.api.service.event.RefundAuditEvent"/>
 	<dubbo:reference id="refundAuditSyncDataEvent" interface="com.all580.order.api.service.event.RefundAuditSyncDataEvent"/>
+	<dubbo:reference id="refundAliPaySyncDataEvent" interface="com.all580.order.api.service.event.RefundAliPaySyncDataEvent" />
+	<dubbo:reference id="refundTicketEvent" interface="com.all580.order.api.service.event.RefundTicketEvent" />
+	<dubbo:reference id="refundTicketSyncDataEvent" interface="com.all580.order.api.service.event.RefundTicketSyncDataEvent" />
+	<dubbo:reference id="refundMoneyEvent" interface="com.all580.order.api.service.event.RefundMoneyEvent" />
+	<dubbo:reference id="refundMoneySyncDataEvent" interface="com.all580.order.api.service.event.RefundMoneySyncDataEvent" />
+	<dubbo:reference id="refundSuccessEvent" interface="com.all580.order.api.service.event.RefundSuccessEvent" />
+	<dubbo:reference id="refundSuccessSyncDataEvent" interface="com.all580.order.api.service.event.RefundSuccessSyncDataEvent" />
 </beans>

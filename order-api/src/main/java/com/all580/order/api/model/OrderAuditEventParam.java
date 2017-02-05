@@ -2,6 +2,7 @@ package com.all580.order.api.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
@@ -13,6 +14,7 @@ import java.io.Serializable;
  */
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class OrderAuditEventParam implements Serializable {
     private static final long serialVersionUID = -5786316284524435333L;
 
