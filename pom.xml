@@ -1,5 +1,5 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.all580</groupId>
 	<artifactId>base</artifactId>
@@ -9,15 +9,15 @@
 	<name>base</name>
 	<description>base parent</description>
 	<modules>
-		<module>base-api</module>
+		<!--<module>base-api</module>-->
 		<module>base-web</module>
 		<!--<module>base-rpc</module>-->
-		<module>order-api</module>
-		<module>order-rpc</module>
+		<!--<module>order-api</module>
+		<module>order-rpc</module>-->
 		<!--<module>ep-api</module>
 		<module>ep-rpc</module>-->
-		<!--<module>payment</module>
-		<module>payment-api</module>-->
+		<module>payment</module>
+		<module>payment-api</module>
 
 	</modules>
 	<properties>
