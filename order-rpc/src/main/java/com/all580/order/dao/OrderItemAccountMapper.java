@@ -78,6 +78,14 @@ public interface OrderItemAccountMapper {
     List<OrderItemAccount> selectByOrder(@Param("orderId") Integer orderId);
 
     /**
+     * 根据订单ID&&平台商ID获取
+     * @param orderId
+     * @param coreEpId
+     * @return
+     */
+    List<OrderItemAccount> selectByOrderAndCore(@Param("orderId") Integer orderId, @Param("coreEpId") Integer coreEpId);
+
+    /**
      * 根据订单ID&&企业ID获取
      * @param orderId 订单ID
      * @param epId 企业ID

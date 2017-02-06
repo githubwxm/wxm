@@ -492,67 +492,12 @@ public class BookingOrderManager extends BaseOrderManager {
     }
 
     /**
-     * 同步创建订单数据
-     * @param orderId 订单ID
-     */
-    public Map syncCreateOrderData(int orderId) {
-
-        return generateSyncByOrder(orderId)
-                // 同步订单表
-                .put("t_order", CommonUtil.oneToList(orderMapper.selectByPrimaryKey(orderId)))
-                // 同步子订单表
-                .put("t_order_item", orderItemMapper.selectByOrderId(orderId))
-                // 同步子订单明细表
-                .put("t_order_item_detail", orderItemDetailMapper.selectByOrderId(orderId))
-                // 同步分账表
-                .put("t_order_item_account", orderItemAccountMapper.selectByOrder(orderId))
-                // 同步联系人表
-                .put("t_shipping", CommonUtil.oneToList(shippingMapper.selectByOrder(orderId)))
-                // 同步游客信息表
-                .put("t_visitor", visitorMapper.selectByOrder(orderId))
-                // 同步
-                .sync().getDataMapForJsonMap();
-    }
-
-    /**
-     * 同步订单审核通过数据
-     * @param orderId 订单ID
-     */
-    public Map syncOrderAuditAcceptData(int orderId, int orderItemId) {
-        return generateSyncByOrder(orderId)
-                .put("t_order", CommonUtil.oneToList(orderMapper.selectByPrimaryKey(orderId)))
-                .put("t_order_item", CommonUtil.oneToList(orderItemMapper.selectByPrimaryKey(orderItemId)))
-                .sync().getDataMapForJsonMap();
-    }
-
-    /**
-     * 同步订单支付数据
-     * @param orderId 订单ID
-     */
-    public Map syncOrderPaymentData(int orderId) {
-        return generateSyncByOrder(orderId)
-                .put("t_order", CommonUtil.oneToList(orderMapper.selectByPrimaryKey(orderId)))
-                .sync().getDataMapForJsonMap();
-    }
-
-    /**
      * 同步订单分账数据
      * @param itemId 子订单ID
      */
     public Map syncOrderAccountData(int itemId) {
         return generateSyncByItem(itemId)
                 .put("t_order_item_account", orderItemAccountMapper.selectByOrderItem(itemId))
-                .sync().getDataMapForJsonMap();
-    }
-
-    /**
-     * 同步发票数据
-     * @param itemId 子订单ID
-     */
-    public Map syncSendTicketData(int itemId) {
-        return generateSyncByItem(itemId)
-                .put("t_order_item", CommonUtil.oneToList(orderItemMapper.selectByPrimaryKey(itemId)))
-                .put("t_ma_send_response", maSendResponseMapper.selectByOrderItemId(itemId))
                 .sync().getDataMapForJsonMap();
     }
 
@@ -591,28 +536,6 @@ public class BookingOrderManager extends BaseOrderManager {
                 .put("t_order_item_detail", orderItemDetailMapper.selectByItemId(itemId))
                 .put("t_clearance_washed_serial", CommonUtil.oneToList(clearanceWashedSerialMapper.selectBySn(sn)))
                 .put("t_visitor", visitorMapper.selectByOrderItem(itemId))
-                .sync().getDataMapForJsonMap();
-    }
-
-    /**
-     * 同步支付成功数据
-     * @param orderId 订单ID
-     */
-    public Map syncPaymentSuccessData(int orderId) {
-        return generateSyncByOrder(orderId)
-                .put("t_order", CommonUtil.oneToList(orderMapper.selectByPrimaryKey(orderId)))
-                .put("t_order_item", orderItemMapper.selectByOrderId(orderId))
-                .sync().getDataMapForJsonMap();
-    }
-
-    /**
-     * 同步支付分账数据
-     * @param orderId 订单ID
-     */
-    public Map syncPaymentSplitAccountData(int orderId) {
-        return generateSyncByOrder(orderId)
-                .put("t_order", CommonUtil.oneToList(orderMapper.selectByPrimaryKey(orderId)))
-                .put("t_order_item_account", orderItemAccountMapper.selectByOrder(orderId))
                 .sync().getDataMapForJsonMap();
     }
 

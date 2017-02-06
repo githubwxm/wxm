@@ -647,30 +647,6 @@ public class RefundOrderManager extends BaseOrderManager {
     }
 
     /**
-     * 同步订单取消数据
-     * @param orderId 订单ID
-     */
-    public Map syncOrderCancelData(int orderId) {
-        return generateSyncByOrder(orderId)
-                .put("t_order", CommonUtil.oneToList(orderMapper.selectByPrimaryKey(orderId)))
-                .put("t_order_item", orderItemMapper.selectByOrderId(orderId))
-                .sync().getDataMapForJsonMap();
-    }
-
-    /**
-     * 同步退订订单申请数据
-     * @param refundId 退订订单ID
-     */
-    public Map syncRefundOrderApplyData(int refundId) {
-        RefundOrder refundOrder = refundOrderMapper.selectByPrimaryKey(refundId);
-        return generateSyncByItem(refundOrder.getOrder_item_id())
-                .put("t_refund_order", CommonUtil.oneToList(refundOrder))
-                .put("t_order_item_detail", orderItemDetailMapper.selectByItemId(refundOrder.getOrder_item_id()))
-                .put("t_refund_visitor", refundVisitorMapper.selectByRefundId(refundId))
-                .put("t_refund_account", refundAccountMapper.selectByRefundId(refundId))
-                .sync().getDataMapForJsonMap();
-    }
-    /**
      * 同步退款分账数据
      * @param refundId 退订订单ID
      */
@@ -678,59 +654,6 @@ public class RefundOrderManager extends BaseOrderManager {
         RefundOrder refundOrder = refundOrderMapper.selectByPrimaryKey(refundId);
         return generateSyncByItem(refundOrder.getOrder_item_id())
                 .put("t_refund_account", refundAccountMapper.selectByRefundId(refundId))
-                .sync().getDataMapForJsonMap();
-    }
-
-    /**
-     * 同步退订审核通过数据
-     * @param refundId 退订订单ID
-     */
-    public Map syncRefundOrderAuditAcceptData(int refundId) {
-        RefundOrder refundOrder = refundOrderMapper.selectByPrimaryKey(refundId);
-        return generateSyncByItem(refundOrder.getOrder_item_id())
-                .put("t_refund_order", CommonUtil.oneToList(refundOrder))
-                .put("t_refund_serial", CommonUtil.oneToList(refundSerialMapper.selectByRefundOrder(refundOrder.getId())))
-                .put("t_refund_visitor", refundVisitorMapper.selectByRefundId(refundId))
-                .put("t_visitor", visitorMapper.selectByOrderItem(refundOrder.getOrder_item_id()))
-                .put("t_order_item", CommonUtil.oneToList(orderItemMapper.selectByPrimaryKey(refundOrder.getOrder_item_id())))
-                .sync().getDataMapForJsonMap();
-    }
-
-    /**
-     * 同步退订订单审核拒绝数据
-     * @param refundId 退订订单ID
-     */
-    public Map syncRefundOrderAuditRefuse(int refundId) {
-        RefundOrder refundOrder = refundOrderMapper.selectByPrimaryKey(refundId);
-        return generateSyncByItem(refundOrder.getOrder_item_id())
-                .put("t_refund_order", CommonUtil.oneToList(refundOrder))
-                .put("t_order_item_detail", orderItemDetailMapper.selectByItemId(refundOrder.getOrder_item_id()))
-                .sync().getDataMapForJsonMap();
-    }
-
-    /**
-     * 同步退订订单退款数据
-     * @param refundId 退订订单ID
-     */
-    public Map syncRefundOrderMoney(int refundId) {
-        RefundOrder refundOrder = refundOrderMapper.selectByPrimaryKey(refundId);
-        return generateSyncByItem(refundOrder.getOrder_item_id())
-                .put("t_refund_order", CommonUtil.oneToList(refundOrder))
-                .sync().getDataMapForJsonMap();
-    }
-
-    /**
-     * 同步退票数据
-     * @param refundId 退订订单ID
-     */
-    public Map syncRefundTicketData(int refundId) {
-        RefundOrder refundOrder = refundOrderMapper.selectByPrimaryKey(refundId);
-        return generateSyncByItem(refundOrder.getOrder_item_id())
-                .put("t_refund_order", CommonUtil.oneToList(refundOrder))
-                .put("t_order_item", CommonUtil.oneToList(orderItemMapper.selectByPrimaryKey(refundOrder.getOrder_item_id())))
-                .put("t_refund_serial", CommonUtil.oneToList(refundSerialMapper.selectByRefundOrder(refundOrder.getId())))
-                .put("t_visitor", visitorMapper.selectByOrderItem(refundOrder.getOrder_item_id()))
-                .put("t_refund_visitor", refundVisitorMapper.selectByRefundId(refundId))
                 .sync().getDataMapForJsonMap();
     }
 }

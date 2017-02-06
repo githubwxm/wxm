@@ -223,6 +223,14 @@
         WHERE o.id = #{orderId}
     </select>
 
+    <select id="selectByOrderAndCore" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT toia.* FROM t_order_item_account toia
+        LEFT JOIN t_order_item toi ON toi.id = toia.order_item_id
+        LEFT JOIN t_order o ON o.id = toi.order_id
+        WHERE o.id = #{orderId}
+         AND toia.`core_ep_id` = #{coreEpId,jdbcType=INTEGER}
+    </select>
+
     <select id="selectByOrderAnEp" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         SELECT toia.* FROM t_order_item_account toia
         LEFT JOIN t_order_item toi ON toi.id = toia.order_item_id

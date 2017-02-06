@@ -60,4 +60,6 @@ public interface RefundAccountMapper {
      * @return
      */
     List<RefundAccount> selectByRefundId(@Param("refundId") Integer refundId);
+
+    List<RefundAccount> selectByRefundIdAndCore(@Param("refundId") Integer refundId, @Param("coreEpId") Integer coreEpId);
 }

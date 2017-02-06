@@ -182,4 +182,10 @@
         SELECT * FROM t_refund_account
         WHERE `refund_order_id` = #{refundId,jdbcType=INTEGER}
     </select>
+
+    <select id="selectByRefundIdAndCore" resultMap="BaseResultMap">
+        SELECT * FROM t_refund_account
+        WHERE `refund_order_id` = #{refundId,jdbcType=INTEGER}
+        and `core_ep_id` = #{coreEpId,jdbcType=INTEGER}
+    </select>
 </mapper>
