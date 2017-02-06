@@ -68,6 +68,20 @@ public class CoreEpAccessServiceImpl implements CoreEpAccessService {
         }
         return result;//CoreEpAccess
     }
+    @Override
+    public Result<List<Map<String,Object>>> selectAccessMap(List<Integer> ids) {
+        Result<List<Map<String,Object>>> result = new Result<>();
+        try {
+
+            result.put(coreEpAccessMapper.selectAccessMap(ids));
+            result.setSuccess();
+            // }
+        } catch (Exception e) {
+            log.error("查询中心平台接口访问配置", e);
+            throw new ApiException("查询中心平台接口访问配置", e);
+        }
+        return result;//CoreEpAccess
+    }
 
     @Override
     public Result<List<Map<String,Object>>> select(Map<String,Object> params) {

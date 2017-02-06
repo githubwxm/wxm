@@ -14,4 +14,5 @@ public interface CoreEpAccessMapper {
    Map<String,Object> selectAccess(Map<String,Object> params);
    List<String> selectAll();
    List<String> selectAccessList(@Param("ids") List<Integer> ids);
+   List<Map<String,Object>> selectAccessMap(@Param("ids") List<Integer> ids);
 }

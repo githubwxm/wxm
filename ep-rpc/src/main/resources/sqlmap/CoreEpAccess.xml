@@ -44,4 +44,13 @@
            #{item}
        </foreach>
    </select>
+
+    <select id="selectAccessMap" resultType="java.util.Map">
+        select * from t_core_ep_access
+        where
+        `id`  in
+        <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
 </mapper>
