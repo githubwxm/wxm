@@ -44,4 +44,6 @@ public interface CoreEpAccessService {
      * @return   access_key
      */
     Result<List<String>> selectAccessList(List<Integer> ids);
+
+    Result<List<Map<String,Object>>> selectAccessMap(List<Integer> ids);
 }
