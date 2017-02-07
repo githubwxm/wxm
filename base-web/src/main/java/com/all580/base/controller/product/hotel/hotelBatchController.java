@@ -112,7 +112,7 @@ public class hotelBatchController {
         rules.put(new String[]{
                 "effective_end_date", //
                 "effective_start_date", //
-                "disable_week", //
+                "week", //
                 "product_sub_id", //
                 "settle_price", //name
                 "name", //
