@@ -1,6 +1,7 @@
 package com.all580.base.controller.product.hotel;
 
 import com.all580.product.api.hotel.service.HotelBatchService;
+import com.all580.product.api.hotel.service.HotelPlanSaleService;
 import com.framework.common.Result;
 import com.framework.common.validate.ParamsMapValidate;
 import com.framework.common.validate.ValidRule;
@@ -24,6 +25,9 @@ public class hotelBatchController {
     @Autowired
     private HotelBatchService hotelBatchService;
 
+    @Autowired
+    private HotelPlanSaleService hotelPlanSaleService;
+
     /**
      * 添加销售计划
      * @param params
@@ -46,6 +50,18 @@ public class hotelBatchController {
     public Result<?> updateRetainDay(@RequestBody Map params) {
         ParamsMapValidate.validate(params, generateCreateHotelBatchRetainValidate());
         return hotelBatchService.updateRetainDay(params);
+    }
+
+    @RequestMapping(value = "update_up", method = RequestMethod.POST)
+    @ResponseBody
+    public Result<?> updateUp(@RequestBody Map params) {
+        return hotelPlanSaleService.updateUp(params);
+    }
+
+    @RequestMapping(value = "update_down", method = RequestMethod.POST)
+    @ResponseBody
+    public Result<?> updateDown(@RequestBody Map params) {
+        return hotelPlanSaleService.updateDown(params);
     }
 
     /**

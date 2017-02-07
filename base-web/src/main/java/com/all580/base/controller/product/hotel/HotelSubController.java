@@ -30,6 +30,13 @@ public class HotelSubController {
         return hotelSubService.addHotelSub(params);
     }
 
+    @RequestMapping(value = "select_hotel_sub", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<?> selectHotel(Integer id) {
+
+        return hotelSubService.selectHotelSub(id);
+    }
+
 
 
     public Map<String[], ValidRule[]> generateCreateHotelSubValidate() {
@@ -42,7 +49,7 @@ public class HotelSubController {
                 "min_sell_price", //
                 "ticket_flag", //
                 "pay_type", //
-                "ma_product_id", //
+               // "ma_product_id", //
                 "ep_ma_id", //
                 "window", //
                 "ischeck_in_latest", //
@@ -56,7 +63,7 @@ public class HotelSubController {
                 "min_sell_price" ,// 企业id
                 "ticket_flag" ,// 企业id
                 "pay_type" ,// 企业id
-                "ma_product_id" ,// 企业id
+               // "ma_product_id" ,// 企业id
                 "ep_ma_id" ,// 企业id
                 "window", //
         }, new ValidRule[]{new ValidRule.Digits()});
