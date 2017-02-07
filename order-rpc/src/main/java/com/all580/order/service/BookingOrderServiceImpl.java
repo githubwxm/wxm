@@ -135,13 +135,12 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             OrderItem orderItem = orderInterface.insertItem(order, sub, salesInfo, price, item);
 
 
-            List<OrderItemDetail> detailList = new ArrayList<>();
             // 创建子订单详情
             List<OrderItemDetail> details = orderInterface.insertDetail(orderItem, sub, salesInfo);
 
             orderInterface.insertVisitor(visitors, details, salesInfo, sub, item);
 
-            lockStockDtoMap.put(orderItem.getId(), new LockStockDto(orderItem, detailList, salesInfo.getDay_info_list()));
+            lockStockDtoMap.put(orderItem.getId(), new LockStockDto(orderItem, details, salesInfo.getDay_info_list()));
             lockParams.add(bookingOrderManager.parseParams(orderItem));
 
             // 预分账记录
