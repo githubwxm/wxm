@@ -40,8 +40,6 @@ public class ProductController extends BaseController {
     @Resource
     ProductDistributionRPCService productDistributionService;
 
-
-
     /**
      * 修改景区子主产品
      * @param  map  主产品id
@@ -53,6 +51,7 @@ public class ProductController extends BaseController {
 
         return productService.updateProductSubBatch(map);
     }
+
     /**
      * 查询景区子产品
      * @param  productSubId  子产品id
@@ -63,6 +62,18 @@ public class ProductController extends BaseController {
     public Result<?> selectProductSubBatch(@RequestParam("product_sub_id") Integer productSubId, @RequestParam("ep_id") Integer epId){
         return productService.selectProductSubBatch(productSubId, epId);
     }
+
+    /**
+     * 查询景区子产品
+     * @param  productSubCode 子产品code
+     * @return
+     */
+    @RequestMapping(value = "sub_code", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<?> selectProductSubBatchByCode (@RequestParam("code") Integer productSubCode, @RequestParam("ep_id") Integer epId){
+        return productService.selectProductSubBatchByCode(productSubCode, epId);
+    }
+
     /**
      * 查询景区主产品
      * @param  productId  主产品id
