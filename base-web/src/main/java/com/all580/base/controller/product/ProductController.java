@@ -274,6 +274,12 @@ public class ProductController extends BaseController {
         return productService.searchProductBookingView(epId, productSubId);
     }
 
+    @RequestMapping(value = "booking/view_code")
+    @ResponseBody
+    public Result<Map> searchProductBookingViewByCode(@RequestParam("ep_id") Integer epId, @RequestParam("code") Long productSubCode) {
+        return productService.searchProductBookingViewByCode(epId, productSubCode);
+    }
+    
     /**
      * 自供产品
      * @param epId

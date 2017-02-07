@@ -3,18 +3,14 @@ package com.all580.order.service.event;
 import com.all580.order.api.model.RefundTicketEventParam;
 import com.all580.order.api.service.event.RefundTicketSyncDataEvent;
 import com.all580.order.dao.*;
+import com.all580.order.dto.SyncAccess;
 import com.all580.order.entity.Order;
 import com.all580.order.entity.RefundOrder;
-import com.all580.order.manager.RefundOrderManager;
 import com.framework.common.Result;
-import com.framework.common.mns.TopicPushManager;
-import com.framework.common.synchronize.SynchronizeDataMap;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
-import javax.lang.exception.ApiException;
 import java.util.Date;
 
 /**
@@ -24,7 +20,7 @@ import java.util.Date;
  * @date 2017/2/5 9:54
  */
 @Service
-public class RefundTicketSyncDataEventImpl implements RefundTicketSyncDataEvent {
+public class RefundTicketSyncDataEventImpl extends BasicSyncDataEvent implements RefundTicketSyncDataEvent {
     @Autowired
     private RefundOrderMapper refundOrderMapper;
     @Autowired
@@ -40,13 +36,6 @@ public class RefundTicketSyncDataEventImpl implements RefundTicketSyncDataEvent 
     @Autowired
     private OrderItemDetailMapper orderItemDetailMapper;
 
-    @Autowired
-    private RefundOrderManager refundOrderManager;
-    @Autowired
-    private TopicPushManager topicPushManager;
-    @Value("${mns.topic}")
-    private String topicName;
-
     @Override
     public Result process(String msgId, RefundTicketEventParam content, Date createDate) {
         RefundOrder refundOrder = refundOrderMapper.selectByPrimaryKey(content.getRefundId());
@@ -54,24 +43,23 @@ public class RefundTicketSyncDataEventImpl implements RefundTicketSyncDataEvent 
         Order order = orderMapper.selectByRefundSn(refundOrder.getNumber());
         Assert.notNull(order, "订单不存在");
 
-        String accessKey = refundOrderManager.getAccessKey(order.getPayee_ep_id());
-        SynchronizeDataMap dataMap = new SynchronizeDataMap(accessKey);
+        SyncAccess syncAccess = getAccessKeys(order);
         if (content.isStatus()) {
-            dataMap.add("t_refund_order", refundOrder)
+            syncAccess.getDataMap()
+                    .add("t_refund_order", refundOrder)
                     .add("t_order_item", orderItemMapper.selectByPrimaryKey(refundOrder.getOrder_item_id()))
                     .add("t_refund_serial", refundSerialMapper.selectByRefundOrder(refundOrder.getId()))
                     .add("t_visitor", visitorMapper.selectByOrderItem(refundOrder.getOrder_item_id()))
                     .add("t_refund_visitor", refundVisitorMapper.selectByRefundId(refundOrder.getId()));
-
         } else {
-            dataMap.add("t_refund_order", refundOrder)
+            // 拒绝
+            syncAccess.getDataMap()
+                    .add("t_refund_order", refundOrder)
                     .add("t_order_item_detail", orderItemDetailMapper.selectByItemId(refundOrder.getOrder_item_id()));
         }
-        try {
-            dataMap.sendToMns(topicPushManager, topicName).clear();
-        } catch (Throwable e) {
-            throw new ApiException("同步数据异常", e);
-        }
+
+        syncAccess.loop();
+        sync(syncAccess.getDataMaps());
         return new Result(true);
     }
 }
