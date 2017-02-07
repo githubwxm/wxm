@@ -14,7 +14,6 @@ import com.framework.common.Result;
 import com.framework.common.util.CommonUtil;
 import com.framework.common.validate.ParamsMapValidate;
 import com.framework.common.validate.ValidRule;
-import lombok.Setter;
 import org.apache.commons.lang.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -35,16 +34,6 @@ public class TicketGroupCreateOrderImpl extends AbstractCreateOrderImpl {
     private GroupMapper groupMapper;
     @Autowired
     private ShippingMapper shippingMapper;
-    @Setter
-    @Autowired
-    private BookingOrderManager bookingOrderManager;
-
-    @Setter
-    @Autowired
-    private EpService epService;
-    @Setter
-    @Autowired
-    private ProductSalesPlanRPCService productSalesPlanRPCService;
 
     @Override
     public ProductSalesInfo validateProductAndGetSales(ValidateProductSub sub, CreateOrder createOrder, Map item) {
@@ -121,5 +110,23 @@ public class TicketGroupCreateOrderImpl extends AbstractCreateOrderImpl {
         shipping.setSid(group.getGuide_sid());
         shippingMapper.insertSelective(shipping);
         return shipping;
+    }
+
+    @Override
+    @Autowired
+    public void setBookingOrderManager(BookingOrderManager bookingOrderManager) {
+        super.bookingOrderManager = bookingOrderManager;
+    }
+
+    @Override
+    @Autowired
+    public void setEpService(EpService epService) {
+        super.epService = epService;
+    }
+
+    @Override
+    @Autowired
+    public void setProductSalesPlanRPCService(ProductSalesPlanRPCService productSalesPlanRPCService) {
+        super.productSalesPlanRPCService = productSalesPlanRPCService;
     }
 }

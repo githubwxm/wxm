@@ -8,7 +8,6 @@ import com.all580.order.entity.Visitor;
 import com.all580.order.manager.BookingOrderManager;
 import com.all580.product.api.model.ProductSalesInfo;
 import com.all580.product.api.service.ProductSalesPlanRPCService;
-import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -23,16 +22,6 @@ import java.util.Map;
  */
 @Component(OrderConstant.CREATE_ADAPTER + "HOTEL")
 public class HotelCreateOrderImpl extends AbstractCreateOrderImpl {
-    @Setter
-    @Autowired
-    private BookingOrderManager bookingOrderManager;
-
-    @Setter
-    @Autowired
-    private EpService epService;
-    @Setter
-    @Autowired
-    private ProductSalesPlanRPCService productSalesPlanRPCService;
 
     @Override
     public void validateVisitor(ProductSalesInfo salesInfo, ValidateProductSub sub, List<?> visitorList, Map item) {
@@ -42,5 +31,23 @@ public class HotelCreateOrderImpl extends AbstractCreateOrderImpl {
     @Override
     public List<Visitor> insertVisitor(List<?> visitorList, List<OrderItemDetail> details, ProductSalesInfo salesInfo, ValidateProductSub sub, Map item) {
         return null;
+    }
+
+    @Override
+    @Autowired
+    public void setBookingOrderManager(BookingOrderManager bookingOrderManager) {
+        super.bookingOrderManager = bookingOrderManager;
+    }
+
+    @Override
+    @Autowired
+    public void setEpService(EpService epService) {
+        super.epService = epService;
+    }
+
+    @Override
+    @Autowired
+    public void setProductSalesPlanRPCService(ProductSalesPlanRPCService productSalesPlanRPCService) {
+        super.productSalesPlanRPCService = productSalesPlanRPCService;
     }
 }
