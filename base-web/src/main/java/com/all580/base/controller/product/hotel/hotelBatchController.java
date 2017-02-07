@@ -65,13 +65,24 @@ public class hotelBatchController {
     }
 
     /**
-     * 查询剩余销售计划
+     * 查询销售计划
      * @param batch_id
      * @return
      */
     @RequestMapping(value = "select_hotel_batch", method = RequestMethod.GET)
     @ResponseBody
     public Result<?> selectHotelBatch(int batch_id) {
+        return hotelBatchService.selectHotelBatch(batch_id);
+    }
+
+    /**
+     * 查询销售计划
+     * @param batch_id
+     * @return
+     */
+    @RequestMapping(value = "select_hotel_residue_batch", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<?> selectHotelResidueBatch(int batch_id) {
         return hotelBatchService.selectHotelBatch(batch_id);
     }
 
