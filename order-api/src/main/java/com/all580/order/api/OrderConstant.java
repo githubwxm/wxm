@@ -7,6 +7,8 @@ package com.all580.order.api;
  * @date 2016/9/30 14:47
  */
 public class OrderConstant {
+
+    public static final String CREATE_ADAPTER = "CREATE_ADAPTER";
     /**
      * 订单状态（支付）
      */

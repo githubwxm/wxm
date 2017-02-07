@@ -3,6 +3,7 @@ package com.all580.order.manager;
 import com.all580.order.api.OrderConstant;
 import com.all580.order.dao.*;
 import com.all580.order.dto.AccountDataDto;
+import com.all580.order.dto.PriceDto;
 import com.all580.order.entity.*;
 import com.all580.order.util.AccountUtil;
 import com.all580.payment.api.model.BalanceChangeInfo;
@@ -67,38 +68,36 @@ public class BookingOrderManager extends BaseOrderManager {
      * @param maxQuantity 最大张数
      * @return
      */
-    public Result validateVisitor(List<Map> visitors, Long productSubCode, Date bookingDate, Integer maxCount, Integer maxQuantity) {
+    public int validateVisitor(List<Map> visitors, Long productSubCode, Date bookingDate, Integer maxCount, Integer maxQuantity) {
+        int total = 0;
         Set<String> sids = new HashSet<>();
         for (Map visitorMap : visitors) {
             String sid = CommonUtil.objectParseString(visitorMap.get("sid"));
             if (sids.contains(sid)) {
-                return new Result<>(false, Result.PARAMS_ERROR, "身份证:" + sid + "重复");
+                throw new ApiException("身份证:" + sid + "重复");
             }
             if (maxCount > 0) {
                 int count = getOrderByCount(productSubCode, sid, bookingDate);
                 if (count >= maxCount) {
-                    return new Result<>(false, Result.PARAMS_ERROR,
-                            String.format("身份证:%s超出该产品当天最大订单次数,已定次数:%d,最大次数:%d",
-                                    sid, count, maxCount));
+                    throw new ApiException(String.format("身份证:%s超出该产品当天最大订单次数,已定次数:%d,最大次数:%d",
+                            sid, count, maxCount));
                 }
             }
+            Integer qty = CommonUtil.objectParseInteger(visitorMap.get("quantity"));
+            if (qty <= 0) {
+                throw new ApiException(String.format("身份证:%s预定张数%d 不能小于1", sid, qty));
+            }
+            total += qty;
             if (maxQuantity > 0) {
-                Integer qty = CommonUtil.objectParseInteger(visitorMap.get("quantity"));
-                if (qty <= 0) {
-                    return new Result<>(false, Result.PARAMS_ERROR,
-                            String.format("身份证:%s预定张数%d 不能小于1",
-                                    sid, qty));
-                }
                 int quantity = getOrderByQuantity(productSubCode, sid, bookingDate);
                 if (quantity + qty > maxQuantity) {
-                    return new Result<>(false, Result.PARAMS_ERROR,
-                            String.format("身份证:%s超出该产品当天最大购票数,已定张数%d,最大购票张数%d",
-                                    sid, quantity, maxQuantity));
+                    throw new ApiException(String.format("身份证:%s超出该产品当天最大购票数,已定张数%d,最大购票张数%d",
+                            sid, quantity, maxQuantity));
                 }
             }
             sids.add(sid);
         }
-        return new Result(true);
+        return total;
     }
 
     /**
@@ -242,7 +241,7 @@ public class BookingOrderManager extends BaseOrderManager {
      * @return
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public OrderItem generateItem(ProductSalesInfo info, Date endTime, int saleAmount, Date bookingDate, int days, int orderId, int quantity, Integer groupId) {
+    public OrderItem generateItem(ProductSalesInfo info, Date endTime, int saleAmount, Date bookingDate, int days, int orderId, int quantity, Integer groupId, String memo) {
         OrderItem orderItem = new OrderItem();
         orderItem.setNumber(UUIDGenerator.generateUUID());
         orderItem.setStart(bookingDate);
@@ -266,6 +265,7 @@ public class BookingOrderManager extends BaseOrderManager {
         orderItem.setLow_quantity(info.getLow_use_quantity());
         orderItem.setEp_ma_id(info.getEp_ma_id());
         orderItem.setPro_sub_ticket_type(info.getProduct_sub_ticket_type());
+        orderItem.setMemo(memo);
         orderItemMapper.insertSelective(orderItem);
         return orderItem;
     }
@@ -405,7 +405,7 @@ public class BookingOrderManager extends BaseOrderManager {
      * @return {0:销售价,1:进货价,2:门市价}
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public int[] calcSalesPrice(List<List<EpSalesInfo>> allDaysSales, ProductSalesInfo salesInfo, int buyEpId, int quantity, int from) {
+    public PriceDto calcSalesPrice(List<List<EpSalesInfo>> allDaysSales, ProductSalesInfo salesInfo, int buyEpId, int quantity, int from) {
         int salePrice = 0;
         int buyingPrice = 0;
         int shopPrice = 0;
@@ -439,7 +439,7 @@ public class BookingOrderManager extends BaseOrderManager {
             daySales.add(self);
             salePrice += self.getPrice() * quantity;
         }
-        return new int[]{salePrice, buyingPrice, shopPrice};
+        return new PriceDto(salePrice, buyingPrice, shopPrice);
     }
 
     /**

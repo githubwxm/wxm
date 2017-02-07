@@ -43,7 +43,7 @@ public class OrderController extends BaseController {
     public Result<?> create(@RequestBody Map params) throws Exception {
         // 验证参数
         ParamsMapValidate.validate(params, orderValidateManager.createValidate());
-        return bookingOrderService.create(params);
+        return bookingOrderService.create(params, "TICKET");
     }
 
     @RequestMapping(value = "group/create", method = RequestMethod.POST)
@@ -51,7 +51,15 @@ public class OrderController extends BaseController {
     public Result<?> createForGroup(@RequestBody Map params) throws Exception {
         // 验证参数
         ParamsMapValidate.validate(params, orderValidateManager.createGroupValidate());
-        return bookingOrderService.createForGroup(params);
+        return bookingOrderService.create(params, "TICKET_GROUP");
+    }
+
+    @RequestMapping(value = "hotel/create", method = RequestMethod.POST)
+    @ResponseBody
+    public Result<?> createForHotel(@RequestBody Map params) throws Exception {
+        // 验证参数
+        ParamsMapValidate.validate(params, orderValidateManager.createHotelValidate());
+        return bookingOrderService.create(params, "HOTEL");
     }
 
     @RequestMapping(value = "audit", method = RequestMethod.POST)

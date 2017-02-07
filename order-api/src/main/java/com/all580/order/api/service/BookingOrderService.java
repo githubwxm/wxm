@@ -2,7 +2,6 @@ package com.all580.order.api.service;
 
 import com.framework.common.Result;
 
-import java.text.ParseException;
 import java.util.Map;
 
 /**
@@ -17,7 +16,7 @@ public interface BookingOrderService {
      * @param params
      * @return
      */
-    Result<?> create(Map params) throws Exception;
+    Result<?> create(Map params, String type) throws Exception;
 
     /**
      * 供应商审核订单
@@ -46,13 +45,6 @@ public interface BookingOrderService {
      * @return
      */
     Result<?> resendTicketForGroup(Map params);
-
-    /**
-     * 团队下单
-     * @param params
-     * @return
-     */
-    Result<?> createForGroup(Map params) throws Exception;
 
     /**
      * 修改票据
