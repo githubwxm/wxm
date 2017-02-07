@@ -23,16 +23,6 @@ import java.util.Map;
  */
 @Component(OrderConstant.CREATE_ADAPTER + "TICKET")
 public class TicketCreateOrderImpl extends AbstractCreateOrderImpl {
-    @Setter
-    @Autowired
-    private BookingOrderManager bookingOrderManager;
-
-    @Setter
-    @Autowired
-    private EpService epService;
-    @Setter
-    @Autowired
-    private ProductSalesPlanRPCService productSalesPlanRPCService;
 
     @Override
     public void validateVisitor(ProductSalesInfo salesInfo, ValidateProductSub sub, List<?> visitorList, Map item) {
@@ -44,5 +34,23 @@ public class TicketCreateOrderImpl extends AbstractCreateOrderImpl {
                 throw new ApiException("游客票数与总票数不符");
             }
         }
+    }
+
+    @Override
+    @Autowired
+    public void setBookingOrderManager(BookingOrderManager bookingOrderManager) {
+        super.bookingOrderManager = bookingOrderManager;
+    }
+
+    @Override
+    @Autowired
+    public void setEpService(EpService epService) {
+        super.epService = epService;
+    }
+
+    @Override
+    @Autowired
+    public void setProductSalesPlanRPCService(ProductSalesPlanRPCService productSalesPlanRPCService) {
+        super.productSalesPlanRPCService = productSalesPlanRPCService;
     }
 }
