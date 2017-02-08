@@ -17,6 +17,7 @@ import com.taobao.api.response.AlibabaAliqinFcSmsNumSendResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
@@ -41,14 +42,17 @@ public class SmsServiceImpl implements SmsService {
     @Autowired
     private SmsAccountConfMapper smsAccountConfMapper;
 
+    @Value("${sms.send}")
+    private int smsSend = 1;
+
     @Override
     public Result send(String destPhoneNum, Integer smsType, Integer epId, Map<String, String> params) {
         Assert.notNull(destPhoneNum, "参数【destPhoneNum】不能为空");
         Assert.notNull(smsType, "参数【smsType】不能为空");
         Assert.notNull(epId, "参数【epId】不能为空");
-//        if(1==1){// TODO: 2017/1/12 0012
-//            return   new Result(true);
-//        }
+        if(smsSend==0){// TODO: 2017/1/12 0012
+            return   new Result(true);
+        }
         SmsTmpl smsTmpl = smsTmplMapper.selectByEpIdAndType(epId, smsType);
         Assert.notNull(smsTmpl, MessageFormat.format("找不到短信模板:epId={0}|smsType={1}", epId, smsType));
         SmsAccountConf smsAccountConf = smsAccountConfMapper.selectByEpId(epId);
