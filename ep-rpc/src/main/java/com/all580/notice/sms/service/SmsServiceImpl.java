@@ -42,15 +42,15 @@ public class SmsServiceImpl implements SmsService {
     @Autowired
     private SmsAccountConfMapper smsAccountConfMapper;
 
-
-    private int smsSend = 1;
+    @Value("${sms.send}")
+    private String smsSend = "1";
 
     @Override
     public Result send(String destPhoneNum, Integer smsType, Integer epId, Map<String, String> params) {
         Assert.notNull(destPhoneNum, "参数【destPhoneNum】不能为空");
         Assert.notNull(smsType, "参数【smsType】不能为空");
         Assert.notNull(epId, "参数【epId】不能为空");
-        if(smsSend==0){// TODO: 2017/1/12 0012
+        if(smsSend.equals("0")){// TODO: 2017/1/12 0012
             return   new Result(true);
         }
         SmsTmpl smsTmpl = smsTmplMapper.selectByEpIdAndType(epId, smsType);
