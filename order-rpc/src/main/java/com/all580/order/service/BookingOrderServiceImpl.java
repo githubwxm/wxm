@@ -122,6 +122,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
 
             // 每天的价格
             List<List<EpSalesInfo>> allDaysSales = salesInfo.getSales();
+            Assert.notEmpty(allDaysSales, "该产品未被分销");
 
             // 子订单总进货价
             PriceDto price = bookingOrderManager.calcSalesPrice(allDaysSales, salesInfo, createOrder.getEpId(), sub.getQuantity(), createOrder.getFrom());

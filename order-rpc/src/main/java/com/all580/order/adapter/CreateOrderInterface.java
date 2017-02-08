@@ -6,6 +6,7 @@ import com.all580.order.dto.ValidateProductSub;
 import com.all580.order.entity.*;
 import com.all580.product.api.model.ProductSalesDayInfo;
 import com.all580.product.api.model.ProductSalesInfo;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -24,6 +25,7 @@ public interface CreateOrderInterface {
 
     void validate(CreateOrder createOrder, Map params);
 
+    @Transactional
     Order insertOrder(CreateOrder createOrder, Map params);
 
     ProductSalesInfo validateProductAndGetSales(ValidateProductSub sub, CreateOrder createOrder, Map item);
@@ -32,11 +34,15 @@ public interface CreateOrderInterface {
 
     void validateVisitor(ProductSalesInfo salesInfo, ValidateProductSub sub, List<?> visitorList, Map item);
 
+    @Transactional
     OrderItem insertItem(Order order, ValidateProductSub sub, ProductSalesInfo salesInfo, PriceDto price, Map item);
 
+    @Transactional
     List<OrderItemDetail> insertDetail(OrderItem item, ValidateProductSub sub, ProductSalesInfo salesInfo);
 
+    @Transactional
     List<Visitor> insertVisitor(List<?> visitorList, List<OrderItemDetail> details, ProductSalesInfo salesInfo, ValidateProductSub sub, Map item);
 
+    @Transactional
     Shipping insertShipping(Map params, Order order);
 }
