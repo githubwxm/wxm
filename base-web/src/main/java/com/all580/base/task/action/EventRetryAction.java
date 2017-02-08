@@ -14,10 +14,12 @@ import com.github.ltsopensource.tasktracker.runner.JobContext;
 import com.github.ltsopensource.tasktracker.runner.JobRunner;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author zhouxianjun(Alone)
@@ -44,7 +46,7 @@ public class EventRetryAction implements JobRunner {
             return new Result(Action.EXECUTE_SUCCESS, "没有订阅器");
         }
         Date createTime = DateFormatUtils.converToDateTime(params.get("time"));
-        Object object = LTSStatic.SyncData.JSON_MAPPER.readValue(TranscodeUtil.base64StrToByteArray(params.get("content")), Object.class);
+        Object object = LTSStatic.SyncData.asObject(TranscodeUtil.base64StrToByteArray(params.get("content")));
         for (MnsSubscribeAction subscribeAction : actions) {
             String name = CommonUtil.getProxyClassForInterface(subscribeAction, MnsSubscribeAction.class).getName();
             if (name.equals(params.get("class"))) {

@@ -23,14 +23,7 @@ public interface RefundOrderService {
      * @param params
      * @return
      */
-    Result<?> apply(Map params) throws Exception;
-
-    /**
-     * 退订团队申请
-     * @param params
-     * @return
-     */
-    Result<?> applyForGroup(Map params) throws Exception;
+    Result<?> apply(Map params, String type) throws Exception;
 
     /**
      * 取消已支付未分账的订单

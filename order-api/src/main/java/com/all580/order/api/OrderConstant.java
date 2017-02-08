@@ -9,6 +9,7 @@ package com.all580.order.api;
 public class OrderConstant {
 
     public static final String CREATE_ADAPTER = "CREATE_ADAPTER";
+    public static final String REFUND_ADAPTER = "REFUND_ADAPTER";
     /**
      * 订单状态（支付）
      */

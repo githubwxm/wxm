@@ -245,6 +245,14 @@ public class OrderValidateManager {
     }
 
     /**
+     * 酒店订单退订申请验证
+     * @return
+     */
+    public Map<String[], ValidRule[]> refundApplyForHotelValidate() {
+        return refundApplyForGroupValidate();
+    }
+
+    /**
      * 订单退订审核验证
      * @return
      */

@@ -1,0 +1,117 @@
+package com.all580.order.adapter;
+
+import com.all580.ep.api.conf.EpConstant;
+import com.all580.order.api.OrderConstant;
+import com.all580.order.dao.OrderItemMapper;
+import com.all580.order.dao.OrderMapper;
+import com.all580.order.dto.RefundDay;
+import com.all580.order.dto.RefundOrderApply;
+import com.all580.order.entity.Order;
+import com.all580.order.entity.OrderItem;
+import com.all580.order.entity.OrderItemDetail;
+import com.all580.order.entity.RefundOrder;
+import com.all580.order.manager.RefundOrderManager;
+import com.all580.order.util.AccountUtil;
+import com.framework.common.util.CommonUtil;
+import org.apache.commons.lang.ArrayUtils;
+import org.springframework.util.Assert;
+
+import javax.lang.exception.ApiException;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * @author zhouxianjun(Alone)
+ * @ClassName:
+ * @Description:
+ * @date 2017/2/8 10:59
+ */
+public abstract class AbstractRefundOrderImpl implements RefundOrderInterface {
+    protected OrderItemMapper orderItemMapper;
+    protected OrderMapper orderMapper;
+    protected RefundOrderManager refundOrderManager;
+
+    public abstract void setOrderItemMapper(OrderItemMapper orderItemMapper);
+    public abstract void setOrderMapper(OrderMapper orderMapper);
+    public abstract void setRefundOrderManager(RefundOrderManager refundOrderManager);
+    @Override
+    public RefundOrderApply validateAndParseParams(long itemNo, Map params) {
+        RefundOrderApply apply = new RefundOrderApply();
+        apply.setItemNo(itemNo);
+        OrderItem orderItem = orderItemMapper.selectBySN(itemNo);
+        Assert.notNull(orderItem, "子订单不存在");
+        apply.setItem(orderItem);
+        Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
+        Assert.notNull(order, "订单不存在");
+        apply.setOrder(order);
+
+        if (ArrayUtils.indexOf(new int[]{
+                OrderConstant.OrderItemStatus.SEND,
+                OrderConstant.OrderItemStatus.NON_SEND,
+                OrderConstant.OrderItemStatus.TICKET_FAIL
+        }, orderItem.getStatus()) < 0 ||
+                order.getStatus() != OrderConstant.OrderStatus.PAID) {
+            throw new ApiException("订单不在可退订状态");
+        }
+        if (!params.containsKey(EpConstant.EpKey.EP_ID)) {
+            throw new ApiException("非法请求:企业ID为空");
+        }
+
+        // 供应侧/销售侧
+        Integer applyFrom = CommonUtil.objectParseInteger(params.get("apply_from"));
+        apply.setFrom(applyFrom);
+        apply.setEpId(CommonUtil.objectParseInteger(params.get(EpConstant.EpKey.EP_ID)));
+        apply.setCause(CommonUtil.objectParseString(params.get("cause")));
+        apply.setQuantity(CommonUtil.objectParseInteger(params.get("quantity")));
+        apply.setDate(new Date());
+        return apply;
+    }
+
+    @Override
+    public void checkAuth(RefundOrderApply apply, Map params) {
+        // 检查权限
+        refundOrderManager.checkApplyRefund(apply.getItem(), apply.getOrder(), apply.getFrom(), apply.getEpId());
+    }
+
+    @Override
+    public void canBeRefund(RefundOrderApply apply, List<OrderItemDetail> detailList, Map params) {
+
+    }
+
+    @Override
+    public Collection<RefundDay> getRefundDays(RefundOrderApply apply, List<OrderItemDetail> detailList, Map params) {
+        return AccountUtil.decompileRefundDay((List) params.get("days"));
+    }
+
+    @Override
+    public int getRefundQuantity(RefundOrderApply apply, Collection<RefundDay> refundDays, Map params) {
+        return apply.getQuantity();
+    }
+
+    @Override
+    public int[] calcRefundMoneyAndFee(RefundOrderApply apply, List<OrderItemDetail> detailList, Collection<RefundDay> refundDays, Map params) {
+        return refundOrderManager.calcRefundMoneyAndFee(apply.getItem(), apply.getOrder(), apply.getFrom(), refundDays, detailList, apply.getDate());
+    }
+
+    @Override
+    public int[] getRefundAudit(RefundOrderApply apply, Map params) {
+        // 获取退订审核
+        int[] auditSupplierConfig = refundOrderManager.getAuditConfig(apply.getItem().getPro_sub_id(), apply.getItem().getSupplier_core_ep_id());
+        int auditTicket = auditSupplierConfig[0];
+        // 获取退款审核
+        int auditMoney = 0;
+        if (apply.getItem().getSupplier_core_ep_id() == apply.getOrder().getPayee_ep_id().intValue()) {
+            auditMoney = auditSupplierConfig[1];
+        } else {
+            auditMoney = refundOrderManager.getAuditConfig(apply.getItem().getPro_sub_id(), apply.getOrder().getPayee_ep_id())[1];
+        }
+        return new int[]{auditTicket, auditMoney};
+    }
+
+    @Override
+    public RefundOrder insertRefundOrder(RefundOrderApply apply, Collection<RefundDay> refundDays, int quantity, int money, int fee, int ticketAudit, int moneyAudit, Map params) {
+        return refundOrderManager.generateRefundOrder(apply.getItem(), refundDays, quantity, money, fee, apply.getCause(), ticketAudit, moneyAudit, apply.getOrder().getPayee_ep_id());
+    }
+}

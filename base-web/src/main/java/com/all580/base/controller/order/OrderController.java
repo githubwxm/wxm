@@ -83,7 +83,7 @@ public class OrderController extends BaseController {
     public Result<?> refundApply(@RequestBody Map params) throws Exception {
         // 验证参数
         ParamsMapValidate.validate(params, orderValidateManager.refundApplyValidate());
-        return refundOrderService.apply(params);
+        return refundOrderService.apply(params, "TICKET");
     }
 
     @RequestMapping(value = "refund/group/apply", method = RequestMethod.POST)
@@ -91,7 +91,15 @@ public class OrderController extends BaseController {
     public Result<?> refundApplyForGroup(@RequestBody Map params) throws Exception {
         // 验证参数
         ParamsMapValidate.validate(params, orderValidateManager.refundApplyForGroupValidate());
-        return refundOrderService.applyForGroup(params);
+        return refundOrderService.apply(params, "TICKET_GROUP");
+    }
+
+    @RequestMapping(value = "refund/hotel/apply", method = RequestMethod.POST)
+    @ResponseBody
+    public Result<?> refundApplyForHotel(@RequestBody Map params) throws Exception {
+        // 验证参数
+        ParamsMapValidate.validate(params, orderValidateManager.refundApplyForHotelValidate());
+        return refundOrderService.apply(params, "HOTEL");
     }
 
     @RequestMapping(value = "refund/audit", method = RequestMethod.POST)
