@@ -1,6 +1,7 @@
 package com.all580.order.service;
 
 import com.all580.ep.api.conf.EpConstant;
+import com.all580.order.adapter.RefundOrderInterface;
 import com.all580.order.api.OrderConstant;
 import com.all580.order.api.service.RefundOrderService;
 import com.all580.order.dao.OrderItemMapper;
@@ -11,7 +12,6 @@ import com.all580.order.entity.OrderItem;
 import com.all580.order.entity.RefundOrder;
 import com.all580.order.manager.LockTransactionManager;
 import com.all580.order.manager.RefundOrderManager;
-import com.all580.product.api.consts.ProductConstants;
 import com.framework.common.Result;
 import com.framework.common.distributed.lock.DistributedLockTemplate;
 import com.framework.common.distributed.lock.DistributedReentrantLock;
@@ -19,8 +19,10 @@ import com.framework.common.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 import javax.lang.exception.ApiException;
 import java.util.Date;
@@ -53,6 +55,9 @@ public class RefundOrderServiceImpl implements RefundOrderService {
     @Value("${lock.timeout}")
     private int lockTimeOut = 3;
 
+    @Autowired
+    private ApplicationContext applicationContext;
+
     @Override
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public Result<?> cancel(Map params) {
@@ -68,57 +73,17 @@ public class RefundOrderServiceImpl implements RefundOrderService {
     }
 
     @Override
-    public Result<?> apply(Map params) throws Exception {
+    public Result<?> apply(Map params, String type) throws Exception {
+        RefundOrderInterface refundOrderInterface = applicationContext.getBean(OrderConstant.REFUND_ADAPTER + type, RefundOrderInterface.class);
+        Assert.notNull(refundOrderInterface, type + " 类型退订申请订单适配器没找到");
+
         String orderItemSn = params.get("order_item_sn").toString();
-        OrderItem orderItem = orderItemMapper.selectBySN(Long.valueOf(orderItemSn));
-        if (orderItem == null) {
-            throw new ApiException("订单不存在");
-        }
-        Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
-        if (order == null) {
-            throw new ApiException("订单不存在");
-        }
-
-        // 供应侧/销售侧
-        Integer applyFrom = CommonUtil.objectParseInteger(params.get("apply_from"));
-
         // 分布式锁
         DistributedReentrantLock lock = distributedLockTemplate.execute(orderItemSn, lockTimeOut);
 
         // 锁成功
         try {
-            return lockTransactionManager.applyRefund(params, orderItem, order, applyFrom);
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    @Override
-    public Result<?> applyForGroup(Map params) throws Exception {
-        String orderItemSn = params.get("order_item_sn").toString();
-        OrderItem orderItem = orderItemMapper.selectBySN(Long.valueOf(orderItemSn));
-        if (orderItem == null) {
-            throw new ApiException("订单不存在");
-        }
-        Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
-        if (order == null) {
-            throw new ApiException("订单不存在");
-        }
-
-        if (!(orderItem.getGroup_id() != null && orderItem.getGroup_id() != 0 &&
-                orderItem.getPro_sub_ticket_type() != null && orderItem.getPro_sub_ticket_type() == ProductConstants.TeamTicketType.TEAM)) {
-            throw new ApiException("该订单不是团队订单");
-        }
-
-        // 供应侧/销售侧
-        Integer applyFrom = CommonUtil.objectParseInteger(params.get("apply_from"));
-
-        // 分布式锁
-        DistributedReentrantLock lock = distributedLockTemplate.execute(orderItemSn, lockTimeOut);
-
-        // 锁成功
-        try {
-            return lockTransactionManager.applyRefundForGroup(params, orderItem, order, applyFrom);
+            return lockTransactionManager.applyRefund(params, Long.valueOf(orderItemSn), refundOrderInterface);
         } finally {
             lock.unlock();
         }
