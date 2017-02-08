@@ -70,7 +70,7 @@ public class ProductController extends BaseController {
      */
     @RequestMapping(value = "sub_code", method = RequestMethod.GET)
     @ResponseBody
-    public Result<?> selectProductSubBatchByCode (@RequestParam("code") Integer productSubCode, @RequestParam("ep_id") Integer epId){
+    public Result<?> selectProductSubBatchByCode (@RequestParam("code") Long productSubCode, @RequestParam("ep_id") Integer epId){
         return productService.selectProductSubBatchByCode(productSubCode, epId);
     }
 
