@@ -42,7 +42,7 @@ public class SmsServiceImpl implements SmsService {
     @Autowired
     private SmsAccountConfMapper smsAccountConfMapper;
 
-    @Value("${sms.send}")
+
     private int smsSend = 1;
 
     @Override
