@@ -101,7 +101,7 @@ public class TicketGroupCreateOrderImpl extends AbstractCreateOrderImpl {
 
     @Override
     public Shipping insertShipping(Map params, Order order) {
-        Integer groupId = CommonUtil.objectParseInteger(params.get("group_id"));
+        Integer groupId = CommonUtil.objectParseInteger(((List<Map>) params.get("items")).get(0).get("group_id"));
         Group group = groupMapper.selectByPrimaryKey(groupId);
         Shipping shipping = new Shipping();
         shipping.setOrder_id(order.getId());
