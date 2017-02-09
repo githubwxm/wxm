@@ -167,6 +167,12 @@ public class EpFinanceServiceImpl implements EpFinanceService {
         BalanceChangeInfo b= new BalanceChangeInfo();
         b.setBalance(balance);
         b.setCan_cash(balance);
+        if(null==balance){
+            return    new Result(false,"充值金额过大或过小");
+        }
+        if(balance>50000000){
+            return new Result(false,"充值金额不能超过50W");
+        }
         b.setEp_id(epId);
         b.setCore_ep_id(coreEpId);
         b.setBalance_type(PaymentConstant.BalanceChangeType.MANUAL_CHANGE_BALANCE_ADD);
