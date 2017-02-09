@@ -247,12 +247,7 @@ public class EpFinanceController extends BaseController {
         ParamsMapValidate.validate(params, generateBalanceSelectValidate());//
         Integer coreEpId=CommonUtil.objectParseInteger(params.get(EpConstant.EpKey.CORE_EP_ID) ) ;
         Integer balance=CommonUtil.objectParseInteger(params.get("balance")) ;
-        if(null==balance){
-          return    new Result(false,"充值金额过大或过小");
-        }
-        if(balance>50000000){
-            return new Result(false,"充值金额不能超过50W");
-        }
+
         Integer balanceEpId=CommonUtil.objectParseInteger(params.get("balance_ep_id")) ;
         return epFinanceService.addBalance(balanceEpId,coreEpId,balance,params.get("operator_name"));
     }
