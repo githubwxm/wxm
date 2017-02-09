@@ -177,6 +177,12 @@ public class PlanController extends BaseController {
         return productService.productOnSaleBatch(updateEpOnsalesParams(params));
     }
 
+    @RequestMapping(value = "salp/lst")
+    @ResponseBody
+    public Result productSubPriceAndStock(@RequestParam("ep_id") Integer epId, @RequestParam("code") Long productSubCode, @RequestParam("start_date") Long startDate, @RequestParam("end_date") Long endDate) {
+        return productSalesPlanService.searchTicketRealTimePriceAndStock(epId, productSubCode, startDate, endDate);
+    }
+
     /**
      * 对企业分销
      * @param params
