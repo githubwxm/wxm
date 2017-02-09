@@ -9,6 +9,7 @@ import com.all580.order.manager.BookingOrderManager;
 import com.all580.order.manager.LockTransactionManager;
 import com.all580.order.manager.RefundOrderManager;
 import com.all580.order.manager.SmsManager;
+import com.all580.product.api.consts.ProductConstants;
 import com.framework.common.Result;
 import com.framework.common.distributed.lock.DistributedLockTemplate;
 import com.framework.common.distributed.lock.DistributedReentrantLock;
@@ -110,6 +111,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
     }
 
     @Override
+    @MnsEvent
     public Result sendGroupTicket(Long orderSn, SendTicketInfo info, Date procTime) {
         OrderItem orderItem = orderItemMapper.selectBySN(orderSn);
         if (orderItem == null) {
@@ -150,6 +152,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
     }
 
     @Override
+    @MnsEvent
     public Result consumeTicket(Long orderSn, ConsumeTicketInfo info, Date procTime) {
         OrderItem orderItem = orderItemMapper.selectBySN(orderSn);
         if (orderItem == null) {
@@ -198,21 +201,12 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         orderItem.setUsed_quantity(orderItem.getUsed_quantity() + info.getConsumeQuantity());
         orderItemMapper.updateByPrimaryKeySelective(orderItem);
 
-        // 发送短信
-        smsManager.sendConsumeSms(orderItem, info.getConsumeQuantity());
-
-        // 分账
-        // 核销成功 记录任务
-        Map<String, String> jobParams = new HashMap<>();
-        jobParams.put("sn", serial.getSerial_no());
-        refundOrderManager.addJob(OrderConstant.Actions.CONSUME_SPLIT_ACCOUNT, jobParams);
-
-        // 同步数据
-        bookingOrderManager.syncConsumeData(orderItem.getId(), info.getValidateSn());
+        MnsEventManager.addEvent(OrderConstant.EventType.CONSUME_TICKET, new ConsumeTicketEventParam(orderItem.getId(), serial.getId()));
         return new Result(true);
     }
 
     @Override
+    @MnsEvent
     public Result consumeGroupTicket(Long orderSn, ConsumeGroupTicketInfo info, Date procTime) {
         OrderItem orderItem = orderItemMapper.selectBySN(orderSn);
         if (orderItem == null) {
@@ -230,7 +224,8 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
             return new Result(false, "核销流水:" + info.getValidateSn() + "重复核销");
         }
 
-        if (orderItem.getGroup_id() == null || orderItem.getGroup_id() == 0) {
+        if (!(orderItem.getGroup_id() != null && orderItem.getGroup_id() != 0 &&
+                orderItem.getPro_sub_ticket_type() != null && orderItem.getPro_sub_ticket_type() == ProductConstants.TeamTicketType.TEAM)) {
             return new Result(false, "该订单不是团队订单");
         }
 
@@ -265,17 +260,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         orderItem.setUsed_quantity(orderItem.getUsed_quantity() + info.getConsumeQuantity());
         orderItemMapper.updateByPrimaryKeySelective(orderItem);
 
-        // 发送短信
-        smsManager.sendConsumeSms(orderItem, info.getConsumeQuantity());
-
-        // 分账
-        // 核销成功 记录任务
-        Map<String, String> jobParams = new HashMap<>();
-        jobParams.put("sn", serial.getSerial_no());
-        refundOrderManager.addJob(OrderConstant.Actions.CONSUME_SPLIT_ACCOUNT, jobParams);
-
-        // 同步数据
-        bookingOrderManager.syncConsumeDataForGroup(orderItem.getId(), info.getValidateSn());
+        MnsEventManager.addEvent(OrderConstant.EventType.CONSUME_TICKET, new ConsumeTicketEventParam(orderItem.getId(), serial.getId()));
         return new Result(true);
     }
 

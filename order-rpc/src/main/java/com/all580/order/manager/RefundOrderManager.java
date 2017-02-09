@@ -83,6 +83,7 @@ public class RefundOrderManager extends BaseOrderManager {
      * @return
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    @MnsEvent
     public Result cancel(Order order) {
         if (order == null) {
             throw new ApiException("订单不存在");
@@ -112,7 +113,8 @@ public class RefundOrderManager extends BaseOrderManager {
         orderMapper.updateByPrimaryKeySelective(order);
         // 还库存
         refundStock(orderItems);
-        // 同步数据
+
+        MnsEventManager.addEvent(OrderConstant.EventType.ORDER_CANCEL, order.getId());
         return new Result(true);
     }
 

@@ -49,5 +49,8 @@
 	<dubbo:service interface="com.all580.order.api.service.event.RefundMoneySyncDataEvent" ref="refundMoneySyncDataEventImpl" />
 	<dubbo:service interface="com.all580.order.api.service.event.RefundSuccessEvent" ref="refundSuccessEventImpl" />
 	<dubbo:service interface="com.all580.order.api.service.event.RefundSuccessSyncDataEvent" ref="refundSuccessSyncDataEventImpl" />
+	<dubbo:service interface="com.all580.order.api.service.event.ConsumeTicketEvent" ref="consumeTicketEventImpl" />
+	<dubbo:service interface="com.all580.order.api.service.event.ConsumeTicketSyncDataEvent" ref="consumeTicketSyncDataEventImpl" />
+	<dubbo:service interface="com.all580.order.api.service.event.OrderItemWaitAuditEvent" ref="orderItemWaitAuditEventImpl" />
 
 </beans>

@@ -503,32 +503,6 @@ public class BookingOrderManager extends BaseOrderManager {
     }
 
     /**
-     * 同步消费数据
-     * @param itemId 子订单ID
-     */
-    public Map syncConsumeData(int itemId, String sn) {
-        return generateSyncByItem(itemId)
-                .put("t_order_item_detail", orderItemDetailMapper.selectByItemId(itemId))
-                .put("t_order_clearance_serial", CommonUtil.oneToList(orderClearanceSerialMapper.selectBySn(sn)))
-                .put("t_order_clearance_detail", CommonUtil.oneToList(orderClearanceDetailMapper.selectBySn(sn)))
-                .put("t_visitor", visitorMapper.selectByOrderItem(itemId))
-                .sync().getDataMapForJsonMap();
-    }
-
-    /**
-     * 同步消费数据
-     * @param itemId 子订单ID
-     */
-    public Map syncConsumeDataForGroup(int itemId, String sn) {
-        return generateSyncByItem(itemId)
-                .put("t_order_item_detail", orderItemDetailMapper.selectByItemId(itemId))
-                .put("t_order_clearance_serial", CommonUtil.oneToList(orderClearanceSerialMapper.selectBySn(sn)))
-                .put("t_group_consume", groupConsumeMapper.selectBySn(sn))
-                .put("t_visitor", visitorMapper.selectByOrderItem(itemId))
-                .sync().getDataMapForJsonMap();
-    }
-
-    /**
      * 同步冲正数据
      * @param itemId 子订单ID
      */
