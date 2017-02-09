@@ -89,17 +89,7 @@ public class hotelBatchController {
     public Result<?> selectHotelBatch(int batch_id) {
         return hotelBatchService.selectHotelBatch(batch_id);
     }
-    /**
-     * 查询销售计划
-     * @param batch_id
-     * @return
-     */
-    @RequestMapping(value = "ssstest", method = RequestMethod.GET)
-    @ResponseBody
-    public Result<?> ssstest(int batch_id) {
-       System.out.print("11111111111");
-        return hotelBatchService.ssstest(batch_id);
-    }
+
 
     /**
      * 查询销售计划
