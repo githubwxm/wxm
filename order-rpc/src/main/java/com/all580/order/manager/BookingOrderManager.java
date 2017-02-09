@@ -12,6 +12,7 @@ import com.all580.product.api.model.EpSalesInfo;
 import com.all580.product.api.model.ProductSalesDayInfo;
 import com.all580.product.api.model.ProductSalesInfo;
 import com.framework.common.Result;
+import com.framework.common.lang.Arith;
 import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.UUIDGenerator;
 import com.framework.common.util.CommonUtil;
@@ -429,12 +430,12 @@ public class BookingOrderManager extends BaseOrderManager {
             // 判断最低零售价
             if (from == OrderConstant.FromType.TRUST && self.getPrice() < salesInfo.getMin_price()) {
                 throw new ApiException(String.format("产品:%s不能低于最低零售价:%f,当前售卖价格:%f",
-                        salesInfo.getProduct_sub_name(), salesInfo.getMin_price()/100f, self.getPrice()/100f));
+                        salesInfo.getProduct_sub_name(), Arith.round(salesInfo.getMin_price()/100f, 2), Arith.round(self.getPrice()/100f, 2)));
             }
             // 判断最高市场价
             if (self.getPrice() > salesInfo.getMarket_price()) {
                 throw new ApiException(String.format("产品:%s不能高于市场价:%f,当前售卖价格:%f",
-                        salesInfo.getProduct_sub_name(), salesInfo.getMarket_price()/100f, self.getPrice()/100f));
+                        salesInfo.getProduct_sub_name(), Arith.round(salesInfo.getMarket_price()/100f, 2), Arith.round(self.getPrice()/100f, 2)));
             }
             daySales.add(self);
             salePrice += self.getPrice() * quantity;
