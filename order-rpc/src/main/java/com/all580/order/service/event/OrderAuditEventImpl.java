@@ -1,6 +1,5 @@
 package com.all580.order.service.event;
 
-import com.all580.order.api.OrderConstant;
 import com.all580.order.api.model.OrderAuditEventParam;
 import com.all580.order.api.service.event.OrderAuditEvent;
 import com.all580.order.dao.OrderItemMapper;

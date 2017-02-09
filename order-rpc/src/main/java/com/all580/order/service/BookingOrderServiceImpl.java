@@ -12,7 +12,6 @@ import com.all580.order.dto.ValidateProductSub;
 import com.all580.order.entity.*;
 import com.all580.order.manager.BookingOrderManager;
 import com.all580.order.manager.LockTransactionManager;
-import com.all580.order.manager.SmsManager;
 import com.all580.product.api.consts.ProductConstants;
 import com.all580.product.api.model.EpSalesInfo;
 import com.all580.product.api.model.ProductSalesDayInfo;
@@ -54,8 +53,6 @@ import java.util.*;
 public class BookingOrderServiceImpl implements BookingOrderService {
     @Autowired
     private BookingOrderManager bookingOrderManager;
-    @Autowired
-    private SmsManager smsManager;
 
     @Autowired
     private OrderMapper orderMapper;
@@ -376,7 +373,6 @@ public class BookingOrderServiceImpl implements BookingOrderService {
                         item.getStatus() == OrderConstant.OrderItemStatus.AUDIT_SUCCESS) {
                     item.setStatus(OrderConstant.OrderItemStatus.AUDIT_WAIT);
                     orderItemMapper.updateByPrimaryKeySelective(item);
-                    smsManager.sendAuditSms(item);
                 }
                 // 更新子订单详情
                 orderItemDetailMapper.updateByPrimaryKeySelective(detail);
