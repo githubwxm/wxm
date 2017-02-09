@@ -52,6 +52,8 @@ public class hotelBatchController {
         return hotelBatchService.updateRetainDay(params);
     }
 
+
+
     @RequestMapping(value = "update_up", method = RequestMethod.POST)
     @ResponseBody
     public Result<?> updateUp(@RequestBody Map params) {
@@ -64,6 +66,19 @@ public class hotelBatchController {
         return hotelPlanSaleService.updateDown(params);
     }
 
+
+    /**
+     * 查询是否有有效销售计划
+     * @param batch_id
+     * @return
+     */
+    @RequestMapping(value = "select_batch_count", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<?> selectBatchCount(int batch_id){
+
+
+         return hotelBatchService.selectBatchCount(batch_id);
+    }
     /**
      * 查询销售计划
      * @param batch_id
@@ -73,6 +88,17 @@ public class hotelBatchController {
     @ResponseBody
     public Result<?> selectHotelBatch(int batch_id) {
         return hotelBatchService.selectHotelBatch(batch_id);
+    }
+    /**
+     * 查询销售计划
+     * @param batch_id
+     * @return
+     */
+    @RequestMapping(value = "ssstest", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<?> ssstest(int batch_id) {
+       System.out.print("11111111111");
+        return hotelBatchService.ssstest(batch_id);
     }
 
     /**
