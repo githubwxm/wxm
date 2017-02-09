@@ -66,8 +66,6 @@ public class LockTransactionManager {
     @Autowired
     private RefundOrderManager refundOrderManager;
     @Autowired
-    private SmsManager smsManager;
-    @Autowired
     private ProductSalesPlanRPCService productSalesPlanRPCService;
     @Autowired
     private EpService epService;
