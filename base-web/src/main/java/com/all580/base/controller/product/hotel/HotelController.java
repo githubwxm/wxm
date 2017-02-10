@@ -3,16 +3,17 @@ package com.all580.base.controller.product.hotel;
 import com.all580.ep.api.conf.EpConstant;
 import com.all580.product.api.hotel.service.HotelService;
 import com.framework.common.Result;
+import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.validate.ParamsMapValidate;
 import com.framework.common.validate.ValidRule;
+import org.apache.commons.lang.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
+import javax.lang.exception.ParamsMapValidationException;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -45,7 +46,28 @@ public class HotelController {
         return hotelService.selectHotelName(map);
     }
 
-
+    @RequestMapping(value = "can_sale/list")
+    @ResponseBody
+    public Result<?> canSaleList(@RequestParam Integer ep_id,
+                                 Integer city, String intDate, String outDate, String keyword,
+                                 @RequestParam(defaultValue = "0") Integer priceMin, Integer priceMax,
+                                 String star, String topic, @RequestParam(defaultValue = "0") Integer personMin,
+                                 Integer personMax, @RequestParam(defaultValue = "ASC") String priceSort,
+                                 @RequestParam(defaultValue = "ASC") String saleSort,
+                                 @RequestParam(defaultValue = "ASC") String createSort,
+                                 @RequestParam(defaultValue = "0") Integer record_start,
+                                 @RequestParam(defaultValue = "20") Integer record_count) throws Exception {
+        Date start_time = DateFormatUtils.converToDate(intDate);
+        Date end_time = DateFormatUtils.converToDate(outDate);
+        String[] sorts = new String[]{priceSort, saleSort, createSort};
+        for (String sort : sorts) {
+            if (!sort.equalsIgnoreCase("asc")) {
+                throw new ParamsMapValidationException("排序只能为 asc 或 desc");
+            }
+        }
+        return hotelService.selectCanSaleList(ep_id, city, start_time, end_time, keyword, priceMin, priceMax,
+                star, topic, personMin, personMax, priceSort, saleSort, createSort, record_start, record_count);
+    }
 
 
 
