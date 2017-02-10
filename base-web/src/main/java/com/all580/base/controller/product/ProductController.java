@@ -209,9 +209,13 @@ public class ProductController extends BaseController {
                                        @RequestParam("is_supplier") Integer isSupplier,
                                        @RequestParam("order_str") Integer order,
                                        @RequestParam("record_start") Integer start,
-                                       @RequestParam("record_count") Integer count) {
+                                       @RequestParam("record_count") Integer count,
+                                                                  Integer type) {
 
         String orderStr = null;
+        if(type==null){
+            type=ProductConstants.ProductType.SCENERY;
+        }
         if (order != null) {
             switch (CanSaleOrderState.getCanSaleOrderSate(order)) {
                 case CREATE_TIME_ASC: orderStr = CanSaleOrderState.CREATE_TIME_ASC.getValue(); break;
@@ -220,7 +224,40 @@ public class ProductController extends BaseController {
                 case PRODUCT_NAME_DESC: orderStr = CanSaleOrderState.PRODUCT_NAME_DESC.getValue(); break;
             }
         }
-        Result<Paginator<ProductAndSubInfo>> result = productService.searchSubProductListByProductName(epId, productName, isSupplier, orderStr, start, count);
+        Result<Paginator<ProductAndSubInfo>> result = productService.searchSubProductListByProductName(epId, productName, isSupplier, orderStr, start, count,type);
+        return result;
+    }
+
+    /**
+     * 产品分销列表
+     * @param epId
+     * @param productName
+     * @param order
+     * @return
+     */
+    @RequestMapping(value = "sale/list/hotel")
+    @ResponseBody
+    public Result<Paginator<ProductAndSubInfo>> searchCanSaleListHotel(@RequestParam("ep_id") Integer epId,
+                                                                  @RequestParam("product_name") String productName,
+                                                                  @RequestParam("is_supplier") Integer isSupplier,
+                                                                  @RequestParam("order_str") Integer order,
+                                                                  @RequestParam("record_start") Integer start,
+                                                                  @RequestParam("record_count") Integer count
+                                                                 ) {
+
+        String orderStr = null;
+
+          Integer  type=ProductConstants.ProductType.HOTEL;
+
+        if (order != null) {
+            switch (CanSaleOrderState.getCanSaleOrderSate(order)) {
+                case CREATE_TIME_ASC: orderStr = CanSaleOrderState.CREATE_TIME_ASC.getValue(); break;
+                case CREATE_TIME_DESC: orderStr = CanSaleOrderState.CREATE_TIME_DESC.getValue(); break;
+                case PRODUCT_NAME_ASC: orderStr = CanSaleOrderState.PRODUCT_NAME_ASC.getValue(); break;
+                case PRODUCT_NAME_DESC: orderStr = CanSaleOrderState.PRODUCT_NAME_DESC.getValue(); break;
+            }
+        }
+        Result result = productService.searchSubProductListByProductNameHotel(epId, productName, isSupplier, orderStr, start, count,type);
         return result;
     }
 
@@ -256,6 +293,8 @@ public class ProductController extends BaseController {
         }
         return new Result<>(false, "状态参数错误");
     }
+
+
 
     /**
      * 跨平台分销

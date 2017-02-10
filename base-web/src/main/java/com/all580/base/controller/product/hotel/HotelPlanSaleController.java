@@ -7,10 +7,7 @@ import com.framework.common.validate.ParamsMapValidate;
 import com.framework.common.validate.ValidRule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,7 +16,7 @@ import java.util.Map;
  * Created by wxming on 2017/2/9 0009.
  */
 @Controller
-@RequestMapping(value = "api/product/hotel/sale")
+@RequestMapping(value = "api/product/hotel")
 public class HotelPlanSaleController {
 
     @Autowired
@@ -60,6 +57,13 @@ public class HotelPlanSaleController {
     public Result<?> productOnSaleBatch(@RequestBody Map params) {
         ParamsMapValidate.validate(params, generateSaleUpdateUpValidate());
         return hotelPlanSaleService.productOnSaleBatch(params);
+    }
+
+    @RequestMapping(value = "sale/select/not_sale", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<?> selectNotSale(@RequestParam("ep_id") Integer ep_id,
+                                   @RequestParam("batch_id") Integer batch_id) {
+        return hotelPlanSaleService.selectNotSale(ep_id,batch_id);
     }
 
 
