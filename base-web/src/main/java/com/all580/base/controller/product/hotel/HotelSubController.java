@@ -2,15 +2,14 @@ package com.all580.base.controller.product.hotel;
 
 import com.all580.product.api.hotel.service.HotelSubService;
 import com.framework.common.Result;
+import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.validate.ParamsMapValidate;
 import com.framework.common.validate.ValidRule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,6 +34,14 @@ public class HotelSubController {
     public Result<?> selectHotel(Integer id) {
 
         return hotelSubService.selectHotelSub(id);
+    }
+
+    @RequestMapping("can_sale/list")
+    @ResponseBody
+    public Result<?> canSaleList(@RequestParam Integer ep_id, @RequestParam Integer product_id, String intDate, String outDate) {
+        Date start_time = DateFormatUtils.converToDate(intDate);
+        Date end_time = DateFormatUtils.converToDate(outDate);
+        return hotelSubService.selectCanSaleByHotel(ep_id, product_id, start_time, end_time);
     }
 
 
