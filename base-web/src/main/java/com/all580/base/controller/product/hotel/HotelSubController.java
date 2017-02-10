@@ -38,8 +38,8 @@ public class HotelSubController {
 
     @RequestMapping("can_sale/list")
     @ResponseBody
-    public Result<?> canSaleList(@RequestParam Integer ep_id, @RequestParam Integer product_id, String intDate, String outDate) {
-        Date start_time = DateFormatUtils.converToDate(intDate);
+    public Result<?> canSaleList(@RequestParam Integer ep_id, @RequestParam Integer product_id, String inDate, String outDate) {
+        Date start_time = DateFormatUtils.converToDate(inDate);
         Date end_time = DateFormatUtils.converToDate(outDate);
         return hotelSubService.selectCanSaleByHotel(ep_id, product_id, start_time, end_time);
     }

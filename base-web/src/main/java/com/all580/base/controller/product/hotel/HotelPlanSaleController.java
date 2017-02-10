@@ -3,12 +3,14 @@ package com.all580.base.controller.product.hotel;
 import com.all580.product.api.hotel.service.HotelPlanSaleService;
 import com.all580.product.api.hotel.service.HotelService;
 import com.framework.common.Result;
+import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.validate.ParamsMapValidate;
 import com.framework.common.validate.ValidRule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -64,6 +66,15 @@ public class HotelPlanSaleController {
     public Result<?> selectNotSale(@RequestParam("ep_id") Integer ep_id,
                                    @RequestParam("batch_id") Integer batch_id) {
         return hotelPlanSaleService.selectNotSale(ep_id,batch_id);
+    }
+
+    @RequestMapping("stock_price")
+    @ResponseBody
+    public Result<?> selectStockAndPrice(@RequestParam Integer ep_id, @RequestParam Integer product_sub_id,
+                                        @RequestParam String inDate, @RequestParam String outDate) {
+        Date start_time = DateFormatUtils.converToDate(inDate);
+        Date end_time = DateFormatUtils.converToDate(outDate);
+        return hotelPlanSaleService.selectHotelStockAndPrice(product_sub_id, ep_id, start_time, end_time);
     }
 
 

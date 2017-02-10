@@ -49,7 +49,7 @@ public class HotelController {
     @RequestMapping(value = "can_sale/list")
     @ResponseBody
     public Result<?> canSaleList(@RequestParam Integer ep_id,
-                                 Integer city, String intDate, String outDate, String keyword,
+                                 Integer city, String inDate, String outDate, String keyword,
                                  @RequestParam(defaultValue = "0") Integer priceMin, Integer priceMax,
                                  String star, String topic, @RequestParam(defaultValue = "0") Integer personMin,
                                  Integer personMax, @RequestParam(defaultValue = "ASC") String priceSort,
@@ -57,7 +57,7 @@ public class HotelController {
                                  @RequestParam(defaultValue = "ASC") String createSort,
                                  @RequestParam(defaultValue = "0") Integer record_start,
                                  @RequestParam(defaultValue = "20") Integer record_count) throws Exception {
-        Date start_time = DateFormatUtils.converToDate(intDate);
+        Date start_time = DateFormatUtils.converToDate(inDate);
         Date end_time = DateFormatUtils.converToDate(outDate);
         String[] sorts = new String[]{priceSort, saleSort, createSort};
         for (String sort : sorts) {
