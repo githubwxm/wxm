@@ -90,7 +90,11 @@ public class VerifyFilter implements  Filter {
                 request.setAttribute(EpConstant.EpKey.ACCESS_KEY,key);
                 TreeMap tree=new TreeMap(map);
                 postParams = JsonUtils.toJson(tree);
+                postParams=postParams.replace("\"","");
+                postParams=postParams.replace("\\","");
+                log.info("Params:",postParams +", key:"+key);
                 boolean ref = SignVerify.verifyPost(postParams, currenttSing, key);
+
                 if (!ref) {
                     log.error("签名校验失败postParams{},currenttSing:{}",postParams,currenttSing);
                     renderingByJsonPData(httpResponse, JSON.toJSONString(getOutPutMap(false,"签名校验失败", Result.SIGN_FAIL,null)));
