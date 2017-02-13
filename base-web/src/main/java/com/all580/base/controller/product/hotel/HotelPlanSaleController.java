@@ -70,11 +70,11 @@ public class HotelPlanSaleController {
 
     @RequestMapping("stock_price")
     @ResponseBody
-    public Result<?> selectStockAndPrice(@RequestParam Integer ep_id, @RequestParam Integer product_sub_id,
+    public Result<?> selectStockAndPrice(@RequestParam Integer ep_id, @RequestParam Long code,
                                         @RequestParam String in_date, @RequestParam String out_date) {
         Date start_time = DateFormatUtils.converToDate(in_date);
         Date end_time = DateFormatUtils.converToDate(out_date);
-        return hotelPlanSaleService.selectHotelStockAndPrice(product_sub_id, ep_id, start_time, end_time);
+        return hotelPlanSaleService.selectHotelStockAndPrice(code, ep_id, start_time, end_time);
     }
 
 

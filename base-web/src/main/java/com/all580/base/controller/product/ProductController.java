@@ -459,4 +459,16 @@ public class ProductController extends BaseController {
         return productDistributionService.searchNotDistributionProductSubGroup(epId, groupId);
     }
 
+    /**
+     * 指定景点信息查询
+     * @param epId
+     * @param productId
+     * @param ticketFlag
+     * @return
+     */
+    @RequestMapping("sales/view")
+    @ResponseBody
+    public Result<Map<String, Object>> searchProductSaleView(@RequestParam("ep_id") Integer epId, @RequestParam("product_id") Integer productId, @RequestParam("ticket_flag") Integer ticketFlag) {
+        return productService.searchProductSaleView(epId, productId, ticketFlag);
+    }
 }
