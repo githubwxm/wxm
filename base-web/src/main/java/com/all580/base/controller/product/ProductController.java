@@ -467,6 +467,7 @@ public class ProductController extends BaseController {
      * @return
      */
     @RequestMapping("sales/view")
+    @ResponseBody
     public Result<Map<String, Object>> searchProductSaleView(@RequestParam("ep_id") Integer epId, @RequestParam("product_id") Integer productId, @RequestParam("ticket_flag") Integer ticketFlag) {
         return productService.searchProductSaleView(epId, productId, ticketFlag);
     }
