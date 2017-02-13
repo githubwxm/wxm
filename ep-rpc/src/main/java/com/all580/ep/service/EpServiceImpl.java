@@ -746,6 +746,9 @@ public class EpServiceImpl implements EpService {
         Map<String, Object> map = new HashMap<>();
         map.put("creator_ep_id", id);
         map.put("ep_type", EpConstant.EpType.SELLER);
+        map.put("record_start",0);
+        map.put("record_count",100);
+        Common.checkPage(map);
         try {
             Common.isEmpty(result, epMapper.select(map));
         } catch (Exception e) {
