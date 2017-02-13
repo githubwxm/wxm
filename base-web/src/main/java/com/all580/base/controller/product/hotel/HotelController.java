@@ -59,7 +59,7 @@ public class HotelController {
                                  Integer city, String in_date, String out_date, String keyword,
                                  @RequestParam(defaultValue = "0") Integer price_min, Integer price_max,
                                  String star, String topic, @RequestParam(defaultValue = "0") Integer person_min,
-                                 Integer personMax, @RequestParam(defaultValue = "ASC") String price_sort,
+                                 Integer person_max, @RequestParam(defaultValue = "ASC") String price_sort,
                                  @RequestParam(defaultValue = "ASC") String sale_sort,
                                  @RequestParam(defaultValue = "ASC") String create_sort,
                                  @RequestParam(defaultValue = "0") Integer record_start,
@@ -73,7 +73,7 @@ public class HotelController {
             }
         }
         return hotelService.selectCanSaleList(ep_id, city, start_time, end_time, keyword, price_min, price_max,
-                star, topic, person_min, personMax, price_sort, sale_sort, create_sort, record_start, record_count);
+                star, topic, person_min, person_max, price_sort, sale_sort, create_sort, record_start, record_count);
     }
 
 
