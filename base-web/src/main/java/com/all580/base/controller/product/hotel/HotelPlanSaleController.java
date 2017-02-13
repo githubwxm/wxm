@@ -33,7 +33,7 @@ public class HotelPlanSaleController {
     @RequestMapping(value = "sale/up", method = RequestMethod.POST)
     @ResponseBody
     public Result<?> updateUp(@RequestBody Map params) {
-        ParamsMapValidate.validate(params, generateSaleUpdateUpValidate());
+        ParamsMapValidate.validate(params, generateSaleUpdateUpIdValidate());
         return hotelPlanSaleService.updateUp(params);
     }
 
@@ -45,7 +45,7 @@ public class HotelPlanSaleController {
     @RequestMapping(value = "sale/down", method = RequestMethod.POST)
     @ResponseBody
     public Result<?> updateDown(@RequestBody Map params) {
-        ParamsMapValidate.validate(params, generateSaleUpdateUpValidate());
+        ParamsMapValidate.validate(params, generateSaleUpdateUpIdValidate());
         return hotelPlanSaleService.updateDown(params);
     }
 
@@ -64,9 +64,29 @@ public class HotelPlanSaleController {
     @RequestMapping(value = "sale/select/not_sale", method = RequestMethod.GET)
     @ResponseBody
     public Result<?> selectNotSale(@RequestParam("ep_id") Integer ep_id,
-                                   @RequestParam("batch_id") Integer batch_id) {
-        return hotelPlanSaleService.selectNotSale(ep_id,batch_id);
+                                   @RequestParam("batch_id") Integer batch_id,Integer status) {
+        return hotelPlanSaleService.selectNotSale(ep_id,batch_id,status);
     }
+    @RequestMapping(value = "sale/select/down_list", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<?> selectDownList(@RequestParam("ep_id") Integer ep_id,
+                                   @RequestParam("batch_id") Integer batch_id) {
+        return hotelPlanSaleService.selectDownList(ep_id,batch_id);
+    }
+
+    /**
+     * 指定一个或多个企业下架    商家的话  mpa list 里是一个上级供应商 （下游）
+     * @param params
+     * @return
+     */
+    @RequestMapping(value = "sale/batch/down", method = RequestMethod.POST)
+    @ResponseBody
+    public Result<?> productOnSaleDown(@RequestBody Map params) {
+        ParamsMapValidate.validate(params, generateSaleUpdateUpValidate());
+        return hotelPlanSaleService.productOnSaleDown(params);
+    }
+
+
 
     @RequestMapping("stock_price")
     @ResponseBody
@@ -89,6 +109,19 @@ public class HotelPlanSaleController {
         // 校验整数
         rules.put(new String[]{
                 "batch_id", //
+        }, new ValidRule[]{new ValidRule.Digits()});
+        return rules;
+    }
+    public Map<String[], ValidRule[]> generateSaleUpdateUpIdValidate() {
+        Map<String[], ValidRule[]> rules = new HashMap<>();
+        // 校验不为空的参数
+        rules.put(new String[]{
+                "id", //
+        }, new ValidRule[]{new ValidRule.NotNull()});
+
+        // 校验整数
+        rules.put(new String[]{
+                "id", //
         }, new ValidRule[]{new ValidRule.Digits()});
         return rules;
     }
