@@ -32,6 +32,14 @@ public class HotelController {
         return hotelService.addHotel(params);
     }
 
+
+    @RequestMapping(value = "select/id", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<?> selectHotelId(HttpServletRequest request,Integer id) {
+
+        return hotelService.selectHotelId(id);
+    }
+
     @RequestMapping(value = "select_hotel_name", method = RequestMethod.GET)
     @ResponseBody
     public Result<?> selectHotelName(HttpServletRequest request, String product_name,String ep_id,  Integer record_start,
