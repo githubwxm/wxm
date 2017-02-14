@@ -483,6 +483,7 @@ public class BookingOrderManager extends BaseOrderManager {
         return balanceChangeInfoList;
     }
 
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public void addPaymentCallback(Order order) {
         order.setStatus(OrderConstant.OrderStatus.PAYING); // 支付中
         // 支付成功回调 记录任务
@@ -490,6 +491,7 @@ public class BookingOrderManager extends BaseOrderManager {
         jobParams.put("orderId", order.getId().toString());
         jobParams.put("serialNum", "-1"); // 到付
         addJob(OrderConstant.Actions.PAYMENT_CALLBACK, jobParams);
+        orderMapper.updateByPrimaryKeySelective(order);
     }
 
     /**
