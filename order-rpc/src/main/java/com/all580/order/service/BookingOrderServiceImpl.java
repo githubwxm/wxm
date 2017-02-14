@@ -348,6 +348,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
     }
 
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    @MnsEvent
     public void checkCreateAudit(Map<Integer, LockStockDto> lockStockDtoMap, Map<Integer, List<Boolean>> listMap, List<OrderItem> orderItems) {
         for (Integer itemId : listMap.keySet()) {
             int i = 0;
@@ -373,6 +374,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
                         item.getStatus() == OrderConstant.OrderItemStatus.AUDIT_SUCCESS) {
                     item.setStatus(OrderConstant.OrderItemStatus.AUDIT_WAIT);
                     orderItemMapper.updateByPrimaryKeySelective(item);
+                    MnsEventManager.addEvent(OrderConstant.EventType.ORDER_WAIT_AUDIT, item.getId());
                 }
                 // 更新子订单详情
                 orderItemDetailMapper.updateByPrimaryKeySelective(detail);
