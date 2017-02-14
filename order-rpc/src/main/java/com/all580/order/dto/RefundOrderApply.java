@@ -29,4 +29,8 @@ public class RefundOrderApply {
     private String cause;
 
     private Date date;
+
+    private Integer userId;
+
+    private String userName;
 }
