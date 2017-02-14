@@ -35,6 +35,13 @@ public class HotelSubController {
 
         return hotelSubService.selectHotelSub(id);
     }
+    @RequestMapping(value = "select_hotel_sub_summary", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<?> selectHotelSubSunmary(Integer id) {
+
+        return hotelSubService.selectHotelSubSunmary(id);
+    }
+
 
     @RequestMapping("can_sale/list")
     @ResponseBody
