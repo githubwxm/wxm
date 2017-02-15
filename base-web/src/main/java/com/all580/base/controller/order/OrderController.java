@@ -46,6 +46,14 @@ public class OrderController extends BaseController {
         return bookingOrderService.create(params, "TICKET");
     }
 
+    @RequestMapping(value = "create/pay", method = RequestMethod.POST)
+    @ResponseBody
+    public Result<?> createPay(@RequestBody Map params) throws Exception {
+        // 验证参数
+        ParamsMapValidate.validate(params, orderValidateManager.createValidate());
+        return bookingOrderService.create(params, "TICKET_AUTO_PAY");
+    }
+
     @RequestMapping(value = "group/create", method = RequestMethod.POST)
     @ResponseBody
     public Result<?> createForGroup(@RequestBody Map params) throws Exception {

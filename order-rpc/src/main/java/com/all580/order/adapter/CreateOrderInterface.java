@@ -25,7 +25,7 @@ public interface CreateOrderInterface {
 
     void validate(CreateOrder createOrder, Map params);
 
-    @Transactional
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     Order insertOrder(CreateOrder createOrder, Map params);
 
     ProductSalesInfo validateProductAndGetSales(ValidateProductSub sub, CreateOrder createOrder, Map item);
@@ -34,15 +34,18 @@ public interface CreateOrderInterface {
 
     void validateVisitor(ProductSalesInfo salesInfo, ValidateProductSub sub, List<?> visitorList, Map item);
 
-    @Transactional
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     OrderItem insertItem(Order order, ValidateProductSub sub, ProductSalesInfo salesInfo, PriceDto price, Map item);
 
-    @Transactional
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     List<OrderItemDetail> insertDetail(OrderItem item, ValidateProductSub sub, ProductSalesInfo salesInfo);
 
-    @Transactional
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     List<Visitor> insertVisitor(List<?> visitorList, List<OrderItemDetail> details, ProductSalesInfo salesInfo, ValidateProductSub sub, Map item);
 
-    @Transactional
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     Shipping insertShipping(Map params, Order order);
+
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    void after(Map params, Order order);
 }

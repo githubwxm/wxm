@@ -16,6 +16,9 @@ import com.framework.common.Result;
 import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.util.CommonUtil;
 import org.apache.commons.lang.time.DateUtils;
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import javax.lang.exception.ApiException;
 import java.text.ParseException;
@@ -165,5 +168,20 @@ public abstract class AbstractCreateOrderImpl implements CreateOrderInterface {
     public Shipping insertShipping(Map params, Order order) {
         Map shippingMap = (Map) params.get("shipping");
         return bookingOrderManager.generateShipping(shippingMap, order.getId());
+    }
+
+    @Override
+    public void after(Map params, Order order) {
+        if (isCheck(params)) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+        }
+    }
+
+    protected boolean isCheck(Map params) {
+        Object object = params.get("check");
+        if (object != null) {
+            return StringUtils.isNumeric(object.toString()) ? BooleanUtils.toBoolean(Integer.parseInt(object.toString())) : BooleanUtils.toBoolean(object.toString());
+        }
+        return false;
     }
 }

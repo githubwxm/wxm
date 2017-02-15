@@ -1,6 +1,5 @@
 package com.all580.order.service;
 
-import com.all580.ep.api.service.EpService;
 import com.all580.order.adapter.CreateOrderInterface;
 import com.all580.order.api.OrderConstant;
 import com.all580.order.api.service.BookingOrderService;
@@ -65,16 +64,10 @@ public class BookingOrderServiceImpl implements BookingOrderService {
     @Autowired
     private RefundOrderMapper refundOrderMapper;
     @Autowired
-    private GroupMapper groupMapper;
-    @Autowired
-    private ShippingMapper shippingMapper;
-    @Autowired
     private VisitorMapper visitorMapper;
 
     @Autowired
     private ProductSalesPlanRPCService productSalesPlanRPCService;
-    @Autowired
-    private EpService epService;
     @Autowired
     private VoucherRPCService voucherRPCService;
     @Autowired
@@ -144,6 +137,10 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             // 预分账记录
             bookingOrderManager.prePaySplitAccount(allDaysSales, orderItem, createOrder.getEpId());
         }
+        // 更新订单金额
+        order.setPay_amount(totalPayPrice);
+        order.setSale_amount(totalSalePrice);
+
         // 创建订单联系人
         orderInterface.insertShipping(params, order);
 
@@ -170,16 +167,15 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             }
         }
 
-        // 更新订单金额
-        order.setPay_amount(totalPayPrice);
-        order.setSale_amount(totalSalePrice);
-
         // 更新审核时间
         if (order.getStatus() != OrderConstant.OrderStatus.AUDIT_WAIT && order.getAudit_time() == null) {
             order.setAudit_time(new Date());
         }
 
         orderMapper.updateByPrimaryKeySelective(order);
+
+        // 执行后事
+        orderInterface.after(params, order);
 
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("order", JsonUtils.obj2map(order));

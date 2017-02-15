@@ -32,9 +32,9 @@ public interface RefundOrderInterface {
 
     int[] getRefundAudit(RefundOrderApply apply, Map params);
 
-    @Transactional
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     RefundOrder insertRefundOrder(RefundOrderApply apply, Collection<RefundDay> refundDays, int quantity, int money, int fee, int ticketAudit, int moneyAudit, Map params);
 
-    @Transactional
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     void hasRemainAndInsertRefundVisitor(RefundOrderApply apply, RefundOrder refundOrder, List<OrderItemDetail> detailList, Collection<RefundDay> refundDays, Map params);
 }
