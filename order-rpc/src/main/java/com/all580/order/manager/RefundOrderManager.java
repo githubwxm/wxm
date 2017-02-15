@@ -23,6 +23,7 @@ import com.framework.common.lang.JsonUtils;
 import com.framework.common.lang.UUIDGenerator;
 import com.framework.common.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -282,8 +283,8 @@ public class RefundOrderManager extends BaseOrderManager {
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public RefundOrder generateRefundOrder(OrderItem item, Collection<RefundDay> refundDays, int quantity, int money, int fee, String cause,
-                                           Integer auditTicket, Integer auditMoney, int saleCoreEpId, Integer applyUserId, String applyUserName) {
-        return generateRefundOrder(item, refundDays, quantity, money, fee, cause, 0, auditTicket, auditMoney, saleCoreEpId, applyUserId, applyUserName);
+                                           Integer auditTicket, Integer auditMoney, int saleCoreEpId, Integer applyUserId, String applyUserName, String outerId) {
+        return generateRefundOrder(item, refundDays, quantity, money, fee, cause, 0, auditTicket, auditMoney, saleCoreEpId, applyUserId, applyUserName, outerId);
     }
 
     /**
@@ -296,7 +297,8 @@ public class RefundOrderManager extends BaseOrderManager {
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public RefundOrder generateRefundOrder(OrderItem item, Collection<RefundDay> refundDays, int quantity, int money, int fee, String cause,
-                                           Integer groupId, Integer auditTicket, Integer auditMoney, int saleCoreEpId, Integer applyUserId, String applyUserName) {
+                                           Integer groupId, Integer auditTicket, Integer auditMoney, int saleCoreEpId,
+                                           Integer applyUserId, String applyUserName, String outerId) {
         RefundOrder refundOrder = new RefundOrder();
         // 获取平台商通道费率
         refundOrder.setChannel_fee(getChannelRate(item.getSupplier_core_ep_id(), saleCoreEpId));
@@ -314,6 +316,7 @@ public class RefundOrderManager extends BaseOrderManager {
         refundOrder.setAudit_money(auditMoney);
         refundOrder.setApply_user_id(applyUserId);
         refundOrder.setApply_user_name(applyUserName);
+        refundOrder.setOuter_id(StringUtils.isEmpty(outerId) ? "_" + refundOrder.getNumber() : outerId);
         refundOrderMapper.insertSelective(refundOrder);
         return refundOrder;
     }

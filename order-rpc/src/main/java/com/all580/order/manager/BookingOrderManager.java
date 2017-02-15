@@ -19,6 +19,7 @@ import com.framework.common.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.time.DateUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -227,7 +228,7 @@ public class BookingOrderManager extends BaseOrderManager {
         order.setFrom_type(from);
         order.setRemark(remark);
         order.setPayee_ep_id(coreEpId);
-        order.setOuter_id(outerId);
+        order.setOuter_id(StringUtils.isEmpty(outerId) ? "_" + order.getNumber() : outerId);
         orderMapper.insertSelective(order);
         return order;
     }
