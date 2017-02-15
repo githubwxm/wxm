@@ -238,19 +238,21 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             throw new ApiException("子订单不在可重新发票状态");
         }
 
+        String phone = CommonUtil.objectParseString(params.get("phone"));
+
         // 是否全部重新发票
         Boolean all = Boolean.parseBoolean(CommonUtil.objectParseString(params.get("all")));
         if (all) {
             List<Visitor> visitors = visitorMapper.selectByOrderItem(orderItem.getId());
             for (Visitor visitor : visitors) {
-                reSendTicket(orderItem, visitor.getId(), visitor.getPhone());
+                reSendTicket(orderItem, visitor.getId(), StringUtils.isEmpty(phone) ? visitor.getPhone() : phone);
             }
         } else {
             Integer visitorId = CommonUtil.objectParseInteger(params.get("visitor_id"));
             if (visitorId == null) {
                 throw new ParamsMapValidationException("visitor_id", "游客ID不能为空");
             }
-            Result result = reSendTicket(orderItem, visitorId, CommonUtil.objectParseString(params.get("phone")));
+            Result result = reSendTicket(orderItem, visitorId, phone);
             if (!result.isSuccess()) {
                 throw new ApiException(result.getError());
             }
