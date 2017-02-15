@@ -1,5 +1,6 @@
 package com.all580.base.controller.product.hotel;
 
+import com.all580.ep.api.service.EpService;
 import com.all580.product.api.hotel.service.HotelPlanSaleService;
 import com.all580.product.api.hotel.service.HotelService;
 import com.framework.common.Result;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -23,6 +25,9 @@ public class HotelPlanSaleController {
 
     @Autowired
     private HotelPlanSaleService hotelPlanSaleService;
+
+    @Autowired
+    private EpService epService;
 
 
     /**
@@ -67,12 +72,43 @@ public class HotelPlanSaleController {
                                    @RequestParam("batch_id") Integer batch_id,Integer status) {
         return hotelPlanSaleService.selectNotSale(ep_id,batch_id,status);
     }
+    @RequestMapping(value = "sale/select/platform_up_list", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<?> selectPlatformUpList(@RequestParam("ep_id") Integer ep_id,
+                                   @RequestParam("batch_id") Integer batch_id) {
+        Map<String,Object> map = new HashMap<>();
+        map.put("ep_id",ep_id);
+        Result<Map<String, Object>> allEpsResult = epService.platformListDown(map);
+        if (allEpsResult.isFault()) return new Result<>(false, "查不到下游平台商");
+        List<Map<String,Object>> epList =(List<Map<String,Object>>)allEpsResult.get().get("list");
+        if(null==epList||epList.isEmpty()){
+            return new Result<>(false, "查不到下游平台商");
+        }
+        return hotelPlanSaleService.selectPlatformUpList(ep_id,batch_id,epList);
+    }
+
+    @RequestMapping(value = "sale/select/platform_down_list", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<?> selectPlatformDownList(@RequestParam("ep_id") Integer ep_id,
+                                          @RequestParam("batch_id") Integer batch_id) {
+        Map<String,Object> map = new HashMap<>();
+        map.put("ep_id",ep_id);
+        Result<Map<String, Object>> allEpsResult = epService.platformListDown(map);
+        if (allEpsResult.isFault()) return new Result<>(false, "查不到下游平台商");
+        List<Map<String,Object>> epList =(List<Map<String,Object>>)allEpsResult.get().get("list");
+        if(null==epList||epList.isEmpty()){
+            return new Result<>(false, "查不到下游平台商");
+        }
+        return hotelPlanSaleService.selectPlatformDownList(ep_id,batch_id,epList);
+    }
+
     @RequestMapping(value = "sale/select/down_list", method = RequestMethod.GET)
     @ResponseBody
     public Result<?> selectDownList(@RequestParam("ep_id") Integer ep_id,
-                                   @RequestParam("batch_id") Integer batch_id) {
+                                    @RequestParam("batch_id") Integer batch_id) {
         return hotelPlanSaleService.selectDownList(ep_id,batch_id);
     }
+
 
     /**
      * 指定一个或多个企业下架    商家的话  mpa list 里是一个上级供应商 （下游）

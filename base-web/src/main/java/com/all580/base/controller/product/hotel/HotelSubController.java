@@ -3,6 +3,7 @@ package com.all580.base.controller.product.hotel;
 import com.all580.product.api.hotel.service.HotelSubService;
 import com.framework.common.Result;
 import com.framework.common.lang.DateFormatUtils;
+import com.framework.common.util.CommonUtil;
 import com.framework.common.validate.ParamsMapValidate;
 import com.framework.common.validate.ValidRule;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,62 @@ public class HotelSubController {
 
         return hotelSubService.selectHotelSub(id);
     }
+
+    /**
+     * 查询子产品库存
+     * @param product_sub_id
+     * @return
+     */
+    @RequestMapping(value = "select_hotel_sub_plan", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<?> selectBatchPlan(Integer product_sub_id) {
+
+        return hotelSubService.selectBatchPlan(product_sub_id);
+    }
+
+    /**
+     * 修改单个库存
+     * @param params
+     * @return
+     */
+    @RequestMapping(value = "update/single_stock", method = RequestMethod.POST)
+    @ResponseBody
+    public Result<?> updateSingleStock(@RequestBody Map params) {
+        ParamsMapValidate.validate(params, generateStockValidate());
+        Integer stock= CommonUtil.objectParseInteger(params.get("stock"));
+        Integer id= CommonUtil.objectParseInteger(params.get("id"));
+        return hotelSubService.updateSingleStock(id,stock);
+    }
+
+    /**
+     * 删除单个库存
+     * @param params
+     * @return
+     */
+    @RequestMapping(value = "delete/single_stock", method = RequestMethod.POST)
+    @ResponseBody
+    public Result<?> deleteSingleStock(@RequestBody Map params) {
+        params.put("stock",0);
+        ParamsMapValidate.validate(params, generateStockValidate());
+        Integer id= CommonUtil.objectParseInteger(params.get("id"));
+        return hotelSubService.deleteSingleStock(id);
+    }
+    /**
+     * 删除单个库存
+     * @param params
+     * @return
+     */
+    @RequestMapping(value = "add/single_stock", method = RequestMethod.POST)
+    @ResponseBody
+    public Result<?> addPlan(@RequestBody Map params) {
+        ParamsMapValidate.validate(params, generateAddStockValidate());
+        return hotelSubService.addPlan(params);
+    }
+    /**
+     * 查询子产品详情
+     * @param id
+     * @return
+     */
     @RequestMapping(value = "select_hotel_sub_summary", method = RequestMethod.GET)
     @ResponseBody
     public Result<?> selectHotelSubSunmary(Integer id) {
@@ -83,4 +140,36 @@ public class HotelSubController {
         }, new ValidRule[]{new ValidRule.Digits()});
         return rules;
     }
+    public Map<String[], ValidRule[]> generateStockValidate() {
+        Map<String[], ValidRule[]> rules = new HashMap<>();
+        // 校验不为空的参数
+        rules.put(new String[]{
+                "stock", //
+                "id", //
+        }, new ValidRule[]{new ValidRule.NotNull()});
+
+        // 校验整数
+        rules.put(new String[]{
+                "stock" ,// 企业id
+                "id" ,// 企业id
+        }, new ValidRule[]{new ValidRule.Digits()});
+        return rules;
+    }
+    public Map<String[], ValidRule[]> generateAddStockValidate() {
+        Map<String[], ValidRule[]> rules = new HashMap<>();
+        // 校验不为空的参数
+        rules.put(new String[]{
+                "start_date", //
+                "product_sub_id", //
+                "stock", //
+        }, new ValidRule[]{new ValidRule.NotNull()});
+
+        // 校验整数
+        rules.put(new String[]{
+                "stock" ,// 企业id
+                "product_sub_id" ,// 企业id
+        }, new ValidRule[]{new ValidRule.Digits()});
+        return rules;
+    }
+
 }
