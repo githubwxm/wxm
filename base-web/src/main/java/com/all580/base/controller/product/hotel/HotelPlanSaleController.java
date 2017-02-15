@@ -122,7 +122,23 @@ public class HotelPlanSaleController {
         return hotelPlanSaleService.productOnSaleDown(params);
     }
 
+    /**
+     * 跨平台按产品
+     * @param ep_id
+     * @param platfrom_id
+     * @return
+     */
+    @RequestMapping("select/platform_hotel_up_list")
+    @ResponseBody
+    public Result selectPlatformHotelUpList(Integer ep_id,Integer platfrom_id ){
+        return hotelPlanSaleService.selectPlatformHotelUpList(ep_id,platfrom_id);
+    }
 
+    @RequestMapping("select/platform_hotel_down_list")
+    @ResponseBody
+    public Result selectPlatformHotelDownList(Integer ep_id,Integer platfrom_id ){
+        return hotelPlanSaleService.selectPlatformHotelDownList(ep_id,platfrom_id);
+    }
 
     @RequestMapping("stock_price")
     @ResponseBody
