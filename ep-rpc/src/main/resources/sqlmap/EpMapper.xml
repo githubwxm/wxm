@@ -137,17 +137,17 @@
         <include refid="platformListUpDown"/>
     </select>
     <sql id="platformListUpDown">
-        <if test="epName != null ">
-            and   name like CONCAT('%',#{epName},'%')
+        <if test="name != null ">
+            and   name like CONCAT('%',#{name},'%')
         </if>
-        <if test="epProvince != null and epProvince!=''">
-            and province =#{epProvince}
+        <if test="province != null and province!=''">
+            and province =#{province}
         </if>
-        <if test="epCity != null and epCity!=''">
-            and city=#{epCity}
+        <if test="city != null and city!=''">
+            and city=#{city}
         </if>
-        <if test="epPhone != null and epPhone!=''">
-            and link_phone =#{epPhone}
+        <if test="link_phone != null and link_phone!=''">
+            and link_phone =#{link_phone}
         </if>
         <include refid="limit"/>
     </sql>
