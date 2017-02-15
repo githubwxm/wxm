@@ -61,6 +61,7 @@ public class TicketGroupRefundOrderImpl extends AbstractRefundOrderImpl {
 
     @Override
     public void canBeRefund(RefundOrderApply apply, List<OrderItemDetail> detailList, Map params) {
+        super.canBeRefund(apply, detailList, params);
         if (apply.getItem().getUsed_quantity() != null && apply.getItem().getUsed_quantity() > 0) {
             Date expiryDate = detailList.get(detailList.size() - 1).getExpiry_date();
             if (apply.getDate().before(expiryDate)) {

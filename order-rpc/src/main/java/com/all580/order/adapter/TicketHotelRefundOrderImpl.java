@@ -52,6 +52,7 @@ public class TicketHotelRefundOrderImpl extends AbstractRefundOrderImpl {
 
     @Override
     public void canBeRefund(RefundOrderApply apply, List<OrderItemDetail> detailList, Map params) {
+        super.canBeRefund(apply, detailList, params);
         List<RefundOrder> refundOrders = refundOrderMapper.selectByItemId(apply.getItem().getId());
         if (refundOrders != null && refundOrders.size() > 0) {
             throw new ApiException("该订单只能退一次");

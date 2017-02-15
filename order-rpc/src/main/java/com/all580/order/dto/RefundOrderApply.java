@@ -33,4 +33,7 @@ public class RefundOrderApply {
     private Integer userId;
 
     private String userName;
+
+    /** 外部信息 */
+    private String outer;
 }
