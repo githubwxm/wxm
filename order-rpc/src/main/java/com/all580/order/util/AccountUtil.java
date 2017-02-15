@@ -473,6 +473,7 @@ public class AccountUtil {
             }
             refundDay.setQuantity(quantity);
             refundDay.setVisitors(Collections.<Visitor>emptyList());
+            collection.add(refundDay);
         }
         return collection;
     }

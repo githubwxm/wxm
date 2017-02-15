@@ -66,6 +66,8 @@ public abstract class AbstractRefundOrderImpl implements RefundOrderInterface {
         apply.setCause(CommonUtil.objectParseString(params.get("cause")));
         apply.setQuantity(CommonUtil.objectParseInteger(params.get("quantity")));
         apply.setDate(new Date());
+        apply.setUserId(CommonUtil.objectParseInteger(params.get("operator_id")));
+        apply.setUserName(CommonUtil.objectParseString(params.get("operator_name")));
         return apply;
     }
 
@@ -112,6 +114,6 @@ public abstract class AbstractRefundOrderImpl implements RefundOrderInterface {
 
     @Override
     public RefundOrder insertRefundOrder(RefundOrderApply apply, Collection<RefundDay> refundDays, int quantity, int money, int fee, int ticketAudit, int moneyAudit, Map params) {
-        return refundOrderManager.generateRefundOrder(apply.getItem(), refundDays, quantity, money, fee, apply.getCause(), ticketAudit, moneyAudit, apply.getOrder().getPayee_ep_id());
+        return refundOrderManager.generateRefundOrder(apply.getItem(), refundDays, quantity, money, fee, apply.getCause(), ticketAudit, moneyAudit, apply.getOrder().getPayee_ep_id(), apply.getUserId(), apply.getUserName());
     }
 }

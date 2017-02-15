@@ -282,8 +282,8 @@ public class RefundOrderManager extends BaseOrderManager {
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public RefundOrder generateRefundOrder(OrderItem item, Collection<RefundDay> refundDays, int quantity, int money, int fee, String cause,
-                                           Integer auditTicket, Integer auditMoney, int saleCoreEpId) {
-        return generateRefundOrder(item, refundDays, quantity, money, fee, cause, 0, auditTicket, auditMoney, saleCoreEpId);
+                                           Integer auditTicket, Integer auditMoney, int saleCoreEpId, Integer applyUserId, String applyUserName) {
+        return generateRefundOrder(item, refundDays, quantity, money, fee, cause, 0, auditTicket, auditMoney, saleCoreEpId, applyUserId, applyUserName);
     }
 
     /**
@@ -296,7 +296,7 @@ public class RefundOrderManager extends BaseOrderManager {
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public RefundOrder generateRefundOrder(OrderItem item, Collection<RefundDay> refundDays, int quantity, int money, int fee, String cause,
-                                           Integer groupId, Integer auditTicket, Integer auditMoney, int saleCoreEpId) {
+                                           Integer groupId, Integer auditTicket, Integer auditMoney, int saleCoreEpId, Integer applyUserId, String applyUserName) {
         RefundOrder refundOrder = new RefundOrder();
         // 获取平台商通道费率
         refundOrder.setChannel_fee(getChannelRate(item.getSupplier_core_ep_id(), saleCoreEpId));
@@ -312,6 +312,8 @@ public class RefundOrderManager extends BaseOrderManager {
         refundOrder.setGroup_id(groupId == null ? 0 : groupId);
         refundOrder.setAudit_ticket(auditTicket);
         refundOrder.setAudit_money(auditMoney);
+        refundOrder.setApply_user_id(applyUserId);
+        refundOrder.setApply_user_name(applyUserName);
         refundOrderMapper.insertSelective(refundOrder);
         return refundOrder;
     }
