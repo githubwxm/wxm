@@ -1,5 +1,6 @@
 package com.all580.order.adapter;
 
+import com.alibaba.fastjson.JSONObject;
 import com.all580.ep.api.conf.EpConstant;
 import com.all580.order.api.OrderConstant;
 import com.all580.order.dao.OrderItemMapper;
@@ -12,8 +13,11 @@ import com.all580.order.entity.OrderItemDetail;
 import com.all580.order.entity.RefundOrder;
 import com.all580.order.manager.RefundOrderManager;
 import com.all580.order.util.AccountUtil;
+import com.all580.product.api.consts.ProductConstants;
 import com.framework.common.util.CommonUtil;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.Assert;
 
 import javax.lang.exception.ApiException;
@@ -80,7 +84,19 @@ public abstract class AbstractRefundOrderImpl implements RefundOrderInterface {
 
     @Override
     public void canBeRefund(RefundOrderApply apply, List<OrderItemDetail> detailList, Map params) {
-
+        for (OrderItemDetail detail : detailList) {
+            String rule = apply.getFrom() == ProductConstants.RefundEqType.SELLER ? detail.getCust_refund_rule() : detail.getSaler_refund_rule();
+            JSONObject jsonObject = JSONObject.parseObject(rule);
+            Object tmp = jsonObject.get("refund");
+            boolean refund = true;
+            if (tmp != null) {
+                String cs = tmp.toString();
+                refund = StringUtils.isNumeric(cs) ? BooleanUtils.toBoolean(Integer.parseInt(cs)) : BooleanUtils.toBoolean(cs);
+            }
+            if (!refund) {
+                throw new ApiException("该订单为不可退退货规则");
+            }
+        }
     }
 
     @Override
