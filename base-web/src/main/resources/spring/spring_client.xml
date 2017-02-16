@@ -106,4 +106,8 @@
 	<dubbo:reference id="consumeTicketEvent" interface="com.all580.order.api.service.event.ConsumeTicketEvent" />
 	<dubbo:reference id="consumeTicketSyncDataEvent" interface="com.all580.order.api.service.event.ConsumeTicketSyncDataEvent" />
 	<dubbo:reference id="orderItemWaitAuditEvent" interface="com.all580.order.api.service.event.OrderItemWaitAuditEvent" />
+	<dubbo:reference id="sendTicketNotifyEvent" interface="com.all580.order.api.service.event.SendTicketNotifyEvent" />
+	<dubbo:reference id="cancelTicketNotifyEvent" interface="com.all580.order.api.service.event.CancelTicketNotifyEvent" />
+	<dubbo:reference id="refundTicketNotifyEvent" interface="com.all580.order.api.service.event.RefundTicketNotifyEvent" />
+	<dubbo:reference id="consumeTicketNotifyEvent" interface="com.all580.order.api.service.event.ConsumeTicketNotifyEvent" />
 </beans>
