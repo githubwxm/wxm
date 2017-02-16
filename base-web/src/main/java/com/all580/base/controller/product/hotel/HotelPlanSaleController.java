@@ -140,6 +140,19 @@ public class HotelPlanSaleController {
         return hotelPlanSaleService.selectPlatformHotelDownList(ep_id,platfrom_id);
     }
 
+    @RequestMapping(value = "sale/batch/platform/up", method = RequestMethod.POST)
+    @ResponseBody
+    public Result<?> productBatchSaleUp(@RequestBody Map params) {
+        ParamsMapValidate.validate(params, generateSaleUpdateUpValidate());
+        return hotelPlanSaleService.productBatchSaleUp(params);
+    }
+    @RequestMapping(value = "sale/batch/platform/down", method = RequestMethod.POST)
+    @ResponseBody
+    public Result<?> productSaleBatchDown(@RequestBody Map params) {
+        ParamsMapValidate.validate(params, generateSaleUpdateUpValidate());
+        return hotelPlanSaleService.productSaleBatchDown(params);
+    }
+
     @RequestMapping("stock_price")
     @ResponseBody
     public Result<?> selectStockAndPrice(@RequestParam Integer ep_id, @RequestParam Long code,
