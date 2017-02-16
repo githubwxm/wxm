@@ -297,6 +297,10 @@
         WHERE `order_item_id` = #{itemId,jdbcType=INTEGER}
         order by `day` asc
     </select>
+  <select id="selectExpiryMaxDate" resultType="java.lang.String">
+     SELECT max(expiry_date) FROM t_order_item_detail
+        WHERE `order_item_id` = #{itemId}
+  </select>
 
     <select id="selectByOrderId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         SELECT toid.* FROM t_order_item_detail toid
