@@ -8,6 +8,7 @@ import com.all580.order.entity.OrderItem;
 import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.mns.TopicPushManager;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -20,6 +21,7 @@ import java.util.Map;
 /**
  * Created by wxming on 2017/2/16 0016.
  */
+@Slf4j
 @Component
 public class BaseNotifyEvent {
     @Autowired
@@ -31,7 +33,7 @@ public class BaseNotifyEvent {
     private OrderItemMapper orderItemMapper;
     @Autowired
     private OrderItemDetailMapper orderItemDetailMapper;
-    @Value("${mns.topic}")
+    @Value("${mns.notify.top}")
     private String topicName;
 
     protected void notifyEvent(Integer itemId,String opCode){
@@ -57,6 +59,7 @@ public class BaseNotifyEvent {
              map.put("exp_qty",item.getQuantity()-item.getRefund_quantity()-item.getUsed_quantity());
           }
         String str = JsonUtils.toJson(map);
+       log.info("通知事物数据: "+str);
         topicPushManager.push(topicName, null, str);
     }
 }

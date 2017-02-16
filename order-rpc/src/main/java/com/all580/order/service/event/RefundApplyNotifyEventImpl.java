@@ -8,6 +8,7 @@ import com.all580.order.dao.RefundOrderMapper;
 import com.all580.order.entity.Order;
 import com.all580.order.entity.OrderItem;
 import com.all580.order.entity.RefundOrder;
+import com.all580.product.api.consts.ProductConstants;
 import com.framework.common.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
@@ -29,7 +30,7 @@ public class RefundApplyNotifyEventImpl extends BaseNotifyEvent implements Refun
         Assert.notNull(refundOrder, "退订订单不存在");
         Order order = orderMapper.selectByRefundSn(refundOrder.getNumber());
         Assert.notNull(order, "订单不存在");
-        if(order.getStatus()- OrderConstant.OrderStatus.AUDIT_WAIT==0){
+        if (refundOrder.getStatus() == OrderConstant.RefundOrderStatus.AUDIT_WAIT) {
             notifyEvent(refundOrder.getOrder_item_id(), "ORTHER");
         }
         return new Result(true);
