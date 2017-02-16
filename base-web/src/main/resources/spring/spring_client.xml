@@ -111,4 +111,6 @@
 	<dubbo:reference id="refundTicketNotifyEvent" interface="com.all580.order.api.service.event.RefundMoneyNotifyEvent" />
 	<dubbo:reference id="orderAuditNotifyEvent" interface="com.all580.order.api.service.event.OrderAuditNotifyEvent" />
 	<dubbo:reference id="refundApplyNotifyEvent" interface="com.all580.order.api.service.event.RefundApplyNotifyEvent" />
+	<dubbo:reference id="consumeTicketNotifyEvent" interface="com.all580.order.api.service.event.ConsumeTicketNotifyEvent" />
+
 </beans>
