@@ -94,6 +94,14 @@ public class OrderController extends BaseController {
         return refundOrderService.apply(params, "TICKET");
     }
 
+    @RequestMapping(value = "refund/ota/apply", method = RequestMethod.POST)
+    @ResponseBody
+    public Result<?> refundApplyForOta(@RequestBody Map params) throws Exception {
+        // 验证参数
+        ParamsMapValidate.validate(params, orderValidateManager.refundApplyForOtaValidate());
+        return refundOrderService.apply(params, "TICKET_OTA");
+    }
+
     @RequestMapping(value = "refund/group/apply", method = RequestMethod.POST)
     @ResponseBody
     public Result<?> refundApplyForGroup(@RequestBody Map params) throws Exception {
