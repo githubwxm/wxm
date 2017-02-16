@@ -2,15 +2,13 @@ package com.all580.order.api.service.event;
 
 import com.all580.order.api.OrderConstant;
 import com.all580.order.api.model.ConsumeTicketEventParam;
+import com.all580.order.api.model.OrderAuditEventParam;
 import com.framework.common.event.EventService;
 import com.framework.common.mns.MnsSubscribeAction;
 
 /**
- * @author zhouxianjun(Alone)
- * @ClassName:
- * @Description: 核销票据事件
- * @date 2017/2/9 11:48
+ * Created by wxming on 2017/2/16 0016.
  */
-@EventService(OrderConstant.EventType.CONSUME_TICKET)
-public interface ConsumeTicketEvent extends MnsSubscribeAction<ConsumeTicketEventParam> {
+@EventService(OrderConstant.EventType.ORDER_AUDIT)
+public interface OrderAuditNotifyEvent extends MnsSubscribeAction<OrderAuditEventParam> {
 }
