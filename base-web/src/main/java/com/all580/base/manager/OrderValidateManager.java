@@ -253,6 +253,14 @@ public class OrderValidateManager {
     }
 
     /**
+     * OTA订单退订申请验证
+     * @return
+     */
+    public Map<String[], ValidRule[]> refundApplyForOtaValidate() {
+        return refundApplyForGroupValidate();
+    }
+
+    /**
      * 订单退订审核验证
      * @return
      */

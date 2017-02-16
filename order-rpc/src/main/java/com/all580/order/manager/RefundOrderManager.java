@@ -235,7 +235,7 @@ public class RefundOrderManager extends BaseOrderManager {
         return null;
     }
 
-    private RefundVisitor getRefundVisitorById(List<RefundVisitor> visitorList, Integer id) {
+    public RefundVisitor getRefundVisitorById(List<RefundVisitor> visitorList, Integer id) {
         if (visitorList == null || id == null) {
             return null;
         }
