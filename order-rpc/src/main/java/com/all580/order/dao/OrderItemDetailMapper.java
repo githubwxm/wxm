@@ -91,4 +91,5 @@ public interface OrderItemDetailMapper {
      * @return
      */
     int resetRefundRemain(@Param("itemId") Integer itemId);
+    String selectExpiryMaxDate(@Param("itemId") Integer itemId);
 }
