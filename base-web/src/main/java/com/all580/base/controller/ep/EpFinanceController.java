@@ -58,16 +58,16 @@ public class EpFinanceController extends BaseController {
                                       String start_date,
                                       String end_date,
                                       String ref_id,
-                                      Integer start_record,
-                                      Integer max_records, Integer export) {
+                                      Integer record_start,
+                                      Integer record_count, Integer export) {
         Assert.notNull(ep_id, "参数【ep_id】不能为空");
         return fundSerialService.selectFundSerial( ep_id,
                  status,
                  start_date,
                  end_date,
                  ref_id,
-                 start_record,
-                 max_records,  export);
+                record_start,
+                record_count,  export);
     }//
     @RequestMapping(value = "update_fund_serial_summary", method = RequestMethod.POST)
     @ResponseBody
