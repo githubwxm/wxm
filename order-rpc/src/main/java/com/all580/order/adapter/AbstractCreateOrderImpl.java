@@ -15,6 +15,7 @@ import com.all580.product.api.service.ProductSalesPlanRPCService;
 import com.framework.common.Result;
 import com.framework.common.event.MnsEventManager;
 import com.framework.common.lang.DateFormatUtils;
+import com.framework.common.lang.JsonUtils;
 import com.framework.common.util.CommonUtil;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.lang3.BooleanUtils;
@@ -23,10 +24,7 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import javax.lang.exception.ApiException;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author zhouxianjun(Alone)
@@ -99,7 +97,10 @@ public abstract class AbstractCreateOrderImpl implements CreateOrderInterface {
             if (order != null) {
                 Result result = new Result(false);
                 result.setCode(Result.UNIQUE_KEY_ERROR);
-                result.put(order);
+                Map<String, Object> map = new HashMap<>();
+                map.put("t_order", JsonUtils.obj2map(order));
+                map.put("items", JsonUtils.json2List(JsonUtils.toJson(bookingOrderManager.selectByOrder(order.getId()))));
+                result.put(map);
                 return result;
             }
         }
