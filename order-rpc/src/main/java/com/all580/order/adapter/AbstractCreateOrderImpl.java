@@ -98,6 +98,7 @@ public abstract class AbstractCreateOrderImpl implements CreateOrderInterface {
             Order order = bookingOrderManager.selectByOuter(createOrder.getEpId(), createOrder.getOuter());
             if (order != null) {
                 Result result = new Result(false);
+                result.setCode(Result.UNIQUE_KEY_ERROR);
                 result.put(order);
                 return result;
             }
