@@ -24,7 +24,7 @@ public interface CreateOrderInterface {
 
     ValidateProductSub parseItemParams(Map item);
 
-    void validate(CreateOrder createOrder, Map params);
+    Result validate(CreateOrder createOrder, Map params);
 
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     Order insertOrder(CreateOrder createOrder, Map params);
