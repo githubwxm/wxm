@@ -188,7 +188,10 @@ public class BookingOrderServiceImpl implements BookingOrderService {
 
         // 触发事件
         MnsEventManager.addEvent(OrderConstant.EventType.ORDER_CREATE, order.getId());
-        return result;
+        Map<String, Collection<?>> data = new HashMap<>();
+        data.put("t_order", CommonUtil.oneToList(order));
+        data.put("t_order_item", orderItems);
+        return result.putExt(Result.SYNC_DATA, JsonUtils.obj2map(data));
     }
 
     @Override
