@@ -7,6 +7,7 @@ import com.all580.order.dao.OrderItemMapper;
 import com.all580.order.entity.OrderItem;
 import com.framework.common.Result;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import java.util.Date;
@@ -14,6 +15,7 @@ import java.util.Date;
 /**
  * Created by wxming on 2017/2/16 0016.
  */
+@Service
 public class ConsumeTicketNotifyEventImpl extends BaseNotifyEvent implements ConsumeTicketNotifyEvent {
 
 
