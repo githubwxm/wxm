@@ -4,6 +4,7 @@ import com.all580.order.api.OrderConstant;
 import com.all580.order.dao.OrderItemDetailMapper;
 import com.all580.order.dao.OrderItemMapper;
 import com.all580.order.dao.OrderMapper;
+import com.all580.order.dao.RefundOrderMapper;
 import com.all580.order.dto.RefundDay;
 import com.all580.order.dto.RefundOrderApply;
 import com.all580.order.entity.OrderItemDetail;
@@ -30,6 +31,8 @@ import java.util.Map;
 public class TicketGroupRefundOrderImpl extends AbstractRefundOrderImpl {
     @Autowired
     private OrderItemDetailMapper orderItemDetailMapper;
+    @Autowired
+    private RefundOrderMapper refundOrderMapper;
 
     @Autowired
     @Override
@@ -62,6 +65,10 @@ public class TicketGroupRefundOrderImpl extends AbstractRefundOrderImpl {
     @Override
     public void canBeRefund(RefundOrderApply apply, List<OrderItemDetail> detailList, Map params) {
         super.canBeRefund(apply, detailList, params);
+        List<RefundOrder> refundOrders = refundOrderMapper.selectByItemId(apply.getItem().getId());
+        if (refundOrders != null && refundOrders.size() > 0) {
+            throw new ApiException("该订单只能退一次");
+        }
         if (apply.getItem().getUsed_quantity() != null && apply.getItem().getUsed_quantity() > 0) {
             Date expiryDate = detailList.get(detailList.size() - 1).getExpiry_date();
             if (apply.getDate().before(expiryDate)) {
