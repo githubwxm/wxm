@@ -439,4 +439,8 @@
     </if>
 
   </select>
+
+  <select id="selectItemQuantity" resultType="java.lang.Integer">
+    select SUM(quantity) from t_refund_order where order_item_id=#{order_item_id};
+  </select>
 </mapper>
