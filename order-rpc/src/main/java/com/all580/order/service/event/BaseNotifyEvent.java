@@ -63,6 +63,6 @@ public class BaseNotifyEvent {
         }
         String str = JsonUtils.toJson(map);
         log.info("通知事物数据: " + str);
-        topicPushManager.push(topicName, StringUtils.isEmpty(tag) ? null : tag, str);
+        topicPushManager.push(topicName, StringUtils.isEmpty(tag) ? null : tag, str, !StringUtils.isEmpty(tag));
     }
 }
