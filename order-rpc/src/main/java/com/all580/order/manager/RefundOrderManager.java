@@ -339,7 +339,7 @@ public class RefundOrderManager extends BaseOrderManager {
         for (RefundAccount refundAccount : refundAccounts) {
             // 余额 则要把最终销售商的钱退还
             if (order.getPayment_type() == PaymentConstant.PaymentType.BALANCE.intValue()) {
-                if (refundAccount.getEp_id().intValue() == order.getBuy_ep_id() && refundAccount.getCore_ep_id().intValue() == order.getBuy_ep_id()) {
+                if (refundAccount.getEp_id().intValue() == order.getBuy_ep_id() && refundAccount.getCore_ep_id().intValue() == order.getPayee_ep_id()) {
                     RefundOrder refundOrder = refundOrderMapper.selectByPrimaryKey(refundOrderId);
                     refundAccount.setMoney(refundAccount.getMoney() + refundOrder.getMoney());
                     refundAccount.setProfit(refundAccount.getProfit() + refundOrder.getMoney());
