@@ -471,6 +471,7 @@ public class AccountUtil {
             } else {
                 quantity = detail.getQuantity() - detail.getUsed_quantity();
             }
+            if (quantity <= 0) continue;
             refundDay.setQuantity(quantity);
             refundDay.setVisitors(Collections.<Visitor>emptyList());
             collection.add(refundDay);

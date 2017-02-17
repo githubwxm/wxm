@@ -12,6 +12,7 @@ import com.framework.common.util.CommonUtil;
 import com.framework.common.vo.PageRecord;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -33,6 +34,11 @@ public class OrderServiceImpl implements OrderService {
     private OrderClearanceSerialMapper orderClearanceSerialMapper;
     @Autowired
     private EpService epService;
+
+    @Value("${order.pay.timeout}")
+    private Integer payTimeOut;
+    @Value("${order.audit.timeout}")
+    private Integer auditTimeOut;
 
     @Override
     public Result<Integer> getPayeeEpIdByOutTransId(String outTranId) {
@@ -157,5 +163,12 @@ public class OrderServiceImpl implements OrderService {
     public Result settledChannelBill(Map params) {
 
         return new Result(true);
+    }
+
+    @Override
+    public Result<Integer[]> getCancelTimeout() {
+        Result<Integer[]> result = new Result<>(true);
+        result.put(new Integer[]{auditTimeOut == null ? 0 : auditTimeOut, payTimeOut == null ? 0 : payTimeOut});
+        return result;
     }
 }

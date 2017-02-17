@@ -110,4 +110,6 @@ public interface OrderService {
      * @return
      */
     Result settledChannelBill(Map params);
+
+    Result<Integer[]> getCancelTimeout();
 }
