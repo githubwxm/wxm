@@ -7,7 +7,6 @@ import com.all580.order.dto.PriceDto;
 import com.all580.order.dto.ValidateProductSub;
 import com.all580.order.entity.*;
 import com.all580.order.manager.BookingOrderManager;
-import com.all580.product.api.consts.ProductConstants;
 import com.all580.product.api.model.ProductSalesDayInfo;
 import com.all580.product.api.model.ProductSalesInfo;
 import com.all580.product.api.model.ProductSearchParams;
@@ -134,12 +133,11 @@ public abstract class AbstractCreateOrderImpl implements CreateOrderInterface {
             throw new ApiException("预定天数与获取产品天数不匹配");
         }
         // 验证最低购票
-        if (salesInfo.getProduct_sub_ticket_type() == ProductConstants.TeamTicketType.TEAM && salesInfo.getMin_buy_quantity() != null && salesInfo.getMin_buy_quantity() > sub.getQuantity()) {
+        if (salesInfo.getMin_buy_quantity() != null && salesInfo.getMin_buy_quantity() > sub.getQuantity()) {
             throw new ApiException("低于最低购买票数");
         }
-        // 判断最高票数 散客
-        if (salesInfo.getProduct_sub_ticket_type() == ProductConstants.TeamTicketType.INDIVIDUAL &&
-                salesInfo.getMax_buy_quantity() != null && salesInfo.getMax_buy_quantity() > 0 && sub.getQuantity() > salesInfo.getMax_buy_quantity()) {
+        // 判断最高票数
+        if (salesInfo.getMax_buy_quantity() != null && salesInfo.getMax_buy_quantity() > 0 && sub.getQuantity() > salesInfo.getMax_buy_quantity()) {
             throw new ApiException(String.format("超过订单最高购买限制: 当前购买:%d, 最大购买:%d", sub.getQuantity(), salesInfo.getMax_buy_quantity()));
         }
         return salesInfo;
