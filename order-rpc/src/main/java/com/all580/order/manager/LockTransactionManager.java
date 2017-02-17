@@ -6,9 +6,11 @@ import com.all580.order.adapter.RefundOrderInterface;
 import com.all580.order.api.OrderConstant;
 import com.all580.order.api.model.*;
 import com.all580.order.dao.*;
+import com.all580.order.dto.AccountDataDto;
 import com.all580.order.dto.RefundDay;
 import com.all580.order.dto.RefundOrderApply;
 import com.all580.order.entity.*;
+import com.all580.order.util.AccountUtil;
 import com.all580.payment.api.conf.PaymentConstant;
 import com.all580.payment.api.model.BalanceChangeInfo;
 import com.all580.payment.api.model.BalanceChangeRsp;
@@ -386,8 +388,12 @@ public class LockTransactionManager {
             // 余额支付需要扣除销售商的钱
             List<OrderItemAccount> accounts = orderItemAccountMapper.selectByOrderAnEp(order.getId(), order.getBuy_ep_id(), order.getPayee_ep_id());
             for (OrderItemAccount account : accounts) {
-                // 这里把销售商该支付的钱一起计算
-                account.setMoney(account.getMoney() + (-order.getPay_amount()));
+                // 把data JSON 反编译为JAVA类型
+                Collection<AccountDataDto> dataDtoList = AccountUtil.decompileAccountData(account.getData());
+                // 获取总出货价
+                int totalOutPrice = AccountUtil.getTotalOutPrice(dataDtoList);
+                OrderItem orderItem = orderItemMapper.selectByPrimaryKey(account.getOrder_item_id());
+                account.setMoney(account.getMoney() + (-totalOutPrice * orderItem.getQuantity()));
                 account.setProfit(account.getMoney());
                 orderItemAccountMapper.updateByPrimaryKeySelective(account);
             }
