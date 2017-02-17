@@ -15,6 +15,7 @@ import com.all580.product.api.service.ProductSalesPlanRPCService;
 import com.framework.common.Result;
 import com.framework.common.event.MnsEventManager;
 import com.framework.common.lang.DateFormatUtils;
+import com.framework.common.lang.JsonUtils;
 import com.framework.common.util.CommonUtil;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.lang3.BooleanUtils;
@@ -92,6 +93,15 @@ public abstract class AbstractCreateOrderImpl implements CreateOrderInterface {
         if (!bookingOrderManager.isEpType(epType, EpConstant.EpType.SELLER) &&
                 !bookingOrderManager.isEpType(epType, EpConstant.EpType.OTA)) {
             throw new ApiException("该企业不能购买产品");
+        }
+
+        if (StringUtils.isNotEmpty(createOrder.getOuter())) {
+            Order order = bookingOrderManager.selectByOuter(createOrder.getEpId(), createOrder.getOuter());
+            if (order != null) {
+                ApiException apiException = new ApiException(JsonUtils.toJson(order));
+                apiException.setCode(Result.SUCCESS);
+                throw apiException;
+            }
         }
     }
 

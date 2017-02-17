@@ -1,6 +1,7 @@
 package com.all580.order.dao;
 
 import com.all580.order.entity.Order;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -87,4 +88,12 @@ public interface OrderMapper {
      * @return
      */
     Order selectByRefundSn(Long sn);
+
+    /**
+     * 根据外部订单号查询订单
+     * @param epId
+     * @param outerId
+     * @return
+     */
+    Order selectByOuter(@Param("epId") Integer epId, @Param("outerId") String outerId);
 }

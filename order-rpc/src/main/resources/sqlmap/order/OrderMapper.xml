@@ -339,4 +339,9 @@
         LEFT JOIN t_refund_order tro ON tro.order_item_id = toi.id
         WHERE tro.number = #{sn}
     </select>
+
+    <select id="selectByOuter" resultMap="BaseResultMap">
+        SELECT * FROM t_order
+        WHERE outer_id = #{outerId} and buy_ep_id = #{epId}
+    </select>
 </mapper>

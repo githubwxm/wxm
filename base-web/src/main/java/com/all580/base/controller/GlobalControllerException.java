@@ -46,7 +46,7 @@ public class GlobalControllerException {
     @ResponseBody
     public Result processApiException(ApiException e) {
         log.error("API业务异常", e);
-        return new Result(false, Result.BUSINESS_EXCEPTION, e.getMessage());
+        return new Result(false, e.getCode() == 0 ? Result.BUSINESS_EXCEPTION : e.getCode(), e.getMessage());
     }
 
     @ExceptionHandler(ParamsMapValidationException.class)

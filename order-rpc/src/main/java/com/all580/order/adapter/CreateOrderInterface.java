@@ -6,6 +6,7 @@ import com.all580.order.dto.ValidateProductSub;
 import com.all580.order.entity.*;
 import com.all580.product.api.model.ProductSalesDayInfo;
 import com.all580.product.api.model.ProductSalesInfo;
+import com.framework.common.Result;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;

@@ -49,17 +49,9 @@ public class BookingOrderManager extends BaseOrderManager {
     @Autowired
     private OrderItemAccountMapper orderItemAccountMapper;
     @Autowired
-    private MaSendResponseMapper maSendResponseMapper;
-    @Autowired
-    private OrderClearanceSerialMapper orderClearanceSerialMapper;
-    @Autowired
-    private OrderClearanceDetailMapper orderClearanceDetailMapper;
-    @Autowired
     private ClearanceWashedSerialMapper clearanceWashedSerialMapper;
     @Autowired
     private GroupMemberMapper groupMemberMapper;
-    @Autowired
-    private GroupConsumeMapper groupConsumeMapper;
 
     /**
      * 验证游客信息
@@ -377,6 +369,10 @@ public class BookingOrderManager extends BaseOrderManager {
         shipping.setSid(CommonUtil.objectParseString(shippingMap.get("sid")));
         shippingMapper.insertSelective(shipping);
         return shipping;
+    }
+
+    public Order selectByOuter(Integer epId, String outerId) {
+        return orderMapper.selectByOuter(epId, outerId);
     }
 
     /**
