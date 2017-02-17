@@ -15,7 +15,6 @@ import com.all580.product.api.service.ProductSalesPlanRPCService;
 import com.framework.common.Result;
 import com.framework.common.event.MnsEventManager;
 import com.framework.common.lang.DateFormatUtils;
-import com.framework.common.lang.JsonUtils;
 import com.framework.common.util.CommonUtil;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.lang3.BooleanUtils;
@@ -83,7 +82,7 @@ public abstract class AbstractCreateOrderImpl implements CreateOrderInterface {
         return sub;
     }
 
-    public void validate(CreateOrder createOrder, Map params) {
+    public Result validate(CreateOrder createOrder, Map params) {
         // 判断销售商状态是否为已冻结
         if (!bookingOrderManager.isEpStatus(epService.getEpStatus(createOrder.getEpId()), EpConstant.EpStatus.ACTIVE)) {
             throw new ApiException("销售商企业已冻结");
@@ -98,11 +97,13 @@ public abstract class AbstractCreateOrderImpl implements CreateOrderInterface {
         if (StringUtils.isNotEmpty(createOrder.getOuter())) {
             Order order = bookingOrderManager.selectByOuter(createOrder.getEpId(), createOrder.getOuter());
             if (order != null) {
-                ApiException apiException = new ApiException(JsonUtils.toJson(order));
-                apiException.setCode(Result.SUCCESS);
-                throw apiException;
+                Result result = new Result(false);
+                result.setCode(Result.UNIQUE_KEY_ERROR);
+                result.put(order);
+                return result;
             }
         }
+        return new Result(true);
     }
 
     public Order insertOrder(CreateOrder createOrder, Map params) {

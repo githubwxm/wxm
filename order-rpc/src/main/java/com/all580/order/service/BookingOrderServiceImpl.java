@@ -91,7 +91,10 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         int totalPayPrice = 0;
         CreateOrder createOrder = orderInterface.parseParams(params);
 
-        orderInterface.validate(createOrder, params);
+        Result validateResult = orderInterface.validate(createOrder, params);
+        if (!validateResult.isSuccess()) {
+            return validateResult;
+        }
 
         // 创建订单
         Order order = orderInterface.insertOrder(createOrder, params);
