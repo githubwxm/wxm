@@ -89,10 +89,11 @@ public class BaseNotifyEvent {
     protected void notifyEvent(Integer itemId, String opCode) {
         OrderItem item = orderItemMapper.selectByPrimaryKey(itemId);
         Assert.notNull(item);
+        Integer rfd_qty= orderItemMapper.selectItemQuantity(itemId);
         Order order = orderMapper.selectByPrimaryKey(item.getOrder_id());
         Assert.notNull(order);
         Integer usd_qty = item.getUsed_quantity();//使用数
-        Integer rfd_qty = item.getRefund_quantity();// 退票数
+        //Integer rfd_qty = item.getRefund_quantity();// 退票数
         Integer quantity = item.getQuantity();//订票总数
         Integer exp_qty = 0;//过期数
         String MaxDate = orderItemDetailMapper.selectExpiryMaxDate(itemId);
