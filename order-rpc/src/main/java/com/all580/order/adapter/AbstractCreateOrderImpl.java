@@ -99,7 +99,7 @@ public abstract class AbstractCreateOrderImpl implements CreateOrderInterface {
             Order order = bookingOrderManager.selectByOuter(createOrder.getEpId(), createOrder.getOuter());
             if (order != null) {
                 ApiException apiException = new ApiException(JsonUtils.toJson(order));
-                apiException.setCode(Result.SUCCESS);
+                apiException.setCode(Result.UNIQUE_KEY_ERROR);
                 throw apiException;
             }
         }
