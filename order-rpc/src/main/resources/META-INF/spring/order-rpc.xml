@@ -55,7 +55,7 @@
 	<dubbo:service interface="com.all580.order.api.service.event.SendTicketNotifyEvent" ref="sendTicketNotifyEventImpl" />
 	<dubbo:service interface="com.all580.order.api.service.event.ConsumeTicketNotifyEvent" ref="consumeTicketNotifyEventImpl" />
 	<dubbo:service interface="com.all580.order.api.service.event.RefundMoneyNotifyEvent" ref="refundMoneyNotifyEventImpl" />
-	<dubbo:service interface="com.all580.order.api.service.event.CancelTicketNotifyEvent" ref="cancelTicketNotifyEventImpl" />
+	<dubbo:service interface="com.all580.order.api.service.event.CancelTicketNotifyEvent" ref="orderCancelTicketNotifyEventImpl" />
 	<dubbo:service interface="com.all580.order.api.service.event.OrderAuditNotifyEvent" ref="orderAuditNotifyEventImpl" />
 	<dubbo:service interface="com.all580.order.api.service.event.RefundApplyNotifyEvent" ref="refundApplyNotifyEventImpl" />
 
