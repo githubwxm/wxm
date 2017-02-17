@@ -375,6 +375,10 @@ public class BookingOrderManager extends BaseOrderManager {
         return orderMapper.selectByOuter(epId, outerId);
     }
 
+    public List<OrderItem> selectByOrder(Integer orderId) {
+        return orderItemMapper.selectByOrderId(orderId);
+    }
+
     /**
      * 判断所有子订单是否审核通过
      * @param orderId 订单ID
