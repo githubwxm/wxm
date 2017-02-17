@@ -93,4 +93,11 @@ public interface RefundOrderMapper {
      * @return
      */
     int  selectByItemIdAndStatus(@Param("itemId") Integer itemId,@Param("status") Integer status,@Param("isTrue") Integer isTrue);
+
+    /**
+     * 获取子订单退票总数
+     * @param order_item_id
+     * @return
+     */
+    int selectItemQuantity(@Param("order_item_id") Integer order_item_id);
 }
