@@ -374,6 +374,7 @@ public class AccountUtil {
             info.setBalance(account.getMoney());
             info.setCan_cash(account.getProfit());
             account.setStatus(OrderConstant.AccountSplitStatus.HAS);
+            infoList.add(info);
             // 设置变动类型
             if (info.getBalance() > 0) {
                 // 退订返回
@@ -387,7 +388,6 @@ public class AccountUtil {
                 // 退订手续费
                 info.setCan_cash_type(PaymentConstant.BalanceChangeType.REFUND_FEE);
             }
-            infoList.add(info);
         }
         return infoList;
     }
