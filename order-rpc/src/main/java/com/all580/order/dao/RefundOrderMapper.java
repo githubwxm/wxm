@@ -83,4 +83,14 @@ public interface RefundOrderMapper {
      * @return
      */
     List<RefundOrder> selectByItemId(@Param("itemId") Integer itemId);
+
+
+    /**
+     * isTrue  =1  状态就等于状态  isTrue=2  状态就不等于状态
+     * @param itemId
+     * @param status
+     * @param isTrue
+     * @return
+     */
+    int  selectByItemIdAndStatus(@Param("itemId") Integer itemId,@Param("status") Integer status,@Param("isTrue") Integer isTrue);
 }
