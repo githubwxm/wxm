@@ -80,6 +80,9 @@ public class CustomJacksonConvert extends MappingJackson2HttpMessageConverter {
 		 	key = key == null ? "" : key;
 
 			String data = JSONObject.toJSONString(result, config, SerializerFeature.SortField);
+			data=data.replace("null","");
+			//['"',"\\","[","]","{","}",'null'
+			data=data.replaceAll("[\"\\\\\\[\\]\\{\\}]","");
 			String sign=CommonUtil.signForData(key,data);
 			result.put("sign",sign);
 			log.debug("result: {}", data);
