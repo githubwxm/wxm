@@ -138,4 +138,9 @@ public class SmsServiceImpl implements SmsService {
         }, new ValidRule[]{new ValidRule.NotNull()});
         return rules;
     }
+
+    @Override
+    public void setIsSend(boolean isSend) {
+        this.smsSend = isSend ? "1" : "0";
+    }
 }
