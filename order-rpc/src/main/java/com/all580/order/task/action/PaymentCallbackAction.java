@@ -1,6 +1,8 @@
 package com.all580.order.task.action;
 
 import com.all580.order.api.OrderConstant;
+import com.all580.order.dao.OrderMapper;
+import com.all580.order.entity.Order;
 import com.all580.order.manager.LockTransactionManager;
 import com.framework.common.distributed.lock.DistributedLockTemplate;
 import com.framework.common.distributed.lock.DistributedReentrantLock;
@@ -11,9 +13,11 @@ import com.github.ltsopensource.tasktracker.Result;
 import com.github.ltsopensource.tasktracker.runner.JobContext;
 import com.github.ltsopensource.tasktracker.runner.JobRunner;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,6 +33,8 @@ import java.util.Map;
 public class PaymentCallbackAction implements JobRunner {
     @Autowired
     private LockTransactionManager lockTransactionManager;
+    @Autowired
+    private OrderMapper orderMapper;
 
     @Autowired
     private DistributedLockTemplate distributedLockTemplate;
@@ -41,8 +47,16 @@ public class PaymentCallbackAction implements JobRunner {
         validateParams(params);
 
         int orderId = Integer.parseInt(params.get("orderId"));
+        String orderSn = params.get("orderSn");
         String outTransId = params.get("outTransId");
         String serialNum = params.get("serialNum");
+
+        Order order = orderMapper.selectByPrimaryKey(orderId);
+        if (order == null && StringUtils.isNotEmpty(orderSn)) {
+            order = orderMapper.selectBySN(Long.valueOf(orderSn));
+            Assert.notNull(order, "订单不存在");
+            orderId = order.getId();
+        }
 
         DistributedReentrantLock lock = distributedLockTemplate.execute(String.valueOf(orderId), lockTimeOut);
 

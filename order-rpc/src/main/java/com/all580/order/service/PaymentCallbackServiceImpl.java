@@ -43,21 +43,27 @@ public class PaymentCallbackServiceImpl implements PaymentCallbackService {
     public Result payCallback(long ordCode, String serialNum, String outTransId) {
         log.debug("支付回调:订单号:{};流水:{};交易号:{}", new Object[]{ordCode, serialNum, outTransId});
 
+        int orderId = -1;
+        String lockKey;
         Order order = orderMapper.selectBySN(ordCode);
         if (order == null) {
             log.warn("订单:{}不存在", ordCode);
-            return new Result(false, "订单不存在");
+            lockKey = String.valueOf(ordCode);
+        } else {
+            orderId = order.getId();
+            lockKey = String.valueOf(orderId);
         }
 
-        DistributedReentrantLock lock = distributedLockTemplate.execute(String.valueOf(order.getId()), lockTimeOut);
+        DistributedReentrantLock lock = distributedLockTemplate.execute(lockKey, lockTimeOut);
 
         try {
-            lockTransactionManager.paymentCallback(order.getId(), outTransId, serialNum);
+            lockTransactionManager.paymentCallback(orderId, outTransId, serialNum);
         } catch (Exception e) {
             log.warn("支付回调异常,添加任务重试", e);
             // 支付成功回调 记录任务
             Map<String, String> jobParams = new HashMap<>();
-            jobParams.put("orderId", order.getId().toString());
+            jobParams.put("orderId", String.valueOf(orderId));
+            jobParams.put("orderSn", String.valueOf(ordCode));
             jobParams.put("outTransId", outTransId);
             jobParams.put("serialNum", serialNum);
             bookingOrderManager.addJob(OrderConstant.Actions.PAYMENT_CALLBACK, jobParams);
