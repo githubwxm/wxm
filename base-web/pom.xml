@@ -241,5 +241,27 @@
 				</plugins>
 			</build>
 		</profile>
+		<profile>
+			<id>production</id>
+			<properties>
+				<active.profilename>production</active.profilename>
+				<active.driverClass>com.mysql.jdbc.Driver</active.driverClass>
+				<active.name>readonly</active.name>
+				<active.pwd>all580!@#$%^</active.pwd>
+				<active.url>jdbc:mysql://rdsgzfl13uplt1iyv43ig.mysql.rds.aliyuncs.com:3306/config?characterEncoding=utf8</active.url>
+			</properties>
+			<build>
+				<resources>
+					<resource>
+						<directory>src/main/resources/</directory>
+						<filtering>true</filtering>
+						<includes>
+							<include>**/app_init.xml</include>
+							<include>**</include>
+						</includes>
+					</resource>
+				</resources>
+			</build>
+		</profile>
 	</profiles>
 </project>
