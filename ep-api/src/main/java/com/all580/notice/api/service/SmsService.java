@@ -35,4 +35,6 @@ public interface SmsService {
      * @return 成功
      */
     Result createConf(Integer epId, Map<String, String> conf);
+
+    void setIsSend(boolean isSend);
 }

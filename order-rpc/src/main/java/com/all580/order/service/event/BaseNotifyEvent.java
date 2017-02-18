@@ -1,10 +1,7 @@
 package com.all580.order.service.event;
 
 import com.all580.order.api.OrderConstant;
-import com.all580.order.dao.OrderItemDetailMapper;
-import com.all580.order.dao.OrderItemMapper;
-import com.all580.order.dao.OrderMapper;
-import com.all580.order.dao.RefundOrderMapper;
+import com.all580.order.dao.*;
 import com.all580.order.entity.Order;
 import com.all580.order.entity.OrderItem;
 import com.framework.common.lang.DateFormatUtils;
@@ -39,6 +36,8 @@ public class BaseNotifyEvent {
     @Autowired
     private RefundOrderMapper refundOrderMapper;
 
+    @Autowired
+    private MaSendResponseMapper aSendResponseMapper;
 
     @Value("${mns.notify.top}")
     private String topicName;
@@ -140,7 +139,6 @@ public class BaseNotifyEvent {
         }else{
             orderStatus=map.get(orderStatus);
         }
-
         Map<String, Object> map = new HashMap<>();
         map.put("op_code", opCode);
         map.put("order_id", order.getId());
@@ -152,6 +150,7 @@ public class BaseNotifyEvent {
         map.put("rfd_qty", rfd_qty);
         map.put("quantity", quantity);
         map.put("exp_qty", exp_qty);
+        map.put("ma_send_response",aSendResponseMapper.selectByOrderItemId(itemId));
         String str = JsonUtils.toJson(map);
         log.info("通知事物数据: " + str);
         topicPushManager.push(topicName, StringUtils.isEmpty(tag) ? null : tag, str, !StringUtils.isEmpty(tag));
