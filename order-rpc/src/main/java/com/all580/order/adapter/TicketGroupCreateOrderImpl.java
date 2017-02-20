@@ -91,9 +91,11 @@ public class TicketGroupCreateOrderImpl extends AbstractCreateOrderImpl {
         List<GroupMember> members = validateResult.get();
 
         List<Visitor> visitors = new ArrayList<>();
-        for (OrderItemDetail detail : details) {
-            for (GroupMember member : members) {
-                visitors.add(bookingOrderManager.generateGroupVisitor(member, detail.getId(), sub.getGroupId()));
+        if (members != null) {
+            for (OrderItemDetail detail : details) {
+                for (GroupMember member : members) {
+                    visitors.add(bookingOrderManager.generateGroupVisitor(member, detail.getId(), sub.getGroupId()));
+                }
             }
         }
         return visitors;
