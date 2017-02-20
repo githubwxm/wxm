@@ -45,6 +45,14 @@ public class PlatfromController extends BaseController {
 
     }
 
+    @RequestMapping(value = "update", method = RequestMethod.POST)
+    @ResponseBody
+    public Result<Map<String,Object>> update(@RequestBody Map<String,Object> map) {
+        ParamsMapValidate.validate(map, platfromValidateManager.generateCreateEpPlatfromValidate());
+        return epService.updateEp(map);
+
+    }
+
     @RequestMapping(value = "validate", method = RequestMethod.GET)
     @ResponseBody
     public Result<Map<String,Object>> validate( String access_id
