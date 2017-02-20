@@ -887,7 +887,8 @@ public class EpServiceImpl implements EpService {
                 result.setSuccess();
             } else if (list.size() == 2) {
                 message = "企业名字与电话重复";
-                throw new ApiException(message);
+                //throw new ApiException(message);
+                return new Result(false,Result.NAME_UNIQUE_KEY_ERROR, message);
             } else if (list.size() == 1) {
                 Map<String, Object> mapResult = list.get(0);
                 String name = mapResult.get("name").toString();
@@ -898,7 +899,8 @@ public class EpServiceImpl implements EpService {
                 if (link_phone.equals(map.get("link_phone"))) {
                     message += "号码已经存在 ";
                 }
-                throw new ApiException(message);
+                //throw new ApiException(message);
+                return new Result(false,Result.NAME_UNIQUE_KEY_ERROR, message);
             }
         } catch (Exception e) {
             log.error("查询数据库异常", e);

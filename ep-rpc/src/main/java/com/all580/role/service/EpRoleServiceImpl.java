@@ -60,7 +60,8 @@ public class EpRoleServiceImpl implements EpRoleService {
             int ref = epRoleMapper.checkName(params);
             if (ref > 0) {
                 log.error("角色名字已存在 {}", params.get("name"));
-                throw new ApiException("角色名字已存在");
+                //throw new ApiException("角色名字已存在");
+                return new Result(false,Result.NAME_UNIQUE_KEY_ERROR, "角色名字已存在");
             }
             epRoleMapper.insertSelective(params);
             Integer ep_role_id = CommonUtil.objectParseInteger(params.get("id"));
@@ -93,7 +94,7 @@ public class EpRoleServiceImpl implements EpRoleService {
             int ref = epRoleMapper.checkName(params);
             if (ref > 0) {
                 log.error("角色名字已存在 {}", params.get("name"));
-                return new Result(false, "角色名字已存在");
+                return new Result(false,Result.NAME_UNIQUE_KEY_ERROR, "角色名字已存在");
             }
             ref = epRoleMapper.updateByPrimaryKeySelective(params);
             if (ref >0) {
