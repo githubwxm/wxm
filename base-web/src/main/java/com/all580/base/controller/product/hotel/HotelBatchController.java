@@ -20,7 +20,7 @@ import java.util.Map;
  */
 @Controller
 @RequestMapping(value = "api/product/hotel/batch")
-public class hotelBatchController {
+public class HotelBatchController {
 
     @Autowired
     private HotelBatchService hotelBatchService;

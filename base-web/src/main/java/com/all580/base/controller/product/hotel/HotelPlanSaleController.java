@@ -140,6 +140,11 @@ public class HotelPlanSaleController {
         return hotelPlanSaleService.selectPlatformHotelDownList(ep_id,platfrom_id);
     }
 
+    /**
+     * 跨平台按产品上架
+     * @param params
+     * @return
+     */
     @RequestMapping(value = "sale/batch/platform/up", method = RequestMethod.POST)
     @ResponseBody
     public Result<?> productBatchSaleUp(@RequestBody Map params) {
