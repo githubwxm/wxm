@@ -25,7 +25,7 @@ public class SendTicketNotifyEventImpl extends BaseNotifyEvent implements SendTi
 
     @Override
     public Result process(String s, Integer integer, Date date) {
-        notifyEvent(integer, "SENT");
+        notifyEvent(integer, "SENT",null);
         return new Result(true);
     }
 }

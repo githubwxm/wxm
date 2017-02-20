@@ -1,5 +1,6 @@
 package com.all580.order.service.event;
 
+import com.all580.order.api.OrderConstant;
 import com.all580.order.api.model.RefundMoneyEventParam;
 import com.all580.order.api.service.event.RefundMoneyNotifyEvent;
 import com.all580.order.dao.OrderMapper;
@@ -13,6 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by wxming on 2017/2/16 0016.
@@ -27,11 +30,19 @@ public class RefundMoneyNotifyEventImpl extends BaseNotifyEvent implements Refun
 
     @Override
     public Result process(String s, RefundMoneyEventParam content, Date date) {
-        RefundOrder refundOrder = refundOrderMapper.selectBySN(Long.valueOf(content.getSerialNo()));
+        Long serialNo=Long.valueOf(content.getSerialNo());
+        RefundOrder refundOrder = refundOrderMapper.selectBySN(serialNo);
         Assert.notNull(refundOrder, "退订订单不存在");
         Order order = orderMapper.selectByRefundSn(refundOrder.getNumber());
         Assert.notNull(order, "订单不存在");
-        notifyEvent(refundOrder.getOrder_item_id(), "REFUND");
+        Map<String,Object> map = new HashMap<>();
+        map.put("refund_seq",serialNo);
+        if(content.isSuccess()){
+        map.put("refund_result ","APPROVE");
+        }else{
+            map.put("refund_result ","REJECT");
+        }
+        notifyEvent(refundOrder.getOrder_item_id(), "REFUND",map);
         return new Result(true);
     }
 

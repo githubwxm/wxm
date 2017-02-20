@@ -33,7 +33,7 @@ public class RefundApplyNotifyEventImpl extends BaseNotifyEvent implements Refun
         Order order = orderMapper.selectByRefundSn(refundOrder.getNumber());
         Assert.notNull(order, "订单不存在");
         if (refundOrder.getStatus() == OrderConstant.RefundOrderStatus.AUDIT_WAIT) {
-            notifyEvent(refundOrder.getOrder_item_id(), "ORTHER");
+            notifyEvent(refundOrder.getOrder_item_id(), "ORTHER",null);
         }
         return new Result(true);
     }

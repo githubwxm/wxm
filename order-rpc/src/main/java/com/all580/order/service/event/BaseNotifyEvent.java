@@ -85,7 +85,7 @@ public class BaseNotifyEvent {
 
     }
 
-    protected void notifyEvent(Integer itemId, String opCode) {
+    protected void notifyEvent(Integer itemId, String opCode,Map<String,Object> tempMap) {
         OrderItem item = orderItemMapper.selectByPrimaryKey(itemId);
         Assert.notNull(item);
         Integer rfd_qty= refundOrderMapper.selectItemQuantity(itemId);
@@ -151,6 +151,9 @@ public class BaseNotifyEvent {
         map.put("quantity", quantity);
         map.put("exp_qty", exp_qty);
         map.put("ma_send_response",aSendResponseMapper.selectByOrderItemId(itemId));
+        if(tempMap!=null){
+            map.putAll(tempMap);
+        }
         String str = JsonUtils.toJson(map);
         log.info("通知事物数据: " + str);
         topicPushManager.push(topicName, StringUtils.isEmpty(tag) ? null : tag, str, !StringUtils.isEmpty(tag));

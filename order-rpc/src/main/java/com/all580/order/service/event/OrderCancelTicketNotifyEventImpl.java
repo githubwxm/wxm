@@ -31,7 +31,7 @@ public class OrderCancelTicketNotifyEventImpl extends BaseNotifyEvent implements
         Assert.notNull(order, "订单不存在");
         List<OrderItem> list = orderItemMapper.selectByOrderId(order.getId());
         Assert.notNull(list, "子订单不存在");
-        notifyEvent(list.get(0).getId(), "CANCEL");
+        notifyEvent(list.get(0).getId(), "CANCEL",null);
         return new Result(true);
     }
 
