@@ -197,49 +197,49 @@
     <update id="update">
         update t_ep
         <set>
-            <if test="pic_address != null">
+            <if test="pic_address != null and pic_address!=''">
                 pic_address = #{pic_address},
             </if>
-            <if test="name != null">
+            <if test="name != null and name!=''">
                 name = #{name},
             </if>
-            <if test="en_name != null">
+            <if test="en_name != null and en_name!=''">
                 en_name = #{en_name},
             </if>
-            <if test="linkman != null">
+            <if test="linkman != null and linkman!=''">
                 linkman = #{linkman},
             </if>
-            <if test="link_phone != null">
+            <if test="link_phone != null and link_phone!=''">
                 link_phone = #{link_phone},
             </if>
-            <if test="address != null">
+            <if test="address != null and address!=''">
                 address = #{address},
             </if>
-            <if test="code != null">
+            <if test="code != null and code!=''">
                 code = #{code},
             </if>
-            <if test="license != null">
+            <if test="license != null and license!=''">
                 license = #{license},
             </if>
-            <if test="logo_pic != null">
+            <if test="logo_pic != null and logo_pic!=''">
                 logo_pic = #{logo_pic},
             </if>
-            <if test="province != null">
+            <if test="province != null and province!=''">
                 province = #{province},
             </if>
-            <if test="city != null">
+            <if test="city != null and city!=''">
                 city = #{city},
             </if>
-            <if test="area != null">
+            <if test="area != null and area!=''">
                 area = #{area},
             </if>
-            <if test="ep_class != null">
+            <if test="ep_class != null and ep_class!=''">
                 ep_class = #{ep_class},
             </if>
-            <if test="group_name != null">
+            <if test="group_name != null and group_name!=''">
                 group_name = #{group_name},
             </if>
-            <if test="group_id != null">
+            <if test="group_id != null and group_id!=''">
                 group_id = #{group_id},
             </if>
         </set>
