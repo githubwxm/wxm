@@ -140,7 +140,10 @@ public class SmsServiceImpl implements SmsService {
     }
 
     @Override
-    public void setIsSend(boolean isSend) {
+    public Result setIsSend(boolean isSend) {
         this.smsSend = isSend ? "1" : "0";
+        Result result = new Result(true);
+        result.put(this.smsSend);
+        return result;
     }
 }
