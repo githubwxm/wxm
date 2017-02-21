@@ -75,14 +75,10 @@ public class TicketRefundOrderOTAImpl extends TicketRefundOrderImpl {
             throw new ApiException("不止一个游客");
         }
         Visitor visitor = visitors.get(0);
-        RefundVisitor refundVisitor = refundOrderManager.getRefundVisitorById(refundVisitors, visitor.getId());
-        int quantity = visitor.getQuantity() - (refundVisitor != null ? refundVisitor.getPre_quantity() : 0) - visitor.getReturn_quantity() - visitor.getUse_quantity();
-        if (quantity > 0) {
-            Map<String, Integer> map = new HashMap<>();
-            map.put("id", visitor.getId());
-            map.put("quantity", quantity);
-            vList.add(map);
-        }
-        return quantity;
+        Map<String, Integer> map = new HashMap<>();
+        map.put("id", visitor.getId());
+        map.put("quantity", apply.getQuantity());
+        vList.add(map);
+        return apply.getQuantity();
     }
 }
