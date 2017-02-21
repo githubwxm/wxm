@@ -151,6 +151,7 @@ public class BaseNotifyEvent {
         map.put("quantity", quantity);
         map.put("exp_qty", exp_qty);
         map.put("ma_send_response",aSendResponseMapper.selectByOrderItemId(itemId));
+        map.put("number",item.getNumber());
         if(tempMap!=null){
             map.putAll(tempMap);
         }
