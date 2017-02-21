@@ -2,6 +2,7 @@ package com.all580.base.controller.index;
 
 import com.all580.notice.api.service.SmsService;
 import com.framework.common.BaseController;
+import com.framework.common.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -15,7 +16,7 @@ public class IndexController extends BaseController {
 	private SmsService smsService;
 
 	@RequestMapping("sms/set")
-	public void setSms(@RequestParam boolean is){
-		smsService.setIsSend(is);
+	public Result setSms(@RequestParam boolean is){
+		return smsService.setIsSend(is);
 	}
 }
