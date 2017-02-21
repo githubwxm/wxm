@@ -23,15 +23,15 @@ import java.util.Map;
 public class ConsumeTicketNotifyEventImpl extends BaseNotifyEvent implements ConsumeTicketNotifyEvent {
 
 
-    @Autowired
-    private OrderItemMapper orderItemMapper;
+//    @Autowired
+//    private OrderItemMapper orderItemMapper;
 
     @Autowired
     private OrderClearanceSerialMapper orderClearanceSerialMapper;
     @Override
     public Result process(String s, ConsumeTicketEventParam content, Date date) {
-        OrderItem item = orderItemMapper.selectByPrimaryKey(content.getItemId());
-        Assert.notNull(item);
+//        OrderItem item = orderItemMapper.selectByPrimaryKey(content.getItemId());
+//        Assert.notNull(item);
         OrderClearanceSerial serial=orderClearanceSerialMapper.selectByPrimaryKey(content.getSerialId()) ;
         Map<String,Object> map = new HashMap<>();
         map.put("id",serial.getSerial_no());
@@ -42,7 +42,7 @@ public class ConsumeTicketNotifyEventImpl extends BaseNotifyEvent implements Con
 
         Map<String,Object> consumeInfo = new HashMap<>();
         consumeInfo.put("consume_info",map);
-        notifyEvent(content.getItemId(), "CONSUME",null);
+        notifyEvent(content.getItemId(), "CONSUME",consumeInfo);
         return new Result(true);
 
 
