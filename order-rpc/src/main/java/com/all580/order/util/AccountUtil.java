@@ -158,7 +158,7 @@ public class AccountUtil {
             RefundAccount refundAccount = new RefundAccount();
             refundAccount.setEp_id(account.getEp_id());
             refundAccount.setCore_ep_id(account.getCore_ep_id());
-            refundAccount.setMoney(money == 0 ? 0 : -money);
+            refundAccount.setMoney(money == 0 ? 0 : account.getMoney() > 0 ? -money : money);
             refundAccount.setProfit(cash == 0 ? 0 : cash);
             refundAccount.setStatus(OrderConstant.AccountSplitStatus.NOT);
             refundAccount.setRefund_order_id(refundOrderId);
