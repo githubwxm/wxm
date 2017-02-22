@@ -34,9 +34,12 @@ public class GlobalControllerException {
             }
 
             if (message != null && message.startsWith("org.springframework.dao.DataIntegrityViolationException:")) {
-                int beginIndex = message.indexOf("Data too long for column '");
-                String column = message.substring(beginIndex, message.indexOf("' at row", beginIndex));
-                return processDataIntegrityViolationException(new DataIntegrityViolationException("字段: " + column + "太长.", e));
+                String str = "Data too long for column '";
+                int beginIndex = message.indexOf(str);
+                if (beginIndex > 0) {
+                    String column = message.substring(beginIndex + str.length(), message.indexOf("' at row", beginIndex));
+                    return processDataIntegrityViolationException(new DataIntegrityViolationException("字段: " + column + "太长.", e));
+                }
             }
         }
         log.error("网关未知异常", e);
