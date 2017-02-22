@@ -3,6 +3,7 @@ package com.all580.base.controller;
 import com.alibaba.dubbo.rpc.RpcException;
 import com.framework.common.Result;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.lang.exception.ApiException;
 import javax.lang.exception.ParamsMapValidationException;
+import java.util.regex.Pattern;
 
 /**
  * @author zhouxianjun(Alone)
@@ -29,6 +31,12 @@ public class GlobalControllerException {
             String message = e.getMessage();
             if (message != null && message.startsWith("org.springframework.dao.DuplicateKeyException:")) {
                 return processDuplicateKeyException(new DuplicateKeyException(message, e));
+            }
+
+            if (message != null && message.startsWith("org.springframework.dao.DataIntegrityViolationException:")) {
+                int beginIndex = message.indexOf("Data too long for column '");
+                String column = message.substring(beginIndex, message.indexOf("' at row", beginIndex));
+                return processDataIntegrityViolationException(new DataIntegrityViolationException("字段: " + column + "太长.", e));
             }
         }
         log.error("网关未知异常", e);
@@ -75,5 +83,12 @@ public class GlobalControllerException {
     public Result processDuplicateKeyException(DuplicateKeyException e) {
         log.error("数据库唯一约束异常", e);
         return new Result(false, Result.UNIQUE_KEY_ERROR, e.getMessage());
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    @ResponseBody
+    public Result processDataIntegrityViolationException(DataIntegrityViolationException e) {
+        log.error("数据库字段长度异常", e);
+        return new Result(false, Result.PARAMS_ERROR, e.getMessage());
     }
 }
