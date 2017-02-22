@@ -182,14 +182,16 @@ public abstract class AbstractCreateOrderImpl implements CreateOrderInterface {
     }
 
     @Override
-    public void after(Map params, Order order) {
+    public boolean after(Map params, Order order) {
         if (isCheck(params)) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             MnsEventManager.rollback();
+            return false;
         }
+        return true;
     }
 
-    protected boolean isCheck(Map params) {
+    public boolean isCheck(Map params) {
         Object object = params.get("check");
         if (object != null) {
             return StringUtils.isNumeric(object.toString()) ? BooleanUtils.toBoolean(Integer.parseInt(object.toString())) : BooleanUtils.toBoolean(object.toString());

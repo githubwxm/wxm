@@ -30,9 +30,9 @@ public class TicketCreateOrderAutoPayImpl extends TicketCreateOrderImpl {
     private LogCreditService logCreditService;
 
     @Override
-    public void after(Map params, Order order) {
-        super.after(params, order);
-        if (order.getPay_amount() == null || order.getPay_amount() <= 0) return;
+    public boolean after(Map params, Order order) {
+        boolean after = super.after(params, order);
+        if (order.getPay_amount() == null || order.getPay_amount() <= 0) return after;
         Result<Map<String, String>> result = balancePayService.getBalanceAccountInfo(order.getBuy_ep_id(), order.getPayee_ep_id());
         if (!result.isSuccess()) {
             throw new ApiException("获取余额失败:" + result.getError());
@@ -55,5 +55,6 @@ public class TicketCreateOrderAutoPayImpl extends TicketCreateOrderImpl {
                 throw new ApiException("自动支付异常:" + payResult.getError());
             }
         }
+        return after;
     }
 }

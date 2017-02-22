@@ -178,7 +178,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         orderMapper.updateByPrimaryKeySelective(order);
 
         // 执行后事
-        orderInterface.after(params, order);
+        boolean ok = orderInterface.after(params, order);
 
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("order", JsonUtils.obj2map(order));
@@ -188,10 +188,13 @@ public class BookingOrderServiceImpl implements BookingOrderService {
 
         // 触发事件
         MnsEventManager.addEvent(OrderConstant.EventType.ORDER_CREATE, order.getId());
-        Map<String, Collection<?>> data = new HashMap<>();
-        data.put("t_order", CommonUtil.oneToList(order));
-        data.put("t_order_item", orderItems);
-        return result.putExt(Result.SYNC_DATA, JsonUtils.obj2map(data));
+        if (ok) {
+            Map<String, Collection<?>> data = new HashMap<>();
+            data.put("t_order", CommonUtil.oneToList(order));
+            data.put("t_order_item", orderItems);
+            result.putExt(Result.SYNC_DATA, JsonUtils.obj2map(data));
+        }
+        return result;
     }
 
     @Override

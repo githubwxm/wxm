@@ -48,5 +48,5 @@ public interface CreateOrderInterface {
     Shipping insertShipping(Map params, Order order);
 
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    void after(Map params, Order order);
+    boolean after(Map params, Order order);
 }
