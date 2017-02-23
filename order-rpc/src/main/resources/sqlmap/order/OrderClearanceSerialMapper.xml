@@ -563,6 +563,9 @@
         <include refid="channelBillDetail" />
         ) a
     </select>
+    <select id="selectItemQuantityCount" resultType="java.lang.Integer">
+      select IFNULL(SUM(quantity),0)  from t_order_clearance_serial where order_item_id=#{order_item_id}
+    </select>
 
     <sql id="limit">
         <if test="record_start != null and record_count != null">

@@ -104,4 +104,11 @@ public interface OrderClearanceSerialMapper {
      * @return
      */
     int selectChannelBillDetailCount(@Param("coreEpId") Integer coreEpId, @Param("saleCoreEpId") Integer saleCoreEpId, @Param("selectMonth") Integer selectMonth);
+
+    /**
+     * 按子订单查询核销总数
+     * @param order_item_id
+     * @return
+     */
+    int selectItemQuantityCount(@Param("order_item_id") Integer order_item_id);
 }
