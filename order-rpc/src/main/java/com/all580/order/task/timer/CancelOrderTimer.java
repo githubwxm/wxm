@@ -39,7 +39,7 @@ public class CancelOrderTimer {
                 boolean retry = true;
                 for (Order order : orderList) {
                     try {
-                        refundOrderManager.cancel(order.getNumber());
+                        refundOrderManager.cancel(order);
                     } catch (Exception e) {
                         retry = false;
                         log.error("订单:"+ order.getNumber() +"未支付超时取消异常", e);
@@ -62,7 +62,7 @@ public class CancelOrderTimer {
                 boolean retry = true;
                 for (Order order : orderList) {
                     try {
-                        refundOrderManager.cancel(order.getNumber());
+                        refundOrderManager.cancel(order);
                     } catch (Exception e) {
                         retry = false;
                         log.error("订单:"+ order.getNumber() +"待审核超时取消异常", e);
