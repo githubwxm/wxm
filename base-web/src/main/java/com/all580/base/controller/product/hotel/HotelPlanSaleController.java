@@ -69,8 +69,8 @@ public class HotelPlanSaleController {
     @RequestMapping(value = "sale/select/not_sale", method = RequestMethod.GET)
     @ResponseBody
     public Result<?> selectNotSale(@RequestParam("ep_id") Integer ep_id,
-                                   @RequestParam("batch_id") Integer batch_id,Integer status) {
-        return hotelPlanSaleService.selectNotSale(ep_id,batch_id,status);
+                                   @RequestParam("batch_id") Integer batch_id,Integer status,String ep_name) {
+        return hotelPlanSaleService.selectNotSale(ep_id,batch_id,status,ep_name);
     }
     @RequestMapping(value = "sale/select/platform_up_list", method = RequestMethod.GET)
     @ResponseBody
@@ -157,6 +157,22 @@ public class HotelPlanSaleController {
         ParamsMapValidate.validate(params, generateSaleUpdateUpValidate());
         return hotelPlanSaleService.productSaleBatchDown(params);
     }
+
+    /***
+     * 产品按组上架
+     * @param params
+     * @return
+     */
+
+    @RequestMapping(value = "sale/batch/group/up", method = RequestMethod.POST)
+    @ResponseBody
+    public Result<?> productGroupUp(@RequestBody Map params) {
+        ParamsMapValidate.validate(params, generateSaleUpdateUpValidate());
+        return hotelPlanSaleService.productGroupUp(params);
+    }
+
+
+
 
     @RequestMapping("stock_price")
     @ResponseBody
