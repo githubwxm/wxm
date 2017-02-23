@@ -737,7 +737,7 @@ public class EpServiceImpl implements EpService {
     }
 
     @Override
-    public Result<List<Map<String, Object>>> selectSeller(Integer id) {
+    public Result<List<Map<String, Object>>> selectSeller(Integer id,String name) {
         Result<List<Map<String, Object>>> result = new Result<>();
         if (null == id) {
             result.setError(result.PARAMS_ERROR, "企业id不能为空");
@@ -745,6 +745,7 @@ public class EpServiceImpl implements EpService {
         }
         Map<String, Object> map = new HashMap<>();
         map.put("creator_ep_id", id);
+        map.put("name",name);
         map.put("ep_type", EpConstant.EpType.SELLER);
         map.put("record_start",0);
         map.put("record_count",100);
