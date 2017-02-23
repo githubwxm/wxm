@@ -9,6 +9,7 @@ import com.all580.order.entity.Order;
 import com.all580.order.entity.RefundOrder;
 import com.framework.common.Result;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import java.util.Date;
@@ -18,6 +19,7 @@ import java.util.Map;
 /**
  * Created by wxming on 2017/2/23 0023.
  */
+@Service
 public class RefundTicketNotifyEventImpl extends BaseNotifyEvent implements RefundTicketNotifyEvent {
 
     @Autowired
