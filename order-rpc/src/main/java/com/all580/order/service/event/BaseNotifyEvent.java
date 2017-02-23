@@ -154,12 +154,12 @@ public class BaseNotifyEvent {
         map.put("rfd_qty", rfd_qty);
         map.put("quantity", quantity);
         map.put("exp_qty", exp_qty);
-        map.put("ma_send_response",aSendResponseMapper.selectByOrderItemId(itemId));
-        map.put("number",item.getNumber());
-        if(tempMap!=null){
-            map.putAll(tempMap);
-        }
-        String str = JsonUtils.toJson(map);
+        //map.put("ma_send_response",aSendResponseMapper.selectByOrderItemId(itemId));
+//        map.put("number",item.getNumber());
+//        if(tempMap!=null){
+//            map.putAll(tempMap);
+//        }
+      String str = JsonUtils.toJson(map);
         log.info("通知事物数据: " + str);
         topicPushManager.push(topicName, StringUtils.isEmpty(tag) ? null : tag, str, !StringUtils.isEmpty(tag));
     }
