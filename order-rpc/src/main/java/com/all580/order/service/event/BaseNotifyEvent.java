@@ -91,6 +91,10 @@ public class BaseNotifyEvent {
         Integer rfd_qty= refundOrderMapper.selectItemQuantity(itemId);
         Order order = orderMapper.selectByPrimaryKey(item.getOrder_id());
         Assert.notNull(order);
+        if(order.getBuy_operator_id()!=0){
+            log.info("通知事物数据: 操作人id: " + order.getBuy_operator_id());
+            return;
+        }
         Integer usd_qty = item.getUsed_quantity();//使用数
         //Integer rfd_qty = item.getRefund_quantity();// 退票数
         Integer quantity = item.getQuantity();//订票总数
