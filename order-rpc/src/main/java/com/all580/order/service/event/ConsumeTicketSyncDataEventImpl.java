@@ -58,6 +58,7 @@ public class ConsumeTicketSyncDataEventImpl extends BasicSyncDataEvent implement
         SyncAccess syncAccess = getAccessKeys(order);
         syncAccess.getDataMap()
                 .add("t_order_item_detail", orderItemDetailMapper.selectByItemId(orderItem.getId()))
+                .add("t_order_item", orderItem)
                 .add("t_order_clearance_serial", serial)
                 .add("t_order_clearance_detail", orderClearanceDetailMapper.selectBySn(serial.getSerial_no()))
                 .add("t_visitor", visitorMapper.selectByOrderItem(orderItem.getId()));

@@ -213,7 +213,7 @@ public class LockTransactionManager {
         refundOrderInterface.canBeRefund(apply, detailList, params);
         // 每日退票详情
         Collection<RefundDay> refundDays = refundOrderInterface.getRefundDays(apply, detailList, params);
-        Assert.notEmpty(refundDays, "缺少退票详情");
+        Assert.notEmpty(refundDays, "没有可退的票");
         // 总退票数量
         Integer quantity = refundOrderInterface.getRefundQuantity(apply, refundDays, params);
         Assert.notNull(quantity, "退票数量异常");

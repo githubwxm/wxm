@@ -192,10 +192,10 @@ public class RefundOrderManager extends BaseOrderManager {
                 throw new ApiException(String.format("游客:%d 不存在", visitor.getId()));
             }
             if (v.getQuantity() < visitor.getQuantity()) {
-                throw new ApiException(String.format("游客:%s 票不足", new Object[]{visitor.getName()}));
+                throw new ApiException(String.format("游客:%s 票不足", new Object[]{v.getName()}));
             }
             if (visitor.getQuantity() <= 0) {
-                throw new ApiException(String.format("游客:%s 退票数量必须大于0", visitor.getName()));
+                throw new ApiException(String.format("游客:%s 退票数量必须大于0", v.getName()));
             }
             // 判断余票
             RefundVisitor upRefundVisitor = getRefundVisitorById(refundVisitorList, visitor.getId());
@@ -203,7 +203,7 @@ public class RefundOrderManager extends BaseOrderManager {
             if (upRefundVisitor != null &&
                     upRefundVisitor.getPre_quantity() + upRefundVisitor.getReturn_quantity() + visitor.getQuantity() > v.getQuantity() ) {
                 throw new ApiException(String.format("游客:%s 余票不足.总票数:%d 已退票:%d 已预退票:%d 本次预退票:%d",
-                        new Object[]{visitor.getName(),
+                        new Object[]{v.getName(),
                                 v.getQuantity(), upRefundVisitor.getReturn_quantity(), upRefundVisitor.getPre_quantity(), visitor.getQuantity()}));
             }
             RefundVisitor refundVisitor = new RefundVisitor();
