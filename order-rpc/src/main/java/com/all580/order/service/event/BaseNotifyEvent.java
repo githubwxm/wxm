@@ -92,7 +92,7 @@ public class BaseNotifyEvent {
         Order order = orderMapper.selectByPrimaryKey(item.getOrder_id());
         Assert.notNull(order);
         if(order.getBuy_operator_id()!=0){
-            log.info("通知事物数据: 操作人id: " + order.getBuy_operator_id());
+            log.info("通知事物数据: 操作人id:{} orderid:{} " , order.getBuy_operator_id(),order.getId());
             return;
         }
         Integer usd_qty = item.getUsed_quantity();//使用数
