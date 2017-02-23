@@ -148,7 +148,7 @@ public interface EpService {
      * @param id  企业id
      * @return  id, name,
      */
-    Result<List<Map<String,Object>>> selectSeller(Integer id);
+    Result<List<Map<String,Object>>> selectSeller(Integer id,String name);
 
     /**
      * 过滤出只是销售伤的id
