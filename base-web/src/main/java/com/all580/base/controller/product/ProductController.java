@@ -266,12 +266,12 @@ public class ProductController extends BaseController {
     public Result<List<DistributionEpInfo>> searchDistributionEpInfo(
             @RequestParam("ep_id") Integer epId,
             @RequestParam("product_sub_id") Integer productSubId,
-            @RequestParam("status") Integer distributionStatus) {
+            @RequestParam("status") Integer distributionStatus,String epName) {
         switch (CommonUtil.objectParseInteger(distributionStatus)) {
             case ProductConstants.ProductDistributionState.HAD_DISTRIBUTE:
-                return productDistributionService.selectAlreadyDistributionEp(productSubId, epId);
+                return productDistributionService.selectAlreadyDistributionEp(productSubId, epId,epName);
             case ProductConstants.ProductDistributionState.NOT_DISTRIBUTE:
-                return productDistributionService.selectNoDistributionEp(epId, productSubId);
+                return productDistributionService.selectNoDistributionEp(epId, productSubId,epName);
         }
         return new Result<>(false, "状态参数错误");
     }
