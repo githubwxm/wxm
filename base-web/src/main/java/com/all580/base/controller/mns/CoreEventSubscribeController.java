@@ -81,18 +81,18 @@ public class CoreEventSubscribeController extends AbstractSubscribeController {
                     String name = CommonUtil.getProxyClassForInterface(subscribeAction, MnsSubscribeAction.class).getName();
                     try {
                         Result result = subscribeAction.process(id, object, createTime);
-                        log.debug("调用订阅器回调Action:{}, Class:{}, Result:{}", new Object[]{action, name, result.toJsonString()});
+                        log.debug("调用订阅器回调MNS:{}, Action:{}, Class:{}, Result:{}", new Object[]{id, action, name, result.toJsonString()});
                         if (!result.isSuccess()) {
                             throw new Exception(result.getError());
                         }
                     } catch (Exception e) {
-                        log.error("MNS: "+action+", Class: " + name + " 订阅器执行异常", e);
+                        log.error("MNS: " + id + "Action:" +action+", Class: " + name + " 订阅器执行异常", e);
                         jobs.add(createRetryJob(id, content, time, action, name));
                     }
                 }
             } catch (Exception e) {
                 if (object == null) {
-                    log.error("解析事件内容异常,重试...", e);
+                    log.error("MNS:" + id + " 解析事件内容异常,重试...", e);
                     addRetryTask(jobs, actions, id, content, time, action);
                 } else {
                     throw e;
