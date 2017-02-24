@@ -402,6 +402,9 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             reSendTicketParams.setOrderSn(orderItem.getNumber());
             reSendTicketParams.setVisitorId(visitorId);
             reSendTicketParams.setMobile(phone);
+            reSendTicketParams.setMaOrderId(response.getMa_order_id());
+            reSendTicketParams.setMaProductId(response.getMa_product_id());
+            reSendTicketParams.setVoucher(response.getVoucher_value());
             return voucherRPCService.resendTicket(orderItem.getEp_ma_id(), reSendTicketParams);
         }
         // 出票

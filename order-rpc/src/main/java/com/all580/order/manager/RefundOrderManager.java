@@ -27,6 +27,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 import javax.lang.exception.ApiException;
 import java.util.*;
@@ -58,6 +59,8 @@ public class RefundOrderManager extends BaseOrderManager {
     private RefundSerialMapper refundSerialMapper;
     @Autowired
     private RefundVisitorMapper refundVisitorMapper;
+    @Autowired
+    private MaSendResponseMapper maSendResponseMapper;
 
     @Autowired
     private ProductSalesPlanRPCService productSalesPlanRPCService;
@@ -65,8 +68,6 @@ public class RefundOrderManager extends BaseOrderManager {
     private VoucherRPCService voucherRPCService;
     @Autowired
     private ThirdPayService thirdPayService;
-    @Autowired
-    private SmsManager smsManager;
 
     /**
      * 取消订单
@@ -467,16 +468,23 @@ public class RefundOrderManager extends BaseOrderManager {
         OrderItem orderItem = orderItemMapper.selectByPrimaryKey(refundOrder.getOrder_item_id());
         if (orderItem.getGroup_id() != null && orderItem.getGroup_id() != 0 &&
                 orderItem.getPro_sub_ticket_type() != null && orderItem.getPro_sub_ticket_type() == ProductConstants.TeamTicketType.TEAM) {
+            MaSendResponse response = maSendResponseMapper.selectByVisitorId(orderItem.getId(), 0, orderItem.getEp_ma_id());
+            Assert.notNull(response, "出票信息不存在");
             RefundGroupTicketParams ticketParams = new RefundGroupTicketParams();
             ticketParams.setOrderSn(orderItem.getNumber());
             ticketParams.setRefundSn(String.valueOf(refundSerial.getLocal_serial_no()));
             ticketParams.setQuantity(refundOrder.getQuantity());
             ticketParams.setReason(refundOrder.getCause());
             ticketParams.setApplyTime(refundOrder.getAudit_time());
+            ticketParams.setMaOrderId(response.getMa_order_id());
+            ticketParams.setVoucher(response.getVoucher_value());
             voucherRPCService.refundGroupTicket(orderItem.getEp_ma_id(), ticketParams);
         } else {
             List<RefundVisitor> refundVisitorList = refundVisitorMapper.selectByRefundId(refundOrder.getId());
+            List<MaSendResponse> responses = maSendResponseMapper.selectByOrderItemId(orderItem.getId());
             for (RefundVisitor refundVisitor : refundVisitorList) {
+                MaSendResponse response = getMaResponse(responses, refundVisitor.getVisitor_id(), orderItem.getEp_ma_id());
+                Assert.notNull(response, "出票信息不存在");
                 RefundTicketParams ticketParams = new RefundTicketParams();
                 ticketParams.setApplyTime(refundOrder.getAudit_time());
                 ticketParams.setOrderSn(orderItem.getNumber());
@@ -484,6 +492,8 @@ public class RefundOrderManager extends BaseOrderManager {
                 ticketParams.setVisitorId(refundVisitor.getVisitor_id());
                 ticketParams.setRefundSn(String.valueOf(refundSerial.getLocal_serial_no()));
                 ticketParams.setReason(refundOrder.getCause());
+                ticketParams.setMaOrderId(response.getMa_order_id());
+                ticketParams.setVoucher(response.getVoucher_value());
                 try {
                     // TODO: 2016/11/3 讲道理这里要一起提交或者只能一个人退票
                     Result result = voucherRPCService.refundTicket(orderItem.getEp_ma_id(), ticketParams);
@@ -670,5 +680,14 @@ public class RefundOrderManager extends BaseOrderManager {
         return generateSyncByItem(refundOrder.getOrder_item_id())
                 .put("t_refund_account", refundAccountMapper.selectByRefundId(refundId))
                 .sync().getDataMapForJsonMap();
+    }
+
+    private MaSendResponse getMaResponse(List<MaSendResponse> responses, Integer visitorId, Integer epMaId) {
+        for (MaSendResponse response : responses) {
+            if (response.getVisitor_id() == visitorId.intValue() && response.getEp_ma_id() == epMaId.intValue()) {
+                return response;
+            }
+        }
+        return null;
     }
 }
