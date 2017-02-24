@@ -34,6 +34,7 @@ public class IndexController extends BaseController {
 	}
 
 	@RequestMapping("events")
+	@ResponseBody
 	public Result listEvents() {
 		Result<Map> result = new Result<>(true);
 		result.put(mnsEventCache.getCacheEventsMap().asMap());
