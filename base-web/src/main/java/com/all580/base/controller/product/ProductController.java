@@ -337,13 +337,14 @@ public class ProductController extends BaseController {
      */
     @RequestMapping(value = "self/list")
     @ResponseBody
-    public Result<Paginator<ProductAndSubsInfo>> searchSelfProviderProduct(@RequestParam("ep_id") Integer epId,
+    public Result<Map<String,Object>> searchSelfProviderProduct(@RequestParam("ep_id") Integer epId,
                                                                            @RequestParam("product_name") String productName,
                                                                            @RequestParam("product_sub_name") String productSubName,
                                                                            @RequestParam("record_start") Integer recordStart,
                                                                            @RequestParam("record_count") Integer recordCount) {
        // TODO: 验证入参
-       return productService.searchSelfProviderProductList(epId, productName, productSubName, recordStart, recordCount);
+        return productService.searchSelfProviderProductListMap(epId, productName, productSubName, recordStart, recordCount);
+       //return productService.searchSelfProviderProductList(epId, productName, productSubName, recordStart, recordCount);
     }
 
     /**
