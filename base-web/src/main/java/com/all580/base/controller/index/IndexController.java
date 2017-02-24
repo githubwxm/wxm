@@ -33,7 +33,7 @@ public class IndexController extends BaseController {
 		return result;
 	}
 
-	@RequestMapping("events")
+	@RequestMapping(value = "events")
 	@ResponseBody
 	public Result listEvents() {
 		Result<Map> result = new Result<>(true);
