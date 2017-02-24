@@ -160,5 +160,5 @@ public interface OrderItemMapper {
 
     int selectCountByGroup(@Param("groupId") Integer groupId);
 
-
+    int useQuantity(@Param("id") Integer id, @Param("quantity") Integer quantity);
 }

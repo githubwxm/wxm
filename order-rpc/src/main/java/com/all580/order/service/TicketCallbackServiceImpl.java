@@ -178,8 +178,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
 
         // 目前景点只有一天
         OrderItemDetail itemDetail = detailList.get(0);
-        itemDetail.setUsed_quantity(itemDetail.getUsed_quantity() + info.getConsumeQuantity());
-        orderItemDetailMapper.updateByPrimaryKeySelective(itemDetail);
+        orderItemDetailMapper.useQuantity(itemDetail.getId(), info.getConsumeQuantity());
 
         // 保存核销流水
         OrderClearanceSerial serial = saveClearanceSerial(orderItem, order.getPayee_ep_id(), info.getConsumeQuantity(), info.getValidateSn(), procTime);
@@ -195,11 +194,9 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         orderClearanceDetailMapper.insertSelective(detail);
 
         // 设置核销人核销数量
-        visitor.setUse_quantity(visitor.getUse_quantity() + info.getConsumeQuantity());
-        visitorMapper.updateByPrimaryKeySelective(visitor);
+        visitorMapper.useQuantity(visitor.getId(), info.getConsumeQuantity());
         // 修改已用数量
-        orderItem.setUsed_quantity(orderItem.getUsed_quantity() + info.getConsumeQuantity());
-        orderItemMapper.updateByPrimaryKeySelective(orderItem);
+        orderItemMapper.useQuantity(orderItem.getId(), info.getConsumeQuantity());
 
         MnsEventManager.addEvent(OrderConstant.EventType.CONSUME_TICKET, new ConsumeTicketEventParam(orderItem.getId(), serial.getId()));
         return new Result(true);
@@ -236,8 +233,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
 
         // 目前景点只有一天
         OrderItemDetail itemDetail = detailList.get(0);
-        itemDetail.setUsed_quantity(itemDetail.getUsed_quantity() + info.getConsumeQuantity());
-        orderItemDetailMapper.updateByPrimaryKeySelective(itemDetail);
+        orderItemDetailMapper.useQuantity(itemDetail.getId(), info.getConsumeQuantity());
 
         // 保存核销流水
         OrderClearanceSerial serial = saveClearanceSerial(orderItem, order.getPayee_ep_id(), info.getConsumeQuantity(), info.getValidateSn(), procTime);
@@ -257,8 +253,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         }
 
         // 修改已用数量
-        orderItem.setUsed_quantity(orderItem.getUsed_quantity() + info.getConsumeQuantity());
-        orderItemMapper.updateByPrimaryKeySelective(orderItem);
+        orderItemMapper.useQuantity(orderItem.getId(), info.getConsumeQuantity());
 
         MnsEventManager.addEvent(OrderConstant.EventType.CONSUME_TICKET, new ConsumeTicketEventParam(orderItem.getId(), serial.getId()));
         return new Result(true);
@@ -294,8 +289,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
 
         // 目前景点只有一天
         OrderItemDetail itemDetail = detailList.get(0);
-        itemDetail.setUsed_quantity(itemDetail.getUsed_quantity() - orderClearanceSerial.getQuantity());
-        orderItemDetailMapper.updateByPrimaryKeySelective(itemDetail);
+        orderItemDetailMapper.useQuantity(itemDetail.getId(), -orderClearanceSerial.getQuantity());
 
         // 保存冲正流水
         ClearanceWashedSerial serial = saveWashedSerial(orderItem, order.getPayee_ep_id(),
@@ -304,11 +298,9 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         // 获取核销人信息
         Visitor visitor = visitorMapper.selectByPrimaryKey(info.getVisitorSeqId());
         // 设置核销人核销数量
-        visitor.setUse_quantity(visitor.getUse_quantity() - orderClearanceSerial.getQuantity());
-        visitorMapper.updateByPrimaryKeySelective(visitor);
+        visitorMapper.useQuantity(visitor.getId(), -orderClearanceSerial.getQuantity());
         // 修改已用数量
-        orderItem.setUsed_quantity(orderItem.getUsed_quantity() - orderClearanceSerial.getQuantity());
-        orderItemMapper.updateByPrimaryKeySelective(orderItem);
+        orderItemMapper.useQuantity(orderItem.getId(), -orderClearanceSerial.getQuantity());
 
         // 发送短信
         smsManager.sendReConsumeSms(orderItem, orderClearanceSerial.getQuantity(), orderClearanceSerial.getQuantity());
@@ -358,16 +350,14 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
 
         // 目前景点只有一天
         OrderItemDetail itemDetail = detailList.get(0);
-        itemDetail.setUsed_quantity(itemDetail.getUsed_quantity() - info.getQuantity());
-        orderItemDetailMapper.updateByPrimaryKeySelective(itemDetail);
+        orderItemDetailMapper.useQuantity(itemDetail.getId(), -info.getQuantity());
 
         // 保存冲正流水
         ClearanceWashedSerial serial = saveWashedSerial(orderItem, order.getPayee_ep_id(),
                 orderClearanceSerial.getQuantity(), info.getReValidateSn(), info.getValidateSn(), procTime);
 
         // 修改已用数量
-        orderItem.setUsed_quantity(orderItem.getUsed_quantity() - info.getQuantity());
-        orderItemMapper.updateByPrimaryKeySelective(orderItem);
+        orderItemMapper.useQuantity(orderItem.getId(), -info.getQuantity());
 
         // 发送短信
         smsManager.sendReConsumeSms(orderItem, info.getQuantity(), orderClearanceSerial.getQuantity());

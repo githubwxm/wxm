@@ -92,4 +92,6 @@ public interface OrderItemDetailMapper {
      */
     int resetRefundRemain(@Param("itemId") Integer itemId);
     String selectExpiryMaxDate(@Param("itemId") Integer itemId);
+
+    int useQuantity(@Param("id") Integer id, @Param("quantity") Integer quantity);
 }

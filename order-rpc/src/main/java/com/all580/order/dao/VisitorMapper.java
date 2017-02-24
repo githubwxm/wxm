@@ -103,4 +103,6 @@ public interface VisitorMapper {
      * @return
      */
     Visitor selectBySidAndGroup(@Param("sid") String sid, @Param("groupId") Integer groupId);
+
+    int useQuantity(@Param("id") Integer id, @Param("quantity") Integer quantity);
 }
