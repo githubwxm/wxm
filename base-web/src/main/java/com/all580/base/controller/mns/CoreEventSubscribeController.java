@@ -62,7 +62,6 @@ public class CoreEventSubscribeController extends AbstractSubscribeController {
             String content = map.get(CONTENT).toString();
             Object time = map.get(CREATE_TIME);
             Date createTime = DateFormatUtils.converToDateTime(time.toString());
-            Object object = LTSStatic.SyncData.asObject(TranscodeUtil.base64StrToByteArray(content));
             // 获取事件订阅器
             Collection<MnsSubscribeAction> actions = mnsEventCache.getProcess(action);
             if (actions == null || actions.size() == 0) {
@@ -70,37 +69,64 @@ public class CoreEventSubscribeController extends AbstractSubscribeController {
                 responseWrite(response, "OK");
                 return;
             }
+
             List<Job> jobs = new ArrayList<>();
-            for (MnsSubscribeAction subscribeAction : actions) {
-                String name = CommonUtil.getProxyClassForInterface(subscribeAction, MnsSubscribeAction.class).getName();
-                try {
-                    Result result = subscribeAction.process(id, object, createTime);
-                    log.debug("调用订阅器回调Action:{}, Class:{}, Result:{}", new Object[]{action, name, result.toJsonString()});
-                    if (!result.isSuccess()) {
-                        throw new Exception(result.getError());
+            Object object = null;
+            try {
+                object = LTSStatic.SyncData.asObject(TranscodeUtil.base64StrToByteArray(content));
+                if (object == null) {
+                    throw new Exception("事件内容为空");
+                }
+                for (MnsSubscribeAction subscribeAction : actions) {
+                    String name = CommonUtil.getProxyClassForInterface(subscribeAction, MnsSubscribeAction.class).getName();
+                    try {
+                        Result result = subscribeAction.process(id, object, createTime);
+                        log.debug("调用订阅器回调Action:{}, Class:{}, Result:{}", new Object[]{action, name, result.toJsonString()});
+                        if (!result.isSuccess()) {
+                            throw new Exception(result.getError());
+                        }
+                    } catch (Exception e) {
+                        log.error("MNS: "+action+", Class: " + name + " 订阅器执行异常", e);
+                        jobs.add(createRetryJob(id, content, time, action, name));
                     }
-                } catch (Exception e) {
-                    log.error("MNS: "+action+", Class: " + name + " 订阅器执行异常", e);
-                    Job job = new Job();
-                    job.setTaskId("EVENT-RETRY-JOB-" + UUIDGenerator.getUUID());
-                    job.setParam("msgId", id);
-                    job.setParam("content", content);
-                    job.setParam("time", time.toString());
-                    job.setParam("class", name);
-                    job.setParam("action", action);
-                    job.setParam("$ACTION$", EventRetryAction.NAME);
-                    job.setTaskTrackerNodeGroup(taskTracker);
-                    if (maxRetryTimes != null) {
-                        job.setMaxRetryTimes(maxRetryTimes);
-                    }
-                    job.setNeedFeedback(false);
-                    jobs.add(job);
+                }
+            } catch (Exception e) {
+                if (object == null) {
+                    log.error("解析事件内容异常,重试...", e);
+                    addRetryTask(jobs, actions, id, content, time, action);
+                } else {
+                    throw e;
                 }
             }
+
             if (!jobs.isEmpty() && jobs.size() > 0) {
                 jobClient.submitJob(jobs);
             }
             responseWrite(response, "OK");
         }
+    }
+
+    private void addRetryTask(List<Job> jobs, Collection<MnsSubscribeAction> actions, String id, String content, Object time, String action) {
+        for (MnsSubscribeAction subscribeAction : actions) {
+            String name = CommonUtil.getProxyClassForInterface(subscribeAction, MnsSubscribeAction.class).getName();
+            jobs.add(createRetryJob(id, content, time, action, name));
+        }
+    }
+
+    private Job createRetryJob(String id, String content, Object time, String action, String name) {
+        Job job = new Job();
+        job.setTaskId("EVENT-RETRY-JOB-" + UUIDGenerator.getUUID());
+        job.setParam("msgId", id);
+        job.setParam("content", content);
+        job.setParam("time", time.toString());
+        job.setParam("class", name);
+        job.setParam("action", action);
+        job.setParam("$ACTION$", EventRetryAction.NAME);
+        job.setTaskTrackerNodeGroup(taskTracker);
+        if (maxRetryTimes != null) {
+            job.setMaxRetryTimes(maxRetryTimes);
+        }
+        job.setNeedFeedback(false);
+        return job;
     }
 }

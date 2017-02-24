@@ -253,4 +253,10 @@
         AND `group_id` = #{groupId,jdbcType=INTEGER}
         limit 1
     </select>
+
+  <update id="useQuantity">
+    UPDATE t_visitor
+    SET use_quantity = use_quantity + #{quantity}
+    where id = #{id}
+  </update>
 </mapper>

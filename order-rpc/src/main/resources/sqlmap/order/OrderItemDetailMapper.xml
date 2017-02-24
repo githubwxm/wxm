@@ -322,4 +322,10 @@
       SET `refund_quantity` = 0
       WHERE `order_item_id` = #{itemId}
     </update>
+
+    <update id="useQuantity">
+      UPDATE t_order_item_detail
+      SET used_quantity = used_quantity + #{quantity}
+      where id = #{id}
+    </update>
 </mapper>
