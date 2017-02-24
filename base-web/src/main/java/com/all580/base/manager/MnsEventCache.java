@@ -3,6 +3,8 @@ package com.all580.base.manager;
 import com.alibaba.dubbo.config.spring.ReferenceBean;
 import com.framework.common.event.EventService;
 import com.framework.common.mns.MnsSubscribeAction;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 import com.google.common.collect.Ordering;
 import com.google.common.collect.TreeMultimap;
 import lombok.Getter;
@@ -41,6 +43,8 @@ public class MnsEventCache extends InstantiationAwareBeanPostProcessorAdapter {
             return 1;
         }
     });
+    @Getter
+    private Multimap<String, String> cacheEventsMap = ArrayListMultimap.create();
 
     @Override
     public Object postProcessAfterInitialization(Object o, String s) throws BeansException {
@@ -57,6 +61,7 @@ public class MnsEventCache extends InstantiationAwareBeanPostProcessorAdapter {
                     System.exit(0);
                     return o;
                 }
+                cacheEventsMap.put(key, aClass.getName());
                 log.info("事件注册:Key:{}, Event:{}", new Object[]{key, aClass});
             }
         } catch (Exception e) {
