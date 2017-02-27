@@ -31,7 +31,7 @@ public class RefundTicketNotifyEventImpl extends BaseNotifyEvent implements Refu
     @Override
     public Result process(String s, RefundTicketEventParam content, Date date) {
         RefundOrder refundOrder = refundOrderMapper.selectByPrimaryKey(content.getRefundId());
-        Long serialNo=refundOrder.getNumber();
+        String serialNo=refundOrder.getOuter_id();
         Assert.notNull(refundOrder, "退订订单不存在");
         Order order = orderMapper.selectByRefundSn(refundOrder.getNumber());
         Assert.notNull(order, "订单不存在");
