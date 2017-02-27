@@ -42,6 +42,7 @@ public class RefundTicketNotifyEventImpl extends BaseNotifyEvent implements Refu
         }else{
             map.put("refund_result ","REJECT");
         }
+        map.put("refund_quantity",refundOrder.getQuantity());
         notifyEvent(refundOrder.getOrder_item_id(), "REFUND",map);
         return new Result(true);
     }
