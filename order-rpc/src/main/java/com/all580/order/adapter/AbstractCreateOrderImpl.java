@@ -138,7 +138,8 @@ public abstract class AbstractCreateOrderImpl implements CreateOrderInterface {
         }
         // 判断最高票数
         if (salesInfo.getMax_buy_quantity() != null && salesInfo.getMax_buy_quantity() > 0 && sub.getQuantity() > salesInfo.getMax_buy_quantity()) {
-            throw new ApiException(String.format("超过订单最高购买限制: 当前购买:%d, 最大购买:%d", sub.getQuantity(), salesInfo.getMax_buy_quantity()));
+            throw new ApiException(String.format("超过订单最高购买限制: 当前购买:%d, 最大购买:%d", sub.getQuantity(), salesInfo.getMax_buy_quantity())).dataMap()
+                    .putData("current", sub.getQuantity()).putData("max", salesInfo.getMax_buy_quantity());
         }
         return salesInfo;
     }

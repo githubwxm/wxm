@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.lang.exception.ApiException;
 import javax.lang.exception.ParamsMapValidationException;
-import java.util.regex.Pattern;
 
 /**
  * @author zhouxianjun(Alone)
@@ -57,7 +56,11 @@ public class GlobalControllerException {
     @ResponseBody
     public Result processApiException(ApiException e) {
         log.error("API业务异常", e);
-        return new Result(false, e.getCode() == 0 ? Result.BUSINESS_EXCEPTION : e.getCode(), e.getMessage());
+        Result result = new Result(false, e.getCode() == 0 ? Result.BUSINESS_EXCEPTION : e.getCode(), e.getMessage());
+        if (e.getData() != null) {
+            result.put(e.getData());
+        }
+        return result;
     }
 
     @ExceptionHandler(ParamsMapValidationException.class)

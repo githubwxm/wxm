@@ -5,7 +5,6 @@ import com.all580.order.api.service.event.PaidEvent;
 import com.all580.order.dao.OrderItemMapper;
 import com.all580.order.dao.OrderMapper;
 import com.all580.order.entity.Order;
-import com.all580.order.entity.OrderItem;
 import com.all580.order.manager.BookingOrderManager;
 import com.all580.order.manager.SmsManager;
 import com.all580.payment.api.conf.PaymentConstant;
@@ -16,7 +15,6 @@ import org.springframework.stereotype.Service;
 import javax.lang.exception.ApiException;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -43,12 +41,12 @@ public class PaidEventImpl implements PaidEvent {
         if (order == null) {
             throw new ApiException("订单不存在");
         }
-        List<OrderItem> orderItems = orderItemMapper.selectByOrderId(order.getId());
+        /*List<OrderItem> orderItems = orderItemMapper.selectByOrderId(order.getId());
         if (orderItems.size() == 1) {
             // 发送短信
             // TODO: 2016/11/16  目前只支持单子订单发送
             smsManager.sendPaymentSuccess(orderItems.get(0));
-        }
+        }*/
 
         // 添加分账任务 余额不做后续分账(和支付的时候一起)
         if (order.getPayment_type() != null && order.getPayment_type() != PaymentConstant.PaymentType.BALANCE.intValue()) {

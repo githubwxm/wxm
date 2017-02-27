@@ -303,7 +303,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         orderItemMapper.useQuantity(orderItem.getId(), -orderClearanceSerial.getQuantity());
 
         // 发送短信
-        smsManager.sendReConsumeSms(orderItem, orderClearanceSerial.getQuantity(), orderClearanceSerial.getQuantity());
+        //smsManager.sendReConsumeSms(orderItem, orderClearanceSerial.getQuantity(), orderClearanceSerial.getQuantity());
 
         // 分账
         // 记录任务
@@ -360,7 +360,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         orderItemMapper.useQuantity(orderItem.getId(), -info.getQuantity());
 
         // 发送短信
-        smsManager.sendReConsumeSms(orderItem, info.getQuantity(), orderClearanceSerial.getQuantity());
+        //smsManager.sendReConsumeSms(orderItem, info.getQuantity(), orderClearanceSerial.getQuantity());
 
         // 分账
         // 记录任务
