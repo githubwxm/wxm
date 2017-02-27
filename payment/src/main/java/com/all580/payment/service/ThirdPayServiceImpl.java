@@ -50,6 +50,10 @@ public class ThirdPayServiceImpl implements ThirdPayService {
     @Autowired
     private OrderService orderService;
 
+
+    public Result<String> queryPayStatus(){
+        return null;
+    }
     @Override
     public Result<String> reqPay(long ordCode, int coreEpId, int payType, Map<String, Object> params) {
         Result<String> result = new Result<>();
