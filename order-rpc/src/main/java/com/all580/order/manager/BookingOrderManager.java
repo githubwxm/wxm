@@ -74,7 +74,8 @@ public class BookingOrderManager extends BaseOrderManager {
                 int count = getOrderByCount(productSubCode, sid, bookingDate);
                 if (count >= maxCount) {
                     throw new ApiException(String.format("身份证:%s超出该产品当天最大订单次数,已定次数:%d,最大次数:%d",
-                            sid, count, maxCount));
+                            sid, count, maxCount))
+                            .dataMap().putData("idCard", sid).putData("booking", count).putData("max", maxCount);
                 }
             }
             Integer qty = CommonUtil.objectParseInteger(visitorMap.get("quantity"));
@@ -86,7 +87,8 @@ public class BookingOrderManager extends BaseOrderManager {
                 int quantity = getOrderByQuantity(productSubCode, sid, bookingDate);
                 if (quantity + qty > maxQuantity) {
                     throw new ApiException(String.format("身份证:%s超出该产品当天最大购票数,已定张数%d,最大购票张数%d",
-                            sid, quantity, maxQuantity));
+                            sid, quantity, maxQuantity))
+                            .dataMap().putData("idCard", sid).putData("booking", quantity).putData("max", maxQuantity);
                 }
             }
             sids.add(sid);
@@ -431,12 +433,14 @@ public class BookingOrderManager extends BaseOrderManager {
             // 判断最低零售价
             if (from == OrderConstant.FromType.TRUST && self.getPrice() < salesInfo.getMin_price()) {
                 throw new ApiException(String.format("产品:%s不能低于最低零售价:%f,当前售卖价格:%f",
-                        salesInfo.getProduct_sub_name(), Arith.round(salesInfo.getMin_price()/100f, 2), Arith.round(self.getPrice()/100f, 2)));
+                        salesInfo.getProduct_sub_name(), Arith.round(salesInfo.getMin_price()/100f, 2), Arith.round(self.getPrice()/100f, 2)))
+                        .dataMap().putData("min", salesInfo.getMin_price()).putData("current", self.getPrice());
             }
             // 判断最高市场价
             if (self.getPrice() > salesInfo.getMarket_price()) {
                 throw new ApiException(String.format("产品:%s不能高于市场价:%f,当前售卖价格:%f",
-                        salesInfo.getProduct_sub_name(), Arith.round(salesInfo.getMarket_price()/100f, 2), Arith.round(self.getPrice()/100f, 2)));
+                        salesInfo.getProduct_sub_name(), Arith.round(salesInfo.getMarket_price()/100f, 2), Arith.round(self.getPrice()/100f, 2)))
+                        .dataMap().putData("market", salesInfo.getMarket_price()).putData("current", self.getPrice());
             }
             daySales.add(self);
             salePrice += self.getPrice() * quantity;

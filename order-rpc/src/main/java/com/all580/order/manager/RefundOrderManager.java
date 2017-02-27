@@ -203,9 +203,10 @@ public class RefundOrderManager extends BaseOrderManager {
             // 有退票信息 && 预退票 + 已退票 + 本次退票 > 游客总票数 则错误
             if (upRefundVisitor != null &&
                     upRefundVisitor.getPre_quantity() + upRefundVisitor.getReturn_quantity() + visitor.getQuantity() > v.getQuantity() ) {
-                throw new ApiException(String.format("游客:%s 余票不足.总票数:%d 已退票:%d 已预退票:%d 本次预退票:%d",
+                throw new ApiException(String.format("游客:%s 余票不足.总票数:%d 已退票:%d 退票中:%d 本次预退票:%d",
                         new Object[]{v.getName(),
-                                v.getQuantity(), upRefundVisitor.getReturn_quantity(), upRefundVisitor.getPre_quantity(), visitor.getQuantity()}));
+                                v.getQuantity(), upRefundVisitor.getReturn_quantity(), upRefundVisitor.getPre_quantity(), visitor.getQuantity()}))
+                        .dataMap().putData("total", v.getQuantity()).putData("refund", upRefundVisitor.getReturn_quantity()).putData("preRefund", upRefundVisitor.getPre_quantity()).putData("current", visitor.getQuantity());
             }
             RefundVisitor refundVisitor = new RefundVisitor();
             refundVisitor.setVisitor_id(visitor.getId());

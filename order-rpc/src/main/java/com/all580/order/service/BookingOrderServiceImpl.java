@@ -366,7 +366,8 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             List<OrderItemDetail> orderItemDetail = lockStockDto.getOrderItemDetail();
             List<ProductSalesDayInfo> dayInfoList = lockStockDto.getDayInfoList();
             if (booleanList.size() != orderItemDetail.size() || booleanList.size() != dayInfoList.size()) {
-                throw new ApiException(String.format("锁库存天数:%d与购买天数:%d不匹配", booleanList.size(), orderItemDetail.size()));
+                throw new ApiException(String.format("锁库存天数:%d与购买天数:%d不匹配", booleanList.size(), orderItemDetail.size()))
+                        .dataMap().putData("lockDays", booleanList.size()).putData("buyDays", orderItemDetail.size());
             }
             for (Boolean oversell : booleanList) {
                 OrderItemDetail detail = orderItemDetail.get(i);
