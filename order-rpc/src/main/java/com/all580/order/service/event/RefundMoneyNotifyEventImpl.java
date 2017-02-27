@@ -38,9 +38,9 @@ public class RefundMoneyNotifyEventImpl extends BaseNotifyEvent implements Refun
         Map<String,Object> map = new HashMap<>();
         map.put("refund_seq",serialNo);
         if(content.isSuccess()){
-        map.put("refund_result ","APPROVE");
+        map.put("refund_result","APPROVE");
         }else{
-            map.put("refund_result ","REJECT");
+            map.put("refund_result","REJECT");
         }
         notifyEvent(refundOrder.getOrder_item_id(), "REFUND_MONEY",map);
         return new Result(true);
