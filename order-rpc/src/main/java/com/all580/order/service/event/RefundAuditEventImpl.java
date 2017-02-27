@@ -55,9 +55,9 @@ public class RefundAuditEventImpl implements RefundAuditEvent {
         // 拒绝
         refundOrderManager.refundFail(refundOrder);
         // 发送短信
-        OrderItem orderItem = orderItemMapper.selectByPrimaryKey(refundOrder.getOrder_item_id());
+        /*OrderItem orderItem = orderItemMapper.selectByPrimaryKey(refundOrder.getOrder_item_id());
         Assert.notNull(orderItem, "子订单不存在");
-        smsManager.sendAuditRefuseSms(orderItem);
+        smsManager.sendAuditRefuseSms(orderItem);*/
         return new Result(true);
     }
 }
