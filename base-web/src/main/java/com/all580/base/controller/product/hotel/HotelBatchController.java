@@ -1,8 +1,10 @@
 package com.all580.base.controller.product.hotel;
 
+import com.all580.ep.api.service.EpService;
 import com.all580.product.api.hotel.service.HotelBatchService;
 import com.all580.product.api.hotel.service.HotelPlanSaleService;
 import com.framework.common.Result;
+import com.framework.common.util.CommonUtil;
 import com.framework.common.validate.ParamsMapValidate;
 import com.framework.common.validate.ValidRule;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +29,9 @@ public class HotelBatchController {
 
     @Autowired
     private HotelPlanSaleService hotelPlanSaleService;
+
+    @Autowired
+    private EpService epService;
 
     /**
      * 添加销售计划
@@ -63,6 +68,17 @@ public class HotelBatchController {
     @RequestMapping(value = "update_down", method = RequestMethod.POST)
     @ResponseBody
     public Result<?> updateDown(@RequestBody Map params) {
+        return hotelPlanSaleService.updateDown(params);
+    }
+
+    @RequestMapping(value = "update_product_down", method = RequestMethod.POST)
+    @ResponseBody
+    public Result<?> updateDownBatch(@RequestBody Map params) {
+          Integer ep_id = CommonUtil.objectParseInteger( params.get("ep_id"));
+        Integer core_ep_id=epService.selectPlatformId(ep_id).get();
+        if(ep_id.equals(core_ep_id)){
+            return new Result<>(false,"平台商不用下架");
+        }
         return hotelPlanSaleService.updateDown(params);
     }
 
