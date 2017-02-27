@@ -59,7 +59,7 @@ public class ConsumeTicketEventImpl implements ConsumeTicketEvent {
         }
 
         // 发送短信
-        smsManager.sendConsumeSms(orderItem, serial.getQuantity());
+        //smsManager.sendConsumeSms(orderItem, serial.getQuantity());
         return new Result(true);
     }
 }
