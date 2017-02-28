@@ -135,6 +135,7 @@ public class SendGroupTicketAction implements JobRunner {
             ossStoreManager.upload(pathName, JsonUtils.toJson(visitorList));
             String url = ossStoreManager.makeSecurityTokenUrl(pathName, groupVisitorExpire);
             sendGroupTicketParams.setOssUrl(url);
+            log.debug("超大团: {} OSS: {}", orderItem.getNumber(), url);
         } else {
             List<com.all580.voucher.api.model.Visitor> contacts = new ArrayList<>();
             for (Visitor visitor : visitorList) {
