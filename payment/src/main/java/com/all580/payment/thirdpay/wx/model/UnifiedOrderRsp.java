@@ -34,6 +34,22 @@ public class UnifiedOrderRsp extends CommonsRsp implements Serializable {
 //    weixin://wxpay/s/An4baqw
     private String code_url;
 
+    //    交易状态	trade_state	是	String(32)	SUCCESS	SUCCESS—支付成功
+//    REFUND—转入退款
+//    NOTPAY—未支付
+//    CLOSED—已关闭
+//    REVOKED—已撤销
+//    USERPAYING--用户支付中
+//    PAYERROR--支付失败(其他原因，如银行返回失败)
+    private String trade_state;
+    public String getTrade_state() {
+        return trade_state;
+    }
+
+    public void setTrade_state(String trade_state) {
+        this.trade_state = trade_state;
+    }
+
     public String getAppid() {
         return appid;
     }

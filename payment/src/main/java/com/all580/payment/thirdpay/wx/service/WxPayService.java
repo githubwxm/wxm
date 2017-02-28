@@ -104,7 +104,10 @@ public class WxPayService {
         result.put(rsp);
         return result;
     }
-
+    public   <T> T request(String url, CommonsReq req, Class<T> cls, boolean certBool,Integer coreEpId ) throws Exception {
+        WxProperties wxProperties = wxPropertiesMap.get(coreEpId);
+       return  this.request(url,req,cls,certBool,wxProperties);
+    }
     /**
      * @param url
      * @param req
@@ -114,7 +117,7 @@ public class WxPayService {
      * @return
      * @throws Exception
      */
-    private <T> T request(String url, CommonsReq req, Class<T> cls, boolean certBool, WxProperties wxProperties) throws Exception {
+    private   <T> T request(String url, CommonsReq req, Class<T> cls, boolean certBool, WxProperties wxProperties) throws Exception {
         // 创建请求对象
         RequestHandler queryReq = new RequestHandler(null, null);
         // 通信对象
@@ -126,6 +129,10 @@ public class WxPayService {
         queryReq.init();
         queryReq.setKey(wxProperties.getMch_key());
         queryReq.setGateUrl(url);
+
+        req.setAppid(wxProperties.getApp_id());
+        req.setMch_id(wxProperties.getMch_id());
+        req.setNonce_str(WXUtil.getNonceStr());
 
         Class clss = req.getClass();
         for (; clss != Object.class; clss = clss.getSuperclass()) {

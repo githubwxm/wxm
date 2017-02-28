@@ -7,8 +7,9 @@ import com.all580.payment.api.service.ThirdPayService;
 import com.all580.payment.dao.EpPaymentConfMapper;
 import com.all580.payment.entity.EpPaymentConf;
 import com.all580.payment.thirdpay.ali.service.AliPayService;
-import com.all580.payment.thirdpay.wx.model.RefundRsp;
+import com.all580.payment.thirdpay.wx.model.*;
 import com.all580.payment.thirdpay.wx.service.WxPayService;
+import com.all580.payment.thirdpay.wx.util.ConstantUtil;
 import com.framework.common.Result;
 import com.framework.common.event.MnsEvent;
 import com.framework.common.event.MnsEventManager;
@@ -22,6 +23,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import java.lang.reflect.Field;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
@@ -50,10 +52,98 @@ public class ThirdPayServiceImpl implements ThirdPayService {
     @Autowired
     private OrderService orderService;
 
+//    @Autowired
+//    private WxProperties wxProperties;
 
-    public Result<String> queryPayStatus(){
-        return null;
+
+
+    @Override
+    public Result refundQuery(Long ordCode,int coreEpId,Integer payType) {
+        if(PaymentConstant.PaymentType.WX_PAY.equals(payType)){
+            RefundReq req = new RefundReq();
+            req.setOut_trade_no(ordCode+"");
+            RefundRsp  rsp=null;
+            try {
+                rsp=  getWxPayService(coreEpId, payType).request(ConstantUtil.REFUNDQUERY, req, RefundRsp.class, false, coreEpId);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            Result result = new Result(true);
+            result.put(rsp.getRefund_status_0());
+            return result;
+        }else{
+            throw new RuntimeException("不支持的支付类型:" + payType);
+        }
     }
+
+    @Override
+    public Result<String> getPaidStatus(long ordCode, int coreEpId, Integer payType,String trade_no) {
+        Result result = new Result();
+        String msg = "";
+        if (PaymentConstant.PaymentType.WX_PAY.equals(payType)) {
+            UnifiedOrderReq req = new UnifiedOrderReq();
+            req.setOut_trade_no(ordCode+"");
+            try {
+                UnifiedOrderRsp rsp = getWxPayService(coreEpId, payType).request(ConstantUtil.ORDERQUERY, req, UnifiedOrderRsp.class, false, coreEpId);
+                if ("SUCCESS".equalsIgnoreCase(rsp.getReturn_code()) && "SUCCESS".equalsIgnoreCase(rsp.getResult_code())) {
+                    switch (rsp.getTrade_state()) {
+                        case "SUCCESS":
+                            StringBuffer sb = new StringBuffer(16);
+                            Field[] fields = rsp.getClass().getDeclaredFields();
+                            for (Field field : fields) {
+                                field.setAccessible(true);
+                                if (null != field.get(rsp)) {
+                                    sb.append(field.getName() + "=" + field.get(rsp) + ";");
+                                }
+                            }
+                            msg = "订单支付成功";
+                            break;
+                        case "NOTPAY":
+                            msg = "订单未支付";
+                            break;
+                        case "USERPAYING":
+                            msg = "订单正在支付中";
+                            break;
+                        case "PAYERROR":
+                            msg = "订单支付失败";
+                            break;
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                result.setError(e.getMessage());
+            }
+        } else if (PaymentConstant.PaymentType.ALI_PAY.equals(payType)) {
+//             QueryReq queryReq = new QueryReq();
+//             queryReq.setOrderId(String.valueOf(order.getId()));
+//             queryReq.setTrade_no(order.getTransaction_id());
+            Map<String, String> paymentQuery = getAliPayService(coreEpId, payType).paymentQuery(ordCode, coreEpId,trade_no);
+            if (paymentQuery.get("is_success") != null && paymentQuery.get("is_success").equals("T")) {
+                switch (paymentQuery.get("trade_status")) {
+                    case "WAIT_BUYER_PAY":
+                        msg = "订单未支付";
+                        break;
+                    case "TRADE_CLOSED":
+                        msg = "订单未支付,已关闭";
+                        break;
+                    case "TRADE_SUCCESS":
+                    case "TRADE_FINISHED":
+                        msg = "订单支付成功";
+                        break;
+                    case "TRADE_REFUSE":
+                    case "TRADE_CANCEL":
+                        msg = "订单支付取消";
+                        break;
+                }
+            }
+        } else {
+                throw new RuntimeException("不支持的支付类型:" + payType);
+        }
+            result.put(msg);
+            result.setSuccess();
+            return result;
+    }
+
     @Override
     public Result<String> reqPay(long ordCode, int coreEpId, int payType, Map<String, Object> params) {
         Result<String> result = new Result<>();
@@ -232,11 +322,6 @@ public class ThirdPayServiceImpl implements ThirdPayService {
             throw new RuntimeException("不支持的支付类型:" + payType);
         }
         return rst;
-    }
-
-    @Override
-    public Result getPaidStatus(Long ordCode) {
-        return null;
     }
 
 }

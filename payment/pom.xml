@@ -13,6 +13,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>jaxen</groupId>
+            <artifactId>jaxen</artifactId>
+            <version>1.1.6</version>
+        </dependency>
+        <dependency>
             <groupId>com.all580</groupId>
             <artifactId>payment-api</artifactId>
             <version>${project.parent.version}</version>
