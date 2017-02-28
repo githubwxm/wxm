@@ -52,6 +52,9 @@ public class CoreEpChannelServiceImpl implements CoreEpChannelService {
             if(coreEpChannelMapper.selectChannel(params)>0){
                 throw new ApiException("通道汇率已经存在");
             }
+            if(epId-coreEpId==0){
+                throw new ApiException("不需要给自己添加通告汇率");
+            }
             result.put(coreEpChannelMapper.create(params));
             result.setSuccess();
             balancePayService.createBalanceAccount(epId,coreEpId);//添加钱包
