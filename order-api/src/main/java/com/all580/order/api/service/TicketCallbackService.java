@@ -77,6 +77,14 @@ public interface TicketCallbackService {
     Result refundTicket(Long orderSn, RefundTicketInfo info, Date procTime);
 
     /**
+     * 退票回调(旅动力)
+     * @param orderSn 子订单流水编号
+     * @param procTime 处理时间
+     * @return
+     */
+    Result refundTicket(Long orderSn, boolean success, Date procTime);
+
+    /**
      * 退票回调
      * @param orderSn 子订单流水编号
      * @param info 退票信息

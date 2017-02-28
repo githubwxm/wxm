@@ -20,7 +20,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
+import javax.lang.exception.ApiException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -55,6 +57,8 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
     private RefundOrderMapper refundOrderMapper;
     @Autowired
     private GroupConsumeMapper groupConsumeMapper;
+    @Autowired
+    private RefundSerialMapper refundSerialMapper;
 
     @Autowired
     private RefundOrderManager refundOrderManager;
@@ -391,6 +395,39 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         // 锁成功
         try {
             return lockTransactionManager.refundTicket(info, procTime, orderItem, refundOrder);
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    @Override
+    public Result refundTicket(Long orderSn, boolean success, Date procTime) {
+        OrderItem orderItem = orderItemMapper.selectBySN(orderSn);
+        Assert.notNull(orderItem, "订单不存在");
+        List<RefundOrder> refundOrders = refundOrderMapper.selectByItemId(orderItem.getId());
+        Assert.notEmpty(refundOrders, "该订单没有申请退订");
+        RefundOrder refundOrderResult = null;
+        for (RefundOrder refundOrder : refundOrders) {
+            if (refundOrder.getStatus() == OrderConstant.RefundOrderStatus.REFUNDING) {
+                if (refundOrderResult != null) {
+                    throw new ApiException("该订单已申请多个退订");
+                }
+                refundOrderResult = refundOrder;
+            }
+        }
+        Assert.notNull(refundOrderResult, "退订订单不存在");
+        List<Visitor> visitors = visitorMapper.selectByOrderItem(orderItem.getId());
+        if (visitors.size() == 1) {
+            throw new ApiException("该订单有多个游客");
+        }
+        String refId = String.valueOf(refundOrderResult.getLocal_refund_serial_no());
+        RefundTicketInfo info = new RefundTicketInfo(visitors.get(0).getId(), refId, success);
+        // 分布式锁
+        DistributedReentrantLock lock = distributedLockTemplate.execute(refId, lockTimeOut);
+
+        // 锁成功
+        try {
+            return lockTransactionManager.refundTicket(info, procTime, orderItem, refundOrderResult);
         } finally {
             lock.unlock();
         }
