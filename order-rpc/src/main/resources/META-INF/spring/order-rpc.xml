@@ -59,6 +59,6 @@
 	<dubbo:service interface="com.all580.order.api.service.event.OrderAuditNotifyEvent" ref="orderAuditNotifyEventImpl" />
 	<dubbo:service interface="com.all580.order.api.service.event.RefundApplyNotifyEvent" ref="refundApplyNotifyEventImpl" />
 	<dubbo:service interface="com.all580.order.api.service.event.RefundTicketNotifyEvent" ref="refundTicketNotifyEventImpl" />
-
+	<dubbo:service interface="com.all580.order.api.service.event.RefundAuditNotifyEvent" ref="refundAuditNotifyEventImpl" />
 
 </beans>
