@@ -1,10 +1,13 @@
 package com.all580.payment.thirdpay.wx.model;
 
+import lombok.Data;
+
 /**
  * @包名称：com.hentre.all580.pay.model
  * @创建人：YQ
  * @创建时间：2015/3/16 15:28
  */
+@Data
 public class RefundRsp extends CommonsRsp {
 
 
@@ -61,236 +64,21 @@ public class RefundRsp extends CommonsRsp {
     //    单个代金券或立减优惠支付金额	coupon_fee_$n	否	Int	100	单个代金券或立减优惠支付金额, $n为下标，从1开始编号
     private Integer coupon_fee_$n;
 
-    public String getResult_code() {
-        return result_code;
-    }
+    /*退款状态：
+SUCCES—退款成功
+FAIL—退款失败
+PROCESSING—退款处理中
+NOTSURE—未确定，需要商户
+原退款单号重新发起
+CHANGE—转入代发，退款到
+银行发现用户的卡作废或者
+冻结了，导致原路退款银行
+卡失败，资金回流到商户的
+现金帐号，需要商户人工干
+预，通过线下或者财付通转
+账的方式进行退款。
+* */
+    private String refund_status_0;
 
-    public void setResult_code(String result_code) {
-        this.result_code = result_code;
-    }
 
-    public String getErr_code() {
-        return err_code;
-    }
-
-    public void setErr_code(String err_code) {
-        this.err_code = err_code;
-    }
-
-    public String getErr_code_des() {
-        return err_code_des;
-    }
-
-    public void setErr_code_des(String err_code_des) {
-        this.err_code_des = err_code_des;
-    }
-
-    public String getAppid() {
-        return appid;
-    }
-
-    public void setAppid(String appid) {
-        this.appid = appid;
-    }
-
-    public String getMch_id() {
-        return mch_id;
-    }
-
-    public void setMch_id(String mch_id) {
-        this.mch_id = mch_id;
-    }
-
-    public String getDevice_info() {
-        return device_info;
-    }
-
-    public void setDevice_info(String device_info) {
-        this.device_info = device_info;
-    }
-
-    public String getNonce_str() {
-        return nonce_str;
-    }
-
-    public void setNonce_str(String nonce_str) {
-        this.nonce_str = nonce_str;
-    }
-
-    public String getSign() {
-        return sign;
-    }
-
-    public void setSign(String sign) {
-        this.sign = sign;
-    }
-
-    public String getTransaction_id() {
-        return transaction_id;
-    }
-
-    public void setTransaction_id(String transaction_id) {
-        this.transaction_id = transaction_id;
-    }
-
-    public String getOut_trade_no() {
-        return out_trade_no;
-    }
-
-    public void setOut_trade_no(String out_trade_no) {
-        this.out_trade_no = out_trade_no;
-    }
-
-    public String getOut_refund_no() {
-        return out_refund_no;
-    }
-
-    public void setOut_refund_no(String out_refund_no) {
-        this.out_refund_no = out_refund_no;
-    }
-
-    public String getRefund_id() {
-        return refund_id;
-    }
-
-    public void setRefund_id(String refund_id) {
-        this.refund_id = refund_id;
-    }
-
-    public Integer getRefund_fee() {
-        return refund_fee;
-    }
-
-    public void setRefund_fee(Integer refund_fee) {
-        this.refund_fee = refund_fee;
-    }
-
-    public String getRefund_fee_type() {
-        return refund_fee_type;
-    }
-
-    public void setRefund_fee_type(String refund_fee_type) {
-        this.refund_fee_type = refund_fee_type;
-    }
-
-    public Integer getTotal_fee() {
-        return total_fee;
-    }
-
-    public void setTotal_fee(Integer total_fee) {
-        this.total_fee = total_fee;
-    }
-
-    public String getFee_type() {
-        return fee_type;
-    }
-
-    public void setFee_type(String fee_type) {
-        this.fee_type = fee_type;
-    }
-
-    public Integer getCash_fee() {
-        return cash_fee;
-    }
-
-    public void setCash_fee(Integer cash_fee) {
-        this.cash_fee = cash_fee;
-    }
-
-    public String getCash_fee_type() {
-        return cash_fee_type;
-    }
-
-    public void setCash_fee_type(String cash_fee_type) {
-        this.cash_fee_type = cash_fee_type;
-    }
-
-    public Integer getCash_refund_fee() {
-        return cash_refund_fee;
-    }
-
-    public void setCash_refund_fee(Integer cash_refund_fee) {
-        this.cash_refund_fee = cash_refund_fee;
-    }
-
-    public String getCash_refund_fee_type() {
-        return cash_refund_fee_type;
-    }
-
-    public void setCash_refund_fee_type(String cash_refund_fee_type) {
-        this.cash_refund_fee_type = cash_refund_fee_type;
-    }
-
-    public Integer getCoupon_refund_fee() {
-        return coupon_refund_fee;
-    }
-
-    public void setCoupon_refund_fee(Integer coupon_refund_fee) {
-        this.coupon_refund_fee = coupon_refund_fee;
-    }
-
-    public Integer getCoupon_count() {
-        return coupon_count;
-    }
-
-    public void setCoupon_count(Integer coupon_count) {
-        this.coupon_count = coupon_count;
-    }
-
-    public String getCoupon_batch_id_$n() {
-        return coupon_batch_id_$n;
-    }
-
-    public void setCoupon_batch_id_$n(String coupon_batch_id_$n) {
-        this.coupon_batch_id_$n = coupon_batch_id_$n;
-    }
-
-    public String getCoupon_id_$n() {
-        return coupon_id_$n;
-    }
-
-    public void setCoupon_id_$n(String coupon_id_$n) {
-        this.coupon_id_$n = coupon_id_$n;
-    }
-
-    public Integer getCoupon_fee_$n() {
-        return coupon_fee_$n;
-    }
-
-    public void setCoupon_fee_$n(Integer coupon_fee_$n) {
-        this.coupon_fee_$n = coupon_fee_$n;
-    }
-
-    @Override
-    public String toString() {
-        return "RefundRsp [" +
-                "return_code='" + return_code + '\'' +
-                ", return_msg='" + return_msg + '\'' +
-                ", result_code='" + result_code + '\'' +
-                ", err_code='" + err_code + '\'' +
-                ", err_code_des='" + err_code_des + '\'' +
-                ", appid='" + appid + '\'' +
-                ", mch_id='" + mch_id + '\'' +
-                ", device_info='" + device_info + '\'' +
-                ", nonce_str='" + nonce_str + '\'' +
-                ", sign='" + sign + '\'' +
-                ", transaction_id='" + transaction_id + '\'' +
-                ", out_trade_no='" + out_trade_no + '\'' +
-                ", out_refund_no='" + out_refund_no + '\'' +
-                ", refund_id='" + refund_id + '\'' +
-                ", refund_fee=" + refund_fee +
-                ", refund_fee_type='" + refund_fee_type + '\'' +
-                ", total_fee=" + total_fee +
-                ", fee_type='" + fee_type + '\'' +
-                ", cash_fee=" + cash_fee +
-                ", cash_fee_type='" + cash_fee_type + '\'' +
-                ", cash_refund_fee=" + cash_refund_fee +
-                ", cash_refund_fee_type='" + cash_refund_fee_type + '\'' +
-                ", coupon_refund_fee=" + coupon_refund_fee +
-                ", coupon_count=" + coupon_count +
-                ", coupon_batch_id_$n='" + coupon_batch_id_$n + '\'' +
-                ", coupon_id_$n='" + coupon_id_$n + '\'' +
-                ", coupon_fee_$n=" + coupon_fee_$n +
-                ']';
-    }
 }

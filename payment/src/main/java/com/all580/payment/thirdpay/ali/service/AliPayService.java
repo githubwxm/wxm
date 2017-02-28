@@ -52,14 +52,14 @@ public class AliPayService {
         alipayPropertiesMap.put(coreEpId, aliPayProperties);
     }
 
-    public Map<String, String> paymentQuery(long ordCode, int coreEpId) {
+    public Map<String, String> paymentQuery(long ordCode, int coreEpId,String trade_no) {
         AliPayProperties aliPayProperties = alipayPropertiesMap.get(coreEpId);
         //把请求参数打包成数组
         Map<String, String> sParaTemp = new HashMap<String, String>();
         sParaTemp.put("service", "single_trade_query");
         sParaTemp.put("partner", aliPayProperties.getPartner());
         sParaTemp.put("_input_charset", AlipayConfig.input_charset);
-        sParaTemp.put("trade_no", "");
+        sParaTemp.put("trade_no", trade_no);
         sParaTemp.put("out_trade_no", String.valueOf(ordCode));
 
         // 建立请求
