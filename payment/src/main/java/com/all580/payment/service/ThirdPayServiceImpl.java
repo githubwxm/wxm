@@ -58,10 +58,11 @@ public class ThirdPayServiceImpl implements ThirdPayService {
 
 
     @Override
-    public Result<PaymentConstant.ThirdPayStatus> refundQuery(Long ordCode,int coreEpId,Integer payType) {
+    public Result<PaymentConstant.ThirdPayStatus> refundQuery(String out_refund_no,int coreEpId,Integer payType) {
         if(PaymentConstant.PaymentType.WX_PAY.equals(payType)){
             RefundReq req = new RefundReq();
-            req.setOut_trade_no(ordCode+"");
+           // req.setOut_trade_no(ordCode+"");
+            req.setOut_refund_no(out_refund_no);
             RefundRsp  rsp=null;
             try {
                 rsp=  getWxPayService(coreEpId, payType).request(ConstantUtil.REFUNDQUERY, req, RefundRsp.class, false, coreEpId);

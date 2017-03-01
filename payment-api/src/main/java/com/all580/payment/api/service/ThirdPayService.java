@@ -58,10 +58,10 @@ public interface ThirdPayService {
 
     /**
      *查询退款状态    微信才有
-     * @param ordCode
+     * @param out_refund_no
      * @param coreEpId
      * @param payType
      * @return
      */
-     Result<PaymentConstant.ThirdPayStatus> refundQuery(Long ordCode, int coreEpId, Integer payType);
+     Result<PaymentConstant.ThirdPayStatus> refundQuery(String out_refund_no, int coreEpId, Integer payType);
 }
