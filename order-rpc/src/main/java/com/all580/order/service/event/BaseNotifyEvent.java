@@ -156,13 +156,14 @@ public class BaseNotifyEvent {
         map.put("rfd_qty", rfd_qty);
         map.put("quantity", quantity);
         map.put("exp_qty", exp_qty);
-        List<MaSendResponse>list =aSendResponseMapper.selectByOrderItemId(itemId);
-        if(null==list||list.isEmpty()){
-            map.put("ma_send_response","");
-        }else{
-            MaSendResponse maSendResponse =list.get(0);
-            map.put("ma_send_response",maSendResponse.getImage_url());
-        }
+        map.put("ma_send_response",aSendResponseMapper.selectByOrderItemId(itemId));
+//        List<MaSendResponse>list =aSendResponseMapper.selectByOrderItemId(itemId);
+//        if(null==list||list.isEmpty()){
+//            map.put("ma_send_response",aSendResponseMapper.selectByOrderItemId(itemId));
+//        }else{
+//            MaSendResponse maSendResponse =list.get(0);
+//            map.put("ma_send_response",maSendResponse.getImage_url());
+//        }
         map.put("number",item.getNumber());
         if(tempMap!=null){
             map.putAll(tempMap);
