@@ -273,8 +273,8 @@ public class PlatfromController extends BaseController {
      */
     @RequestMapping(value = "select_platform", method = RequestMethod.GET)
     @ResponseBody
-    public Result<Map<String,Object>> selectPlatform() {
-        return epService.selectPlatform();
+    public Result<Map<String,Object>> selectPlatform(Integer seller_core_ep_id) {
+        return epService.selectPlatform(seller_core_ep_id);
     }
 
     /**
