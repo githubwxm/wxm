@@ -188,7 +188,16 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         OrderClearanceSerial serial = saveClearanceSerial(orderItem, order.getPayee_ep_id(), info.getConsumeQuantity(), info.getValidateSn(), procTime);
 
         // 获取核销人信息
-        Visitor visitor = visitorMapper.selectByPrimaryKey(info.getVisitorSeqId());
+        Visitor visitor;
+        if (info.getVisitorSeqId() == null) {
+            List<Visitor> visitors = visitorMapper.selectByOrderItem(orderItem.getId());
+            if (visitors.size() == 1) {
+                throw new ApiException("该订单有多个游客");
+            }
+            visitor = visitors.get(0);
+        } else {
+            visitor = visitorMapper.selectByPrimaryKey(info.getVisitorSeqId());
+        }
         // 保存核销明细
         OrderClearanceDetail detail = new OrderClearanceDetail();
         detail.setSerial_no(info.getValidateSn());
