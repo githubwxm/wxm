@@ -140,7 +140,7 @@ public class ThirdPayServiceImpl implements ThirdPayService {
                     result.put(code);
                 }
             } catch (Exception e) {
-                code=PaymentConstant.ThirdPayStatus.PAYERROR;
+                code=PaymentConstant.ThirdPayStatus.NOTPAY;
                 result.put(code);
             }
         } else if (PaymentConstant.PaymentType.ALI_PAY.equals(payType)) {
@@ -168,6 +168,11 @@ public class ThirdPayServiceImpl implements ThirdPayService {
                         msg = "订单支付取消";
                         code=PaymentConstant.ThirdPayStatus.NOTPAY;
                         break;
+                    case "TRADE_NOT_EXIST":
+                        msg = "找不不到订单";
+                        code=PaymentConstant.ThirdPayStatus.NOTPAY;
+                        break;
+
                     default:
                         throw new RuntimeException("返回结果不匹配");
                 }
