@@ -53,7 +53,7 @@ public interface ThirdPayService {
      *
      * @param ordCode 订单编号
      */
-    Result getPaidStatus(long ordCode, int coreEpId, Integer payType,String trade_no);
+    Result<Integer> getPaidStatus(long ordCode, int coreEpId, Integer payType,String trade_no);
 
     /**
      *查询退款状态    微信才有
@@ -62,5 +62,5 @@ public interface ThirdPayService {
      * @param payType
      * @return
      */
-     Result refundQuery(Long ordCode,int coreEpId,Integer payType);
+     Result<Integer> refundQuery(Long ordCode,int coreEpId,Integer payType);
 }
