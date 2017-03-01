@@ -78,11 +78,6 @@ public class ThirdPayStatusOrderTimer {
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public void rollback(Order order, PaymentConstant.ThirdPayStatus payStatus) {
         order.setStatus(payStatus == PaymentConstant.ThirdPayStatus.NOTPAY ? OrderConstant.OrderStatus.PAY_WAIT : OrderConstant.OrderStatus.PAY_FAIL);
-        if (payStatus == PaymentConstant.ThirdPayStatus.NOTPAY) {
-            order.setLocal_payment_serial_no(null);
-            order.setPayment_type(null);
-            order.setPay_time(null);
-        }
         orderMapper.updateByPrimaryKeySelective(order);
         // 同步数据
         SyncAccess syncAccess = basicSyncDataEvent.getAccessKeys(order);
