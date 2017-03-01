@@ -159,7 +159,7 @@ public class BaseNotifyEvent {
         map.put("ma_send_response",aSendResponseMapper.selectByOrderItemId(itemId));
 //        List<MaSendResponse>list =aSendResponseMapper.selectByOrderItemId(itemId);
 //        if(null==list||list.isEmpty()){
-//            map.put("ma_send_response",aSendResponseMapper.selectByOrderItemId(itemId));
+//            map.put("ma_send_response","");
 //        }else{
 //            MaSendResponse maSendResponse =list.get(0);
 //            map.put("ma_send_response",maSendResponse.getImage_url());
