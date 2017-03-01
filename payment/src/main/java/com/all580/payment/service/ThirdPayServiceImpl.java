@@ -140,8 +140,8 @@ public class ThirdPayServiceImpl implements ThirdPayService {
                     result.put(code);
                 }
             } catch (Exception e) {
-                e.printStackTrace();
-                result.setError(e.getMessage());
+                code=PaymentConstant.ThirdPayStatus.PAYERROR;
+                result.put(code);
             }
         } else if (PaymentConstant.PaymentType.ALI_PAY.equals(payType)) {
 //             QueryReq queryReq = new QueryReq();
