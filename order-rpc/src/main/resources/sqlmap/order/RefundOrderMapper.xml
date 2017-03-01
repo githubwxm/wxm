@@ -443,4 +443,13 @@
   <select id="selectItemQuantity" resultType="java.lang.Integer">
      select IFNULL(SUM(quantity),0) from  t_refund_order where order_item_id=#{order_item_id} and status=345;
   </select>
+
+  <select id="selectRefundMoneyOrder" resultMap="BaseResultMap">
+    SELECT tro.* FROM t_refund_order tro
+    LEFT JOIN t_order_item toi ON toi.id = tro.order_item_id
+    LEFT JOIN t_order o ON o.id = toi.order_id
+    WHERE tro.`status` = 343
+    AND o.payment_type = 7113
+    limit 20
+  </select>
 </mapper>

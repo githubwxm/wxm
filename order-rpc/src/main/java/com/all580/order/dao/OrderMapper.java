@@ -96,4 +96,16 @@ public interface OrderMapper {
      * @return
      */
     Order selectByOuter(@Param("epId") Integer epId, @Param("outerId") String outerId);
+
+    /**
+     * 查询支付中的订单
+     * @return
+     */
+    List<Order> selectPayingOrder();
+
+    /**
+     * 查询退款中的订单
+     * @return
+     */
+    List<Order> selectRefundMoneyOrder();
 }
