@@ -191,7 +191,7 @@ public class EpServiceImpl implements EpService {
             if(seller_core_ep_id==null){
                 map.put("list", epMapper.selectPlatform());
             }else{
-                epMapper.selectPlatformSupplier(seller_core_ep_id);
+                map.put("list", epMapper.selectPlatformSupplier(seller_core_ep_id));
             }
             result.setCode(200);
             result.put(map);
