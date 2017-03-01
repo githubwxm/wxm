@@ -28,7 +28,12 @@ public class PaymentConstant {
         public static final int DISABLED = 0;
         public static final int ENABLED = 1;
     }
-
+    public static class ThirdPayStatus{
+        public static final Integer SUCCESS = 7121; // 订单支付成功
+        public static final Integer NOTPAY = 7122; // 订单未支付     订单未支付,已关闭   订单支付取消
+        public static final Integer USERPAYING = 7123; // 订单正在支付中
+        public static final Integer PAYERROR = 7124; // 订单支付失败
+    }
     /**
      * 余额变动类型
      */
