@@ -68,8 +68,27 @@ public class ThirdPayServiceImpl implements ThirdPayService {
             }catch (Exception e){
                 e.printStackTrace();
             }
+            String str =rsp.getRefund_status_0();
+            Integer code= -1;
             Result result = new Result(true);
-            result.put(rsp.getRefund_status_0());
+            switch (str){
+                case "SUCCES":
+                    code=PaymentConstant.ThirdPayStatus.REFUND_SUCCES;
+                    break;
+                case "FAIL":
+                    code=PaymentConstant.ThirdPayStatus.REFUND_FAIL;
+                    break;
+                case "PROCESSING":
+                    code=PaymentConstant.ThirdPayStatus.REFUND_PROCESSING;
+                    break;
+                case "NOTSURE":
+                    code=PaymentConstant.ThirdPayStatus.REFUND_NOTSURE;
+                    break;
+                case "CHANGE":
+                    code=PaymentConstant.ThirdPayStatus.REFUND_CHANGE;
+                    break;
+            }
+            result.put(code);
             return result;
         }else{
             throw new RuntimeException("不支持的支付类型:" + payType);
