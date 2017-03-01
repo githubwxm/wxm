@@ -34,10 +34,10 @@ public class ThirdPayServiceTest extends BaseTest {
 
     @Test
     public void testStatus(){
-        //System.out.println(thirdPayService.refundQuery(1481789993863120L,1,7113).get());
+        System.out.println(thirdPayService.refundQuery(1481789993863120L,1,7113).get());
        // System.out.println(thirdPayService.getPaidStatus(1481789993863120L,1,7113,"").get());
-        System.out.println(thirdPayService.getPaidStatus(1481764752441540L,1,7112,"").get());
-        System.out.println(thirdPayService.getPaidStatus(1481765421585540L,1,7112,"").get());
+       // System.out.println(thirdPayService.getPaidStatus(1481764752441540L,1,7112,"").get());
+       // System.out.println(thirdPayService.getPaidStatus(1481765421585540L,1,7112,"").get());
     }
     @Test
     public void reqPayToAliTest() {

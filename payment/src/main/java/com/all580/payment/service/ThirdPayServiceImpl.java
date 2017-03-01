@@ -72,7 +72,7 @@ public class ThirdPayServiceImpl implements ThirdPayService {
             Integer code= -1;
             Result result = new Result(true);
             switch (str){
-                case "SUCCES":
+                case "SUCCESS":
                     code=PaymentConstant.ThirdPayStatus.REFUND_SUCCES;
                     break;
                 case "FAIL":

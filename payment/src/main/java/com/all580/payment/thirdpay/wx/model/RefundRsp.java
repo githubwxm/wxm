@@ -65,7 +65,7 @@ public class RefundRsp extends CommonsRsp {
     private Integer coupon_fee_$n;
 
     /*退款状态：
-SUCCES—退款成功
+SUCCESS—退款成功
 FAIL—退款失败
 PROCESSING—退款处理中
 NOTSURE—未确定，需要商户
