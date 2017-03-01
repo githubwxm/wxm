@@ -28,18 +28,17 @@ public class PaymentConstant {
         public static final int DISABLED = 0;
         public static final int ENABLED = 1;
     }
-    public static class ThirdPayStatus{
-        public static final Integer SUCCESS = 7121; // 订单支付成功
-        public static final Integer NOTPAY = 7122; // 订单未支付     订单未支付,已关闭   订单支付取消
-        public static final Integer USERPAYING = 7123; // 订单正在支付中
-        public static final Integer PAYERROR = 7124; // 订单支付失败
+    public enum ThirdPayStatus{
+        SUCCESS, // 订单支付成功
+        NOTPAY, // 订单未支付     订单未支付,已关闭   订单支付取消
+        USERPAYING,// 订单正在支付中
+        PAYERROR,// 订单支付失败
 
-        public static final Integer REFUND_SUCCES = 7125; // 退款成功
-        public static final Integer REFUND_FAIL = 7126; // 退款失败
-        public static final Integer REFUND_PROCESSING = 7127; // 退款处理中
-        public static final Integer REFUND_NOTSURE = 7128; // 未确定，需要商户  原退款单号重新发起
-        public static final Integer REFUND_CHANGE = 7129; // 转入代发 退款到银行发现用户的卡问题需要商户人工干预，通过线下或者财付通转
-
+        REFUND_SUCCES, // 退款成功
+        REFUND_FAIL, // 退款失败
+        REFUND_PROCESSING, // 退款处理中
+        REFUND_NOTSURE, // 未确定，需要商户  原退款单号重新发起
+        REFUND_CHANGE // 转入代发 退款到银行发现用户的卡问题需要商户人工干预，通过线下或者财付通转
     }
     /**
      * 余额变动类型

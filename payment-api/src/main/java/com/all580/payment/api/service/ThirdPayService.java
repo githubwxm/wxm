@@ -1,5 +1,6 @@
 package com.all580.payment.api.service;
 
+import com.all580.payment.api.conf.PaymentConstant;
 import com.framework.common.Result;
 
 import java.util.Map;
@@ -53,7 +54,7 @@ public interface ThirdPayService {
      *
      * @param ordCode 订单编号
      */
-    Result<Integer> getPaidStatus(long ordCode, int coreEpId, Integer payType,String trade_no);
+    Result<PaymentConstant.ThirdPayStatus> getPaidStatus(long ordCode, int coreEpId, Integer payType,String trade_no);
 
     /**
      *查询退款状态    微信才有
@@ -62,5 +63,5 @@ public interface ThirdPayService {
      * @param payType
      * @return
      */
-     Result<Integer> refundQuery(Long ordCode,int coreEpId,Integer payType);
+     Result<PaymentConstant.ThirdPayStatus> refundQuery(Long ordCode, int coreEpId, Integer payType);
 }

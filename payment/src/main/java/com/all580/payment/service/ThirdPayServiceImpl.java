@@ -58,7 +58,7 @@ public class ThirdPayServiceImpl implements ThirdPayService {
 
 
     @Override
-    public Result refundQuery(Long ordCode,int coreEpId,Integer payType) {
+    public Result<PaymentConstant.ThirdPayStatus> refundQuery(Long ordCode,int coreEpId,Integer payType) {
         if(PaymentConstant.PaymentType.WX_PAY.equals(payType)){
             RefundReq req = new RefundReq();
             req.setOut_trade_no(ordCode+"");
@@ -69,8 +69,8 @@ public class ThirdPayServiceImpl implements ThirdPayService {
                 e.printStackTrace();
             }
             String str =rsp.getRefund_status_0();
-            Integer code= -1;
-            Result result = new Result(true);
+            PaymentConstant.ThirdPayStatus code;
+            Result<PaymentConstant.ThirdPayStatus> result = new Result<>(true);
             switch (str){
                 case "SUCCESS":
                     code=PaymentConstant.ThirdPayStatus.REFUND_SUCCES;
@@ -87,6 +87,8 @@ public class ThirdPayServiceImpl implements ThirdPayService {
                 case "CHANGE":
                     code=PaymentConstant.ThirdPayStatus.REFUND_CHANGE;
                     break;
+                default:
+                    throw new RuntimeException("返回结果不匹配");
             }
             result.put(code);
             return result;
@@ -96,10 +98,10 @@ public class ThirdPayServiceImpl implements ThirdPayService {
     }
 
     @Override
-    public Result<Integer> getPaidStatus(long ordCode, int coreEpId, Integer payType,String trade_no) {
-        Result result = new Result();
+    public Result<PaymentConstant.ThirdPayStatus> getPaidStatus(long ordCode, int coreEpId, Integer payType,String trade_no) {
+        Result<PaymentConstant.ThirdPayStatus> result = new Result<>();
         String msg = "";
-        Integer code=-1;
+        PaymentConstant.ThirdPayStatus code;
         if (PaymentConstant.PaymentType.WX_PAY.equals(payType)) {
             UnifiedOrderReq req = new UnifiedOrderReq();
             req.setOut_trade_no(ordCode+"");
@@ -131,7 +133,10 @@ public class ThirdPayServiceImpl implements ThirdPayService {
                             msg = "订单支付失败";
                             code=PaymentConstant.ThirdPayStatus.PAYERROR;
                             break;
+                        default:
+                            throw new RuntimeException("返回结果不匹配");
                     }
+                    result.put(code);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -162,12 +167,14 @@ public class ThirdPayServiceImpl implements ThirdPayService {
                         msg = "订单支付取消";
                         code=PaymentConstant.ThirdPayStatus.NOTPAY;
                         break;
+                    default:
+                        throw new RuntimeException("返回结果不匹配");
                 }
+                result.put(code);
             }
         } else {
                 throw new RuntimeException("不支持的支付类型:" + payType);
         }
-            result.put(code);
             result.setSuccess();
             return result;
     }
