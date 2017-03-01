@@ -77,9 +77,10 @@ public class ThirdPayServiceImpl implements ThirdPayService {
     }
 
     @Override
-    public Result<String> getPaidStatus(long ordCode, int coreEpId, Integer payType,String trade_no) {
+    public Result<Integer> getPaidStatus(long ordCode, int coreEpId, Integer payType,String trade_no) {
         Result result = new Result();
         String msg = "";
+        Integer code=-1;
         if (PaymentConstant.PaymentType.WX_PAY.equals(payType)) {
             UnifiedOrderReq req = new UnifiedOrderReq();
             req.setOut_trade_no(ordCode+"");
@@ -97,15 +98,19 @@ public class ThirdPayServiceImpl implements ThirdPayService {
                                 }
                             }
                             msg = "订单支付成功";
+                            code=PaymentConstant.ThirdPayStatus.SUCCESS;
                             break;
                         case "NOTPAY":
                             msg = "订单未支付";
+                            code=PaymentConstant.ThirdPayStatus.NOTPAY;
                             break;
                         case "USERPAYING":
                             msg = "订单正在支付中";
+                            code=PaymentConstant.ThirdPayStatus.USERPAYING;
                             break;
                         case "PAYERROR":
                             msg = "订单支付失败";
+                            code=PaymentConstant.ThirdPayStatus.PAYERROR;
                             break;
                     }
                 }
@@ -122,24 +127,28 @@ public class ThirdPayServiceImpl implements ThirdPayService {
                 switch (paymentQuery.get("trade_status")) {
                     case "WAIT_BUYER_PAY":
                         msg = "订单未支付";
+                        code=PaymentConstant.ThirdPayStatus.NOTPAY;
                         break;
                     case "TRADE_CLOSED":
                         msg = "订单未支付,已关闭";
+                        code=PaymentConstant.ThirdPayStatus.NOTPAY;
                         break;
                     case "TRADE_SUCCESS":
                     case "TRADE_FINISHED":
                         msg = "订单支付成功";
+                        code=PaymentConstant.ThirdPayStatus.SUCCESS;
                         break;
                     case "TRADE_REFUSE":
                     case "TRADE_CANCEL":
                         msg = "订单支付取消";
+                        code=PaymentConstant.ThirdPayStatus.NOTPAY;
                         break;
                 }
             }
         } else {
                 throw new RuntimeException("不支持的支付类型:" + payType);
         }
-            result.put(msg);
+            result.put(code);
             result.setSuccess();
             return result;
     }
