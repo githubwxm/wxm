@@ -100,4 +100,10 @@ public interface RefundOrderMapper {
      * @return
      */
     int selectItemQuantity(@Param("order_item_id") Integer order_item_id);
+
+    /**
+     * 查询退款中的退订订单
+     * @return
+     */
+    List<RefundOrder> selectRefundMoneyOrder();
 }

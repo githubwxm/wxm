@@ -344,4 +344,11 @@
         SELECT * FROM t_order
         WHERE outer_id = #{outerId} and buy_ep_id = #{epId}
     </select>
+
+  <select id="selectPayingOrder" resultMap="BaseResultMap">
+    SELECT * FROM t_order
+    WHERE `status` = 312
+    AND payment_type IN (7112, 7113)
+    limit 20
+  </select>
 </mapper>
