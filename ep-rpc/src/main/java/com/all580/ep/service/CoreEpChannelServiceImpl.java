@@ -53,7 +53,7 @@ public class CoreEpChannelServiceImpl implements CoreEpChannelService {
                 throw new ApiException("通道汇率已经存在");
             }
             if(epId-coreEpId==0){
-                throw new ApiException("不需要给自己添加通告汇率");
+                throw new ApiException("不需要添加自己给自己的供应");
             }
             result.put(coreEpChannelMapper.create(params));
             result.setSuccess();
