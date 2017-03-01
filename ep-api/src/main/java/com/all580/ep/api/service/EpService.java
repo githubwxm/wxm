@@ -45,7 +45,7 @@ public interface EpService {
      *查询平台商通道
      * @return   ｛list:{id:1 平台商id,name:String 平台商名称}｝
      */
-    Result<Map<String,Object>> selectPlatform();
+    Result<Map<String,Object>> selectPlatform(Integer seller_core_ep_id);
     /**
      * 创建企业
      * @param map   企业信息

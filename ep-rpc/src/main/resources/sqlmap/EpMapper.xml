@@ -41,6 +41,12 @@
         select id,name from t_ep where ep_type=10001;
     </select>
 
+    <select id="selectPlatformSupplier" resultType="java.util.Map">
+         select id,name from t_ep where ep_type=10001
+       and id != #{supplier_core_ep_id}
+       and   id not in(select seller_core_ep_id from t_core_ep_channel where supplier_core_ep_id=#{supplier_core_ep_id});
+    </select>
+
     <select id="getSellerPlatfromAccuntInfo" resultType="java.util.Map">
         select  pic_address,ep.id ,ep.name,ep.linkman,ep.link_phone,ep.province,ep.city,ep.area,ep.address,ep.status,
         date_format(ep.add_time,'%Y-%m-%d') add_time,param.`name` as ep_type_name  from

@@ -14,6 +14,7 @@ import java.util.Map;
  */
 public interface EpMapper {
      List<Map<String,Object>> selectPlatform();
+    List<Map<String,Object>> selectPlatformSupplier(int seller_core_ep_id);
     int create(Object obj);
     List<Map<String,Object>> select (Map<String,Object> params);
     Integer selectCount(Map<String,Object> params);

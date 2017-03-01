@@ -184,11 +184,15 @@ public class EpServiceImpl implements EpService {
     }
 
     @Override
-    public Result<Map<String, Object>> selectPlatform() {
+    public Result<Map<String, Object>> selectPlatform(Integer seller_core_ep_id) {
         Result<Map<String, Object>> result = new Result<>(true);
         try {
             Map<String, Object> map = new HashMap();
-            map.put("list", epMapper.selectPlatform());
+            if(seller_core_ep_id==null){
+                map.put("list", epMapper.selectPlatform());
+            }else{
+                epMapper.selectPlatformSupplier(seller_core_ep_id);
+            }
             result.setCode(200);
             result.put(map);
             return result;
