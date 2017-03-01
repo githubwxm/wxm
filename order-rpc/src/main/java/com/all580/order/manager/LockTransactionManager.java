@@ -367,8 +367,7 @@ public class LockTransactionManager {
             throw new ApiException("订单不存在");
         }
         if (order.getStatus() != OrderConstant.OrderStatus.PAY_WAIT &&
-                order.getStatus() != OrderConstant.OrderStatus.PAY_FAIL &&
-                order.getStatus() != OrderConstant.OrderStatus.PAYING) {
+                order.getStatus() != OrderConstant.OrderStatus.PAY_FAIL) {
             throw new ApiException("订单不在待支付状态");
         }
         if (order.getPay_amount() <= 0) {
