@@ -43,7 +43,6 @@ public class ThirdPayStatusOrderTimer {
     private BasicSyncDataEvent basicSyncDataEvent;
 
     @Scheduled(fixedDelay = 60000 * 5)
-    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public void payingJob() {
         try {
             List<Order> orderList = orderMapper.selectPayingOrder();
@@ -59,18 +58,7 @@ public class ThirdPayStatusOrderTimer {
                                 break;
                             case NOTPAY:
                             case PAYERROR:
-                                order.setStatus(payStatus == PaymentConstant.ThirdPayStatus.NOTPAY ? OrderConstant.OrderStatus.PAY_WAIT : OrderConstant.OrderStatus.PAY_FAIL);
-                                if (payStatus == PaymentConstant.ThirdPayStatus.NOTPAY) {
-                                    order.setLocal_payment_serial_no(null);
-                                    order.setPayment_type(null);
-                                    order.setPay_time(null);
-                                }
-                                orderMapper.updateByPrimaryKeySelective(order);
-                                // 同步数据
-                                SyncAccess syncAccess = basicSyncDataEvent.getAccessKeys(order);
-                                syncAccess.getDataMap().add("t_order", order);
-                                syncAccess.loop();
-                                basicSyncDataEvent.sync(syncAccess.getDataMaps());
+                                rollback(order, payStatus);
                                 break;
                         }
                     } catch (Exception e) {
@@ -87,8 +75,18 @@ public class ThirdPayStatusOrderTimer {
         }
     }
 
-    @Scheduled(fixedDelay = 60000 * 5)
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public void rollback(Order order, PaymentConstant.ThirdPayStatus payStatus) {
+        order.setStatus(payStatus == PaymentConstant.ThirdPayStatus.NOTPAY ? OrderConstant.OrderStatus.PAY_WAIT : OrderConstant.OrderStatus.PAY_FAIL);
+        orderMapper.updateByPrimaryKeySelective(order);
+        // 同步数据
+        SyncAccess syncAccess = basicSyncDataEvent.getAccessKeys(order);
+        syncAccess.getDataMap().add("t_order", order);
+        syncAccess.loop();
+        basicSyncDataEvent.sync(syncAccess.getDataMaps());
+    }
+
+    @Scheduled(fixedDelay = 60000 * 5)
     public void refundMoneyJob() {
         try {
             List<RefundOrder> refundOrders = refundOrderMapper.selectRefundMoneyOrder();
