@@ -62,6 +62,13 @@ public interface RefundVisitorMapper {
     List<RefundVisitor> selectByItemId(@Param("itemId") Integer itemId);
 
     /**
+     * 根据子订单查询已退订的游客 不包含退订失败的(没有自增ID的 聚合)
+     * @param itemId
+     * @return
+     */
+    List<RefundVisitor> selectByItemIdExcludeFailed(@Param("itemId") Integer itemId);
+
+    /**
      * 根据退订订单查询已退订的游客
      * @param refundId
      * @return

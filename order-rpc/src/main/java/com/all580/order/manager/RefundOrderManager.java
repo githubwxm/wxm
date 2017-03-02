@@ -166,7 +166,7 @@ public class RefundOrderManager extends BaseOrderManager {
     public int canRefundForDays(Collection<RefundDay> refundDays, Collection<OrderItemDetail> details, int itemId, int refundId) {
         int totalRefundQuantity = 0;
         List<Visitor> visitorList = visitorMapper.selectByOrderItem(itemId);
-        List<RefundVisitor> refundVisitorList = refundVisitorMapper.selectByItemId(itemId);
+        List<RefundVisitor> refundVisitorList = refundVisitorMapper.selectByItemIdExcludeFailed(itemId);
         List<Visitor> totalVisitorList = new ArrayList<>();
         for (RefundDay refundDay : refundDays) {
             OrderItemDetail detail = AccountUtil.getDetailByDay(details, refundDay.getDay());

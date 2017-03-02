@@ -34,7 +34,7 @@ public class TicketRefundOrderOTAImpl extends TicketRefundOrderImpl {
         RefundOrderApply apply = super.validateAndParseParams(itemNo, params);
         if (!params.containsKey("days")) {
             List<Visitor> visitors = visitorMapper.selectByOrderItem(apply.getItem().getId());
-            List<RefundVisitor> refundVisitors = refundVisitorMapper.selectByItemId(apply.getItem().getId());
+            List<RefundVisitor> refundVisitors = refundVisitorMapper.selectByItemIdExcludeFailed(apply.getItem().getId());
 
             List<Map<String, Object>> days = new ArrayList<>();
             params.put("days", days);
