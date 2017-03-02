@@ -177,6 +177,9 @@ public class ThirdPayServiceImpl implements ThirdPayService {
                         throw new RuntimeException("返回结果不匹配");
                 }
                 result.put(code);
+            }else if(paymentQuery.get("is_success") != null && paymentQuery.get("is_success").equals("F")){
+                code=PaymentConstant.ThirdPayStatus.NOTPAY;
+                result.put(code);
             }
         } else {
                 throw new RuntimeException("不支持的支付类型:" + payType);
