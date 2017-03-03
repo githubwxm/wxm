@@ -248,6 +248,12 @@ public class OrderController extends BaseController {
         return orderService.selectChannelBillForSupplier(supplier_core_ep_id, start_time, end_time, settled);
     }
 
+    @RequestMapping("cancel/times")
+    @ResponseBody
+    public Result<?> getCancelTimes() {
+        return orderService.getCancelTimeout();
+    }
+
     private Date[] checkDate(String start_time, String end_time) {
         Date[] result = new Date[]{null, null};
         try {
