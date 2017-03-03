@@ -374,7 +374,7 @@ public class PlanController extends BaseController {
 
     @RequestMapping("can_sale/qunar/sub/list")
     @ResponseBody
-    public Result<?> selectCanSaleSubByQunar(@RequestParam Integer ep_id, Long code, @RequestParam(defaultValue = "0") Integer record_start, @RequestParam(defaultValue = "20") Integer record_count) {
-        return productSalesPlanService.selectCanSaleSubAndCalendarByQunar(ep_id, code, record_start, record_count);
+    public Result<?> selectCanSaleSubByQunar(@RequestParam Integer ep_id, Long[] code, @RequestParam(defaultValue = "1") Integer calendar, @RequestParam(defaultValue = "0") Integer record_start, @RequestParam(defaultValue = "20") Integer record_count) {
+        return productSalesPlanService.selectCanSaleSubAndCalendarByQunar(ep_id, code == null || code.length == 0 ? null : Arrays.asList(code), calendar == 1, record_start, record_count);
     }
 }
