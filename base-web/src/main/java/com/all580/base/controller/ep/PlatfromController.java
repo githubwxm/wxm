@@ -189,9 +189,7 @@ public class PlatfromController extends BaseController {
     @RequestMapping(value = "payment/list_by_core_ep_id", method = RequestMethod.GET)
     @ResponseBody
     public Result<List<Map<String, String>>> paymentListByEpIdNotApi(Integer core_ep_id) {
-        if(core_ep_id==null){
-
-        }
+        Assert.notNull(core_ep_id, "参数【type】不能为空");
         Result<List<Map<String, String>>> result =epPaymentConfService.listByEpId(core_ep_id);
         for(Map<String, String> map:result.get()){
             if(PaymentConstant.PaymentType.ALI_PAY-CommonUtil.objectParseInteger(map.get("payment_type"))==0){
