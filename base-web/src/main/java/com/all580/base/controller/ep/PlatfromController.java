@@ -18,6 +18,7 @@ import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -191,13 +192,20 @@ public class PlatfromController extends BaseController {
     public Result<List<Map<String, String>>> paymentListByEpIdNotApi(Integer core_ep_id) {
         Assert.notNull(core_ep_id, "参数【type】不能为空");
         Result<List<Map<String, String>>> result =epPaymentConfService.listByEpId(core_ep_id);
+        List<Map<String,String>> list = new ArrayList<>();
         for(Map<String, String> map:result.get()){
+            Map<String,String> resultMap = new HashMap<>();
             if(PaymentConstant.PaymentType.ALI_PAY-CommonUtil.objectParseInteger(map.get("payment_type"))==0){
-                 map.put("img",PaymentConstant.PaymentiImg.ALI_PAY_IMG);
+                resultMap.put("img",PaymentConstant.PaymentiImg.ALI_PAY_IMG);
+                resultMap.put("name","支付宝");
             }else if(PaymentConstant.PaymentType.WX_PAY-CommonUtil.objectParseInteger(map.get("payment_type"))==0){
-                 map.put("img",PaymentConstant.PaymentiImg.WX_PAY_IMG);
+                resultMap.put("img",PaymentConstant.PaymentiImg.WX_PAY_IMG);
+                resultMap.put("name","微信");
             }
+            resultMap.put("payment_type",map.remove("payment_type"));
+            list.add(resultMap);
         }
+        result.put(list);
         return    result ;
     }
 
