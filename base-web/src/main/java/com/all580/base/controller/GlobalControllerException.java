@@ -29,7 +29,12 @@ public class GlobalControllerException {
         if (e != null) {
             String message = e.getMessage();
             if (message != null && message.startsWith("org.springframework.dao.DuplicateKeyException:")) {
-                return processDuplicateKeyException(new DuplicateKeyException(message, e));
+                String str = "Duplicate entry '";
+                int beginIndex = message.indexOf(str);
+                if (beginIndex > 0) {
+                    String msg = message.substring(beginIndex + str.length(), message.indexOf("' for key", beginIndex));
+                    return processDuplicateKeyException(new DuplicateKeyException("字段: " + msg + " 重复.", e));
+                }
             }
 
             if (message != null && message.startsWith("org.springframework.dao.DataIntegrityViolationException:")) {
@@ -37,7 +42,7 @@ public class GlobalControllerException {
                 int beginIndex = message.indexOf(str);
                 if (beginIndex > 0) {
                     String column = message.substring(beginIndex + str.length(), message.indexOf("' at row", beginIndex));
-                    return processDataIntegrityViolationException(new DataIntegrityViolationException("字段: " + column + "太长.", e));
+                    return processDataIntegrityViolationException(new DataIntegrityViolationException("字段: " + column + " 太长.", e));
                 }
             }
         }
