@@ -44,7 +44,7 @@ public interface EpPaymentConfService {
      * 通过企业ID获取收款方式配置信息
      *
      * @param epId 企业ID
-     * @return {"coreEpId":xxx,"paymentType":7112,"confData":"...","status":1}
+     * @return {"core_ep_id":xxx,"payment_type":7112,"conf_data":"...","status":1}
      */
     Result<List<Map<String, String>>> listByEpId(Integer epId);
 

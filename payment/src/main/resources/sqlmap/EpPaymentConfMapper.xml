@@ -108,7 +108,7 @@
         select
         <include refid="Base_Column_List"/>
         from t_core_ep_payment_conf
-        where core_ep_id=#{core_ep_id}
+        where core_ep_id=#{core_ep_id}  and status =1
     </select>
 
     <select id="countByEpIdAndType" resultType="java.lang.Integer">
