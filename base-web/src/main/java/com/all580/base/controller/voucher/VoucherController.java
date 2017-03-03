@@ -36,7 +36,7 @@ public class VoucherController extends BaseController {
     public Result add(@RequestBody Map params) {
         // 验证参数
         ParamsMapValidate.validate(params, voucherValidateManager.addValidate());
-        return voucherRPCService.addVoucher(params.get("name").toString(), params.get("link").toString(), (String) params.get("memo"));
+        return voucherRPCService.addVoucher(params.get("name").toString(), params.get("link").toString(), (String) params.get("memo"), (String) params.get("service"));
     }
 
     @RequestMapping(value = "get/id")
@@ -51,7 +51,7 @@ public class VoucherController extends BaseController {
         // 验证参数
         ParamsMapValidate.validate(params, voucherValidateManager.updateValidate());
         int id = Integer.parseInt(params.get("id").toString());
-        return voucherRPCService.updateVoucher(id, params.get("name").toString(), params.get("link").toString(), (String) params.get("memo"));
+        return voucherRPCService.updateVoucher(id, params.get("name").toString(), params.get("link").toString(), (String) params.get("memo"), (String) params.get("service"));
     }
 
     @RequestMapping(value = "merchant/add", method = RequestMethod.POST)
