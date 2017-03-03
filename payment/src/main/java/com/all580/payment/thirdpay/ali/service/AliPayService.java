@@ -7,6 +7,7 @@ import com.all580.payment.thirdpay.ali.util.AlipaySubmit;
 import com.framework.common.Result;
 import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.JsonUtils;
+import com.framework.common.util.CommonUtil;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -98,7 +99,7 @@ public class AliPayService {
         sParaTemp.put("_input_charset", AlipayConfig.input_charset);
         sParaTemp.put("payment_type", AlipayConfig.PayType.PROD_PURCHASE.toString());
         sParaTemp.put("notify_url", notify_url);
-        sParaTemp.put("return_url", "");
+        sParaTemp.put("return_url", CommonUtil.objectParseString(params.get("return_url")));
         sParaTemp.put("seller_email", "admin@all580.com");
         sParaTemp.put("out_trade_no", String.valueOf(ordCode));
         sParaTemp.put("subject", String.valueOf(params.get("prodName")));
