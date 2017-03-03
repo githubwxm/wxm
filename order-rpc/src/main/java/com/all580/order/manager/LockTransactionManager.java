@@ -430,6 +430,7 @@ public class LockTransactionManager {
         payParams.put("totalFee", order.getPay_amount());
         payParams.put("serialNum", order.getNumber().toString());
         payParams.put("prodId", StringUtils.join(ids, ","));
+        payParams.put("return_url", params.get("return_url"));
 
         Result result = thirdPayService.reqPay(order.getNumber(),
                 bookingOrderManager.getCoreEpId(epService.selectPlatformId(order.getBuy_ep_id())),
