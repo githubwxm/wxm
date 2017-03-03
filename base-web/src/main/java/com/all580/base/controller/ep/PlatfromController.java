@@ -3,6 +3,7 @@ package com.all580.base.controller.ep;
 import com.all580.base.manager.PlatfromValidateManager;
 import com.all580.ep.api.conf.EpConstant;
 import com.all580.ep.api.service.EpService;
+import com.all580.payment.api.conf.PaymentConstant;
 import com.all580.payment.api.service.EpPaymentConfService;
 import com.framework.common.BaseController;
 import com.framework.common.Result;
@@ -183,6 +184,24 @@ public class PlatfromController extends BaseController {
     public Result<List<Map<String, String>>> paymentListByEpId(Integer ep_id) {
         return     epPaymentConfService.listByEpId(ep_id);
     }//payment
+
+
+    @RequestMapping(value = "payment/list_by_core_ep_id", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<List<Map<String, String>>> paymentListByEpIdNotApi(Integer core_ep_id) {
+        if(core_ep_id==null){
+
+        }
+        Result<List<Map<String, String>>> result =epPaymentConfService.listByEpId(core_ep_id);
+        for(Map<String, String> map:result.get()){
+            if(PaymentConstant.PaymentType.ALI_PAY-CommonUtil.objectParseInteger(map.get("payment_type"))==0){
+                 map.put("img",PaymentConstant.PaymentiImg.ALI_PAY_IMG);
+            }else if(PaymentConstant.PaymentType.WX_PAY-CommonUtil.objectParseInteger(map.get("payment_type"))==0){
+                 map.put("img",PaymentConstant.PaymentiImg.WX_PAY_IMG);
+            }
+        }
+        return    result ;
+    }
 
     /**
      * 上游平台商
