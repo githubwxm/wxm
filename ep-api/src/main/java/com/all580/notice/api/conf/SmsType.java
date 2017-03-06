@@ -39,6 +39,11 @@ public class SmsType {
         public static final int PRODUCT_INFORM = 12201; // 产品调整通知 产品上架、价格更改、内容修改、计划变动。
         public static final int PRODUCT_ORDER = 12202; // 产品订购 产品预定支付完成
         public static final int PRODUCT_ORDER_OTA = 12203; // 产品订购  产品订购OTA
+
+        //第三方产品上下架回调通知
+        public static final int THIRD_PRODUCT_UP = 12204; // 上架
+        public static final int THIRD_PRODUCT_DOWN = 12205; // 下架
+        public static final int THIRD_PRODUCT_UPDATE_UP = 12206; // 更新上架
     }
 
     public static class Order { // 订单
