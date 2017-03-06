@@ -11,13 +11,16 @@ import com.all580.order.service.event.BasicSyncDataEvent;
 import com.all580.payment.api.conf.PaymentConstant;
 import com.all580.payment.api.service.ThirdPayService;
 import com.framework.common.Result;
+import com.framework.common.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author zhouxianjun(Alone)
@@ -42,19 +45,23 @@ public class ThirdPayStatusOrderTimer {
     @Autowired
     private BasicSyncDataEvent basicSyncDataEvent;
 
+    @Value("${order.pay.timeout}")
+    private Integer payTimeOut;
+
     @Scheduled(fixedDelay = 60000 * 5)
     public void payingJob() {
         try {
-            List<Order> orderList = orderMapper.selectPayingOrder();
+            List<Order> orderList = orderMapper.selectPayingOrder(payTimeOut);
             if (orderList != null && !orderList.isEmpty()) {
                 boolean retry = true;
                 for (Order order : orderList) {
                     try {
-                        Result<PaymentConstant.ThirdPayStatus> result = thirdPayService.getPaidStatus(order.getNumber(), order.getPayee_ep_id(), order.getPayment_type(), order.getThird_serial_no());
-                        PaymentConstant.ThirdPayStatus payStatus = result.get();
+                        Result<Map<String, Object>> result = thirdPayService.getPaidStatus(order.getNumber(), order.getPayee_ep_id(), order.getPayment_type(), order.getThird_serial_no());
+                        Map<String, Object> map = result.get();
+                        PaymentConstant.ThirdPayStatus payStatus = (PaymentConstant.ThirdPayStatus) map.get("code");
                         switch (payStatus) {
                             case SUCCESS:
-                                paymentCallbackService.payCallback(order.getNumber(), String.valueOf(order.getNumber()), order.getThird_serial_no());
+                                paymentCallbackService.payCallback(order.getNumber(), String.valueOf(order.getNumber()), CommonUtil.objectParseString(map.get("transaction_id")));
                                 break;
                             case NOTPAY:
                             case PAYERROR:
@@ -78,7 +85,7 @@ public class ThirdPayStatusOrderTimer {
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public void rollback(Order order, PaymentConstant.ThirdPayStatus payStatus) {
         order.setStatus(payStatus == PaymentConstant.ThirdPayStatus.NOTPAY ? OrderConstant.OrderStatus.PAY_WAIT : OrderConstant.OrderStatus.PAY_FAIL);
-        orderMapper.updateByPrimaryKeySelective(order);
+        orderMapper.setStatus(order.getId(), payStatus == PaymentConstant.ThirdPayStatus.NOTPAY ? OrderConstant.OrderStatus.PAY_WAIT : OrderConstant.OrderStatus.PAY_FAIL, OrderConstant.OrderStatus.PAYING);
         // 同步数据
         SyncAccess syncAccess = basicSyncDataEvent.getAccessKeys(order);
         syncAccess.getDataMap().add("t_order", order);
