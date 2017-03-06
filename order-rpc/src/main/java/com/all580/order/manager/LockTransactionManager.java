@@ -5,6 +5,7 @@ import com.all580.ep.api.service.EpService;
 import com.all580.order.adapter.RefundOrderInterface;
 import com.all580.order.api.OrderConstant;
 import com.all580.order.api.model.*;
+import com.all580.order.api.service.PaymentCallbackService;
 import com.all580.order.dao.*;
 import com.all580.order.dto.AccountDataDto;
 import com.all580.order.dto.RefundDay;
@@ -71,6 +72,8 @@ public class LockTransactionManager {
     private EpService epService;
     @Autowired
     private ThirdPayService thirdPayService;
+    @Autowired
+    private PaymentCallbackService paymentCallbackService;
 
     /**
      * 支付回调
@@ -372,10 +375,6 @@ public class LockTransactionManager {
         if (order == null) {
             throw new ApiException("订单不存在");
         }
-        if (order.getStatus() != OrderConstant.OrderStatus.PAY_WAIT &&
-                order.getStatus() != OrderConstant.OrderStatus.PAY_FAIL) {
-            throw new ApiException("订单不在待支付状态");
-        }
         if (order.getPay_amount() <= 0) {
             throw new ApiException("该订单不需要支付");
         }
@@ -384,6 +383,29 @@ public class LockTransactionManager {
         }
         if (!String.valueOf(params.get(EpConstant.EpKey.EP_ID)).equals(String.valueOf(order.getBuy_ep_id()))) {
             throw new ApiException("非法请求:当前企业不能支付该订单");
+        }
+
+        if (order.getStatus() != OrderConstant.OrderStatus.PAY_WAIT &&
+                order.getStatus() != OrderConstant.OrderStatus.PAY_FAIL) {
+            if (order.getStatus() == OrderConstant.OrderStatus.PAYING) {
+                // 支付中的订单 主动查询第三方机构获取支付状态, 支付成功则更新订单,支付中则不允许再支付,其它则可以继续支付
+                Result<Map<String, Object>> result = thirdPayService.getPaidStatus(order.getNumber(), order.getPayee_ep_id(), order.getPayment_type(), order.getThird_serial_no());
+                if (result == null || !result.isSuccess()) {
+                    log.warn("获取订单:{}支付状态异常", order.getNumber(), result == null ? null : result.getError());
+                    throw new ApiException("服务器繁忙");
+                }
+                Map<String, Object> map = result.get();
+                PaymentConstant.ThirdPayStatus payStatus = (PaymentConstant.ThirdPayStatus) map.get("code");
+                switch (payStatus) {
+                    case SUCCESS:
+                        paymentCallback(order.getId(), CommonUtil.objectParseString(map.get("transaction_id")), String.valueOf(order.getNumber()));
+                        return new Result<>(true, "该订单已支付成功");
+                    case USERPAYING:
+                        throw new ApiException("订单正在支付中");
+                }
+            } else {
+                throw new ApiException("订单不在待支付状态");
+            }
         }
 
         order.setStatus(OrderConstant.OrderStatus.PAYING);

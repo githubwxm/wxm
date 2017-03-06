@@ -349,6 +349,17 @@
     SELECT * FROM t_order
     WHERE `status` = 312
     AND payment_type IN (7112, 7113)
+    <if test="minute != null">
+      AND (UNIX_TIMESTAMP(NOW())-UNIX_TIMESTAMP(pay_time))/60 &gt;= #{minute}
+    </if>
     limit 20
   </select>
+
+  <update id="setStatus">
+    UPDATE t_order SET `status` = #{status}
+    where id = #{id}
+    <if test="before != null">
+      and `status` = #{before}
+    </if>
+  </update>
 </mapper>
