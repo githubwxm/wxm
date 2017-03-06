@@ -33,7 +33,7 @@ public class PaymentConstant {
         NOTPAY, // 订单未支付     订单未支付,已关闭   订单支付取消
         USERPAYING,// 订单正在支付中
         PAYERROR,// 订单支付失败
-
+        NOT_EXIST,//订单没找到
         REFUND_SUCCES, // 退款成功
         REFUND_FAIL, // 退款失败
         REFUND_PROCESSING, // 退款处理中
