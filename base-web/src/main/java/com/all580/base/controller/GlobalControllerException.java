@@ -33,7 +33,8 @@ public class GlobalControllerException {
                 int beginIndex = message.indexOf(str);
                 if (beginIndex > 0) {
                     String msg = message.substring(beginIndex + str.length(), message.indexOf("' for key", beginIndex));
-                    return processDuplicateKeyException(new DuplicateKeyException("字段: " + msg + " 重复.", e));
+                    log.warn("数据库唯一约束异常", e);
+                    return processDuplicateKeyException(new DuplicateKeyException("字段: " + msg + " 重复."));
                 }
             }
 
@@ -42,7 +43,8 @@ public class GlobalControllerException {
                 int beginIndex = message.indexOf(str);
                 if (beginIndex > 0) {
                     String column = message.substring(beginIndex + str.length(), message.indexOf("' at row", beginIndex));
-                    return processDataIntegrityViolationException(new DataIntegrityViolationException("字段: " + column + " 太长.", e));
+                    log.warn("数据库字段长度异常", e);
+                    return processDataIntegrityViolationException(new DataIntegrityViolationException("字段: " + column + " 太长."));
                 }
             }
         }
