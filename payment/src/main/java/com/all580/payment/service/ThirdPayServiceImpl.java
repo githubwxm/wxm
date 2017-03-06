@@ -99,9 +99,10 @@ public class ThirdPayServiceImpl implements ThirdPayService {
     }
 
     @Override
-    public Result<PaymentConstant.ThirdPayStatus> getPaidStatus(long ordCode, int coreEpId, Integer payType,String trade_no) {
-        Result<PaymentConstant.ThirdPayStatus> result = new Result<>();
+    public Result<Map<String,Object>> getPaidStatus(long ordCode, int coreEpId, Integer payType,String trade_no) {
+        Result<Map<String,Object>> result = new Result<>();
         String msg = "";
+        Map<String,Object> resultMap = new HashMap<>();
         PaymentConstant.ThirdPayStatus code;
         if (PaymentConstant.PaymentType.WX_PAY.equals(payType)) {
             UnifiedOrderReq req = new UnifiedOrderReq();
@@ -135,13 +136,21 @@ public class ThirdPayServiceImpl implements ThirdPayService {
                             code=PaymentConstant.ThirdPayStatus.PAYERROR;
                             break;
                         default:
-                            throw new RuntimeException("返回结果不匹配");
+                            msg = rsp.getErr_code_des();
+                            throw new RuntimeException(msg);
                     }
-                    result.put(code);
+                    resultMap.put("code",code);
+                    resultMap.put("msg",msg);
+                    resultMap.put("transaction_id",rsp.getTransaction_id());
+                    result.put(resultMap);
                 }
             } catch (Exception e) {
-                code=PaymentConstant.ThirdPayStatus.NOTPAY;
-                result.put(code);
+                if("order not exist".equals(e.getMessage())){
+                    resultMap.put("code",PaymentConstant.ThirdPayStatus.NOT_EXIST);
+                }else{
+                    throw new RuntimeException(e.getMessage());
+                }
+
             }
         } else if (PaymentConstant.PaymentType.ALI_PAY.equals(payType)) {
 //             QueryReq queryReq = new QueryReq();
@@ -170,16 +179,22 @@ public class ThirdPayServiceImpl implements ThirdPayService {
                         break;
                     case "TRADE_NOT_EXIST":
                         msg = "找不不到订单";
-                        code=PaymentConstant.ThirdPayStatus.NOTPAY;
+                        code=PaymentConstant.ThirdPayStatus.NOT_EXIST;
                         break;
 
                     default:
                         throw new RuntimeException("返回结果不匹配");
                 }
-                result.put(code);
+                resultMap.put("code",code);
+                resultMap.put("msg",msg);
+                resultMap.put("transaction_id",paymentQuery.get("trade_no"));
+                result.put(resultMap);
             }else if(paymentQuery.get("is_success") != null && paymentQuery.get("is_success").equals("F")){
-                code=PaymentConstant.ThirdPayStatus.NOTPAY;
-                result.put(code);
+                code=PaymentConstant.ThirdPayStatus.PAYERROR;
+                resultMap.put("code",code);
+                resultMap.put("msg","订单支付失败");
+                resultMap.put("transaction_id",null);
+                result.put(resultMap);
             }
         } else {
                 throw new RuntimeException("不支持的支付类型:" + payType);
