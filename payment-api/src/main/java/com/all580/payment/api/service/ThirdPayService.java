@@ -53,8 +53,9 @@ public interface ThirdPayService {
      * 获取支付状态
      *
      * @param ordCode 订单编号
+     *  return  transaction_id  第三方交易号  code  状态 PaymentConstant.ThirdPayStatus.SUCCESS
      */
-    Result<PaymentConstant.ThirdPayStatus> getPaidStatus(long ordCode, int coreEpId, Integer payType,String trade_no);
+    Result<Map<String,Object>> getPaidStatus(long ordCode, int coreEpId, Integer payType,String trade_no);
 
     /**
      *查询退款状态    微信才有
