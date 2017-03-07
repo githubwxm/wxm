@@ -230,6 +230,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public Result<?> resendTicket(Map params) {
         OrderItem orderItem = orderItemMapper.selectBySN(Long.valueOf(params.get("order_item_sn").toString()));
         if (orderItem == null) {
