@@ -796,7 +796,7 @@
 
   <update id="resendTicket">
     UPDATE t_order_item
-    SET resend_times = resend_times + 1
+    SET resend_times = resend_times + 1, last_resend_time = now()
     where id = #{id}
     and resend_max_times &gt;= resend_times + 1
     and UNIX_TIMESTAMP(NOW())-UNIX_TIMESTAMP(last_resend_time) &gt;= resend_interval
