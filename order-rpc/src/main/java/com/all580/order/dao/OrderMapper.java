@@ -101,7 +101,7 @@ public interface OrderMapper {
      * 查询支付中的订单
      * @return
      */
-    List<Order> selectPayingOrder(Integer minute);
+    List<Order> selectPayingOrder(@Param("minute")Integer minute);
 
     int setStatus(@Param("id") Integer id, @Param("status") Integer status, @Param("before") Integer before);
 }
