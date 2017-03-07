@@ -189,8 +189,9 @@ public class PlatfromController extends BaseController {
 
     @RequestMapping(value = "payment/list_by_core_ep_id", method = RequestMethod.GET)
     @ResponseBody
-    public Result<List<Map<String, String>>> paymentListByEpIdNotApi(Integer core_ep_id) {
-        Assert.notNull(core_ep_id, "参数【type】不能为空");
+    public Result<List<Map<String, String>>> paymentListByEpIdNotApi() {
+        Integer core_ep_id=CommonUtil.objectParseInteger(getAttribute(EpConstant.EpKey.CORE_EP_ID));
+        Assert.notNull(core_ep_id, "参数【core_ep_id】不能为空");
         Result<List<Map<String, String>>> result =epPaymentConfService.listByEpId(core_ep_id);
         List<Map<String,String>> list = new ArrayList<>();
         for(Map<String, String> map:result.get()){
