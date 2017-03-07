@@ -16,8 +16,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author zhouxianjun(Alone)
@@ -28,7 +28,7 @@ import java.util.Map;
 @Component
 @Slf4j
 public class MnsEventCache extends InstantiationAwareBeanPostProcessorAdapter {
-    private Map<MnsSubscribeAction, Integer> orderMap = new HashMap<>();
+    private Map<MnsSubscribeAction, Integer> orderMap = new ConcurrentHashMap<>();
     @Getter
     private TreeMultimap<String, MnsSubscribeAction> cacheEvents = TreeMultimap.create(Ordering.natural(), new Comparator<MnsSubscribeAction>() {
         @Override
