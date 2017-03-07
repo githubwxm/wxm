@@ -190,11 +190,19 @@ public class ThirdPayServiceImpl implements ThirdPayService {
                 resultMap.put("transaction_id",paymentQuery.get("trade_no"));
                 result.put(resultMap);
             }else if(paymentQuery.get("is_success") != null && paymentQuery.get("is_success").equals("F")){
-                code=PaymentConstant.ThirdPayStatus.PAYERROR;
-                resultMap.put("code",code);
-                resultMap.put("msg","订单支付失败");
-                resultMap.put("transaction_id",null);
-                result.put(resultMap);
+                if(paymentQuery.get("result")!=null&&paymentQuery.get("result").contains("TRADE_NOT_EXIST")){
+                    code=PaymentConstant.ThirdPayStatus.NOT_EXIST;
+                    resultMap.put("code",code);
+                    resultMap.put("msg","找不到订单");
+                    resultMap.put("transaction_id",null);
+                    result.put(resultMap);
+                }else{
+                    code=PaymentConstant.ThirdPayStatus.PAYERROR;
+                    resultMap.put("code",code);
+                    resultMap.put("msg","订单支付失败");
+                    resultMap.put("transaction_id",null);
+                    result.put(resultMap);
+                }
             }
         } else {
                 throw new RuntimeException("不支持的支付类型:" + payType);
