@@ -785,7 +785,7 @@
     SET resend_times = resend_times + 1
     where id = #{id}
     and resend_max_times &gt;= resend_times + 1
-    and UNIX_TIMESTAMP(NOW())-UNIX_TIMESTAMP(last_resend_time) &lt;= resend_interval
+    and UNIX_TIMESTAMP(NOW())-UNIX_TIMESTAMP(last_resend_time) &gt;= resend_interval
   </update>
 
 </mapper>
