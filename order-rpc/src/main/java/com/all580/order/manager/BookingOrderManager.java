@@ -21,6 +21,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,6 +53,10 @@ public class BookingOrderManager extends BaseOrderManager {
     private ClearanceWashedSerialMapper clearanceWashedSerialMapper;
     @Autowired
     private GroupMemberMapper groupMemberMapper;
+    @Value("${resend_ticket_max_times}")
+    private Integer resendTicketMax;
+    @Value("${resend_ticket_interval}")
+    private Integer resendTicketInterval;
 
     /**
      * 验证游客信息
@@ -262,6 +267,8 @@ public class BookingOrderManager extends BaseOrderManager {
         orderItem.setEp_ma_id(info.getEp_ma_id());
         orderItem.setPro_sub_ticket_type(info.getProduct_sub_ticket_type());
         orderItem.setMemo(memo);
+        orderItem.setResend_max_times(resendTicketMax);
+        orderItem.setResend_interval(resendTicketInterval);
         orderItemMapper.insertSelective(orderItem);
         return orderItem;
     }

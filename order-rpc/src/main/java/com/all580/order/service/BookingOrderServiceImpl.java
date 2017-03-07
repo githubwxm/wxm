@@ -245,6 +245,11 @@ public class BookingOrderServiceImpl implements BookingOrderService {
 
         String phone = CommonUtil.objectParseString(params.get("phone"));
 
+        int ok = orderItemMapper.resendTicket(orderItem.getId());
+        if (ok <= 0) {
+            log.warn("订单:{} 重新发票失败,已超过最大次数或太快", orderItem.getNumber());
+            throw new ApiException("已超过最大次数或太快");
+        }
         // 是否全部重新发票
         Boolean all = Boolean.parseBoolean(CommonUtil.objectParseString(params.get("all")));
         if (all) {
