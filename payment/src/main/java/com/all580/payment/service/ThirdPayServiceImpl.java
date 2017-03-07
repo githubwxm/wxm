@@ -147,6 +147,7 @@ public class ThirdPayServiceImpl implements ThirdPayService {
             } catch (Exception e) {
                 if("order not exist".equals(e.getMessage())){
                     resultMap.put("code",PaymentConstant.ThirdPayStatus.NOT_EXIST);
+                    result.put(resultMap);
                 }else{
                     throw new RuntimeException(e.getMessage());
                 }
