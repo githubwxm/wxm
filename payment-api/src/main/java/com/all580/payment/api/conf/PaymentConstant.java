@@ -31,6 +31,8 @@ public class PaymentConstant {
     public enum ThirdPayStatus{
         SUCCESS, // 订单支付成功
         NOTPAY, // 订单未支付     订单未支付,已关闭   订单支付取消
+        CLOSED, // 已关闭
+        REVOKED, // 已撤销
         USERPAYING,// 订单正在支付中
         PAYERROR,// 订单支付失败
         NOT_EXIST,//订单没找到

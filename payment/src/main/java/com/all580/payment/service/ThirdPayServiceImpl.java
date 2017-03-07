@@ -127,6 +127,14 @@ public class ThirdPayServiceImpl implements ThirdPayService {
                             msg = "订单未支付";
                             code=PaymentConstant.ThirdPayStatus.NOTPAY;
                             break;
+                        case "CLOSED":
+                            msg = "订单已关闭";
+                            code=PaymentConstant.ThirdPayStatus.CLOSED;
+                            break;
+                        case "REVOKED":
+                            msg = "订单已撤销";
+                            code=PaymentConstant.ThirdPayStatus.REVOKED;
+                            break;
                         case "USERPAYING":
                             msg = "订单正在支付中";
                             code=PaymentConstant.ThirdPayStatus.USERPAYING;
