@@ -82,6 +82,7 @@ public class SendTicketAction implements JobRunner {
         sendTicketParams.setInvalidTime(detail.getExpiry_date());
         sendTicketParams.setDisableWeek(detail.getDisable_week());
         sendTicketParams.setDisableDate(detail.getDisable_day());
+        sendTicketParams.setMaProductId(orderItem.getMa_product_id());
         // TODO: 2016/11/3 出票发送短信
         sendTicketParams.setSendSms(true);
         //sendTicketParams.setSms("");

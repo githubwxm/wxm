@@ -602,13 +602,7 @@ public class RefundOrderManager extends BaseOrderManager {
                 List<OrderItemDetail> detailList = orderItemDetailMapper.selectByItemId(orderItem.getId());
                 for (OrderItemDetail detail : detailList) {
                     if (!detail.getOversell()) {
-                        ProductSearchParams p = new ProductSearchParams();
-                        p.setSubProductCode(orderItem.getPro_sub_number());
-                        p.setStartDate(detail.getDay());
-                        p.setDays(1);
-                        p.setQuantity(detail.getQuantity());
-                        p.setSubOrderId(orderItem.getId());
-                        lockParams.add(p);
+                        lockParams.add(getProductSearchParams(orderItem, detail.getDay(), detail.getQuantity()));
                     }
                 }
             }
@@ -620,6 +614,39 @@ public class RefundOrderManager extends BaseOrderManager {
                 }
             }
         }
+    }
+
+    /**
+     * 退票还库存
+     * @param refundOrder
+     */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public void refundStock(RefundOrder refundOrder) {
+        if (refundOrder != null) {
+            List<ProductSearchParams> lockParams = new ArrayList<>();
+            OrderItem orderItem = orderItemMapper.selectByPrimaryKey(refundOrder.getOrder_item_id());
+            Collection<RefundDay> refundDays = AccountUtil.decompileRefundDay(refundOrder.getData());
+            for (RefundDay refundDay : refundDays) {
+                lockParams.add(getProductSearchParams(orderItem, refundDay.getDay(), refundDay.getQuantity()));
+            }
+            // 还库存
+            if (!lockParams.isEmpty()) {
+                com.framework.common.Result result = productSalesPlanRPCService.addProductStocks(lockParams);
+                if (!result.isSuccess()) {
+                    throw new ApiException(result.getError());
+                }
+            }
+        }
+    }
+
+    private ProductSearchParams getProductSearchParams(OrderItem orderItem, Date day, int quantity) {
+        ProductSearchParams p = new ProductSearchParams();
+        p.setSubProductCode(orderItem.getPro_sub_number());
+        p.setStartDate(day);
+        p.setDays(1);
+        p.setQuantity(quantity);
+        p.setSubOrderId(orderItem.getId());
+        return p;
     }
 
     /**

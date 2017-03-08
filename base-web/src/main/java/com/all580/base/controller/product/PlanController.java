@@ -372,6 +372,21 @@ public class PlanController extends BaseController {
         return productSalesPlanService.searchPlanCalendar(DateFormatUtils.converToDateTime(startDate), DateFormatUtils.converToDateTime(endDate), productSubId, recordStart, recordCount);
     }
 
+    /**
+     * 查询产品销售日历
+     * @param productSubCode
+     * @param startDate
+     * @param endDate
+     * @param recordStart
+     * @param recordCount
+     * @return  //
+     */
+    @RequestMapping(value = "sale/calendar")
+    @ResponseBody
+    public Result<Paginator<ProductPlanInfo>> searchProductPlanCalendar (@RequestParam("product_sub_code") Long productSubCode, @RequestParam("start_date") String startDate, @RequestParam("end_date") String endDate, @RequestParam("record_start") Integer recordStart, @RequestParam("record_count") Integer recordCount ) {
+        return productSalesPlanService.searchPlanCalendarByCode(DateFormatUtils.converToDateTime(startDate), DateFormatUtils.converToDateTime(endDate), productSubCode, recordStart, recordCount);
+    }
+
     @RequestMapping("can_sale/qunar/sub/list")
     @ResponseBody
     public Result<?> selectCanSaleSubByQunar(@RequestParam Integer ep_id, Long[] code, @RequestParam(defaultValue = "1") Integer calendar, @RequestParam(defaultValue = "0") Integer record_start, @RequestParam(defaultValue = "20") Integer record_count) {
