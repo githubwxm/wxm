@@ -6,6 +6,7 @@ import com.all580.product.api.model.*;
 import com.all580.product.api.service.ProductDistributionRPCService;
 import com.all580.product.api.service.ProductRPCService;
 import com.all580.product.api.service.ProductSalesPlanRPCService;
+import com.all580.voucher.api.service.third.ThirdProductService;
 import com.framework.common.BaseController;
 import com.framework.common.Result;
 import com.framework.common.lang.DateFormatUtils;
@@ -39,6 +40,9 @@ public class ProductController extends BaseController {
 
     @Resource
     ProductDistributionRPCService productDistributionService;
+
+    @Resource
+    ThirdProductService thirdProductService;
 
     /**
      * 修改景区子主产品
@@ -471,5 +475,32 @@ public class ProductController extends BaseController {
     @ResponseBody
     public Result<Map<String, Object>> searchProductSaleView(@RequestParam("ep_id") Integer epId, @RequestParam("product_id") Integer productId, @RequestParam("ticket_flag") Integer ticketFlag) {
         return productService.searchProductSaleView(epId, productId, ticketFlag);
+    }
+
+    /**
+     * 查询三方供应平台景点信息
+     * @param epId
+     * @param maConfId
+     * @return
+     */
+    @RequestMapping("other/park_list")
+    @ResponseBody
+    public Result<Paginator<Map<String, Object>>> searchOtherProviderParkList(@RequestParam("ep_id") Integer epId, @RequestParam("ma_conf_id") Integer maConfId, @RequestParam("record_start") Integer start, @RequestParam("record_count") Integer count) {
+        return thirdProductService.searchParkList(epId, maConfId, start, count);
+    }
+
+    /**
+     * 查询三方供应平台门票信息
+     * @param epId
+     * @param maConfId
+     * @param parkId
+     * @param start
+     * @param count
+     * @return
+     */
+    @RequestMapping("other/ticket_list")
+    @ResponseBody
+    public Result<Paginator<Map<String, Object>>> searchOtherProviderTicketList(@RequestParam("ep_id") Integer epId, @RequestParam("ma_conf_id") Integer maConfId, @RequestParam("park_id") Integer parkId, @RequestParam("record_start") Integer start, @RequestParam("record_count") Integer count) {
+        return thirdProductService.searchTicketList(epId, maConfId, parkId, start, count);
     }
 }
