@@ -42,8 +42,7 @@ public class RefundTicketEventImpl implements RefundTicketEvent {
         if (content.isStatus()) {
             // 还库存 记录任务
             Map<String, String> jobParams = new HashMap<>();
-            jobParams.put("orderItemId", String.valueOf(refundOrder.getOrder_item_id()));
-            jobParams.put("check", "false");
+            jobParams.put("refundId", String.valueOf(refundOrder.getId()));
             refundOrderManager.addJob(OrderConstant.Actions.REFUND_STOCK, jobParams);
         } else {
             // 发送短信

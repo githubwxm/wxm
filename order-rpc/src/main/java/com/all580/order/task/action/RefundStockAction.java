@@ -1,8 +1,8 @@
 package com.all580.order.task.action;
 
 import com.all580.order.api.OrderConstant;
-import com.all580.order.dao.OrderItemMapper;
-import com.all580.order.entity.OrderItem;
+import com.all580.order.dao.RefundOrderMapper;
+import com.all580.order.entity.RefundOrder;
 import com.all580.order.manager.RefundOrderManager;
 import com.framework.common.util.CommonUtil;
 import com.framework.common.validate.ParamsMapValidate;
@@ -30,7 +30,7 @@ import java.util.Map;
 @Slf4j
 public class RefundStockAction implements JobRunner {
     @Autowired
-    private OrderItemMapper orderItemMapper;
+    private RefundOrderMapper refundOrderMapper;
     @Autowired
     private RefundOrderManager refundOrderManager;
 
@@ -43,20 +43,13 @@ public class RefundStockAction implements JobRunner {
         Map<String, String> params = jobContext.getJob().getExtParams();
         validateParams(params);
 
-        boolean check = Boolean.parseBoolean(params.get("check"));
-        Integer orderItemId = CommonUtil.objectParseInteger(params.get("orderItemId"));
-        Assert.notNull(orderItemId);
-        OrderItem orderItem = orderItemMapper.selectByPrimaryKey(orderItemId);
-        Assert.notNull(orderItem);
-        if (check) {
-            if (orderItem.getStatus() != OrderConstant.OrderItemStatus.NON_SEND &&
-                    orderItem.getStatus() != OrderConstant.OrderItemStatus.TICKET_FAIL) {
-                return new Result(Action.EXECUTE_SUCCESS, "还库存:需要检查,检查结果为不需要还库存");
-            }
-        }
+        Integer refundId = CommonUtil.objectParseInteger(params.get("refundId"));
+        Assert.notNull(refundId);
+        RefundOrder refundOrder = refundOrderMapper.selectByPrimaryKey(refundId);
+        Assert.notNull(refundOrder);
 
-        refundOrderManager.refundStock(orderItem);
-        return new Result(Action.EXECUTE_SUCCESS);
+        refundOrderManager.refundStock(refundOrder);
+        return new Result(Action.EXECUTE_SUCCESS, String.valueOf(refundOrder.getQuantity()));
     }
 
     /**
@@ -69,11 +62,8 @@ public class RefundStockAction implements JobRunner {
         }
         Map<String[], ValidRule[]> rules = new HashMap<>();
         rules.put(new String[]{
-                "orderItemId" // 子订单ID
+                "refundId" // 退订订单ID
         }, new ValidRule[]{new ValidRule.NotNull(), new ValidRule.Digits()});
-        rules.put(new String[]{
-                "check" // 是否检查未出票
-        }, new ValidRule[]{new ValidRule.NotNull(), new ValidRule.Boolean()});
 
         ParamsMapValidate.validate(params, rules);
     }
