@@ -114,11 +114,9 @@ public class EpServiceImpl implements EpService {
     @Override
     public Result<Map<String, Object>>
     createPlatform(Map<String, Object> map) {
-        try {
-            checkNamePhone(map);//检查电话与名字是否存在 ，存在抛出异常
-        } catch (ApiException e) {
-            log.error(e.getMessage(), e);
-            throw new ApiException(e.getMessage(), e);
+        Result  checkResult= checkNamePhone(map);//检查电话与名字是否存在 ，存在抛出异常
+        if(!checkResult.isSuccess()){
+            return checkResult;
         }
         map.put("status", EpConstant.EpStatus.ACTIVE);// 状态默认未初始化
         map.put("status_bak", EpConstant.EpStatus.ACTIVE);// 状态默认未初始化
@@ -281,7 +279,10 @@ public class EpServiceImpl implements EpService {
     @Override
     public Result<Map<String, Object>> createEp(Map<String, Object> map) {
         try {
-            checkNamePhone(map);//检查电话与名字是否存在 ，存在抛出异常
+             Result  checkResult= checkNamePhone(map);//检查电话与名字是否存在 ，存在抛出异常
+            if(!checkResult.isSuccess()){
+                return checkResult;
+            }
         } catch (ApiException e) {
             log.error(e.getMessage(), e);
             throw new ApiException(e.getMessage(), e);
@@ -882,9 +883,9 @@ public class EpServiceImpl implements EpService {
     }
 
     @Override
-    public Result<Boolean> checkNamePhone(Map<String, Object> map) {
+    public Result checkNamePhone(Map<String, Object> map) {
         List<Map<String, Object>> list = epMapper.checkNamePhone(map);
-        Result<Boolean> result = new Result<>();
+        Result result = new Result<>();
         String message = "";
         try {
             if (list.isEmpty()) {
