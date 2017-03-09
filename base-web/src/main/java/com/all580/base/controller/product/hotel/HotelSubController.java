@@ -30,6 +30,13 @@ public class HotelSubController {
         return hotelSubService.addHotelSub(params);
     }
 
+    @RequestMapping(value = "update", method = RequestMethod.POST)
+    @ResponseBody
+    public Result<?> updateHotelSub(@RequestBody Map params) {
+        ParamsMapValidate.validate(params, generateCreateHotelSubValidate());
+        return hotelSubService.updateHotelSubSummary(params);
+    }
+
     @RequestMapping(value = "select_hotel_sub", method = RequestMethod.GET)
     @ResponseBody
     public Result<?> selectHotel(Integer id) {
