@@ -503,4 +503,10 @@ public class ProductController extends BaseController {
     public Result<Paginator<Map<String, Object>>> searchOtherProviderTicketList(@RequestParam("ep_id") Integer epId, @RequestParam("ma_conf_id") Integer maConfId, @RequestParam("park_id") Integer parkId, @RequestParam("record_start") Integer start, @RequestParam("record_count") Integer count) {
         return thirdProductService.searchTicketList(epId, maConfId, parkId, start, count);
     }
+
+    @RequestMapping("other/ticket_all")
+    @ResponseBody
+    public Result<Paginator<Map<String, Object>>> searchAllProviderTicketList(@RequestParam("ep_id") Integer epId, @RequestParam("park_name") String parkName, @RequestParam("ticket_name") String ticketName, @RequestParam("record_start") Integer start, @RequestParam("record_count") Integer count) {
+        return productService.searchThirdProducts(epId, parkName, ticketName, start, count);
+    }
 }
