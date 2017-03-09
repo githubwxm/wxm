@@ -112,7 +112,7 @@ public class ProductController extends BaseController {
             case ProductConstants.ProductType.SCENERY:
                 ProductSceneryInfo productSceneryInfo = initProductScenery((Map) params.get("props"));
                 Object phone = params.get("phone");
-                productService.addSceneryProduct(params.get("name").toString(),
+                productService.addSceneryProduct(CommonUtil.objectParseInteger(params.get("ma_conf_id")),params.get("name").toString(),
                         Integer.valueOf(params.get("ep_id").toString()),
                         phone == null ? null : phone.toString(),
                         productSceneryInfo);
