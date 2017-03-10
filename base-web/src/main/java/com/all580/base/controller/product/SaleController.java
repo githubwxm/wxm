@@ -175,6 +175,7 @@ public class SaleController extends BaseController {
             }
             String  [] temps= pids.split(",");
             List<Integer> pidsList = new ArrayList<>();
+            pidsList.add(epId);
             for(int i=0;i<temps.length;i++){
                 Integer pid =CommonUtil.objectParseInteger(temps[0]);
                 if( null!=pid){
