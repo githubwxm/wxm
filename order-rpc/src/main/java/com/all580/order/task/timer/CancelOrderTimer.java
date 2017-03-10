@@ -10,6 +10,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author zhouxianjun(Alone)
@@ -31,49 +32,60 @@ public class CancelOrderTimer {
     @Autowired
     private RefundOrderManager refundOrderManager;
 
-    @Scheduled(fixedDelay = 30000)
+    private AtomicBoolean payRun = new AtomicBoolean(false);
+    private AtomicBoolean auditRun = new AtomicBoolean(false);
+
+    @Scheduled(fixedDelay = 60000)
     public void payTimerJob() {
         try {
-            List<Order> orderList = orderMapper.selectNoPayForMinute(payTimeOut);
-            if (orderList != null && !orderList.isEmpty()) {
-                boolean retry = true;
-                for (Order order : orderList) {
-                    try {
-                        refundOrderManager.cancel(order);
-                    } catch (Exception e) {
-                        retry = false;
-                        log.error("订单:"+ order.getNumber() +"未支付超时取消异常", e);
+            if (payRun.compareAndSet(false, true)) {
+                List<Order> orderList = orderMapper.selectNoPayForMinute(payTimeOut);
+                if (orderList != null && !orderList.isEmpty()) {
+                    boolean retry = true;
+                    for (Order order : orderList) {
+                        try {
+                            refundOrderManager.cancel(order);
+                        } catch (Exception e) {
+                            retry = false;
+                            log.error("订单:" + order.getNumber() + "未支付超时取消异常", e);
+                        }
                     }
-                }
-                if (retry) {
-                    payTimerJob();
+                    if (retry) {
+                        payTimerJob();
+                    }
                 }
             }
         } catch (Exception e) {
             log.error("未支付订单超时取消异常", e);
+        } finally {
+            payRun.set(false);
         }
     }
 
-    @Scheduled(fixedDelay = 30000)
+    @Scheduled(fixedDelay = 60000)
     public void auditTimerJob() {
         try {
-            List<Order> orderList = orderMapper.selectAuditWaitForMinute(auditTimeOut);
-            if (orderList != null && !orderList.isEmpty()) {
-                boolean retry = true;
-                for (Order order : orderList) {
-                    try {
-                        refundOrderManager.cancel(order);
-                    } catch (Exception e) {
-                        retry = false;
-                        log.error("订单:"+ order.getNumber() +"待审核超时取消异常", e);
+            if (auditRun.compareAndSet(false, true)) {
+                List<Order> orderList = orderMapper.selectAuditWaitForMinute(auditTimeOut);
+                if (orderList != null && !orderList.isEmpty()) {
+                    boolean retry = true;
+                    for (Order order : orderList) {
+                        try {
+                            refundOrderManager.cancel(order);
+                        } catch (Exception e) {
+                            retry = false;
+                            log.error("订单:" + order.getNumber() + "待审核超时取消异常", e);
+                        }
                     }
-                }
-                if (retry) {
-                    auditTimerJob();
+                    if (retry) {
+                        auditTimerJob();
+                    }
                 }
             }
         } catch (Exception e) {
             log.error("待审核订单超时取消异常", e);
+        } finally {
+            auditRun.set(false);
         }
     }
 }
