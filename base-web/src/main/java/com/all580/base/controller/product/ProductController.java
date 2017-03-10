@@ -18,9 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.lang.exception.ApiException;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * 产品，子产品，计划批次接口网关
@@ -52,8 +50,8 @@ public class ProductController extends BaseController {
      */
     @RequestMapping(value = "selectIds", method = RequestMethod.GET)
     @ResponseBody
-    public Result<?> selectIds(@RequestParam("list") List<Integer> list,Integer start,Integer count){
-        return productService.selectIds(list, start,count);
+    public Result<?> selectIds(Integer [] list,Integer start,Integer count){
+        return productService.selectIds(Arrays.asList(list), start,count);
     }
     /**
      * 修改景区子主产品
