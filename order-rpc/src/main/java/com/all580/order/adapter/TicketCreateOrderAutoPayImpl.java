@@ -46,7 +46,7 @@ public class TicketCreateOrderAutoPayImpl extends TicketCreateOrderImpl {
         Integer credit = creditResult.get();
 
         if (balance + (credit == null ? 0 : credit) < order.getPay_amount()) {
-            throw new ApiException("余额不足");
+            throw new ApiException(Result.BALANCE_LACK_FOR_PAYMENT, "余额不足");
         }
 
         if (!isCheck(params)) {
