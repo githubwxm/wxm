@@ -44,6 +44,17 @@ public class ProductController extends BaseController {
     @Resource
     ThirdProductService thirdProductService;
 
+
+    /**
+     * 查询景区子产品
+     * @param    list
+     * @return
+     */
+    @RequestMapping(value = "selectIds", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<?> selectIds(@RequestParam("list") List<Integer> list,Integer start,Integer count){
+        return productService.selectIds(list, start,count);
+    }
     /**
      * 修改景区子主产品
      * @param  map  主产品id
