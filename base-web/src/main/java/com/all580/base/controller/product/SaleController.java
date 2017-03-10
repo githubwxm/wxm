@@ -165,6 +165,22 @@ public class SaleController extends BaseController {
         }
         if (ProductConstants.ProductDistributionState.NOT_DISTRIBUTE == isDistributed) {
             Result<Map> pricesResult = productService.searchPlanSaleAllPrices(epId, productSubId);
+             Result<Map> pidsMap= productSalesPlanService.selectByEpIdProductSub(productSubId,epId);
+            String pids="";
+            if(null!= pidsMap &&pidsMap.get()!=null){//根据pids过滤掉已经ep_id
+                pids = CommonUtil.objectParseString(pidsMap.get().get("pids"));
+                if(null==pids){
+                    pids="";
+                }
+            }
+            String  [] temps= pids.split(",");
+            List<Integer> pidsList = new ArrayList<>();
+            for(int i=0;i<temps.length;i++){
+                Integer pid =CommonUtil.objectParseInteger(temps[0]);
+                if( null!=pid){
+                    pidsList.add(pid);
+                }
+            }
             if (pricesResult == null || pricesResult.isFault()) return new Result<>(false, "未查到产品价格信息");
             for (Map<String, Object> ep : eps) {
                 // 是否已分销标记
@@ -179,6 +195,9 @@ public class SaleController extends BaseController {
                 if (!flag) {
                     ep.put("min_price", pricesResult.get().get("min_sell_price"));       // 最低售价
                     ep.put("buying_price", pricesResult.get().get("price"));    // 进货价
+                    if(pidsList.contains(epId)){
+                        continue;
+                    }
                     returnList.add(ep);
                 }
             }
