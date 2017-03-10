@@ -85,4 +85,10 @@ public class VoucherController extends BaseController {
         result.put(list);
         return result;
     }
+
+    @RequestMapping(value = "provider/list")
+    @ResponseBody
+    public Result providerList(@RequestParam("ep_id") Integer epId) {
+        return voucherRPCService.selectSelfProviderList(epId);
+    }
 }
