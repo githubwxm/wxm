@@ -12,6 +12,7 @@ import com.all580.order.entity.RefundOrder;
 import com.all580.order.manager.RefundOrderManager;
 import com.all580.order.util.AccountUtil;
 import com.all580.product.api.consts.ProductConstants;
+import com.framework.common.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -81,7 +82,7 @@ public class TicketGroupRefundOrderImpl extends AbstractRefundOrderImpl {
     public Collection<RefundDay> getRefundDays(RefundOrderApply apply, List<OrderItemDetail> detailList, Map params) {
         Collection<RefundDay> refundDays = AccountUtil.parseRefundDayForDetail(detailList);
         if (refundDays == null || refundDays.size() == 0 && apply.getItem().getLow_quantity() != null && apply.getItem().getLow_quantity() > 0) {
-            throw new ApiException("没有可退的票").dataMap().putData("low", apply.getItem().getLow_quantity());
+            throw new ApiException(Result.REFUNDABLE_LACK, "没有可退的票").dataMap().putData("low", apply.getItem().getLow_quantity());
         }
         return refundDays;
     }

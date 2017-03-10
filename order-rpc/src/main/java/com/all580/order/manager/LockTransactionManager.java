@@ -222,6 +222,9 @@ public class LockTransactionManager {
         // 每日退票详情
         Collection<RefundDay> refundDays = refundOrderInterface.getRefundDays(apply, detailList, params);
         Assert.notEmpty(refundDays, "没有可退的票");
+        if (refundDays == null || refundDays.isEmpty()) {
+            throw new ApiException(Result.REFUNDABLE_LACK, "没有可退的票");
+        }
         // TODO: 2017/3/2  因为线下不支持批量退票,so 暂时关闭多人退订
         for (RefundDay refundDay : refundDays) {
             if (refundDay.getVisitors() != null && refundDay.getVisitors().size() > 1) {

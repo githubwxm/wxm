@@ -25,6 +25,7 @@ import com.framework.common.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -319,7 +320,14 @@ public class RefundOrderManager extends BaseOrderManager {
         refundOrder.setApply_user_id(applyUserId);
         refundOrder.setApply_user_name(applyUserName);
         refundOrder.setOuter_id(StringUtils.isEmpty(outerId) ? "_" + refundOrder.getNumber() : outerId);
-        refundOrderMapper.insertSelective(refundOrder);
+        try {
+            refundOrderMapper.insertSelective(refundOrder);
+        } catch (DuplicateKeyException e) {
+            if (e.getMessage().contains("'order_item_id'") && StringUtils.isNotEmpty(outerId)) {
+                throw new ApiException(Result.UNIQUE_KEY_ERROR, "重复操作", refundOrderMapper.selectByItemIdAndOuter(item.getId(), outerId));
+            }
+            throw e;
+        }
         return refundOrder;
     }
 
