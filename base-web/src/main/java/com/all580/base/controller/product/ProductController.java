@@ -478,7 +478,7 @@ public class ProductController extends BaseController {
     }
 
     /**
-     * 查询三方供应平台景点信息
+     * 查询单个三方供应平台景点信息
      * @param epId
      * @param maConfId
      * @return
@@ -490,7 +490,7 @@ public class ProductController extends BaseController {
     }
 
     /**
-     * 查询三方供应平台门票信息
+     * 查询单个三方供应平台门票信息
      * @param epId
      * @param maConfId
      * @param parkId
@@ -504,9 +504,18 @@ public class ProductController extends BaseController {
         return thirdProductService.searchTicketList(epId, maConfId, parkId, start, count);
     }
 
+    /**
+     * 查询所有第三方供应平台门票信息
+     * @param epId
+     * @param parkName
+     * @param ticketName
+     * @param start
+     * @param count
+     * @return
+     */
     @RequestMapping("other/ticket_all")
     @ResponseBody
-    public Result<Paginator<Map<String, Object>>> searchAllProviderTicketList(@RequestParam("ep_id") Integer epId, @RequestParam("park_name") String parkName, @RequestParam("ticket_name") String ticketName, @RequestParam("record_start") Integer start, @RequestParam("record_count") Integer count) {
+    public Result<Map<String, Object>> searchAllProviderTicketList(@RequestParam("ep_id") Integer epId, @RequestParam(value = "park_name", required = false) String parkName, @RequestParam(value = "ticket_name", required = false) String ticketName, @RequestParam("record_start") Integer start, @RequestParam("record_count") Integer count) {
         return productService.searchThirdProducts(epId, parkName, ticketName, start, count);
     }
 }
