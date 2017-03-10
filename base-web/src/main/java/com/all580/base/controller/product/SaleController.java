@@ -196,7 +196,7 @@ public class SaleController extends BaseController {
                 if (!flag) {
                     ep.put("min_price", pricesResult.get().get("min_sell_price"));       // 最低售价
                     ep.put("buying_price", pricesResult.get().get("price"));    // 进货价
-                    if(pidsList.contains(epId)){
+                    if(pidsList.contains(ep.get("id"))){
                         continue;
                     }
                     returnList.add(ep);
