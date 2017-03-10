@@ -50,8 +50,8 @@ public class ProductController extends BaseController {
      */
     @RequestMapping(value = "selectIds", method = RequestMethod.GET)
     @ResponseBody
-    public Result<?> selectIds(Integer [] list,Integer start,Integer count){
-        return productService.selectIds(Arrays.asList(list), start,count);
+    public Result<?> selectIds(Integer [] list,Integer record_start,Integer record_count){
+        return productService.selectIds(Arrays.asList(list), record_start,record_count);
     }
     /**
      * 修改景区子主产品
