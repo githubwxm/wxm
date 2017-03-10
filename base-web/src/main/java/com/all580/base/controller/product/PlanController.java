@@ -383,8 +383,8 @@ public class PlanController extends BaseController {
      */
     @RequestMapping(value = "sale/calendar")
     @ResponseBody
-    public Result<Paginator<ProductPlanInfo>> searchProductPlanCalendar (@RequestParam("product_sub_code") Long productSubCode, @RequestParam("start_date") String startDate, @RequestParam("end_date") String endDate, @RequestParam("record_start") Integer recordStart, @RequestParam("record_count") Integer recordCount ) {
-        return productSalesPlanService.searchPlanCalendarByCode(DateFormatUtils.converToDateTime(startDate), DateFormatUtils.converToDateTime(endDate), productSubCode, recordStart, recordCount);
+    public Result<Paginator<Map<String, Object>>> searchProductPlanCalendar (@RequestParam("ep_id") Integer epId, @RequestParam("product_sub_code") Long productSubCode, @RequestParam("start_date") String startDate, @RequestParam("end_date") String endDate, @RequestParam("record_start") Integer recordStart, @RequestParam("record_count") Integer recordCount ) {
+        return productSalesPlanService.searchPlanCalendarByCode(epId, DateFormatUtils.converToDateTime(startDate), DateFormatUtils.converToDateTime(endDate), productSubCode, recordStart, recordCount);
     }
 
     @RequestMapping("can_sale/qunar/sub/list")
