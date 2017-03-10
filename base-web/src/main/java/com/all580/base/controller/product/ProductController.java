@@ -48,10 +48,10 @@ public class ProductController extends BaseController {
      * @param    list
      * @return
      */
-    @RequestMapping(value = "selectIds", method = RequestMethod.GET)
+    @RequestMapping(value = "select_ids", method = RequestMethod.GET)
     @ResponseBody
     public Result<?> selectIds(Integer [] list,@RequestParam("ep_id") Integer ep_id,Integer record_start,Integer record_count){
-        return productService.selectIds(Arrays.asList(list), ep_id,record_start,record_count);
+        return productService.selectIds(list==null?null:  Arrays.asList(list), ep_id,record_start,record_count);
     }
     /**
      * 修改景区子主产品
