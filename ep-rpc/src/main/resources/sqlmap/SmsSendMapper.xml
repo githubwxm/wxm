@@ -30,7 +30,7 @@
     </if>
   </sql>
   <sql id="selectThreshold">
-   select  te.id  as  send_ep_id,ts.id,ts.send_phone1,ts.send_phone2,ts.threshold_status,te.name,te.ep_type ,
+   select  te.id  as  send_ep_id,ts.id,ts.send_phone1,ts.send_phone2,IFNULL(ts.threshold_status,0) ,te.name,te.ep_type ,
    '销售商' as type_name,tet.threshold from t_ep  te
    LEFT JOIN t_sms_send  ts on(ts.ep_id=te.id)
    LEFT JOIN t_ep_balance_threshold tet on
