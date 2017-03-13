@@ -37,9 +37,9 @@
    (te.id=tet.ep_id and tet.core_ep_id=te.core_ep_id)
     where te.core_ep_id=#{ep_id} and te.ep_type=10003
     <if test="name != null">
-      and name  like #{name}
+      and name  like  CONCAT('%',#{name},'%')
     </if>
-    <if test="start_threshold != null and end_threshold != null">
+    <if test="start_threshold != null and end_threshold != null and start_threshold != '' ">
       and threshold BETWEEN #{start_threshold}  AND #{end_threshold}
     </if>
 
