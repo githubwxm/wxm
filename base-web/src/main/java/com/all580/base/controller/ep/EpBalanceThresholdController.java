@@ -67,15 +67,17 @@ public class EpBalanceThresholdController extends BaseController {
      */
     @RequestMapping(value = "select/threshold/list", method = RequestMethod.GET)
     @ResponseBody
-    public Result<?> selectThresholdList( String name,Integer start_threshold,Integer end_threshold,Integer ep_id
+    public Result<?> selectThresholdList( String name,Integer start_threshold,Integer end_threshold,Integer ep_id,
+                                          Integer record_start,Integer record_count
     ) {
         Map<String,Object> map = new HashMap<>();
         map.put("ep_id",ep_id);
         map.put("name",name);
+        map.put("record_start",record_start);
+        map.put("record_count",record_count);
         map.put("start_threshold",start_threshold);
         map.put("end_threshold",end_threshold);
-        map.put(EpConstant.EpKey.CORE_EP_ID,getAttribute(EpConstant.EpKey.CORE_EP_ID)) ;//
-        ParamsMapValidate.validate(map, generateEpBalanceThresholdValidate());
+        //map.put(EpConstant.EpKey.CORE_EP_ID,getAttribute(EpConstant.EpKey.CORE_EP_ID)) ;
         return epBalanceThresholdService.selectThresholdList(map);
     }
     /**
