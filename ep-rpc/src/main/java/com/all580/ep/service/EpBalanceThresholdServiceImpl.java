@@ -5,6 +5,7 @@ import com.all580.ep.api.service.EpBalanceThresholdService;
 import com.all580.ep.com.Common;
 import com.all580.ep.dao.EpBalanceThresholdMapper;
 import com.all580.ep.dao.EpMapper;
+import com.all580.ep.dao.SmsSendMapper;
 import com.all580.notice.api.conf.SmsType;
 import com.all580.notice.api.service.SmsService;
 import com.framework.common.Result;
@@ -33,6 +34,9 @@ public class EpBalanceThresholdServiceImpl implements EpBalanceThresholdService 
 
     @Autowired
     private SmsService smsService;
+
+    @Autowired
+    private SmsSendMapper smsSendMapper;
 
     @Override
     public  Result<Integer> createOrUpdate(Map<String,Object> map) {
@@ -105,6 +109,33 @@ public class EpBalanceThresholdServiceImpl implements EpBalanceThresholdService 
     }
 
     @Override
+    public Result selectThresholdList(Map<String,Object> map){
+        Result result = new Result(true);
+        Common.checkPage(map);
+        Map<String,Object> resultMap = new HashMap<>();
+        resultMap.put("totalCount",smsSendMapper.selectThresholdCount(map));
+        resultMap.put("list",smsSendMapper.selectThresholdList(map));
+        result.put(resultMap);
+        return result;
+    }
+
+    @Override
+    public Result CreateOnUpdateThreshold(Map<String,Object> map){
+        Result result = new Result(true);
+        Integer id = CommonUtil.objectParseInteger(map.get("id"));//send_ep_id
+        if(null==id){
+            smsSendMapper.insert(map);
+        }else{
+            smsSendMapper.updateByPrimaryKey(map);
+        }
+        Map<String,Object> thresholdMap = new HashMap<>();
+        thresholdMap.put("id",map.get("send_ep_id"));
+        thresholdMap.put(EpConstant.EpKey.CORE_EP_ID,map.get(EpConstant.EpKey.CORE_EP_ID)) ;
+        thresholdMap.put("threshold",map.get("threshold"));
+        createOrUpdate(map);
+        return result;
+    }
+    @Override
     public Result warn(Map<String,Object> map) {
        // Result returnResult = new Result();
         try {
@@ -133,7 +164,19 @@ public class EpBalanceThresholdServiceImpl implements EpBalanceThresholdService 
                      String jinqian =threshold+"";
                      String point = Common.matcher(jinqian,"([\\d]{2}$)" );//Common.matcher(125665419+"","([\\d]{2}$)" )
                      params.put("jinqian",jinqian.replaceAll("([\\d]{2}$)", "."+point));
-                   return  smsService.send(destPhoneNum, SmsType.Ep.BALANCE_SHORTAGE,ep_id,params);//发送短信
+                       Map<String,Object> mapSend = smsSendMapper.selectByEpId(ep_id);//   余额修改之后的发送短信
+                     if("1".equals(mapSend.get("threshold_status"))){
+                         String send_phone2=CommonUtil.objectParseString(mapSend.get("send_phone2"));
+                         if( null != send_phone2 && !"".equals(send_phone2.trim())){
+                             smsService.send(send_phone2, SmsType.Ep.BALANCE_SHORTAGE,ep_id,params);//发送短信
+                         }
+                         String send_phone1=CommonUtil.objectParseString(mapSend.get("send_phone1"));
+                         if(  null != send_phone1 && !"".equals(send_phone1.trim())){
+                             return smsService.send(send_phone1, SmsType.Ep.BALANCE_SHORTAGE,ep_id,params);//发送短信
+                         }else{
+                             return  smsService.send(destPhoneNum, SmsType.Ep.BALANCE_SHORTAGE,ep_id,params);//发送短信
+                         }
+                     }
                  }
             }
         } catch (Exception e) {

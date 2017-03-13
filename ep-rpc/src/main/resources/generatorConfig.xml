@@ -37,9 +37,9 @@
             <property name="enableSubPackages" value="true"/>
         </javaClientGenerator>
 
-        <table tableName="t_ep_param" enableCountByExample="false" enableUpdateByExample="false"
+        <table tableName="t_sms_send" enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"
-               domainObjectName="EpParam">
+               domainObjectName="SmsSend">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
         </table>
 

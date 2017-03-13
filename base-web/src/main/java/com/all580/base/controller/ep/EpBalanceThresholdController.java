@@ -50,6 +50,34 @@ public class EpBalanceThresholdController extends BaseController {
 
     }
 
+    @RequestMapping(value = "create/update", method = RequestMethod.POST)
+    @ResponseBody
+    public Result<Integer> CreateOnUpdateThreshold(@RequestBody Map<String,Object> map) {
+        //core_ep_id
+        // map.put("id",map.get("id"));
+        //   Integer core_ep_id = Integer.parseInt(map.get("id").toString());
+
+        return epBalanceThresholdService.CreateOnUpdateThreshold(map);
+
+    }
+
+    /**
+     *
+     * @return
+     */
+    @RequestMapping(value = "select/threshold/list", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<?> selectThresholdList( String name,Integer start_threshold,Integer end_threshold,Integer ep_id
+    ) {
+        Map<String,Object> map = new HashMap<>();
+        map.put("ep_id",ep_id);
+        map.put("name",name);
+        map.put("start_threshold",start_threshold);
+        map.put("end_threshold",end_threshold);
+        map.put(EpConstant.EpKey.CORE_EP_ID,getAttribute(EpConstant.EpKey.CORE_EP_ID)) ;//
+        ParamsMapValidate.validate(map, generateEpBalanceThresholdValidate());
+        return epBalanceThresholdService.selectThresholdList(map);
+    }
     /**
      *余额提醒查询
      * @return

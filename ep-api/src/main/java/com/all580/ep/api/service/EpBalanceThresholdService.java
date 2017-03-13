@@ -31,4 +31,8 @@ public interface EpBalanceThresholdService {
      * @return  余额小于阀值
      */
     Result warn(Map<String,Object> mpa);
+
+
+    Result selectThresholdList(Map<String,Object> map);
+    Result CreateOnUpdateThreshold(Map<String,Object> map);
 }
