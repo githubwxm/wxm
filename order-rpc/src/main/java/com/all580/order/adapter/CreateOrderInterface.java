@@ -42,7 +42,7 @@ public interface CreateOrderInterface {
     List<OrderItemDetail> insertDetail(OrderItem item, ValidateProductSub sub, ProductSalesInfo salesInfo);
 
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    List<Visitor> insertVisitor(List<?> visitorList, List<OrderItemDetail> details, ProductSalesInfo salesInfo, ValidateProductSub sub, Map item);
+    List<Visitor> insertVisitor(List<?> visitorList, OrderItem orderItem, ProductSalesInfo salesInfo, ValidateProductSub sub, Map item);
 
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     Shipping insertShipping(Map params, Order order);

@@ -87,7 +87,7 @@ public class SendTicketAction implements JobRunner {
         sendTicketParams.setSendSms(true);
         //sendTicketParams.setSms("");
 
-        List<Visitor> visitorList = visitorMapper.selectByOrderDetailId(detail.getId());
+        List<Visitor> visitorList = visitorMapper.selectByOrderItem(orderItemId);
         List<com.all580.voucher.api.model.Visitor> contacts = new ArrayList<>();
         for (Visitor visitor : visitorList) {
             com.all580.voucher.api.model.Visitor v = new com.all580.voucher.api.model.Visitor();

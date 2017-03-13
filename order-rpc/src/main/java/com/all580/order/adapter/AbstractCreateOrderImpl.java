@@ -166,12 +166,10 @@ public abstract class AbstractCreateOrderImpl implements CreateOrderInterface {
     }
 
     @Override
-    public List<Visitor> insertVisitor(List<?> visitorList, List<OrderItemDetail> details, ProductSalesInfo salesInfo, ValidateProductSub sub, Map item) {
+    public List<Visitor> insertVisitor(List<?> visitorList, OrderItem orderItem, ProductSalesInfo salesInfo, ValidateProductSub sub, Map item) {
         List<Visitor> visitors = new ArrayList<>();
-        for (OrderItemDetail detail : details) {
-            for (Object o : visitorList) {
-                visitors.add(bookingOrderManager.generateVisitor((Map) o, detail.getId()));
-            }
+        for (Object o : visitorList) {
+            visitors.add(bookingOrderManager.generateVisitor((Map) o, orderItem.getId()));
         }
         return visitors;
     }

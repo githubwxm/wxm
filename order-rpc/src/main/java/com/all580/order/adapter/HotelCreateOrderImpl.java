@@ -6,7 +6,6 @@ import com.all580.order.dto.PriceDto;
 import com.all580.order.dto.ValidateProductSub;
 import com.all580.order.entity.Order;
 import com.all580.order.entity.OrderItem;
-import com.all580.order.entity.OrderItemDetail;
 import com.all580.order.entity.Visitor;
 import com.all580.order.manager.BookingOrderManager;
 import com.all580.product.api.model.ProductSalesInfo;
@@ -35,7 +34,7 @@ public class HotelCreateOrderImpl extends AbstractCreateOrderImpl {
     }
 
     @Override
-    public List<Visitor> insertVisitor(List<?> visitorList, List<OrderItemDetail> details, ProductSalesInfo salesInfo, ValidateProductSub sub, Map item) {
+    public List<Visitor> insertVisitor(List<?> visitorList, OrderItem orderItem, ProductSalesInfo salesInfo, ValidateProductSub sub, Map item) {
         return null;
     }
 
