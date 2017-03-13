@@ -256,7 +256,9 @@ public class LockTransactionManager {
 
         // 触发事件
         MnsEventManager.addEvent(OrderConstant.EventType.ORDER_REFUND_APPLY, refundOrder.getId());
-        return new Result<>(true);
+        Result<RefundOrder> result = new Result<>(true);
+        result.put(refundOrder);
+        return result;
     }
 
     /**
