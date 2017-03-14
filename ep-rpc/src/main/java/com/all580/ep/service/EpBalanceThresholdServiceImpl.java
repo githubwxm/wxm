@@ -11,11 +11,12 @@ import com.all580.notice.api.service.SmsService;
 import com.framework.common.Result;
 import javax.lang.exception.ApiException;
 import com.framework.common.util.CommonUtil;
-import com.framework.common.validate.ValidRule;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 import java.util.HashMap;
 import java.util.List;
@@ -124,6 +125,15 @@ public class EpBalanceThresholdServiceImpl implements EpBalanceThresholdService 
         Result result = new Result(true);
         Integer id = CommonUtil.objectParseInteger(map.get("id"));//send_ep_id
         if(null==id){
+          if("1".equals(map.get("threshold_status"))){
+              String send_phone1= CommonUtil.objectParseString( map.get("send_phone1"));
+              Integer threshold=CommonUtil.objectParseInteger( map.get("threshold"));
+              Assert.notNull(send_phone1, "电话为空");
+              Assert.notNull(threshold, "余额提醒值为空");
+              if(threshold<0){
+                  throw new ApiException("余额提醒值为负数");
+              }
+           }
             smsSendMapper.insert(map);
         }else{
             smsSendMapper.updateByPrimaryKey(map);
@@ -132,7 +142,7 @@ public class EpBalanceThresholdServiceImpl implements EpBalanceThresholdService 
         thresholdMap.put("id",map.get("send_ep_id"));
         thresholdMap.put(EpConstant.EpKey.CORE_EP_ID,map.get(EpConstant.EpKey.CORE_EP_ID)) ;
         thresholdMap.put("threshold",map.get("threshold"));
-        createOrUpdate(map);
+        createOrUpdate(thresholdMap);
         return result;
     }
     @Override
