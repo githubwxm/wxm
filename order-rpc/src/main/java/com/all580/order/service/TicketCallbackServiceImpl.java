@@ -191,7 +191,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         Visitor visitor;
         if (info.getVisitorSeqId() == null) {
             List<Visitor> visitors = visitorMapper.selectByOrderItem(orderItem.getId());
-            if (visitors.size() == 1) {
+            if (visitors.size() > 1) {
                 throw new ApiException("该订单有多个游客");
             }
             visitor = visitors.get(0);
