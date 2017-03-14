@@ -127,11 +127,16 @@ public class EpBalanceThresholdServiceImpl implements EpBalanceThresholdService 
         if(null==id){
           if("1".equals(map.get("threshold_status"))){
               String send_phone1= CommonUtil.objectParseString( map.get("send_phone1"));
+              String send_phone2= CommonUtil.objectParseString( map.get("send_phone2"));
               Integer threshold=CommonUtil.objectParseInteger( map.get("threshold"));
-              Assert.notNull(send_phone1, "电话为空");
               Assert.notNull(threshold, "余额提醒值为空");
+              if(send_phone1==null && send_phone2==null){
+                   result.setError("电话号码必须有一个");
+                  return result;
+              }
               if(threshold<0){
-                  throw new ApiException("余额提醒值为负数");
+                  result.setError("余额提醒值为负数");
+                  return result;
               }
            }
             smsSendMapper.insert(map);
@@ -141,7 +146,8 @@ public class EpBalanceThresholdServiceImpl implements EpBalanceThresholdService 
         Map<String,Object> thresholdMap = new HashMap<>();
         thresholdMap.put("id",map.get("send_ep_id"));
         thresholdMap.put(EpConstant.EpKey.CORE_EP_ID,map.get(EpConstant.EpKey.CORE_EP_ID)) ;
-        thresholdMap.put("threshold",map.get("threshold"));
+        Integer threshold =CommonUtil.objectParseInteger( map.get("threshold"));
+        thresholdMap.put("threshold",threshold/100);
         createOrUpdate(thresholdMap);
         return result;
     }

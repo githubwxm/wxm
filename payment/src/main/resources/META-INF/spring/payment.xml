@@ -30,5 +30,5 @@
     <dubbo:service interface="com.all580.payment.api.service.EpPaymentConfService" ref="epPaymentConfService"/>
     <dubbo:service interface="com.all580.payment.api.service.FundSerialService" ref="fundSerialService"/>
     <dubbo:service interface="com.all580.payment.api.service.PlatfromFundService" ref="platfromFundService"/>
-    <dubbo:service interface="com.all580.payment.api.service.LockPayManagerService" ref="lockPayManagerService"/>
+    <!--<dubbo:service interface="com.all580.payment.api.service.LockPayManagerService" ref="lockPayManagerService"/>-->
 </beans>
