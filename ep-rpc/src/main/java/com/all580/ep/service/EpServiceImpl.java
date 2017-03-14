@@ -751,7 +751,7 @@ public class EpServiceImpl implements EpService {
         map.put("name",name);
         map.put("ep_type", EpConstant.EpType.SELLER);
         map.put("record_start",0);
-        map.put("record_count",100);
+        map.put("record_count",500);
         Common.checkPage(map);
         try {
             Common.isEmpty(result, epMapper.select(map));
