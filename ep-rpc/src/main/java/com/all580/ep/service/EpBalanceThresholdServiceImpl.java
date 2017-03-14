@@ -144,6 +144,10 @@ public class EpBalanceThresholdServiceImpl implements EpBalanceThresholdService 
                   result.setError("余额提醒值为负数");
                   return result;
               }
+              if(threshold>5000000){
+                  result.setError("余额提醒值过大，50000");
+                  return result;
+              }
            }
             smsSendMapper.insert(map);
         }else{
