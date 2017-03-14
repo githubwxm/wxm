@@ -57,6 +57,7 @@ public class EpBalanceThresholdController extends BaseController {
         // map.put("id",map.get("id"));
         //   Integer core_ep_id = Integer.parseInt(map.get("id").toString());
 
+        ParamsMapValidate.validate(map, generateEpBalanceThresholdMobileWarnValidate());
         return epBalanceThresholdService.CreateOnUpdateThreshold(map);
 
     }
@@ -163,6 +164,14 @@ public class EpBalanceThresholdController extends BaseController {
         return rules;
     }
 
+    private Map<String[], ValidRule[]> generateEpBalanceThresholdMobileWarnValidate() {
+        Map<String[], ValidRule[]> rules = new HashMap<>();
+        rules.put(new String[]{
+                "send_phone1", // 订单联系人手机号码
+                "send_phone2", // 订单联系人手机号码
+        }, new ValidRule[]{new ValidRule.Pattern(ValidRule.MOBILE_PHONE)});
+        return rules;
+    }
     private Map<String[], ValidRule[]> generateEpBalanceValidate() {
         Map<String[], ValidRule[]> rules = new HashMap<>();
         // 校验不为空的参数

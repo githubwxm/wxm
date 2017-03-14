@@ -35,10 +35,10 @@ public class BalanceChangeSubscribeServiceImpl implements BalanceChangeSubscribe
 
     @Override
     public  Result process(String s, Object t, Date date) {
-        Integer status= epParamMapper.selectEpNoteStatus();
-        if(status.equals(0)){//  查询是否需要发送短信
-            return new Result(true);
-        }
+//        Integer status= epParamMapper.selectEpNoteStatus();
+//        if(status.equals(0)){//  查询是否需要发送短信
+//            return new Result(true);
+//        }
         List list =(List) t;
         if (list == null) {
             return new Result(true);

@@ -134,6 +134,12 @@ public class EpBalanceThresholdServiceImpl implements EpBalanceThresholdService 
                    result.setError("电话号码必须有一个");
                   return result;
               }
+              if(send_phone1!=null && send_phone2!=null){
+                  if(send_phone1.trim().equals(send_phone2)){
+                      result.setError("2个电话号码不能一致");
+                      return result;
+                  }
+              }
               if(threshold<0){
                   result.setError("余额提醒值为负数");
                   return result;
@@ -173,7 +179,7 @@ public class EpBalanceThresholdServiceImpl implements EpBalanceThresholdService 
                  List<Map<String,Object>> list= epMapper.select(epMap);//   获取企业信息
                  if(null!=list && !list.isEmpty()){
                      Map<String,Object> mapResult = list.get(0);
-                     ep_id=CommonUtil.objectParseInteger( map.get(EpConstant.EpKey.CORE_EP_ID));//发送短信人
+                   Integer  core_ep_id=CommonUtil.objectParseInteger( map.get(EpConstant.EpKey.CORE_EP_ID));//发送短信人
                     String destPhoneNum=  mapResult.get("link_phone").toString();
                      Map<String, String>  params = new HashMap<>();
                      params.put("qiye",mapResult.get("name").toString());
@@ -181,16 +187,16 @@ public class EpBalanceThresholdServiceImpl implements EpBalanceThresholdService 
                      String point = Common.matcher(jinqian,"([\\d]{2}$)" );//Common.matcher(125665419+"","([\\d]{2}$)" )
                      params.put("jinqian",jinqian.replaceAll("([\\d]{2}$)", "."+point));
                        Map<String,Object> mapSend = smsSendMapper.selectByEpId(ep_id);//   余额修改之后的发送短信
-                     if("1".equals(mapSend.get("threshold_status"))){
+                     if(null!=mapSend && "1".equals(CommonUtil.objectParseString( mapSend.get("threshold_status")))){
                          String send_phone2=CommonUtil.objectParseString(mapSend.get("send_phone2"));
                          if( null != send_phone2 && !"".equals(send_phone2.trim())){
-                             smsService.send(send_phone2, SmsType.Ep.BALANCE_SHORTAGE,ep_id,params);//发送短信
+                             smsService.send(send_phone2, SmsType.Ep.BALANCE_SHORTAGE,core_ep_id,params);//发送短信
                          }
                          String send_phone1=CommonUtil.objectParseString(mapSend.get("send_phone1"));
                          if(  null != send_phone1 && !"".equals(send_phone1.trim())){
-                             return smsService.send(send_phone1, SmsType.Ep.BALANCE_SHORTAGE,ep_id,params);//发送短信
+                             return smsService.send(send_phone1, SmsType.Ep.BALANCE_SHORTAGE,core_ep_id,params);//发送短信
                          }else{
-                             return  smsService.send(destPhoneNum, SmsType.Ep.BALANCE_SHORTAGE,ep_id,params);//发送短信
+                             return  smsService.send(destPhoneNum, SmsType.Ep.BALANCE_SHORTAGE,core_ep_id,params);//发送短信
                          }
                      }
                  }
