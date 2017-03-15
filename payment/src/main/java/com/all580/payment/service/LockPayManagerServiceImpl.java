@@ -103,6 +103,7 @@ public class LockPayManagerServiceImpl implements LockPayManagerService {
         } catch (BusinessException e) {
             logger.error("失败 -> 余额变更出现异常，原因：" + e.getMessage(), e);
             result.setFail();
+            result.setError(e.getMessage());
             result.put((BalanceChangeRsp) e.getData());
         }
 
