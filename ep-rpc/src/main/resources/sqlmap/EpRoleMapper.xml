@@ -3,7 +3,7 @@
 <mapper namespace="com.all580.role.dao.EpRoleMapper" >
 
   <sql id="Base_Column_List" >
-    id, name, status, create_time, user_id, CONCAT('',update_time,'') update_time, isdelete
+    id, name,ep_type, status,summary, create_time, user_id, CONCAT('',update_time,'') update_time, isdelete
   </sql>
   <select id="selectByPrimaryKey" resultType="java.util.Map" >
     select 
@@ -30,7 +30,7 @@
     <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
       SELECT LAST_INSERT_ID()
     </selectKey>
-    insert into t_ep_role (name,user_id)values(#{name},#{user_id});
+    insert into t_ep_role (name,user_id,ep_type,summary)values(#{name},#{user_id},#{ep_type},#{summary});
   </insert>
   <update id="updateByPrimaryKeySelective"  >
     update t_ep_role
@@ -40,6 +40,12 @@
       </if>
       <if test="status != null" >
         status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="ep_type != null" >
+        name = #{ep_type,jdbcType=INTEGER},
+      </if>
+      <if test="summary != null" >
+        name = #{summary,jdbcType=VARCHAR},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
