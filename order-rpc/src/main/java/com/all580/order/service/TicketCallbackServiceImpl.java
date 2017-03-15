@@ -426,7 +426,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         }
         Assert.notNull(refundOrderResult, "退订订单不存在");
         List<Visitor> visitors = visitorMapper.selectByOrderItem(orderItem.getId());
-        if (visitors.size() == 1) {
+        if (visitors.size() > 1) {
             throw new ApiException("该订单有多个游客");
         }
         String refId = String.valueOf(refundOrderResult.getLocal_refund_serial_no());

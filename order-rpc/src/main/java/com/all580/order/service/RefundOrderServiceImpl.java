@@ -59,7 +59,6 @@ public class RefundOrderServiceImpl implements RefundOrderService {
     private ApplicationContext applicationContext;
 
     @Override
-    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public Result<?> cancel(Map params) {
         if (!params.containsKey(EpConstant.EpKey.EP_ID)) {
             throw new ApiException("非法请求:企业ID为空");
@@ -147,7 +146,6 @@ public class RefundOrderServiceImpl implements RefundOrderService {
     }
 
     @Override
-    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public Result<?> refundMoneyAudit(Map params) {
         RefundOrder refundOrder = refundOrderMapper.selectBySN(Long.valueOf(params.get("refund_sn").toString()));
         if (refundOrder == null) {

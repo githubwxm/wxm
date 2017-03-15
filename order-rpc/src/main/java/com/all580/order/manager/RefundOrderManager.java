@@ -129,6 +129,7 @@ public class RefundOrderManager extends BaseOrderManager {
      * @return
      */
     @MnsEvent
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public void auditSuccess(OrderItem orderItem, RefundOrder refundOrder, Order order) {
         if (refundOrder.getAudit_time() == null) {
             refundOrder.setAudit_time(new Date());
@@ -459,8 +460,7 @@ public class RefundOrderManager extends BaseOrderManager {
      * 退票
      * @param refundOrder
      */
-    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public void refundTicket(RefundOrder refundOrder) {
+    private void refundTicket(RefundOrder refundOrder) {
         // 生成退票流水
         RefundSerial refundSerial = new RefundSerial();
         refundSerial.setLocal_serial_no(UUIDGenerator.generateUUID());
