@@ -580,7 +580,7 @@ public class RefundOrderManager extends BaseOrderManager {
                     sn == null ? order.getNumber().toString() : sn, balanceChangeInfoList);
             if (!result.isSuccess()) {
                 log.warn("余额退款失败:{}", result.get());
-                throw new ApiException(result.getError());
+                throw new ApiException("调用余额退款失败:" + result.getError());
             }
             return new Result(true);
         }
@@ -593,7 +593,7 @@ public class RefundOrderManager extends BaseOrderManager {
         Result result = thirdPayService.reqRefund(order.getNumber(), coreEpId, order.getPayment_type(), payParams);
         if (!result.isSuccess()) {
             log.warn("第三方退款异常:{}", result);
-            throw new ApiException(result.getError());
+            throw new ApiException("调用第三方退款失败:" + result.getError());
         }
         return result;
     }
