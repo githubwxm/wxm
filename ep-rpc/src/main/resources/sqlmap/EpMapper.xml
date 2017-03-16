@@ -266,10 +266,8 @@
     </update>
     <select id="checkEpRole" resultType="java.lang.Integer">
         select count(*) from t_ep_role
-        where id = #{ep_role} and ep_type=
-     (
-      select ep_type from t_ep where id = #{id}
-     )
+        where id = #{ep_role} and ep_type=(
+      select ep_type from t_ep where id = #{id} )
     </select>
 
     <select id="checkNamePhone" resultType="java.util.Map">
