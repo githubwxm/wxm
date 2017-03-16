@@ -1077,6 +1077,9 @@ public class EpServiceImpl implements EpService {
     @Override
     public Result updateEpRole(Map<String, Object> params) {
         try {
+            if(epMapper.checkEpRole(params)!=1){
+                return new Result(false,"企业类型与角色不匹配");
+            }
             epMapper.updateEpRole(params);
             Map<String, Object> map = new HashMap<>();
             map.put("id", params.get("id"));

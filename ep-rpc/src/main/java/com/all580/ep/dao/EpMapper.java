@@ -58,6 +58,12 @@ public interface EpMapper {
     String selectPhone(int id);
     int updateEpRole(Map<String,Object> map);
 
+    /**
+     * 检查  该企业类型是否有这个  企业角色
+     * @param map
+     * @return
+     */
+    int checkEpRole(Map<String,Object> map);
     List<Map<String,String>> getCoreEpName(@Param("list") List<Integer> list,@Param("mainEpId") Integer mainEpId);
     List<Integer> selectSupplier(Integer  coreEpId);
     List<Integer> getSeller(@Param("list") List<Integer> list);
