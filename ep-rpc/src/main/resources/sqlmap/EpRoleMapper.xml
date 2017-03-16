@@ -42,10 +42,10 @@
         status = #{status,jdbcType=INTEGER},
       </if>
       <if test="ep_type != null" >
-        name = #{ep_type,jdbcType=INTEGER},
+        ep_type = #{ep_type,jdbcType=INTEGER},
       </if>
       <if test="summary != null" >
-        name = #{summary,jdbcType=VARCHAR},
+        summary = #{summary,jdbcType=VARCHAR},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
