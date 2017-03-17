@@ -16,7 +16,6 @@ import com.framework.common.distributed.lock.DistributedLockTemplate;
 import com.framework.common.distributed.lock.DistributedReentrantLock;
 import com.framework.common.event.MnsEvent;
 import com.framework.common.event.MnsEventAspect;
-import com.framework.common.event.MnsEventManager;
 import com.framework.common.mns.TopicPushManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

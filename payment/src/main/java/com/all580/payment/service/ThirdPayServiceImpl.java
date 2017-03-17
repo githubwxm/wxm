@@ -13,7 +13,6 @@ import com.all580.payment.thirdpay.wx.util.ConstantUtil;
 import com.framework.common.Result;
 import com.framework.common.event.MnsEvent;
 import com.framework.common.event.MnsEventAspect;
-import com.framework.common.event.MnsEventManager;
 import com.framework.common.mns.TopicPushManager;
 import com.framework.common.util.CommonUtil;
 import org.apache.commons.lang.StringUtils;
