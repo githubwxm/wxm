@@ -127,7 +127,7 @@ public class SendGroupTicketAction implements JobRunner {
         sendGroupTicketParams.setMaProductId(orderItem.getMa_product_id());
         sendGroupTicketParams.setSendSms(true);
 
-        List<Visitor> visitorList = visitorMapper.selectByOrderDetailId(detail.getId());
+        List<Visitor> visitorList = visitorMapper.selectByOrderItem(orderItemId);
         // 超大团 走OSS
         if (visitorList.size() > groupMaxVisitor) {
             log.debug("团队订单: {} 人员过多,上传游客到OSS.", orderItem.getNumber());
