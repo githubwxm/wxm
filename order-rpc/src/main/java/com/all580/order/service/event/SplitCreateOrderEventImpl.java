@@ -8,6 +8,8 @@ import com.all580.order.entity.Order;
 import com.all580.order.entity.OrderItem;
 import com.all580.product.api.consts.ProductConstants;
 import com.framework.common.Result;
+import com.framework.common.event.MnsEvent;
+import com.framework.common.event.MnsEventAspect;
 import com.framework.common.outside.JobAspect;
 import com.framework.common.outside.JobTask;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,9 +33,12 @@ public class SplitCreateOrderEventImpl implements SplitCreateOrderEvent {
 
     @Autowired
     private JobAspect jobManager;
+    @Autowired
+    private MnsEventAspect eventManager;
 
     @Override
     @JobTask
+    @MnsEvent
     public Result process(String msgId, Integer content, Date createDate) {
         Order order = orderMapper.selectByPrimaryKey(content);
         if (order == null) {
@@ -53,7 +58,7 @@ public class SplitCreateOrderEventImpl implements SplitCreateOrderEvent {
             }
             // 酒店
             if (orderItem.getPro_type() == ProductConstants.ProductType.HOTEL) {
-
+                hotelSend(orderItem);
                 continue;
             }
             jobParams.add(jobParam);
@@ -65,5 +70,12 @@ public class SplitCreateOrderEventImpl implements SplitCreateOrderEvent {
             jobManager.addJob(OrderConstant.Actions.SEND_GROUP_TICKET, jobGroupParams);
         }
         return new Result(true);
+    }
+
+    private void hotelSend(OrderItem orderItem) {
+        orderItem.setStatus(OrderConstant.OrderItemStatus.SEND);
+        orderItem.setSend_ma_time(new Date());
+        orderItemMapper.updateByPrimaryKeySelective(orderItem);
+        eventManager.addEvent(OrderConstant.EventType.SEND_TICKET, orderItem.getId());
     }
 }

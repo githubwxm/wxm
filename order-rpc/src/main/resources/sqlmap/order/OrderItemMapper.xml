@@ -793,6 +793,12 @@
     where id = #{id}
   </update>
 
+  <update id="refundQuantity">
+    UPDATE t_order_item
+    SET refund_quantity = refund_quantity + #{quantity}
+    where id = #{id}
+  </update>
+
   <update id="resendTicket">
     UPDATE t_order_item
     SET resend_times = resend_times + 1, last_resend_time = now()

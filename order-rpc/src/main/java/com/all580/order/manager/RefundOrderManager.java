@@ -136,7 +136,7 @@ public class RefundOrderManager extends BaseOrderManager {
         if (refundOrder.getAudit_time() == null) {
             refundOrder.setAudit_time(new Date());
         }
-        if (orderItem.getStatus() == OrderConstant.OrderItemStatus.SEND) {
+        if (orderItem.getStatus() == OrderConstant.OrderItemStatus.SEND && orderItem.getPro_type() != ProductConstants.ProductType.HOTEL) {
             // 调用退票
             refundTicket(refundOrder);
             refundOrderMapper.updateByPrimaryKeySelective(refundOrder);
@@ -147,12 +147,10 @@ public class RefundOrderManager extends BaseOrderManager {
             if (orderItem.getGroup_id() != null && orderItem.getGroup_id() != 0 &&
                     orderItem.getPro_sub_ticket_type() != null && orderItem.getPro_sub_ticket_type() == ProductConstants.TeamTicketType.TEAM) {
                 nonSendTicketRefundForGroup(refundOrder, orderItem.getGroup_id());
-                orderItem.setRefund_quantity(refundOrder.getQuantity());
             } else {
-                int quantity = nonSendTicketRefund(refundOrder);
-                orderItem.setRefund_quantity(orderItem.getRefund_quantity() + quantity);
+                nonSendTicketRefund(refundOrder);
             }
-            orderItemMapper.updateByPrimaryKeySelective(orderItem);
+            orderItemMapper.refundQuantity(orderItem.getId(), refundOrder.getQuantity());
             // 退款
             refundMoney(order, refundOrder.getMoney(), String.valueOf(refundOrder.getNumber()), refundOrder);
         }

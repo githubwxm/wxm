@@ -163,4 +163,6 @@ public interface OrderItemMapper {
     int useQuantity(@Param("id") Integer id, @Param("quantity") Integer quantity);
 
     int resendTicket(@Param("id") Integer id);
+
+    int refundQuantity(@Param("id") Integer id, @Param("quantity") Integer quantity);
 }
