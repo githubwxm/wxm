@@ -15,7 +15,7 @@ import com.framework.common.Result;
 import com.framework.common.distributed.lock.DistributedLockTemplate;
 import com.framework.common.distributed.lock.DistributedReentrantLock;
 import com.framework.common.event.MnsEvent;
-import com.framework.common.event.MnsEventManager;
+import com.framework.common.event.MnsEventAspect;
 import com.framework.common.mns.TopicPushManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,6 +46,9 @@ public class LockPayManagerServiceImpl implements LockPayManagerService {
     @Autowired
     private CapitalSerialMapper capitalSerialMapper;
 
+    @Autowired
+    private MnsEventAspect eventAspect;
+
     @Override
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     @MnsEvent
@@ -74,7 +77,7 @@ public class LockPayManagerServiceImpl implements LockPayManagerService {
                 map.put("balance",c.getBalance());
                 tempList.add(map);
             }
-            MnsEventManager.addEvent("BALANCE_CHANGE", tempList);
+            eventAspect.addEvent("BALANCE_CHANGE", tempList);
             //fireBalanceChangedEvent(capitals);
 
             // 回调订单模块-余额支付
