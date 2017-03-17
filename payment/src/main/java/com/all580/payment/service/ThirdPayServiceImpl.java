@@ -12,6 +12,7 @@ import com.all580.payment.thirdpay.wx.service.WxPayService;
 import com.all580.payment.thirdpay.wx.util.ConstantUtil;
 import com.framework.common.Result;
 import com.framework.common.event.MnsEvent;
+import com.framework.common.event.MnsEventAspect;
 import com.framework.common.event.MnsEventManager;
 import com.framework.common.mns.TopicPushManager;
 import com.framework.common.util.CommonUtil;
@@ -52,6 +53,8 @@ public class ThirdPayServiceImpl implements ThirdPayService {
     @Autowired
     private OrderService orderService;
 
+    @Autowired
+    private MnsEventAspect eventAspect;
 //    @Autowired
 //    private WxProperties wxProperties;
 
@@ -258,7 +261,8 @@ public class ThirdPayServiceImpl implements ThirdPayService {
             logger.info("第三方金额变更事件----->开始");
             String tag = "core";
             //topicPushManager.asyncFireEvent(topicName, tag, PaymentConstant.EVENT_NAME_FUND_CHANGE, map);
-            MnsEventManager.addEvent("FUND_CHANGE", map);
+           // MnsEventManager.addEvent("FUND_CHANGE", map);
+            eventAspect.addEvent("FUND_CHANGE", map);
             logger.info("第三方金额变更事件----->成功");
         }catch (Exception e){
             logger.error("第三方金额变更事件 异常{}  ",map.toString());
