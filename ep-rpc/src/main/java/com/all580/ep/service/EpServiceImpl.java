@@ -1055,16 +1055,21 @@ public class EpServiceImpl implements EpService {
      */
     @Override
     public Result<List<Map<String, Object>>> getEp(Integer[] epids, String[] field) {
+        Result<List<Map<String, Object>>> result = new Result<>();
         Map<String, Object> map = new HashMap<>();
         if (epids == null || epids.length == 0) {
-            throw new ApiException("epids不能为空");
+            result.setError("epids不能为空");
+            //throw new ApiException("");
+            return  result;
         }
         if (field == null || field.length == 0) {
-            throw new ApiException("field不能为空");
+            result.setError("epids不能为空");
+            //throw new ApiException("");
+            return  result;
         }
         map.put("epids", epids);
         map.put("field", field);
-        Result<List<Map<String, Object>>> result = new Result<>();
+
         try {
             Common.isEmpty(result, epMapper.getEp(map));
         } catch (Exception e) {
