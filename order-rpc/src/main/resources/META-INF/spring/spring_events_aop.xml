@@ -10,14 +10,20 @@
        http://www.springframework.org/schema/aop/spring-aop-4.3.xsd">
 
     <!-- aop配置 -->
-    <bean id="eventAspect" class="com.framework.common.event.MnsEventAspect">
+    <bean id="eventManager" class="com.framework.common.event.MnsEventAspect">
         <property name="mns" ref="topicPushManager"/>
         <property name="topicName" value="${mns.topic}"/>
         <property name="tag" value="core_events"/>
     </bean>
+    <bean id="jobManager" class="com.framework.common.outside.JobAspect">
+        <property name="jobClient" ref="jobClient"/>
+        <property name="maxRetryTimes" value="${task.maxRetryTimes}"/>
+        <property name="prefix" value="ORDER-JOB-"/>
+        <property name="taskTracker" value="${task.tracker}"/>
+    </bean>
     <aop:config proxy-target-class="true">
-        <!--切面 -->
-        <aop:aspect ref="eventAspect" order="1">
+        <!--事件切面 -->
+        <aop:aspect ref="eventManager" order="1">
             <!-- 切点 -->
             <aop:pointcut expression="@annotation(com.framework.common.event.MnsEvent)" id="event"/>
             <!--连接通知方法与切点 -->
@@ -25,6 +31,15 @@
             <aop:after-returning method="afterReturn" pointcut-ref="event"/>
             <aop:after-throwing method="afterThrowing" pointcut-ref="event"/>
             <aop:before method="processBefore" pointcut="this(com.framework.common.mns.MnsSubscribeAction)"/>
+        </aop:aspect>
+        <!--任务切面 -->
+        <aop:aspect ref="jobManager" order="1">
+            <!-- 切点 -->
+            <aop:pointcut expression="@annotation(com.framework.common.outside.JobTask)" id="job"/>
+            <!--连接通知方法与切点 -->
+            <aop:before method="before" pointcut-ref="job"/>
+            <aop:after-returning method="afterReturn" pointcut-ref="job"/>
+            <aop:after-throwing method="afterThrowing" pointcut-ref="job"/>
         </aop:aspect>
     </aop:config>
 </beans>

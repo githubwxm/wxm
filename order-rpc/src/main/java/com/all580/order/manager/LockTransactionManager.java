@@ -5,7 +5,6 @@ import com.all580.ep.api.service.EpService;
 import com.all580.order.adapter.RefundOrderInterface;
 import com.all580.order.api.OrderConstant;
 import com.all580.order.api.model.*;
-import com.all580.order.api.service.PaymentCallbackService;
 import com.all580.order.dao.*;
 import com.all580.order.dto.AccountDataDto;
 import com.all580.order.dto.RefundDay;
@@ -21,9 +20,11 @@ import com.all580.product.api.model.ProductSearchParams;
 import com.all580.product.api.service.ProductSalesPlanRPCService;
 import com.framework.common.Result;
 import com.framework.common.event.MnsEvent;
-import com.framework.common.event.MnsEventManager;
+import com.framework.common.event.MnsEventAspect;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.lang.UUIDGenerator;
+import com.framework.common.outside.JobAspect;
+import com.framework.common.outside.JobTask;
 import com.framework.common.util.CommonUtil;
 import com.github.ltsopensource.core.domain.Action;
 import lombok.extern.slf4j.Slf4j;
@@ -73,7 +74,9 @@ public class LockTransactionManager {
     @Autowired
     private ThirdPayService thirdPayService;
     @Autowired
-    private PaymentCallbackService paymentCallbackService;
+    private MnsEventAspect eventManager;
+    @Autowired
+    private JobAspect jobManager;
 
     /**
      * 支付回调
@@ -124,11 +127,11 @@ public class LockTransactionManager {
         orderItemMapper.setStatusByOrderId(orderId, OrderConstant.OrderItemStatus.NON_SEND);
 
         // 触发事件
-        MnsEventManager.addEvent(OrderConstant.EventType.PAID, order.getId());
+        eventManager.addEvent(OrderConstant.EventType.PAID, order.getId());
 
         if (order.getStatus() == OrderConstant.OrderStatus.PAID) {
             // 出票
-            MnsEventManager.addEvent(OrderConstant.EventType.SPLIT_CREATE_ACCOUNT, order.getId());
+            eventManager.addEvent(OrderConstant.EventType.SPLIT_CREATE_ACCOUNT, order.getId());
         }
     }
 
@@ -141,6 +144,7 @@ public class LockTransactionManager {
      * @throws Exception
      */
     @MnsEvent
+    @JobTask
     public void refundMoneyCallback(int orderId, Long ordCode, String serialNum, boolean success) throws Exception {
         Order order = orderMapper.selectByPrimaryKey(orderId);
         if (order == null) {
@@ -148,7 +152,7 @@ public class LockTransactionManager {
             throw new Exception("订单不存在");
         }
 
-        MnsEventManager.addEvent(OrderConstant.EventType.REFUND_MONEY, new RefundMoneyEventParam(orderId, serialNum, success));
+        eventManager.addEvent(OrderConstant.EventType.REFUND_MONEY, new RefundMoneyEventParam(orderId, serialNum, success));
         if (order.getStatus() == OrderConstant.OrderStatus.PAID_HANDLING) {
             if (!success) {
                 addRefundMoneyJob(ordCode, serialNum);
@@ -158,7 +162,7 @@ public class LockTransactionManager {
             // 记录任务
             Map<String, String> jobParams = new HashMap<>();
             jobParams.put("orderId", order.getId().toString());
-            bookingOrderManager.addJob(OrderConstant.Actions.CANCEL_CALLBACK, jobParams);
+            jobManager.addJob(OrderConstant.Actions.CANCEL_CALLBACK, Collections.singleton(jobParams));
             return;
         }
 
@@ -199,7 +203,7 @@ public class LockTransactionManager {
         }
 
         // 出票
-        MnsEventManager.addEvent(OrderConstant.EventType.SPLIT_CREATE_ACCOUNT, order.getId());
+        eventManager.addEvent(OrderConstant.EventType.SPLIT_CREATE_ACCOUNT, order.getId());
         return new com.github.ltsopensource.tasktracker.Result(Action.EXECUTE_SUCCESS);
     }
 
@@ -255,7 +259,7 @@ public class LockTransactionManager {
         }
 
         // 触发事件
-        MnsEventManager.addEvent(OrderConstant.EventType.ORDER_REFUND_APPLY, refundOrder.getId());
+        eventManager.addEvent(OrderConstant.EventType.ORDER_REFUND_APPLY, refundOrder.getId());
         Result<RefundOrder> result = new Result<>(true);
         result.put(refundOrder);
         return result;
@@ -312,7 +316,7 @@ public class LockTransactionManager {
         boolean status = Boolean.parseBoolean(params.get("status").toString());
 
         refundOrderMapper.updateByPrimaryKeySelective(refundOrder);
-        MnsEventManager.addEvent(OrderConstant.EventType.ORDER_REFUND_AUDIT, new RefundAuditEventParam(refundOrder.getId(), status));
+        eventManager.addEvent(OrderConstant.EventType.ORDER_REFUND_AUDIT, new RefundAuditEventParam(refundOrder.getId(), status));
         return new Result<>(true);
     }
 
@@ -323,6 +327,7 @@ public class LockTransactionManager {
      * @return
      */
     @MnsEvent
+    @JobTask
     public Result<?> auditBooking(Map params, long orderItemSn) {
         OrderItem orderItem = orderItemMapper.selectBySN(orderItemSn);
         if (orderItem == null) {
@@ -364,7 +369,7 @@ public class LockTransactionManager {
             }
         }
         orderItemMapper.updateByPrimaryKeySelective(orderItem);
-        MnsEventManager.addEvent(OrderConstant.EventType.ORDER_AUDIT, new OrderAuditEventParam(orderItem.getId(), status));
+        eventManager.addEvent(OrderConstant.EventType.ORDER_AUDIT, new OrderAuditEventParam(orderItem.getId(), status));
         return new Result<>(true);
     }
 
@@ -488,7 +493,7 @@ public class LockTransactionManager {
             return new Result(false, "退票流水:" + info.getRefId() + "重复操作");
         }
 
-        MnsEventManager.addEvent(OrderConstant.EventType.REFUND_TICKET, new RefundTicketEventParam(refundOrder.getId(), info.isSuccess()));
+        eventManager.addEvent(OrderConstant.EventType.REFUND_TICKET, new RefundTicketEventParam(refundOrder.getId(), info.isSuccess()));
         // 退票失败
         if (!info.isSuccess()) {
             return refundFail(refundOrder);
@@ -555,7 +560,7 @@ public class LockTransactionManager {
         Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
         refundOrderManager.refundMoney(order, refundOrder.getMoney(), String.valueOf(refundOrder.getNumber()), refundOrder);
 
-        MnsEventManager.addEvent(OrderConstant.EventType.REFUND_TICKET, new RefundTicketEventParam(refundOrder.getId(), info.isSuccess()));
+        eventManager.addEvent(OrderConstant.EventType.REFUND_TICKET, new RefundTicketEventParam(refundOrder.getId(), info.isSuccess()));
         return new Result(true);
     }
 
@@ -565,7 +570,7 @@ public class LockTransactionManager {
         Map<String, String> jobParams = new HashMap<>();
         jobParams.put("ordCode", String.valueOf(ordCode));
         jobParams.put("serialNum", serialNum);
-        bookingOrderManager.addJob(OrderConstant.Actions.REFUND_MONEY, jobParams, true);
+        jobManager.addJob(Collections.singleton(bookingOrderManager.createJob(OrderConstant.Actions.REFUND_MONEY, jobParams, true)));
     }
 
     private Result refundFail(RefundOrder refundOrder) {

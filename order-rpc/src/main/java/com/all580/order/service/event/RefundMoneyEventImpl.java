@@ -7,16 +7,18 @@ import com.all580.order.dao.OrderMapper;
 import com.all580.order.dao.RefundOrderMapper;
 import com.all580.order.entity.Order;
 import com.all580.order.entity.RefundOrder;
-import com.all580.order.manager.RefundOrderManager;
 import com.all580.order.manager.SmsManager;
 import com.all580.payment.api.conf.PaymentConstant;
 import com.framework.common.Result;
 import com.framework.common.event.MnsEvent;
-import com.framework.common.event.MnsEventManager;
+import com.framework.common.event.MnsEventAspect;
+import com.framework.common.outside.JobAspect;
+import com.framework.common.outside.JobTask;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,12 +37,15 @@ public class RefundMoneyEventImpl implements RefundMoneyEvent {
     private OrderMapper orderMapper;
 
     @Autowired
-    private RefundOrderManager refundOrderManager;
-    @Autowired
     private SmsManager smsManager;
+    @Autowired
+    private MnsEventAspect eventManager;
+    @Autowired
+    private JobAspect jobManager;
 
     @Override
     @MnsEvent
+    @JobTask
     public Result process(String msgId, RefundMoneyEventParam content, Date createDate) {
         RefundOrder refundOrder = refundOrderMapper.selectBySN(Long.valueOf(content.getSerialNo()));
         Assert.notNull(refundOrder, "退订订单不存在");
@@ -57,9 +62,9 @@ public class RefundMoneyEventImpl implements RefundMoneyEvent {
             if (order.getPayment_type() != null && order.getPayment_type() != PaymentConstant.PaymentType.BALANCE.intValue()) {
                 Map<String, String> moneyJobParams = new HashMap<>();
                 moneyJobParams.put("refundId", String.valueOf(refundOrder.getId()));
-                refundOrderManager.addJob(OrderConstant.Actions.REFUND_MONEY_SPLIT_ACCOUNT, moneyJobParams, false);
+                jobManager.addJob(OrderConstant.Actions.REFUND_MONEY_SPLIT_ACCOUNT, Collections.singleton(moneyJobParams));
             } else {
-                MnsEventManager.addEvent(OrderConstant.EventType.REFUND_SUCCESS, refundOrder.getId());
+                eventManager.addEvent(OrderConstant.EventType.REFUND_SUCCESS, refundOrder.getId());
             }
         }
         return new Result(true);

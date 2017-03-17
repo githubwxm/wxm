@@ -9,11 +9,14 @@ import com.all580.order.manager.LockTransactionManager;
 import com.framework.common.Result;
 import com.framework.common.distributed.lock.DistributedLockTemplate;
 import com.framework.common.distributed.lock.DistributedReentrantLock;
+import com.framework.common.outside.JobAspect;
+import com.framework.common.outside.JobTask;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,7 +42,11 @@ public class PaymentCallbackServiceImpl implements PaymentCallbackService {
     @Value("${lock.timeout}")
     private int lockTimeOut = 3;
 
+    @Autowired
+    private JobAspect jobManager;
+
     @Override
+    @JobTask
     public Result payCallback(long ordCode, String serialNum, String outTransId) {
         log.debug("支付回调:订单号:{};流水:{};交易号:{}", new Object[]{ordCode, serialNum, outTransId});
 
@@ -66,7 +73,7 @@ public class PaymentCallbackServiceImpl implements PaymentCallbackService {
             jobParams.put("orderSn", String.valueOf(ordCode));
             jobParams.put("outTransId", outTransId);
             jobParams.put("serialNum", serialNum);
-            bookingOrderManager.addJob(OrderConstant.Actions.PAYMENT_CALLBACK, jobParams);
+            jobManager.addJob(OrderConstant.Actions.PAYMENT_CALLBACK, Collections.singleton(jobParams));
         } finally {
             lock.unlock();
         }
@@ -74,6 +81,7 @@ public class PaymentCallbackServiceImpl implements PaymentCallbackService {
     }
 
     @Override
+    @JobTask
     public Result refundCallback(Long ordCode, String serialNum, String outTransId, boolean success) {
         log.debug("退款回调-{}:订单号:{};流水:{};交易号:{}", new Object[]{success, ordCode, serialNum, outTransId});
         Order order = orderMapper.selectBySN(ordCode);
@@ -101,7 +109,7 @@ public class PaymentCallbackServiceImpl implements PaymentCallbackService {
             jobParams.put("ordCode", String.valueOf(ordCode));
             jobParams.put("serialNum", serialNum);
             jobParams.put("success", Boolean.toString(success));
-            bookingOrderManager.addJob(OrderConstant.Actions.REFUND_MONEY_CALLBACK, jobParams);
+            jobManager.addJob(OrderConstant.Actions.REFUND_MONEY_CALLBACK, Collections.singleton(jobParams));
         } finally {
             lock.unlock();
         }

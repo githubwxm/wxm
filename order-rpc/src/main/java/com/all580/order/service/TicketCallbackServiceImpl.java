@@ -8,14 +8,15 @@ import com.all580.order.entity.*;
 import com.all580.order.manager.BookingOrderManager;
 import com.all580.order.manager.LockTransactionManager;
 import com.all580.order.manager.RefundOrderManager;
-import com.all580.order.manager.SmsManager;
 import com.all580.product.api.consts.ProductConstants;
 import com.framework.common.Result;
 import com.framework.common.distributed.lock.DistributedLockTemplate;
 import com.framework.common.distributed.lock.DistributedReentrantLock;
 import com.framework.common.event.MnsEvent;
-import com.framework.common.event.MnsEventManager;
+import com.framework.common.event.MnsEventAspect;
 import com.framework.common.lang.JsonUtils;
+import com.framework.common.outside.JobAspect;
+import com.framework.common.outside.JobTask;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,10 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import javax.lang.exception.ApiException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author zhouxianjun(Alone)
@@ -57,15 +55,11 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
     private RefundOrderMapper refundOrderMapper;
     @Autowired
     private GroupConsumeMapper groupConsumeMapper;
-    @Autowired
-    private RefundSerialMapper refundSerialMapper;
 
     @Autowired
     private RefundOrderManager refundOrderManager;
     @Autowired
     private BookingOrderManager bookingOrderManager;
-    @Autowired
-    private SmsManager smsManager;
 
     @Autowired
     private DistributedLockTemplate distributedLockTemplate;
@@ -74,6 +68,10 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
 
     @Autowired
     private LockTransactionManager lockTransactionManager;
+    @Autowired
+    private MnsEventAspect eventManager;
+    @Autowired
+    private JobAspect jobManager;
 
     @Override
     @MnsEvent
@@ -110,7 +108,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         }
 
         // 触发事件
-        MnsEventManager.addEvent(OrderConstant.EventType.SEND_TICKET, orderItem.getId());
+        eventManager.addEvent(OrderConstant.EventType.SEND_TICKET, orderItem.getId());
         return new Result(true);
     }
 
@@ -151,7 +149,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         maSendResponseMapper.insertSelective(response);
 
         // 触发事件
-        MnsEventManager.addEvent(OrderConstant.EventType.SEND_TICKET, orderItem.getId());
+        eventManager.addEvent(OrderConstant.EventType.SEND_TICKET, orderItem.getId());
         return new Result(true);
     }
 
@@ -211,7 +209,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         // 修改已用数量
         orderItemMapper.useQuantity(orderItem.getId(), info.getConsumeQuantity());
 
-        MnsEventManager.addEvent(OrderConstant.EventType.CONSUME_TICKET, new ConsumeTicketEventParam(orderItem.getId(), serial.getId()));
+        eventManager.addEvent(OrderConstant.EventType.CONSUME_TICKET, new ConsumeTicketEventParam(orderItem.getId(), serial.getId()));
         return new Result(true);
     }
 
@@ -268,11 +266,12 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         // 修改已用数量
         orderItemMapper.useQuantity(orderItem.getId(), info.getConsumeQuantity());
 
-        MnsEventManager.addEvent(OrderConstant.EventType.CONSUME_TICKET, new ConsumeTicketEventParam(orderItem.getId(), serial.getId()));
+        eventManager.addEvent(OrderConstant.EventType.CONSUME_TICKET, new ConsumeTicketEventParam(orderItem.getId(), serial.getId()));
         return new Result(true);
     }
 
     @Override
+    @JobTask
     public Result reConsumeTicket(Long orderSn, ReConsumeTicketInfo info, Date procTime) {
         OrderItem orderItem = orderItemMapper.selectBySN(orderSn);
         if (orderItem == null) {
@@ -322,7 +321,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         // 记录任务
         Map<String, String> jobParams = new HashMap<>();
         jobParams.put("sn", serial.getSerial_no());
-        refundOrderManager.addJob(OrderConstant.Actions.RE_CONSUME_SPLIT_ACCOUNT, jobParams);
+        jobManager.addJob(OrderConstant.Actions.RE_CONSUME_SPLIT_ACCOUNT, Collections.singleton(jobParams));
 
         // 同步数据
         bookingOrderManager.syncReConsumeData(orderItem.getId(), info.getReValidateSn());
@@ -330,6 +329,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
     }
 
     @Override
+    @JobTask
     public Result reConsumeGroupTicket(Long orderSn, ReConsumeGroupTicketInfo info, Date procTime) {
         OrderItem orderItem = orderItemMapper.selectBySN(orderSn);
         if (orderItem == null) {
@@ -379,7 +379,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         // 记录任务
         Map<String, String> jobParams = new HashMap<>();
         jobParams.put("sn", serial.getSerial_no());
-        refundOrderManager.addJob(OrderConstant.Actions.RE_CONSUME_SPLIT_ACCOUNT, jobParams);
+        jobManager.addJob(OrderConstant.Actions.RE_CONSUME_SPLIT_ACCOUNT, Collections.singleton(jobParams));
 
         // 同步数据
         bookingOrderManager.syncReConsumeData(orderItem.getId(), info.getReValidateSn());

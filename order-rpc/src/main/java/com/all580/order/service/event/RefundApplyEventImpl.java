@@ -8,7 +8,7 @@ import com.all580.order.entity.RefundOrder;
 import com.all580.product.api.consts.ProductConstants;
 import com.framework.common.Result;
 import com.framework.common.event.MnsEvent;
-import com.framework.common.event.MnsEventManager;
+import com.framework.common.event.MnsEventAspect;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -25,6 +25,8 @@ import java.util.Date;
 public class RefundApplyEventImpl implements RefundApplyEvent {
     @Autowired
     private RefundOrderMapper refundOrderMapper;
+    @Autowired
+    private MnsEventAspect eventManager;
 
     @Override
     @MnsEvent
@@ -33,7 +35,7 @@ public class RefundApplyEventImpl implements RefundApplyEvent {
         Assert.notNull(refundOrder, "退订订单不存在");
         // 判断是否需要退订审核
         if (refundOrder.getAudit_ticket() == ProductConstants.RefundAudit.NO) {
-            MnsEventManager.addEvent(OrderConstant.EventType.ORDER_REFUND_AUDIT, new RefundAuditEventParam(content, true));
+            eventManager.addEvent(OrderConstant.EventType.ORDER_REFUND_AUDIT, new RefundAuditEventParam(content, true));
         }
         return new Result(true);
     }

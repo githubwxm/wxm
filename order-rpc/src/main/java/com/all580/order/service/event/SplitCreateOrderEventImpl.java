@@ -6,9 +6,10 @@ import com.all580.order.dao.OrderItemMapper;
 import com.all580.order.dao.OrderMapper;
 import com.all580.order.entity.Order;
 import com.all580.order.entity.OrderItem;
-import com.all580.order.manager.BookingOrderManager;
 import com.all580.product.api.consts.ProductConstants;
 import com.framework.common.Result;
+import com.framework.common.outside.JobAspect;
+import com.framework.common.outside.JobTask;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,9 +30,10 @@ public class SplitCreateOrderEventImpl implements SplitCreateOrderEvent {
     private OrderItemMapper orderItemMapper;
 
     @Autowired
-    private BookingOrderManager bookingOrderManager;
+    private JobAspect jobManager;
 
     @Override
+    @JobTask
     public Result process(String msgId, Integer content, Date createDate) {
         Order order = orderMapper.selectByPrimaryKey(content);
         if (order == null) {
@@ -49,13 +51,18 @@ public class SplitCreateOrderEventImpl implements SplitCreateOrderEvent {
                 jobGroupParams.add(jobParam);
                 continue;
             }
+            // 酒店
+            if (orderItem.getPro_type() == ProductConstants.ProductType.HOTEL) {
+
+                continue;
+            }
             jobParams.add(jobParam);
         }
         if (jobParams.size() > 0) {
-            bookingOrderManager.addJobs(OrderConstant.Actions.SEND_TICKET, jobParams);
+            jobManager.addJob(OrderConstant.Actions.SEND_TICKET, jobParams);
         }
         if (jobGroupParams.size() > 0) {
-            bookingOrderManager.addJobs(OrderConstant.Actions.SEND_GROUP_TICKET, jobGroupParams);
+            jobManager.addJob(OrderConstant.Actions.SEND_GROUP_TICKET, jobGroupParams);
         }
         return new Result(true);
     }

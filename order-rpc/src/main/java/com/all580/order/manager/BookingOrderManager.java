@@ -12,10 +12,14 @@ import com.all580.product.api.model.EpSalesInfo;
 import com.all580.product.api.model.ProductSalesDayInfo;
 import com.all580.product.api.model.ProductSalesInfo;
 import com.framework.common.Result;
+import com.framework.common.event.MnsEventAspect;
 import com.framework.common.lang.Arith;
 import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.UUIDGenerator;
+import com.framework.common.outside.JobAspect;
+import com.framework.common.outside.JobTask;
 import com.framework.common.util.CommonUtil;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.time.DateUtils;
@@ -53,6 +57,11 @@ public class BookingOrderManager extends BaseOrderManager {
     private ClearanceWashedSerialMapper clearanceWashedSerialMapper;
     @Autowired
     private GroupMemberMapper groupMemberMapper;
+    @Autowired
+    @Getter
+    private MnsEventAspect eventManager;
+    @Autowired
+    private JobAspect jobManager;
     @Value("${resend_ticket_max_times}")
     private Integer resendTicketMax;
     @Value("${resend_ticket_interval}")
@@ -497,13 +506,14 @@ public class BookingOrderManager extends BaseOrderManager {
     }
 
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    @JobTask
     public void addPaymentCallback(Order order) {
         order.setStatus(OrderConstant.OrderStatus.PAYING); // 支付中
         // 支付成功回调 记录任务
         Map<String, String> jobParams = new HashMap<>();
         jobParams.put("orderId", order.getId().toString());
         jobParams.put("serialNum", "-1"); // 到付
-        addJob(OrderConstant.Actions.PAYMENT_CALLBACK, jobParams);
+        jobManager.addJob(OrderConstant.Actions.PAYMENT_CALLBACK, Collections.singleton(jobParams));
         orderMapper.updateByPrimaryKeySelective(order);
     }
 

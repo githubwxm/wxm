@@ -59,7 +59,8 @@ public class BasicSyncDataEvent {
         syncAccess.setCoreEpId(order.getPayee_ep_id());
         syncAccess.setAccessKey(map.get(order.getPayee_ep_id()));
         syncAccess.setAccessKeyMap(map);
-        syncAccess.setDataMap(new SynchronizeDataMap(syncAccess.getAccessKey()));
+        StackTraceElement traceElement = Thread.currentThread().getStackTrace()[2];
+        syncAccess.setDataMap(new SynchronizeDataMap(syncAccess.getAccessKey(), traceElement.getClassName() + "." + traceElement.getMethodName()));
         Assert.notNull(syncAccess.getAccessKey());
         return syncAccess;
     }

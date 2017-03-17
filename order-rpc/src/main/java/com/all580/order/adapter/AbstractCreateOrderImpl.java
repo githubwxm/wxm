@@ -12,7 +12,6 @@ import com.all580.product.api.model.ProductSalesInfo;
 import com.all580.product.api.model.ProductSearchParams;
 import com.all580.product.api.service.ProductSalesPlanRPCService;
 import com.framework.common.Result;
-import com.framework.common.event.MnsEventManager;
 import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.util.CommonUtil;
@@ -184,7 +183,7 @@ public abstract class AbstractCreateOrderImpl implements CreateOrderInterface {
     public boolean after(Map params, Order order) {
         if (isCheck(params)) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            MnsEventManager.rollback();
+            bookingOrderManager.getEventManager().rollback();
             return false;
         }
         return true;

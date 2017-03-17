@@ -18,7 +18,7 @@ import com.all580.voucher.api.model.group.RefundGroupTicketParams;
 import com.all580.voucher.api.service.VoucherRPCService;
 import com.framework.common.Result;
 import com.framework.common.event.MnsEvent;
-import com.framework.common.event.MnsEventManager;
+import com.framework.common.event.MnsEventAspect;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.lang.UUIDGenerator;
 import com.framework.common.util.CommonUtil;
@@ -69,6 +69,8 @@ public class RefundOrderManager extends BaseOrderManager {
     private VoucherRPCService voucherRPCService;
     @Autowired
     private ThirdPayService thirdPayService;
+    @Autowired
+    private MnsEventAspect eventManager;
 
     /**
      * 取消订单
@@ -117,7 +119,7 @@ public class RefundOrderManager extends BaseOrderManager {
         // 还库存
         refundStock(orderItems);
 
-        MnsEventManager.addEvent(OrderConstant.EventType.ORDER_CANCEL, order.getId());
+        eventManager.addEvent(OrderConstant.EventType.ORDER_CANCEL, order.getId());
         return new Result(true);
     }
 
@@ -140,7 +142,7 @@ public class RefundOrderManager extends BaseOrderManager {
             refundOrderMapper.updateByPrimaryKeySelective(refundOrder);
         } else {
             // 触发退票成功事件
-            MnsEventManager.addEvent(OrderConstant.EventType.REFUND_TICKET, new RefundTicketEventParam(refundOrder.getId(), true));
+            eventManager.addEvent(OrderConstant.EventType.REFUND_TICKET, new RefundTicketEventParam(refundOrder.getId(), true));
             // 没有出票直接退款
             if (orderItem.getGroup_id() != null && orderItem.getGroup_id() != 0 &&
                     orderItem.getPro_sub_ticket_type() != null && orderItem.getPro_sub_ticket_type() == ProductConstants.TeamTicketType.TEAM) {
@@ -548,7 +550,7 @@ public class RefundOrderManager extends BaseOrderManager {
         }
 
         if (order.getPayment_type() != null && order.getPayment_type() == PaymentConstant.PaymentType.ALI_PAY.intValue()) {
-            MnsEventManager.addEvent(OrderConstant.EventType.REFUND_ALI_PAY_AUDIT, refundOrder.getId());
+            eventManager.addEvent(OrderConstant.EventType.REFUND_ALI_PAY_AUDIT, refundOrder.getId());
         }
         return new Result(true);
     }
@@ -564,7 +566,7 @@ public class RefundOrderManager extends BaseOrderManager {
         if (money == 0 && sn != null) {
             log.debug("订单:{} 退款为0元,直接调用退款成功.", order.getNumber());
             refundMoneyAfter(Long.valueOf(sn), true);
-            MnsEventManager.addEvent(OrderConstant.EventType.REFUND_SUCCESS, refundOrderId);
+            eventManager.addEvent(OrderConstant.EventType.REFUND_SUCCESS, refundOrderId);
             return new Result(true);
         }
         Integer coreEpId = getCoreEpId(getCoreEpId(order.getBuy_ep_id()));

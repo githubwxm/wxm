@@ -24,8 +24,10 @@ import com.framework.common.Result;
 import com.framework.common.distributed.lock.DistributedLockTemplate;
 import com.framework.common.distributed.lock.DistributedReentrantLock;
 import com.framework.common.event.MnsEvent;
-import com.framework.common.event.MnsEventManager;
+import com.framework.common.event.MnsEventAspect;
 import com.framework.common.lang.JsonUtils;
+import com.framework.common.outside.JobAspect;
+import com.framework.common.outside.JobTask;
 import com.framework.common.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.ArrayUtils;
@@ -79,6 +81,10 @@ public class BookingOrderServiceImpl implements BookingOrderService {
     private LockTransactionManager lockTransactionManager;
     @Autowired
     private ApplicationContext applicationContext;
+    @Autowired
+    private MnsEventAspect eventManager;
+    @Autowired
+    private JobAspect jobManager;
 
     @Override
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
@@ -187,7 +193,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         result.put(resultMap);
 
         // 触发事件
-        MnsEventManager.addEvent(OrderConstant.EventType.ORDER_CREATE, order.getId());
+        eventManager.addEvent(OrderConstant.EventType.ORDER_CREATE, order.getId());
         if (ok) {
             Map<String, Collection<?>> data = new HashMap<>();
             data.put("t_order", CommonUtil.oneToList(order));
@@ -231,6 +237,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
 
     @Override
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    @JobTask
     public Result<?> resendTicket(Map params) {
         OrderItem orderItem = orderItemMapper.selectBySN(Long.valueOf(params.get("order_item_sn").toString()));
         if (orderItem == null) {
@@ -272,6 +279,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
     }
 
     @Override
+    @JobTask
     public Result<?> resendTicketForGroup(Map params) {
         OrderItem orderItem = orderItemMapper.selectBySN(Long.valueOf(params.get("order_item_sn").toString()));
         if (orderItem == null) {
@@ -302,7 +310,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         // 记录任务
         Map<String, String> jobMap = new HashMap<>();
         jobMap.put("orderItemId", orderItem.getId().toString());
-        bookingOrderManager.addJob(OrderConstant.Actions.SEND_GROUP_TICKET, jobMap);
+        jobManager.addJob(OrderConstant.Actions.SEND_GROUP_TICKET, Collections.singleton(jobMap));
         return new Result<>(true);
     }
 
@@ -388,7 +396,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
                         item.getStatus() == OrderConstant.OrderItemStatus.AUDIT_SUCCESS) {
                     item.setStatus(OrderConstant.OrderItemStatus.AUDIT_WAIT);
                     orderItemMapper.updateByPrimaryKeySelective(item);
-                    MnsEventManager.addEvent(OrderConstant.EventType.ORDER_WAIT_AUDIT, item.getId());
+                    eventManager.addEvent(OrderConstant.EventType.ORDER_WAIT_AUDIT, item.getId());
                 }
                 // 更新子订单详情
                 orderItemDetailMapper.updateByPrimaryKeySelective(detail);
@@ -418,7 +426,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         // 记录任务
         Map<String, String> jobParam = new HashMap<>();
         jobParam.put("orderItemId", orderItem.getId().toString());
-        bookingOrderManager.addJob(OrderConstant.Actions.SEND_TICKET, jobParam);
+        jobManager.addJob(OrderConstant.Actions.SEND_TICKET, Collections.singleton(jobParam));
         return new Result(true);
     }
 }

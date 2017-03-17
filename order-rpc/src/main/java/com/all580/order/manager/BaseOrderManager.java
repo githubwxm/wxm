@@ -7,11 +7,9 @@ import com.all580.ep.api.service.CoreEpChannelService;
 import com.all580.ep.api.service.EpService;
 import com.all580.order.dao.OrderItemAccountMapper;
 import com.all580.order.dao.OrderMapper;
-import com.all580.order.dto.AccountDataDto;
 import com.all580.order.entity.Order;
 import com.all580.order.entity.OrderItem;
 import com.all580.order.entity.OrderItemAccount;
-import com.all580.order.entity.OrderItemDetail;
 import com.all580.order.util.AccountUtil;
 import com.all580.payment.api.conf.PaymentConstant;
 import com.all580.payment.api.model.BalanceChangeInfo;
@@ -23,15 +21,12 @@ import com.all580.product.api.model.ProductSearchParams;
 import com.all580.product.api.service.ProductSalesPlanRPCService;
 import com.framework.common.Result;
 import com.framework.common.lang.DateFormatUtils;
-import com.framework.common.lang.JsonUtils;
 import com.framework.common.lang.UUIDGenerator;
 import com.framework.common.synchronize.SynchronizeAction;
 import com.framework.common.synchronize.SynchronizeDataManager;
 import com.framework.common.util.CommonUtil;
 import com.github.ltsopensource.core.domain.Job;
-import com.github.ltsopensource.jobclient.JobClient;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -66,9 +61,6 @@ public class BaseOrderManager {
     private CoreEpChannelService coreEpChannelService;
     @Autowired
     private ProductSalesPlanRPCService productSalesPlanRPCService;
-
-    @Autowired
-    private JobClient jobClient;
 
     @Value("${task.tracker}")
     private String taskTracker;
@@ -182,31 +174,6 @@ public class BaseOrderManager {
         return params;
     }
 
-    /**
-     * 添加任务
-     * @param action 任务执行器
-     * @param params 参数
-     */
-    public void addJob(String action, Map<String, String> params) {
-        addJob(action, params, false);
-    }
-
-    /**
-     * 批量添加任务
-     * @param action 任务执行器
-     * @param params 参数
-     */
-    public void addJobs(String action, List<Map<String, String>> params) {
-        List<Job> jobs = new ArrayList<>();
-        for (Map<String, String> param : params) {
-            jobs.add(createJob(action, param, false));
-        }
-        jobClient.submitJob(jobs);
-    }
-    public void addJobs(Job... jobs) {
-        jobClient.submitJob(Arrays.asList(jobs));
-    }
-
     public Job createJob(String action, Map<String, String> params, boolean once) {
         Job job = new Job();
         job.setTaskId("ORDER-JOB-" + UUIDGenerator.getUUID());
@@ -218,18 +185,6 @@ public class BaseOrderManager {
         }
         job.setNeedFeedback(false);
         return job;
-    }
-
-    /**
-     * 添加任务
-     * @param action 任务执行器
-     * @param params 参数
-     */
-    public void addJob(String action, Map<String, String> params, boolean once) {
-        if (action == null) {
-            throw new RuntimeException("任务Action为空");
-        }
-        jobClient.submitJob(createJob(action, params, once));
     }
 
     /**
