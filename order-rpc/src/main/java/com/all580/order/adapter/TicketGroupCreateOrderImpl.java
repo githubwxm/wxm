@@ -79,10 +79,10 @@ public class TicketGroupCreateOrderImpl extends AbstractCreateOrderImpl {
     }
 
     @Override
-    public List<Visitor> insertVisitor(List<?> visitorList, List<OrderItemDetail> details, ProductSalesInfo salesInfo, ValidateProductSub sub, Map item) {
+    public List<Visitor> insertVisitor(List<?> visitorList, OrderItem orderItem, ProductSalesInfo salesInfo, ValidateProductSub sub, Map item) {
         boolean special = BooleanUtils.toBoolean(CommonUtil.objectParseString(item.get("special")));
         if (special) {
-            return super.insertVisitor(visitorList, details, salesInfo, sub, item);
+            return super.insertVisitor(visitorList, orderItem, salesInfo, sub, item);
         }
         Result<List<GroupMember>> validateResult = bookingOrderManager.validateGroupVisitor(visitorList, salesInfo.getReal_name(), sub.getQuantity(), sub.getGroupId());
         if (!validateResult.isSuccess()) {
@@ -92,10 +92,8 @@ public class TicketGroupCreateOrderImpl extends AbstractCreateOrderImpl {
 
         List<Visitor> visitors = new ArrayList<>();
         if (members != null) {
-            for (OrderItemDetail detail : details) {
-                for (GroupMember member : members) {
-                    visitors.add(bookingOrderManager.generateGroupVisitor(member, detail.getId(), sub.getGroupId()));
-                }
+            for (GroupMember member : members) {
+                visitors.add(bookingOrderManager.generateGroupVisitor(member, orderItem.getId(), sub.getGroupId()));
             }
         }
         return visitors;

@@ -67,13 +67,6 @@ public interface VisitorMapper {
                                        @Param("start") Date start, @Param("end") Date end);
 
     /**
-     * 根据子订单详情ID获取游客信息
-     * @param detailId 子订单详情ID
-     * @return
-     */
-    List<Visitor> selectByOrderDetailId(@Param("detailId") Integer detailId);
-
-    /**
      * 根据发码信息获取游客信息
      * @param detailId 子订单详情ID
      * @param sid 身份证

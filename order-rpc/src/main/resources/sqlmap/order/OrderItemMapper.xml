@@ -516,8 +516,7 @@
         count(DISTINCT oi.id)
         FROM
         t_order_item oi
-        LEFT JOIN t_order_item_detail toid ON toid.order_item_id = oi.id
-        LEFT JOIN t_visitor v ON v.ref_id = toid.id
+        LEFT JOIN t_visitor v ON v.ref_id = oi.id
         WHERE
         oi.pro_sub_number = #{productSubCode}
         AND v.sid = #{sid}

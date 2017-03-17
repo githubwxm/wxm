@@ -207,21 +207,13 @@
         IFNULL(sum(v.quantity - v.return_quantity),0)
         FROM
         t_visitor v
-        LEFT JOIN t_order_item_detail toid ON toid.id = v.ref_id
-        LEFT JOIN t_order_item oi ON toid.order_item_id = oi.id
+        LEFT JOIN t_order_item oi ON v.ref_id = oi.id
         WHERE
         oi.pro_sub_number = #{productSubCode}
         AND v.sid = #{sid}
         AND oi.status not in(326)
         AND (<![CDATA[ oi.refund_quantity <= 0 ]]> OR oi.refund_quantity IS NULL)
         AND oi.start between #{start,jdbcType=TIMESTAMP} and #{end,jdbcType=TIMESTAMP}
-    </select>
-
-    <select id="selectByOrderDetailId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-        SELECT * FROM
-        t_visitor
-        WHERE
-        `ref_id` = #{detailId,jdbcType=INTEGER}
     </select>
 
     <select id="selectByMa" resultMap="BaseResultMap">
@@ -234,17 +226,15 @@
     </select>
 
     <select id="selectByOrder" resultMap="BaseResultMap">
-        SELECT * FROM t_visitor tv
-        LEFT JOIN t_order_item_detail toid ON toid.id = tv.ref_id
-        LEFT JOIN t_order_item toi ON toi.id = toid.order_item_id
+        SELECT tv.* FROM t_visitor tv
+        LEFT JOIN t_order_item toi ON toi.id = tv.ref_id
         LEFT JOIN t_order o ON o.id = toi.order_id
         WHERE o.id = #{orderId}
     </select>
 
     <select id="selectByOrderItem" resultMap="BaseResultMap">
-         SELECT * FROM t_visitor tv
-        LEFT JOIN t_order_item_detail toid ON toid.id = tv.ref_id
-        WHERE toid.order_item_id = #{itemId}
+        SELECT * FROM t_visitor tv
+        WHERE tv.ref_id = #{itemId}
     </select>
 
     <select id="selectBySidAndGroup" resultMap="BaseResultMap">
