@@ -225,4 +225,11 @@ public interface EpService {
      * @return
      */
     Result<Integer>updateEpNoteStatus(int status);
+
+    /**
+     * ep_type  ep_id name
+     * @param map
+     * @return
+     */
+    Result selectTypeName(Map<String,Object> map);
 }

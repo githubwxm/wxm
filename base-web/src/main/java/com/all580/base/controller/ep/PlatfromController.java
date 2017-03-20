@@ -65,7 +65,16 @@ public class PlatfromController extends BaseController {
         return epService.validate(map);
 
     }
+    @RequestMapping(value = "select_type_name", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<Map<String,Object>> selectTypeName(String name,@RequestParam(value="ep_type") Integer ep_type,Integer ep_id) {
+        Map<String,Object> map = new HashMap<>();
+        map.put("name",name);
+        map.put("ep_type",ep_type);
+        map.put("ep_id",ep_id);
+        return epService.selectTypeName(map);
 
+    }
 
     /**
      *查询平台商id

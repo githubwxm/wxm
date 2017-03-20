@@ -1096,6 +1096,13 @@ public class EpServiceImpl implements EpService {
             throw new ApiException("查询数据库异常", e);
         }
     }
+
+    @Override
+    public Result selectTypeName(Map<String,Object> map){
+        Result result =new Result(true);
+        result.put(epMapper.selectTypeName(map));
+        return result;
+    }
 //
 //
 //    /**
