@@ -157,8 +157,8 @@ public class EpBalanceThresholdServiceImpl implements EpBalanceThresholdService 
         thresholdMap.put("id",map.get("send_ep_id"));
         thresholdMap.put(EpConstant.EpKey.CORE_EP_ID,map.get(EpConstant.EpKey.CORE_EP_ID)) ;
         Integer threshold =CommonUtil.objectParseInteger( map.get("threshold"));
-        thresholdMap.put("threshold",threshold/100);
-        createOrUpdate(thresholdMap);
+        thresholdMap.put("threshold",threshold);
+        epBalanceThresholdMapper.createOrUpdate(thresholdMap);
         return result;
     }
     @Override
