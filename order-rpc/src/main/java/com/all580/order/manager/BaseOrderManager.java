@@ -5,9 +5,11 @@ import com.alibaba.fastjson.JSONObject;
 import com.all580.ep.api.service.CoreEpAccessService;
 import com.all580.ep.api.service.CoreEpChannelService;
 import com.all580.ep.api.service.EpService;
+import com.all580.order.dao.OrderClearanceSerialMapper;
 import com.all580.order.dao.OrderItemAccountMapper;
 import com.all580.order.dao.OrderMapper;
 import com.all580.order.entity.Order;
+import com.all580.order.entity.OrderClearanceSerial;
 import com.all580.order.entity.OrderItem;
 import com.all580.order.entity.OrderItemAccount;
 import com.all580.order.util.AccountUtil;
@@ -50,6 +52,8 @@ public class BaseOrderManager {
     private BalancePayService balancePayService;
     @Autowired
     private OrderItemAccountMapper orderItemAccountMapper;
+    @Autowired
+    private OrderClearanceSerialMapper orderClearanceSerialMapper;
     @Autowired
     private OrderMapper orderMapper;
     @Autowired
@@ -294,6 +298,25 @@ public class BaseOrderManager {
         }
     }
 
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public OrderClearanceSerial saveClearanceSerial(OrderItem orderItem, int saleCoreEpId, Date day, int quantity, String sn, Date procTime) {
+        OrderClearanceSerial serial = new OrderClearanceSerial();
+        serial.setOrder_item_id(orderItem.getId());
+        serial.setClearance_time(procTime);
+        serial.setCreate_time(new Date());
+        serial.setDay(day);
+        serial.setQuantity(quantity);
+        serial.setSerial_no(sn);
+        // 获取本次核销 供应平台商应得金额
+        int money = getOutPriceForEp(orderItem.getId(), orderItem.getSupplier_core_ep_id(),
+                orderItem.getSupplier_core_ep_id(), serial.getDay(), serial.getQuantity());
+        serial.setSupplier_money(money);
+        // 获取平台商通道费率
+        serial.setChannel_fee(getChannelRate(orderItem.getSupplier_core_ep_id(), saleCoreEpId));
+        orderClearanceSerialMapper.insertSelective(serial);
+        return serial;
+    }
+
     /**
      * 获取平台商通道费率
      * @param supplier 供应侧
@@ -322,6 +345,20 @@ public class BaseOrderManager {
             Integer tmpMoney = CommonUtil.objectParseInteger(map.get("audit_money"));
             auditTicket = tmpTicket == null ? auditTicket : tmpTicket;
             auditMoney = tmpMoney == null ? auditMoney : tmpMoney;
+        }
+        return new int[]{auditTicket, auditMoney};
+    }
+
+    public int[] getAuditConfig(Order order, OrderItem orderItem) {
+        // 获取退订审核
+        int[] auditSupplierConfig = getAuditConfig(orderItem.getPro_sub_id(), orderItem.getSupplier_core_ep_id());
+        int auditTicket = auditSupplierConfig[0];
+        // 获取退款审核
+        int auditMoney = 0;
+        if (orderItem.getSupplier_core_ep_id() == order.getPayee_ep_id().intValue()) {
+            auditMoney = auditSupplierConfig[1];
+        } else {
+            auditMoney = getAuditConfig(orderItem.getPro_sub_id(), order.getPayee_ep_id())[1];
         }
         return new int[]{auditTicket, auditMoney};
     }

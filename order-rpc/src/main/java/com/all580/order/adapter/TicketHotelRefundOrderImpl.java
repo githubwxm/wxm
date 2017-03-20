@@ -66,11 +66,7 @@ public class TicketHotelRefundOrderImpl extends AbstractRefundOrderImpl {
 
     @Override
     public int getRefundQuantity(RefundOrderApply apply, Collection<RefundDay> refundDays, Map params) {
-        int totalRefundQuantity = 0;
-        for (RefundDay refundDay : refundDays) {
-            totalRefundQuantity += refundDay.getQuantity();
-        }
-        return totalRefundQuantity;
+        return AccountUtil.getRefundQuantity(refundDays);
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.all580.order.util;
 
 import com.all580.order.api.OrderConstant;
 import com.all580.order.dto.AccountDataDto;
+import com.all580.order.dto.ConsumeDay;
 import com.all580.order.dto.RefundDay;
 import com.all580.order.entity.*;
 import com.all580.payment.api.conf.PaymentConstant;
@@ -480,6 +481,25 @@ public class AccountUtil {
     }
 
     /**
+     * JSON转java退票数据类型
+     * @param list
+     * @return
+     */
+    public static Collection<ConsumeDay> decompileConsumeDay(List list) {
+        Collection<ConsumeDay> collection = new ArrayList<>();
+        try {
+            for (Object day : list) {
+                ConsumeDay consumeDay = JsonUtils.map2obj((Map) day, ConsumeDay.class);
+                collection.add(consumeDay);
+            }
+        } catch (Exception e) {
+            log.error("反编译为JAVA类型失败", e);
+            throw new ApiException("核销天数据反编译JAVA类型失败", e);
+        }
+        return collection;
+    }
+
+    /**
      * 获取某天详情
      * @param detailList 天数据
      * @param day 某一天
@@ -495,6 +515,14 @@ public class AccountUtil {
             }
         }
         return null;
+    }
+
+    public static int getRefundQuantity(Collection<RefundDay> refundDays) {
+        int totalRefundQuantity = 0;
+        for (RefundDay refundDay : refundDays) {
+            totalRefundQuantity += refundDay.getQuantity();
+        }
+        return totalRefundQuantity;
     }
 
     /**

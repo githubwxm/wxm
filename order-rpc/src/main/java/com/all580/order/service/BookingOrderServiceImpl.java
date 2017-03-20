@@ -368,6 +368,22 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         return voucherRPCService.modifyGroupTicket(orderItem.getEp_ma_id(), ticketParams);
     }
 
+    @Override
+    public Result<?> consumeHotelBySupplier(Map params) {
+        String orderItemSn = params.get("order_item_sn").toString();
+        Long sn = Long.valueOf(orderItemSn);
+
+        // 分布式锁
+        DistributedReentrantLock lock = distributedLockTemplate.execute(orderItemSn, lockTimeOut);
+
+        // 锁成功
+        try {
+            return lockTransactionManager.consumeHotelTicket(params, sn);
+        } finally {
+            lock.unlock();
+        }
+    }
+
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     @MnsEvent
     public void checkCreateAudit(Map<Integer, LockStockDto> lockStockDtoMap, Map<Integer, List<Boolean>> listMap, List<OrderItem> orderItems) {

@@ -116,17 +116,7 @@ public abstract class AbstractRefundOrderImpl implements RefundOrderInterface {
 
     @Override
     public int[] getRefundAudit(RefundOrderApply apply, Map params) {
-        // 获取退订审核
-        int[] auditSupplierConfig = refundOrderManager.getAuditConfig(apply.getItem().getPro_sub_id(), apply.getItem().getSupplier_core_ep_id());
-        int auditTicket = auditSupplierConfig[0];
-        // 获取退款审核
-        int auditMoney = 0;
-        if (apply.getItem().getSupplier_core_ep_id() == apply.getOrder().getPayee_ep_id().intValue()) {
-            auditMoney = auditSupplierConfig[1];
-        } else {
-            auditMoney = refundOrderManager.getAuditConfig(apply.getItem().getPro_sub_id(), apply.getOrder().getPayee_ep_id())[1];
-        }
-        return new int[]{auditTicket, auditMoney};
+        return refundOrderManager.getAuditConfig(apply.getOrder(), apply.getItem());
     }
 
     @Override

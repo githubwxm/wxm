@@ -7,6 +7,7 @@ import com.all580.order.api.OrderConstant;
 import com.all580.order.api.model.*;
 import com.all580.order.dao.*;
 import com.all580.order.dto.AccountDataDto;
+import com.all580.order.dto.ConsumeDay;
 import com.all580.order.dto.RefundDay;
 import com.all580.order.dto.RefundOrderApply;
 import com.all580.order.entity.*;
@@ -21,6 +22,7 @@ import com.all580.product.api.service.ProductSalesPlanRPCService;
 import com.framework.common.Result;
 import com.framework.common.event.MnsEvent;
 import com.framework.common.event.MnsEventAspect;
+import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.lang.UUIDGenerator;
 import com.framework.common.outside.JobAspect;
@@ -55,6 +57,8 @@ public class LockTransactionManager {
     private OrderMapper orderMapper;
     @Autowired
     private RefundOrderMapper refundOrderMapper;
+    @Autowired
+    private OrderClearanceSerialMapper orderClearanceSerialMapper;
     @Autowired
     private OrderItemDetailMapper orderItemDetailMapper;
     @Autowired
@@ -561,6 +565,92 @@ public class LockTransactionManager {
         refundOrderManager.refundMoney(order, refundOrder.getMoney(), String.valueOf(refundOrder.getNumber()), refundOrder);
 
         eventManager.addEvent(OrderConstant.EventType.REFUND_TICKET, new RefundTicketEventParam(refundOrder.getId(), info.isSuccess()));
+        return new Result(true);
+    }
+
+    @MnsEvent
+    public Result consumeHotelTicket(Map params, long orderItemSn) {
+        OrderItem orderItem = orderItemMapper.selectBySN(orderItemSn);
+        if (orderItem == null) {
+            throw new ApiException("订单不存在");
+        }
+        if (orderItem.getStatus() != OrderConstant.OrderItemStatus.SEND) {
+            throw new ApiException("订单不在可核销状态");
+        }
+        if (!params.containsKey(EpConstant.EpKey.EP_ID)) {
+            throw new ApiException("非法请求:企业ID为空");
+        }
+        if (!String.valueOf(params.get(EpConstant.EpKey.EP_ID)).equals(String.valueOf(orderItem.getSupplier_ep_id()))) {
+            throw new ApiException("非法请求:当前企业不能核销该订单");
+        }
+
+        Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
+        Assert.notNull(order, "订单不存在");
+
+        Collection<ConsumeDay> consumeDays = AccountUtil.decompileConsumeDay((List) params.get("days"));
+        if (consumeDays == null || consumeDays.isEmpty()) {
+            throw new ApiException("核销详情为空");
+        }
+
+        List<RefundOrder> refundOrders = refundOrderMapper.selectByItemId(orderItem.getId());
+        if (refundOrders != null && refundOrders.size() > 0) {
+            throw new ApiException("该订单已退订");
+        }
+
+        int count = orderClearanceSerialMapper.selectItemQuantityCount(orderItem.getId());
+        if (count > 0) {
+            throw new ApiException("该订单已核销");
+        }
+
+        // 核销
+        Date clearanceTime = new Date();
+        List<OrderItemDetail> details = orderItemDetailMapper.selectByItemId(orderItem.getId());
+        int total = 0;
+        for (ConsumeDay consumeDay : consumeDays) {
+            OrderItemDetail detail = AccountUtil.getDetailByDay(details, consumeDay.getDay());
+            Assert.notNull(detail, String.format("日期: %s 没有订单详情", DateFormatUtils.parseDateToDatetimeString(consumeDay.getDay())));
+            orderItemDetailMapper.useQuantity(detail.getId(), consumeDay.getQuantity());
+            detail.setUsed_quantity(consumeDay.getQuantity());
+            // 保存核销流水
+            OrderClearanceSerial serial = bookingOrderManager.saveClearanceSerial(orderItem, order.getPayee_ep_id(), consumeDay.getDay(), consumeDay.getQuantity(), String.valueOf(UUIDGenerator.generateUUID()), clearanceTime);
+            total += consumeDay.getQuantity();
+            eventManager.addEvent(OrderConstant.EventType.CONSUME_TICKET, new ConsumeTicketEventParam(orderItem.getId(), serial.getId()));
+        }
+        // 修改已使用数量
+        orderItemMapper.useQuantity(orderItem.getId(), total);
+
+        // 退票
+        Collection<RefundDay> refundDays = AccountUtil.parseRefundDayForDetail(details);
+        int[] calcResult = refundOrderManager.calcRefundMoneyAndFee(orderItem, order, ProductConstants.RefundEqType.SELLER, refundDays, details, clearanceTime);
+        // 计算退款金额
+        int money = calcResult[0];
+        // 手续费
+        int fee = calcResult[1];
+
+        // 获取退订审核配置
+        int[] auditSupplierConfig = refundOrderManager.getAuditConfig(order, orderItem);
+        int auditTicket = auditSupplierConfig[0];
+        int auditMoney = auditSupplierConfig[1];
+        // 总退票数
+        int totalRefund = AccountUtil.getRefundQuantity(refundDays);
+        if (totalRefund + total != orderItem.getQuantity()) {
+            throw new ApiException("核销异常,请联系管理员");
+        }
+        // 创建退订订单
+        RefundOrder refundOrder = refundOrderManager.generateRefundOrder(orderItem, refundDays, totalRefund, money, fee,
+                "核销退订", auditTicket, auditMoney, order.getPayee_ep_id(),
+                CommonUtil.objectParseInteger(params.get("operator_id")), CommonUtil.objectParseString(params.get("operator_name")), null);
+
+        // 更新退订张数
+        orderItemDetailMapper.refundRemain(orderItem.getId());
+
+        // 退订分账 到付退订不分帐
+        if (orderItem.getPayment_flag() != ProductConstants.PayType.PAYS) {
+            refundOrderManager.preRefundSplitAccount(ProductConstants.RefundEqType.SELLER, refundOrder.getId(), order, clearanceTime, refundOrder.getOrder_item_id(), details, refundDays);
+        }
+
+        // 触发事件
+        eventManager.addEvent(OrderConstant.EventType.ORDER_REFUND_APPLY, refundOrder.getId());
         return new Result(true);
     }
 

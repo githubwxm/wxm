@@ -7,7 +7,6 @@ import com.all580.order.dao.*;
 import com.all580.order.entity.*;
 import com.all580.order.manager.BookingOrderManager;
 import com.all580.order.manager.LockTransactionManager;
-import com.all580.order.manager.RefundOrderManager;
 import com.all580.product.api.consts.ProductConstants;
 import com.framework.common.Result;
 import com.framework.common.distributed.lock.DistributedLockTemplate;
@@ -21,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import javax.lang.exception.ApiException;
@@ -57,8 +57,6 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
     private GroupConsumeMapper groupConsumeMapper;
 
     @Autowired
-    private RefundOrderManager refundOrderManager;
-    @Autowired
     private BookingOrderManager bookingOrderManager;
 
     @Autowired
@@ -75,6 +73,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
 
     @Override
     @MnsEvent
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public Result sendTicket(Long orderSn, List<SendTicketInfo> infoList, Date procTime) {
         OrderItem orderItem = orderItemMapper.selectBySN(orderSn);
         if (orderItem == null) {
@@ -114,6 +113,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
 
     @Override
     @MnsEvent
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public Result sendGroupTicket(Long orderSn, SendTicketInfo info, Date procTime) {
         OrderItem orderItem = orderItemMapper.selectBySN(orderSn);
         if (orderItem == null) {
@@ -155,6 +155,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
 
     @Override
     @MnsEvent
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public Result consumeTicket(Long orderSn, ConsumeTicketInfo info, Date procTime) {
         OrderItem orderItem = orderItemMapper.selectBySN(orderSn);
         if (orderItem == null) {
@@ -183,7 +184,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         orderItemDetailMapper.useQuantity(itemDetail.getId(), info.getConsumeQuantity());
 
         // 保存核销流水
-        OrderClearanceSerial serial = saveClearanceSerial(orderItem, order.getPayee_ep_id(), info.getConsumeQuantity(), info.getValidateSn(), procTime);
+        OrderClearanceSerial serial = bookingOrderManager.saveClearanceSerial(orderItem, order.getPayee_ep_id(), itemDetail.getDay(), info.getConsumeQuantity(), info.getValidateSn(), procTime);
 
         // 获取核销人信息
         Visitor visitor;
@@ -215,6 +216,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
 
     @Override
     @MnsEvent
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public Result consumeGroupTicket(Long orderSn, ConsumeGroupTicketInfo info, Date procTime) {
         OrderItem orderItem = orderItemMapper.selectBySN(orderSn);
         if (orderItem == null) {
@@ -247,7 +249,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         orderItemDetailMapper.useQuantity(itemDetail.getId(), info.getConsumeQuantity());
 
         // 保存核销流水
-        OrderClearanceSerial serial = saveClearanceSerial(orderItem, order.getPayee_ep_id(), info.getConsumeQuantity(), info.getValidateSn(), procTime);
+        OrderClearanceSerial serial = bookingOrderManager.saveClearanceSerial(orderItem, order.getPayee_ep_id(), itemDetail.getDay(), info.getConsumeQuantity(), info.getValidateSn(), procTime);
 
         // 保存核销明细
         List<String> sids = info.getSids();
@@ -272,6 +274,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
 
     @Override
     @JobTask
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public Result reConsumeTicket(Long orderSn, ReConsumeTicketInfo info, Date procTime) {
         OrderItem orderItem = orderItemMapper.selectBySN(orderSn);
         if (orderItem == null) {
@@ -330,6 +333,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
 
     @Override
     @JobTask
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public Result reConsumeGroupTicket(Long orderSn, ReConsumeGroupTicketInfo info, Date procTime) {
         OrderItem orderItem = orderItemMapper.selectBySN(orderSn);
         if (orderItem == null) {
@@ -501,24 +505,6 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
             }
         }
         return null;
-    }
-
-    private OrderClearanceSerial saveClearanceSerial(OrderItem orderItem, int saleCoreEpId, int quantity, String sn, Date procTime) {
-        OrderClearanceSerial serial = new OrderClearanceSerial();
-        serial.setOrder_item_id(orderItem.getId());
-        serial.setClearance_time(procTime);
-        serial.setCreate_time(new Date());
-        serial.setDay(orderItem.getStart());
-        serial.setQuantity(quantity);
-        serial.setSerial_no(sn);
-        // 获取本次核销 供应平台商应得金额
-        int money = bookingOrderManager.getOutPriceForEp(orderItem.getId(), orderItem.getSupplier_core_ep_id(),
-                orderItem.getSupplier_core_ep_id(), serial.getDay(), serial.getQuantity());
-        serial.setSupplier_money(money);
-        // 获取平台商通道费率
-        serial.setChannel_fee(bookingOrderManager.getChannelRate(orderItem.getSupplier_core_ep_id(), saleCoreEpId));
-        orderClearanceSerialMapper.insertSelective(serial);
-        return serial;
     }
 
     private ClearanceWashedSerial saveWashedSerial(OrderItem orderItem, int saleCoreEpId, int quantity, String sn, String clearanceSn, Date procTime) {

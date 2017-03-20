@@ -52,4 +52,11 @@ public interface BookingOrderService {
      * @return
      */
     Result<?> modifyTicketForGroup(Map params);
+
+    /**
+     * 供应商酒店核销
+     * @param params
+     * @return
+     */
+    Result<?> consumeHotelBySupplier(Map params);
 }
