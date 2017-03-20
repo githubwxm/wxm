@@ -1,6 +1,6 @@
 package com.all580.order.service.event;
 
-import com.all580.order.api.service.event.SendTicketSyncDataEvent;
+import com.all580.order.api.service.event.SendTicketEvent;
 import com.all580.order.dao.OrderItemMapper;
 import com.all580.order.entity.OrderItem;
 import com.all580.order.manager.SmsManager;
@@ -19,7 +19,7 @@ import java.util.Date;
  * @date 2017/2/4 15:47
  */
 @Service
-public class SendTicketEventImpl implements SendTicketSyncDataEvent {
+public class SendTicketEventImpl implements SendTicketEvent {
     @Autowired
     private OrderItemMapper orderItemMapper;
     @Autowired
