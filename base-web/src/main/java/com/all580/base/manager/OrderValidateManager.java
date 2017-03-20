@@ -402,4 +402,26 @@ public class OrderValidateManager {
 
         return rules;
     }
+
+    /**
+     * 酒店核销验证
+     * @return
+     */
+    public Map<String[], ValidRule[]> consumeHotelValidate() {
+        Map<String[], ValidRule[]> rules = new HashMap<>();
+        rules.put(new String[]{
+                "order_item_sn", // 订单编号(流水)
+                "days.quantity" // 核销数量
+        }, new ValidRule[]{new ValidRule.NotNull(), new ValidRule.Digits()});
+
+        rules.put(new String[]{
+                "days.quantity" // 核销数量
+        }, new ValidRule[]{new ValidRule.Digits(1L, 100000L)});
+
+        rules.put(new String[]{
+                "days.day" // 日期
+        }, new ValidRule[]{new ValidRule.NotNull(), new ValidRule.Date()});
+
+        return rules;
+    }
 }

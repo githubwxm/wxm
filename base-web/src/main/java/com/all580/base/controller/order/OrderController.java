@@ -182,6 +182,14 @@ public class OrderController extends BaseController {
         return bookingOrderService.modifyTicketForGroup(params);
     }
 
+    @RequestMapping(value = "consume/hotel/ticket", method = RequestMethod.POST)
+    @ResponseBody
+    public Result<?> consumeTicketForHotel(@RequestBody Map params) throws Exception {
+        // 验证参数
+        ParamsMapValidate.validate(params, orderValidateManager.consumeHotelValidate());
+        return bookingOrderService.consumeHotelBySupplier(params);
+    }
+
     @RequestMapping(value = "platform/list/supplier")
     @ResponseBody
     public Result<?> listPlatformOrderBySupplierCore(@RequestParam Integer supplier_core_ep_id,
