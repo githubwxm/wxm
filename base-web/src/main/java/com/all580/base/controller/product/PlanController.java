@@ -112,8 +112,8 @@ public class PlanController extends BaseController {
             @RequestParam(value = "types", required = false) String types,
             @RequestParam(value = "from", required = false) String from,
             @RequestParam(value = "sort", required = false) Integer sort,
-            @RequestParam(value = "record_start", required = false) Integer start,
-            @RequestParam(value = "record_count", required = false) Integer count) {
+            @RequestParam(value = "record_start") Integer start,
+            @RequestParam(value = "record_count") Integer count) {
         String sortStr = null;
         if (sort != null) {
             switch (CanSaleOrderState.getCanSaleOrderSate(sort)) {
