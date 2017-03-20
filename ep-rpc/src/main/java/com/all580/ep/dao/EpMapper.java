@@ -38,7 +38,7 @@ public interface EpMapper {
      * 查询平台商下的企业 按名字与类型包含平台商
      * @return
      */
-    Map<String,Object> selectTypeName(Map<String,Object> map);
+    List<Map<String,Object>> selectTypeName(Map<String,Object> map);
     List<Map<String,Object>> getSellerPlatfromAccuntInfo(Map<String,Object> map);
     int getSellerPlatfromAccuntInfoCount(Map<String,Object> map);
     List<Map<String,Object>> getAccountInfoList(Map<String,Object> map);
