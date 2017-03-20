@@ -5,6 +5,7 @@ import com.all580.ep.api.service.EpBalanceThresholdService;
 import com.all580.ep.api.service.EpService;
 import com.framework.common.BaseController;
 import com.framework.common.Result;
+import com.framework.common.util.CommonUtil;
 import com.framework.common.validate.ParamsMapValidate;
 import com.framework.common.validate.ValidRule;
 import lombok.extern.slf4j.Slf4j;
@@ -56,7 +57,8 @@ public class EpBalanceThresholdController extends BaseController {
         //core_ep_id
         // map.put("id",map.get("id"));
         //   Integer core_ep_id = Integer.parseInt(map.get("id").toString());
-
+        map.put("send_phone1",CommonUtil.emptyStringParseNull( map.get("send_phone1")));
+        map.put("send_phone2",CommonUtil.emptyStringParseNull( map.get("send_phone2")));
         ParamsMapValidate.validate(map, generateEpBalanceThresholdMobileWarnValidate());
         return epBalanceThresholdService.CreateOnUpdateThreshold(map);
 
