@@ -416,7 +416,7 @@ public class OrderValidateManager {
 
         rules.put(new String[]{
                 "days.quantity" // 核销数量
-        }, new ValidRule[]{new ValidRule.Digits(1L, 100000L)});
+        }, new ValidRule[]{new ValidRule.Digits(0L, 100000L)});
 
         rules.put(new String[]{
                 "days.day" // 日期
