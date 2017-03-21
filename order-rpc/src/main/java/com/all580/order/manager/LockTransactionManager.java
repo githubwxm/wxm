@@ -618,7 +618,7 @@ public class LockTransactionManager {
         }
         // 修改已使用数量
         orderItemMapper.useQuantity(orderItem.getId(), total);
-        if (total < orderItem.getQuantity()) {
+        if (total < orderItem.getQuantity() * orderItem.getDays()) {
             // 退票
             Collection<RefundDay> refundDays = AccountUtil.parseRefundDayForDetail(details);
             if (refundDays == null || refundDays.isEmpty()) {
