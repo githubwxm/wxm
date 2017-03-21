@@ -443,6 +443,7 @@ public class AccountUtil {
         try {
             for (Object day : list) {
                 RefundDay refundDay = JsonUtils.map2obj((Map) day, RefundDay.class);
+                if (refundDay.getQuantity() <= 0) continue;
                 collection.add(refundDay);
             }
         } catch (Exception e) {
@@ -490,6 +491,7 @@ public class AccountUtil {
         try {
             for (Object day : list) {
                 ConsumeDay consumeDay = JsonUtils.map2obj((Map) day, ConsumeDay.class);
+                if (consumeDay.getQuantity() <= 0) continue;
                 collection.add(consumeDay);
             }
         } catch (Exception e) {
