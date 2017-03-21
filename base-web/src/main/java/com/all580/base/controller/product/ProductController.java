@@ -109,6 +109,16 @@ public class ProductController extends BaseController {
     }
 
     /**
+     * @param  id
+     * @return
+     */
+    @RequestMapping(value = "param", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<?> selectProductParam(@RequestParam("id") Integer id){
+        return productService.selectProductParam(id);
+    }
+
+    /**
      * 修改主产品信息
      * @param params
      * @return

@@ -128,7 +128,7 @@ public class HotelSubController {
                 "ticket_flag", //
                 "pay_type", //
                // "ma_product_id", //
-                "ep_ma_id", //
+               // "ep_ma_id", //
                 "window", //
                 "ischeck_in_latest", //
                 "return_money", //
