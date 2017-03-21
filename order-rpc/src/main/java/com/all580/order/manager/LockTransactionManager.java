@@ -636,7 +636,7 @@ public class LockTransactionManager {
             int auditMoney = auditSupplierConfig[1];
             // 总退票数
             int totalRefund = AccountUtil.getRefundQuantity(refundDays);
-            if (totalRefund + total != orderItem.getQuantity()) {
+            if (totalRefund + total != orderItem.getQuantity() * orderItem.getDays()) {
                 throw new ApiException("核销异常,请联系管理员");
             }
             // 创建退订订单
