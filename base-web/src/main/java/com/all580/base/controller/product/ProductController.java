@@ -44,6 +44,16 @@ public class ProductController extends BaseController {
 
 
     /**
+     * 查询景区产品名称
+     * @param
+     * @return
+     */
+    @RequestMapping(value = "select_ep_product", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<?> selectEpProduct(@RequestParam("ep_id") Integer ep_id){
+        return productService.selectEpProduct(ep_id);
+    }
+    /**
      * 查询景区子产品
      * @param    list
      * @return

@@ -88,8 +88,9 @@
     </select>
 
     <select id="selectTypeName" resultType="java.util.Map">
-        select id,name from all580_ep.t_ep where(  core_ep_id=#{ep_id}
-        and ep_type=#{ep_type} or id=#{ep_id}) and name like CONCAT('%',#{name},'%') ;
+        select id,name from t_ep where(  core_ep_id=#{ep_id}
+        and ep_type=#{ep_type} or id=#{ep_id}) and name like CONCAT('%',#{name},'%')
+         ORDER BY CONVERT(name using gbk) ;
     </select>
 
     <select id="selectId" resultType="java.util.Map">
