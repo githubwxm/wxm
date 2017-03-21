@@ -618,39 +618,43 @@ public class LockTransactionManager {
         }
         // 修改已使用数量
         orderItemMapper.useQuantity(orderItem.getId(), total);
+        if (total < orderItem.getQuantity()) {
+            // 退票
+            Collection<RefundDay> refundDays = AccountUtil.parseRefundDayForDetail(details);
+            if (refundDays == null || refundDays.isEmpty()) {
+                return new Result(true);
+            }
+            int[] calcResult = refundOrderManager.calcRefundMoneyAndFee(orderItem, order, ProductConstants.RefundEqType.SELLER, refundDays, details, clearanceTime);
+            // 计算退款金额
+            int money = calcResult[0];
+            // 手续费
+            int fee = calcResult[1];
 
-        // 退票
-        Collection<RefundDay> refundDays = AccountUtil.parseRefundDayForDetail(details);
-        int[] calcResult = refundOrderManager.calcRefundMoneyAndFee(orderItem, order, ProductConstants.RefundEqType.SELLER, refundDays, details, clearanceTime);
-        // 计算退款金额
-        int money = calcResult[0];
-        // 手续费
-        int fee = calcResult[1];
+            // 获取退订审核配置
+            int[] auditSupplierConfig = refundOrderManager.getAuditConfig(order, orderItem);
+            int auditTicket = auditSupplierConfig[0];
+            int auditMoney = auditSupplierConfig[1];
+            // 总退票数
+            int totalRefund = AccountUtil.getRefundQuantity(refundDays);
+            if (totalRefund + total != orderItem.getQuantity()) {
+                throw new ApiException("核销异常,请联系管理员");
+            }
+            // 创建退订订单
+            RefundOrder refundOrder = refundOrderManager.generateRefundOrder(orderItem, refundDays, totalRefund, money, fee,
+                    "核销退订", auditTicket, auditMoney, order.getPayee_ep_id(),
+                    CommonUtil.objectParseInteger(params.get("operator_id")), CommonUtil.objectParseString(params.get("operator_name")), null);
 
-        // 获取退订审核配置
-        int[] auditSupplierConfig = refundOrderManager.getAuditConfig(order, orderItem);
-        int auditTicket = auditSupplierConfig[0];
-        int auditMoney = auditSupplierConfig[1];
-        // 总退票数
-        int totalRefund = AccountUtil.getRefundQuantity(refundDays);
-        if (totalRefund + total != orderItem.getQuantity()) {
-            throw new ApiException("核销异常,请联系管理员");
+            // 更新退订张数
+            orderItemDetailMapper.refundRemain(orderItem.getId());
+
+            // 退订分账 到付退订不分帐
+            if (orderItem.getPayment_flag() != ProductConstants.PayType.PAYS) {
+                refundOrderManager.preRefundSplitAccount(ProductConstants.RefundEqType.SELLER, refundOrder.getId(), order, clearanceTime, refundOrder.getOrder_item_id(), details, refundDays);
+            }
+
+            // 触发事件
+            eventManager.addEvent(OrderConstant.EventType.ORDER_REFUND_APPLY, refundOrder.getId());
         }
-        // 创建退订订单
-        RefundOrder refundOrder = refundOrderManager.generateRefundOrder(orderItem, refundDays, totalRefund, money, fee,
-                "核销退订", auditTicket, auditMoney, order.getPayee_ep_id(),
-                CommonUtil.objectParseInteger(params.get("operator_id")), CommonUtil.objectParseString(params.get("operator_name")), null);
-
-        // 更新退订张数
-        orderItemDetailMapper.refundRemain(orderItem.getId());
-
-        // 退订分账 到付退订不分帐
-        if (orderItem.getPayment_flag() != ProductConstants.PayType.PAYS) {
-            refundOrderManager.preRefundSplitAccount(ProductConstants.RefundEqType.SELLER, refundOrder.getId(), order, clearanceTime, refundOrder.getOrder_item_id(), details, refundDays);
-        }
-
-        // 触发事件
-        eventManager.addEvent(OrderConstant.EventType.ORDER_REFUND_APPLY, refundOrder.getId());
         return new Result(true);
     }
 
