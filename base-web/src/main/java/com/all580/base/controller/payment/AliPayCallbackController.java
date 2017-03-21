@@ -5,6 +5,8 @@ import com.all580.payment.api.service.ThirdPayService;
 import com.framework.common.BaseController;
 import com.framework.common.Result;
 import com.framework.common.lang.JsonUtils;
+import org.apache.commons.lang.math.RandomUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -165,6 +167,24 @@ public class AliPayCallbackController extends BaseController {
         params.put("outTransId", "2016111021001004380274119776");
         params.put("serialNum", "1111111120");
         Result<String> result = thirdPayService.reqRefund(ordCode, coreEpId, payType, params);
+        rsp.setContentType("text/html; charset=UTF-8");
+        logger.info(result.get());
+        rsp.getWriter().print(result.get());
+        rsp.getWriter().flush();
+    }
+
+    /* 测试方法，不要调用 */
+    @RequestMapping(value = "/wapPayTest")
+    public void wapPayTest(HttpServletResponse rsp) throws Exception {
+        System.out.println("---------------------------->   /wapPay");
+        int coreEpId = 1;
+        int payType = PaymentConstant.PaymentType.ALI_PAY;
+        Map<String, Object> params = new HashMap<>();
+        params.put("totalFee", 1);
+        params.put("prodId", 1010);
+        params.put("prodName", "测试产品名称");
+        params.put("serialNum", RandomStringUtils.random(10));
+        Result<String> result = thirdPayService.wapPay(RandomUtils.nextLong(), coreEpId, payType, params);
         rsp.setContentType("text/html; charset=UTF-8");
         logger.info(result.get());
         rsp.getWriter().print(result.get());

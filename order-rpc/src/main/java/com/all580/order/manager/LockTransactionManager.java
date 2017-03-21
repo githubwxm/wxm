@@ -30,6 +30,7 @@ import com.framework.common.outside.JobTask;
 import com.framework.common.util.CommonUtil;
 import com.github.ltsopensource.core.domain.Action;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -468,14 +469,22 @@ public class LockTransactionManager {
         payParams.put("prodId", StringUtils.join(ids, ","));
         payParams.put("return_url", params.get("return_url"));
 
-        Result result = thirdPayService.reqPay(order.getNumber(),
-                bookingOrderManager.getCoreEpId(epService.selectPlatformId(order.getBuy_ep_id())),
-                payType, payParams);
-        if (!result.isSuccess()) {
-            log.warn("第三方支付异常:{}", JsonUtils.toJson(result));
-            throw new ApiException(result.getError());
+        boolean isWap = BooleanUtils.toBoolean(CommonUtil.objectParseString(params.get("wap")));
+        if (isWap) {
+            Result result = thirdPayService.wapPay(order.getNumber(), order.getPayee_ep_id(), payType, payParams);
+            if (!result.isSuccess()) {
+                log.warn("第三方WAP支付异常:{}", JsonUtils.toJson(result));
+                throw new ApiException(result.getError());
+            }
+            return result;
+        } else {
+            Result result = thirdPayService.reqPay(order.getNumber(), order.getPayee_ep_id(), payType, payParams);
+            if (!result.isSuccess()) {
+                log.warn("第三方支付异常:{}", JsonUtils.toJson(result));
+                throw new ApiException(result.getError());
+            }
+            return result;
         }
-        return result;
     }
 
     /**
