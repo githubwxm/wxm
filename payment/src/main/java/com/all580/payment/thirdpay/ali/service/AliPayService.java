@@ -1,5 +1,9 @@
 package com.all580.payment.thirdpay.ali.service;
 
+import com.alipay.api.AlipayApiException;
+import com.alipay.api.AlipayClient;
+import com.alipay.api.DefaultAlipayClient;
+import com.alipay.api.request.AlipayTradeWapPayRequest;
 import com.all580.payment.thirdpay.ali.config.AlipayConfig;
 import com.all580.payment.thirdpay.ali.util.AlipayCore;
 import com.all580.payment.thirdpay.ali.util.AlipayNotify;
@@ -43,6 +47,7 @@ public class AliPayService {
     private String phonepay_notify_url;//支付宝服务器主动通知商户网站里指定的页面http路径
 
     public static final String HEAD = "<head><meta charset=\"UTF-8\"><meta content=\"text/html\"></head>";
+    public static final String API_URL = "https://openapi.alipay.com/gateway.do";
 
     public boolean isPropertiesInit(int coreEpId) {
         return alipayPropertiesMap.containsKey(coreEpId);
@@ -171,5 +176,26 @@ public class AliPayService {
         }
         return result;//验证成功
 
+    }
+
+    public String wapPay(long ordCode, int coreEpId, Map<String, Object> params) throws AlipayApiException {
+        AliPayProperties aliPayProperties = alipayPropertiesMap.get(coreEpId);
+        if (aliPayProperties.getAlipayClient() == null) {
+            AlipayClient alipayClient = new DefaultAlipayClient(API_URL, aliPayProperties.getApp_id(), aliPayProperties.getPrivate_key(), "json", AlipayConfig.input_charset, aliPayProperties.getAlipay_public_key(), "RSA2"); //获得初始化的AlipayClient
+            aliPayProperties.setAlipayClient(alipayClient);
+        }
+        AlipayTradeWapPayRequest alipayRequest = new AlipayTradeWapPayRequest();//创建API对应的request
+        alipayRequest.setReturnUrl(CommonUtil.objectParseString(params.get("return_url")));
+        alipayRequest.setNotifyUrl(domain + refund_notify_url);//在公共参数中设置回跳和通知地址
+        // 把请求参数打包成数组
+        Map<String, String> sParaTemp = new HashMap<>();
+        sParaTemp.put("product_code", "QUICK_WAP_PAY");
+        sParaTemp.put("out_trade_no", String.valueOf(ordCode));
+        sParaTemp.put("subject", String.valueOf(params.get("prodName")));
+        int totalFee = (Integer) params.get("totalFee");
+        sParaTemp.put("total_amount", String.valueOf(totalFee / 100.0));
+        sParaTemp.put("passback_params", String.valueOf(coreEpId));
+        alipayRequest.setBizContent(JsonUtils.toJson(sParaTemp));//填充业务参数
+        return aliPayProperties.getAlipayClient().pageExecute(alipayRequest).getBody(); //调用SDK生成表单
     }
 }

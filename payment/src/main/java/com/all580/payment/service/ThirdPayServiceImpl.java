@@ -1,5 +1,6 @@
 package com.all580.payment.service;
 
+import com.alipay.api.AlipayApiException;
 import com.all580.order.api.service.OrderService;
 import com.all580.order.api.service.PaymentCallbackService;
 import com.all580.payment.api.conf.PaymentConstant;
@@ -7,7 +8,10 @@ import com.all580.payment.api.service.ThirdPayService;
 import com.all580.payment.dao.EpPaymentConfMapper;
 import com.all580.payment.entity.EpPaymentConf;
 import com.all580.payment.thirdpay.ali.service.AliPayService;
-import com.all580.payment.thirdpay.wx.model.*;
+import com.all580.payment.thirdpay.wx.model.RefundReq;
+import com.all580.payment.thirdpay.wx.model.RefundRsp;
+import com.all580.payment.thirdpay.wx.model.UnifiedOrderReq;
+import com.all580.payment.thirdpay.wx.model.UnifiedOrderRsp;
 import com.all580.payment.thirdpay.wx.service.WxPayService;
 import com.all580.payment.thirdpay.wx.util.ConstantUtil;
 import com.framework.common.Result;
@@ -23,6 +27,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import javax.lang.exception.ApiException;
 import java.lang.reflect.Field;
 import java.text.MessageFormat;
 import java.util.HashMap;
@@ -238,6 +243,27 @@ public class ThirdPayServiceImpl implements ThirdPayService {
             }
         } else if (PaymentConstant.PaymentType.ALI_PAY == payType) {
             String html = getAliPayService(coreEpId, payType).reqPay(ordCode, coreEpId, params);
+            logger.info(html);
+            result.put(html);
+            result.setSuccess();
+        } else {
+            throw new RuntimeException("不支持的支付类型:" + payType);
+        }
+        return result;
+    }
+
+    @Override
+    public Result<String> wapPay(long ordCode, int coreEpId, int payType, Map<String, Object> params) {
+        Result<String> result = new Result<>();
+
+       if (PaymentConstant.PaymentType.ALI_PAY == payType) {
+            String html = null;
+            try {
+                html = getAliPayService(coreEpId, payType).wapPay(ordCode, coreEpId, params);
+            } catch (AlipayApiException e) {
+                logger.error("支付宝WAP支付异常", e);
+                throw new ApiException("支付异常:" + e.getErrMsg());
+            }
             logger.info(html);
             result.put(html);
             result.setSuccess();

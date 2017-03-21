@@ -28,6 +28,20 @@ public interface ThirdPayService {
     Result<String> reqPay(long ordCode, int coreEpId, int payType, Map<String, Object> params);
 
     /**
+     * 请求WAP支付
+     * @param ordCode  订单编号
+     * @param coreEpId 平台商企业ID
+     * @param payType  支付类型 @see PaymentConstant.PaymentType
+     * @param params   {prodName:xx,totalFee:xx,serialNum:xx,prodId:xx}
+     *                 prodName - String - 商品名称[最长127个字节]
+     *                 totalFee - int - 支付总金额，单位分
+     *                 serialNum - String - 流水号
+     *                 prodId - int - 子产品ID
+     * @return 第三方支付请求数据：1、支付宝：请求支付宝的form表单html片段
+     */
+    Result<String> wapPay(long ordCode, int coreEpId, int payType, Map<String, Object> params);
+
+    /**
      * 退款请求
      *
      * @param ordCode  订单编号
