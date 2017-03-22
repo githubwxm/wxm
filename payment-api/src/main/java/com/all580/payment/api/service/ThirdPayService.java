@@ -59,6 +59,9 @@ public interface ThirdPayService {
     // 支付回调，发布回调订单模块的任务
     Result<Map<String,String>> payCallback(String ordId,String trade_no,Map<String, String> params,int payType);
 
+    // WAP支付回调，发布回调订单模块的任务
+    Result<Map<String,String>> wapPayCallback(String ordId,String trade_no,Map<String, String> params,int payType);
+
 
     // 退款回调，发布回调订单模块的任务
     Result refundCallback(Map<String,String> params,int payType);
