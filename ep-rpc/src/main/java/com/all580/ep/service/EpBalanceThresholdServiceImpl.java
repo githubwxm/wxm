@@ -177,7 +177,6 @@ public class EpBalanceThresholdServiceImpl implements EpBalanceThresholdService 
                 throw new ApiException("添加更新余额阀值出错"+map);
             }
             if(balance<threshold && history_balance>=threshold){
-                //Todo  发送余额短信
                 Map<String,Object> epMap = new HashMap<>();//EpConstant.EpKey.CORE_EP_ID
                 Integer ep_id= CommonUtil.objectParseInteger(map.get("id"));//企业id
                 epMap.put("id",ep_id);//再看发送短信所需要的参数
