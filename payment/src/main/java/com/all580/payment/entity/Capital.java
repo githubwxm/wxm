@@ -15,6 +15,16 @@ public class Capital implements Serializable {
 
     private Integer core_ep_id;
 
+    private Integer history_balance;
+
+    public Integer getHistory_balance() {
+        return history_balance;
+    }
+
+    public void setHistory_balance(Integer history_balance) {
+        this.history_balance = history_balance;
+    }
+
     private static final long serialVersionUID = 1L;
 
     public Integer getId() {

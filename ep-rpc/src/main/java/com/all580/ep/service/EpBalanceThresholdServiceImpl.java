@@ -168,6 +168,7 @@ public class EpBalanceThresholdServiceImpl implements EpBalanceThresholdService 
             Result<Map<String,Object>> result = select(map);
             Integer balance=Common.objectParseInteger(map.get("balance"));//传来的余额
             Integer threshold = Common.objectParseInteger(result.get("threshold"));//阀值
+            Integer history_balance=Common.objectParseInteger(map.get("history_balance"));
             if(threshold==null){
                 return new Result(true);
             }
@@ -175,7 +176,7 @@ public class EpBalanceThresholdServiceImpl implements EpBalanceThresholdService 
                 log.error("未查询到阀值数据"+map);
                 throw new ApiException("添加更新余额阀值出错"+map);
             }
-            if(balance<threshold){
+            if(balance<threshold && history_balance>=threshold){
                 //Todo  发送余额短信
                 Map<String,Object> epMap = new HashMap<>();//EpConstant.EpKey.CORE_EP_ID
                 Integer ep_id= CommonUtil.objectParseInteger(map.get("id"));//企业id

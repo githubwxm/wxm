@@ -75,6 +75,7 @@ public class LockPayManagerServiceImpl implements LockPayManagerService {
                 map.put("ep_id",c.getEp_id());
                 map.put("core_ep_id",c.getCore_ep_id());
                 map.put("balance",c.getBalance());
+                map.put("history_balance",c.getHistory_balance());
                 tempList.add(map);
             }
             eventAspect.addEvent("BALANCE_CHANGE", tempList);
@@ -140,7 +141,7 @@ public class LockPayManagerServiceImpl implements LockPayManagerService {
                 capitalSerial.setNew_balance(newBalance);
                 capitalSerial.setNew_can_cash(newCanCash);
                 capitalSerials.add(capitalSerial);
-
+                capital.setHistory_balance(capital.getBalance());
                 capital.setBalance(newBalance);
                 capital.setCan_cash(newCanCash);
             } else {
