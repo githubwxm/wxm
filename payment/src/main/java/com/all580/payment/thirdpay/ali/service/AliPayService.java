@@ -186,7 +186,7 @@ public class AliPayService {
         }
         AlipayTradeWapPayRequest alipayRequest = new AlipayTradeWapPayRequest();//创建API对应的request
         alipayRequest.setReturnUrl(CommonUtil.objectParseString(params.get("return_url")));
-        alipayRequest.setNotifyUrl(domain + refund_notify_url);//在公共参数中设置回跳和通知地址
+        alipayRequest.setNotifyUrl(domain + pay_notify_url);//在公共参数中设置回跳和通知地址
         // 把请求参数打包成数组
         Map<String, String> sParaTemp = new HashMap<>();
         sParaTemp.put("product_code", "QUICK_WAP_PAY");
