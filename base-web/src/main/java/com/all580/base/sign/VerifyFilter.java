@@ -12,14 +12,16 @@ import com.framework.common.lang.JsonUtils;
 import com.framework.common.util.Auth;
 import com.framework.common.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections.map.HashedMap;
 
-import javax.lang.exception.ApiException;
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
-import java.util.*;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Created by wxming on 2016/10/13 0013.
@@ -40,7 +42,7 @@ public class VerifyFilter implements  Filter {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse =(HttpServletResponse)response;
         String method= httpRequest.getMethod();
-        Map<String, Object> map = new HashedMap();
+        Map<String, String> map = new HashMap<>();
         ServletRequest requestWrapper = null;
         String postParams="";
         String currenttSing="";
@@ -73,7 +75,11 @@ public class VerifyFilter implements  Filter {
         }
         Map access=null;
         try {
-             access = coreEpAccessService.selectAccess(map).get();
+            Map<String, Object> objectMap = new HashMap<>();
+            for (String key : map.keySet()) {
+                objectMap.put(key, map.get(key));
+            }
+            access = coreEpAccessService.selectAccess(objectMap).get();
         }catch (Exception e){
             log.error(e.getMessage());
             renderingByJsonPData(httpResponse, JSON.toJSONString(getOutPutMap(false,"获取access_key错误", Result.SIGN_FAIL,null)));
