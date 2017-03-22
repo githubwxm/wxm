@@ -131,6 +131,7 @@ public class LockPayManagerServiceImpl implements LockPayManagerService {
                 CapitalSerial capitalSerial = new CapitalSerial();
                 capitalSerial.setCapital_id(capital.getId());
                 capitalSerial.setRef_id(serialNum);
+
                 capitalSerial.setRef_type(type);
                 capitalSerial.setBalance_type(balanceChangeInfo.getBalance_type());
                 capitalSerial.setCan_cash_type(balanceChangeInfo.getCan_cash_type());
