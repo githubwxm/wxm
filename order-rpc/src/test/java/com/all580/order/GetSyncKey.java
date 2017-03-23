@@ -14,5 +14,6 @@ public class GetSyncKey {
         System.out.println("畅旅生产环境:" + Md5Utils.getMD5For16("P_1476277250138WFBZ35GTM7PL25").toUpperCase()); // 畅旅
         System.out.println("畅旅开发环境:" + Md5Utils.getMD5For16("D_1476277250138WFBZ35GTM7PL25").toUpperCase()); // 畅旅
         System.out.println("策票生产环境:" + Md5Utils.getMD5For16("P_1488267799748EXBSWRREXW77BE").toUpperCase()); // 策票
+        System.out.println("德夯生产环境:" + Md5Utils.getMD5For16("P_14901686773782Y8QKCVA3HHN7F").toUpperCase()); // 德夯
     }
 }

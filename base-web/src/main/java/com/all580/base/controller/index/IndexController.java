@@ -56,12 +56,12 @@ public class IndexController extends BaseController {
             throw new ApiException("获取微信token失败");
         }
         Map map = tokenResult.get();
-        String noncestr = RandomStringUtils.random(30);
+        String nonceStr = RandomStringUtils.random(30);
         long timestamp = System.currentTimeMillis() / 1000;
-        String signature = DigestUtils.sha1Hex(String.format("jsapi_ticket=%s&noncestr=%s&timestamp=%s", map.get("ticket"), noncestr, timestamp));
+        String signature = DigestUtils.sha1Hex(String.format("jsapi_ticket=%s&noncestr=%s&timestamp=%s", map.get("ticket"), nonceStr, timestamp));
         result.put("app_id", map.get("appId"));
         result.put("timestamp", timestamp);
-        result.put("noncestr", noncestr);
+        result.put("noncestr", nonceStr);
         result.put("signature", signature);
 		return result;
 	}
