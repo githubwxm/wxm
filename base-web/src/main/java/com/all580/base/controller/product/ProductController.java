@@ -63,7 +63,7 @@ public class ProductController extends BaseController {
     @ResponseBody
     public Result<?> selectEpSelfProduct(@RequestParam("statistic_ep_id") Integer ep_id,Integer type){
         if(null==type){
-            type=5051;
+            type=ProductConstants.ProductType.SCENERY;
         }
         return productService.selectEpSelfProduct(ep_id,type);
     }
