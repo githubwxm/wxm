@@ -17,4 +17,5 @@ public class AccessTokenBean {
     private int expiresSecond;
     private Date expires;
     private Date last;
+    private String appId;
 }
