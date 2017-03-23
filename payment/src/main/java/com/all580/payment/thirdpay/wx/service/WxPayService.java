@@ -12,6 +12,7 @@ import com.framework.common.lang.JsonUtils;
 import com.framework.common.net.IPUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +34,9 @@ public class WxPayService {
     private String domain;
     @Value("${wx.pay.callback.url}")
     private String payCallbackUrl;
+
+    @Autowired
+    private AccessToken accessToken;
 
     public String reqPay(long ordCode, int coreEpId, Map<String, Object> params) throws Exception {
         WxProperties wxProperties = wxPropertiesMap.get(coreEpId);
@@ -103,6 +107,11 @@ public class WxPayService {
         }
         result.put(rsp);
         return result;
+    }
+
+    public AccessTokenBean getAccessToken(Integer coreEpId) {
+        WxProperties wxProperties = wxPropertiesMap.get(coreEpId);
+        return accessToken.get(wxProperties);
     }
     public   <T> T request(String url, CommonsReq req, Class<T> cls, boolean certBool,Integer coreEpId ) throws Exception {
         WxProperties wxProperties = wxPropertiesMap.get(coreEpId);

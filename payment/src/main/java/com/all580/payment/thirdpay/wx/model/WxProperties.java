@@ -11,10 +11,18 @@ public class WxProperties {
     private String app_id; // 开发应用ID
     private String mch_id; // 商户号
     private String mch_key; //  商户秘钥
+    private String app_secret; //应用密钥
 
     private int core_ep_id; // 平台商ID
     //private
 
+    public String getApp_secret() {
+        return app_secret;
+    }
+
+    public void setApp_secret(String app_secret) {
+        this.app_secret = app_secret;
+    }
 
     public String getApi_client_cert_p12_str() {
         return api_client_cert_p12_str;

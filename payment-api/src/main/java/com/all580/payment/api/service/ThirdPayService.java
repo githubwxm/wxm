@@ -82,4 +82,11 @@ public interface ThirdPayService {
      * @return
      */
      Result<PaymentConstant.ThirdPayStatus> refundQuery(String out_refund_no, int coreEpId, Integer payType);
+
+    /**
+     * 获取微信accessToken
+     * @param coreEpId
+     * @return
+     */
+     Result<Map> getWxAccessToken(int coreEpId);
 }

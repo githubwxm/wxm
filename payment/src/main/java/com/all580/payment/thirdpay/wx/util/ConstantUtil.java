@@ -7,6 +7,7 @@ package com.all580.payment.thirdpay.wx.util;
 public class ConstantUtil {
     // 初始化
     public static String TOKENURL = "https://api.weixin.qq.com/cgi-bin/token";// 获取access_token对应的url
+    public static String TICKETURL = "https://api.weixin.qq.com/cgi-bin/ticket/getticket";// 获取ticket对应的url
     public static String GRANT_TYPE = "client_credential";// 常量固定值
     public static String EXPIRE_ERRCODE = "42001";// access_token失效后请求返回的errcode
     public static String FAIL_ERRCODE = "40001";// 重复获取导致上一次获取的access_token失效,返回错误码
