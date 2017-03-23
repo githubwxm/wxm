@@ -67,6 +67,7 @@ public class AccessToken {
                 throw new RuntimeException("微信获取Token失败");
             }
             AccessTokenBean bean = new AccessTokenBean();
+            bean.setAppId(wxProperties.getApp_id());
             bean.setToken(map.get("access_token").toString());
             bean.setExpiresSecond(CommonUtil.objectParseInteger(map.get("expires_in")));
             Date last = new Date();
