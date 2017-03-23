@@ -26,6 +26,11 @@
         <constructor-arg index="4" value="${redis.password}"/>
     </bean>
 
+    <bean id="redisUtils" class="com.framework.common.io.cache.redis.RedisUtils">
+        <constructor-arg name="uri" value="${redis.url}"/>
+        <constructor-arg name="redisConfig" ref="jedisPoolConfig"/>
+    </bean>
+
     <bean id="distributedLockTemplate" class="com.framework.common.distributed.lock.redis.RedisDistributedLockTemplate">
         <constructor-arg name="jedisPool" ref="jedisPool"/>
     </bean>

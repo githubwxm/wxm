@@ -8,15 +8,13 @@ import com.all580.payment.api.service.ThirdPayService;
 import com.all580.payment.dao.EpPaymentConfMapper;
 import com.all580.payment.entity.EpPaymentConf;
 import com.all580.payment.thirdpay.ali.service.AliPayService;
-import com.all580.payment.thirdpay.wx.model.RefundReq;
-import com.all580.payment.thirdpay.wx.model.RefundRsp;
-import com.all580.payment.thirdpay.wx.model.UnifiedOrderReq;
-import com.all580.payment.thirdpay.wx.model.UnifiedOrderRsp;
+import com.all580.payment.thirdpay.wx.model.*;
 import com.all580.payment.thirdpay.wx.service.WxPayService;
 import com.all580.payment.thirdpay.wx.util.ConstantUtil;
 import com.framework.common.Result;
 import com.framework.common.event.MnsEvent;
 import com.framework.common.event.MnsEventAspect;
+import com.framework.common.lang.JsonUtils;
 import com.framework.common.mns.TopicPushManager;
 import com.framework.common.util.CommonUtil;
 import org.apache.commons.lang.StringUtils;
@@ -452,4 +450,11 @@ public class ThirdPayServiceImpl implements ThirdPayService {
         return rst;
     }
 
+    @Override
+    public Result<Map> getWxAccessToken(int coreEpId) {
+        Result<Map> rst = new Result<>(true);
+        AccessTokenBean bean = getWxPayService(coreEpId, PaymentConstant.PaymentType.WX_PAY).getAccessToken(coreEpId);
+        rst.put(JsonUtils.obj2map(bean));
+        return rst;
+    }
 }
