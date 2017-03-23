@@ -331,7 +331,7 @@
           ) ) b on a.id=b.id
     </select>
     <select id="selectSupplier" resultType="java.lang.Integer">
-        select id from t_ep where core_ep_id =#{core_ep_id} and ep_type=10002;
+        select id from t_ep where core_ep_id =#{core_ep_id} and ep_type=10002 OR id =#{core_ep_id};
     </select>
 
     <select id="getSeller" resultType="java.lang.Integer">

@@ -53,6 +53,20 @@ public class ProductController extends BaseController {
     public Result<?> selectEpProduct(@RequestParam("ep_id") Integer ep_id){
         return productService.selectEpProduct(ep_id);
     }
+
+    /**
+     * 查询景区产品名称
+     * @param
+     * @return
+     */
+    @RequestMapping(value = "select_ep_self_product", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<?> selectEpSelfProduct(@RequestParam("ep_id") Integer ep_id,Integer type){
+        if(null==type){
+            type=5051;
+        }
+        return productService.selectEpSelfProduct(ep_id,type);
+    }
     /**
      * 查询景区子产品
      * @param    list
