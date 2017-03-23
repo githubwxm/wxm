@@ -61,7 +61,7 @@ public class ProductController extends BaseController {
      */
     @RequestMapping(value = "select_ep_self_product", method = RequestMethod.GET)
     @ResponseBody
-    public Result<?> selectEpSelfProduct(@RequestParam("ep_id") Integer ep_id,Integer type){
+    public Result<?> selectEpSelfProduct(@RequestParam("statistic_ep_id") Integer ep_id,Integer type){
         if(null==type){
             type=5051;
         }
