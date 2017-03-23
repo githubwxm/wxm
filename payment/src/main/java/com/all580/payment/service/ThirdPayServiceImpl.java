@@ -397,6 +397,28 @@ public class ThirdPayServiceImpl implements ThirdPayService {
 
     @Override
     @MnsEvent
+    public Result<Map<String, String>> wapPayCallback(String ordId, String trade_no, Map<String, String> params, int payType) {
+        // 根据企业获取配置信息
+        if (PaymentConstant.PaymentType.ALI_PAY == payType) {
+            String extraStr = params.get("passback_params");
+            int coreEpId = Integer.parseInt(extraStr);
+            Result<Map<String, String>> result = getAliPayService(coreEpId, payType).wapPayCallback(params, coreEpId);
+            if (result.isSuccess()) {
+                Double m = Double.parseDouble(CommonUtil.objectParseString(params.get("total_amount")))*100;
+                fireBalanceChangedEvent(coreEpId,ordId,m.intValue(),PaymentConstant.BalanceChangeType.THIRD_PAY_FOR_ORDER);
+                Result callResult = paymentCallbackService.payCallback(Long.valueOf(ordId), ordId, trade_no);
+                if (callResult.isFault()) {
+                    logger.error("支付宝WAP支付回调.回调订单失败");
+                }
+            }
+            return result;
+        } else {
+            throw new RuntimeException("不支持的支付类型:" + payType);
+        }
+    }
+
+    @Override
+    @MnsEvent
     public Result refundCallback(Map<String, String> params, int payType) {
         Result rst = new Result();
         // 根据企业获取配置信息

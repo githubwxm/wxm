@@ -3,6 +3,7 @@ package com.all580.payment.thirdpay.ali.service;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
+import com.alipay.api.internal.util.AlipaySignature;
 import com.alipay.api.request.AlipayTradeWapPayRequest;
 import com.all580.payment.thirdpay.ali.config.AlipayConfig;
 import com.all580.payment.thirdpay.ali.util.AlipayCore;
@@ -39,6 +40,8 @@ public class AliPayService {
     private String domain;
     @Value("${alipay.payment.callback.url}")
     private String pay_notify_url;//支付宝服务器主动通知商户网站里指定的页面http路径
+    @Value("${alipay.wap.payment.callback.url}")
+    private String wap_pay_notify_url;//支付宝服务器主动通知商户网站里指定的页面http路径
     @Value("${alipay.recharge.callback.url}")
     private String recharge_notify_url;//支付宝服务器主动通知商户网站里指定的页面http路径
     @Value("${alipay.refund.callback.url}")
@@ -178,6 +181,35 @@ public class AliPayService {
 
     }
 
+    /**
+     * wap支付回调
+     * @param params
+     * @param coreEpId
+     * @return
+     */
+    public Result<Map<String, String>> wapPayCallback(Map<String, String> params, int coreEpId) {
+        Result<Map<String, String>> result = new Result<>();
+        AliPayProperties aliPayProperties = alipayPropertiesMap.get(coreEpId);
+        if (aliPayProperties.getAlipayClient() == null) {
+            AlipayClient alipayClient = new DefaultAlipayClient(API_URL, aliPayProperties.getApp_id(), aliPayProperties.getPrivate_key(), "json", AlipayConfig.input_charset, aliPayProperties.getAlipay_public_key(), "RSA2"); //获得初始化的AlipayClient
+            aliPayProperties.setAlipayClient(alipayClient);
+        }
+        try {
+            boolean verify_result = AlipaySignature.rsaCheckV1(params, aliPayProperties.getAlipay_public_key(), AlipayConfig.input_charset, "RSA2");
+            if (verify_result) {
+                result.setSuccess();
+            } else {
+                throw new AlipayApiException("签名验证失败");
+            }
+        } catch (AlipayApiException e) {
+            String linkString = AlipayCore.createLinkString(params);
+            logger.error("支付宝WAP支付回调验证失败，信息：" + linkString);
+            result.setFail();
+            result.setError("支付宝WAP支付回调验证失败，信息：" + linkString);
+        }
+        return result;//验证成功
+    }
+
     public String wapPay(long ordCode, int coreEpId, Map<String, Object> params) throws AlipayApiException {
         AliPayProperties aliPayProperties = alipayPropertiesMap.get(coreEpId);
         if (aliPayProperties.getAlipayClient() == null) {
@@ -186,7 +218,7 @@ public class AliPayService {
         }
         AlipayTradeWapPayRequest alipayRequest = new AlipayTradeWapPayRequest();//创建API对应的request
         alipayRequest.setReturnUrl(CommonUtil.objectParseString(params.get("return_url")));
-        alipayRequest.setNotifyUrl(domain + pay_notify_url);//在公共参数中设置回跳和通知地址
+        alipayRequest.setNotifyUrl(domain + wap_pay_notify_url);//在公共参数中设置回跳和通知地址
         // 把请求参数打包成数组
         Map<String, String> sParaTemp = new HashMap<>();
         sParaTemp.put("product_code", "QUICK_WAP_PAY");

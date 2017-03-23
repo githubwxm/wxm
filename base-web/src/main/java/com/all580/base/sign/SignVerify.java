@@ -19,8 +19,8 @@ public class SignVerify {
     public final static String charset = "utf-8";
 
 
-    public static Map<String, Object> getParameterMap(HttpServletRequest request) {
-        Map<String, Object> params = new HashMap<String, Object>();
+    public static Map<String, String> getParameterMap(HttpServletRequest request) {
+        Map<String, String> params = new HashMap<>();
         Map requestParams = request.getParameterMap();
         for (Iterator iter = requestParams.keySet().iterator(); iter.hasNext(); ) {
             String name = (String) iter.next();
