@@ -29,12 +29,12 @@ public class OrderSupplierController extends BaseController {
     @ResponseBody
     public Result selectSupplierOrderReserve(HttpServletRequest request, HttpServletResponse response,
                                              @RequestParam("statistic_ep_id") Integer statistic_ep_id,
-                                             @RequestParam("key") String key,
+                                             @RequestParam("statistics_type_id") String statistics_type_id,
                                              String start  ,String end,String pro_name,
                                              Integer record_start,Integer record_count){
         Map<String,Object> map = new HashMap<>();
         map.put("statistic_ep_id",statistic_ep_id);
-        map.put("key",key);
+        map.put("key",statistics_type_id);
         map.put("start",start);
         map.put("end",end);
         map.put("pro_name",pro_name);
