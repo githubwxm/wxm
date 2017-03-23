@@ -188,8 +188,14 @@ public class EpBalanceThresholdServiceImpl implements EpBalanceThresholdService 
                      Map<String, String>  params = new HashMap<>();
                      params.put("qiye",mapResult.get("name").toString());
                      String jinqian =threshold+"";
-                     String point = Common.matcher(jinqian,"([\\d]{2}$)" );//Common.matcher(125665419+"","([\\d]{2}$)" )
-                     params.put("jinqian",jinqian.replaceAll("([\\d]{2}$)", "."+point));
+                     if(jinqian.length()>2){
+                         String point = Common.matcher(jinqian,"([\\d]{2}$)" );//Common.matcher(125665419+"","([\\d]{2}$)" )
+                         params.put("jinqian",jinqian.replaceAll("([\\d]{2}$)", "."+point));
+                     }else if(jinqian.length()==2){
+                         params.put("jinqian","0."+jinqian);
+                     }else if(jinqian.length()==1){
+                         params.put("jinqian","0.0"+jinqian);
+                     }
                        Map<String,Object> mapSend = smsSendMapper.selectByEpId(ep_id);//   余额修改之后的发送短信
                      if(null!=mapSend && "1".equals(CommonUtil.objectParseString( mapSend.get("threshold_status")))){
                          String send_phone2=CommonUtil.objectParseString(mapSend.get("send_phone2"));
