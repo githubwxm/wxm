@@ -151,7 +151,7 @@ public class LockPayManagerServiceImpl implements LockPayManagerService {
             }
         }
         for (Capital capital : capitalMap.values()) {
-            if (capital.getBalance() + capital.getCredit() < 0 && capital.getHistory_balance()<capital.getBalance()) {
+            if (capital.getBalance() + capital.getCredit() < 0 && capital.getHistory_balance()>capital.getBalance()) {
                 BalanceChangeRsp changeRsp = new BalanceChangeRsp(capital.getEp_id(), capital.getCore_ep_id(), null);
                 throw new BusinessException("余额不足", changeRsp);
             }
