@@ -272,7 +272,7 @@ public class ThirdPayServiceImpl implements ThirdPayService {
                map.put("prepay_id", rsp.getPrepay_id());
                map.put("code_url", rsp.getCode_url());
                map.put("return_code", rsp.getReturn_code());
-               map.put("return_msg", rsp.getResult_code());
+               map.put("result_code", rsp.getResult_code());
                String string = JsonUtils.toJson(map);
                logger.info(string);
                result.put(string);
