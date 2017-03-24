@@ -65,4 +65,15 @@ public class IndexController extends BaseController {
         result.put("signature", signature);
 		return result;
 	}
+
+	@RequestMapping(value = "api/openid/wx", method = RequestMethod.POST)
+	@ResponseBody
+	public Result openidForWx(@RequestBody Map params) {
+        Integer coreEpId = CommonUtil.objectParseInteger(params.get(EpConstant.EpKey.CORE_EP_ID));
+        Result<Map> tokenResult = thirdPayService.getWxOpenid(coreEpId, params.get("code").toString());
+        if (!tokenResult.isSuccess()) {
+            throw new ApiException("获取微信openid失败");
+        }
+		return tokenResult;
+	}
 }

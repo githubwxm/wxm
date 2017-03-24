@@ -117,6 +117,26 @@ public class WxPayService {
         WxProperties wxProperties = wxPropertiesMap.get(coreEpId);
         return accessToken.get(wxProperties);
     }
+
+    public Map getOpenid(Integer coreEpId, String code) {
+        WxProperties wxProperties = wxPropertiesMap.get(coreEpId);
+        TenpayHttpClient client = new TenpayHttpClient();
+        client.setIsHttps(true);
+        client.setMethod("get");
+        client.setReqContent(String.format("%s?grant_type=authorization_code&appid=%s&secret=%s&code=%s", ConstantUtil.ACCESS_TOKEN_SECOND, wxProperties.getApp_id(), wxProperties.getApp_secret(), code));
+        client.setWxProperties(wxProperties);
+        if (!client.call()){
+            logger.warn("微信获取openid通信异常: {}-{}", client.getResponseCode(), client.getErrInfo());
+            throw new RuntimeException("微信获取openid通信失败");
+        }
+        String response = client.getResContent();
+        logger.info("微信获取openid返回: {}", response);
+        Map map = JsonUtils.json2Map(response);
+        if (!map.containsKey("openid")) {
+            throw new RuntimeException("微信获取openid失败");
+        }
+        return map;
+    }
     public   <T> T request(String url, CommonsReq req, Class<T> cls, boolean certBool,Integer coreEpId ) throws Exception {
         WxProperties wxProperties = wxPropertiesMap.get(coreEpId);
        return  this.request(url,req,cls,certBool,wxProperties);
