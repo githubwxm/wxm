@@ -428,7 +428,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
                 refundOrderResult = refundOrder;
             }
         }
-        Assert.notNull(refundOrderResult, "退订订单不存在");
+        Assert.notNull(refundOrderResult, "没有在退订中的退订订单");
         List<Visitor> visitors = visitorMapper.selectByOrderItem(orderItem.getId());
         if (visitors.size() > 1) {
             throw new ApiException("该订单有多个游客");
