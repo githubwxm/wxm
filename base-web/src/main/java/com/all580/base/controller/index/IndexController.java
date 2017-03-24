@@ -46,7 +46,7 @@ public class IndexController extends BaseController {
 		return result;
 	}
 
-	@RequestMapping(value = "signature/wx", method = RequestMethod.POST)
+	@RequestMapping(value = "api/signature/wx", method = RequestMethod.POST)
 	@ResponseBody
 	public Result signatureForWx(@RequestBody Map params) {
 		Result<Map> result = new Result<>(true);
