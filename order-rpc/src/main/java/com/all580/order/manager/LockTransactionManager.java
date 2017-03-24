@@ -304,6 +304,9 @@ public class LockTransactionManager {
         if (refundOrder.getStatus() != OrderConstant.RefundOrderStatus.AUDIT_WAIT) {
             throw new ApiException("退订订单不在待审核状态");
         }
+        if (refundOrder.getAudit_time() != null) {
+            throw new ApiException("该退订订单已审核");
+        }
         refundOrder.setAudit_time(new Date());
         refundOrder.setAudit_user_id(CommonUtil.objectParseInteger(params.get("operator_id")));
         refundOrder.setAudit_user_name(CommonUtil.objectParseString(params.get("operator_name")));
@@ -354,6 +357,9 @@ public class LockTransactionManager {
         }
         if (!String.valueOf(params.get(EpConstant.EpKey.EP_ID)).equals(String.valueOf(orderItem.getSupplier_ep_id()))) {
             throw new ApiException("非法请求:当前企业不能审核该订单");
+        }
+        if (orderItem.getAudit_time() != null) {
+            throw new ApiException("该订单已审核");
         }
 
         orderItem.setAudit_user_id(CommonUtil.objectParseInteger(params.get("operator_id")));

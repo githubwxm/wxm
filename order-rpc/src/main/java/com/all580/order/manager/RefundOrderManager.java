@@ -515,6 +515,9 @@ public class RefundOrderManager extends BaseOrderManager {
                 }
             }
             if (i != refundVisitorList.size()) {
+                if (i <= 0) {
+                    throw new ApiException("退票发起失败: " + refundOrder.getNumber());
+                }
                 log.warn("*****退票发起部分成功*****");
             }
         }

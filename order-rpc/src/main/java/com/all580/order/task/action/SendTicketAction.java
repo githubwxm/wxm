@@ -94,7 +94,7 @@ public class SendTicketAction implements JobRunner {
             com.all580.voucher.api.model.Visitor v = new com.all580.voucher.api.model.Visitor();
             BeanUtils.copyProperties(visitor, v);
             if (StringUtils.isEmpty(v.getSid())) {
-                v.setSid("SYSTEM");
+                v.setSid("110101194901013454");
             }
             contacts.add(v);
         }
