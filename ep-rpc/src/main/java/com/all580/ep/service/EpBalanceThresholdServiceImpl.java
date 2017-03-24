@@ -124,31 +124,31 @@ public class EpBalanceThresholdServiceImpl implements EpBalanceThresholdService 
     public Result CreateOnUpdateThreshold(Map<String,Object> map){
         Result result = new Result(true);
         Integer id = CommonUtil.objectParseInteger(map.get("id"));//send_ep_id
+        if("1".equals(map.get("threshold_status"))){
+            String send_phone1= CommonUtil.objectParseString( map.get("send_phone1"));
+            String send_phone2= CommonUtil.objectParseString( map.get("send_phone2"));
+            Integer threshold=CommonUtil.objectParseInteger( map.get("threshold"));
+            Assert.notNull(threshold, "余额提醒值为空");
+            if(send_phone1==null && send_phone2==null){
+                result.setError("电话号码必须有一个");
+                return result;
+            }
+            if(send_phone1!=null && send_phone2!=null){
+                if(send_phone1.trim().equals(send_phone2)){
+                    result.setError("2个电话号码不能一致");
+                    return result;
+                }
+            }
+            if(threshold<0){
+                result.setError("余额提醒值为负数");
+                return result;
+            }
+            if(threshold>5000000){
+                result.setError("余额提醒值过大，50000");
+                return result;
+            }
+        }
         if(null==id){
-          if("1".equals(map.get("threshold_status"))){
-              String send_phone1= CommonUtil.objectParseString( map.get("send_phone1"));
-              String send_phone2= CommonUtil.objectParseString( map.get("send_phone2"));
-              Integer threshold=CommonUtil.objectParseInteger( map.get("threshold"));
-              Assert.notNull(threshold, "余额提醒值为空");
-              if(send_phone1==null && send_phone2==null){
-                   result.setError("电话号码必须有一个");
-                  return result;
-              }
-              if(send_phone1!=null && send_phone2!=null){
-                  if(send_phone1.trim().equals(send_phone2)){
-                      result.setError("2个电话号码不能一致");
-                      return result;
-                  }
-              }
-              if(threshold<0){
-                  result.setError("余额提醒值为负数");
-                  return result;
-              }
-              if(threshold>5000000){
-                  result.setError("余额提醒值过大，50000");
-                  return result;
-              }
-           }
             smsSendMapper.insert(map);
         }else{
             smsSendMapper.updateByPrimaryKey(map);
