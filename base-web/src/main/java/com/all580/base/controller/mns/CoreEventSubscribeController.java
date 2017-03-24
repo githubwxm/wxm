@@ -66,9 +66,10 @@ public class CoreEventSubscribeController extends AbstractSubscribeController {
             Collection<MnsSubscribeAction> actions = mnsEventCache.getProcess(action);
             if (actions == null || actions.size() == 0) {
                 log.warn("MNS:{}, Action:{} 事件,没有订阅器.", id, action);
-                responseWrite(response, "OK");
                 return;
             }
+            // TODO: 2017/3/24 这里先直接返回
+            responseWrite(response, "OK");
 
             List<Job> jobs = new ArrayList<>();
             Object object = null;
@@ -102,7 +103,6 @@ public class CoreEventSubscribeController extends AbstractSubscribeController {
             if (!jobs.isEmpty() && jobs.size() > 0) {
                 jobClient.submitJob(jobs);
             }
-            responseWrite(response, "OK");
         }
     }
 
