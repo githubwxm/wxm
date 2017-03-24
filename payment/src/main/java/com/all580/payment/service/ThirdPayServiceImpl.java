@@ -473,4 +473,11 @@ public class ThirdPayServiceImpl implements ThirdPayService {
         rst.put(JsonUtils.obj2map(bean));
         return rst;
     }
+
+    @Override
+    public Result<Map> getWxOpenid(int coreEpId, String code) {
+        Result<Map> rst = new Result<>(true);
+        rst.put(getWxPayService(coreEpId, PaymentConstant.PaymentType.WX_PAY).getOpenid(coreEpId, code));
+        return rst;
+    }
 }

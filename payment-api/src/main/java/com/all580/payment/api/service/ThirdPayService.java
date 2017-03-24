@@ -89,4 +89,11 @@ public interface ThirdPayService {
      * @return
      */
      Result<Map> getWxAccessToken(int coreEpId);
+
+    /**
+     * 获取微信accessToken
+     * @param coreEpId
+     * @return
+     */
+     Result<Map> getWxOpenid(int coreEpId, String code);
 }
