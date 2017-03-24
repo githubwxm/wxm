@@ -265,10 +265,26 @@ public class ThirdPayServiceImpl implements ThirdPayService {
             logger.info(html);
             result.put(html);
             result.setSuccess();
-        } else {
+       } else if (PaymentConstant.PaymentType.WX_PAY == payType) {
+           try {
+               UnifiedOrderRsp rsp = getWxPayService(coreEpId, payType).reqPay(ordCode, coreEpId, ConstantUtil.JSAPI_TRADE_TYPE, params);
+               Map<String, Object> map = new HashMap<>();
+               map.put("prepay_id", rsp.getPrepay_id());
+               map.put("code_url", rsp.getCode_url());
+               map.put("return_code", rsp.getReturn_code());
+               map.put("return_msg", rsp.getResult_code());
+               String string = JsonUtils.toJson(map);
+               logger.info(string);
+               result.put(string);
+               result.setSuccess();
+           } catch (Exception e) {
+               logger.error("微信WAP支付异常", e);
+               throw new ApiException("支付异常:" + e.getMessage());
+           }
+       } else {
             throw new RuntimeException("不支持的支付类型:" + payType);
-        }
-        return result;
+       }
+       return result;
     }
 
     /**

@@ -39,6 +39,11 @@ public class WxPayService {
     private AccessToken accessToken;
 
     public String reqPay(long ordCode, int coreEpId, Map<String, Object> params) throws Exception {
+        return reqPay(ordCode, coreEpId, ConstantUtil.NATIVE_TRADE_TYPE, params).getCode_url();
+
+    }
+
+    public UnifiedOrderRsp reqPay(long ordCode, int coreEpId, String tradeType, Map<String, Object> params) throws Exception {
         WxProperties wxProperties = wxPropertiesMap.get(coreEpId);
         // payCallbackUrl = "http://core.py.ngrok.wendal.cn/no_auth_api/callback/wx/payment";
         UnifiedOrderReq req = new UnifiedOrderReq();
@@ -49,7 +54,7 @@ public class WxPayService {
         req.setTotal_fee(String.valueOf(params.get("totalFee")));
         //透传参数
         req.setAttach("" + coreEpId);
-        req.setTrade_type(ConstantUtil.NATIVE_TRADE_TYPE);
+        req.setTrade_type(tradeType);
         req.setProduct_id(String.valueOf(params.get("prodId")));
         req.setSpbill_create_ip(IPUtils.getRealIp(true));
         req.setFee_type("CNY");
@@ -59,10 +64,7 @@ public class WxPayService {
         req.setOut_trade_no(String.valueOf(ordCode));
         // req.setSign();
 
-        UnifiedOrderRsp unifiedOrderRsp = this.request(ConstantUtil.UNIFIEDORDER, req, UnifiedOrderRsp.class, false, wxProperties);
-
-        return unifiedOrderRsp.getCode_url();
-
+        return this.request(ConstantUtil.UNIFIEDORDER, req, UnifiedOrderRsp.class, false, wxProperties);
     }
 
     // 申请退款
