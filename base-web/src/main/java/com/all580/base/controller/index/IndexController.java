@@ -15,6 +15,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.lang.exception.ApiException;
+import javax.lang.exception.ParamsMapValidationException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
@@ -70,7 +71,11 @@ public class IndexController extends BaseController {
 	@ResponseBody
 	public Result openidForWx(@RequestBody Map params) {
         Integer coreEpId = CommonUtil.objectParseInteger(params.get(EpConstant.EpKey.CORE_EP_ID));
-        Result<Map> tokenResult = thirdPayService.getWxOpenid(coreEpId, params.get("code").toString());
+		Object code = params.get("code");
+		if (code == null) {
+			throw new ParamsMapValidationException("code 不能为空");
+		}
+		Result<Map> tokenResult = thirdPayService.getWxOpenid(coreEpId, code.toString());
         if (!tokenResult.isSuccess()) {
             throw new ApiException("获取微信openid失败");
         }
