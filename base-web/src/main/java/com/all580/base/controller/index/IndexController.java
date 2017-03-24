@@ -56,7 +56,7 @@ public class IndexController extends BaseController {
             throw new ApiException("获取微信token失败");
         }
         Map map = tokenResult.get();
-        String nonceStr = RandomStringUtils.random(30);
+        String nonceStr = DigestUtils.md5Hex(RandomStringUtils.randomAlphanumeric(10));
         long timestamp = System.currentTimeMillis() / 1000;
         String signature = DigestUtils.sha1Hex(String.format("jsapi_ticket=%s&noncestr=%s&timestamp=%s", map.get("ticket"), nonceStr, timestamp));
         result.put("app_id", map.get("appId"));
