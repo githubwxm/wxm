@@ -10,6 +10,7 @@ import com.all580.payment.thirdpay.wx.util.WXUtil;
 import com.framework.common.Result;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.net.IPUtils;
+import com.framework.common.util.CommonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,6 +63,7 @@ public class WxPayService {
         req.setBody(String.valueOf(params.get("prodName")));
         // req.setGoods_tag();
         req.setOut_trade_no(String.valueOf(ordCode));
+        req.setOpenid(CommonUtil.objectParseString(params.get("openid")));
         // req.setSign();
 
         return this.request(ConstantUtil.UNIFIEDORDER, req, UnifiedOrderRsp.class, false, wxProperties);
