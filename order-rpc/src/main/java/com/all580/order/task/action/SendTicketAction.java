@@ -19,6 +19,7 @@ import com.github.ltsopensource.tasktracker.Result;
 import com.github.ltsopensource.tasktracker.runner.JobContext;
 import com.github.ltsopensource.tasktracker.runner.JobRunner;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -92,6 +93,9 @@ public class SendTicketAction implements JobRunner {
         for (Visitor visitor : visitorList) {
             com.all580.voucher.api.model.Visitor v = new com.all580.voucher.api.model.Visitor();
             BeanUtils.copyProperties(visitor, v);
+            if (StringUtils.isEmpty(v.getSid())) {
+                v.setSid("SYSTEM");
+            }
             contacts.add(v);
         }
         sendTicketParams.setVisitors(contacts);
