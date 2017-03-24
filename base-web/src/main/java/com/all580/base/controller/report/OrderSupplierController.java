@@ -47,6 +47,7 @@ public class OrderSupplierController extends BaseController {
     @ResponseBody
     public Result selectSupplierOrderReserveDetail(HttpServletRequest request, HttpServletResponse response,
                                              @RequestParam("statistic_ep_id") Integer statistic_ep_id,
+                                                   String start  ,String end,
                                              String date_time  ,String condition,String pro_name,
                                              Integer record_start,Integer record_count){
         Map<String,Object> map = new HashMap<>();
@@ -54,6 +55,8 @@ public class OrderSupplierController extends BaseController {
         map.put("date_time",date_time);
         map.put("condition",condition);
         map.put("pro_name",pro_name);
+        map.put("start",start);
+        map.put("end",end);
         map.put("record_start",record_start);
         map.put("record_count",record_count);
         return  epOrderService.selectSupplierOrderReserveDetail(map);
