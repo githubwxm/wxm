@@ -474,6 +474,7 @@ public class LockTransactionManager {
         payParams.put("serialNum", order.getNumber().toString());
         payParams.put("prodId", StringUtils.join(ids, ","));
         payParams.put("return_url", params.get("return_url"));
+        payParams.put("openid", params.get("openid"));
 
         boolean isWap = BooleanUtils.toBoolean(CommonUtil.objectParseString(params.get("wap")));
         if (isWap) {
