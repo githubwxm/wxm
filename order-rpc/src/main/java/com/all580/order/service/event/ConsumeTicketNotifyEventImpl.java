@@ -39,6 +39,7 @@ public class ConsumeTicketNotifyEventImpl extends BaseNotifyEvent implements Con
         map.put("consume_amount",serial.getQuantity());
         map.put("vocher_remaining","");
         map.put("device_sid","");
+        map.put("total_usd_qty",serial.getQuantity());
 
         Map<String,Object> consumeInfo = new HashMap<>();
         consumeInfo.put("consume_info",map);
