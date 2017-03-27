@@ -39,7 +39,7 @@ public interface ThirdPayService {
      *                 prodId - int - 子产品ID
      * @return 第三方支付请求数据：1、支付宝：请求支付宝的form表单html片段
      */
-    Result<String> wapPay(long ordCode, int coreEpId, int payType, Map<String, Object> params);
+    Result<Object> wapPay(long ordCode, int coreEpId, int payType, Map<String, Object> params);
 
     /**
      * 退款请求

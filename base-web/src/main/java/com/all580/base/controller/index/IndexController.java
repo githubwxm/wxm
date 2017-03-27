@@ -10,6 +10,7 @@ import com.framework.common.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -52,6 +53,11 @@ public class IndexController extends BaseController {
 	public Result signatureForWx(@RequestBody Map params) {
 		Result<Map> result = new Result<>(true);
         Integer coreEpId = CommonUtil.objectParseInteger(params.get(EpConstant.EpKey.CORE_EP_ID));
+        String url = CommonUtil.objectParseString(params.get("url"));
+        if (StringUtils.isEmpty(url)) {
+        	throw new ParamsMapValidationException("url 不能为空");
+		}
+		url = url.replaceAll("#(.*)", "");
         Result<Map> tokenResult = thirdPayService.getWxAccessToken(coreEpId);
         if (!tokenResult.isSuccess()) {
             throw new ApiException("获取微信token失败");
@@ -59,7 +65,7 @@ public class IndexController extends BaseController {
         Map map = tokenResult.get();
         String nonceStr = DigestUtils.md5Hex(RandomStringUtils.randomAlphanumeric(10));
         long timestamp = System.currentTimeMillis() / 1000;
-        String signature = DigestUtils.sha1Hex(String.format("jsapi_ticket=%s&noncestr=%s&timestamp=%s", map.get("ticket"), nonceStr, timestamp));
+        String signature = DigestUtils.sha1Hex(String.format("jsapi_ticket=%s&noncestr=%s&timestamp=%s&url=%s", map.get("ticket"), nonceStr, timestamp, url));
         result.put("app_id", map.get("appId"));
         result.put("timestamp", timestamp);
         result.put("noncestr", nonceStr);

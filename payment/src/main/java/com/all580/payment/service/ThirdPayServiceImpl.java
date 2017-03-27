@@ -253,8 +253,8 @@ public class ThirdPayServiceImpl implements ThirdPayService {
     }
 
     @Override
-    public Result<String> wapPay(long ordCode, int coreEpId, int payType, Map<String, Object> params) {
-        Result<String> result = new Result<>();
+    public Result<Object> wapPay(long ordCode, int coreEpId, int payType, Map<String, Object> params) {
+        Result<Object> result = new Result<>();
 
        if (PaymentConstant.PaymentType.ALI_PAY == payType) {
             String html = null;
@@ -278,16 +278,15 @@ public class ThirdPayServiceImpl implements ThirdPayService {
                // 给前台签名预支付
                String nonceStr = DigestUtils.md5Hex(RandomStringUtils.randomAlphanumeric(10));
                long timestamp = System.currentTimeMillis() / 1000;
-               String paramsStr = String.format("appId=%s&nonceStr=%s&package=prepay_id=%s&signType=MD5&timeStamp=%s", rsp.getAppid(), nonceStr, rsp.getPrepay_id(), timestamp);
-               String paySign = DigestUtils.sha1Hex(paramsStr).toUpperCase();
+               String paramsStr = String.format("appId=%s&nonceStr=%s&package=prepay_id=%s&signType=MD5&timeStamp=%s&key=%s", rsp.getAppid(), nonceStr, rsp.getPrepay_id(), timestamp, rsp.getKey());
+               String paySign = DigestUtils.md5Hex(paramsStr).toUpperCase();
                map.put("paySign", paySign);
                map.put("nonceStr", nonceStr);
                map.put("timeStamp", timestamp);
                map.put("appId", rsp.getAppid());
                map.put("signType", "MD5");
-               String string = JsonUtils.toJson(map);
-               logger.info(string);
-               result.put(string);
+               logger.info(JsonUtils.toJson(map));
+               result.put(map);
                result.setSuccess();
            } catch (Exception e) {
                logger.error("微信WAP支付异常", e);
