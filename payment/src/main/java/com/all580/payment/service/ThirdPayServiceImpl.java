@@ -253,8 +253,8 @@ public class ThirdPayServiceImpl implements ThirdPayService {
     }
 
     @Override
-    public Result<String> wapPay(long ordCode, int coreEpId, int payType, Map<String, Object> params) {
-        Result<String> result = new Result<>();
+    public Result<Object> wapPay(long ordCode, int coreEpId, int payType, Map<String, Object> params) {
+        Result<Object> result = new Result<>();
 
        if (PaymentConstant.PaymentType.ALI_PAY == payType) {
             String html = null;
@@ -285,9 +285,8 @@ public class ThirdPayServiceImpl implements ThirdPayService {
                map.put("timeStamp", timestamp);
                map.put("appId", rsp.getAppid());
                map.put("signType", "MD5");
-               String string = JsonUtils.toJson(map);
-               logger.info(string);
-               result.put(string);
+               logger.info(JsonUtils.toJson(map));
+               result.put(map);
                result.setSuccess();
            } catch (Exception e) {
                logger.error("微信WAP支付异常", e);
