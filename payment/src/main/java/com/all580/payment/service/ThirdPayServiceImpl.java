@@ -17,7 +17,9 @@ import com.framework.common.event.MnsEventAspect;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.mns.TopicPushManager;
 import com.framework.common.util.CommonUtil;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -273,6 +275,16 @@ public class ThirdPayServiceImpl implements ThirdPayService {
                map.put("code_url", rsp.getCode_url());
                map.put("return_code", rsp.getReturn_code());
                map.put("result_code", rsp.getResult_code());
+               // 给前台签名预支付
+               String nonceStr = DigestUtils.md5Hex(RandomStringUtils.randomAlphanumeric(10));
+               long timestamp = System.currentTimeMillis() / 1000;
+               String paramsStr = String.format("appId=%s&nonceStr=%s&package=prepay_id=%s&signType=MD5&timeStamp=%s", rsp.getAppid(), nonceStr, rsp.getPrepay_id(), timestamp);
+               String paySign = DigestUtils.sha1Hex(paramsStr).toUpperCase();
+               map.put("paySign", paySign);
+               map.put("nonceStr", nonceStr);
+               map.put("timeStamp", timestamp);
+               map.put("appId", rsp.getAppid());
+               map.put("signType", "MD5");
                String string = JsonUtils.toJson(map);
                logger.info(string);
                result.put(string);
