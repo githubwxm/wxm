@@ -278,8 +278,8 @@ public class ThirdPayServiceImpl implements ThirdPayService {
                // 给前台签名预支付
                String nonceStr = DigestUtils.md5Hex(RandomStringUtils.randomAlphanumeric(10));
                long timestamp = System.currentTimeMillis() / 1000;
-               String paramsStr = String.format("appId=%s&nonceStr=%s&package=prepay_id=%s&signType=MD5&timeStamp=%s", rsp.getAppid(), nonceStr, rsp.getPrepay_id(), timestamp);
-               String paySign = DigestUtils.sha1Hex(paramsStr).toUpperCase();
+               String paramsStr = String.format("appId=%s&nonceStr=%s&package=prepay_id=%s&signType=MD5&timeStamp=%s&key=%s", rsp.getAppid(), nonceStr, rsp.getPrepay_id(), timestamp, rsp.getKey());
+               String paySign = DigestUtils.md5Hex(paramsStr).toUpperCase();
                map.put("paySign", paySign);
                map.put("nonceStr", nonceStr);
                map.put("timeStamp", timestamp);

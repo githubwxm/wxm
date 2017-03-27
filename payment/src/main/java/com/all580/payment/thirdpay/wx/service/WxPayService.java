@@ -66,7 +66,9 @@ public class WxPayService {
         req.setOpenid(CommonUtil.objectParseString(params.get("openid")));
         // req.setSign();
 
-        return this.request(ConstantUtil.UNIFIEDORDER, req, UnifiedOrderRsp.class, false, wxProperties);
+        UnifiedOrderRsp rsp = this.request(ConstantUtil.UNIFIEDORDER, req, UnifiedOrderRsp.class, false, wxProperties);
+        rsp.setKey(wxProperties.getMch_key());
+        return rsp;
     }
 
     // 申请退款

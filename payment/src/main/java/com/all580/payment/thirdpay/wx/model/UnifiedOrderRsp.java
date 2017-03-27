@@ -47,6 +47,7 @@ public class UnifiedOrderRsp extends CommonsRsp implements Serializable {
 //    PAYERROR--支付失败(其他原因，如银行返回失败)
     private String trade_state;
 
+    private String key;
 
 
 
