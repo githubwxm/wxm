@@ -198,9 +198,9 @@ public class AliPayCallbackController extends BaseController {
         params.put("prodId", 1010);
         params.put("prodName", "测试产品名称");
         params.put("serialNum", RandomStringUtils.random(10));
-        Result<String> result = thirdPayService.wapPay(RandomUtils.nextLong(), coreEpId, payType, params);
+        Result<Object> result = thirdPayService.wapPay(RandomUtils.nextLong(), coreEpId, payType, params);
         rsp.setContentType("text/html; charset=UTF-8");
-        logger.info(result.get());
+        logger.info(JsonUtils.toJson(result.get()));
         rsp.getWriter().print(result.get());
         rsp.getWriter().flush();
     }
