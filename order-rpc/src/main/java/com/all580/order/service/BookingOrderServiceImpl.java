@@ -404,9 +404,8 @@ public class BookingOrderServiceImpl implements BookingOrderService {
                 ProductSalesDayInfo dayInfo = dayInfoList.get(i);
                 detail.setOversell(oversell);
                 // 如果是超卖则把子订单状态修改为待审
-                if ((oversell &&
-                        (dayInfo.getSale_rule_type() == ProductConstants.SalesRuleType.OVERSELL_NEED_AUDIT ||
-                                dayInfo.getSale_rule_type() == ProductConstants.SalesRuleType.ANYWAY_NEED_AUDIT) ||
+                if (((oversell && dayInfo.getSale_rule_type() == ProductConstants.SalesRuleType.OVERSELL_NEED_AUDIT) ||
+                        dayInfo.getSale_rule_type() == ProductConstants.SalesRuleType.ANYWAY_NEED_AUDIT ||
                         dayInfo.getSale_rule_type() == ProductConstants.SalesRuleType.ANYWAY_NEED_AUDIT_OVERSELL ||
                         dayInfo.getSale_rule_type() == ProductConstants.SalesRuleType.ANYWAY_NEED_AUDIT_NOT_OVERSELL) &&
                         item.getStatus() == OrderConstant.OrderItemStatus.AUDIT_SUCCESS) {

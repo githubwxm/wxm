@@ -636,9 +636,13 @@ public class RefundOrderManager extends BaseOrderManager {
         if (refundOrder != null) {
             List<ProductSearchParams> lockParams = new ArrayList<>();
             OrderItem orderItem = orderItemMapper.selectByPrimaryKey(refundOrder.getOrder_item_id());
+            List<OrderItemDetail> details = orderItemDetailMapper.selectByItemId(orderItem.getId());
             Collection<RefundDay> refundDays = AccountUtil.decompileRefundDay(refundOrder.getData());
             for (RefundDay refundDay : refundDays) {
-                lockParams.add(getProductSearchParams(orderItem, refundDay.getDay(), refundDay.getQuantity()));
+                OrderItemDetail detail = AccountUtil.getDetailByDay(details, refundDay.getDay());
+                if (!detail.getOversell()) { // 没有超卖才还库存
+                    lockParams.add(getProductSearchParams(orderItem, refundDay.getDay(), refundDay.getQuantity()));
+                }
             }
             // 还库存
             if (!lockParams.isEmpty()) {
