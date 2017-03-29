@@ -249,4 +249,10 @@
     SET use_quantity = use_quantity + #{quantity}
     where id = #{id}
   </update>
+  <update id="refundQuantity">
+    UPDATE t_visitor
+    SET return_quantity = return_quantity + #{quantity}
+    where id = #{id}
+    and return_quantity + #{quantity} &lt;= quantity
+  </update>
 </mapper>

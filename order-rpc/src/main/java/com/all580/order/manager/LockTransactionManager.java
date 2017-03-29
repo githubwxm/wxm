@@ -513,6 +513,10 @@ public class LockTransactionManager {
             return new Result(false, "退票流水:" + info.getRefId() + "重复操作");
         }
 
+        if (orderItem.getQuantity() < orderItem.getUsed_quantity() + orderItem.getRefund_quantity() + refundSerial.getQuantity() && info.isSuccess()) {
+            log.error("退订订单:{} 退票回调异常: 退票人:{} 可退票不足, 小秘书重置为退票失败", refundOrder.getNumber(), info.getVisitorSeqId());
+            info.setSuccess(false);
+        }
         eventManager.addEvent(OrderConstant.EventType.REFUND_TICKET, new RefundTicketEventParam(refundOrder.getId(), info.isSuccess()));
         // 退票失败
         if (!info.isSuccess()) {
@@ -527,7 +531,10 @@ public class LockTransactionManager {
         // 获取核销人信息
         Visitor visitor = visitorMapper.selectByPrimaryKey(info.getVisitorSeqId());
         visitor.setReturn_quantity(visitor.getReturn_quantity() + refundSerial.getQuantity());
-        visitorMapper.updateByPrimaryKeySelective(visitor);
+        int ret = visitorMapper.refundQuantity(visitor.getId(), refundSerial.getQuantity());
+        if (ret < 1) {
+            log.warn("退订订单:{} 退票回调异常: 退票人:{} 可退票不足", refundOrder.getNumber(), info.getVisitorSeqId());
+        }
 
         RefundVisitor refundVisitor = refundVisitorMapper.selectByRefundIdAndVisitorId(refundOrder.getId(), info.getVisitorSeqId());
         refundVisitor.setReturn_quantity(refundVisitor.getReturn_quantity() + refundSerial.getQuantity());
