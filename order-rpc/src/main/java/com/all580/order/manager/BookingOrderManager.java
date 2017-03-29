@@ -170,8 +170,9 @@ public class BookingOrderManager extends BaseOrderManager {
             if (dayInfo.isBooking_limit()) {
                 int dayLimit = dayInfo.getBooking_day_limit();
                 Date limit = DateUtils.addDays(bookingDate, -dayLimit);
+                String time = null;
                 try {
-                    String time = dayInfo.getBooking_time_limit();
+                    time = dayInfo.getBooking_time_limit();
                     if (time != null) {
                         String[] timeArray = time.split(":");
                         limit = DateUtils.setHours(limit, Integer.parseInt(timeArray[0]));
@@ -181,7 +182,7 @@ public class BookingOrderManager extends BaseOrderManager {
                     throw new ApiException("预定时间限制数据不合法", e);
                 }
                 if (when.after(limit)) {
-                    throw new ApiException("预定时间限制,最晚预定时间:" + DateFormatUtils.parseDateToDatetimeString(limit));
+                    throw new ApiException(String.format("该产品有预订限制，需在订购时间的前%d天的%s前预订", dayLimit, time == null ? "00:00" : time));
                 }
             }
         }
