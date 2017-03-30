@@ -201,7 +201,28 @@
                 </resources>
             </build>
         </profile>
-
+        <profile>
+            <id>demo</id>
+            <properties>
+                <active.profilename>demo</active.profilename>
+                <active.driverClass>com.mysql.jdbc.Driver</active.driverClass>
+                <active.name>root</active.name>
+                <active.pwd>if(a==b)echo1</active.pwd>
+                <active.url>jdbc:mysql://localhost:3306/config?characterEncoding=utf8</active.url>
+            </properties>
+            <build>
+                <resources>
+                    <resource>
+                        <directory>src/main/resources/</directory>
+                        <filtering>true</filtering>
+                        <includes>
+                            <include>**/app_init.xml</include>
+                            <include>**</include>
+                        </includes>
+                    </resource>
+                </resources>
+            </build>
+        </profile>
     </profiles>
 
 </project>
