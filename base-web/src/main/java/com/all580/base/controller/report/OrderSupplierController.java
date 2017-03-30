@@ -133,6 +133,6 @@ public class OrderSupplierController extends BaseController {
         map.put("end",end);
         map.put("record_start",record_start);
         map.put("record_count",record_count);
-        return  epOrderService.selectSupplierOrderRefund(map);
+        return  epOrderService.selectSupplierOrderRefundDetail(map);
     }
 }
