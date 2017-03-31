@@ -3,6 +3,8 @@ package com.all580.order.task.timer;
 import com.all580.order.dao.OrderMapper;
 import com.all580.order.entity.Order;
 import com.all580.order.manager.RefundOrderManager;
+import com.framework.common.distributed.lock.DistributedLockTemplate;
+import com.framework.common.distributed.lock.DistributedReentrantLock;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,6 +34,12 @@ public class CancelOrderTimer {
     @Autowired
     private RefundOrderManager refundOrderManager;
 
+    @Autowired
+    private DistributedLockTemplate distributedLockTemplate;
+
+    @Value("${lock.timeout}")
+    private int lockTimeOut = 3;
+
     private AtomicBoolean payRun = new AtomicBoolean(false);
     private AtomicBoolean auditRun = new AtomicBoolean(false);
 
@@ -43,11 +51,14 @@ public class CancelOrderTimer {
                 if (orderList != null && !orderList.isEmpty()) {
                     boolean retry = true;
                     for (Order order : orderList) {
+                        DistributedReentrantLock lock = distributedLockTemplate.execute(String.valueOf(order.getNumber()), lockTimeOut);
                         try {
                             refundOrderManager.cancel(order);
                         } catch (Exception e) {
                             retry = false;
                             log.error("订单:" + order.getNumber() + "未支付超时取消异常", e);
+                        } finally {
+                            lock.unlock();
                         }
                     }
                     if (retry) {
@@ -70,11 +81,14 @@ public class CancelOrderTimer {
                 if (orderList != null && !orderList.isEmpty()) {
                     boolean retry = true;
                     for (Order order : orderList) {
+                        DistributedReentrantLock lock = distributedLockTemplate.execute(String.valueOf(order.getNumber()), lockTimeOut);
                         try {
                             refundOrderManager.cancel(order);
                         } catch (Exception e) {
                             retry = false;
                             log.error("订单:" + order.getNumber() + "待审核超时取消异常", e);
+                        } finally {
+                            lock.unlock();
                         }
                     }
                     if (retry) {
