@@ -108,7 +108,7 @@ public class AliPayService {
         sParaTemp.put("payment_type", AlipayConfig.PayType.PROD_PURCHASE.toString());
         sParaTemp.put("notify_url", notify_url);
         sParaTemp.put("return_url", CommonUtil.objectParseString(params.get("return_url")));
-        sParaTemp.put("seller_email", "admin@all580.com");
+        sParaTemp.put("seller_email", aliPayProperties.getSeller_email());
         sParaTemp.put("out_trade_no", String.valueOf(ordCode));
         sParaTemp.put("subject", String.valueOf(params.get("prodName")));
         int totalFee = (Integer) params.get("totalFee");
