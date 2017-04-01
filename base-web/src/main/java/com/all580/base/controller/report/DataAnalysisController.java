@@ -95,6 +95,7 @@ public class DataAnalysisController extends BalanceController {
                     calendar.set(Calendar.HOUR_OF_DAY, 0);
                     calendar.set(Calendar.MINUTE, 0);
                     calendar.set(Calendar.SECOND, 0);
+                    calendar.set(Calendar.MILLISECOND, 0);
                     result[0] = calendar.getTime();
                 } else {
                     result[0] = DateFormatUtils.parseString(DateFormatUtils.DATE_FORMAT, start_time);
@@ -111,6 +112,7 @@ public class DataAnalysisController extends BalanceController {
                     calendar.set(Calendar.HOUR_OF_DAY, 0);
                     calendar.set(Calendar.MINUTE, 0);
                     calendar.set(Calendar.SECOND, 0);
+                    calendar.set(Calendar.MILLISECOND, 0);
                     result[1] = calendar.getTime();
                 } else {
                     result[1] = DateFormatUtils.parseString(DateFormatUtils.DATE_FORMAT, end_time);
