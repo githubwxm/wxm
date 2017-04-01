@@ -85,7 +85,7 @@ public class DataAnalysisController extends BalanceController {
         try {
             if (start_time != null) {
                 String[] split = start_time.split("-");
-                if (split.length == 1) {
+                if (split.length == 2) {
                     Calendar calendar = Calendar.getInstance();
                     calendar.set(Calendar.YEAR, Integer.parseInt(split[0]));
                     calendar.set(Calendar.MONTH, Integer.parseInt(split[1]) - 1);
@@ -97,7 +97,7 @@ public class DataAnalysisController extends BalanceController {
             }
             if (end_time != null) {
                 String[] split = end_time.split("-");
-                if (split.length == 1) {
+                if (split.length == 2) {
                     Calendar calendar = Calendar.getInstance();
                     calendar.set(Calendar.YEAR, Integer.parseInt(split[0]));
                     calendar.set(Calendar.MONTH, Integer.parseInt(split[1]));
