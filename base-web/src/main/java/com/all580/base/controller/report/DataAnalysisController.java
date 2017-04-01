@@ -9,6 +9,7 @@ import com.framework.common.Result;
 import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.util.CommonUtil;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,6 +43,12 @@ public class DataAnalysisController extends BalanceController {
                                        @RequestParam(defaultValue = "0") Integer record_start,
                                        @RequestParam(defaultValue = "20") Integer record_count) {
         Date[] dates = checkDate(start, end);
+        if (StringUtils.isEmpty(sortCol)) {
+            sortCol = null;
+        }
+        if (StringUtils.isEmpty(sortType)) {
+            sortType = null;
+        }
         if (!Utils.isSortType(sortType)) {
             throw new ApiException("排序方式错误");
         }
@@ -65,6 +72,12 @@ public class DataAnalysisController extends BalanceController {
                                            @RequestParam(defaultValue = "0") Integer record_start,
                                            @RequestParam(defaultValue = "20") Integer record_count) {
         Date[] dates = checkDate(start, end);
+        if (StringUtils.isEmpty(sortCol)) {
+            sortCol = null;
+        }
+        if (StringUtils.isEmpty(sortType)) {
+            sortType = null;
+        }
         if (!Utils.isSortType(sortType)) {
             throw new ApiException("排序方式错误");
         }
