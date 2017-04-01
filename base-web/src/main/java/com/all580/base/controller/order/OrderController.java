@@ -1,6 +1,7 @@
 package com.all580.base.controller.order;
 
 import com.all580.base.manager.OrderValidateManager;
+import com.all580.base.util.Utils;
 import com.all580.order.api.service.BookingOrderService;
 import com.all580.order.api.service.OrderService;
 import com.all580.order.api.service.RefundOrderService;
@@ -202,7 +203,7 @@ public class OrderController extends BaseController {
                                                      @RequestParam(defaultValue = "0") Integer record_start,
                                                      @RequestParam(defaultValue = "20") Integer record_count) {
         checkPlatformOrderParams(start_time, end_time, phone);
-        Date[] dates = checkDate(start_time, end_time);
+        Date[] dates = Utils.checkDate(start_time, end_time);
         return orderService.selectPlatformOrderBySupplierCore(supplier_core_ep_id, dates[0], dates[1], order_status,
                 order_item_status, phone, order_item_number, record_start, record_count);
     }
@@ -223,7 +224,7 @@ public class OrderController extends BaseController {
                                           @RequestParam(defaultValue = "0") Integer record_start,
                                           @RequestParam(defaultValue = "20") Integer record_count) {
         checkPlatformOrderParams(start_time, end_time, phone);
-        Date[] dates = checkDate(start_time, end_time);
+        Date[] dates = Utils.checkDate(start_time, end_time);
         return orderService.selectBySupplierPlatform(supplier_core_ep_id, sale_core_ep_id, date_type,
                 dates[0], dates[1], order_status, order_item_status, phone, order_item_number, self, product_sub_number, record_start, record_count);
     }
@@ -231,7 +232,7 @@ public class OrderController extends BaseController {
     @RequestMapping(value = "list/channel/bill")
     @ResponseBody
     public Result<?> listChannelBill(@RequestParam Integer supplier_core_ep_id, String start, String end, Boolean settled) throws Exception {
-        Date[] array = checkDateTime(start, end);
+        Date[] array = Utils.checkDateTime(start, end);
         Date start_time = array[0];
         Date end_time = array[1];
         return orderService.selectChannelBill(supplier_core_ep_id, start_time, end_time, settled);
@@ -250,7 +251,7 @@ public class OrderController extends BaseController {
     @RequestMapping(value = "list/channel/bill/supplier")
     @ResponseBody
     public Result<?> listChannelBillForSupplier(Integer supplier_core_ep_id, String start, String end, Boolean settled) throws Exception {
-        Date[] array = checkDateTime(start, end);
+        Date[] array = Utils.checkDateTime(start, end);
         Date start_time = array[0];
         Date end_time = array[1];
         return orderService.selectChannelBillForSupplier(supplier_core_ep_id, start_time, end_time, settled);
@@ -260,35 +261,6 @@ public class OrderController extends BaseController {
     @ResponseBody
     public Result<?> getCancelTimes() {
         return orderService.getCancelTimeout();
-    }
-
-    private Date[] checkDate(String start_time, String end_time) {
-        Date[] result = new Date[]{null, null};
-        try {
-            if (start_time != null) {
-                result[0] = DateFormatUtils.parseString(DateFormatUtils.DATE_TIME_FORMAT, start_time);
-            }
-            if (end_time != null) {
-                result[1] = DateFormatUtils.parseString(DateFormatUtils.DATE_TIME_FORMAT, end_time);
-            }
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
-        return result;
-    }
-
-    private Date[] checkDateTime(String start, String end) {
-        Date start_time = null;
-        Date end_time = null;
-        try {
-            start_time = start == null ? null : DateFormatUtils.parseString(DateFormatUtils.DATE_FORMAT, start);
-            end_time = end == null ? null : DateFormatUtils.parseString(DateFormatUtils.DATE_FORMAT, end);
-            start_time = start_time == null ? null : DateFormatUtils.setHms(start_time, "00:00:00");
-            end_time = end_time == null ? null : DateFormatUtils.setHms(end_time, "23:59:59");
-        } catch (Exception e) {
-            log.warn("时间格式化异常", e);
-        }
-        return new Date[]{start_time, end_time};
     }
 
     private void checkPlatformOrderParams(String start_time, String end_time, String phone) {
