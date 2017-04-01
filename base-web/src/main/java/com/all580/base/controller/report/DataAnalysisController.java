@@ -29,7 +29,7 @@ public class DataAnalysisController extends BalanceController {
 
     @RequestMapping("sale/consume/list")
     @ResponseBody
-    public Result<?> consumeListBySale(@RequestParam Integer product_id,
+    public Result<?> consumeListBySale(Integer product_id,
                                        @RequestParam String start,
                                        @RequestParam String end,
                                        @RequestParam Integer core_ep_id,
@@ -50,7 +50,7 @@ public class DataAnalysisController extends BalanceController {
 
     @RequestMapping("sale/consume/compared")
     @ResponseBody
-    public Result<?> consumeComparedBySale(@RequestParam Integer product_id,
+    public Result<?> consumeComparedBySale(Integer product_id,
                                            @RequestParam String start,
                                            @RequestParam String end,
                                            @RequestParam Integer core_ep_id,
