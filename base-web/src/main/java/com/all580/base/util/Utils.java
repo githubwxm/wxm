@@ -2,6 +2,7 @@ package com.all580.base.util;
 
 import com.framework.common.lang.DateFormatUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 import java.text.ParseException;
 import java.util.Date;
@@ -45,6 +46,6 @@ public class Utils {
     }
 
     public static boolean isSortType(String type) {
-        return "asc".equalsIgnoreCase(type) || "desc".equalsIgnoreCase(type);
+        return StringUtils.isEmpty(type) || "asc".equalsIgnoreCase(type) || "desc".equalsIgnoreCase(type);
     }
 }

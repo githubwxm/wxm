@@ -38,26 +38,20 @@ public class DataAnalysisController extends BalanceController {
     public Result<?> consumeListBySale(Integer product_id,
                                        @RequestParam String start,
                                        @RequestParam String end,
-                                       String sortCol,
-                                       String sortType,
+                                       String sort_col,
+                                       String sort_type,
                                        @RequestParam(defaultValue = "0") Integer record_start,
                                        @RequestParam(defaultValue = "20") Integer record_count) {
         Date[] dates = checkDate(start, end);
-        if (StringUtils.isEmpty(sortCol)) {
-            sortCol = null;
-        }
-        if (StringUtils.isEmpty(sortType)) {
-            sortType = null;
-        }
-        if (!Utils.isSortType(sortType)) {
+        if (!Utils.isSortType(sort_type)) {
             throw new ApiException("排序方式错误");
         }
         String[] sortCols = new String[]{"individual", "team", "total"};
-        if (!ArrayUtils.contains(sortCols, sortCol)) {
+        if (StringUtils.isNotEmpty(sort_col) && !ArrayUtils.contains(sortCols, sort_col)) {
             throw new ApiException("排序字段错误");
         }
         Object core_ep_id = getAttribute(EpConstant.EpKey.CORE_EP_ID);
-        return dataAnalysisService.selectConsumeAnalysisListBySale(product_id, dates[0], dates[1], CommonUtil.objectParseInteger(core_ep_id), sortCol, sortType, record_start, record_count);
+        return dataAnalysisService.selectConsumeAnalysisListBySale(product_id, dates[0], dates[1], CommonUtil.objectParseInteger(core_ep_id), sort_col, sort_type, record_start, record_count);
     }
 
     @RequestMapping("sale/consume/compared")
@@ -67,22 +61,16 @@ public class DataAnalysisController extends BalanceController {
                                            @RequestParam String end,
                                            @RequestParam Integer type,
                                            @RequestParam(defaultValue = "false") boolean group,
-                                           String sortCol,
-                                           String sortType,
+                                           String sort_col,
+                                           String sort_type,
                                            @RequestParam(defaultValue = "0") Integer record_start,
                                            @RequestParam(defaultValue = "20") Integer record_count) {
         Date[] dates = checkDate(start, end);
-        if (StringUtils.isEmpty(sortCol)) {
-            sortCol = null;
-        }
-        if (StringUtils.isEmpty(sortType)) {
-            sortType = null;
-        }
-        if (!Utils.isSortType(sortType)) {
+        if (!Utils.isSortType(sort_type)) {
             throw new ApiException("排序方式错误");
         }
         String[] sortCols = new String[]{"before", "after", "fee"};
-        if (!ArrayUtils.contains(sortCols, sortCol)) {
+        if (StringUtils.isNotEmpty(sort_col) && !ArrayUtils.contains(sortCols, sort_col)) {
             throw new ApiException("排序字段错误");
         }
         int[] types = new int[]{ReportConstant.ConsumeAnalysisType.YEAR_ON_YEAR, ReportConstant.ConsumeAnalysisType.MONTH};
@@ -90,7 +78,7 @@ public class DataAnalysisController extends BalanceController {
             throw new ApiException("类型错误");
         }
         Object core_ep_id = getAttribute(EpConstant.EpKey.CORE_EP_ID);
-        return dataAnalysisService.selectConsumeAnalysisComparedSale(product_id, dates[0], dates[1], CommonUtil.objectParseInteger(core_ep_id), type, group ? "team" : "individual", sortCol, sortType, record_start, record_count);
+        return dataAnalysisService.selectConsumeAnalysisComparedSale(product_id, dates[0], dates[1], CommonUtil.objectParseInteger(core_ep_id), type, group ? "team" : "individual", sort_col, sort_type, record_start, record_count);
     }
 
     public static Date[] checkDate(String start_time, String end_time) {
