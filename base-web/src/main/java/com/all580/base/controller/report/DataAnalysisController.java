@@ -10,6 +10,7 @@ import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.util.CommonUtil;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -91,6 +92,9 @@ public class DataAnalysisController extends BalanceController {
                     calendar.set(Calendar.YEAR, Integer.parseInt(split[0]));
                     calendar.set(Calendar.MONTH, Integer.parseInt(split[1]) - 1);
                     calendar.set(Calendar.DAY_OF_MONTH, 1);
+                    calendar.set(Calendar.HOUR_OF_DAY, 0);
+                    calendar.set(Calendar.MINUTE, 0);
+                    calendar.set(Calendar.SECOND, 0);
                     result[0] = calendar.getTime();
                 } else {
                     result[0] = DateFormatUtils.parseString(DateFormatUtils.DATE_FORMAT, start_time);
@@ -104,6 +108,9 @@ public class DataAnalysisController extends BalanceController {
                     calendar.set(Calendar.MONTH, Integer.parseInt(split[1]));
                     calendar.set(Calendar.DAY_OF_MONTH, 1);
                     calendar.add(Calendar.DAY_OF_MONTH, -1);
+                    calendar.set(Calendar.HOUR_OF_DAY, 0);
+                    calendar.set(Calendar.MINUTE, 0);
+                    calendar.set(Calendar.SECOND, 0);
                     result[1] = calendar.getTime();
                 } else {
                     result[1] = DateFormatUtils.parseString(DateFormatUtils.DATE_FORMAT, end_time);
