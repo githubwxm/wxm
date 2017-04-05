@@ -127,6 +127,7 @@ public class CoreEventSubscribeController extends AbstractSubscribeController {
             job.setMaxRetryTimes(maxRetryTimes);
         }
         job.setNeedFeedback(false);
+        log.info("事件错误新增TASK: {}-{}-{}", new Object[]{job.getTaskId(), id, name});
         return job;
     }
 }
