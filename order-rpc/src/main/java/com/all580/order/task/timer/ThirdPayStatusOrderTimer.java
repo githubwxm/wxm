@@ -74,7 +74,7 @@ public class ThirdPayStatusOrderTimer {
                     }
                 }
                 if (retry) {
-                    payingJob();
+                    //payingJob();
                 }
             }
         } catch (Exception e) {
@@ -119,7 +119,7 @@ public class ThirdPayStatusOrderTimer {
                     }
                 }
                 if (retry) {
-                    refundMoneyJob();
+                    //refundMoneyJob();
                 }
             }
         } catch (Exception e) {
