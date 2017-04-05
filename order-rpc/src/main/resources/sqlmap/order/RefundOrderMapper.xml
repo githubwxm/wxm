@@ -454,8 +454,17 @@
     SELECT tro.* FROM t_refund_order tro
     LEFT JOIN t_order_item toi ON toi.id = tro.order_item_id
     LEFT JOIN t_order o ON o.id = toi.order_id
+    LEFT JOIN t_payment_job tpj ON tpj.number = tro.number
     WHERE tro.`status` = 343
     AND o.payment_type = 7113
+    AND (
+      (
+      tpj.type = 381
+      AND tpj. STATUS = 1
+      AND tpj.retry &lt; tpj.max
+      )
+      OR tpj.id IS NULL
+    )
     limit 20
   </select>
 </mapper>

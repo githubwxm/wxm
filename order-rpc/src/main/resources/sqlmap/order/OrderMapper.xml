@@ -346,11 +346,20 @@
     </select>
 
   <select id="selectPayingOrder" resultMap="BaseResultMap">
-    SELECT * FROM t_order
-    WHERE `status` = 312
-    AND payment_type IN (7112, 7113)
+    SELECT o.* FROM t_order o
+    LEFT JOIN t_payment_job tpj ON tpj.number = o.number
+    WHERE o.`status` = 312
+    AND (
+      (
+      tpj.type = 380
+      AND tpj. STATUS = 1
+      AND tpj.retry &lt; tpj.max
+      )
+      OR tpj.id IS NULL
+    )
+    AND o.payment_type IN (7112, 7113)
     <if test="minute != null">
-      AND (UNIX_TIMESTAMP(NOW())-UNIX_TIMESTAMP(pay_time))/60 &gt;= #{minute}
+      AND (UNIX_TIMESTAMP(NOW())-UNIX_TIMESTAMP(o.pay_time))/60 &gt;= #{minute}
     </if>
     limit 20
   </select>

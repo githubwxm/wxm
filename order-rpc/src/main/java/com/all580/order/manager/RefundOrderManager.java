@@ -4,7 +4,9 @@ import com.all580.order.api.OrderConstant;
 import com.all580.order.api.model.RefundTicketEventParam;
 import com.all580.order.dao.*;
 import com.all580.order.dto.RefundDay;
+import com.all580.order.dto.SyncAccess;
 import com.all580.order.entity.*;
+import com.all580.order.service.event.BasicSyncDataEvent;
 import com.all580.order.util.AccountUtil;
 import com.all580.payment.api.conf.PaymentConstant;
 import com.all580.payment.api.model.BalanceChangeInfo;
@@ -62,6 +64,8 @@ public class RefundOrderManager extends BaseOrderManager {
     private RefundVisitorMapper refundVisitorMapper;
     @Autowired
     private MaSendResponseMapper maSendResponseMapper;
+    @Autowired
+    private BasicSyncDataEvent basicSyncDataEvent;
 
     @Autowired
     private ProductSalesPlanRPCService productSalesPlanRPCService;
@@ -652,6 +656,17 @@ public class RefundOrderManager extends BaseOrderManager {
                 }
             }
         }
+    }
+
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public void rollback(Order order, PaymentConstant.ThirdPayStatus payStatus) {
+        order.setStatus(payStatus == PaymentConstant.ThirdPayStatus.NOTPAY ? OrderConstant.OrderStatus.PAY_WAIT : OrderConstant.OrderStatus.PAY_FAIL);
+        orderMapper.setStatus(order.getId(), payStatus == PaymentConstant.ThirdPayStatus.NOTPAY ? OrderConstant.OrderStatus.PAY_WAIT : OrderConstant.OrderStatus.PAY_FAIL, OrderConstant.OrderStatus.PAYING);
+        // 同步数据
+        SyncAccess syncAccess = basicSyncDataEvent.getAccessKeys(order);
+        syncAccess.getDataMap().add("t_order", order);
+        syncAccess.loop();
+        basicSyncDataEvent.sync(syncAccess.getDataMaps());
     }
 
     private ProductSearchParams getProductSearchParams(OrderItem orderItem, Date day, int quantity) {
