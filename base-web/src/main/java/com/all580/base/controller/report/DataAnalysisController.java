@@ -82,6 +82,54 @@ public class DataAnalysisController extends BalanceController {
         return dataAnalysisService.selectConsumeAnalysisComparedSale(product_id, dates[0], dates[1], CommonUtil.objectParseInteger(core_ep_id), type, group ? "team" : "individual", sort_col, sort_type, record_start, record_count);
     }
 
+    @RequestMapping("supply/consume/list")
+    @ResponseBody
+    public Result<?> consumeListBySupply(Integer product_id,
+                                       @RequestParam String start,
+                                       @RequestParam String end,
+                                       String sort_col,
+                                       String sort_type,
+                                       @RequestParam(defaultValue = "0") Integer record_start,
+                                       @RequestParam(defaultValue = "20") Integer record_count) {
+        Date[] dates = checkDate(start, end);
+        if (!Utils.isSortType(sort_type)) {
+            throw new ApiException("排序方式错误");
+        }
+        String[] sortCols = new String[]{"individual", "team", "total"};
+        if (StringUtils.isNotEmpty(sort_col) && !ArrayUtils.contains(sortCols, sort_col)) {
+            throw new ApiException("排序字段错误");
+        }
+        Object core_ep_id = getAttribute(EpConstant.EpKey.CORE_EP_ID);
+        return dataAnalysisService.selectConsumeAnalysisListBySupply(product_id, dates[0], dates[1], CommonUtil.objectParseInteger(core_ep_id), sort_col, sort_type, record_start, record_count);
+    }
+
+    @RequestMapping("supply/consume/compared")
+    @ResponseBody
+    public Result<?> consumeComparedBySupply(Integer product_id,
+                                           @RequestParam String start,
+                                           @RequestParam String end,
+                                           @RequestParam Integer type,
+                                           @RequestParam(defaultValue = "false") boolean group,
+                                           String sort_col,
+                                           String sort_type,
+                                           @RequestParam(defaultValue = "0") Integer record_start,
+                                           @RequestParam(defaultValue = "20") Integer record_count) {
+        Date[] dates = checkDate(start, end);
+        if (!Utils.isSortType(sort_type)) {
+            throw new ApiException("排序方式错误");
+        }
+        String[] sortCols = new String[]{"before", "after", "fee"};
+        if (StringUtils.isNotEmpty(sort_col) && !ArrayUtils.contains(sortCols, sort_col)) {
+            throw new ApiException("排序字段错误");
+        }
+        int[] types = new int[]{ReportConstant.ConsumeAnalysisType.YEAR_ON_YEAR, ReportConstant.ConsumeAnalysisType.MONTH};
+        if (!ArrayUtils.contains(types, type)) {
+            throw new ApiException("类型错误");
+        }
+        Object core_ep_id = getAttribute(EpConstant.EpKey.CORE_EP_ID);
+        return dataAnalysisService.selectConsumeAnalysisComparedSupply(product_id, dates[0], dates[1], CommonUtil.objectParseInteger(core_ep_id), type, group ? "team" : "individual", sort_col, sort_type, record_start, record_count);
+    }
+
     public static Date[] checkDate(String start_time, String end_time) {
         Date[] result = new Date[]{null, null};
         try {
