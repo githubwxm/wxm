@@ -1,9 +1,12 @@
 package com.all580.order.task.timer;
 
+import com.all580.order.api.OrderConstant;
 import com.all580.order.api.service.PaymentCallbackService;
 import com.all580.order.dao.OrderMapper;
+import com.all580.order.dao.PaymentJobMapper;
 import com.all580.order.dao.RefundOrderMapper;
 import com.all580.order.entity.Order;
+import com.all580.order.entity.PaymentJob;
 import com.all580.order.entity.RefundOrder;
 import com.all580.order.manager.RefundOrderManager;
 import com.all580.payment.api.conf.PaymentConstant;
@@ -35,6 +38,8 @@ public class ThirdPayStatusOrderTimer {
     private OrderMapper orderMapper;
     @Autowired
     private RefundOrderMapper refundOrderMapper;
+    @Autowired
+    private PaymentJobMapper paymentJobMapper;
 
     @Autowired
     private ThirdPayService thirdPayService;
@@ -50,6 +55,8 @@ public class ThirdPayStatusOrderTimer {
 
     @Value("${order.pay.timeout}")
     private Integer payTimeOut;
+    @Value("${order.payment.job.retry.max}")
+    private Integer max;
 
     private AtomicBoolean payingRun = new AtomicBoolean(false);
     private AtomicBoolean refundRun = new AtomicBoolean(false);
@@ -64,6 +71,7 @@ public class ThirdPayStatusOrderTimer {
                     for (Order order : orderList) {
                         DistributedReentrantLock lock = distributedLockTemplate.execute(String.valueOf(order.getNumber()), 10);
                         try {
+                            checkPaymentJob(order.getNumber(), OrderConstant.PaymentJobType.PAYING);
                             Result<Map<String, Object>> result = thirdPayService.getPaidStatus(order.getNumber(), order.getPayee_ep_id(), order.getPayment_type(), order.getThird_serial_no());
                             Map<String, Object> map = result.get();
                             PaymentConstant.ThirdPayStatus payStatus = (PaymentConstant.ThirdPayStatus) map.get("code");
@@ -77,6 +85,9 @@ public class ThirdPayStatusOrderTimer {
                                 case REVOKED:
                                     refundOrderManager.rollback(order, payStatus);
                                     break;
+                                default:
+                                    log.info("订单: {} 支付中状态: {},设置为禁用", order.getNumber(), payStatus);
+                                    paymentJobMapper.disable(order.getNumber(), OrderConstant.PaymentJobType.PAYING);
                             }
                         } catch (Exception e) {
                             retry = false;
@@ -107,6 +118,7 @@ public class ThirdPayStatusOrderTimer {
                     for (RefundOrder refundOrder : refundOrders) {
                         DistributedReentrantLock lock = distributedLockTemplate.execute(String.valueOf(refundOrder.getNumber()), 10);
                         try {
+                            checkPaymentJob(refundOrder.getNumber(), OrderConstant.PaymentJobType.REFUND);
                             Order order = orderMapper.selectByRefundSn(refundOrder.getNumber());
                             Result<PaymentConstant.ThirdPayStatus> result = thirdPayService.refundQuery(String.valueOf(refundOrder.getNumber()), order.getPayee_ep_id(), order.getPayment_type());
                             PaymentConstant.ThirdPayStatus refundStatus = result.get();
@@ -118,6 +130,9 @@ public class ThirdPayStatusOrderTimer {
                                 case REFUND_NOTSURE:
                                     paymentCallbackService.refundCallback(order.getNumber(), String.valueOf(refundOrder.getNumber()), order.getThird_serial_no(), false);
                                     break;
+                                default:
+                                    log.info("订单: {} 退款中状态: {},设置为禁用", refundOrder.getNumber(), refundStatus);
+                                    paymentJobMapper.disable(refundOrder.getNumber(), OrderConstant.PaymentJobType.REFUND);
                             }
                         } catch (Exception e) {
                             retry = false;
@@ -135,6 +150,24 @@ public class ThirdPayStatusOrderTimer {
             log.error("退款中订单检查异常", e);
         } finally {
             refundRun.set(false);
+        }
+    }
+
+    private void checkPaymentJob(Long number, int type) {
+        PaymentJob job = paymentJobMapper.selectByNumberAndType(number, type);
+        if (job == null) {
+            job = new PaymentJob();
+            job.setMax(max);
+            job.setNumber(number);
+            job.setRetry(0);
+            job.setStatus(true);
+            job.setType(type);
+            paymentJobMapper.insertSelective(job);
+        } else {
+            int ret = paymentJobMapper.retry(number, type);
+            if (ret <= 0) {
+                throw new RuntimeException("该订单已达最大查询次数" + number);
+            }
         }
     }
 }
