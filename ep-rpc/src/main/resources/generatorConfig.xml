@@ -5,15 +5,18 @@
 
 <generatorConfiguration>
     <classPathEntry
-            location="C:\Users\Administrator\.m2\repository\mysql\mysql-connector-java\5.1.30\mysql-connector-java-5.1.30.jar"/>
+            location="E:\mvn_repository\mysql\mysql-connector-java\5.1.11\mysql-connector-java-5.1.11.jar"/>
     <context id="my" targetRuntime="MyBatis3">
         <!-- 抑制警告 -->
-        <property name="suppressTypeWarnings" value="true"/>
+        <property name="suppressTypeWarnings" value="true" />
+        <property name="autoDelimitKeywords" value="true"/>
+        <property name="beginningDelimiter" value="`"/>
+        <property name="endingDelimiter" value="`"/>
         <!-- generate entity时，生成serialVersionUID -->
-        <plugin type="org.mybatis.generator.plugins.SerializablePlugin"/>
+        <plugin type="org.mybatis.generator.plugins.SerializablePlugin" />
         <commentGenerator>
-            <property name="suppressDate" value="true"/>
-            <property name="suppressAllComments" value="true"/>
+            <property name="suppressDate" value="false"/>
+            <property name="suppressAllComments" value="false"/>
         </commentGenerator>
 
         <jdbcConnection driverClass="com.mysql.jdbc.Driver"
@@ -22,18 +25,18 @@
                         password="abcd1234"/>
 
         <javaModelGenerator targetPackage="com.all580.ep.entity"
-                            targetProject="D:\java\3.0\base\ep-rpc\src\main\java">
+                            targetProject="E:\Gary\working\base\ep-rpc\src\main\java">
             <property name="enableSubPackages" value="true"/>
             <property name="trimStrings" value="true"/>
         </javaModelGenerator>
 
         <sqlMapGenerator targetPackage="sqlmap"
-                         targetProject="D:\java\3.0\base\ep-rpc\src\main\resources">
+                         targetProject="E:\Gary\working\base\ep-rpc\src\main\resources">
             <property name="enableSubPackages" value="true"/>
         </sqlMapGenerator>
 
         <javaClientGenerator targetPackage="com.all580.ep.dao"
-                             targetProject="D:\java\3.0\base\ep-rpc\src\main\java" type="XMLMAPPER">
+                             targetProject="E:\Gary\working\base\ep-rpc\src\main\java" type="XMLMAPPER">
             <property name="enableSubPackages" value="true"/>
         </javaClientGenerator>
 
@@ -43,6 +46,16 @@
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
         </table>
 
-
+        <table tableName="t_ep_push"
+               enableCountByExample="false"
+               enableUpdateByExample="false"
+               enableDeleteByExample="false"
+               enableSelectByExample="false"
+               selectByExampleQueryId="false"
+               delimitAllColumns="true"
+               domainObjectName="EpPush">
+            <property name="useActualColumnNames" value="true"/>
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+        </table>
     </context>
 </generatorConfiguration>
