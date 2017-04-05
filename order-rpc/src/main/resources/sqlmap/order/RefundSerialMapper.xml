@@ -184,6 +184,11 @@
         SELECT * FROM t_refund_serial
         WHERE `local_serial_no` = #{localSn,jdbcType=BIGINT}
     </select>
+  <select id="selectItemRefundSerial" resultMap="BaseResultMap">
+    select * from t_refund_serial where refund_order_id in(
+    select id from t_refund_order where order_item_id=#{itemId}
+    )
+  </select>
 
     <select id="selectByRefundOrder" resultMap="BaseResultMap">
         SELECT * FROM t_refund_serial

@@ -37,6 +37,11 @@
     from t_refund_account
     where `id` = #{id,jdbcType=INTEGER}
   </select>
+  <select id="selectItemRefundOrder" resultMap="BaseResultMap">
+    select  <include refid="Base_Column_List" /> from t_refund_account where refund_order_id in(
+     select id from t_refund_order where order_item_id=#{itemId}
+    )
+  </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     <!--
       WARNING - @mbggenerated

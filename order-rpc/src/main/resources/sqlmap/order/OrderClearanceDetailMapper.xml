@@ -146,4 +146,9 @@
         SELECT * FROM t_order_clearance_detail
         WHERE `serial_no` = #{sn,jdbcType=VARCHAR}
     </select>
+  <select id="selectItemClearanceDetail" resultMap="BaseResultMap">
+    select * from t_order_clearance_detail where serial_no in(
+    select serial_no from t_order_clearance_serial where order_item_id=#{itemId}
+     )
+  </select>
 </mapper>

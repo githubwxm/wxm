@@ -567,6 +567,10 @@
       select IFNULL(SUM(quantity),0)  from t_order_clearance_serial where order_item_id=#{order_item_id}
     </select>
 
+    <select id="selectItemClearanceSerial" resultMap="BaseResultMap">
+        select *  from t_order_clearance_serial where order_item_id=#{order_item_id}
+    </select>
+
     <sql id="limit">
         <if test="record_start != null and record_count != null">
             limit #{record_start},#{record_count}
