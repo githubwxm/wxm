@@ -41,6 +41,8 @@
 
 	<bean id="funcService" class="com.all580.role.service.FuncServiceImpl" />
 	<dubbo:service interface="com.all580.role.api.service.FuncService" ref="funcService" />
+	<bean id="epPushService" class="com.all580.ep.service.EpPushServiceImpl" />
+	<dubbo:service interface="com.all580.ep.api.service.EpPushService" ref="epPushService" />
 
 	<!--<bean id="funcIntfService" class="com.all580.role.service.FuncIntfServiceImpl" />-->
 	<!--<dubbo:service interface="com.all580.role.api.service.FuncIntfService" ref="funcIntfService" />-->
