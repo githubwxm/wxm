@@ -1,5 +1,6 @@
 package com.all580.order.service;
 
+import com.all580.order.api.service.SyncExceptionOrder;
 import com.all580.order.dao.*;
 import com.all580.order.dto.SyncAccess;
 import com.all580.order.entity.Order;
@@ -14,13 +15,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by wxming on 2017/3/31 0031.
  */
 @Service
 @Slf4j
-public class SyncExceptionOrderImpl extends BasicSyncDataEvent {
+public class SyncExceptionOrderImpl extends BasicSyncDataEvent implements SyncExceptionOrder {
     @Autowired
     private OrderItemMapper orderItemMapper;
     @Autowired
@@ -49,8 +51,17 @@ public class SyncExceptionOrderImpl extends BasicSyncDataEvent {
     @Autowired
     private OrderClearanceDetailMapper orderClearanceDetailMapper;
 
+    @Autowired
+    private OrderExceptionMapper orderExceptionMapper;
 
 
+
+    public Result selectOrderException(Map<String,Object> map){
+        List<Map<String,Object>> list= orderExceptionMapper.selectOrderException(map);
+        Result result = new Result(true);
+        result.put(list);
+        return result;
+    }
 
 
     public Result selectSyncOrder(Long sn){
