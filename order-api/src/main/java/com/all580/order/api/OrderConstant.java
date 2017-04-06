@@ -86,6 +86,14 @@ public class OrderConstant {
     }
 
     /**
+     * 第三方支付任务类型
+     */
+    public static class PaymentJobType {
+        public static final int PAYING = 380; // 支付中
+        public static final int REFUND = 381; // 退款中
+    }
+
+    /**
      * 任务执行器
      */
     public static class Actions {

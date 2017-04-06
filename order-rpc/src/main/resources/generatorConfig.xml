@@ -24,18 +24,18 @@
                         password="abcd1234"/>
 
         <javaModelGenerator targetPackage="com.all580.order.entity"
-                            targetProject="E:\Gary\working\3.0\base\order-rpc\src\main\java">
+                            targetProject="E:\Gary\working\base\order-rpc\src\main\java">
             <property name="enableSubPackages" value="true"/>
             <property name="trimStrings" value="true"/>
         </javaModelGenerator>
 
         <sqlMapGenerator targetPackage="sqlmap.order"
-                         targetProject="E:\Gary\working\3.0\base\order-rpc\src\main\resources">
+                         targetProject="E:\Gary\working\base\order-rpc\src\main\resources">
             <property name="enableSubPackages" value="true"/>
         </sqlMapGenerator>
 
         <javaClientGenerator targetPackage="com.all580.order.dao"
-                             targetProject="E:\Gary\working\3.0\base\order-rpc\src\main\java" type="XMLMAPPER">
+                             targetProject="E:\Gary\working\base\order-rpc\src\main\java" type="XMLMAPPER">
             <property name="enableSubPackages" value="true"/>
         </javaClientGenerator>
 
@@ -265,6 +265,17 @@
                selectByExampleQueryId="false"
                delimitAllColumns="true"
                domainObjectName="SupplierChannelBill">
+            <property name="useActualColumnNames" value="true"/>
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+        </table>
+        <table tableName="t_payment_job"
+               enableCountByExample="false"
+               enableUpdateByExample="false"
+               enableDeleteByExample="false"
+               enableSelectByExample="false"
+               selectByExampleQueryId="false"
+               delimitAllColumns="true"
+               domainObjectName="PaymentJob">
             <property name="useActualColumnNames" value="true"/>
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
         </table>
