@@ -65,7 +65,7 @@ public class PushSubscribeController extends AbstractSubscribeController {
                 throw new ApiException("查询企业推送配置异常: " + id + ":" + (result == null ? "null" : result.getError()));
             }
             List list = pushMsgManager.getUrls(epId, id);
-            if (list == null) {
+            if (list == null || list.isEmpty()) {
                 log.warn("推送信息:{} 没有查询到配置", id);
                 return;
             }
