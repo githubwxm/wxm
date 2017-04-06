@@ -98,4 +98,41 @@ public class OrderSupplierController extends BaseController {
         map.put("record_count",record_count);
         return  epOrderService.selectSupplierOrderConsumeDetail(map);
     }
+
+    @RequestMapping(value = "supplier/refund", method = RequestMethod.GET)
+    @ResponseBody
+    public Result selectSupplierOrderRefund(HttpServletRequest request, HttpServletResponse response,
+                                             @RequestParam("statistic_ep_id") Integer statistic_ep_id,
+                                             @RequestParam("statistics_type_id") String statistics_type_id,
+                                             String start  ,String end,String pro_name,
+                                             Integer record_start,Integer record_count){
+        Map<String,Object> map = new HashMap<>();
+        map.put("statistic_ep_id",statistic_ep_id);
+        map.put("key",statistics_type_id);
+        map.put("start",start);
+        map.put("end",end);
+        map.put("pro_name",pro_name);
+        map.put("record_start",record_start);
+        map.put("record_count",record_count);
+        return  epOrderService.selectSupplierOrderRefund(map);
+    }
+
+    @RequestMapping(value = "supplier/refund/detail", method = RequestMethod.GET)
+    @ResponseBody
+    public Result selectSupplierOrderRefund(HttpServletRequest request, HttpServletResponse response,
+                                                   @RequestParam("statistic_ep_id") Integer statistic_ep_id,
+                                                   String start  ,String end,
+                                                   String date_time  ,String condition,String pro_name,
+                                                   Integer record_start,Integer record_count){
+        Map<String,Object> map = new HashMap<>();
+        map.put("statistic_ep_id",statistic_ep_id);
+        map.put("date_time",date_time);
+        map.put("condition",condition);
+        map.put("pro_name",pro_name);
+        map.put("start",start);
+        map.put("end",end);
+        map.put("record_start",record_start);
+        map.put("record_count",record_count);
+        return  epOrderService.selectSupplierOrderRefundDetail(map);
+    }
 }
