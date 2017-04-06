@@ -27,7 +27,7 @@ public class OrderExceptionContoller {
     @ResponseBody
     public Result<?> selectOrderException( String supplier_ep_name,
                                             String buy_ep_name,
-                                           Long number,Date start,Date end,
+                                           Long number,String start,String end,
                                            @RequestParam(defaultValue = "0") Integer record_start,
                                            @RequestParam(defaultValue = "20") Integer record_count) {
         Map<String,Object> map = new HashMap<>();
