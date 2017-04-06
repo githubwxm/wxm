@@ -64,6 +64,8 @@
 					 interface="com.all580.role.api.service.EpRoleService"/>
 	<dubbo:reference id="smsService"
 					 interface="com.all580.notice.api.service.SmsService"/>
+	<dubbo:reference id="epPushService"
+					 interface="com.all580.ep.api.service.EpPushService"/>
 
 	<dubbo:reference id="planGroupService" interface="com.all580.product.api.service.PlanGroupRPCService" />
 	<dubbo:reference id="productDistributionService" interface="com.all580.product.api.service.ProductDistributionRPCService" />
@@ -83,6 +85,7 @@
 	<dubbo:reference id="ticketOrderReportService" interface="com.all580.report.api.service.TicketOrderReportRPCService" />
 	<dubbo:reference id="epInfoService" interface="com.all580.report.api.service.EpInfoService" />
 	<dubbo:reference id="epOrderService" interface="com.all580.report.api.service.EpOrderService" />
+	<dubbo:reference id="dataAnalysisService" interface="com.all580.report.api.service.DataAnalysisService" />
 
 
 
