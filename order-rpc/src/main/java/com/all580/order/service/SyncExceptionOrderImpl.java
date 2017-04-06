@@ -77,8 +77,10 @@ public class SyncExceptionOrderImpl extends BasicSyncDataEvent implements SyncEx
         if( null==list|| list.isEmpty()){
             throw new ApiException("未找到主订单");
         }
+        Map<String,Object> map = new HashMap<>();
         Result result = new Result(true);
-        result.put(list);
+        map.put("list",list);
+        result.put(map);
         return result;
     }
 
