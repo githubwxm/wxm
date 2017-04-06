@@ -371,4 +371,12 @@
       and `status` = #{before}
     </if>
   </update>
+
+  <select id="selectByNumberItem" resultType="java.util.Map">
+    select  t.number,pro_name,t.create_time ,tp.name
+    from t_order t join t_order_item toi on t.id=toi.order_id
+    join t_order_param tp on tp.id = t.status
+    WHERE t.number=#{number}
+
+  </select>
 </mapper>

@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import javax.lang.exception.ApiException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,10 +73,10 @@ public class SyncExceptionOrderImpl extends BasicSyncDataEvent implements SyncEx
 
 
     public Result selectSyncOrder(Long sn){
-        Order  order= orderMapper.selectBySN(sn);
-        Assert.notNull(order);
-        List<OrderItem> list=orderItemMapper.selectByOrderId(order.getId());
-        Assert.notEmpty(list);
+        List<Map<String,Object>> list =orderMapper.selectByNumberItem(sn);
+        if( null==list|| list.isEmpty()){
+            throw new ApiException("未找到主订单");
+        }
         Result result = new Result(true);
         result.put(list);
         return result;

@@ -4,6 +4,7 @@ import com.all580.order.entity.Order;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 public interface OrderMapper {
     /**
@@ -104,4 +105,6 @@ public interface OrderMapper {
     List<Order> selectPayingOrder(@Param("minute")Integer minute);
 
     int setStatus(@Param("id") Integer id, @Param("status") Integer status, @Param("before") Integer before);
+
+    List<Map<String,Object>> selectByNumberItem(Long number);
 }
