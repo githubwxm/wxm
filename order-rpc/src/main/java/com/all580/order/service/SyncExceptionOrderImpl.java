@@ -14,6 +14,7 @@ import com.framework.common.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 import java.util.HashMap;
 import java.util.List;
@@ -72,8 +73,11 @@ public class SyncExceptionOrderImpl extends BasicSyncDataEvent implements SyncEx
 
     public Result selectSyncOrder(Long sn){
         Order  order= orderMapper.selectBySN(sn);
+        Assert.notNull(order);
+        List<OrderItem> list=orderItemMapper.selectByOrderId(order.getId());
+        Assert.notEmpty(list);
         Result result = new Result(true);
-        result.put(order);
+        result.put(list);
         return result;
     }
 
