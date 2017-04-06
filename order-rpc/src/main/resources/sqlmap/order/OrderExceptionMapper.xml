@@ -68,6 +68,22 @@
         </if>
         <include refid="limit"/>
     </select>
+    <select id="selectOrderExceptionCount" resultType="java.lang.Integer">
+        select count(*) from  t_order_exception
+        where 1=1
+        <if test="supplier_ep_name != null and supplier_ep_name!=''">
+            and supplier_ep_name like  CONCAT('%',#{supplier_ep_name},'%')
+        </if>
+        <if test="buy_ep_name != null and buy_ep_name!=''">
+            and buy_ep_name like  CONCAT('%',#{buy_ep_name},'%')
+        </if>
+        <if test="number != null and number!=''">
+            and number=#{number}
+        </if>
+        <if test="start != null and end != null">
+            and exception_time BETWEEN #{start} AND #{end}
+        </if>
+    </select>
 
     <sql id="limit">
         <if test="limit != null">

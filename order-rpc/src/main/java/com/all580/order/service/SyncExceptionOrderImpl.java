@@ -10,10 +10,12 @@ import com.all580.order.entity.OrderItemAccount;
 import com.all580.order.service.event.BasicSyncDataEvent;
 import com.all580.product.api.consts.ProductConstants;
 import com.framework.common.Result;
+import com.framework.common.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -57,9 +59,13 @@ public class SyncExceptionOrderImpl extends BasicSyncDataEvent implements SyncEx
 
 
     public Result selectOrderException(Map<String,Object> map){
+        Map<String,Object> resultMap = new HashMap();
+        CommonUtil.checkPage(map);
         List<Map<String,Object>> list= orderExceptionMapper.selectOrderException(map);
+        resultMap.put("list",list);
+        resultMap.put("totalCount",orderExceptionMapper.selectOrderExceptionCount(map));
         Result result = new Result(true);
-        result.put(list);
+        result.put(resultMap);
         return result;
     }
 
