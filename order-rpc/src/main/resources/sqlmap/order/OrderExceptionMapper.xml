@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.all580.order.dao.OrderExceptionMapper">
+    <select id="selectOrderSendException" resultType="java.util.Map">
+      select  toi.order_id,toi.id as order_item_id,t.number,toi.number as pro_sub_number,pro_name,pro_sub_name,
+       toi.update_time as exception_time,supplier_ep_id, -- supplier_ep_name,
+        buy_ep_name,toi.status as exception_status,'出票中' as exception_name
+      from t_order t join t_order_item toi on t.id=toi.order_id
+      where toi.status=324 and  TIMESTAMPDIFF(MINUTE,toi.update_time,NOW())>20 and t.id not in(
+      select toe.order_id from t_order_exception  toe
+      )
+    </select>
+
+  <select id="selectOrderFefundException" resultType="java.util.Map">
+    select toi.order_id,toi.id as order_item_id,t.number,toi.number as pro_sub_number,pro_name,pro_sub_name,
+     toi.update_time as exception_time,supplier_ep_id, -- supplier_ep_name,
+        buy_ep_name,toi.status as exception_status,'退票中' as exception_name
+     from t_order t join t_order_item toi on t.id=toi.order_id
+     where toi.status=342 and  TIMESTAMPDIFF(MINUTE,toi.update_time,NOW())>20 ;
+  </select>
+    <insert id="insertOrderException">
+        INSERT INTO t_order_exception(order_id,
+        order_item_id,
+        number,
+        pro_sub_number,
+        pro_name,
+        pro_sub_name,
+        exception_time,
+        supplier_ep_id,
+        buy_ep_name,
+        exception_status,
+        exception_name
+        ) VALUES
+        <foreach collection="list" item="item" index="index" separator="," >
+            (#{item.order_id}, #{item.order_item_id}, #{item.number}, #{item.pro_sub_number}, #{item.pro_name},
+            #{item.pro_sub_name}, #{item.exception_time}, #{item.supplier_ep_id}, #{item.buy_ep_name},
+            #{item.exception_status}, #{item.exception_name})
+        </foreach>
+        on DUPLICATE   key update order_id=order_id ;
+    </insert>
+</mapper>
