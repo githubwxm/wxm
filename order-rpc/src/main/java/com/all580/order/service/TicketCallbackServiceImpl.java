@@ -181,7 +181,11 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
 
         // 目前景点只有一天
         OrderItemDetail itemDetail = detailList.get(0);
-        orderItemDetailMapper.useQuantity(itemDetail.getId(), info.getConsumeQuantity());
+        int ret = orderItemDetailMapper.useQuantity(itemDetail.getId(), info.getConsumeQuantity());
+        if (ret <= 0) {
+            log.warn("核销流水: {} 订单:{} 核销票不足", info.getValidateSn(), orderSn);
+            throw new ApiException("没有可核销的票");
+        }
 
         // 保存核销流水
         OrderClearanceSerial serial = bookingOrderManager.saveClearanceSerial(orderItem, order.getPayee_ep_id(), itemDetail.getDay(), info.getConsumeQuantity(), info.getValidateSn(), procTime);
@@ -246,7 +250,11 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
 
         // 目前景点只有一天
         OrderItemDetail itemDetail = detailList.get(0);
-        orderItemDetailMapper.useQuantity(itemDetail.getId(), info.getConsumeQuantity());
+        int ret = orderItemDetailMapper.useQuantity(itemDetail.getId(), info.getConsumeQuantity());
+        if (ret <= 0) {
+            log.warn("核销流水: {} 订单:{} 核销票不足", info.getValidateSn(), orderSn);
+            throw new ApiException("没有可核销的票");
+        }
 
         // 保存核销流水
         OrderClearanceSerial serial = bookingOrderManager.saveClearanceSerial(orderItem, order.getPayee_ep_id(), itemDetail.getDay(), info.getConsumeQuantity(), info.getValidateSn(), procTime);
