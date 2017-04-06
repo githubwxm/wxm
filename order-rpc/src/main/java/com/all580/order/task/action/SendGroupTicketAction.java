@@ -141,6 +141,7 @@ public class SendGroupTicketAction implements JobRunner {
             for (Visitor visitor : visitorList) {
                 com.all580.voucher.api.model.Visitor v = new com.all580.voucher.api.model.Visitor();
                 BeanUtils.copyProperties(visitor, v);
+                v.setIdType(visitor.getCard_type());
                 contacts.add(v);
             }
             sendGroupTicketParams.setVisitors(contacts);

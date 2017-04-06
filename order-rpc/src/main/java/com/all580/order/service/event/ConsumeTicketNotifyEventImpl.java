@@ -30,7 +30,7 @@ public class ConsumeTicketNotifyEventImpl extends BaseNotifyEvent implements Con
     private OrderClearanceSerialMapper orderClearanceSerialMapper;
     @Override
     public Result process(String s, ConsumeTicketEventParam content, Date date) {
-//        OrderItem item = orderItemMapper.selectByPrimaryKey(content.getItemId());
+
 //        Assert.notNull(item);
         OrderClearanceSerial serial=orderClearanceSerialMapper.selectByPrimaryKey(content.getSerialId()) ;
         OrderItem item = orderItemMapper.selectByPrimaryKey(serial.getOrder_item_id());
