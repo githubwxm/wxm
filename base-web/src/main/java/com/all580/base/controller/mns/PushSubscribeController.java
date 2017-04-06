@@ -2,12 +2,9 @@ package com.all580.base.controller.mns;
 
 import com.alibaba.fastjson.JSONObject;
 import com.all580.base.aop.MnsSubscribeAspect;
-import com.all580.base.task.action.PushRetryAction;
+import com.all580.base.manager.PushMsgManager;
 import com.all580.ep.api.service.EpPushService;
 import com.framework.common.Result;
-import com.framework.common.lang.JsonUtils;
-import com.framework.common.lang.UUIDGenerator;
-import com.framework.common.net.HttpUtils;
 import com.framework.common.util.CommonUtil;
 import com.github.ltsopensource.core.domain.Job;
 import com.github.ltsopensource.jobclient.JobClient;
@@ -47,6 +44,9 @@ public class PushSubscribeController extends AbstractSubscribeController {
     @Autowired
     private JobClient jobClient;
 
+    @Autowired
+    private PushMsgManager pushMsgManager;
+
     @RequestMapping(value = "push", method = RequestMethod.POST)
     public void push(HttpServletResponse response, ModelMap model) {
         String id = (String) model.get(MnsSubscribeAspect.MSG_ID);
@@ -57,12 +57,6 @@ public class PushSubscribeController extends AbstractSubscribeController {
             return;
         }
         Map map = JSONObject.parseObject(msg, Map.class);
-        String opCode = CommonUtil.objectParseString(map.get("op_code"));
-        String refundResult = CommonUtil.objectParseString(map.get("refund_result"));
-        if (opCode != null && "REFUND".equals(opCode) && refundResult != null && "REJECT".equals(refundResult)) {
-            map.put("op_code", "REFUND_FAIL");
-            msg = JsonUtils.toJson(map);
-        }
         String epId = CommonUtil.objectParseString(map.get("ep_id"));
         try {
             responseWrite(response, "OK");
@@ -70,7 +64,7 @@ public class PushSubscribeController extends AbstractSubscribeController {
             if (result == null || !result.isSuccess()) {
                 throw new ApiException("查询企业推送配置异常: " + id + ":" + (result == null ? "null" : result.getError()));
             }
-            List list = (List) result.get();
+            List list = pushMsgManager.getUrls(epId, id);
             if (list == null) {
                 log.warn("推送信息:{} 没有查询到配置", id);
                 return;
@@ -83,44 +77,17 @@ public class PushSubscribeController extends AbstractSubscribeController {
                     log.warn("推送信息:{} URL为空", id);
                     continue;
                 }
+                String type = CommonUtil.objectParseString(m.get("type"));
                 // push
                 log.debug("推送信息:{} URL:{}", id, url);
-                try {
-                    String res = HttpUtils.postJson(url, msg, "UTF-8");
-                    if (!res.equalsIgnoreCase("ok")) {
-                        throw new ApiException(res);
-                    }
-                } catch (Exception e) {
-                    log.warn("推送信息:{} URL:{} 推送失败", new Object[]{id, url, e});
-                    jobs.add(addJob(id, msg, url, epId));
-                }
-                log.info("推送信息:{} URL:{} 成功", id, url);
+                pushMsgManager.pushForAddJob(id, epId, url, type, msg, map, m, jobs);
             }
             if (!jobs.isEmpty() && jobs.size() > 0) {
                 jobClient.submitJob(jobs);
             }
         } catch (Exception e) {
             log.error("MNS PUSH ERROR", e);
-            jobClient.submitJob(addJob(id, msg, null, epId));
+            jobClient.submitJob(pushMsgManager.addJob(id, msg, null, null, epId));
         }
-    }
-
-    private Job addJob(String id, String content, String url, String epId) {
-        Job job = new Job();
-        job.setTaskId("PUSH-RETRY-JOB-" + UUIDGenerator.getUUID());
-        job.setParam("msgId", id);
-        job.setParam("content", content);
-        if (!StringUtils.isEmpty(url)) {
-            job.setParam("url", url);
-        }
-        job.setParam("epId", epId);
-        job.setParam("$ACTION$", PushRetryAction.NAME);
-        job.setTaskTrackerNodeGroup(taskTracker);
-        if (maxRetryTimes != null) {
-            job.setMaxRetryTimes(maxRetryTimes);
-        }
-        job.setNeedFeedback(false);
-        log.info("推送信息错误新增TASK: {}-{}-{}", new Object[]{job.getTaskId(), id, url});
-        return job;
     }
 }

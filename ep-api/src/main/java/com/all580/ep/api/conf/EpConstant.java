@@ -53,6 +53,8 @@ public class EpConstant {
         public static final Integer  RESTS=10013;//其他
     }
 
+    public static final String PUSH_ADAPTER = "PUSH_ADAPTER";
+
 //    public static class PaymentType{ //收款方式
 //        public static final Integer BALANCE=111;//余额
 //        public static final Integer ALI_PAY=112;//支付宝

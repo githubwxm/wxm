@@ -1,8 +1,8 @@
 package com.all580.base.task.action;
 
-import com.all580.ep.api.service.EpPushService;
-import com.framework.common.lang.UUIDGenerator;
-import com.framework.common.net.HttpUtils;
+import com.alibaba.fastjson.JSONObject;
+import com.all580.base.adapter.push.PushMsgAdapter;
+import com.all580.base.manager.PushMsgManager;
 import com.framework.common.util.CommonUtil;
 import com.framework.common.validate.ParamsMapValidate;
 import com.framework.common.validate.ValidRule;
@@ -15,10 +15,8 @@ import com.github.ltsopensource.tasktracker.runner.JobRunner;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.lang.exception.ApiException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,12 +33,7 @@ import java.util.Map;
 public class PushRetryAction implements JobRunner {
     public static final String NAME = "PUSH_RETRY_ACTION";
     @Autowired
-    private EpPushService epPushService;
-    @Value("${task.tracker}")
-    private String taskTracker;
-
-    @Value("${task.maxRetryTimes}")
-    private Integer maxRetryTimes;
+    private PushMsgManager pushMsgManager;
 
     @Autowired
     private JobClient jobClient;
@@ -52,15 +45,19 @@ public class PushRetryAction implements JobRunner {
 
         String msgId = params.get("msgId");
         String url = params.get("url");
-        String content = params.get("content");
+        String type = params.get("type");
+        String msg = params.get("content");
+        String epId = params.get("epId");
+        Map map = JSONObject.parseObject(msg, Map.class);
         // URL 为空则全部推送
-        if (StringUtils.isEmpty(url)) {
-            String epId = params.get("epId");
-            com.framework.common.Result<?> result = epPushService.selectByEpId(epId);
-            if (result == null || !result.isSuccess()) {
-                throw new ApiException("查询企业推送配置异常: " + msgId + ":" + (result == null ? "null" : result.getError()));
-            }
-            List list = (List) result.get();
+        if (!StringUtils.isEmpty(url) && !StringUtils.isEmpty(type)) {
+            log.debug("推送信息:{} URL:{}", msgId, url);
+            PushMsgAdapter adapter = pushMsgManager.getAdapter(type);
+            String content = pushMsgManager.getMsg(adapter, map, msg);
+            adapter.push(epId, url, content, null);
+            log.info("推送信息:{} URL:{} 成功", msgId, url);
+        } else {
+            List list = pushMsgManager.getUrls(epId, msgId);
             if (list == null) {
                 log.warn("推送信息:{} 没有查询到配置", msgId);
                 return new Result(Action.EXECUTE_SUCCESS, "没有推送地址");
@@ -73,46 +70,17 @@ public class PushRetryAction implements JobRunner {
                     log.warn("推送信息:{} URL为空", msgId);
                     continue;
                 }
+                type = CommonUtil.objectParseString(m.get("type"));
                 // push
                 log.debug("推送信息:{} URL:{}", msgId, url);
-                String res = HttpUtils.postJson(url, content, "UTF-8");
-                if (!res.equalsIgnoreCase("ok")) {
-                    log.warn("推送信息:{} URL:{} 推送失败:{}", new Object[]{msgId, url, res});
-                    jobs.add(addJob(msgId, content, url));
-                    continue;
-                }
-                log.info("推送信息:{} URL:{} 成功", msgId, url);
+                pushMsgManager.pushForAddJob(msgId, epId, url, type, msg, map, m, jobs);
             }
             if (!jobs.isEmpty() && jobs.size() > 0) {
                 jobClient.submitJob(jobs);
             }
-        } else {
-            log.debug("推送信息:{} URL:{}", msgId, url);
-            String res = HttpUtils.postJson(url, content, "UTF-8");
-            if (!res.equalsIgnoreCase("ok")) {
-                log.warn("推送信息:{} URL:{} 推送失败:{}", new Object[]{msgId, url, res});
-                throw new Exception(res);
-            }
-            log.info("推送信息:{} URL:{} 成功", msgId, url);
         }
 
         return new Result(Action.EXECUTE_SUCCESS);
-    }
-
-    private Job addJob(String id, String content, String url) {
-        Job job = new Job();
-        job.setTaskId("PUSH-RETRY-JOB-" + UUIDGenerator.getUUID());
-        job.setParam("msgId", id);
-        job.setParam("content", content);
-        job.setParam("url", url);
-        job.setParam("$ACTION$", PushRetryAction.NAME);
-        job.setTaskTrackerNodeGroup(taskTracker);
-        if (maxRetryTimes != null) {
-            job.setMaxRetryTimes(maxRetryTimes);
-        }
-        job.setNeedFeedback(false);
-        log.info("推送信息错误新增TASK: {}-{}-{}", new Object[]{job.getTaskId(), id, url});
-        return job;
     }
 
     /**
@@ -126,6 +94,7 @@ public class PushRetryAction implements JobRunner {
         Map<String[], ValidRule[]> rules = new HashMap<>();
         rules.put(new String[]{
                 "msgId", // MNS ID
+                "epId", // epId
                 "content" // base64内容
         }, new ValidRule[]{new ValidRule.NotNull()});
 
