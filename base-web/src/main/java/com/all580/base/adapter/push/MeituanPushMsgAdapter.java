@@ -2,6 +2,7 @@ package com.all580.base.adapter.push;
 
 import com.all580.base.util.BasicAuthorizationUtils;
 import com.all580.ep.api.conf.EpConstant;
+import com.framework.common.lang.JsonUtils;
 import com.framework.common.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.json.JSONObject;
@@ -26,7 +27,7 @@ import java.util.Map;
 public class MeituanPushMsgAdapter extends GeneralPushMsgAdapter {
     @Override
     public String parseMsg(Map map, String msg) {
-        msg = super.parseMsg(map, msg);
+        super.parseMsg(map, msg);
         String opCode = CommonUtil.objectParseString(map.get("op_code"));
         if (StringUtils.isEmpty(opCode)) {
             throw new ApiException("消息推送OPCODE为空");
@@ -36,13 +37,22 @@ public class MeituanPushMsgAdapter extends GeneralPushMsgAdapter {
         Map<String, Object> body = new HashMap<>();
         switch (opCode) {
             case "CONSUME":
-                body.put("orderId", 11);
+                body.put("orderId", map.get("outer_id"));
                 body.put("partnerOrderId", map.get("number"));
                 body.put("quantity", map.get("quantity"));
                 body.put("usedQuantity", map.get("total_usd_qty"));
                 body.put("refundedQuantity", map.get("rfd_qty"));
+            case "REFUND_FAIL":
+                params.put("code", 606);
+                params.put("describe", "余票不足或拒绝退票");
+                body.put("orderId", map.get("outer_id"));
+                body.put("refundId", map.get("refund_outer_id"));
+                body.put("partnerOrderId", map.get("number"));
+                body.put("requestTime", map.get("apply_time"));
+                body.put("responseTime", map.get("audit_time"));
         }
-        return msg;
+        params.put("body", body);
+        return JsonUtils.toJson(params);
     }
 
     @Override
