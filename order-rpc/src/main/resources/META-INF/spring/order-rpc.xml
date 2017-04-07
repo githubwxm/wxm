@@ -1,7 +1,7 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
 	http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
 
 	<!-- 远程rpc类声明 -->
@@ -20,7 +20,8 @@
 	<bean id="orderService" class="com.all580.order.service.OrderServiceImpl" />
 	<bean id="ticketCallbackService" class="com.all580.order.service.TicketCallbackServiceImpl" />
 	<bean id="groupService" class="com.all580.order.service.GroupServiceImpl" />
-
+	<bean id="syncExceptionOrder" class="com.all580.order.service.SyncExceptionOrderImpl" />
+	<dubbo:service interface="com.all580.order.api.service.SyncExceptionOrder" ref="syncExceptionOrder" />
 	<dubbo:service interface="com.all580.order.api.service.BookingOrderService" ref="bookingOrderService" />
 	<dubbo:service interface="com.all580.order.api.service.PaymentCallbackService" ref="paymentCallbackService" />
 	<dubbo:service interface="com.all580.order.api.service.OrderService" ref="orderService" />
