@@ -109,7 +109,7 @@ public class MnsEventCache extends InstantiationAwareBeanPostProcessorAdapter {
         try {
             bytes = TranscodeUtil.base64StrToByteArray(content);
         } catch (Exception e) {
-            log.warn("事件内容: {} 不是二进制类型", content, e);
+            log.debug("事件内容: {} 不是二进制类型: {}", content, e.getMessage());
             return getObject(content, action, true);
         }
         return LTSStatic.SyncData.asObject(bytes);
