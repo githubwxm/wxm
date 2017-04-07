@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.all580.order.dao.OrderExceptionMapper">
+    <select id="selectOrderSendException" resultType="java.util.Map">
+      select  toi.order_id,toi.id as order_item_id,t.number,toi.number as pro_sub_number,pro_name,pro_sub_name,
+       toi.update_time as exception_time,supplier_ep_id, -- supplier_ep_name,
+        buy_ep_name,toi.status as exception_status,'出票中' as exception_name
+      from t_order t join t_order_item toi on t.id=toi.order_id
+      where toi.status=324 and  TIMESTAMPDIFF(MINUTE,toi.update_time,NOW())>20 and t.id not in(
+      select toe.order_id from t_order_exception  toe
+      )
+    </select>
+
+  <select id="selectOrderFefundException" resultType="java.util.Map">
+    select toi.order_id,toi.id as order_item_id,t.number,toi.number as pro_sub_number,pro_name,pro_sub_name,
+     toi.update_time as exception_time,supplier_ep_id, -- supplier_ep_name,
+        buy_ep_name,342 as exception_status,'退票中' as exception_name
+     from t_order t join t_order_item toi on t.id=toi.order_id
+     where toi.id in(select DISTINCT order_item_id from t_refund_order where `status`=342 and  TIMESTAMPDIFF(MINUTE,toi.update_time,NOW())>20
+      and t.id not in(
+      select toe.order_id from t_order_exception  toe
+      ));
+  </select>
+    <select id="selectOrderNumException" resultType="java.util.Map">
+        select toi.order_id,toi.id as order_item_id,t.number,toi.number as pro_sub_number,pro_name,pro_sub_name,
+        toi.update_time as exception_time,supplier_ep_id, -- supplier_ep_name,
+        buy_ep_name,347 as exception_status,'数量错误' as exception_name
+        from t_order t join t_order_item toi on t.id=toi.order_id
+        where toi.quantity &lt; used_quantity+refund_quantity and t.id not in(
+      select toe.order_id from t_order_exception  toe
+      );
+    </select>
+    <insert id="insertOrderException">
+        INSERT INTO t_order_exception(order_id,
+        order_item_id,
+        number,
+        pro_sub_number,
+        pro_name,
+        pro_sub_name,
+        exception_time,
+        supplier_ep_id,
+        supplier_ep_name,
+        buy_ep_name,
+        exception_status,
+        exception_name
+        ) VALUES
+        <foreach collection="list" item="item" index="index" separator="," >
+            (#{item.order_id}, #{item.order_item_id}, #{item.number}, #{item.pro_sub_number}, #{item.pro_name},
+            #{item.pro_sub_name}, #{item.exception_time}, #{item.supplier_ep_id}, #{item.supplier_ep_name}, #{item.buy_ep_name},
+            #{item.exception_status}, #{item.exception_name})
+        </foreach>
+        on DUPLICATE   key update order_id=order_id ;
+    </insert>
+    <select id="selectOrderException" resultType="java.util.Map">
+        select * from  t_order_exception
+        where 1=1
+        <if test="supplier_ep_name != null and supplier_ep_name!=''">
+            and supplier_ep_name like  CONCAT('%',#{supplier_ep_name},'%')
+        </if>
+        <if test="buy_ep_name != null and buy_ep_name!=''">
+            and buy_ep_name like  CONCAT('%',#{buy_ep_name},'%')
+        </if>
+        <if test="number != null and number!=''">
+            and number=#{number}
+        </if>
+        <if test="start != null and end != null">
+            and exception_time BETWEEN #{start} AND #{end}
+        </if>
+        <include refid="limit"/>
+    </select>
+    <select id="selectOrderExceptionCount" resultType="java.lang.Integer">
+        select count(*) from  t_order_exception
+        where 1=1
+        <if test="supplier_ep_name != null and supplier_ep_name!=''">
+            and supplier_ep_name like  CONCAT('%',#{supplier_ep_name},'%')
+        </if>
+        <if test="buy_ep_name != null and buy_ep_name!=''">
+            and buy_ep_name like  CONCAT('%',#{buy_ep_name},'%')
+        </if>
+        <if test="number != null and number!=''">
+            and number=#{number}
+        </if>
+        <if test="start != null and end != null">
+            and exception_time BETWEEN #{start} AND #{end}
+        </if>
+    </select>
+
+    <sql id="limit">
+        <if test="limit != null">
+            limit #{record_start},#{record_count}
+        </if>
+    </sql>
+</mapper>
