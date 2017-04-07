@@ -93,13 +93,25 @@ public class MnsEventCache extends InstantiationAwareBeanPostProcessorAdapter {
         }
     }
 
-    public Object getObject(String content, MnsSubscribeAction action) {
-        if (JSONUtils.mayBeJSON(content)) {
+    public Object getObject(String content, MnsSubscribeAction action, boolean json) {
+        if (json) {
             Class pClass = getParamsClass(action);
             log.debug("JSON 类型事件:{}", pClass.getName());
             return JsonUtils.fromJson(content, pClass);
         } else {
             return LTSStatic.SyncData.asObject(TranscodeUtil.base64StrToByteArray(content));
         }
+    }
+
+    public Object getObject(String content, MnsSubscribeAction action) {
+        if (JSONUtils.mayBeJSON(content)) return getObject(content, action, true);
+        byte[] bytes = null;
+        try {
+            bytes = TranscodeUtil.base64StrToByteArray(content);
+        } catch (Exception e) {
+            log.warn("事件内容: {} 不是二进制类型", content, e);
+            return getObject(content, action, true);
+        }
+        return LTSStatic.SyncData.asObject(bytes);
     }
 }
