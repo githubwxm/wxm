@@ -61,11 +61,12 @@ public class ProductController extends BaseController {
      */
     @RequestMapping(value = "select_ep_self_product", method = RequestMethod.GET)
     @ResponseBody
-    public Result<?> selectEpSelfProduct(@RequestParam("statistic_ep_id") Integer ep_id,Integer type){
+    public Result<?> selectEpSelfProduct(@RequestParam("statistic_ep_id") Integer ep_id,String name,Integer type,
+    Integer record_start,Integer record_coun){
         if(null==type){
             type=ProductConstants.ProductType.SCENERY;
         }
-        return productService.selectEpSelfProduct(ep_id,type);
+        return productService.selectEpSelfProduct(ep_id,name,type,record_start,record_coun);
     }
     /**
      * 查询景区子产品
