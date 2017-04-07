@@ -7,9 +7,7 @@ import com.all580.base.task.action.EventRetryAction;
 import com.framework.common.Result;
 import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.UUIDGenerator;
-import com.framework.common.lang.codec.TranscodeUtil;
 import com.framework.common.mns.MnsSubscribeAction;
-import com.framework.common.synchronize.LTSStatic;
 import com.framework.common.util.CommonUtil;
 import com.github.ltsopensource.core.domain.Job;
 import com.github.ltsopensource.jobclient.JobClient;
@@ -74,7 +72,7 @@ public class CoreEventSubscribeController extends AbstractSubscribeController {
             List<Job> jobs = new ArrayList<>();
             Object object = null;
             try {
-                object = LTSStatic.SyncData.asObject(TranscodeUtil.base64StrToByteArray(content));
+                object = mnsEventCache.getObject(content, actions.iterator().next());
                 if (object == null) {
                     throw new Exception("事件内容为空");
                 }

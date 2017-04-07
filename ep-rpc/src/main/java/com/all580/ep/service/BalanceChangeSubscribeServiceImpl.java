@@ -1,19 +1,15 @@
 package com.all580.ep.service;
 
-import com.all580.ep.api.conf.EpConstant;
 import com.all580.ep.api.service.EpBalanceThresholdService;
 import com.all580.ep.dao.EpParamMapper;
 import com.all580.notice.api.service.BalanceChangeSubscribeService;
 import com.framework.common.Result;
-import com.framework.common.lang.JsonUtils;
-import com.github.ltsopensource.core.json.JSONArray;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,15 +27,8 @@ public class BalanceChangeSubscribeServiceImpl implements BalanceChangeSubscribe
     @Autowired
     private EpParamMapper epParamMapper;
 
-
-
     @Override
-    public  Result process(String s, Object t, Date date) {
-//        Integer status= epParamMapper.selectEpNoteStatus();
-//        if(status.equals(0)){//  查询是否需要发送短信
-//            return new Result(true);
-//        }
-        List list =(List) t;
+    public Result process(String s, List list, Date date) {
         if (list == null) {
             return new Result(true);
         }
@@ -55,8 +44,5 @@ public class BalanceChangeSubscribeServiceImpl implements BalanceChangeSubscribe
             epBalanceThresholdService.warn(map);
         }
         return new Result(true);
-
     }
-
-
 }
