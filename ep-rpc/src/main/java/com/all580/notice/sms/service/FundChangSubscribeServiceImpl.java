@@ -52,16 +52,18 @@ public class FundChangSubscribeServiceImpl implements FundChangeSubscribeService
         return rules;
     }
 
+
     @Override
-    public  Result process(String s, Object o, Date date) {
-        Map<String,Object> map = (Map)o;
+    public Result process(String s, Map map, Date date) {
         //ParamsMapValidate.validate(map, generateCreateCreditValidate());//
         log.info(" content map  {}",map.toString());
+        Map<String, Object> objectMap = new HashMap<>();
+        objectMap.putAll(map);
         Integer core_ep_id = CommonUtil.objectParseInteger(map.get(EpConstant.EpKey.CORE_EP_ID));
         Integer moeny = CommonUtil.objectParseInteger( map.get("money"));
-        int ref= fundSerialService.selectExists(map).get();
+        int ref= fundSerialService.selectExists(objectMap).get();
         if(ref==0){
-            fundSerialService.insertFundSerial(map);//必须先插入流水再修改总资金
+            fundSerialService.insertFundSerial(objectMap);//必须先插入流水再修改总资金
             if(moeny>0){
                 platfromFundService.addFund(moeny,core_ep_id);
             }else{
@@ -70,6 +72,4 @@ public class FundChangSubscribeServiceImpl implements FundChangeSubscribeService
         }
         return new Result(true);
     }
-
-
 }

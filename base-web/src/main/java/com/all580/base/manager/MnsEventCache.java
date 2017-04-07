@@ -85,7 +85,8 @@ public class MnsEventCache extends InstantiationAwareBeanPostProcessorAdapter {
 
     public Class getParamsClass(MnsSubscribeAction action) {
         try {
-            Type type = ((ParameterizedType) CommonUtil.getProxyClassForInterface(action, MnsSubscribeAction.class).getGenericInterfaces()[0]).getActualTypeArguments()[0];
+            Class<?> aClass = CommonUtil.getProxyClassForInterface(action, MnsSubscribeAction.class);
+            Type type = ((ParameterizedType) aClass.getGenericInterfaces()[0]).getActualTypeArguments()[0];
             return (Class) type;
         } catch (Exception e) {
             log.error("获取事件处理器的参数类型异常", e);
@@ -105,13 +106,11 @@ public class MnsEventCache extends InstantiationAwareBeanPostProcessorAdapter {
 
     public Object getObject(String content, MnsSubscribeAction action) {
         if (JSONUtils.mayBeJSON(content)) return getObject(content, action, true);
-        byte[] bytes = null;
         try {
-            bytes = TranscodeUtil.base64StrToByteArray(content);
+            return LTSStatic.SyncData.asObject(TranscodeUtil.base64StrToByteArray(content));
         } catch (Exception e) {
             log.debug("事件内容: {} 不是二进制类型: {}", content, e.getMessage());
             return getObject(content, action, true);
         }
-        return LTSStatic.SyncData.asObject(bytes);
     }
 }
