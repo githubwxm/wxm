@@ -42,6 +42,11 @@ public class RefundMoneyNotifyEventImpl extends BaseNotifyEvent implements Refun
         }else{
             map.put("refund_result","REJECT");
         }
+        map.put("refund_outer_id", refundOrder.getOuter_id());
+        map.put("audit_time", refundOrder.getAudit_time());
+        map.put("refund_money_time", refundOrder.getRefund_money_time());
+        map.put("refund_ticket_time", refundOrder.getRefund_ticket_time());
+        map.put("apply_time", refundOrder.getCreate_time());
         notifyEvent(refundOrder.getOrder_item_id(), "REFUND_MONEY",map);
         return new Result(true);
     }
