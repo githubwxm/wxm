@@ -2,9 +2,7 @@ package com.all580.base.task.action;
 
 import com.all580.base.manager.MnsEventCache;
 import com.framework.common.lang.DateFormatUtils;
-import com.framework.common.lang.codec.TranscodeUtil;
 import com.framework.common.mns.MnsSubscribeAction;
-import com.framework.common.synchronize.LTSStatic;
 import com.framework.common.util.CommonUtil;
 import com.framework.common.validate.ParamsMapValidate;
 import com.framework.common.validate.ValidRule;
@@ -46,7 +44,8 @@ public class EventRetryAction implements JobRunner {
             return new Result(Action.EXECUTE_SUCCESS, "没有订阅器");
         }
         Date createTime = DateFormatUtils.converToDateTime(params.get("time"));
-        Object object = LTSStatic.SyncData.asObject(TranscodeUtil.base64StrToByteArray(params.get("content")));
+        String content = params.get("content");
+        Object object = mnsEventCache.getObject(content, actions.iterator().next());
         for (MnsSubscribeAction subscribeAction : actions) {
             String name = CommonUtil.getProxyClassForInterface(subscribeAction, MnsSubscribeAction.class).getName();
             if (name.equals(params.get("class"))) {

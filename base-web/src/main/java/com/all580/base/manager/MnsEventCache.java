@@ -2,18 +2,26 @@ package com.all580.base.manager;
 
 import com.alibaba.dubbo.config.spring.ReferenceBean;
 import com.framework.common.event.EventService;
+import com.framework.common.lang.JsonUtils;
+import com.framework.common.lang.codec.TranscodeUtil;
 import com.framework.common.mns.MnsSubscribeAction;
+import com.framework.common.synchronize.LTSStatic;
+import com.framework.common.util.CommonUtil;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Ordering;
 import com.google.common.collect.TreeMultimap;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import net.sf.json.util.JSONUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.InstantiationAwareBeanPostProcessorAdapter;
 import org.springframework.stereotype.Component;
 
+import javax.lang.exception.ApiException;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Map;
@@ -73,5 +81,25 @@ public class MnsEventCache extends InstantiationAwareBeanPostProcessorAdapter {
 
     public Collection<MnsSubscribeAction> getProcess(String key) {
         return cacheEvents.get(key);
+    }
+
+    public Class getParamsClass(MnsSubscribeAction action) {
+        try {
+            Type type = ((ParameterizedType) CommonUtil.getProxyClassForInterface(action, MnsSubscribeAction.class).getGenericInterfaces()[0]).getActualTypeArguments()[0];
+            return (Class) type;
+        } catch (Exception e) {
+            log.error("获取事件处理器的参数类型异常", e);
+            throw new ApiException("事件处理器数据类型异常", e);
+        }
+    }
+
+    public Object getObject(String content, MnsSubscribeAction action) {
+        if (JSONUtils.mayBeJSON(content)) {
+            Class pClass = getParamsClass(action);
+            log.debug("JSON 类型事件:{}", pClass.getName());
+            return JsonUtils.fromJson(content, pClass);
+        } else {
+            return LTSStatic.SyncData.asObject(TranscodeUtil.base64StrToByteArray(content));
+        }
     }
 }
