@@ -148,6 +148,7 @@ public class BaseNotifyEvent {
         Map<String, Object> map = new HashMap<>();
         map.put("op_code", opCode);
         map.put("order_id", order.getNumber());
+        map.put("outer_id", order.getOuter_id());
         map.put("order_item_id", item.getNumber());
         map.put("ticket_status", itemStatus);
         map.put("order_status", orderStatus);
