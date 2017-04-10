@@ -2,22 +2,15 @@ package com.all580.order.task.timer;
 
 import com.all580.ep.api.service.EpService;
 import com.all580.order.dao.OrderExceptionMapper;
-import com.all580.order.dao.OrderMapper;
-import com.all580.order.entity.Order;
-import com.all580.order.manager.RefundOrderManager;
 import com.framework.common.Result;
-import com.framework.common.distributed.lock.DistributedLockTemplate;
-import com.framework.common.distributed.lock.DistributedReentrantLock;
 import com.framework.common.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.lang.exception.ApiException;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author zhouxianjun(Alone)

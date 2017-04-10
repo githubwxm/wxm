@@ -4,17 +4,13 @@ import com.all580.order.api.service.SyncExceptionOrder;
 import com.all580.order.dao.*;
 import com.all580.order.dto.SyncAccess;
 import com.all580.order.entity.Order;
-import com.all580.order.entity.OrderClearanceSerial;
 import com.all580.order.entity.OrderItem;
-import com.all580.order.entity.OrderItemAccount;
 import com.all580.order.service.event.BasicSyncDataEvent;
-import com.all580.product.api.consts.ProductConstants;
 import com.framework.common.Result;
 import com.framework.common.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 
 import javax.lang.exception.ApiException;
 import java.util.HashMap;
@@ -85,7 +81,7 @@ public class SyncExceptionOrderImpl extends BasicSyncDataEvent implements SyncEx
     }
 
     public Result SyncOrderAll(Long sn){
-        Order  order= orderMapper.selectBySN(sn);
+        Order order= orderMapper.selectBySN(sn);
         SyncAccess syncAccess = getAccessKeys(order);
         List<OrderItem>  orderItemList = orderItemMapper.selectByOrderId(order.getId());
         syncAccess.getDataMap().add("t_order", order)

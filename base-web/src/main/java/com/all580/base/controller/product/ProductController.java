@@ -61,8 +61,8 @@ public class ProductController extends BaseController {
      */
     @RequestMapping(value = "select_ep_self_product", method = RequestMethod.GET)
     @ResponseBody
-    public Result<?> selectEpSelfProduct(@RequestParam("statistic_ep_id") Integer ep_id,String name,Integer type,
-    Integer record_start,Integer record_coun){
+    public Result<?> selectEpSelfProduct(@RequestParam("statistic_ep_id") int ep_id,String name,Integer type,
+                                         Integer record_start,Integer record_coun){
         if(null==type){
             type=ProductConstants.ProductType.SCENERY;
         }
