@@ -96,7 +96,7 @@ public class SyncExceptionOrderImpl extends BasicSyncDataEvent implements SyncEx
                     .add("t_refund_order", refundOrderMapper.selectByItemId(itemId))
                     .add("t_refund_account", refundAccountMapper.selectItemRefundOrder(itemId))
                     .add("t_refund_serial", refundSerialMapper.selectItemRefundSerial(itemId))
-                    .add("t_refund_visitor", refundVisitorMapper.selectByItemId(itemId))
+                    .add("t_refund_visitor", refundVisitorMapper.selectByItemList(itemId))
                     .add("t_visitor", visitorMapper.selectByOrderItem(itemId))
                     .add("t_order_clearance_serial", orderClearanceSerialMapper.selectItemClearanceSerial(itemId))
                     .add("t_order_clearance_detail", orderClearanceDetailMapper.selectItemClearanceDetail(itemId))

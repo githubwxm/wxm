@@ -4,6 +4,7 @@ import com.all580.order.entity.RefundVisitor;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 public interface RefundVisitorMapper {
     /**
@@ -67,7 +68,7 @@ public interface RefundVisitorMapper {
      * @return
      */
     List<RefundVisitor> selectByItemIdExcludeFailed(@Param("itemId") Integer itemId);
-
+    List<Map<String,Object>> selectByItemList(@Param("itemId") Integer itemId);
     /**
      * 根据退订订单查询已退订的游客
      * @param refundId

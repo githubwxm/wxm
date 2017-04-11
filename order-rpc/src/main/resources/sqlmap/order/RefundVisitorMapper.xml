@@ -171,6 +171,9 @@
         and tro.`status` != 341
         GROUP BY trv.visitor_id
     </select>
+  <select id="selectByItemList" resultType="java.util.Map">
+    select * from  t_refund_visitor where order_item_id=#{itemId}
+  </select>
 
     <select id="selectByRefundId" resultMap="BaseResultMap">
         SELECT * FROM t_refund_visitor
