@@ -105,7 +105,7 @@ public class SyncExceptionOrderImpl extends BasicSyncDataEvent implements SyncEx
         }
 
         syncAccess.loop();
-        sync(syncAccess.getDataMaps());
+        //sync(syncAccess.getDataMaps());
         Result result = new Result(true);
         result.put(syncAccess.getDataMap().asMap());
         return result;
