@@ -23,7 +23,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.lang.exception.ApiException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -47,8 +46,6 @@ public class PushMsgManager {
     @Value("${task.maxRetryTimes}")
     private Integer maxRetryTimes;
 
-    private Map<PushMsgAdapter, Map> msgAdapterStringMap = new HashMap<>();
-
     public PushMsgAdapter getAdapter(String type) {
         try {
             PushMsgAdapter bean = applicationContext.getBean(EpConstant.PUSH_ADAPTER + (StringUtils.isEmpty(type) ? "GENERAL" : type), PushMsgAdapter.class);
@@ -63,12 +60,7 @@ public class PushMsgManager {
     }
 
     public Map getMsg(PushMsgAdapter adapter, Map map, Map config, String originMsg) {
-        if (msgAdapterStringMap.containsKey(adapter)) {
-            return msgAdapterStringMap.get(adapter);
-        }
-        Map msg = adapter.parseMsg(map, config, originMsg);
-        msgAdapterStringMap.put(adapter, msg);
-        return msg;
+        return adapter.parseMsg(map, config, originMsg);
     }
 
     public List getUrls(String epId, String id) {
@@ -123,9 +115,7 @@ public class PushMsgManager {
         job.setParam("epId", epId);
         job.setParam("$ACTION$", PushRetryAction.NAME);
         job.setTaskTrackerNodeGroup(taskTracker);
-        if (maxRetryTimes != null) {
-            job.setMaxRetryTimes(maxRetryTimes);
-        }
+        job.setMaxRetryTimes(maxRetryTimes);
         job.setNeedFeedback(false);
         log.info("推送信息错误新增TASK: {}-{}-{}", new Object[]{job.getTaskId(), id, url});
         return job;
@@ -139,9 +129,7 @@ public class PushMsgManager {
         job.setParam("sign", sign);
         job.setParam("$ACTION$", PushClientRetryAction.NAME);
         job.setTaskTrackerNodeGroup(taskTracker);
-        if (maxRetryTimes != null) {
-            job.setMaxRetryTimes(maxRetryTimes);
-        }
+        job.setMaxRetryTimes(maxRetryTimes);
         job.setNeedFeedback(false);
         log.info("推送客户端信息错误新增TASK: {}-{}-{}", new Object[]{job.getTaskId(), msg, url});
         return job;
