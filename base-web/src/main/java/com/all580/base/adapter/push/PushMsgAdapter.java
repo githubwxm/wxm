@@ -1,6 +1,5 @@
 package com.all580.base.adapter.push;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -15,13 +14,15 @@ public interface PushMsgAdapter {
      * @param msg 消息
      * @return
      */
-    String parseMsg(Map map, String msg);
+    Map parseMsg(Map map, Map config, String msg);
 
     /**
      * 推送消息
      * @param epId 企业ID
      * @param url 推送地址
      * @param msg 消息
+     * @param originMsg 原始消息
+     * @param config 推送配置信息
      */
-    void push(String epId, String url, String msg, Map config);
+    void push(String epId, String url, Map msg, Map originMsg, Map config);
 }

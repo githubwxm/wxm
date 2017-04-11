@@ -26,14 +26,13 @@ public class GeneralPushMsgAdapter implements PushMsgAdapter {
      * @return
      */
     @Override
-    public String parseMsg(Map map, String msg) {
+    public Map parseMsg(Map map, Map config, String msg) {
         String opCode = CommonUtil.objectParseString(map.get("op_code"));
         String refundResult = CommonUtil.objectParseString(map.get("refund_result"));
         if (opCode != null && "REFUND".equals(opCode) && refundResult != null && "REJECT".equals(refundResult)) {
             map.put("op_code", "REFUND_FAIL");
-            msg = JsonUtils.toJson(map);
         }
-        return msg;
+        return map;
     }
 
     /**
@@ -45,8 +44,8 @@ public class GeneralPushMsgAdapter implements PushMsgAdapter {
      * @param config
      */
     @Override
-    public void push(String epId, String url, String msg, Map config) {
-        String res = HttpUtils.postJson(url, msg, "UTF-8");
+    public void push(String epId, String url, Map msg, Map originMsg, Map config) {
+        String res = HttpUtils.postJson(url, JsonUtils.toJson(msg), "UTF-8");
         if (!res.equalsIgnoreCase("ok")) {
             log.warn("推送信息URL:{} 推送失败:{}", new Object[]{url, res});
             throw new ApiException(res);
