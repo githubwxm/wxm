@@ -1,6 +1,7 @@
 package com.all580.base.manager;
 
 import com.all580.base.adapter.push.PushMsgAdapter;
+import com.all580.base.task.action.PushClientRetryAction;
 import com.all580.base.task.action.PushRetryAction;
 import com.all580.ep.api.conf.EpConstant;
 import com.all580.ep.api.service.EpPushService;
@@ -8,6 +9,13 @@ import com.framework.common.Result;
 import com.framework.common.lang.UUIDGenerator;
 import com.github.ltsopensource.core.domain.Job;
 import lombok.extern.slf4j.Slf4j;
+import net.sf.json.JSONObject;
+import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
@@ -39,7 +47,7 @@ public class PushMsgManager {
     @Value("${task.maxRetryTimes}")
     private Integer maxRetryTimes;
 
-    private Map<PushMsgAdapter, String> msgAdapterStringMap = new HashMap<>();
+    private Map<PushMsgAdapter, Map> msgAdapterStringMap = new HashMap<>();
 
     public PushMsgAdapter getAdapter(String type) {
         try {
@@ -54,11 +62,11 @@ public class PushMsgManager {
         }
     }
 
-    public String getMsg(PushMsgAdapter adapter, Map map, String msg) {
+    public Map getMsg(PushMsgAdapter adapter, Map map, Map config, String originMsg) {
         if (msgAdapterStringMap.containsKey(adapter)) {
             return msgAdapterStringMap.get(adapter);
         }
-        msg = adapter.parseMsg(map, msg);
+        Map msg = adapter.parseMsg(map, config, originMsg);
         msgAdapterStringMap.put(adapter, msg);
         return msg;
     }
@@ -71,11 +79,29 @@ public class PushMsgManager {
         return (List) result.get();
     }
 
+    public void postClient(String url, String content, String sign) throws Exception {
+        CloseableHttpClient httpClient = HttpClientBuilder.create().build();
+        HttpPost request = new HttpPost(url);
+        StringEntity postingString = new StringEntity(content);// json传递
+        request.setEntity(postingString);
+        request.setHeader("Content-type", "application/json");
+        request.setHeader("sign", sign);
+        log.debug("请求运营平台:URL:{},CONTENT:{},SIGN:{}", new Object[]{url, content, sign});
+        HttpResponse response = httpClient.execute(request);
+        String responseContent = IOUtils.toString(response.getEntity().getContent());
+        JSONObject res = JSONObject.fromObject(responseContent);
+        if (res == null || res.isNullObject() || res.getInt("code") != 200) {
+            log.warn("请求运营平台错误:{}-{}", url, responseContent);
+            throw new ApiException("请求运营平台错误");
+        }
+        log.debug("请求运营平台:URL:{},RES:{}", url, responseContent);
+    }
+
     public void pushForAddJob(String id, String epId, String url, String type, String msg, Map map, Map m, List<Job> jobs) {
         try {
             PushMsgAdapter adapter = getAdapter(type);
-            String content = getMsg(adapter, map, msg);
-            adapter.push(epId, url, content, m);
+            Map content = getMsg(adapter, map, m, msg);
+            adapter.push(epId, url, content, map, m);
             log.info("推送信息:{} URL:{} 成功", id, url);
         } catch (Exception e) {
             log.warn("推送信息:{} URL:{} 推送失败", new Object[]{id, url, e});
@@ -102,6 +128,22 @@ public class PushMsgManager {
         }
         job.setNeedFeedback(false);
         log.info("推送信息错误新增TASK: {}-{}-{}", new Object[]{job.getTaskId(), id, url});
+        return job;
+    }
+
+    public Job addClientJob(String url, String msg, String sign) {
+        Job job = new Job();
+        job.setTaskId("PUSH-RETRY-JOB-" + UUIDGenerator.getUUID());
+        job.setParam("url", url);
+        job.setParam("msg", msg);
+        job.setParam("sign", sign);
+        job.setParam("$ACTION$", PushClientRetryAction.NAME);
+        job.setTaskTrackerNodeGroup(taskTracker);
+        if (maxRetryTimes != null) {
+            job.setMaxRetryTimes(maxRetryTimes);
+        }
+        job.setNeedFeedback(false);
+        log.info("推送客户端信息错误新增TASK: {}-{}-{}", new Object[]{job.getTaskId(), msg, url});
         return job;
     }
 }
