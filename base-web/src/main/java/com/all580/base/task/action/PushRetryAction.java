@@ -17,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.lang.exception.ApiException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -49,19 +50,23 @@ public class PushRetryAction implements JobRunner {
         String msg = params.get("content");
         String epId = params.get("epId");
         Map map = JSONObject.parseObject(msg, Map.class);
+        List list = pushMsgManager.getUrls(epId, msgId);
+        if (list == null) {
+            log.warn("推送信息:{} 没有查询到配置", msgId);
+            return new Result(Action.EXECUTE_SUCCESS, "没有推送地址");
+        }
         // URL 为空则全部推送
         if (!StringUtils.isEmpty(url) && !StringUtils.isEmpty(type)) {
             log.debug("推送信息:{} URL:{}", msgId, url);
+            Map config = getConfigByUrl(list, url);
+            if (config == null) {
+                throw new ApiException("没找到推送配置信息");
+            }
             PushMsgAdapter adapter = pushMsgManager.getAdapter(type);
-            String content = pushMsgManager.getMsg(adapter, map, msg);
-            adapter.push(epId, url, content, null);
+            Map content = pushMsgManager.getMsg(adapter, map, config, msg);
+            adapter.push(epId, url, content, map, config);
             log.info("推送信息:{} URL:{} 成功", msgId, url);
         } else {
-            List list = pushMsgManager.getUrls(epId, msgId);
-            if (list == null) {
-                log.warn("推送信息:{} 没有查询到配置", msgId);
-                return new Result(Action.EXECUTE_SUCCESS, "没有推送地址");
-            }
             List<Job> jobs = new ArrayList<>();
             for (Object o : list) {
                 Map m = (Map) o;
@@ -99,5 +104,16 @@ public class PushRetryAction implements JobRunner {
         }, new ValidRule[]{new ValidRule.NotNull()});
 
         ParamsMapValidate.validate(params, rules);
+    }
+
+    private Map getConfigByUrl(List list, String url) {
+        for (Object o : list) {
+            Map m = (Map) o;
+            String mUrl = CommonUtil.objectParseString(m.get("url"));
+            if (url.equals(mUrl)) {
+                return m;
+            }
+        }
+        return null;
     }
 }
