@@ -100,11 +100,14 @@ public class SyncExceptionOrderImpl extends BasicSyncDataEvent implements SyncEx
                     .add("t_visitor", visitorMapper.selectByOrderItem(itemId))
                     .add("t_order_clearance_serial", orderClearanceSerialMapper.selectItemClearanceSerial(itemId))
                     .add("t_order_clearance_detail", orderClearanceDetailMapper.selectItemClearanceDetail(itemId))
+                    .asMap()
             ;
         }
 
         syncAccess.loop();
         sync(syncAccess.getDataMaps());
-        return new Result(true);
+        Result result = new Result(true);
+        result.put(syncAccess.getDataMaps());
+        return result;
     }
 }
