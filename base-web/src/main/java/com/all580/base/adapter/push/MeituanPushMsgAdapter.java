@@ -133,7 +133,7 @@ public class MeituanPushMsgAdapter extends GeneralPushMsgAdapter {
                 String content = JsonUtils.toJson(params);
                 String sign = DigestUtils.md5Hex(content);
                 try {
-                    pushMsgManager.postClient(clientUrl, content, sign);
+                    pushMsgManager.postClient(clientUrl + "/service/remote/core/order/refund/ota/apply", content, sign);
                 } catch (Exception e) {
                     log.warn("美团退票申请异常", e);
                     jobClient.submitJob(pushMsgManager.addClientJob(clientUrl, content, sign));
