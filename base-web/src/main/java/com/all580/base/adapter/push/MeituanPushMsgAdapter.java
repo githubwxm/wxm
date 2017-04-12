@@ -130,7 +130,7 @@ public class MeituanPushMsgAdapter extends GeneralPushMsgAdapter implements Init
 
         if (res == null || res.isNullObject() || res.getInt("code") != 200) {
             log.warn("推送信息URL:{} 推送失败:{}", new Object[]{url, res});
-            if (res != null && opCode.equals("SEND")) {
+            if (res != null && opCode.equals("SENT")) {
                 log.info("美团出票推送返回失败,申请退票");
                 // 请求运营平台申请退订
                 String clientUrl = config.get("client_url").toString();
@@ -154,7 +154,7 @@ public class MeituanPushMsgAdapter extends GeneralPushMsgAdapter implements Init
             throw new ApiException(res == null ? "null" : res.toString());
         }
 
-        if (opCode.equals("SEND")) {
+        if (opCode.equals("SENT")) {
             // 推送发码信息
             Map<String, Object> params = new HashMap<>();
             params.put("op_code", "VOUCHER");
