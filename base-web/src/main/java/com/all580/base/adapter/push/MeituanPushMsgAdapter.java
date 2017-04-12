@@ -68,7 +68,7 @@ public class MeituanPushMsgAdapter extends GeneralPushMsgAdapter implements Init
                 body.put("requestTime", map.get("apply_time"));
                 body.put("responseTime", map.get("audit_time"));
                 break;
-            case "SEND":
+            case "SENT":
                 params.put("issueType", 0);
                 body.put("orderId", map.get("outer_id"));
                 body.put("partnerOrderId", map.get("number"));
@@ -95,7 +95,7 @@ public class MeituanPushMsgAdapter extends GeneralPushMsgAdapter implements Init
     public void push(String epId, String url, Map msg, Map originMsg, Map config) {
         String opCode = originMsg.get("op_code").toString();
         if (!opCodeUrl.containsKey(opCode)) {
-            throw new ApiException("请配置美团推送OPCODE");
+            throw new ApiException("请配置美团推送OPCODE:" + opCode);
         }
         CloseableHttpClient httpClient = HttpClientBuilder.create().build();
         JSONObject res = null;
@@ -174,7 +174,7 @@ public class MeituanPushMsgAdapter extends GeneralPushMsgAdapter implements Init
         opCodeUrl.put("CONSUME", "/rhone/mtp/api/order/consume/notice");
         opCodeUrl.put("REFUND_FAIL", "/rhone/mtp/api/order/refund/notice");
         opCodeUrl.put("REFUND", "/rhone/mtp/api/order/refund/notice");
-        opCodeUrl.put("SEND", "/rhone/mtp/api/order/pay/notice");
+        opCodeUrl.put("SENT", "/rhone/mtp/api/order/pay/notice");
         opCodeUrl.put("VOUCHER", "/rhone/mtp/api/order/vouchers/notice");
     }
 }

@@ -94,9 +94,9 @@ public class PushMsgManager {
             PushMsgAdapter adapter = getAdapter(type);
             Map content = getMsg(adapter, map, m, msg);
             adapter.push(epId, url, content, map, m);
-            log.info("推送信息:{} URL:{} 成功", id, url);
+            log.info("推送信息结束:{} URL:{} CONTENT:{} 成功", new Object[]{id, url, content});
         } catch (Exception e) {
-            log.warn("推送信息:{} URL:{} 推送失败", new Object[]{id, url, e});
+            log.warn("推送信息结束:{} URL:{} 推送失败", new Object[]{id, url, e});
             jobs.add(addJob(id, msg, url, type, epId));
         }
     }

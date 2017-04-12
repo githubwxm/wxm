@@ -57,7 +57,7 @@ public class PushRetryAction implements JobRunner {
         }
         // URL 为空则全部推送
         if (!StringUtils.isEmpty(url) && !StringUtils.isEmpty(type)) {
-            log.debug("推送信息:{} URL:{}", msgId, url);
+            log.debug("推送信息开始:{} URL:{} MSG:{}", new Object[]{msgId, url, msg});
             Map config = getConfigByUrl(list, url);
             if (config == null) {
                 throw new ApiException("没找到推送配置信息");
@@ -65,7 +65,7 @@ public class PushRetryAction implements JobRunner {
             PushMsgAdapter adapter = pushMsgManager.getAdapter(type);
             Map content = pushMsgManager.getMsg(adapter, map, config, msg);
             adapter.push(epId, url, content, map, config);
-            log.info("推送信息:{} URL:{} 成功", msgId, url);
+            log.info("推送信息结束:{} URL:{} CONTENT:{} 成功", new Object[]{msgId, url, content});
         } else {
             List<Job> jobs = new ArrayList<>();
             for (Object o : list) {
@@ -77,7 +77,7 @@ public class PushRetryAction implements JobRunner {
                 }
                 type = CommonUtil.objectParseString(m.get("type"));
                 // push
-                log.debug("推送信息:{} URL:{}", msgId, url);
+                log.debug("推送信息开始:{} URL:{} MSG:{}", new Object[]{msgId, url, msg});
                 pushMsgManager.pushForAddJob(msgId, epId, url, type, msg, map, m, jobs);
             }
             if (!jobs.isEmpty() && jobs.size() > 0) {
