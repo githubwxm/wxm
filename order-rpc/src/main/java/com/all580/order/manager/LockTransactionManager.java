@@ -569,6 +569,7 @@ public class LockTransactionManager {
         if (refundSerial.getRefund_time() != null) {
             return new Result(false, "退票流水:" + info.getRefId() + "重复操作");
         }
+        eventManager.addEvent(OrderConstant.EventType.REFUND_TICKET, new RefundTicketEventParam(refundOrder.getId(), info.isSuccess()));
         // 退票失败
         if (!info.isSuccess()) {
             return refundFail(refundOrder);
@@ -587,7 +588,6 @@ public class LockTransactionManager {
         Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
         refundOrderManager.refundMoney(order, refundOrder.getMoney(), String.valueOf(refundOrder.getNumber()), refundOrder);
 
-        eventManager.addEvent(OrderConstant.EventType.REFUND_TICKET, new RefundTicketEventParam(refundOrder.getId(), info.isSuccess()));
         return new Result(true);
     }
 
