@@ -55,6 +55,7 @@ public class MeituanPushMsgAdapter extends GeneralPushMsgAdapter {
                 body.put("quantity", map.get("quantity"));
                 body.put("usedQuantity", map.get("total_usd_qty"));
                 body.put("refundedQuantity", map.get("rfd_qty"));
+                break;
             case "REFUND_FAIL":
                 params.put("code", 606);
                 params.put("describe", "余票不足或拒绝退票");
@@ -63,6 +64,7 @@ public class MeituanPushMsgAdapter extends GeneralPushMsgAdapter {
                 body.put("partnerOrderId", map.get("number"));
                 body.put("requestTime", map.get("apply_time"));
                 body.put("responseTime", map.get("audit_time"));
+                break;
             case "SEND":
                 params.put("issueType", 0);
                 body.put("orderId", map.get("outer_id"));
@@ -80,6 +82,7 @@ public class MeituanPushMsgAdapter extends GeneralPushMsgAdapter {
                 }
                 body.put("vouchers", vouchers);
                 body.put("voucherPics", voucherPics);
+                break;
         }
         params.put("body", body);
         return params;
