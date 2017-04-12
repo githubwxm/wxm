@@ -79,7 +79,7 @@ public class PushSubscribeController extends AbstractSubscribeController {
                 }
                 String type = CommonUtil.objectParseString(m.get("type"));
                 // push
-                log.debug("推送信息:{} URL:{}", id, url);
+                log.debug("推送信息开始:{} URL:{} MSG:{}", new Object[]{id, url, msg});
                 pushMsgManager.pushForAddJob(id, epId, url, type, msg, map, m, jobs);
             }
             if (!jobs.isEmpty() && jobs.size() > 0) {
