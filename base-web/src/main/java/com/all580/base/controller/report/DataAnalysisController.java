@@ -36,7 +36,7 @@ public class DataAnalysisController extends BalanceController {
 
     @RequestMapping("sale/consume/list")
     @ResponseBody
-    public Result<?> consumeListBySale(Integer product_id,
+    public Result<?> consumeListBySale(String product_code,
                                        @RequestParam String start,
                                        @RequestParam String end,
                                        String sort_col,
@@ -52,12 +52,12 @@ public class DataAnalysisController extends BalanceController {
             throw new ApiException("排序字段错误");
         }
         Object core_ep_id = getAttribute(EpConstant.EpKey.CORE_EP_ID);
-        return dataAnalysisService.selectConsumeAnalysisListBySale(product_id, dates[0], dates[1], CommonUtil.objectParseInteger(core_ep_id), sort_col, sort_type, record_start, record_count);
+        return dataAnalysisService.selectConsumeAnalysisListBySale(product_code, dates[0], dates[1], CommonUtil.objectParseInteger(core_ep_id), sort_col, sort_type, record_start, record_count);
     }
 
     @RequestMapping("sale/consume/compared")
     @ResponseBody
-    public Result<?> consumeComparedBySale(Integer product_id,
+    public Result<?> consumeComparedBySale(String product_code,
                                            @RequestParam String start,
                                            @RequestParam String end,
                                            @RequestParam Integer type,
@@ -79,12 +79,12 @@ public class DataAnalysisController extends BalanceController {
             throw new ApiException("类型错误");
         }
         Object core_ep_id = getAttribute(EpConstant.EpKey.CORE_EP_ID);
-        return dataAnalysisService.selectConsumeAnalysisComparedSale(product_id, dates[0], dates[1], CommonUtil.objectParseInteger(core_ep_id), type, group ? "team" : "individual", sort_col, sort_type, record_start, record_count);
+        return dataAnalysisService.selectConsumeAnalysisComparedSale(product_code, dates[0], dates[1], CommonUtil.objectParseInteger(core_ep_id), type, group ? "team" : "individual", sort_col, sort_type, record_start, record_count);
     }
 
     @RequestMapping("supply/consume/list")
     @ResponseBody
-    public Result<?> consumeListBySupply(Integer product_id,
+    public Result<?> consumeListBySupply(String product_code,
                                        @RequestParam String start,
                                        @RequestParam String end,
                                        String sort_col,
@@ -100,12 +100,12 @@ public class DataAnalysisController extends BalanceController {
             throw new ApiException("排序字段错误");
         }
         Object core_ep_id = getAttribute(EpConstant.EpKey.CORE_EP_ID);
-        return dataAnalysisService.selectConsumeAnalysisListBySupply(product_id, dates[0], dates[1], CommonUtil.objectParseInteger(core_ep_id), sort_col, sort_type, record_start, record_count);
+        return dataAnalysisService.selectConsumeAnalysisListBySupply(product_code, dates[0], dates[1], CommonUtil.objectParseInteger(core_ep_id), sort_col, sort_type, record_start, record_count);
     }
 
     @RequestMapping("supply/consume/compared")
     @ResponseBody
-    public Result<?> consumeComparedBySupply(Integer product_id,
+    public Result<?> consumeComparedBySupply(String product_code,
                                            @RequestParam String start,
                                            @RequestParam String end,
                                            @RequestParam Integer type,
@@ -127,7 +127,7 @@ public class DataAnalysisController extends BalanceController {
             throw new ApiException("类型错误");
         }
         Object core_ep_id = getAttribute(EpConstant.EpKey.CORE_EP_ID);
-        return dataAnalysisService.selectConsumeAnalysisComparedSupply(product_id, dates[0], dates[1], CommonUtil.objectParseInteger(core_ep_id), type, group ? "team" : "individual", sort_col, sort_type, record_start, record_count);
+        return dataAnalysisService.selectConsumeAnalysisComparedSupply(product_code, dates[0], dates[1], CommonUtil.objectParseInteger(core_ep_id), type, group ? "team" : "individual", sort_col, sort_type, record_start, record_count);
     }
 
     public static Date[] checkDate(String start_time, String end_time) {
