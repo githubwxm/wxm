@@ -9,7 +9,6 @@ import com.all580.role.api.service.IntfService;
 import com.framework.common.Result;
 import com.framework.common.io.cache.redis.RedisUtils;
 import com.framework.common.lang.JsonUtils;
-import com.framework.common.util.Auth;
 import com.framework.common.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 
@@ -18,10 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * Created by wxming on 2016/10/13 0013.
@@ -30,11 +26,12 @@ import java.util.TreeMap;
 public class VerifyFilter implements  Filter {
 //    @Autowired
 //    private CoreEpAccessService coreEpAccessService;
-
+    private String [] authUrls;
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        // TODO Auto-generated method stub
-
+        String  url=  filterConfig.getInitParameter("authUrls").replaceAll("[^\\S]","");
+        authUrls= url.split(",");
+        Auth.setnotAuthAddress(Arrays.asList(authUrls));
     }
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
@@ -48,9 +45,7 @@ public class VerifyFilter implements  Filter {
         String currenttSing="";
         String url =httpRequest.getRequestURI(); // 访问url
         CoreEpAccessService coreEpAccessService= BeanUtil.getBean("coreEpAccessService", CoreEpAccessService.class);
-
-
-        if ("POST".equals(method)) {
+       if ("POST".equals(method)) {
             if(request instanceof HttpServletRequest) {
                 requestWrapper = new MyHttpServletRequest((HttpServletRequest) request);
                 postParams= CommonUtil.objectParseString(requestWrapper.getAttribute("_body"));
