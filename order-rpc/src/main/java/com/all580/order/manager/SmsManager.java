@@ -106,7 +106,7 @@ public class SmsManager {
      * @param orderItem
      * @return
      */
-    public void sendRefundFailSms(OrderItem orderItem) {
+    public void sendRefundFailSms(OrderItem orderItem, RefundOrder refundOrder) {
         Shipping shipping = shippingMapper.selectByOrder(orderItem.getOrder_id());
         if (shipping == null) {
             throw new ApiException("订单联系人不存在");
@@ -119,7 +119,10 @@ public class SmsManager {
 
         Map<String, String> sendSmsParams = new HashMap<>();
         sendSmsParams.put("date", DateFormatUtils.parseDateToDatetimeString(orderItem.getStart()));
-        sendSmsParams.put("dingdanhao", String.valueOf(orderItem.getNumber()));
+        sendSmsParams.put("productname", orderItem.getPro_sub_name());
+        sendSmsParams.put("countnum", String.valueOf(orderItem.getQuantity() * orderItem.getDays()));
+        sendSmsParams.put("dingdanhao", String.valueOf(order.getNumber()));
+        sendSmsParams.put("num", String.valueOf(refundOrder.getQuantity()));
         Result result = smsService.send(shipping.getPhone(), SmsType.Order.MONEY_REFUND_FAIL, order.getPayee_ep_id(), sendSmsParams);//发送短信
         if (!result.isSuccess()) {
             throw new ApiException("发送退票失败短信失败:" + result.getError());
@@ -146,7 +149,9 @@ public class SmsManager {
 
         Map<String, String> sendSmsParams = new HashMap<>();
         sendSmsParams.put("date", DateFormatUtils.parseDateToDatetimeString(orderItem.getStart()));
-        sendSmsParams.put("dingdanhao", String.valueOf(orderItem.getNumber()));
+        sendSmsParams.put("productname", orderItem.getPro_sub_name());
+        sendSmsParams.put("countnum", String.valueOf(orderItem.getQuantity() * orderItem.getDays()));
+        sendSmsParams.put("dingdanhao", String.valueOf(order.getNumber()));
         sendSmsParams.put("num", String.valueOf(refundOrder.getQuantity()));
         Result result = smsService.send(shipping.getPhone(), SmsType.Order.ORDER_REFUND, order.getPayee_ep_id(), sendSmsParams);//发送短信
         if (!result.isSuccess()) {
