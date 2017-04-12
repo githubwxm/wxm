@@ -408,7 +408,7 @@ public class LockTransactionManager {
 
         if (order.getStatus() != OrderConstant.OrderStatus.PAY_WAIT &&
                 order.getStatus() != OrderConstant.OrderStatus.PAY_FAIL) {
-            if (order.getStatus() == OrderConstant.OrderStatus.PAYING) {
+            if (order.getStatus() == OrderConstant.OrderStatus.PAYING && order.getPayment_type().intValue() != PaymentConstant.PaymentType.BALANCE) {
                 // 支付中的订单 主动查询第三方机构获取支付状态, 支付成功则更新订单,支付中则不允许再支付,其它则可以继续支付
                 Result<Map<String, Object>> result = thirdPayService.getPaidStatus(order.getNumber(), order.getPayee_ep_id(), order.getPayment_type(), order.getThird_serial_no());
                 if (result == null || !result.isSuccess()) {
