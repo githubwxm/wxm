@@ -19,6 +19,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -33,11 +34,12 @@ import java.util.Map;
  */
 @Component(EpConstant.PUSH_ADAPTER + "MEITUAN")
 @Slf4j
-public class MeituanPushMsgAdapter extends GeneralPushMsgAdapter {
+public class MeituanPushMsgAdapter extends GeneralPushMsgAdapter implements InitializingBean {
     @Autowired
     private PushMsgManager pushMsgManager;
     @Autowired
     private JobClient jobClient;
+    private Map<String, String> opCodeUrl = new HashMap<>();
 
     @Override
     public Map parseMsg(Map map, Map config, String msg) {
@@ -57,8 +59,9 @@ public class MeituanPushMsgAdapter extends GeneralPushMsgAdapter {
                 body.put("refundedQuantity", map.get("rfd_qty"));
                 break;
             case "REFUND_FAIL":
-                params.put("code", 606);
-                params.put("describe", "余票不足或拒绝退票");
+            case "REFUND":
+                params.put("code", opCode.equals("REFUND_FAIL") ? 606 : 200);
+                params.put("describe", opCode.equals("REFUND_FAIL") ? "余票不足或拒绝退票" : "退款成功");
                 body.put("orderId", map.get("outer_id"));
                 body.put("refundId", map.get("refund_outer_id"));
                 body.put("partnerOrderId", map.get("number"));
@@ -90,9 +93,13 @@ public class MeituanPushMsgAdapter extends GeneralPushMsgAdapter {
 
     @Override
     public void push(String epId, String url, Map msg, Map originMsg, Map config) {
+        String opCode = originMsg.get("op_code").toString();
+        if (!opCodeUrl.containsKey(opCode)) {
+            throw new ApiException("请配置美团推送OPCODE");
+        }
         CloseableHttpClient httpClient = HttpClientBuilder.create().build();
         JSONObject res = null;
-        HttpPost request = new HttpPost(url);
+        HttpPost request = new HttpPost(url + opCodeUrl.get(opCode));
         try {
             String configStr = CommonUtil.objectParseString(config.get("config"));
             if (!JSONUtils.mayBeJSON(configStr)) {
@@ -112,6 +119,7 @@ public class MeituanPushMsgAdapter extends GeneralPushMsgAdapter {
             res = JSONObject.fromObject(responseContent);
         } catch (Exception e) {
             log.warn("推送美团请求失败", e);
+            throw new ApiException("推送美团请求失败", e);
         } finally {
             try {
                 httpClient.close();
@@ -122,7 +130,7 @@ public class MeituanPushMsgAdapter extends GeneralPushMsgAdapter {
 
         if (res == null || res.isNullObject() || res.getInt("code") != 200) {
             log.warn("推送信息URL:{} 推送失败:{}", new Object[]{url, res});
-            if (res != null && originMsg.get("op_code").equals("SEND")) {
+            if (res != null && opCode.equals("SEND")) {
                 log.info("美团出票推送返回失败,申请退票");
                 // 请求运营平台申请退订
                 String clientUrl = config.get("client_url").toString();
@@ -146,7 +154,7 @@ public class MeituanPushMsgAdapter extends GeneralPushMsgAdapter {
             throw new ApiException(res == null ? "null" : res.toString());
         }
 
-        if (originMsg.get("op_code").equals("SEND")) {
+        if (opCode.equals("SEND")) {
             // 推送发码信息
             Map<String, Object> params = new HashMap<>();
             params.put("op_code", "VOUCHER");
@@ -159,5 +167,14 @@ public class MeituanPushMsgAdapter extends GeneralPushMsgAdapter {
                 jobClient.submitJob(jobs);
             }
         }
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        opCodeUrl.put("CONSUME", "/rhone/mtp/api/order/consume/notice");
+        opCodeUrl.put("REFUND_FAIL", "/rhone/mtp/api/order/refund/notice");
+        opCodeUrl.put("REFUND", "/rhone/mtp/api/order/refund/notice");
+        opCodeUrl.put("SEND", "/rhone/mtp/api/order/pay/notice");
+        opCodeUrl.put("VOUCHER", "/rhone/mtp/api/order/vouchers/notice");
     }
 }
