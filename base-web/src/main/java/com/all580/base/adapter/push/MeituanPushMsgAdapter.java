@@ -142,8 +142,8 @@ public class MeituanPushMsgAdapter extends GeneralPushMsgAdapter implements Init
                 params.put("apply_from", ProductConstants.RefundEqType.SELLER);
                 params.put("cause", "meituan");
                 params.put("outer_id", originMsg.get("outer_id"));
-                String content = JsonUtils.toJson(params) + accessKey;
-                String sign = DigestUtils.md5Hex(content);
+                String content = JsonUtils.toJson(params);
+                String sign = DigestUtils.md5Hex(content + accessKey);
                 try {
                     clientUrl = clientUrl + "/service/remote/core/order/refund/ota/apply";
                     pushMsgManager.postClient(clientUrl, content, sign);
