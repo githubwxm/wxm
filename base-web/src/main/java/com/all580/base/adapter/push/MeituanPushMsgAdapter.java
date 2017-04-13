@@ -50,6 +50,7 @@ public class MeituanPushMsgAdapter extends GeneralPushMsgAdapter implements Init
         }
         Map<String, Object> params = new HashMap<>();
         Map<String, Object> body = new HashMap<>();
+        params.put("body", body);
         switch (opCode) {
             case "CONSUME":
                 body.put("orderId", map.get("outer_id"));
