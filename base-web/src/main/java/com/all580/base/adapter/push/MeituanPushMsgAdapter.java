@@ -134,16 +134,18 @@ public class MeituanPushMsgAdapter extends GeneralPushMsgAdapter implements Init
                 // 请求运营平台申请退订
                 String clientUrl = config.get("client_url").toString();
                 String accessId = config.get("access_id").toString();
+                String accessKey = config.get("access_key").toString();
                 Map<String, Object> params = new HashMap<>();
                 params.put("access_id", accessId);
                 params.put("order_item_sn", originMsg.get("number"));
                 params.put("apply_from", ProductConstants.RefundEqType.SELLER);
                 params.put("cause", "meituan");
                 params.put("outer_id", originMsg.get("outer_id"));
-                String content = JsonUtils.toJson(params);
+                String content = JsonUtils.toJson(params) + accessKey;
                 String sign = DigestUtils.md5Hex(content);
                 try {
-                    pushMsgManager.postClient(clientUrl + "/service/remote/core/order/refund/ota/apply", content, sign);
+                    clientUrl = clientUrl + "/service/remote/core/order/refund/ota/apply";
+                    pushMsgManager.postClient(clientUrl, content, sign);
                 } catch (Exception e) {
                     log.warn("美团退票申请异常", e);
                     jobClient.submitJob(pushMsgManager.addClientJob(clientUrl, content, sign));
