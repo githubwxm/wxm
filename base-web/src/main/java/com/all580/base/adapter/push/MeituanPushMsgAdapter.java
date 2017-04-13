@@ -87,10 +87,7 @@ public class MeituanPushMsgAdapter extends GeneralPushMsgAdapter implements Init
                 body.put("voucherPics", voucherPics);
                 break;
         }
-        if (!map.containsKey("body") || !body.isEmpty()) {
-            params.put("body", body);
-        }
-        return params;
+        return body.isEmpty() ? map : params;
     }
 
     @Override
