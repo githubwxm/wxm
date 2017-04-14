@@ -10,7 +10,6 @@ import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.util.CommonUtil;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -128,6 +127,20 @@ public class DataAnalysisController extends BalanceController {
         }
         Object core_ep_id = getAttribute(EpConstant.EpKey.CORE_EP_ID);
         return dataAnalysisService.selectConsumeAnalysisComparedSupply(product_code, dates[0], dates[1], CommonUtil.objectParseInteger(core_ep_id), type, group ? "team" : "individual", sort_col, sort_type, record_start, record_count);
+    }
+
+    @RequestMapping("search/product")
+    @ResponseBody
+    public Result<?> searchProduct(String name) {
+        Object core_ep_id = getAttribute(EpConstant.EpKey.CORE_EP_ID);
+        return dataAnalysisService.searchProduct(name, null, CommonUtil.objectParseInteger(core_ep_id));
+    }
+
+    @RequestMapping("search/sub")
+    @ResponseBody
+    public Result<?> searchSubProduct(String name, String productCode) {
+        Object core_ep_id = getAttribute(EpConstant.EpKey.CORE_EP_ID);
+        return dataAnalysisService.searchSubProduct(name, productCode, null, CommonUtil.objectParseInteger(core_ep_id));
     }
 
     public static Date[] checkDate(String start_time, String end_time) {
