@@ -8,8 +8,6 @@ import com.all580.product.api.consts.ProductConstants;
 import com.all580.voucher.api.conf.VoucherConstant;
 import com.all580.voucher.api.model.group.SendGroupTicketParams;
 import com.all580.voucher.api.service.VoucherRPCService;
-import com.framework.common.lang.JsonUtils;
-import com.framework.common.mns.OssStoreManager;
 import com.framework.common.validate.ParamsMapValidate;
 import com.framework.common.validate.ValidRule;
 import com.github.ltsopensource.core.domain.Action;
@@ -19,7 +17,6 @@ import com.github.ltsopensource.tasktracker.runner.JobRunner;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,16 +50,6 @@ public class SendGroupTicketAction implements JobRunner {
 
     @Autowired
     private BookingOrderManager bookingOrderManager;
-
-    @Autowired
-    private OssStoreManager ossStoreManager;
-
-    @Value("${group.max.visitor}")
-    private int groupMaxVisitor = 100;
-    @Value("${group.visitor.expire}")
-    private int groupVisitorExpire = 3600 * 1000;
-    @Value("${group.visitor.folder}")
-    private String groupVisitorFolder = "group-visitor";
 
     @Override
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
@@ -135,17 +122,7 @@ public class SendGroupTicketAction implements JobRunner {
             v.setIdType(visitor.getCard_type());
             contacts.add(v);
         }
-        // 超大团 走OSS
-        if (visitorList.size() > groupMaxVisitor) {
-            log.debug("团队订单: {} 人员过多,上传游客到OSS.", orderItem.getNumber());
-            String pathName = groupVisitorFolder + "/" + orderItem.getNumber();
-            ossStoreManager.upload(pathName, JsonUtils.toJson(contacts));
-            String url = ossStoreManager.makeSecurityTokenUrl(pathName, groupVisitorExpire);
-            sendGroupTicketParams.setOssUrl(url);
-            log.debug("超大团: {} OSS: {}", orderItem.getNumber(), url);
-        } else {
-            sendGroupTicketParams.setVisitors(contacts);
-        }
+        sendGroupTicketParams.setVisitors(contacts);
         com.framework.common.Result r = voucherRPCService.sendGroupTicket(orderItem.getEp_ma_id(), sendGroupTicketParams);
         if (!r.isSuccess()) {
             log.warn("子订单:{},出票失败:{}", orderItem.getNumber(), r.getError());
