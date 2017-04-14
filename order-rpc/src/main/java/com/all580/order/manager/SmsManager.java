@@ -327,7 +327,7 @@ public class SmsManager {
         sendSmsParams.put("number", String.valueOf(order.getNumber()));
         sendSmsParams.put("indate", DateFormatUtils.converToStringDate(orderItem.getStart()));
         sendSmsParams.put("outdate", DateFormatUtils.converToStringDate(orderItem.getEnd()));
-        sendSmsParams.put("count", String.valueOf(orderItem.getQuantity() / orderItem.getDays()));
+        sendSmsParams.put("count", String.valueOf(orderItem.getQuantity()));
         Result result = smsService.send(shipping.getPhone(), SmsType.Order.HOTEL_TICKET, order.getPayee_ep_id(), sendSmsParams);//发送短信
         if (!result.isSuccess()) {
             throw new ApiException("发送酒店出票短信失败:" + result.getError());
