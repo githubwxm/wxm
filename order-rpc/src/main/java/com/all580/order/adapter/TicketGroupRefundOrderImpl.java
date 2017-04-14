@@ -66,8 +66,8 @@ public class TicketGroupRefundOrderImpl extends AbstractRefundOrderImpl {
     @Override
     public void canBeRefund(RefundOrderApply apply, List<OrderItemDetail> detailList, Map params) {
         super.canBeRefund(apply, detailList, params);
-        List<RefundOrder> refundOrders = refundOrderMapper.selectByItemId(apply.getItem().getId());
-        if (refundOrders != null && refundOrders.size() > 0) {
+        int count = refundOrderMapper.selectByItemIdAndStatus(apply.getItem().getId(), OrderConstant.RefundOrderStatus.FAIL, 2);
+        if (count > 0) {
             throw new ApiException("该订单只能退一次");
         }
         if (apply.getItem().getUsed_quantity() != null && apply.getItem().getUsed_quantity() > 0) {

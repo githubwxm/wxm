@@ -70,11 +70,12 @@ public class SyncExceptionOrderImpl extends BasicSyncDataEvent implements SyncEx
 
     public Result selectSyncOrder(Long sn){
         List<Map<String,Object>> list =orderMapper.selectByNumberItem(sn);
+        Result result = new Result(true);
         if( null==list|| list.isEmpty()){
-            throw new ApiException("未找到主订单");
+           result.setError("未找到主订单");
         }
         Map<String,Object> map = new HashMap<>();
-        Result result = new Result(true);
+
         map.put("list",list);
         result.put(map);
         return result;
