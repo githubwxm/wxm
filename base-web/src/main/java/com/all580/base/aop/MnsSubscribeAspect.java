@@ -47,7 +47,7 @@ public class MnsSubscribeAspect {
         // 获取请求参数
         String msg = (String) getReqParams.invoke(thisJoinPoint.getThis(), request);
         // 处理消息
-        log.info("MNS 消息: {}", msg);
+        log.info("MNS: {} 消息: {}", mnsMsgId, msg);
         // 保存消息
 
         // 处理消息

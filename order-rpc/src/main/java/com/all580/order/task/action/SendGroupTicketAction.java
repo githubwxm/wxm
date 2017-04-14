@@ -128,21 +128,22 @@ public class SendGroupTicketAction implements JobRunner {
         sendGroupTicketParams.setSendSms(true);
 
         List<Visitor> visitorList = visitorMapper.selectByOrderItem(orderItemId);
+        List<com.all580.voucher.api.model.Visitor> contacts = new ArrayList<>();
+        for (Visitor visitor : visitorList) {
+            com.all580.voucher.api.model.Visitor v = new com.all580.voucher.api.model.Visitor();
+            BeanUtils.copyProperties(visitor, v);
+            v.setIdType(visitor.getCard_type());
+            contacts.add(v);
+        }
         // 超大团 走OSS
         if (visitorList.size() > groupMaxVisitor) {
             log.debug("团队订单: {} 人员过多,上传游客到OSS.", orderItem.getNumber());
             String pathName = groupVisitorFolder + "/" + orderItem.getNumber();
-            ossStoreManager.upload(pathName, JsonUtils.toJson(visitorList));
+            ossStoreManager.upload(pathName, JsonUtils.toJson(contacts));
             String url = ossStoreManager.makeSecurityTokenUrl(pathName, groupVisitorExpire);
             sendGroupTicketParams.setOssUrl(url);
             log.debug("超大团: {} OSS: {}", orderItem.getNumber(), url);
         } else {
-            List<com.all580.voucher.api.model.Visitor> contacts = new ArrayList<>();
-            for (Visitor visitor : visitorList) {
-                com.all580.voucher.api.model.Visitor v = new com.all580.voucher.api.model.Visitor();
-                BeanUtils.copyProperties(visitor, v);
-                contacts.add(v);
-            }
             sendGroupTicketParams.setVisitors(contacts);
         }
         com.framework.common.Result r = voucherRPCService.sendGroupTicket(orderItem.getEp_ma_id(), sendGroupTicketParams);
