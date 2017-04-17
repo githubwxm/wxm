@@ -24,6 +24,11 @@
 	<filter>
 		<filter-name>sessionFilter</filter-name>
 		<filter-class>com.all580.base.sign.VerifyFilter</filter-class>
+		<init-param>
+			<param-name>authUrls</param-name>
+			<param-value>/api/balance/info,/api/ep/platform/validate,/api/sms/send,/api/order/cancel/times,
+				/api/ep/platform/payment/list_by_core_ep_id</param-value>
+		</init-param>
 	</filter>
 	<filter-mapping>
 		<filter-name>sessionFilter</filter-name>

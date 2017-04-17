@@ -50,7 +50,7 @@ public class RefundTicketEventImpl implements RefundTicketEvent {
         } else {
             // 发送短信
             OrderItem orderItem = orderItemMapper.selectByPrimaryKey(refundOrder.getOrder_item_id());
-            smsManager.sendRefundFailSms(orderItem);
+            smsManager.sendRefundFailSms(orderItem, refundOrder);
         }
         return new Result(true);
     }

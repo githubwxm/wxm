@@ -111,4 +111,6 @@ public interface OrderClearanceSerialMapper {
      * @return
      */
     int selectItemQuantityCount(@Param("order_item_id") Integer order_item_id);
+
+    List<OrderClearanceSerial> selectItemClearanceSerial(@Param("order_item_id") Integer order_item_id);
 }
