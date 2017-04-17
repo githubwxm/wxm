@@ -253,6 +253,6 @@
     UPDATE t_visitor
     SET return_quantity = return_quantity + #{quantity}
     where id = #{id}
-    and return_quantity + #{quantity} &lt;= quantity
+    and return_quantity + use_quantity + #{quantity} &lt;= quantity
   </update>
 </mapper>

@@ -181,11 +181,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
 
         // 目前景点只有一天
         OrderItemDetail itemDetail = detailList.get(0);
-        int ret = orderItemDetailMapper.useQuantity(itemDetail.getId(), info.getConsumeQuantity());
-        if (ret <= 0) {
-            log.warn("核销流水: {} 订单:{} 核销票不足", info.getValidateSn(), orderSn);
-            throw new ApiException("没有可核销的票");
-        }
+        orderItemDetailMapper.useQuantity(itemDetail.getId(), info.getConsumeQuantity());
 
         // 保存核销流水
         OrderClearanceSerial serial = bookingOrderManager.saveClearanceSerial(orderItem, order.getPayee_ep_id(), itemDetail.getDay(), info.getConsumeQuantity(), info.getValidateSn(), procTime);
@@ -212,7 +208,11 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         // 设置核销人核销数量
         visitorMapper.useQuantity(visitor.getId(), info.getConsumeQuantity());
         // 修改已用数量
-        orderItemMapper.useQuantity(orderItem.getId(), info.getConsumeQuantity());
+        int ret = orderItemMapper.useQuantity(orderItem.getId(), info.getConsumeQuantity());
+        if (ret <= 0) {
+            log.warn("核销流水: {} 订单:{} 核销票不足 核销信息:{}", new Object[]{info.getValidateSn(), orderSn, JsonUtils.toJson(info)});
+            throw new ApiException("没有可核销的票");
+        }
 
         eventManager.addEvent(OrderConstant.EventType.CONSUME_TICKET, new ConsumeTicketEventParam(orderItem.getId(), serial.getId()));
         return new Result(true);
@@ -250,11 +250,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
 
         // 目前景点只有一天
         OrderItemDetail itemDetail = detailList.get(0);
-        int ret = orderItemDetailMapper.useQuantity(itemDetail.getId(), info.getConsumeQuantity());
-        if (ret <= 0) {
-            log.warn("核销流水: {} 订单:{} 核销票不足", info.getValidateSn(), orderSn);
-            throw new ApiException("没有可核销的票");
-        }
+        orderItemDetailMapper.useQuantity(itemDetail.getId(), info.getConsumeQuantity());
 
         // 保存核销流水
         OrderClearanceSerial serial = bookingOrderManager.saveClearanceSerial(orderItem, order.getPayee_ep_id(), itemDetail.getDay(), info.getConsumeQuantity(), info.getValidateSn(), procTime);
@@ -274,7 +270,11 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         }
 
         // 修改已用数量
-        orderItemMapper.useQuantity(orderItem.getId(), info.getConsumeQuantity());
+        int ret = orderItemMapper.useQuantity(orderItem.getId(), info.getConsumeQuantity());
+        if (ret <= 0) {
+            log.warn("核销流水: {} 订单:{} 核销票不足 核销信息:{}", new Object[]{info.getValidateSn(), orderSn, JsonUtils.toJson(info)});
+            throw new ApiException("没有可核销的票");
+        }
 
         eventManager.addEvent(OrderConstant.EventType.CONSUME_TICKET, new ConsumeTicketEventParam(orderItem.getId(), serial.getId()));
         return new Result(true);
@@ -323,7 +323,11 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         // 设置核销人核销数量
         visitorMapper.useQuantity(visitor.getId(), -orderClearanceSerial.getQuantity());
         // 修改已用数量
-        orderItemMapper.useQuantity(orderItem.getId(), -orderClearanceSerial.getQuantity());
+        int ret = orderItemMapper.useQuantity(orderItem.getId(), -orderClearanceSerial.getQuantity());
+        if (ret <= 0) {
+            log.warn("反核销流水: {} 订单:{} 反核销票不足 反核销信息:{}", new Object[]{info.getValidateSn(), orderSn, JsonUtils.toJson(info)});
+            throw new ApiException("没有可反核销的票");
+        }
 
         // 发送短信
         //smsManager.sendReConsumeSms(orderItem, orderClearanceSerial.getQuantity(), orderClearanceSerial.getQuantity());
@@ -382,7 +386,11 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
                 orderClearanceSerial.getQuantity(), info.getReValidateSn(), info.getValidateSn(), procTime);
 
         // 修改已用数量
-        orderItemMapper.useQuantity(orderItem.getId(), -info.getQuantity());
+        int ret = orderItemMapper.useQuantity(orderItem.getId(), -info.getQuantity());
+        if (ret <= 0) {
+            log.warn("反核销流水: {} 订单:{} 反核销票不足 反核销信息:{}", new Object[]{info.getValidateSn(), orderSn, JsonUtils.toJson(info)});
+            throw new ApiException("没有可反核销的票");
+        }
 
         // 发送短信
         //smsManager.sendReConsumeSms(orderItem, info.getQuantity(), orderClearanceSerial.getQuantity());
