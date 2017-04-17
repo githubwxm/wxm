@@ -45,6 +45,7 @@ public class ConsumeTicketNotifyEventImpl extends BaseNotifyEvent implements Con
         Map<String,Object> consumeInfo = new HashMap<>();
         consumeInfo.put("consume_info",map);
         consumeInfo.put("total_usd_qty",item.getUsed_quantity());
+        consumeInfo.put("usd_qty",serial.getQuantity());
         notifyEvent(content.getItemId(), "CONSUME",consumeInfo);
         return new Result(true);
 
