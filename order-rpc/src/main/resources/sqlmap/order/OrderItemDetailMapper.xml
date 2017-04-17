@@ -327,6 +327,5 @@
       UPDATE t_order_item_detail
       SET used_quantity = used_quantity + #{quantity}
       where id = #{id}
-      and used_quantity + #{quantity} &lt;= quantity - refund_quantity
     </update>
 </mapper>
