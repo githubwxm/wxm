@@ -1,11 +1,14 @@
 package com.all580.order.service.event;
 
+import com.all580.order.api.OrderConstant;
 import com.all580.order.api.service.event.SendTicketEvent;
 import com.all580.order.dao.OrderItemMapper;
 import com.all580.order.entity.OrderItem;
 import com.all580.order.manager.SmsManager;
 import com.all580.product.api.consts.ProductConstants;
 import com.framework.common.Result;
+import com.framework.common.lang.JsonUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -19,6 +22,7 @@ import java.util.Date;
  * @date 2017/2/4 15:47
  */
 @Service
+@Slf4j
 public class SendTicketEventImpl implements SendTicketEvent {
     @Autowired
     private OrderItemMapper orderItemMapper;
@@ -34,6 +38,17 @@ public class SendTicketEventImpl implements SendTicketEvent {
         if (item.getPro_type() == ProductConstants.ProductType.HOTEL) {
             smsManager.sendHotelSendTicket(item);
         }
+        log.info("order {} {} {} {} {} {} {} {} {}", new Object[]{
+                JsonUtils.toJson(createDate),
+                null,
+                item.getNumber(),
+                OrderConstant.LogOperateCode.SYSTEM,
+                0,
+                "ORDER_EVENT",
+                OrderConstant.LogOperateCode.SENDED,
+                item.getQuantity(),
+                "已出票"
+        });
         return new Result(true);
     }
 }
