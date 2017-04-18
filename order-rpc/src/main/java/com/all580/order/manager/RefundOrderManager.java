@@ -1,5 +1,6 @@
 package com.all580.order.manager;
 
+import com.all580.ep.api.conf.EpConstant;
 import com.all580.order.api.OrderConstant;
 import com.all580.order.api.model.RefundTicketEventParam;
 import com.all580.order.dao.*;
@@ -525,6 +526,17 @@ public class RefundOrderManager extends BaseOrderManager {
                 log.warn("*****退票发起部分成功*****");
             }
         }
+        log.info("order {} {} {} {} {} {} {} {} {}", new Object[]{
+                JsonUtils.toJson(new Date()),
+                null,
+                orderItem.getNumber(),
+                OrderConstant.LogOperateCode.SYSTEM,
+                0,
+                "ORDER",
+                OrderConstant.LogOperateCode.SEND_REFUND_TICKETING,
+                refundOrder.getQuantity(),
+                "退票发起"
+        });
     }
 
     /**
@@ -538,6 +550,17 @@ public class RefundOrderManager extends BaseOrderManager {
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     @MnsEvent
     public Result refundMoney(Order order, int money, String sn, RefundOrder refundOrder) {
+        log.info("order {} {} {} {} {} {} {} {} {}", new Object[]{
+                JsonUtils.toJson(new Date()),
+                order.getNumber(),
+                null,
+                OrderConstant.LogOperateCode.SYSTEM,
+                0,
+                "ORDER",
+                OrderConstant.LogOperateCode.REFUND_MONEY_APPLY,
+                refundOrder.getQuantity(),
+                String.format("退订退款申请:退订订单:%s", refundOrder.getNumber())
+        });
         // 需要审核
         if (refundOrder.getAudit_money() == ProductConstants.RefundMoneyAudit.YES &&
                 refundOrder.getStatus() != OrderConstant.RefundOrderStatus.REFUND_MONEY_AUDITING) {
