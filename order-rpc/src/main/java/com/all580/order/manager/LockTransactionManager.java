@@ -263,6 +263,18 @@ public class LockTransactionManager {
             refundOrderManager.preRefundSplitAccount(apply.getFrom(), refundOrder.getId(), apply.getOrder(), apply.getDate(), refundOrder.getOrder_item_id(), detailList, refundDays);
         }
 
+        log.info("order {} {} {} {} {} {} {} {} {}", new Object[]{
+                JsonUtils.toJson(refundOrder.getCreate_time()),
+                apply.getOrder().getNumber(),
+                apply.getItem().getNumber(),
+                OrderConstant.LogOperateCode.SYSTEM,
+                apply.getEpId(),
+                apply.getUserName(),
+                OrderConstant.LogOperateCode.REFUND_APPLY_SUCCESS,
+                apply.getQuantity(),
+                String.format("退订申请:退订参数:%s", JsonUtils.toJson(params))
+        });
+
         // 触发事件
         eventManager.addEvent(OrderConstant.EventType.ORDER_REFUND_APPLY, refundOrder.getId());
         Result<RefundOrder> result = new Result<>(true);
@@ -325,6 +337,18 @@ public class LockTransactionManager {
 
         refundOrderMapper.updateByPrimaryKeySelective(refundOrder);
         eventManager.addEvent(OrderConstant.EventType.ORDER_REFUND_AUDIT, new RefundAuditEventParam(refundOrder.getId(), status));
+
+        log.info("order {} {} {} {} {} {} {} {} {}", new Object[]{
+                JsonUtils.toJson(refundOrder.getAudit_time()),
+                order.getNumber(),
+                orderItem.getNumber(),
+                OrderConstant.LogOperateCode.SYSTEM,
+                params.get(EpConstant.EpKey.EP_ID),
+                refundOrder.getAudit_user_name(),
+                status ? OrderConstant.LogOperateCode.REFUND_AUDIT_PASS_SUCCESS : OrderConstant.LogOperateCode.REFUND_AUDIT_REJECT_SUCCESS,
+                refundOrder.getQuantity(),
+                String.format("退订申请审核:审核参数:%s", JsonUtils.toJson(params))
+        });
         return new Result<>(true);
     }
 
@@ -381,6 +405,17 @@ public class LockTransactionManager {
         }
         orderItemMapper.updateByPrimaryKeySelective(orderItem);
         eventManager.addEvent(OrderConstant.EventType.ORDER_AUDIT, new OrderAuditEventParam(orderItem.getId(), status));
+        log.info("order {} {} {} {} {} {} {} {} {}", new Object[]{
+                JsonUtils.toJson(orderItem.getAudit_time()),
+                order.getNumber(),
+                orderItem.getNumber(),
+                OrderConstant.LogOperateCode.SYSTEM,
+                orderItem.getAudit_user_id(),
+                orderItem.getAudit_user_name(),
+                status ? OrderConstant.LogOperateCode.AUDIT_PASS_SUCCESS : OrderConstant.LogOperateCode.AUDIT_REJECT_SUCCESS,
+                orderItem.getQuantity(),
+                "订单预定审核"
+        });
         return new Result<>(true);
     }
 
@@ -434,6 +469,18 @@ public class LockTransactionManager {
         order.setPayment_type(payType);
         order.setPay_time(new Date());
         orderMapper.updateByPrimaryKeySelective(order);
+
+        log.info("order {} {} {} {} {} {} {} {} {}", new Object[]{
+                JsonUtils.toJson(order.getPay_time()),
+                order.getNumber(),
+                null,
+                OrderConstant.LogOperateCode.SYSTEM,
+                params.get(EpConstant.EpKey.EP_ID),
+                params.get("operator_name"),
+                OrderConstant.LogOperateCode.PAID,
+                0,
+                "订单支付"
+        });
 
         // 调用支付RPC
         // 余额支付
@@ -517,6 +564,17 @@ public class LockTransactionManager {
             log.error("退订订单:{} 退票回调异常: 退票人:{} 可退票不足, 小秘书重置为退票失败", refundOrder.getNumber(), info.getVisitorSeqId());
             info.setSuccess(false);
         }
+        log.info("order {} {} {} {} {} {} {} {} {}", new Object[]{
+                JsonUtils.toJson(procTime),
+                null,
+                orderItem.getNumber(),
+                OrderConstant.LogOperateCode.SYSTEM,
+                0,
+                "VOUCHER",
+                OrderConstant.LogOperateCode.RECEIVE_REFUND_TICKETING,
+                refundOrder.getQuantity(),
+                String.format("退票返回:退票信息:%s", JsonUtils.toJson(info))
+        });
         eventManager.addEvent(OrderConstant.EventType.REFUND_TICKET, new RefundTicketEventParam(refundOrder.getId(), info.isSuccess()));
         // 退票失败
         if (!info.isSuccess()) {

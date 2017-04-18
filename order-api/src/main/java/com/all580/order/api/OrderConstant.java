@@ -126,4 +126,36 @@ public class OrderConstant {
         public static final String REFUND_MONEY = "REFUND_MONEY"; // 退款结果
         public static final String ORDER_CANCEL = "ORDER_CANCEL"; // 订单取消
     }
+
+    /**
+     * 日志操作码
+     */
+    public static class LogOperateCode {
+        public static final String SYSTEM = "all580";
+        public static final String CREATE_SUCCESS = "CA1000100";
+        public static final String CANCEL_SUCCESS = "CA3000100";
+        public static final String PAID = "CA40001";
+        public static final String PAID_FAIL = "CA4000101";
+        public static final String PAID_SUCCESS = "CA4000100";
+        public static final String SEND_TICKETING = "CA5000110";
+        public static final String RECEIVE_TICKETING = "CA5000111";
+        public static final String SENDED = "CA50003";
+        public static final String REFUND_APPLY_SUCCESS = "CA6000100";
+        public static final String REFUND_AUDIT_PASS_SUCCESS = "CA7000100";
+        public static final String REFUND_AUDIT_REJECT_SUCCESS = "CA7000200";
+        public static final String SEND_REFUND_TICKETING = "CA7000110";
+        public static final String RECEIVE_REFUND_TICKETING = "CA7000111";
+        public static final String REFUND_MONEY_APPLY = "CA80001";
+        public static final String REFUND_MONEY_AUDIT_SUCCESS = "CA8000200";
+        public static final String REFUND_MONEY_FAIL = "CA8000301";
+        public static final String REFUND_MONEY_SUCCESS = "CA8000300";
+        public static final String TICKET_CONSUME = "CA90001";
+        public static final String TICKET_CONSUME_SUCCESS = "CA9000100";
+        public static final String TICKET_CONSUME_FAIL = "CA9000101";
+        public static final String TICKET_RECONSUME = "CA100001";
+        public static final String TICKET_RECONSUME_SUCCESS = "CA10000101";
+        public static final String TICKET_RECONSUME_FAIL = "CA10000100";
+        public static final String AUDIT_PASS_SUCCESS = "CA20000100";
+        public static final String AUDIT_REJECT_SUCCESS = "CA20000200";
+    }
 }

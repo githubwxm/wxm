@@ -106,6 +106,18 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
             maSendResponseMapper.insertSelective(response);
         }
 
+        log.info("order {} {} {} {} {} {} {} {} {}", new Object[]{
+                JsonUtils.toJson(procTime),
+                null,
+                orderItem.getNumber(),
+                OrderConstant.LogOperateCode.SYSTEM,
+                0,
+                "VOUCHER",
+                OrderConstant.LogOperateCode.RECEIVE_TICKETING,
+                orderItem.getQuantity(),
+                String.format("散客出票接收:接收信息:%s", JsonUtils.toJson(infoList))
+        });
+
         // 触发事件
         eventManager.addEvent(OrderConstant.EventType.SEND_TICKET, orderItem.getId());
         return new Result(true);
@@ -148,6 +160,17 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         response.setCreate_time(procTime);
         maSendResponseMapper.insertSelective(response);
 
+        log.info("order {} {} {} {} {} {} {} {} {}", new Object[]{
+                JsonUtils.toJson(procTime),
+                null,
+                orderItem.getNumber(),
+                OrderConstant.LogOperateCode.SYSTEM,
+                0,
+                "VOUCHER",
+                OrderConstant.LogOperateCode.RECEIVE_TICKETING,
+                orderItem.getQuantity(),
+                String.format("团队出票接收:接收信息:%s", JsonUtils.toJson(info))
+        });
         // 触发事件
         eventManager.addEvent(OrderConstant.EventType.SEND_TICKET, orderItem.getId());
         return new Result(true);
@@ -214,6 +237,18 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
             throw new ApiException("没有可核销的票");
         }
 
+        log.info("order {} {} {} {} {} {} {} {} {}", new Object[]{
+                JsonUtils.toJson(procTime),
+                order.getNumber(),
+                orderItem.getNumber(),
+                OrderConstant.LogOperateCode.SYSTEM,
+                0,
+                "VOUCHER",
+                OrderConstant.LogOperateCode.TICKET_CONSUME_SUCCESS,
+                orderItem.getQuantity(),
+                String.format("散客票核销:接收信息:%s", JsonUtils.toJson(info))
+        });
+
         eventManager.addEvent(OrderConstant.EventType.CONSUME_TICKET, new ConsumeTicketEventParam(orderItem.getId(), serial.getId()));
         return new Result(true);
     }
@@ -276,6 +311,18 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
             throw new ApiException("没有可核销的票");
         }
 
+        log.info("order {} {} {} {} {} {} {} {} {}", new Object[]{
+                JsonUtils.toJson(procTime),
+                order.getNumber(),
+                orderItem.getNumber(),
+                OrderConstant.LogOperateCode.SYSTEM,
+                0,
+                "VOUCHER",
+                OrderConstant.LogOperateCode.TICKET_CONSUME_SUCCESS,
+                orderItem.getQuantity(),
+                String.format("团队票核销:接收信息:%s", JsonUtils.toJson(info))
+        });
+
         eventManager.addEvent(OrderConstant.EventType.CONSUME_TICKET, new ConsumeTicketEventParam(orderItem.getId(), serial.getId()));
         return new Result(true);
     }
@@ -328,6 +375,18 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
             log.warn("反核销流水: {} 订单:{} 反核销票不足 反核销信息:{}", new Object[]{info.getValidateSn(), orderSn, JsonUtils.toJson(info)});
             throw new ApiException("没有可反核销的票");
         }
+
+        log.info("order {} {} {} {} {} {} {} {} {}", new Object[]{
+                JsonUtils.toJson(procTime),
+                order.getNumber(),
+                orderItem.getNumber(),
+                OrderConstant.LogOperateCode.SYSTEM,
+                0,
+                "VOUCHER",
+                OrderConstant.LogOperateCode.TICKET_RECONSUME_SUCCESS,
+                orderItem.getQuantity(),
+                String.format("散客票反核销:接收信息:%s", JsonUtils.toJson(info))
+        });
 
         // 发送短信
         //smsManager.sendReConsumeSms(orderItem, orderClearanceSerial.getQuantity(), orderClearanceSerial.getQuantity());
@@ -391,6 +450,18 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
             log.warn("反核销流水: {} 订单:{} 反核销票不足 反核销信息:{}", new Object[]{info.getValidateSn(), orderSn, JsonUtils.toJson(info)});
             throw new ApiException("没有可反核销的票");
         }
+
+        log.info("order {} {} {} {} {} {} {} {} {}", new Object[]{
+                JsonUtils.toJson(procTime),
+                order.getNumber(),
+                orderItem.getNumber(),
+                OrderConstant.LogOperateCode.SYSTEM,
+                0,
+                "VOUCHER",
+                OrderConstant.LogOperateCode.TICKET_RECONSUME_SUCCESS,
+                orderItem.getQuantity(),
+                String.format("团队票反核销:接收信息:%s", JsonUtils.toJson(info))
+        });
 
         // 发送短信
         //smsManager.sendReConsumeSms(orderItem, info.getQuantity(), orderClearanceSerial.getQuantity());

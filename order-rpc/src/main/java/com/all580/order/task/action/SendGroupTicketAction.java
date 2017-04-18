@@ -8,6 +8,7 @@ import com.all580.product.api.consts.ProductConstants;
 import com.all580.voucher.api.conf.VoucherConstant;
 import com.all580.voucher.api.model.group.SendGroupTicketParams;
 import com.all580.voucher.api.service.VoucherRPCService;
+import com.framework.common.lang.JsonUtils;
 import com.framework.common.validate.ParamsMapValidate;
 import com.framework.common.validate.ValidRule;
 import com.github.ltsopensource.core.domain.Action;
@@ -20,10 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author zhouxianjun(Alone)
@@ -124,6 +122,17 @@ public class SendGroupTicketAction implements JobRunner {
         }
         sendGroupTicketParams.setVisitors(contacts);
         com.framework.common.Result r = voucherRPCService.sendGroupTicket(orderItem.getEp_ma_id(), sendGroupTicketParams);
+        log.info("order {} {} {} {} {} {} {} {} {}", new Object[]{
+                JsonUtils.toJson(new Date()),
+                null,
+                orderItem.getNumber(),
+                OrderConstant.LogOperateCode.SYSTEM,
+                0,
+                "ORDER_ACTION",
+                OrderConstant.LogOperateCode.SEND_TICKETING,
+                orderItem.getQuantity(),
+                String.format("团队出票任务:发送状态:%s", String.valueOf(r.isSuccess()))
+        });
         if (!r.isSuccess()) {
             log.warn("子订单:{},出票失败:{}", orderItem.getNumber(), r.getError());
             throw new Exception("出票失败:" + r.getError());

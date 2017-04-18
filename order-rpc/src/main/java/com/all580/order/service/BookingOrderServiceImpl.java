@@ -109,8 +109,10 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         // 锁定库存集合(统一锁定)
         Map<Integer, LockStockDto> lockStockDtoMap = new HashMap<>();
         List<ProductSearchParams> lockParams = new ArrayList<>();
+        ValidateProductSub first = null;
         for (Map item : items) {
             ValidateProductSub sub = orderInterface.parseItemParams(item);
+            if (first == null) first = sub;
             ProductSalesInfo salesInfo = orderInterface.validateProductAndGetSales(sub, createOrder, item);
 
             orderInterface.validateBookingDate(sub, salesInfo.getDay_info_list());
@@ -145,6 +147,9 @@ public class BookingOrderServiceImpl implements BookingOrderService {
 
             // 预分账记录
             bookingOrderManager.prePaySplitAccount(allDaysSales, orderItem, createOrder.getEpId());
+        }
+        if (first == null) {
+            throw new ApiException("请选择购买的产品");
         }
         // 更新订单金额
         order.setPay_amount(totalPayPrice);
@@ -200,6 +205,17 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             data.put("t_order_item", orderItems);
             result.putExt(Result.SYNC_DATA, JsonUtils.obj2map(data));
         }
+        log.info("order {} {} {} {} {} {} {} {} {}", new Object[]{
+                JsonUtils.toJson(order.getCreate_time()),
+                order.getNumber(),
+                null,
+                OrderConstant.LogOperateCode.SYSTEM,
+                createOrder.getEpId(),
+                createOrder.getEpName(),
+                OrderConstant.LogOperateCode.CREATE_SUCCESS,
+                first.getQuantity(),
+                "订单创建成功"
+        });
         return result;
     }
 
