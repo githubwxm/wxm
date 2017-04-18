@@ -25,11 +25,19 @@ public class HotelController {
 
     @Autowired
     private HotelService hotelService;
+
     @RequestMapping(value = "create", method = RequestMethod.POST)
     @ResponseBody
     public Result<?> addHotel(@RequestBody Map params) {
         ParamsMapValidate.validate(params, generateCreateHotelValidate());
         return hotelService.addHotel(params);
+    }
+
+    @RequestMapping(value = "update", method = RequestMethod.POST)
+    @ResponseBody
+    public Result<?> updateHotel(@RequestBody Map params) {
+        ParamsMapValidate.validate(params, generateCreateHotelValidate());
+        return hotelService.updateHotel(params);
     }
 
 
