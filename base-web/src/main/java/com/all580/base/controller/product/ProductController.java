@@ -61,7 +61,7 @@ public class ProductController extends BaseController {
      */
     @RequestMapping(value = "select_ep_self_product", method = RequestMethod.GET)
     @ResponseBody
-    public Result<?> selectEpSelfProduct(@RequestParam("statistic_ep_id") int ep_id,String name,Integer type,
+    public Result<?> selectEpSelfProduct(@RequestParam("statistic_ep_id") Integer ep_id,String name,Integer type,
                                          Integer record_start,Integer record_coun){
         if(null==type){
             type=ProductConstants.ProductType.SCENERY;
@@ -467,6 +467,20 @@ public class ProductController extends BaseController {
     }
 
     /**
+     * 已分销产品列表
+     * @param epId
+     * @param subEpId
+     * @return
+     */
+    @RequestMapping(value = "ep_distributed/list/all")
+    @ResponseBody
+    public Result<List<Map<String, Object>>> searchDistributedProductAll(
+            @RequestParam("ep_id") Integer epId,
+            @RequestParam("sub_ep_id") Integer subEpId) {
+        return productDistributionService.searchAlreadyDistributionProductSubEpAll(subEpId, epId);
+    }
+
+    /**
      * 未分销产品列表
      * @param epId
      * @param subEpId
@@ -481,6 +495,20 @@ public class ProductController extends BaseController {
     }
 
     /**
+     * 未分销产品列表  包含酒店景区
+     * @param epId
+     * @param subEpId
+     * @return
+     */
+    @RequestMapping(value = "ep_distribute/list/all")
+    @ResponseBody
+    public Result<List<Map<String, Object>>> searchDistributeProductTypeAll(
+            @RequestParam("ep_id") Integer epId,
+            @RequestParam("sub_ep_id") Integer subEpId) {
+        return productDistributionService.searchNotDistributionProductSubEpAll(subEpId, epId);
+    }
+
+    /**
      * 查询对组已分销产品信息
      * @param epId
      * @param groupId
@@ -491,7 +519,20 @@ public class ProductController extends BaseController {
     public Result<List<Map<String, Object>>> searchGroupDistributedProduct(
             @RequestParam("ep_id") Integer epId,
             @RequestParam("group_id") Integer groupId) {
-        return productDistributionService.searchAlreadyDistributionProductSubGroup(epId, groupId);
+        return productDistributionService.searchAlreadyDistributionProductSubGroup(epId, groupId,ProductConstants.ProductType.SCENERY);
+    }
+    /**
+     * 查询对组已分销产品信息
+     * @param epId
+     * @param groupId
+     * @return
+     */
+    @RequestMapping(value = "group_distributed/list/all")
+    @ResponseBody
+    public Result<List<Map<String, Object>>> searchGroupDistributedProductAll(
+            @RequestParam("ep_id") Integer epId,
+            @RequestParam("group_id") Integer groupId) {
+        return productDistributionService.searchAlreadyDistributionProductSubGroup(epId, groupId,null);
     }
 
     /**
