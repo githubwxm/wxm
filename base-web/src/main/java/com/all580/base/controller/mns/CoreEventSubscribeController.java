@@ -63,7 +63,7 @@ public class CoreEventSubscribeController extends AbstractSubscribeController {
             // 获取事件订阅器
             Collection<MnsSubscribeAction> actions = mnsEventCache.getProcess(action);
             if (actions == null || actions.size() == 0) {
-                log.warn("MNS:{}, Action:{} 事件,没有订阅器.", id, action);
+                log.warn("event subscribe {} {} {} {}", new Object[]{id, action, content, "没有订阅器"});
                 return;
             }
             // TODO: 2017/3/24 这里先直接返回
@@ -80,18 +80,18 @@ public class CoreEventSubscribeController extends AbstractSubscribeController {
                     String name = CommonUtil.getProxyClassForInterface(subscribeAction, MnsSubscribeAction.class).getName();
                     try {
                         Result result = subscribeAction.process(id, object, createTime);
-                        log.debug("调用订阅器回调MNS:{}, Action:{}, Class:{}, Result:{}", new Object[]{id, action, name, result.toJsonString()});
+                        log.error("event process-result {} {} {} {}", new Object[]{id, action, content, String.format("订阅器:%s执行完成:%s", name, result.toJsonString())});
                         if (!result.isSuccess()) {
                             throw new Exception(result.getError());
                         }
                     } catch (Exception e) {
-                        log.error("MNS: " + id + "Action:" +action+", Class: " + name + " 订阅器执行异常", e);
+                        log.error("event process-fail {} {} {} {}", new Object[]{id, action, content, "订阅器执行异常,添加任务重试..."});
                         jobs.add(createRetryJob(id, content, time, action, name));
                     }
                 }
             } catch (Exception e) {
                 if (object == null) {
-                    log.error("MNS:" + id + " 解析事件内容异常,重试...", e);
+                    log.error("event subscribe {} {} {} {}", new Object[]{id, action, content, "解析事件内容异常,添加任务重试..."});
                     addRetryTask(jobs, actions, id, content, time, action);
                 } else {
                     throw e;
