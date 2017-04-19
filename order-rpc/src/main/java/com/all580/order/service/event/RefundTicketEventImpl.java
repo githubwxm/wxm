@@ -9,8 +9,11 @@ import com.all580.order.entity.OrderItem;
 import com.all580.order.entity.RefundOrder;
 import com.all580.order.manager.SmsManager;
 import com.framework.common.Result;
+import com.framework.common.lang.DateFormatUtils;
+import com.framework.common.lang.JsonUtils;
 import com.framework.common.outside.JobAspect;
 import com.framework.common.outside.JobTask;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -27,6 +30,7 @@ import java.util.Map;
  * @date 2017/2/5 9:54
  */
 @Service
+@Slf4j
 public class RefundTicketEventImpl implements RefundTicketEvent {
     @Autowired
     private RefundOrderMapper refundOrderMapper;
@@ -42,6 +46,18 @@ public class RefundTicketEventImpl implements RefundTicketEvent {
     public Result process(String msgId, RefundTicketEventParam content, Date createDate) {
         RefundOrder refundOrder = refundOrderMapper.selectByPrimaryKey(content.getRefundId());
         Assert.notNull(refundOrder, "退订订单不存在");
+        OrderItem orderItem = orderItemMapper.selectByPrimaryKey(refundOrder.getOrder_item_id());
+        log.info("order {} {} {} {} {} {} {} {} {}", new Object[]{
+                DateFormatUtils.parseDateToDatetimeString(createDate),
+                null,
+                orderItem.getNumber(),
+                OrderConstant.LogOperateCode.SYSTEM,
+                0,
+                "ORDER",
+                OrderConstant.LogOperateCode.REFUND_TICKET,
+                refundOrder.getQuantity(),
+                String.format("退票成功:%s", refundOrder.getNumber())
+        });
         if (content.isStatus()) {
             // 还库存 记录任务
             Map<String, String> jobParams = new HashMap<>();
@@ -49,7 +65,6 @@ public class RefundTicketEventImpl implements RefundTicketEvent {
             jobManager.addJob(OrderConstant.Actions.REFUND_STOCK, Collections.singleton(jobParams));
         } else {
             // 发送短信
-            OrderItem orderItem = orderItemMapper.selectByPrimaryKey(refundOrder.getOrder_item_id());
             smsManager.sendRefundFailSms(orderItem, refundOrder);
         }
         return new Result(true);
