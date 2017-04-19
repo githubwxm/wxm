@@ -176,6 +176,8 @@
 				<active.name>root</active.name>
 				<active.pwd>abcd1234</active.pwd>
 				<active.url>jdbc:mysql://192.168.1.250:3306/config?characterEncoding=utf8</active.url>
+				<logstash.host>192.168.1.250</logstash.host>
+				<logstash.port>5555</logstash.port>
 			</properties>
 			<build>
                 <resources>
@@ -183,7 +185,8 @@
 						<directory>src/main/resources</directory>
                         <filtering>true</filtering>
 						<includes>
-							<include>**/applicationContext.xml</include>
+                            <include>log4j.xml</include>
+                            <include>**/applicationContext.xml</include>
 							<include>**</include>
 						</includes>
 					</resource>
@@ -215,6 +218,8 @@
 				<active.name>root</active.name>
 				<active.pwd>abcd1234</active.pwd>
 				<active.url>jdbc:mysql://192.168.1.250:3306/config?characterEncoding=utf8</active.url>
+				<logstash.host>192.168.1.250</logstash.host>
+				<logstash.port>5555</logstash.port>
 			</properties>
 			<build>
 				<resources>
@@ -222,6 +227,7 @@
 						<directory>src/main/resources</directory>
 						<filtering>true</filtering>
 						<includes>
+							<include>log4j.xml</include>
 							<include>**/applicationContext.xml</include>
 							<include>**</include>
 						</includes>
@@ -254,6 +260,8 @@
 				<active.name>readonly</active.name>
 				<active.pwd>all580!@#$%^</active.pwd>
 				<active.url>jdbc:mysql://rdsgzfl13uplt1iyv43ig.mysql.rds.aliyuncs.com:3306/config?characterEncoding=utf8</active.url>
+				<logstash.host>120.77.93.85</logstash.host>
+				<logstash.port>5555</logstash.port>
 			</properties>
 			<build>
 				<resources>
@@ -261,6 +269,7 @@
 						<directory>src/main/resources/</directory>
 						<filtering>true</filtering>
 						<includes>
+							<include>log4j.xml</include>
 							<include>**/app_init.xml</include>
 							<include>**</include>
 						</includes>
@@ -283,6 +292,7 @@
 						<directory>src/main/resources/</directory>
 						<filtering>true</filtering>
 						<includes>
+							<include>log4j.xml</include>
 							<include>**/app_init.xml</include>
 							<include>**</include>
 						</includes>
