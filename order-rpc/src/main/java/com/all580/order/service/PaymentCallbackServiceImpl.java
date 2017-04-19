@@ -10,6 +10,7 @@ import com.all580.order.manager.LockTransactionManager;
 import com.framework.common.Result;
 import com.framework.common.distributed.lock.DistributedLockTemplate;
 import com.framework.common.distributed.lock.DistributedReentrantLock;
+import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.outside.JobAspect;
 import com.framework.common.outside.JobTask;
@@ -64,7 +65,7 @@ public class PaymentCallbackServiceImpl implements PaymentCallbackService {
             lockKey = String.valueOf(orderId);
         }
         log.info("order {} {} {} {} {} {} {} {} {}", new Object[]{
-                JsonUtils.toJson(new Date()),
+                DateFormatUtils.parseDateToDatetimeString(new Date()),
                 ordCode,
                 null,
                 OrderConstant.LogOperateCode.SYSTEM,
@@ -112,7 +113,7 @@ public class PaymentCallbackServiceImpl implements PaymentCallbackService {
         }
 
         log.info("order {} {} {} {} {} {} {} {} {}", new Object[]{
-                JsonUtils.toJson(new Date()),
+                DateFormatUtils.parseDateToDatetimeString(new Date()),
                 order.getNumber(),
                 null,
                 OrderConstant.LogOperateCode.SYSTEM,
