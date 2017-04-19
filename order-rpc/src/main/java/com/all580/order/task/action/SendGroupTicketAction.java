@@ -8,6 +8,7 @@ import com.all580.product.api.consts.ProductConstants;
 import com.all580.voucher.api.conf.VoucherConstant;
 import com.all580.voucher.api.model.group.SendGroupTicketParams;
 import com.all580.voucher.api.service.VoucherRPCService;
+import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.validate.ParamsMapValidate;
 import com.framework.common.validate.ValidRule;
@@ -123,7 +124,7 @@ public class SendGroupTicketAction implements JobRunner {
         sendGroupTicketParams.setVisitors(contacts);
         com.framework.common.Result r = voucherRPCService.sendGroupTicket(orderItem.getEp_ma_id(), sendGroupTicketParams);
         log.info("order {} {} {} {} {} {} {} {} {}", new Object[]{
-                JsonUtils.toJson(new Date()),
+                DateFormatUtils.parseDateToDatetimeString(new Date()),
                 null,
                 orderItem.getNumber(),
                 OrderConstant.LogOperateCode.SYSTEM,

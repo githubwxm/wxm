@@ -25,6 +25,7 @@ import com.framework.common.distributed.lock.DistributedLockTemplate;
 import com.framework.common.distributed.lock.DistributedReentrantLock;
 import com.framework.common.event.MnsEvent;
 import com.framework.common.event.MnsEventAspect;
+import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.outside.JobAspect;
 import com.framework.common.outside.JobTask;
@@ -206,7 +207,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             result.putExt(Result.SYNC_DATA, JsonUtils.obj2map(data));
         }
         log.info("order {} {} {} {} {} {} {} {} {}", new Object[]{
-                JsonUtils.toJson(order.getCreate_time()),
+                DateFormatUtils.parseDateToDatetimeString(order.getCreate_time()),
                 order.getNumber(),
                 null,
                 OrderConstant.LogOperateCode.SYSTEM,

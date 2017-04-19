@@ -7,6 +7,7 @@ import com.all580.order.entity.OrderItem;
 import com.all580.order.manager.SmsManager;
 import com.all580.product.api.consts.ProductConstants;
 import com.framework.common.Result;
+import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +40,7 @@ public class SendTicketEventImpl implements SendTicketEvent {
             smsManager.sendHotelSendTicket(item);
         }
         log.info("order {} {} {} {} {} {} {} {} {}", new Object[]{
-                JsonUtils.toJson(createDate),
+                DateFormatUtils.parseDateToDatetimeString(createDate),
                 null,
                 item.getNumber(),
                 OrderConstant.LogOperateCode.SYSTEM,

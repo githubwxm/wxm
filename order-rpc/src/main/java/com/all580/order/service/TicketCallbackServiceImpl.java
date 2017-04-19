@@ -13,6 +13,7 @@ import com.framework.common.distributed.lock.DistributedLockTemplate;
 import com.framework.common.distributed.lock.DistributedReentrantLock;
 import com.framework.common.event.MnsEvent;
 import com.framework.common.event.MnsEventAspect;
+import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.outside.JobAspect;
 import com.framework.common.outside.JobTask;
@@ -107,7 +108,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         }
 
         log.info("order {} {} {} {} {} {} {} {} {}", new Object[]{
-                JsonUtils.toJson(procTime),
+                DateFormatUtils.parseDateToDatetimeString(procTime),
                 null,
                 orderItem.getNumber(),
                 OrderConstant.LogOperateCode.SYSTEM,
@@ -161,7 +162,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         maSendResponseMapper.insertSelective(response);
 
         log.info("order {} {} {} {} {} {} {} {} {}", new Object[]{
-                JsonUtils.toJson(procTime),
+                DateFormatUtils.parseDateToDatetimeString(procTime),
                 null,
                 orderItem.getNumber(),
                 OrderConstant.LogOperateCode.SYSTEM,
@@ -238,7 +239,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         }
 
         log.info("order {} {} {} {} {} {} {} {} {}", new Object[]{
-                JsonUtils.toJson(procTime),
+                DateFormatUtils.parseDateToDatetimeString(procTime),
                 order.getNumber(),
                 orderItem.getNumber(),
                 OrderConstant.LogOperateCode.SYSTEM,
@@ -312,7 +313,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         }
 
         log.info("order {} {} {} {} {} {} {} {} {}", new Object[]{
-                JsonUtils.toJson(procTime),
+                DateFormatUtils.parseDateToDatetimeString(procTime),
                 order.getNumber(),
                 orderItem.getNumber(),
                 OrderConstant.LogOperateCode.SYSTEM,
@@ -377,7 +378,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         }
 
         log.info("order {} {} {} {} {} {} {} {} {}", new Object[]{
-                JsonUtils.toJson(procTime),
+                DateFormatUtils.parseDateToDatetimeString(procTime),
                 order.getNumber(),
                 orderItem.getNumber(),
                 OrderConstant.LogOperateCode.SYSTEM,
@@ -452,7 +453,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         }
 
         log.info("order {} {} {} {} {} {} {} {} {}", new Object[]{
-                JsonUtils.toJson(procTime),
+                DateFormatUtils.parseDateToDatetimeString(procTime),
                 order.getNumber(),
                 orderItem.getNumber(),
                 OrderConstant.LogOperateCode.SYSTEM,

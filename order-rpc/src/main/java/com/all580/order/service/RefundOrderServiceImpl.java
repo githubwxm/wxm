@@ -15,6 +15,7 @@ import com.all580.order.manager.RefundOrderManager;
 import com.framework.common.Result;
 import com.framework.common.distributed.lock.DistributedLockTemplate;
 import com.framework.common.distributed.lock.DistributedReentrantLock;
+import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -170,7 +171,7 @@ public class RefundOrderServiceImpl implements RefundOrderService {
         refundOrder.setAudit_money_user_id(CommonUtil.objectParseInteger(params.get("operator_id")));
         refundOrder.setAudit_money_user_name(CommonUtil.objectParseString(params.get("operator_name")));
         log.info("order {} {} {} {} {} {} {} {} {}", new Object[]{
-                JsonUtils.toJson(refundOrder.getAudit_money_time()),
+                DateFormatUtils.parseDateToDatetimeString(refundOrder.getAudit_money_time()),
                 order.getNumber(),
                 orderItem.getNumber(),
                 OrderConstant.LogOperateCode.SYSTEM,
