@@ -184,6 +184,7 @@
                         <filtering>true</filtering>
 						<includes>
 							<include>**/applicationContext.xml</include>
+							<include>**/log4j.xml</include>
 							<include>**</include>
 						</includes>
 					</resource>
