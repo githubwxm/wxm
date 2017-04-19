@@ -211,7 +211,13 @@ public class PlanController extends BaseController {
     @RequestMapping(value = "sale/ep/creator", method = RequestMethod.POST)
     @ResponseBody
     public Result productSubDistributionCreatorEp(@RequestBody Map params) {
-        return productService.productOnSaleBatch(updateEpOnsalesParams(params));
+          Integer type =    CommonUtil.objectParseInteger(params.get("product_type")) ;
+         if(ProductConstants.ProductType.SCENERY-type==0){
+             return productService.productOnSaleBatch(updateEpOnsalesParams(params));
+         }else{
+             return null;
+         }
+
     }
 
     @RequestMapping(value = "salp/lst")
@@ -318,6 +324,8 @@ public class PlanController extends BaseController {
         map.put("price_percent",params.get("price_percent"));
         map.put("price_pixed",params.get("price_pixed"));
         map.put("product_sub_id",params.get("product_sub_id"));
+        map.put("product_type",params.get("product_type"));
+        map.put("batch_id",params.get("batch_id"));
         list.add(map);
         return list;
     }
