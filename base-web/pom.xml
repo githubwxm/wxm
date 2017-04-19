@@ -183,8 +183,8 @@
 						<directory>src/main/resources</directory>
                         <filtering>true</filtering>
 						<includes>
-							<include>**/applicationContext.xml</include>
-							<include>**/log4j.xml</include>
+                            <include>log4j.xml</include>
+                            <include>**/applicationContext.xml</include>
 							<include>**</include>
 						</includes>
 					</resource>
@@ -223,6 +223,7 @@
 						<directory>src/main/resources</directory>
 						<filtering>true</filtering>
 						<includes>
+							<include>log4j.xml</include>
 							<include>**/applicationContext.xml</include>
 							<include>**</include>
 						</includes>
@@ -262,6 +263,7 @@
 						<directory>src/main/resources/</directory>
 						<filtering>true</filtering>
 						<includes>
+							<include>log4j.xml</include>
 							<include>**/app_init.xml</include>
 							<include>**</include>
 						</includes>
@@ -284,6 +286,7 @@
 						<directory>src/main/resources/</directory>
 						<filtering>true</filtering>
 						<includes>
+							<include>log4j.xml</include>
 							<include>**/app_init.xml</include>
 							<include>**</include>
 						</includes>
