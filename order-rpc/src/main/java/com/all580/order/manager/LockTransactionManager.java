@@ -264,7 +264,7 @@ public class LockTransactionManager {
         }
 
         log.info("order {} {} {} {} {} {} {} {} {}", new Object[]{
-                JsonUtils.toJson(refundOrder.getCreate_time()),
+                DateFormatUtils.parseDateToDatetimeString(refundOrder.getCreate_time()),
                 apply.getOrder().getNumber(),
                 apply.getItem().getNumber(),
                 OrderConstant.LogOperateCode.SYSTEM,
@@ -339,7 +339,7 @@ public class LockTransactionManager {
         eventManager.addEvent(OrderConstant.EventType.ORDER_REFUND_AUDIT, new RefundAuditEventParam(refundOrder.getId(), status));
 
         log.info("order {} {} {} {} {} {} {} {} {}", new Object[]{
-                JsonUtils.toJson(refundOrder.getAudit_time()),
+                DateFormatUtils.parseDateToDatetimeString(refundOrder.getAudit_time()),
                 order.getNumber(),
                 orderItem.getNumber(),
                 OrderConstant.LogOperateCode.SYSTEM,
@@ -406,7 +406,7 @@ public class LockTransactionManager {
         orderItemMapper.updateByPrimaryKeySelective(orderItem);
         eventManager.addEvent(OrderConstant.EventType.ORDER_AUDIT, new OrderAuditEventParam(orderItem.getId(), status));
         log.info("order {} {} {} {} {} {} {} {} {}", new Object[]{
-                JsonUtils.toJson(orderItem.getAudit_time()),
+                DateFormatUtils.parseDateToDatetimeString(orderItem.getAudit_time()),
                 order.getNumber(),
                 orderItem.getNumber(),
                 OrderConstant.LogOperateCode.SYSTEM,
@@ -471,7 +471,7 @@ public class LockTransactionManager {
         orderMapper.updateByPrimaryKeySelective(order);
 
         log.info("order {} {} {} {} {} {} {} {} {}", new Object[]{
-                JsonUtils.toJson(order.getPay_time()),
+                DateFormatUtils.parseDateToDatetimeString(order.getPay_time()),
                 order.getNumber(),
                 null,
                 OrderConstant.LogOperateCode.SYSTEM,
@@ -565,7 +565,7 @@ public class LockTransactionManager {
             info.setSuccess(false);
         }
         log.info("order {} {} {} {} {} {} {} {} {}", new Object[]{
-                JsonUtils.toJson(procTime),
+                DateFormatUtils.parseDateToDatetimeString(procTime),
                 null,
                 orderItem.getNumber(),
                 OrderConstant.LogOperateCode.SYSTEM,

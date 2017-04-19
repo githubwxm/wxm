@@ -22,6 +22,7 @@ import com.all580.voucher.api.service.VoucherRPCService;
 import com.framework.common.Result;
 import com.framework.common.event.MnsEvent;
 import com.framework.common.event.MnsEventAspect;
+import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.lang.UUIDGenerator;
 import lombok.extern.slf4j.Slf4j;
@@ -527,7 +528,7 @@ public class RefundOrderManager extends BaseOrderManager {
             }
         }
         log.info("order {} {} {} {} {} {} {} {} {}", new Object[]{
-                JsonUtils.toJson(new Date()),
+                DateFormatUtils.parseDateToDatetimeString(new Date()),
                 null,
                 orderItem.getNumber(),
                 OrderConstant.LogOperateCode.SYSTEM,
@@ -551,7 +552,7 @@ public class RefundOrderManager extends BaseOrderManager {
     @MnsEvent
     public Result refundMoney(Order order, int money, String sn, RefundOrder refundOrder) {
         log.info("order {} {} {} {} {} {} {} {} {}", new Object[]{
-                JsonUtils.toJson(new Date()),
+                DateFormatUtils.parseDateToDatetimeString(new Date()),
                 order.getNumber(),
                 null,
                 OrderConstant.LogOperateCode.SYSTEM,
