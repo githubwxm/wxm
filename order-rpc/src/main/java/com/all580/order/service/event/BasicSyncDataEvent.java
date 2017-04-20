@@ -7,6 +7,7 @@ import com.all580.order.entity.Order;
 import com.framework.common.Result;
 import com.framework.common.mns.TopicPushManager;
 import com.framework.common.synchronize.SynchronizeDataMap;
+import com.github.ltsopensource.jobclient.JobClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -33,6 +34,13 @@ public class BasicSyncDataEvent {
     private TopicPushManager topicPushManager;
     @Value("${mns.topic}")
     private String topicName;
+
+    @Autowired
+    private JobClient jobClient;
+    @Value("${task.sync.new.tracker}")
+    private String taskTracker;
+    @Value("${task.sync.new.maxRetryTimes}")
+    private Integer maxRetryTimes;
 
     @Autowired
     private CoreEpAccessService coreEpAccessService;
@@ -69,6 +77,9 @@ public class BasicSyncDataEvent {
         Assert.notEmpty(dataMaps);
         for (SynchronizeDataMap dataMap : dataMaps) {
             try {
+                dataMap.setJobClient(jobClient);
+                dataMap.setTaskTracker(taskTracker);
+                dataMap.setMaxRetryTimes(maxRetryTimes);
                 dataMap.sendToMns(topicPushManager, topicName).clear();
             } catch (Throwable e) {
                 throw new ApiException("同步数据异常: " + dataMap.getKey(), e);
