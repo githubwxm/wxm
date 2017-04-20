@@ -145,6 +145,7 @@ public class OrderConstant {
         public static final String REFUND_AUDIT_REJECT_SUCCESS = "CA7000200";
         public static final String SEND_REFUND_TICKETING = "CA7000110";
         public static final String RECEIVE_REFUND_TICKETING = "CA7000111";
+        public static final String REFUND_TICKET = "CA7000112";
         public static final String REFUND_MONEY_APPLY = "CA80001";
         public static final String REFUND_MONEY_AUDIT_SUCCESS = "CA8000200";
         public static final String REFUND_MONEY_FAIL = "CA8000301";
