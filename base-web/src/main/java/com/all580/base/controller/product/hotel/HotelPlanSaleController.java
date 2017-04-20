@@ -76,8 +76,7 @@ public class HotelPlanSaleController {
     @RequestMapping(value = "sale/select/platform_up_list", method = RequestMethod.GET)
     @ResponseBody
     public Result<?> selectPlatformUpList(@RequestParam("ep_id") Integer ep_id,
-                                   @RequestParam("batch_id") Integer batch_id,
-                                          @RequestParam("is_distributed") Integer is_distributed) {
+                                   @RequestParam("batch_id") Integer batch_id) {
         Map<String,Object> map = new HashMap<>();
         map.put("ep_id",ep_id);
         Result<Map<String, Object>> allEpsResult = epService.platformListDown(map);
@@ -86,12 +85,7 @@ public class HotelPlanSaleController {
         if(null==epList||epList.isEmpty()){
             return new Result<>(false, "查不到下游平台商");
         }
-        if(ProductConstants.ProductDistributionState.HAD_DISTRIBUTE == is_distributed){
-            return hotelPlanSaleService.selectPlatformDownList(ep_id,batch_id,epList);
-        }else{
-            return hotelPlanSaleService.selectPlatformUpList(ep_id,batch_id,epList);
-        }
-
+        return hotelPlanSaleService.selectPlatformUpList(ep_id,batch_id,epList);
     }
 
     @RequestMapping(value = "sale/select/platform_down_list", method = RequestMethod.GET)
