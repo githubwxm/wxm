@@ -109,7 +109,7 @@ public class TicketCallbackServiceImpl extends BasicSyncDataEvent implements Tic
             maSendResponseMapper.insertSelective(response);
         }
 
-        log.info("order {} {} {} {} {} {} {} {} {}", new Object[]{
+        log.info("order-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}", new Object[]{
                 DateFormatUtils.parseDateToDatetimeString(procTime),
                 null,
                 orderItem.getNumber(),
@@ -163,7 +163,7 @@ public class TicketCallbackServiceImpl extends BasicSyncDataEvent implements Tic
         response.setCreate_time(procTime);
         maSendResponseMapper.insertSelective(response);
 
-        log.info("order {} {} {} {} {} {} {} {} {}", new Object[]{
+        log.info("order-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}", new Object[]{
                 DateFormatUtils.parseDateToDatetimeString(procTime),
                 null,
                 orderItem.getNumber(),
@@ -240,7 +240,7 @@ public class TicketCallbackServiceImpl extends BasicSyncDataEvent implements Tic
             throw new ApiException("没有可核销的票");
         }
 
-        log.info("order {} {} {} {} {} {} {} {} {}", new Object[]{
+        log.info("order-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}", new Object[]{
                 DateFormatUtils.parseDateToDatetimeString(procTime),
                 order.getNumber(),
                 orderItem.getNumber(),
@@ -314,7 +314,7 @@ public class TicketCallbackServiceImpl extends BasicSyncDataEvent implements Tic
             throw new ApiException("没有可核销的票");
         }
 
-        log.info("order {} {} {} {} {} {} {} {} {}", new Object[]{
+        log.info("order-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}", new Object[]{
                 DateFormatUtils.parseDateToDatetimeString(procTime),
                 order.getNumber(),
                 orderItem.getNumber(),
@@ -379,7 +379,7 @@ public class TicketCallbackServiceImpl extends BasicSyncDataEvent implements Tic
             throw new ApiException("没有可反核销的票");
         }
 
-        log.info("order {} {} {} {} {} {} {} {} {}", new Object[]{
+        log.info("order-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}", new Object[]{
                 DateFormatUtils.parseDateToDatetimeString(procTime),
                 order.getNumber(),
                 orderItem.getNumber(),
@@ -460,7 +460,7 @@ public class TicketCallbackServiceImpl extends BasicSyncDataEvent implements Tic
             throw new ApiException("没有可反核销的票");
         }
 
-        log.info("order {} {} {} {} {} {} {} {} {}", new Object[]{
+        log.info("order-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}", new Object[]{
                 DateFormatUtils.parseDateToDatetimeString(procTime),
                 order.getNumber(),
                 orderItem.getNumber(),

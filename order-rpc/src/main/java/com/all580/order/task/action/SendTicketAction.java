@@ -105,7 +105,7 @@ public class SendTicketAction extends BasicSyncDataEvent implements JobRunner {
         }
         sendTicketParams.setVisitors(contacts);
         com.framework.common.Result r = voucherRPCService.sendTicket(orderItem.getEp_ma_id(), sendTicketParams);
-        log.info("order {} {} {} {} {} {} {} {} {}", new Object[]{
+        log.info("order-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}", new Object[]{
                 DateFormatUtils.parseDateToDatetimeString(new Date()),
                 null,
                 orderItem.getNumber(),

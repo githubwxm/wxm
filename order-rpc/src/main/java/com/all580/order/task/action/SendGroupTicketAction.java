@@ -124,7 +124,7 @@ public class SendGroupTicketAction extends BasicSyncDataEvent implements JobRunn
         }
         sendGroupTicketParams.setVisitors(contacts);
         com.framework.common.Result r = voucherRPCService.sendGroupTicket(orderItem.getEp_ma_id(), sendGroupTicketParams);
-        log.info("order {} {} {} {} {} {} {} {} {}", new Object[]{
+        log.info("order-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}", new Object[]{
                 DateFormatUtils.parseDateToDatetimeString(new Date()),
                 null,
                 orderItem.getNumber(),

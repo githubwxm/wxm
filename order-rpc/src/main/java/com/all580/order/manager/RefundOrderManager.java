@@ -535,7 +535,7 @@ public class RefundOrderManager extends BaseOrderManager {
                 log.warn("*****退票发起部分成功*****");
             }
         }
-        log.info("order {} {} {} {} {} {} {} {} {}", new Object[]{
+        log.info("order-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}", new Object[]{
                 DateFormatUtils.parseDateToDatetimeString(new Date()),
                 null,
                 orderItem.getNumber(),
@@ -560,7 +560,7 @@ public class RefundOrderManager extends BaseOrderManager {
     @MnsEvent
     public Result refundMoney(Order order, int money, String sn, RefundOrder refundOrder) {
         if (refundOrder.getStatus() != OrderConstant.RefundOrderStatus.REFUND_MONEY_AUDITING) {
-            log.info("order {} {} {} {} {} {} {} {} {}", new Object[]{
+            log.info("order-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}", new Object[]{
                     DateFormatUtils.parseDateToDatetimeString(new Date()),
                     order.getNumber(),
                     null,

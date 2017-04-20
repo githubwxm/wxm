@@ -39,7 +39,7 @@ public class SendTicketEventImpl implements SendTicketEvent {
         if (item.getPro_type() == ProductConstants.ProductType.HOTEL) {
             smsManager.sendHotelSendTicket(item);
         }
-        log.info("order {} {} {} {} {} {} {} {} {}", new Object[]{
+        log.info("order-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}", new Object[]{
                 DateFormatUtils.parseDateToDatetimeString(createDate),
                 null,
                 item.getNumber(),
