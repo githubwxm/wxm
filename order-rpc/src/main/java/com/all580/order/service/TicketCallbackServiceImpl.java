@@ -597,7 +597,7 @@ public class TicketCallbackServiceImpl extends BasicSyncDataEvent implements Tic
         Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
         SyncAccess syncAccess = getAccessKeys(order);
         syncAccess.getDataMap()
-                .add("t_order_item", orderItem);
+                .add("t_order_item", orderItemMapper.selectByPrimaryKey(orderItem.getId()));
         syncAccess.loop();
         sync(syncAccess.getDataMaps());
         return new Result(true);

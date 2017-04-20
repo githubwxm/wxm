@@ -142,7 +142,7 @@ public class SendGroupTicketAction extends BasicSyncDataEvent implements JobRunn
 
         SyncAccess syncAccess = getAccessKeys(order);
         syncAccess.getDataMap()
-                .add("t_order_item", orderItem);
+                .add("t_order_item", orderItemMapper.selectByPrimaryKey(orderItem.getId()));
         syncAccess.loop();
         sync(syncAccess.getDataMaps());
         return new Result(Action.EXECUTE_SUCCESS);
