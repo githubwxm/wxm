@@ -329,6 +329,8 @@ public class PlanController extends BaseController {
         for (Map ep : onSalesEps) {
             ep.put("product_sub_id", params.get("product_sub_id"));
             ep.put("sale_ep_id", params.get("ep_id"));
+            ep.put("batch_id",params.get("batch_id"));
+            ep.put("product_type",params.get("product_type"));
         }
         return onSalesEps;
     }
