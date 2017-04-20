@@ -7,6 +7,7 @@ import com.all580.order.entity.Order;
 import com.framework.common.Result;
 import com.framework.common.mns.TopicPushManager;
 import com.framework.common.synchronize.SynchronizeDataMap;
+import com.framework.common.util.CommonUtil;
 import com.github.ltsopensource.jobclient.JobClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -47,6 +48,19 @@ public class BasicSyncDataEvent {
 
     public SyncAccess getAccessKeys(Order order) {
         List<Integer> coreEpIds = orderItemAccountMapper.selectCoreEpIdByOrder(order.getId());
+        Map<Integer, String> map = getAccessKeyMap(coreEpIds);
+        SyncAccess syncAccess = new SyncAccess();
+        syncAccess.setOrder(order);
+        syncAccess.setCoreEpId(order.getPayee_ep_id());
+        syncAccess.setAccessKey(map.get(order.getPayee_ep_id()));
+        syncAccess.setAccessKeyMap(map);
+        StackTraceElement traceElement = Thread.currentThread().getStackTrace()[2];
+        syncAccess.setDataMap(new SynchronizeDataMap(syncAccess.getAccessKey(), traceElement.getClassName() + "." + traceElement.getMethodName()));
+        Assert.notNull(syncAccess.getAccessKey());
+        return syncAccess;
+    }
+
+    public Map<Integer, String> getAccessKeyMap(List<Integer> coreEpIds) {
         Assert.notEmpty(coreEpIds);
 
         Result<List<Map<String, Object>>> accessKeyResult = coreEpAccessService.selectAccessMap(coreEpIds);
@@ -62,10 +76,14 @@ public class BasicSyncDataEvent {
             Assert.noNullElements(new Object[]{id, access_key});
             map.put(Integer.parseInt(id.toString()), access_key.toString());
         }
+        return map;
+    }
+
+    public SyncAccess getAccessKeys(int coreEpId) {
+        Map<Integer, String> map = getAccessKeyMap(CommonUtil.oneToList(coreEpId));
         SyncAccess syncAccess = new SyncAccess();
-        syncAccess.setOrder(order);
-        syncAccess.setCoreEpId(order.getPayee_ep_id());
-        syncAccess.setAccessKey(map.get(order.getPayee_ep_id()));
+        syncAccess.setCoreEpId(coreEpId);
+        syncAccess.setAccessKey(map.get(coreEpId));
         syncAccess.setAccessKeyMap(map);
         StackTraceElement traceElement = Thread.currentThread().getStackTrace()[2];
         syncAccess.setDataMap(new SynchronizeDataMap(syncAccess.getAccessKey(), traceElement.getClassName() + "." + traceElement.getMethodName()));

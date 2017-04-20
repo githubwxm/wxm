@@ -1,22 +1,18 @@
 package com.all580.order.manager;
 
-import com.all580.ep.api.service.CoreEpAccessService;
 import com.all580.order.dao.GroupMapper;
 import com.all580.order.dao.GroupMemberMapper;
 import com.all580.order.dao.GuideMapper;
+import com.all580.order.dto.SyncAccess;
 import com.all580.order.entity.Group;
 import com.all580.order.entity.Guide;
-import com.framework.common.Result;
-import com.framework.common.synchronize.SynchronizeAction;
-import com.framework.common.synchronize.SynchronizeDataManager;
+import com.all580.order.service.event.BasicSyncDataEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.lang.exception.ApiException;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -28,13 +24,7 @@ import java.util.Set;
  */
 @Component
 @Slf4j
-public class GroupSyncManager {
-
-    @Autowired
-    private SynchronizeDataManager synchronizeDataManager;
-
-    @Autowired
-    private CoreEpAccessService coreEpAccessService;
+public class GroupSyncManager extends BasicSyncDataEvent {
 
     @Autowired
     private GroupMapper groupMapper;
@@ -53,13 +43,14 @@ public class GroupSyncManager {
         if (group == null) {
             throw new ApiException("同步团队数据异常:null");
         }
-        return generateSyncByGroup(group)
-                // 同步团队表
-                .put("t_group", Collections.singletonList(group))
-                // 同步导游表
-                .put("t_guide", guideId != null ? Collections.singletonList(guideMapper.selectByPrimaryKey(guideId)) : Collections.EMPTY_LIST)
-                // 同步
-                .sync().getDataMapForJsonMap();
+        SyncAccess syncAccess = getAccessKeys(group.getCore_ep_id());
+        syncAccess.getDataMap().add("t_group", group);
+        if (guideId != null) {
+            syncAccess.getDataMap().add("t_guide", guideMapper.selectByPrimaryKey(guideId));
+        }
+        Map data = syncAccess.getDataMap().asMap();
+        sync(syncAccess.getDataMaps());
+        return data;
     }
 
     /**
@@ -86,12 +77,13 @@ public class GroupSyncManager {
         if (ret <= 0) {
             throw new ApiException("同步团队数据异常:删除团队失败");
         }
-        return generateSyncByGroup(group)
-                // 同步团队表
+        SyncAccess syncAccess = getAccessKeys(group.getCore_ep_id());
+        syncAccess.getDataMap()
                 .delete("t_group", groupId)
-                .delete("t_group_member", members)
-                // 同步
-                .sync().getDataMapForJsonMap();
+                .delete("t_group_member", members);
+        Map data = syncAccess.getDataMap().asMap();
+        sync(syncAccess.getDataMaps());
+        return data;
     }
 
     /**
@@ -104,11 +96,11 @@ public class GroupSyncManager {
         if (guide == null) {
             throw new ApiException("同步导游数据异常:null");
         }
-        return generateSyncByGuide(guide)
-                // 同步导游表
-                .put("t_guide", Collections.singletonList(guide))
-                // 同步
-                .sync().getDataMapForJsonMap();
+        SyncAccess syncAccess = getAccessKeys(guide.getCore_ep_id());
+        syncAccess.getDataMap().add("t_guide", guide);
+        Map data = syncAccess.getDataMap().asMap();
+        sync(syncAccess.getDataMaps());
+        return data;
     }
 
     /**
@@ -126,11 +118,12 @@ public class GroupSyncManager {
         if (ret <= 0) {
             throw new ApiException("同步导游数据异常:删除导游失败");
         }
-        return generateSyncByGuide(guide)
-                // 同步导游表
-                .delete("t_guide", guideId)
-                // 同步
-                .sync().getDataMapForJsonMap();
+        SyncAccess syncAccess = getAccessKeys(guide.getCore_ep_id());
+        syncAccess.getDataMap()
+                .delete("t_guide", guideId);
+        Map data = syncAccess.getDataMap().asMap();
+        sync(syncAccess.getDataMaps());
+        return data;
     }
 
     /**
@@ -144,11 +137,11 @@ public class GroupSyncManager {
         if (group == null) {
             throw new ApiException("同步团队成员数据异常:null");
         }
-        return generateSyncByGroup(group)
-                // 同步团队成员表
-                .put("t_group_member", groupMemberMapper.selectByGroup(groupId, lastId))
-                // 同步
-                .sync().getDataMapForJsonMap();
+        SyncAccess syncAccess = getAccessKeys(group.getCore_ep_id());
+        syncAccess.getDataMap().add("t_group_member", groupMemberMapper.selectByGroup(groupId, lastId));
+        Map data = syncAccess.getDataMap().asMap();
+        sync(syncAccess.getDataMaps());
+        return data;
     }
 
     /**
@@ -162,30 +155,11 @@ public class GroupSyncManager {
         if (group == null) {
             throw new ApiException("同步团队成员数据异常:null");
         }
-        return generateSyncByGroup(group)
-                // 同步团队成员表
-                .delete("t_group_member", memberId)
-                // 同步
-                .sync().getDataMapForJsonMap();
-    }
-
-    public SynchronizeAction generateSyncByGroup(Group group) {
-        return generateSync(group.getCore_ep_id());
-    }
-
-    public SynchronizeAction generateSyncByGuide(Guide guide) {
-        return generateSync(guide.getCore_ep_id());
-    }
-
-    private SynchronizeAction generateSync(Integer coreEpId) {
-        if (coreEpId == null) {
-            throw new ApiException("sync core ep id is not null.");
-        }
-        Result<List<String>> accessKeyResult = coreEpAccessService.selectAccessList(Collections.singletonList(coreEpId));
-        if (!accessKeyResult.isSuccess()) {
-            throw new ApiException(accessKeyResult.getError());
-        }
-        List<String> accessKeyList = accessKeyResult.get();
-        return synchronizeDataManager.generate(accessKeyList.toArray(new String[accessKeyList.size()]));
+        SyncAccess syncAccess = getAccessKeys(group.getCore_ep_id());
+        syncAccess.getDataMap()
+                .delete("t_group_member", memberId);
+        Map data = syncAccess.getDataMap().asMap();
+        sync(syncAccess.getDataMaps());
+        return data;
     }
 }
