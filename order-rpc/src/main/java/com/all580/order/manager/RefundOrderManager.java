@@ -157,7 +157,7 @@ public class RefundOrderManager extends BaseOrderManager {
             }
             orderItemMapper.refundQuantity(orderItem.getId(), refundOrder.getQuantity());
             // 退款
-            refundMoney(order, refundOrder.getMoney(), String.valueOf(refundOrder.getNumber()), refundOrder);
+            refundMoney(order, refundOrder.getMoney(), String.valueOf(refundOrder.getNumber()), refundOrder, true);
         }
     }
 
@@ -558,8 +558,8 @@ public class RefundOrderManager extends BaseOrderManager {
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     @MnsEvent
-    public Result refundMoney(Order order, int money, String sn, RefundOrder refundOrder) {
-        if (refundOrder.getStatus() != OrderConstant.RefundOrderStatus.REFUND_MONEY_AUDITING) {
+    public Result refundMoney(Order order, int money, String sn, RefundOrder refundOrder, boolean isApply) {
+        if (isApply) {
             log.info("order-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}", new Object[]{
                     DateFormatUtils.parseDateToDatetimeString(new Date()),
                     order.getNumber(),
