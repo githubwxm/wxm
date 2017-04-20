@@ -263,7 +263,7 @@ public class LockTransactionManager {
             refundOrderManager.preRefundSplitAccount(apply.getFrom(), refundOrder.getId(), apply.getOrder(), apply.getDate(), refundOrder.getOrder_item_id(), detailList, refundDays);
         }
 
-        log.info("order {} {} {} {} {} {} {} {} {}", new Object[]{
+        log.info("order-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}", new Object[]{
                 DateFormatUtils.parseDateToDatetimeString(refundOrder.getCreate_time()),
                 apply.getOrder().getNumber(),
                 apply.getItem().getNumber(),
@@ -338,7 +338,7 @@ public class LockTransactionManager {
         refundOrderMapper.updateByPrimaryKeySelective(refundOrder);
         eventManager.addEvent(OrderConstant.EventType.ORDER_REFUND_AUDIT, new RefundAuditEventParam(refundOrder.getId(), status));
 
-        log.info("order {} {} {} {} {} {} {} {} {}", new Object[]{
+        log.info("order-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}", new Object[]{
                 DateFormatUtils.parseDateToDatetimeString(refundOrder.getAudit_time()),
                 order.getNumber(),
                 orderItem.getNumber(),
@@ -405,7 +405,7 @@ public class LockTransactionManager {
         }
         orderItemMapper.updateByPrimaryKeySelective(orderItem);
         eventManager.addEvent(OrderConstant.EventType.ORDER_AUDIT, new OrderAuditEventParam(orderItem.getId(), status));
-        log.info("order {} {} {} {} {} {} {} {} {}", new Object[]{
+        log.info("order-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}", new Object[]{
                 DateFormatUtils.parseDateToDatetimeString(orderItem.getAudit_time()),
                 order.getNumber(),
                 orderItem.getNumber(),
@@ -470,7 +470,7 @@ public class LockTransactionManager {
         order.setPay_time(new Date());
         orderMapper.updateByPrimaryKeySelective(order);
 
-        log.info("order {} {} {} {} {} {} {} {} {}", new Object[]{
+        log.info("order-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}", new Object[]{
                 DateFormatUtils.parseDateToDatetimeString(order.getPay_time()),
                 order.getNumber(),
                 null,
@@ -564,7 +564,7 @@ public class LockTransactionManager {
             log.error("退订订单:{} 退票回调异常: 退票人:{} 可退票不足, 小秘书重置为退票失败", refundOrder.getNumber(), info.getVisitorSeqId());
             info.setSuccess(false);
         }
-        log.info("order {} {} {} {} {} {} {} {} {}", new Object[]{
+        log.info("order-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}", new Object[]{
                 DateFormatUtils.parseDateToDatetimeString(procTime),
                 null,
                 orderItem.getNumber(),

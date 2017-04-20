@@ -206,7 +206,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             data.put("t_order_item", orderItems);
             result.putExt(Result.SYNC_DATA, JsonUtils.obj2map(data));
         }
-        log.info("order {} {} {} {} {} {} {} {} {}", new Object[]{
+        log.info("order-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}", new Object[]{
                 DateFormatUtils.parseDateToDatetimeString(order.getCreate_time()),
                 order.getNumber(),
                 null,
