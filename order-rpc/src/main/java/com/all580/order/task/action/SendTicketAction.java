@@ -3,11 +3,15 @@ package com.all580.order.task.action;
 import com.all580.order.api.OrderConstant;
 import com.all580.order.dao.OrderItemDetailMapper;
 import com.all580.order.dao.OrderItemMapper;
+import com.all580.order.dao.OrderMapper;
 import com.all580.order.dao.VisitorMapper;
+import com.all580.order.dto.SyncAccess;
+import com.all580.order.entity.Order;
 import com.all580.order.entity.OrderItem;
 import com.all580.order.entity.OrderItemDetail;
 import com.all580.order.entity.Visitor;
 import com.all580.order.manager.BookingOrderManager;
+import com.all580.order.service.event.BasicSyncDataEvent;
 import com.all580.product.api.consts.ProductConstants;
 import com.all580.voucher.api.conf.VoucherConstant;
 import com.all580.voucher.api.model.SendTicketParams;
@@ -37,13 +41,15 @@ import java.util.*;
  */
 @Component(OrderConstant.Actions.SEND_TICKET)
 @Slf4j
-public class SendTicketAction implements JobRunner {
+public class SendTicketAction extends BasicSyncDataEvent implements JobRunner {
     @Autowired
     private OrderItemMapper orderItemMapper;
     @Autowired
     private OrderItemDetailMapper orderItemDetailMapper;
     @Autowired
     private VisitorMapper visitorMapper;
+    @Autowired
+    private OrderMapper orderMapper;
 
     @Autowired
     private VoucherRPCService voucherRPCService;
@@ -115,7 +121,12 @@ public class SendTicketAction implements JobRunner {
             throw new Exception("出票失败:" + r.getError());
         }
 
-        bookingOrderManager.syncSendingData(orderItemId);
+        Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
+        SyncAccess syncAccess = getAccessKeys(order);
+        syncAccess.getDataMap()
+                .add("t_order_item", orderItem);
+        syncAccess.loop();
+        sync(syncAccess.getDataMaps());
         return new Result(Action.EXECUTE_SUCCESS);
     }
 

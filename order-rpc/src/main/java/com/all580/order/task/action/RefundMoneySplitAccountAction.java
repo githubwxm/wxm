@@ -1,15 +1,14 @@
 package com.all580.order.task.action;
 
 import com.all580.order.api.OrderConstant;
-import com.all580.order.dao.OrderClearanceSerialMapper;
-import com.all580.order.dao.OrderItemMapper;
+import com.all580.order.dao.OrderMapper;
 import com.all580.order.dao.RefundAccountMapper;
 import com.all580.order.dao.RefundOrderMapper;
-import com.all580.order.entity.OrderClearanceSerial;
-import com.all580.order.entity.OrderItem;
-import com.all580.order.entity.RefundAccount;
-import com.all580.order.manager.BookingOrderManager;
+import com.all580.order.dto.SyncAccess;
+import com.all580.order.entity.Order;
+import com.all580.order.entity.RefundOrder;
 import com.all580.order.manager.RefundOrderManager;
+import com.all580.order.service.event.BasicSyncDataEvent;
 import com.framework.common.util.CommonUtil;
 import com.framework.common.validate.ParamsMapValidate;
 import com.framework.common.validate.ValidRule;
@@ -23,7 +22,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -34,9 +32,15 @@ import java.util.Map;
  */
 @Component(OrderConstant.Actions.REFUND_MONEY_SPLIT_ACCOUNT)
 @Slf4j
-public class RefundMoneySplitAccountAction implements JobRunner {
+public class RefundMoneySplitAccountAction extends BasicSyncDataEvent implements JobRunner {
     @Autowired
     private RefundOrderManager refundOrderManager;
+    @Autowired
+    private OrderMapper orderMapper;
+    @Autowired
+    private RefundOrderMapper refundOrderMapper;
+    @Autowired
+    private RefundAccountMapper refundAccountMapper;
 
     @Override
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
@@ -50,9 +54,15 @@ public class RefundMoneySplitAccountAction implements JobRunner {
         }
 
         Integer id = CommonUtil.objectParseInteger(refundId);
-        refundOrderManager.refundSplitAccount(id);
+        RefundOrder refundOrder = refundOrderMapper.selectByPrimaryKey(id);
+        refundOrderManager.refundSplitAccount(refundOrder);
         // 同步数据
-        refundOrderManager.syncRefundAccountData(id);
+        Order order = orderMapper.selectByRefundSn(refundOrder.getNumber());
+        SyncAccess syncAccess = getAccessKeys(order);
+        syncAccess.getDataMap()
+                .add("t_refund_account", refundAccountMapper.selectByRefundId(id));
+        syncAccess.loop();
+        sync(syncAccess.getDataMaps());
         return new Result(Action.EXECUTE_SUCCESS);
     }
 
