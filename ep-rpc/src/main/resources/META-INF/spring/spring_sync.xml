@@ -36,7 +36,7 @@
     </bean>
 
     <!-- 同步数据任务执行器 -->
-    <!--<bean id="syncTaskTracker" class="com.github.ltsopensource.spring.TaskTrackerAnnotationFactoryBean" init-method="start">
+    <bean id="syncTaskTracker" class="com.github.ltsopensource.spring.TaskTrackerAnnotationFactoryBean" init-method="start">
         <property name="jobRunnerClass" value="com.framework.common.synchronize.SynchronizeDataTaskTracker"/>
         <property name="bizLoggerLevel" value="INFO"/>
         <property name="clusterName" value="${task.cluster}"/>
@@ -49,7 +49,7 @@
                 <prop key="jobtracker.job.retry.interval.millis">180</prop>
             </props>
         </property>
-    </bean>-->
+    </bean>
     <task:annotation-driven/>
 </beans>
 
