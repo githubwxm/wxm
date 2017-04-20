@@ -2,7 +2,6 @@ package com.all580.order.manager;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.all580.ep.api.service.CoreEpAccessService;
 import com.all580.ep.api.service.CoreEpChannelService;
 import com.all580.ep.api.service.EpService;
 import com.all580.order.dao.OrderClearanceSerialMapper;
@@ -24,8 +23,6 @@ import com.all580.product.api.service.ProductSalesPlanRPCService;
 import com.framework.common.Result;
 import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.UUIDGenerator;
-import com.framework.common.synchronize.SynchronizeAction;
-import com.framework.common.synchronize.SynchronizeDataManager;
 import com.framework.common.util.CommonUtil;
 import com.github.ltsopensource.core.domain.Job;
 import lombok.extern.slf4j.Slf4j;
@@ -56,11 +53,6 @@ public class BaseOrderManager {
     private OrderClearanceSerialMapper orderClearanceSerialMapper;
     @Autowired
     private OrderMapper orderMapper;
-    @Autowired
-    private SynchronizeDataManager synchronizeDataManager;
-
-    @Autowired
-    private CoreEpAccessService coreEpAccessService;
     @Autowired
     private CoreEpChannelService coreEpChannelService;
     @Autowired
@@ -361,44 +353,5 @@ public class BaseOrderManager {
             auditMoney = getAuditConfig(orderItem.getPro_sub_id(), order.getPayee_ep_id())[1];
         }
         return new int[]{auditTicket, auditMoney};
-    }
-
-    /**
-     * 开始同步数据
-     * @param orderId 订单ID
-     * @return
-     */
-    public SynchronizeAction generateSyncByOrder(int orderId) {
-        return generateSync(orderItemAccountMapper.selectCoreEpIdByOrder(orderId));
-    }
-
-    /**
-     * 开始同步数据
-     * @param itemId 子订单ID
-     * @return
-     */
-    public SynchronizeAction generateSyncByItem(int itemId) {
-        return generateSync(orderItemAccountMapper.selectCoreEpIdByOrderItem(itemId));
-    }
-
-    private SynchronizeAction generateSync(List<Integer> coreEpIds) {
-        if (coreEpIds == null) {
-            throw new ApiException("sync core ep ids is not null.");
-        }
-        Result<List<String>> accessKeyResult = coreEpAccessService.selectAccessList(coreEpIds);
-        if (!accessKeyResult.isSuccess()) {
-            throw new ApiException(accessKeyResult.getError());
-        }
-        List<String> accessKeyList = accessKeyResult.get();
-        return synchronizeDataManager.generate(accessKeyList.toArray(new String[accessKeyList.size()]));
-    }
-
-    public String getAccessKey(Integer coreEpId) {
-        Result<List<String>> accessKeyResult = coreEpAccessService.selectAccessList(CommonUtil.oneToList(coreEpId));
-        if (!accessKeyResult.isSuccess()) {
-            throw new ApiException(accessKeyResult.getError());
-        }
-        List<String> accessKeyList = accessKeyResult.get();
-        return accessKeyList.get(0);
     }
 }

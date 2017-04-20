@@ -4,9 +4,11 @@ import com.all580.order.api.OrderConstant;
 import com.all580.order.api.model.*;
 import com.all580.order.api.service.TicketCallbackService;
 import com.all580.order.dao.*;
+import com.all580.order.dto.SyncAccess;
 import com.all580.order.entity.*;
 import com.all580.order.manager.BookingOrderManager;
 import com.all580.order.manager.LockTransactionManager;
+import com.all580.order.service.event.BasicSyncDataEvent;
 import com.all580.product.api.consts.ProductConstants;
 import com.framework.common.Result;
 import com.framework.common.distributed.lock.DistributedLockTemplate;
@@ -35,7 +37,7 @@ import java.util.*;
  */
 @Service
 @Slf4j
-public class TicketCallbackServiceImpl implements TicketCallbackService {
+public class TicketCallbackServiceImpl extends BasicSyncDataEvent implements TicketCallbackService {
     @Autowired
     private OrderMapper orderMapper;
     @Autowired
@@ -107,7 +109,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
             maSendResponseMapper.insertSelective(response);
         }
 
-        log.info("order {} {} {} {} {} {} {} {} {}", new Object[]{
+        log.info("order-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}", new Object[]{
                 DateFormatUtils.parseDateToDatetimeString(procTime),
                 null,
                 orderItem.getNumber(),
@@ -161,7 +163,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         response.setCreate_time(procTime);
         maSendResponseMapper.insertSelective(response);
 
-        log.info("order {} {} {} {} {} {} {} {} {}", new Object[]{
+        log.info("order-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}", new Object[]{
                 DateFormatUtils.parseDateToDatetimeString(procTime),
                 null,
                 orderItem.getNumber(),
@@ -238,7 +240,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
             throw new ApiException("没有可核销的票");
         }
 
-        log.info("order {} {} {} {} {} {} {} {} {}", new Object[]{
+        log.info("order-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}", new Object[]{
                 DateFormatUtils.parseDateToDatetimeString(procTime),
                 order.getNumber(),
                 orderItem.getNumber(),
@@ -312,7 +314,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
             throw new ApiException("没有可核销的票");
         }
 
-        log.info("order {} {} {} {} {} {} {} {} {}", new Object[]{
+        log.info("order-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}", new Object[]{
                 DateFormatUtils.parseDateToDatetimeString(procTime),
                 order.getNumber(),
                 orderItem.getNumber(),
@@ -377,7 +379,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
             throw new ApiException("没有可反核销的票");
         }
 
-        log.info("order {} {} {} {} {} {} {} {} {}", new Object[]{
+        log.info("order-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}", new Object[]{
                 DateFormatUtils.parseDateToDatetimeString(procTime),
                 order.getNumber(),
                 orderItem.getNumber(),
@@ -399,7 +401,13 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         jobManager.addJob(OrderConstant.Actions.RE_CONSUME_SPLIT_ACCOUNT, Collections.singleton(jobParams));
 
         // 同步数据
-        bookingOrderManager.syncReConsumeData(orderItem.getId(), info.getReValidateSn());
+        SyncAccess syncAccess = getAccessKeys(order);
+        syncAccess.getDataMap()
+                .add("t_order_item_detail", orderItemDetailMapper.selectByItemId(orderItem.getId()))
+                .add("t_clearance_washed_serial", clearanceWashedSerialMapper.selectBySn(info.getReValidateSn()))
+                .add("t_visitor", visitorMapper.selectByOrderItem(orderItem.getId()));
+        syncAccess.loop();
+        sync(syncAccess.getDataMaps());
         return new Result(true);
     }
 
@@ -452,7 +460,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
             throw new ApiException("没有可反核销的票");
         }
 
-        log.info("order {} {} {} {} {} {} {} {} {}", new Object[]{
+        log.info("order-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}", new Object[]{
                 DateFormatUtils.parseDateToDatetimeString(procTime),
                 order.getNumber(),
                 orderItem.getNumber(),
@@ -474,7 +482,13 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         jobManager.addJob(OrderConstant.Actions.RE_CONSUME_SPLIT_ACCOUNT, Collections.singleton(jobParams));
 
         // 同步数据
-        bookingOrderManager.syncReConsumeData(orderItem.getId(), info.getReValidateSn());
+        SyncAccess syncAccess = getAccessKeys(order);
+        syncAccess.getDataMap()
+                .add("t_order_item_detail", orderItemDetailMapper.selectByItemId(orderItem.getId()))
+                .add("t_clearance_washed_serial", clearanceWashedSerialMapper.selectBySn(info.getReValidateSn()))
+                .add("t_visitor", visitorMapper.selectByOrderItem(orderItem.getId()));
+        syncAccess.loop();
+        sync(syncAccess.getDataMaps());
         return new Result(true);
     }
 
@@ -580,7 +594,12 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         orderItemMapper.updateByPrimaryKeySelective(orderItem);
 
         // 同步数据
-        bookingOrderManager.syncSendingData(orderItem.getId());
+        Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
+        SyncAccess syncAccess = getAccessKeys(order);
+        syncAccess.getDataMap()
+                .add("t_order_item", orderItemMapper.selectByPrimaryKey(orderItem.getId()));
+        syncAccess.loop();
+        sync(syncAccess.getDataMaps());
         return new Result(true);
     }
 

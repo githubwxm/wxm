@@ -64,7 +64,7 @@ public class PaymentCallbackServiceImpl implements PaymentCallbackService {
             orderId = order.getId();
             lockKey = String.valueOf(orderId);
         }
-        log.info("order {} {} {} {} {} {} {} {} {}", new Object[]{
+        log.info("order-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}", new Object[]{
                 DateFormatUtils.parseDateToDatetimeString(new Date()),
                 ordCode,
                 null,
@@ -112,7 +112,7 @@ public class PaymentCallbackServiceImpl implements PaymentCallbackService {
             return new Result(false, "订单号不存在");
         }
 
-        log.info("order {} {} {} {} {} {} {} {} {}", new Object[]{
+        log.info("order-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}", new Object[]{
                 DateFormatUtils.parseDateToDatetimeString(new Date()),
                 order.getNumber(),
                 null,

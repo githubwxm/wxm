@@ -170,7 +170,7 @@ public class RefundOrderServiceImpl implements RefundOrderService {
         refundOrder.setAudit_money_time(new Date());
         refundOrder.setAudit_money_user_id(CommonUtil.objectParseInteger(params.get("operator_id")));
         refundOrder.setAudit_money_user_name(CommonUtil.objectParseString(params.get("operator_name")));
-        log.info("order {} {} {} {} {} {} {} {} {}", new Object[]{
+        log.info("order-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}", new Object[]{
                 DateFormatUtils.parseDateToDatetimeString(refundOrder.getAudit_money_time()),
                 order.getNumber(),
                 orderItem.getNumber(),

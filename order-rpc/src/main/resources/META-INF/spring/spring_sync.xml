@@ -1,53 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
-       xmlns:task="http://www.springframework.org/schema/task"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans
-        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-        http://www.springframework.org/schema/task
-        http://www.springframework.org/schema/task/spring-task-3.0.xsd">
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
 	<bean id="topicPushManager" class="com.framework.common.mns.TopicPushManager">
 		<property name="accessId" value="${mns.access.id}"/>
 		<property name="accessKey" value="${mns.access.key}"/>
 		<property name="accountEndpoint" value="${mns.endpoint}"/>
 		<property name="tagPrefix" value="${mns.tag.prefix}"/>
-	</bean>
-
-	<!-- 同步数据提交管理器 -->
-	<bean id="synchronizeDataManager" class="com.framework.common.synchronize.SynchronizeDataManager">
-		<property name="jobClient" ref="syncJobClient"/>
-		<property name="taskTracker" value="${task.sync.tracker}"/>
-		<property name="maxRetryTimes" value="${task.sync.maxRetryTimes}"/>
-		<property name="topicName" value="${mns.topic}"/>
-	</bean>
-
-	<!-- 同步数据提交客户端 -->
-	<bean id="syncJobClient" class="com.github.ltsopensource.spring.JobClientFactoryBean" init-method="start">
-		<property name="clusterName" value="${task.cluster}"/>
-		<property name="registryAddress" value="${task.registry}"/>
-		<property name="nodeGroup" value="${task.sync.client}"/>
-		<property name="configs">
-			<props>
-				<!-- 参数 -->
-				<prop key="job.fail.store">mapdb</prop>
-			</props>
-		</property>
-	</bean>
-
-	<!-- 同步数据任务执行器 -->
-	<bean id="syncTaskTracker" class="com.github.ltsopensource.spring.TaskTrackerAnnotationFactoryBean" init-method="start">
-		<property name="jobRunnerClass" value="com.framework.common.synchronize.SynchronizeDataTaskTracker"/>
-		<property name="bizLoggerLevel" value="INFO"/>
-		<property name="clusterName" value="${task.cluster}"/>
-		<property name="registryAddress" value="${task.registry}"/>
-		<property name="nodeGroup" value="${task.sync.tracker}"/>
-		<property name="workThreads" value="20"/>
-		<property name="configs">
-			<props>
-				<prop key="job.fail.store">mapdb</prop>
-				<prop key="jobtracker.job.retry.interval.millis">180</prop>
-			</props>
-		</property>
 	</bean>
 </beans>

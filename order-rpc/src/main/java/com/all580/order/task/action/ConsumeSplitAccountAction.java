@@ -2,10 +2,15 @@ package com.all580.order.task.action;
 
 import com.all580.order.api.OrderConstant;
 import com.all580.order.dao.OrderClearanceSerialMapper;
+import com.all580.order.dao.OrderItemAccountMapper;
 import com.all580.order.dao.OrderItemMapper;
+import com.all580.order.dao.OrderMapper;
+import com.all580.order.dto.SyncAccess;
+import com.all580.order.entity.Order;
 import com.all580.order.entity.OrderClearanceSerial;
 import com.all580.order.entity.OrderItem;
 import com.all580.order.manager.BookingOrderManager;
+import com.all580.order.service.event.BasicSyncDataEvent;
 import com.github.ltsopensource.core.domain.Action;
 import com.github.ltsopensource.tasktracker.Result;
 import com.github.ltsopensource.tasktracker.runner.JobContext;
@@ -25,13 +30,17 @@ import java.util.Map;
  */
 @Component(OrderConstant.Actions.CONSUME_SPLIT_ACCOUNT)
 @Slf4j
-public class ConsumeSplitAccountAction implements JobRunner {
+public class ConsumeSplitAccountAction extends BasicSyncDataEvent implements JobRunner {
     @Autowired
     private OrderClearanceSerialMapper orderClearanceSerialMapper;
     @Autowired
     private OrderItemMapper orderItemMapper;
     @Autowired
     private BookingOrderManager bookingOrderManager;
+    @Autowired
+    private OrderMapper orderMapper;
+    @Autowired
+    private OrderItemAccountMapper orderItemAccountMapper;
 
     @Override
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
@@ -56,7 +65,12 @@ public class ConsumeSplitAccountAction implements JobRunner {
         bookingOrderManager.consumeOrReConsumeSplitAccount(orderItem, serial.getDay(), serial.getQuantity(), sn, true);
 
         // 同步数据
-        bookingOrderManager.syncOrderAccountData(orderItem.getId());
+        Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
+        SyncAccess syncAccess = getAccessKeys(order);
+        syncAccess.getDataMap()
+                .add("t_order_item_account", orderItemAccountMapper.selectByOrderItem(orderItem.getId()));
+        syncAccess.loop();
+        sync(syncAccess.getDataMaps());
         return new Result(Action.EXECUTE_SUCCESS);
     }
 }

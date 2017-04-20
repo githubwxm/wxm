@@ -1,6 +1,5 @@
 package com.all580.order.manager;
 
-import com.all580.ep.api.conf.EpConstant;
 import com.all580.order.api.OrderConstant;
 import com.all580.order.api.model.RefundTicketEventParam;
 import com.all580.order.dao.*;
@@ -374,7 +373,16 @@ public class RefundOrderManager extends BaseOrderManager {
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public void refundSplitAccount(int refundId) {
-        RefundOrder refundOrder = refundOrderMapper.selectByPrimaryKey(refundId);
+        refundSplitAccount(refundOrderMapper.selectByPrimaryKey(refundId));
+    }
+
+    /**
+     * 退款分账
+     * @param refundOrder 退订订单
+     * @return
+     */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public void refundSplitAccount(RefundOrder refundOrder) {
         List<RefundAccount> accountList = refundAccountMapper.selectByRefundId(refundOrder.getId());
         if (accountList != null) {
             List<BalanceChangeInfo> infoList = AccountUtil.makerRefundBalanceChangeInfo(accountList);
@@ -527,7 +535,7 @@ public class RefundOrderManager extends BaseOrderManager {
                 log.warn("*****退票发起部分成功*****");
             }
         }
-        log.info("order {} {} {} {} {} {} {} {} {}", new Object[]{
+        log.info("order-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}", new Object[]{
                 DateFormatUtils.parseDateToDatetimeString(new Date()),
                 null,
                 orderItem.getNumber(),
@@ -551,17 +559,19 @@ public class RefundOrderManager extends BaseOrderManager {
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     @MnsEvent
     public Result refundMoney(Order order, int money, String sn, RefundOrder refundOrder) {
-        log.info("order {} {} {} {} {} {} {} {} {}", new Object[]{
-                DateFormatUtils.parseDateToDatetimeString(new Date()),
-                order.getNumber(),
-                null,
-                OrderConstant.LogOperateCode.SYSTEM,
-                0,
-                "ORDER",
-                OrderConstant.LogOperateCode.REFUND_MONEY_APPLY,
-                refundOrder.getQuantity(),
-                String.format("退订退款申请:退订订单:%s", refundOrder.getNumber())
-        });
+        if (refundOrder.getStatus() != OrderConstant.RefundOrderStatus.REFUND_MONEY_AUDITING) {
+            log.info("order-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}", new Object[]{
+                    DateFormatUtils.parseDateToDatetimeString(new Date()),
+                    order.getNumber(),
+                    null,
+                    OrderConstant.LogOperateCode.SYSTEM,
+                    0,
+                    "ORDER",
+                    OrderConstant.LogOperateCode.REFUND_MONEY_APPLY,
+                    refundOrder.getQuantity(),
+                    String.format("退订退款申请:退订订单:%s", refundOrder.getNumber())
+            });
+        }
         // 需要审核
         if (refundOrder.getAudit_money() == ProductConstants.RefundMoneyAudit.YES &&
                 refundOrder.getStatus() != OrderConstant.RefundOrderStatus.REFUND_MONEY_AUDITING) {
@@ -751,17 +761,6 @@ public class RefundOrderManager extends BaseOrderManager {
                 throw new ApiException("非法请求:当前企业不能退订该订单");
             }
         }
-    }
-
-    /**
-     * 同步退款分账数据
-     * @param refundId 退订订单ID
-     */
-    public Map syncRefundAccountData(int refundId) {
-        RefundOrder refundOrder = refundOrderMapper.selectByPrimaryKey(refundId);
-        return generateSyncByItem(refundOrder.getOrder_item_id())
-                .put("t_refund_account", refundAccountMapper.selectByRefundId(refundId))
-                .sync().getDataMapForJsonMap();
     }
 
     private MaSendResponse getMaResponse(List<MaSendResponse> responses, Integer visitorId, Integer epMaId) {

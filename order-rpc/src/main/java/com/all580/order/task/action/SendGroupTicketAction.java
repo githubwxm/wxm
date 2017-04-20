@@ -2,14 +2,15 @@ package com.all580.order.task.action;
 
 import com.all580.order.api.OrderConstant;
 import com.all580.order.dao.*;
+import com.all580.order.dto.SyncAccess;
 import com.all580.order.entity.*;
 import com.all580.order.manager.BookingOrderManager;
+import com.all580.order.service.event.BasicSyncDataEvent;
 import com.all580.product.api.consts.ProductConstants;
 import com.all580.voucher.api.conf.VoucherConstant;
 import com.all580.voucher.api.model.group.SendGroupTicketParams;
 import com.all580.voucher.api.service.VoucherRPCService;
 import com.framework.common.lang.DateFormatUtils;
-import com.framework.common.lang.JsonUtils;
 import com.framework.common.validate.ParamsMapValidate;
 import com.framework.common.validate.ValidRule;
 import com.github.ltsopensource.core.domain.Action;
@@ -32,7 +33,7 @@ import java.util.*;
  */
 @Component(OrderConstant.Actions.SEND_GROUP_TICKET)
 @Slf4j
-public class SendGroupTicketAction implements JobRunner {
+public class SendGroupTicketAction extends BasicSyncDataEvent implements JobRunner {
     @Autowired
     private OrderItemMapper orderItemMapper;
     @Autowired
@@ -123,7 +124,7 @@ public class SendGroupTicketAction implements JobRunner {
         }
         sendGroupTicketParams.setVisitors(contacts);
         com.framework.common.Result r = voucherRPCService.sendGroupTicket(orderItem.getEp_ma_id(), sendGroupTicketParams);
-        log.info("order {} {} {} {} {} {} {} {} {}", new Object[]{
+        log.info("order-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}", new Object[]{
                 DateFormatUtils.parseDateToDatetimeString(new Date()),
                 null,
                 orderItem.getNumber(),
@@ -139,7 +140,11 @@ public class SendGroupTicketAction implements JobRunner {
             throw new Exception("出票失败:" + r.getError());
         }
 
-        bookingOrderManager.syncSendingData(orderItemId);
+        SyncAccess syncAccess = getAccessKeys(order);
+        syncAccess.getDataMap()
+                .add("t_order_item", orderItemMapper.selectByPrimaryKey(orderItem.getId()));
+        syncAccess.loop();
+        sync(syncAccess.getDataMaps());
         return new Result(Action.EXECUTE_SUCCESS);
     }
 
