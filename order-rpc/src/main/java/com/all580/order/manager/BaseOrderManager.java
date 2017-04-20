@@ -2,7 +2,6 @@ package com.all580.order.manager;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.all580.ep.api.service.CoreEpAccessService;
 import com.all580.ep.api.service.CoreEpChannelService;
 import com.all580.ep.api.service.EpService;
 import com.all580.order.dao.OrderClearanceSerialMapper;
@@ -24,7 +23,6 @@ import com.all580.product.api.service.ProductSalesPlanRPCService;
 import com.framework.common.Result;
 import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.UUIDGenerator;
-import com.framework.common.synchronize.SynchronizeDataManager;
 import com.framework.common.util.CommonUtil;
 import com.github.ltsopensource.core.domain.Job;
 import lombok.extern.slf4j.Slf4j;
@@ -55,11 +53,6 @@ public class BaseOrderManager {
     private OrderClearanceSerialMapper orderClearanceSerialMapper;
     @Autowired
     private OrderMapper orderMapper;
-    @Autowired
-    private SynchronizeDataManager synchronizeDataManager;
-
-    @Autowired
-    private CoreEpAccessService coreEpAccessService;
     @Autowired
     private CoreEpChannelService coreEpChannelService;
     @Autowired
