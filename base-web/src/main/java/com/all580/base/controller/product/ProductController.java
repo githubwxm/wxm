@@ -276,6 +276,40 @@ public class ProductController extends BaseController {
         return result;
     }
 
+
+    /**
+     * 产品分销列表
+     * @param epId
+     * @param productName
+     * @param order
+     * @return
+     */
+    @RequestMapping(value = "sale/list/all")
+    @ResponseBody
+    public Result<Paginator<ProductAndSubInfo>> searchCanSaleListAll(@RequestParam("ep_id") Integer epId,
+                                                                  @RequestParam("product_name") String productName,
+                                                                  @RequestParam("is_supplier") Integer isSupplier,
+                                                                  @RequestParam("order_str") Integer order,
+                                                                  @RequestParam("record_start") Integer start,
+                                                                  @RequestParam("record_count") Integer count,
+                                                                  Integer type) {
+
+        String orderStr = null;
+        if (order != null) {
+            switch (CanSaleOrderState.getCanSaleOrderSate(order)) {
+                case CREATE_TIME_ASC: orderStr = CanSaleOrderState.CREATE_TIME_ASC.getValue(); break;
+                case CREATE_TIME_DESC: orderStr = CanSaleOrderState.CREATE_TIME_DESC.getValue(); break;
+                case PRODUCT_NAME_ASC: orderStr = CanSaleOrderState.PRODUCT_NAME_ASC.getValue(); break;
+                case PRODUCT_NAME_DESC: orderStr = CanSaleOrderState.PRODUCT_NAME_DESC.getValue(); break;
+            }
+        }
+        Result<Paginator<ProductAndSubInfo>> result = productService.searchSubProductListByProductName(epId, productName, isSupplier, orderStr, start, count,0);
+        // type 为int 类型 如不传修改地方太多， 这里传0  表示不传
+        return result;
+    }
+
+
+
     /**
      * 产品分销列表
      * @param epId
