@@ -107,4 +107,10 @@ public interface OrderMapper {
     int setStatus(@Param("id") Integer id, @Param("status") Integer status, @Param("before") Integer before);
 
     List<Map<String,Object>> selectByNumberItem(Long number);
+
+    /**
+     * 日志记录的查询
+     * @return
+     */
+    Map selectByLog(@Param("id") Integer id);
 }
