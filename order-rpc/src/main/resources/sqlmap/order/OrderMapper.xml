@@ -387,13 +387,13 @@
         toi.used_quantity,
         toi.refund_quantity,
         toi.quantity,
-        SUM(tro.quantity) refunding
+        IFNULL(SUM(tro.quantity),0) refunding
     FROM
         t_order_item toi
     LEFT JOIN t_refund_order tro ON tro.order_item_id = toi.id
     LEFT JOIN t_order o ON o.id = toi.order_id
     WHERE
-        tro.`status` IN (340, 342)
+        (tro.`status` IN (340, 342) OR tro.id is NULL)
     AND (
         toi.id = #{id}
         OR toi.order_id = #{id}
