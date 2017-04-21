@@ -123,6 +123,8 @@ public class OrderConstant {
         public static final String REFUND_TICKET = "REFUND_TICKET"; // 退票结果
         public static final String REFUND_SUCCESS = "REFUND_SUCCESS"; // 退订成功
         public static final String REFUND_ALI_PAY_AUDIT = "REFUND_ALI_PAY_AUDIT"; // 退款支付宝待确认
+        public static final String REFUND_MONEY_APPLY = "REFUND_MONEY_APPLY"; // 退款申请成功
+        public static final String REFUND_MONEY_AUDIT = "REFUND_MONEY_AUDIT"; // 退款申请审核
         public static final String REFUND_MONEY = "REFUND_MONEY"; // 退款结果
         public static final String ORDER_CANCEL = "ORDER_CANCEL"; // 订单取消
     }
