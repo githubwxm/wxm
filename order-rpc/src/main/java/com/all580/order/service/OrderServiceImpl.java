@@ -5,7 +5,11 @@ import com.all580.order.api.service.OrderService;
 import com.all580.order.dao.OrderClearanceSerialMapper;
 import com.all580.order.dao.OrderItemMapper;
 import com.all580.order.dao.OrderMapper;
+import com.all580.order.dto.SyncAccess;
 import com.all580.order.entity.Order;
+import com.all580.order.manager.BookingOrderManager;
+import com.all580.order.manager.RefundOrderManager;
+import com.all580.order.service.event.BasicSyncDataEvent;
 import com.framework.common.Result;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.util.CommonUtil;
@@ -14,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 import java.util.*;
 
@@ -25,7 +30,7 @@ import java.util.*;
  */
 @Service
 @Slf4j
-public class OrderServiceImpl implements OrderService {
+public class OrderServiceImpl extends BasicSyncDataEvent implements OrderService {
     @Autowired
     private OrderMapper orderMapper;
     @Autowired
@@ -34,6 +39,8 @@ public class OrderServiceImpl implements OrderService {
     private OrderClearanceSerialMapper orderClearanceSerialMapper;
     @Autowired
     private EpService epService;
+    @Autowired
+    private BookingOrderManager bookingOrderManager;
 
     @Value("${order.pay.timeout}")
     private Integer payTimeOut;
@@ -170,5 +177,22 @@ public class OrderServiceImpl implements OrderService {
         Result<Integer[]> result = new Result<>(true);
         result.put(new Integer[]{auditTimeOut == null ? 0 : auditTimeOut, payTimeOut == null ? 0 : payTimeOut});
         return result;
+    }
+
+    /**
+     * 同步订单数据
+     * @param number     订单号
+     * @param accessKeys 同步运营平台(可选)
+     * @param tables 同步的表(可选)
+     * @return
+     */
+    @Override
+    public Result<?> syncOrder(long number, String[] accessKeys, String[] tables) {
+        Order order = orderMapper.selectBySN(number);
+        Assert.notNull(order, "订单不存在");
+        SyncAccess syncAccess = getAccessKeys(order);
+        bookingOrderManager.addAllOrderTableSync(syncAccess, accessKeys, tables);
+        sync(syncAccess.getDataMaps());
+        return new Result<>(true);
     }
 }

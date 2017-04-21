@@ -162,4 +162,9 @@ public class OrderConstant {
         public static final String AUDIT_PASS_SUCCESS = "CA20000100";
         public static final String AUDIT_REJECT_SUCCESS = "CA20000200";
     }
+
+    public static String[] ORDER_TABLES = new String[]{
+            "t_order", "t_order_item", "t_order_item_detail", "t_refund_order",
+            "t_refund_serial", "t_refund_visitor", "t_shipping", "t_visitor", "t_order_clearance_detail",
+            "t_order_clearance_serial", "t_ma_send_response", "t_clearance_washed_serial", "t_refund_account", "t_order_item_account"};
 }

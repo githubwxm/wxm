@@ -5,14 +5,9 @@ import com.alibaba.fastjson.JSONObject;
 import com.all580.ep.api.service.CoreEpChannelService;
 import com.all580.ep.api.service.EpService;
 import com.all580.order.api.OrderConstant;
-import com.all580.order.dao.OrderClearanceSerialMapper;
-import com.all580.order.dao.OrderItemAccountMapper;
-import com.all580.order.dao.OrderItemMapper;
-import com.all580.order.dao.OrderMapper;
-import com.all580.order.entity.Order;
-import com.all580.order.entity.OrderClearanceSerial;
-import com.all580.order.entity.OrderItem;
-import com.all580.order.entity.OrderItemAccount;
+import com.all580.order.dao.*;
+import com.all580.order.dto.SyncAccess;
+import com.all580.order.entity.*;
 import com.all580.order.util.AccountUtil;
 import com.all580.payment.api.conf.PaymentConstant;
 import com.all580.payment.api.model.BalanceChangeInfo;
@@ -25,9 +20,11 @@ import com.all580.product.api.service.ProductSalesPlanRPCService;
 import com.framework.common.Result;
 import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.UUIDGenerator;
+import com.framework.common.synchronize.SynchronizeDataMap;
 import com.framework.common.util.CommonUtil;
 import com.github.ltsopensource.core.domain.Job;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -61,6 +58,26 @@ public class BaseOrderManager {
     private ProductSalesPlanRPCService productSalesPlanRPCService;
     @Autowired
     private OrderItemMapper orderItemMapper;
+    @Autowired
+    private OrderItemDetailMapper orderItemDetailMapper;
+    @Autowired
+    private RefundOrderMapper refundOrderMapper;
+    @Autowired
+    private RefundAccountMapper refundAccountMapper;
+    @Autowired
+    private RefundSerialMapper refundSerialMapper;
+    @Autowired
+    private RefundVisitorMapper refundVisitorMapper;
+    @Autowired
+    private ShippingMapper shippingMapper;
+    @Autowired
+    private VisitorMapper visitorMapper;
+    @Autowired
+    private OrderClearanceDetailMapper orderClearanceDetailMapper;
+    @Autowired
+    private MaSendResponseMapper maSendResponseMapper;
+    @Autowired
+    private ClearanceWashedSerialMapper clearanceWashedSerialMapper;
 
     @Value("${task.tracker}")
     private String taskTracker;
@@ -388,5 +405,85 @@ public class BaseOrderManager {
                 result.get("refunding"),
                 memo
         };
+    }
+
+    /**
+     * 同步订单数据
+     * @param syncAccess
+     * @param accessKeys 要同步的平台 可选
+     * @param tables 要同步的表 可选
+     */
+    public void addAllOrderTableSync(SyncAccess syncAccess, String[] accessKeys, String[] tables) {
+        SynchronizeDataMap dataMap = syncAccess.getDataMap();
+        Order order = syncAccess.getOrder();
+        tables = tables == null || tables.length == 0 ? OrderConstant.ORDER_TABLES : tables;
+        if (tables != null && tables.length > 0) {
+            for (String table : tables) {
+                if (ArrayUtils.contains(tables, table)) {
+                    switch (table) {
+                        case "t_order":
+                            dataMap.add("t_order", order);
+                            break;
+                        case "t_order_item":
+                            dataMap.add("t_order_item", orderItemMapper.selectByOrderId(order.getId()));
+                            break;
+                        case "t_order_item_detail":
+                            dataMap.add("t_order_item_detail", orderItemDetailMapper.selectByOrderId(order.getId()));
+                            break;
+                        case "t_refund_order":
+                            dataMap.add("t_refund_order", refundOrderMapper.selectByOrder(order.getId()));
+                            break;
+                        case "t_refund_serial":
+                            dataMap.add("t_refund_serial", refundSerialMapper.selectRefundSerialByOrder(order.getId()));
+                            break;
+                        case "t_refund_visitor":
+                            dataMap.add("t_refund_visitor", refundVisitorMapper.selectByOrderId(order.getId()));
+                            break;
+                        case "t_shipping":
+                            dataMap.add("t_shipping", shippingMapper.selectByOrder(order.getId()));
+                            break;
+                        case "t_visitor":
+                            dataMap.add("t_visitor", visitorMapper.selectByOrder(order.getId()));
+                            break;
+                        case "t_order_clearance_detail":
+                            dataMap.add("t_order_clearance_detail", orderClearanceDetailMapper.selectByOrder(order.getId()));
+                            break;
+                        case "t_order_clearance_serial":
+                            dataMap.add("t_order_clearance_serial", orderClearanceSerialMapper.selectByOrder(order.getId()));
+                            break;
+                        case "t_ma_send_response":
+                            dataMap.add("t_ma_send_response", maSendResponseMapper.selectByOrder(order.getId()));
+                            break;
+                        case "t_clearance_washed_serial":
+                            dataMap.add("t_clearance_washed_serial", clearanceWashedSerialMapper.selectByOrder(order.getId()));
+                            break;
+                    }
+                }
+            }
+        }
+        for (Integer coreEpId : syncAccess.getAccessKeyMap().keySet()) {
+            if (accessKeys != null && accessKeys.length > 0 && !ArrayUtils.contains(accessKeys, syncAccess.getAccessKeyMap().get(coreEpId))) {
+                continue;
+            }
+            List<RefundAccount> refundAccounts = refundAccountMapper.selectByOrderIdAndCore(order.getId(), coreEpId);
+            List<OrderItemAccount> accounts = orderItemAccountMapper.selectByOrderAndCore(order.getId(), coreEpId);
+            if (coreEpId.intValue() == syncAccess.getCoreEpId()) {
+                if (ArrayUtils.contains(tables, "t_refund_account")) {
+                    dataMap.add("t_refund_account", refundAccounts);
+                }
+                if (ArrayUtils.contains(tables, "t_order_item_account")) {
+                    dataMap.add("t_order_item_account", accounts);
+                }
+            } else {
+                SynchronizeDataMap copy = syncAccess.copy(coreEpId);
+                if (ArrayUtils.contains(tables, "t_refund_account")) {
+                    copy.add("t_refund_account", refundAccounts);
+                }
+                if (ArrayUtils.contains(tables, "t_order_item_account")) {
+                    copy.add("t_order_item_account", accounts);
+                }
+                syncAccess.addDataMap(copy);
+            }
+        }
     }
 }

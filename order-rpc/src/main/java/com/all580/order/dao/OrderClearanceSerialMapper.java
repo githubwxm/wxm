@@ -113,4 +113,11 @@ public interface OrderClearanceSerialMapper {
     int selectItemQuantityCount(@Param("order_item_id") Integer order_item_id);
 
     List<OrderClearanceSerial> selectItemClearanceSerial(@Param("order_item_id") Integer order_item_id);
+
+    /**
+     * 根据订单号查询
+     * @param orderId
+     * @return
+     */
+    List<OrderClearanceSerial> selectByOrder(@Param("orderId") Integer orderId);
 }

@@ -64,4 +64,12 @@ public interface RefundAccountMapper {
     List<RefundAccount> selectByRefundId(@Param("refundId") Integer refundId);
 
     List<RefundAccount> selectByRefundIdAndCore(@Param("refundId") Integer refundId, @Param("coreEpId") Integer coreEpId);
+
+    /**
+     * 根据订单号和平台商查询退订分账
+     * @param orderId
+     * @param coreEpId
+     * @return
+     */
+    List<RefundAccount> selectByOrderIdAndCore(@Param("orderId") Integer orderId, @Param("coreEpId") Integer coreEpId);
 }

@@ -112,4 +112,13 @@ public interface OrderService {
     Result settledChannelBill(Map params);
 
     Result<Integer[]> getCancelTimeout();
+
+    /**
+     * 同步订单数据
+     * @param number 订单号
+     * @param accessKeys 同步运营平台(可选)
+     * @param tables 同步的表(可选)
+     * @return
+     */
+    Result<?> syncOrder(long number, String[] accessKeys, String[] tables);
 }

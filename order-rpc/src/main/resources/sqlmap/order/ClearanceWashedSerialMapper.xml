@@ -206,4 +206,11 @@
         SELECT * FROM t_clearance_washed_serial
         WHERE `serial_no` = #{sn,jdbcType=VARCHAR}
     </select>
+
+    <select id="selectByOrder" resultMap="BaseResultMap">
+        SELECT tcws.* FROM t_clearance_washed_serial tcws
+        LEFT JOIN t_order_clearance_serial tocs ON tocs.serial_no = tcws.clearance_serial_no
+        LEFT JOIN t_order_item toi ON toi.id = tocs.order_item_id
+        WHERE toi.order_id = #{orderId}
+    </select>
 </mapper>

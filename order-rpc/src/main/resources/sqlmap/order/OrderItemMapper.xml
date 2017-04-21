@@ -524,7 +524,7 @@
     </select>
 
     <select id="selectByOrderId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-        SELECT * FROM t_order_item toi
+        SELECT toi.* FROM t_order_item toi
         WHERE toi.order_id = #{orderId,jdbcType=INTEGER}
     </select>
 

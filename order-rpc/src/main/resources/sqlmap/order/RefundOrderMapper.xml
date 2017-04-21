@@ -467,4 +467,10 @@
     )
     limit 20
   </select>
+
+  <select id="selectByOrder" resultMap="BaseResultMap">
+    SELECT tro.* FROM t_refund_order tro
+    LEFT JOIN t_order_item toi ON toi.id = tro.order_item_id
+    WHERE toi.order_id = #{orderId}
+  </select>
 </mapper>
