@@ -534,7 +534,7 @@ public class RefundOrderManager extends BaseOrderManager {
                 log.warn("*****退票发起部分成功*****");
             }
         }
-        log.info(OrderConstant.LogOperateCode.NAME, orderLog(orderItem.getId(), refundSerial.getCreate_time(),
+        log.info(OrderConstant.LogOperateCode.NAME, orderLog(orderItem.getId(),
                 0, "ORDER", OrderConstant.LogOperateCode.SEND_REFUND_TICKETING,
                 refundOrder.getQuantity(), "退票发起"));
     }

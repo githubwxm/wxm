@@ -48,7 +48,7 @@ public class RefundTicketEventImpl implements RefundTicketEvent {
         RefundOrder refundOrder = refundOrderMapper.selectByPrimaryKey(content.getRefundId());
         Assert.notNull(refundOrder, "退订订单不存在");
         OrderItem orderItem = orderItemMapper.selectByPrimaryKey(refundOrder.getOrder_item_id());
-        log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(orderItem.getId(), createDate,
+        log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(orderItem.getId(),
                 0, "ORDER_EVENT", OrderConstant.LogOperateCode.REFUND_TICKET,
                 refundOrder.getQuantity(), String.format("退票成功:%s", refundOrder.getNumber())));
         if (content.isStatus()) {

@@ -103,7 +103,7 @@ public class SendTicketAction extends BasicSyncDataEvent implements JobRunner {
         }
         sendTicketParams.setVisitors(contacts);
         com.framework.common.Result r = voucherRPCService.sendTicket(orderItem.getEp_ma_id(), sendTicketParams);
-        log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(orderItem.getId(), new Date(),
+        log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(orderItem.getId(),
                 0, "ORDER_ACTION", OrderConstant.LogOperateCode.SEND_TICKETING,
                 orderItem.getQuantity(), String.format("散客出票任务:发送状态:%s", String.valueOf(r.isSuccess()))));
 

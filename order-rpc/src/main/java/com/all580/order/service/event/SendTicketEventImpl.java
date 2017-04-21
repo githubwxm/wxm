@@ -40,7 +40,7 @@ public class SendTicketEventImpl implements SendTicketEvent {
         if (item.getPro_type() == ProductConstants.ProductType.HOTEL) {
             smsManager.sendHotelSendTicket(item);
         }
-        log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(item.getId(), createDate,
+        log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(item.getId(),
                 0, "ORDER_EVENT", OrderConstant.LogOperateCode.SENDED,
                 item.getQuantity(), "已出票"));
         return new Result(true);
