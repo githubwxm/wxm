@@ -609,7 +609,7 @@ public class LockTransactionManager {
 
         // 退款
         Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
-        refundOrderManager.refundMoney(order, refundOrder.getMoney(), String.valueOf(refundOrder.getNumber()), refundOrder);
+        refundOrderManager.refundMoney(order, refundOrder.getMoney(), String.valueOf(refundOrder.getNumber()), refundOrder, true);
 
         return new Result(true);
     }
@@ -653,7 +653,7 @@ public class LockTransactionManager {
 
         // 退款
         Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
-        refundOrderManager.refundMoney(order, refundOrder.getMoney(), String.valueOf(refundOrder.getNumber()), refundOrder);
+        refundOrderManager.refundMoney(order, refundOrder.getMoney(), String.valueOf(refundOrder.getNumber()), refundOrder, true);
 
         return new Result(true);
     }
