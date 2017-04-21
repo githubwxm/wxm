@@ -68,4 +68,11 @@ public interface RefundSerialMapper {
      * @return
      */
     RefundSerial selectByRefundOrder(@Param("refundId") Integer refundId);
+
+    /**
+     * 根据订单号查询退票流水
+     * @param orderId
+     * @return
+     */
+    List<RefundSerial> selectRefundSerialByOrder(@Param("orderId") Integer orderId);
 }

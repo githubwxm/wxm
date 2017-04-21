@@ -1,6 +1,9 @@
 package com.all580.order.dao;
 
 import com.all580.order.entity.ClearanceWashedSerial;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 public interface ClearanceWashedSerialMapper {
     /**
@@ -57,4 +60,11 @@ public interface ClearanceWashedSerialMapper {
      * @return
      */
     ClearanceWashedSerial selectBySn(String sn);
+
+    /**
+     * 根据订单号查询
+     * @param orderId
+     * @return
+     */
+    List<ClearanceWashedSerial> selectByOrder(@Param("orderId") Integer orderId);
 }

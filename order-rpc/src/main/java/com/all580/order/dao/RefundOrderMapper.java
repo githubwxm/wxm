@@ -114,4 +114,11 @@ public interface RefundOrderMapper {
      * @return
      */
     List<RefundOrder> selectRefundMoneyOrder();
+
+    /**
+     * 根据订单号查询所有退订订单
+     * @param orderId
+     * @return
+     */
+    List<RefundOrder> selectByOrder(@Param("orderId") Integer orderId);
 }

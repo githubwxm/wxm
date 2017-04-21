@@ -78,4 +78,11 @@ public interface MaSendResponseMapper {
      * @return
      */
     MaSendResponse selectByVisitorId(@Param("itemId") Integer itemId, @Param("visitorId") Integer visitorId, @Param("epMaId") Integer epMaId);
+
+    /**
+     * 根据订单号查询
+     * @param orderId
+     * @return
+     */
+    List<MaSendResponse> selectByOrder(@Param("orderId") Integer orderId);
 }

@@ -83,4 +83,11 @@ public interface RefundVisitorMapper {
      * @return
      */
     RefundVisitor selectByRefundIdAndVisitorId(@Param("refundId") Integer refundId, @Param("visitorId") Integer visitorId);
+
+    /**
+     * 根据订单查询退订游客信息
+     * @param orderId
+     * @return
+     */
+    List<RefundVisitor> selectByOrderId(@Param("orderId") Integer orderId);
 }

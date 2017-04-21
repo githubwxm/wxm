@@ -185,4 +185,10 @@
         WHERE `refund_order_id` = #{refundId,jdbcType=INTEGER}
         AND `visitor_id` = #{visitorId,jdbcType=INTEGER}
     </select>
+  <select id="selectByOrderId" resultMap="BaseResultMap">
+    SELECT trv.* FROM t_refund_visitor trv
+    LEFT JOIN t_refund_order tro ON tro.id = trv.refund_order_id
+    LEFT JOIN t_order_item toi ON toi.id = tro.order_item_id
+    WHERE toi.order_id = #{orderId}
+  </select>
 </mapper>

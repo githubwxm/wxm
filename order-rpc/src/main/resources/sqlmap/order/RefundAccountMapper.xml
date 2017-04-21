@@ -193,4 +193,11 @@
         WHERE `refund_order_id` = #{refundId,jdbcType=INTEGER}
         and `core_ep_id` = #{coreEpId,jdbcType=INTEGER}
     </select>
+
+    <select id="selectByOrderIdAndCore" resultMap="BaseResultMap">
+        SELECT tra.* FROM t_refund_account tra
+        LEFT JOIN t_refund_order tro ON tro.id = tra.refund_order_id
+        LEFT JOIN t_order_item toi ON toi.id = tro.order_item_id
+        WHERE toi.order_id = #{orderId} and tra.core_ep_id = #{coreEpId}
+    </select>
 </mapper>

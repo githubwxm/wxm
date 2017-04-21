@@ -194,4 +194,11 @@
         SELECT * FROM t_refund_serial
         WHERE `refund_order_id` = #{refundId,jdbcType=INTEGER}
     </select>
+
+  <select id="selectRefundSerialByOrder" resultMap="BaseResultMap">
+    SELECT trs.* FROM t_refund_serial trs
+    LEFT JOIN t_refund_order tro ON tro.id = trs.refund_order_id
+    LEFT JOIN t_order_item toi ON toi.id = tro.order_item_id
+    WHERE toi.order_id = #{orderId}
+  </select>
 </mapper>
