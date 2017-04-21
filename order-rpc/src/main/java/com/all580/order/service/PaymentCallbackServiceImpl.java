@@ -1,17 +1,13 @@
 package com.all580.order.service;
 
-import com.all580.ep.api.conf.EpConstant;
 import com.all580.order.api.OrderConstant;
 import com.all580.order.api.service.PaymentCallbackService;
 import com.all580.order.dao.OrderMapper;
 import com.all580.order.entity.Order;
-import com.all580.order.manager.BookingOrderManager;
 import com.all580.order.manager.LockTransactionManager;
 import com.framework.common.Result;
 import com.framework.common.distributed.lock.DistributedLockTemplate;
 import com.framework.common.distributed.lock.DistributedReentrantLock;
-import com.framework.common.lang.DateFormatUtils;
-import com.framework.common.lang.JsonUtils;
 import com.framework.common.outside.JobAspect;
 import com.framework.common.outside.JobTask;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +16,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,8 +28,6 @@ import java.util.Map;
 @Service
 @Slf4j
 public class PaymentCallbackServiceImpl implements PaymentCallbackService {
-    @Autowired
-    private BookingOrderManager bookingOrderManager;
     @Autowired
     private LockTransactionManager lockTransactionManager;
 
@@ -64,17 +57,6 @@ public class PaymentCallbackServiceImpl implements PaymentCallbackService {
             orderId = order.getId();
             lockKey = String.valueOf(orderId);
         }
-        log.info("order-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}", new Object[]{
-                DateFormatUtils.parseDateToDatetimeString(new Date()),
-                ordCode,
-                null,
-                OrderConstant.LogOperateCode.SYSTEM,
-                0,
-                "PAYMENT",
-                OrderConstant.LogOperateCode.PAID_SUCCESS,
-                0,
-                String.format("订单支付回调:流水:%s,交易号:%s", serialNum, outTransId)
-        });
 
         DistributedReentrantLock lock = distributedLockTemplate.execute(lockKey, lockTimeOut);
 
@@ -111,18 +93,6 @@ public class PaymentCallbackServiceImpl implements PaymentCallbackService {
             log.warn("退款回调:订单不存在");
             return new Result(false, "订单号不存在");
         }
-
-        log.info("order-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}", new Object[]{
-                DateFormatUtils.parseDateToDatetimeString(new Date()),
-                order.getNumber(),
-                null,
-                OrderConstant.LogOperateCode.SYSTEM,
-                0,
-                "PAYMENT",
-                success ? OrderConstant.LogOperateCode.REFUND_MONEY_SUCCESS : OrderConstant.LogOperateCode.REFUND_MONEY_FAIL,
-                0,
-                String.format("订单退款回调:流水:%s,交易号:%s", serialNum, outTransId)
-        });
 
         DistributedReentrantLock lock = distributedLockTemplate.execute(String.valueOf(order.getId()), lockTimeOut);
 

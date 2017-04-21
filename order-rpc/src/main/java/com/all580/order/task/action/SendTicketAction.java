@@ -16,8 +16,6 @@ import com.all580.product.api.consts.ProductConstants;
 import com.all580.voucher.api.conf.VoucherConstant;
 import com.all580.voucher.api.model.SendTicketParams;
 import com.all580.voucher.api.service.VoucherRPCService;
-import com.framework.common.lang.DateFormatUtils;
-import com.framework.common.lang.JsonUtils;
 import com.framework.common.validate.ParamsMapValidate;
 import com.framework.common.validate.ValidRule;
 import com.github.ltsopensource.core.domain.Action;
@@ -105,17 +103,10 @@ public class SendTicketAction extends BasicSyncDataEvent implements JobRunner {
         }
         sendTicketParams.setVisitors(contacts);
         com.framework.common.Result r = voucherRPCService.sendTicket(orderItem.getEp_ma_id(), sendTicketParams);
-        log.info("order-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}", new Object[]{
-                DateFormatUtils.parseDateToDatetimeString(new Date()),
-                null,
-                orderItem.getNumber(),
-                OrderConstant.LogOperateCode.SYSTEM,
-                0,
-                "ORDER_ACTION",
-                OrderConstant.LogOperateCode.SEND_TICKETING,
-                orderItem.getQuantity(),
-                String.format("散客出票任务:发送状态:%s", String.valueOf(r.isSuccess()))
-        });
+        log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(orderItem.getId(), new Date(),
+                0, "ORDER_ACTION", OrderConstant.LogOperateCode.SEND_TICKETING,
+                orderItem.getQuantity(), String.format("散客出票任务:发送状态:%s", String.valueOf(r.isSuccess()))));
+
         if (!r.isSuccess()) {
             log.warn("子订单:{},出票失败:{}", orderItem.getNumber(), r.getError());
             throw new Exception("出票失败:" + r.getError());

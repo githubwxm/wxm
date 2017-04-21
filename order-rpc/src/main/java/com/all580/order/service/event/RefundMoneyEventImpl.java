@@ -7,6 +7,7 @@ import com.all580.order.dao.OrderMapper;
 import com.all580.order.dao.RefundOrderMapper;
 import com.all580.order.entity.Order;
 import com.all580.order.entity.RefundOrder;
+import com.all580.order.manager.RefundOrderManager;
 import com.all580.order.manager.SmsManager;
 import com.all580.payment.api.conf.PaymentConstant;
 import com.framework.common.Result;
@@ -14,6 +15,7 @@ import com.framework.common.event.MnsEvent;
 import com.framework.common.event.MnsEventAspect;
 import com.framework.common.outside.JobAspect;
 import com.framework.common.outside.JobTask;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -30,6 +32,7 @@ import java.util.Map;
  * @date 2017/2/5 11:10
  */
 @Service
+@Slf4j
 public class RefundMoneyEventImpl implements RefundMoneyEvent {
     @Autowired
     private RefundOrderMapper refundOrderMapper;
@@ -42,6 +45,8 @@ public class RefundMoneyEventImpl implements RefundMoneyEvent {
     private MnsEventAspect eventManager;
     @Autowired
     private JobAspect jobManager;
+    @Autowired
+    private RefundOrderManager refundOrderManager;
 
     @Override
     @MnsEvent
@@ -51,6 +56,10 @@ public class RefundMoneyEventImpl implements RefundMoneyEvent {
         Assert.notNull(refundOrder, "退订订单不存在");
         Order order = orderMapper.selectByRefundSn(refundOrder.getNumber());
         Assert.notNull(order, "订单不存在");
+
+        log.info(OrderConstant.LogOperateCode.NAME, refundOrderManager.orderLog(order.getId(), createDate,
+                0, "ORDER_EVENT", content.isSuccess() ? OrderConstant.LogOperateCode.REFUND_MONEY_SUCCESS : OrderConstant.LogOperateCode.REFUND_MONEY_FAIL,
+                0, "订单退款回调"));
 
         if (content.isSuccess()) {
             // 发送短信 退款

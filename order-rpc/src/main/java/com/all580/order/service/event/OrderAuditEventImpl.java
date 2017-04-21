@@ -1,5 +1,6 @@
 package com.all580.order.service.event;
 
+import com.all580.order.api.OrderConstant;
 import com.all580.order.api.model.OrderAuditEventParam;
 import com.all580.order.api.service.event.OrderAuditEvent;
 import com.all580.order.dao.OrderItemMapper;
@@ -48,6 +49,10 @@ public class OrderAuditEventImpl implements OrderAuditEvent {
         if (order == null) {
             throw new ApiException("订单不存在");
         }
+        log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(item.getId(), item.getAudit_time(),
+                item.getAudit_user_id(), item.getAudit_user_name(),
+                content.isStatus() ? OrderConstant.LogOperateCode.AUDIT_PASS_SUCCESS : OrderConstant.LogOperateCode.AUDIT_REJECT_SUCCESS,
+                item.getQuantity(), "订单预定审核"));
         if (content.isStatus()) {
             boolean allAudit = bookingOrderManager.isOrderAllAudit(item.getOrder_id());
             if (allAudit) {

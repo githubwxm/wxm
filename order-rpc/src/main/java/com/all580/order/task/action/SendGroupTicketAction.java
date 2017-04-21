@@ -124,21 +124,14 @@ public class SendGroupTicketAction extends BasicSyncDataEvent implements JobRunn
         }
         sendGroupTicketParams.setVisitors(contacts);
         com.framework.common.Result r = voucherRPCService.sendGroupTicket(orderItem.getEp_ma_id(), sendGroupTicketParams);
-        log.info("order-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}", new Object[]{
-                DateFormatUtils.parseDateToDatetimeString(new Date()),
-                null,
-                orderItem.getNumber(),
-                OrderConstant.LogOperateCode.SYSTEM,
-                0,
-                "ORDER_ACTION",
-                OrderConstant.LogOperateCode.SEND_TICKETING,
-                orderItem.getQuantity(),
-                String.format("团队出票任务:发送状态:%s", String.valueOf(r.isSuccess()))
-        });
+        Object[] orderLog = bookingOrderManager.orderLog(orderItem.getId(), new Date(),
+                0, "ORDER_ACTION", OrderConstant.LogOperateCode.SEND_TICKETING,
+                orderItem.getQuantity(), String.format("团队出票任务:发送状态:%s", String.valueOf(r.isSuccess())));
         if (!r.isSuccess()) {
-            log.warn("子订单:{},出票失败:{}", orderItem.getNumber(), r.getError());
+            log.error(OrderConstant.LogOperateCode.NAME, orderLog);
             throw new Exception("出票失败:" + r.getError());
         }
+        log.info(OrderConstant.LogOperateCode.NAME, orderLog);
 
         SyncAccess syncAccess = getAccessKeys(order);
         syncAccess.getDataMap()
