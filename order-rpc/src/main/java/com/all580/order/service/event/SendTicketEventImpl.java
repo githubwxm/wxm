@@ -4,11 +4,10 @@ import com.all580.order.api.OrderConstant;
 import com.all580.order.api.service.event.SendTicketEvent;
 import com.all580.order.dao.OrderItemMapper;
 import com.all580.order.entity.OrderItem;
+import com.all580.order.manager.BookingOrderManager;
 import com.all580.order.manager.SmsManager;
 import com.all580.product.api.consts.ProductConstants;
 import com.framework.common.Result;
-import com.framework.common.lang.DateFormatUtils;
-import com.framework.common.lang.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,6 +28,8 @@ public class SendTicketEventImpl implements SendTicketEvent {
     private OrderItemMapper orderItemMapper;
     @Autowired
     private SmsManager smsManager;
+    @Autowired
+    private BookingOrderManager bookingOrderManager;
 
     @Override
     public Result process(String msgId, Integer content, Date createDate) {
@@ -39,17 +40,9 @@ public class SendTicketEventImpl implements SendTicketEvent {
         if (item.getPro_type() == ProductConstants.ProductType.HOTEL) {
             smsManager.sendHotelSendTicket(item);
         }
-        log.info("order-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}", new Object[]{
-                DateFormatUtils.parseDateToDatetimeString(createDate),
-                null,
-                item.getNumber(),
-                OrderConstant.LogOperateCode.SYSTEM,
-                0,
-                "ORDER_EVENT",
-                OrderConstant.LogOperateCode.SENDED,
-                item.getQuantity(),
-                "已出票"
-        });
+        log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(item.getId(), createDate,
+                0, "ORDER_EVENT", OrderConstant.LogOperateCode.SENDED,
+                item.getQuantity(), "已出票"));
         return new Result(true);
     }
 }

@@ -21,7 +21,6 @@ import com.all580.voucher.api.service.VoucherRPCService;
 import com.framework.common.Result;
 import com.framework.common.event.MnsEvent;
 import com.framework.common.event.MnsEventAspect;
-import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.lang.UUIDGenerator;
 import lombok.extern.slf4j.Slf4j;
@@ -535,17 +534,9 @@ public class RefundOrderManager extends BaseOrderManager {
                 log.warn("*****退票发起部分成功*****");
             }
         }
-        log.info("order-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}", new Object[]{
-                DateFormatUtils.parseDateToDatetimeString(new Date()),
-                null,
-                orderItem.getNumber(),
-                OrderConstant.LogOperateCode.SYSTEM,
-                0,
-                "ORDER",
-                OrderConstant.LogOperateCode.SEND_REFUND_TICKETING,
-                refundOrder.getQuantity(),
-                "退票发起"
-        });
+        log.info(OrderConstant.LogOperateCode.NAME, orderLog(orderItem.getId(), new Date(),
+                0, "ORDER", OrderConstant.LogOperateCode.SEND_REFUND_TICKETING,
+                refundOrder.getQuantity(), "退票发起"));
     }
 
     /**
@@ -560,17 +551,9 @@ public class RefundOrderManager extends BaseOrderManager {
     @MnsEvent
     public Result refundMoney(Order order, int money, String sn, RefundOrder refundOrder, boolean isApply) {
         if (isApply) {
-            log.info("order-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}", new Object[]{
-                    DateFormatUtils.parseDateToDatetimeString(new Date()),
-                    order.getNumber(),
-                    null,
-                    OrderConstant.LogOperateCode.SYSTEM,
-                    0,
-                    "ORDER",
-                    OrderConstant.LogOperateCode.REFUND_MONEY_APPLY,
-                    refundOrder.getQuantity(),
-                    String.format("退订退款申请:退订订单:%s", refundOrder.getNumber())
-            });
+            log.info(OrderConstant.LogOperateCode.NAME, orderLog(order.getId(), new Date(),
+                    0, "ORDER", OrderConstant.LogOperateCode.REFUND_MONEY_APPLY,
+                    refundOrder.getQuantity(), String.format("退订退款申请:退订订单:%s", refundOrder.getNumber())));
         }
         // 需要审核
         if (refundOrder.getAudit_money() == ProductConstants.RefundMoneyAudit.YES &&

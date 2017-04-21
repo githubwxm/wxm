@@ -25,7 +25,6 @@ import com.framework.common.distributed.lock.DistributedLockTemplate;
 import com.framework.common.distributed.lock.DistributedReentrantLock;
 import com.framework.common.event.MnsEvent;
 import com.framework.common.event.MnsEventAspect;
-import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.outside.JobAspect;
 import com.framework.common.outside.JobTask;
@@ -206,17 +205,10 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             data.put("t_order_item", orderItems);
             result.putExt(Result.SYNC_DATA, JsonUtils.obj2map(data));
         }
-        log.info("order-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}", new Object[]{
-                DateFormatUtils.parseDateToDatetimeString(order.getCreate_time()),
-                order.getNumber(),
-                null,
-                OrderConstant.LogOperateCode.SYSTEM,
-                createOrder.getEpId(),
-                createOrder.getEpName(),
-                OrderConstant.LogOperateCode.CREATE_SUCCESS,
-                first.getQuantity(),
-                "订单创建成功"
-        });
+
+        log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(order.getId(), order.getCreate_time(),
+                order.getBuy_ep_id(), order.getBuy_ep_name(), OrderConstant.LogOperateCode.CREATE_SUCCESS,
+                null, String.format("订单创建成功:%s", JsonUtils.toJson(params))));
         return result;
     }
 

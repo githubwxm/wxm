@@ -7,10 +7,9 @@ import com.all580.order.dao.OrderItemMapper;
 import com.all580.order.dao.RefundOrderMapper;
 import com.all580.order.entity.OrderItem;
 import com.all580.order.entity.RefundOrder;
+import com.all580.order.manager.BookingOrderManager;
 import com.all580.order.manager.SmsManager;
 import com.framework.common.Result;
-import com.framework.common.lang.DateFormatUtils;
-import com.framework.common.lang.JsonUtils;
 import com.framework.common.outside.JobAspect;
 import com.framework.common.outside.JobTask;
 import lombok.extern.slf4j.Slf4j;
@@ -40,6 +39,8 @@ public class RefundTicketEventImpl implements RefundTicketEvent {
     private SmsManager smsManager;
     @Autowired
     private JobAspect jobManager;
+    @Autowired
+    private BookingOrderManager bookingOrderManager;
 
     @Override
     @JobTask
@@ -47,17 +48,9 @@ public class RefundTicketEventImpl implements RefundTicketEvent {
         RefundOrder refundOrder = refundOrderMapper.selectByPrimaryKey(content.getRefundId());
         Assert.notNull(refundOrder, "退订订单不存在");
         OrderItem orderItem = orderItemMapper.selectByPrimaryKey(refundOrder.getOrder_item_id());
-        log.info("order-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}", new Object[]{
-                DateFormatUtils.parseDateToDatetimeString(createDate),
-                null,
-                orderItem.getNumber(),
-                OrderConstant.LogOperateCode.SYSTEM,
-                0,
-                "ORDER",
-                OrderConstant.LogOperateCode.REFUND_TICKET,
-                refundOrder.getQuantity(),
-                String.format("退票成功:%s", refundOrder.getNumber())
-        });
+        log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(orderItem.getId(), createDate,
+                0, "ORDER_EVENT", OrderConstant.LogOperateCode.REFUND_TICKET,
+                refundOrder.getQuantity(), String.format("退票成功:%s", refundOrder.getNumber())));
         if (content.isStatus()) {
             // 还库存 记录任务
             Map<String, String> jobParams = new HashMap<>();

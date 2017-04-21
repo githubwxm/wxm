@@ -4,8 +4,10 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.all580.ep.api.service.CoreEpChannelService;
 import com.all580.ep.api.service.EpService;
+import com.all580.order.api.OrderConstant;
 import com.all580.order.dao.OrderClearanceSerialMapper;
 import com.all580.order.dao.OrderItemAccountMapper;
+import com.all580.order.dao.OrderItemMapper;
 import com.all580.order.dao.OrderMapper;
 import com.all580.order.entity.Order;
 import com.all580.order.entity.OrderClearanceSerial;
@@ -57,6 +59,8 @@ public class BaseOrderManager {
     private CoreEpChannelService coreEpChannelService;
     @Autowired
     private ProductSalesPlanRPCService productSalesPlanRPCService;
+    @Autowired
+    private OrderItemMapper orderItemMapper;
 
     @Value("${task.tracker}")
     private String taskTracker;
@@ -353,5 +357,37 @@ public class BaseOrderManager {
             auditMoney = getAuditConfig(orderItem.getPro_sub_id(), order.getPayee_ep_id())[1];
         }
         return new int[]{auditTicket, auditMoney};
+    }
+
+    /**
+     * 返回记录订单日志数据
+     * @param id
+     * @param date
+     * @param operateId
+     * @param operateName
+     * @param code
+     * @param qty
+     * @param memo
+     * @return
+     */
+    public Object[] orderLog(Integer id, Date date, Object operateId, Object operateName, String code, Integer qty, String memo) {
+        if (id == null) {
+            throw new ApiException("记录日志异常:没有订单号");
+        }
+        Map result = orderMapper.selectByLog(id);
+        return new Object[]{
+                DateFormatUtils.parseDateToDatetimeString(date),
+                result.get("order_number"),
+                result.get("item_number"),
+                OrderConstant.LogOperateCode.SYSTEM,
+                operateId,
+                operateName,
+                code,
+                qty == null && (code.equals(OrderConstant.LogOperateCode.CREATE_SUCCESS) || code.equals(OrderConstant.LogOperateCode.CANCEL_SUCCESS)) ? result.get("quantity") : qty,
+                result.get("used_quantity"),
+                result.get("refund_quantity"),
+                result.get("refunding"),
+                memo
+        };
     }
 }

@@ -15,7 +15,6 @@ import com.framework.common.distributed.lock.DistributedLockTemplate;
 import com.framework.common.distributed.lock.DistributedReentrantLock;
 import com.framework.common.event.MnsEvent;
 import com.framework.common.event.MnsEventAspect;
-import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.outside.JobAspect;
 import com.framework.common.outside.JobTask;
@@ -109,17 +108,10 @@ public class TicketCallbackServiceImpl extends BasicSyncDataEvent implements Tic
             maSendResponseMapper.insertSelective(response);
         }
 
-        log.info("order-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}", new Object[]{
-                DateFormatUtils.parseDateToDatetimeString(procTime),
-                null,
-                orderItem.getNumber(),
-                OrderConstant.LogOperateCode.SYSTEM,
-                0,
-                "VOUCHER",
+        log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(orderItem.getId(), procTime,
+                0,  "VOUCHER",
                 OrderConstant.LogOperateCode.RECEIVE_TICKETING,
-                orderItem.getQuantity(),
-                String.format("散客出票接收:接收信息:%s", JsonUtils.toJson(infoList))
-        });
+                orderItem.getQuantity(), String.format("散客出票接收:接收信息:%s", JsonUtils.toJson(infoList))));
 
         // 触发事件
         eventManager.addEvent(OrderConstant.EventType.SEND_TICKET, orderItem.getId());
@@ -163,17 +155,10 @@ public class TicketCallbackServiceImpl extends BasicSyncDataEvent implements Tic
         response.setCreate_time(procTime);
         maSendResponseMapper.insertSelective(response);
 
-        log.info("order-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}", new Object[]{
-                DateFormatUtils.parseDateToDatetimeString(procTime),
-                null,
-                orderItem.getNumber(),
-                OrderConstant.LogOperateCode.SYSTEM,
-                0,
-                "VOUCHER",
+        log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(orderItem.getId(), procTime,
+                0,  "VOUCHER",
                 OrderConstant.LogOperateCode.RECEIVE_TICKETING,
-                orderItem.getQuantity(),
-                String.format("团队出票接收:接收信息:%s", JsonUtils.toJson(info))
-        });
+                orderItem.getQuantity(), String.format("团队出票接收:接收信息:%s", JsonUtils.toJson(info))));
         // 触发事件
         eventManager.addEvent(OrderConstant.EventType.SEND_TICKET, orderItem.getId());
         return new Result(true);
@@ -240,17 +225,10 @@ public class TicketCallbackServiceImpl extends BasicSyncDataEvent implements Tic
             throw new ApiException("没有可核销的票");
         }
 
-        log.info("order-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}", new Object[]{
-                DateFormatUtils.parseDateToDatetimeString(procTime),
-                order.getNumber(),
-                orderItem.getNumber(),
-                OrderConstant.LogOperateCode.SYSTEM,
-                0,
-                "VOUCHER",
+        log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(orderItem.getId(), procTime,
+                0,  "VOUCHER",
                 OrderConstant.LogOperateCode.TICKET_CONSUME_SUCCESS,
-                orderItem.getQuantity(),
-                String.format("散客票核销:接收信息:%s", JsonUtils.toJson(info))
-        });
+                info.getConsumeQuantity(), String.format("散客票核销:接收信息:%s", JsonUtils.toJson(info))));
 
         eventManager.addEvent(OrderConstant.EventType.CONSUME_TICKET, new ConsumeTicketEventParam(orderItem.getId(), serial.getId()));
         return new Result(true);
@@ -314,17 +292,10 @@ public class TicketCallbackServiceImpl extends BasicSyncDataEvent implements Tic
             throw new ApiException("没有可核销的票");
         }
 
-        log.info("order-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}", new Object[]{
-                DateFormatUtils.parseDateToDatetimeString(procTime),
-                order.getNumber(),
-                orderItem.getNumber(),
-                OrderConstant.LogOperateCode.SYSTEM,
-                0,
-                "VOUCHER",
+        log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(orderItem.getId(), procTime,
+                0,  "VOUCHER",
                 OrderConstant.LogOperateCode.TICKET_CONSUME_SUCCESS,
-                orderItem.getQuantity(),
-                String.format("团队票核销:接收信息:%s", JsonUtils.toJson(info))
-        });
+                info.getConsumeQuantity(), String.format("团队票核销:接收信息:%s", JsonUtils.toJson(info))));
 
         eventManager.addEvent(OrderConstant.EventType.CONSUME_TICKET, new ConsumeTicketEventParam(orderItem.getId(), serial.getId()));
         return new Result(true);
@@ -379,17 +350,10 @@ public class TicketCallbackServiceImpl extends BasicSyncDataEvent implements Tic
             throw new ApiException("没有可反核销的票");
         }
 
-        log.info("order-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}", new Object[]{
-                DateFormatUtils.parseDateToDatetimeString(procTime),
-                order.getNumber(),
-                orderItem.getNumber(),
-                OrderConstant.LogOperateCode.SYSTEM,
-                0,
-                "VOUCHER",
+        log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(orderItem.getId(), procTime,
+                0,  "VOUCHER",
                 OrderConstant.LogOperateCode.TICKET_RECONSUME_SUCCESS,
-                orderItem.getQuantity(),
-                String.format("散客票反核销:接收信息:%s", JsonUtils.toJson(info))
-        });
+                orderClearanceSerial.getQuantity(), String.format("散客票反核销:接收信息:%s", JsonUtils.toJson(info))));
 
         // 发送短信
         //smsManager.sendReConsumeSms(orderItem, orderClearanceSerial.getQuantity(), orderClearanceSerial.getQuantity());
@@ -460,17 +424,10 @@ public class TicketCallbackServiceImpl extends BasicSyncDataEvent implements Tic
             throw new ApiException("没有可反核销的票");
         }
 
-        log.info("order-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}", new Object[]{
-                DateFormatUtils.parseDateToDatetimeString(procTime),
-                order.getNumber(),
-                orderItem.getNumber(),
-                OrderConstant.LogOperateCode.SYSTEM,
-                0,
-                "VOUCHER",
+        log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(orderItem.getId(), procTime,
+                0,  "VOUCHER",
                 OrderConstant.LogOperateCode.TICKET_RECONSUME_SUCCESS,
-                orderItem.getQuantity(),
-                String.format("团队票反核销:接收信息:%s", JsonUtils.toJson(info))
-        });
+                info.getQuantity(), String.format("团队票反核销:接收信息:%s", JsonUtils.toJson(info))));
 
         // 发送短信
         //smsManager.sendReConsumeSms(orderItem, info.getQuantity(), orderClearanceSerial.getQuantity());
