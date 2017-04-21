@@ -156,7 +156,7 @@ public class RefundOrderManager extends BaseOrderManager {
             }
             orderItemMapper.refundQuantity(orderItem.getId(), refundOrder.getQuantity());
             // 退款
-            refundMoney(order, refundOrder.getMoney(), String.valueOf(refundOrder.getNumber()), refundOrder, true);
+            refundMoney(order, refundOrder.getMoney(), String.valueOf(refundOrder.getNumber()), refundOrder);
         }
     }
 
@@ -549,20 +549,17 @@ public class RefundOrderManager extends BaseOrderManager {
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     @MnsEvent
-    public Result refundMoney(Order order, int money, String sn, RefundOrder refundOrder, boolean isApply) {
-        if (isApply) {
-            log.info(OrderConstant.LogOperateCode.NAME, orderLog(order.getId(), new Date(),
-                    0, "ORDER", OrderConstant.LogOperateCode.REFUND_MONEY_APPLY,
-                    refundOrder.getQuantity(), String.format("退订退款申请:退订订单:%s", refundOrder.getNumber())));
-        }
+    public Result refundMoney(Order order, int money, String sn, RefundOrder refundOrder) {
         // 需要审核
         if (refundOrder.getAudit_money() == ProductConstants.RefundMoneyAudit.YES &&
                 refundOrder.getStatus() != OrderConstant.RefundOrderStatus.REFUND_MONEY_AUDITING) {
             refundOrder.setStatus(OrderConstant.RefundOrderStatus.REFUND_MONEY_AUDITING);
             refundOrderMapper.updateByPrimaryKeySelective(refundOrder);
+            eventManager.addEvent(OrderConstant.EventType.REFUND_MONEY_APPLY, refundOrder.getId());
             return new Result(true);
         }
         // 不需要审核
+        eventManager.addEvent(OrderConstant.EventType.REFUND_MONEY_AUDIT, refundOrder.getId());
         refundOrder.setStatus(OrderConstant.RefundOrderStatus.REFUND_MONEY);
         refundOrderMapper.updateByPrimaryKeySelective(refundOrder);
         // 非支付宝
