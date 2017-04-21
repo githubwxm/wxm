@@ -108,7 +108,7 @@ public class TicketCallbackServiceImpl extends BasicSyncDataEvent implements Tic
             maSendResponseMapper.insertSelective(response);
         }
 
-        log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(orderItem.getId(), procTime,
+        log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(orderItem.getId(),
                 0,  "VOUCHER",
                 OrderConstant.LogOperateCode.RECEIVE_TICKETING,
                 orderItem.getQuantity(), String.format("散客出票接收:接收信息:%s", JsonUtils.toJson(infoList))));
@@ -155,7 +155,7 @@ public class TicketCallbackServiceImpl extends BasicSyncDataEvent implements Tic
         response.setCreate_time(procTime);
         maSendResponseMapper.insertSelective(response);
 
-        log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(orderItem.getId(), procTime,
+        log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(orderItem.getId(),
                 0,  "VOUCHER",
                 OrderConstant.LogOperateCode.RECEIVE_TICKETING,
                 orderItem.getQuantity(), String.format("团队出票接收:接收信息:%s", JsonUtils.toJson(info))));
@@ -225,7 +225,7 @@ public class TicketCallbackServiceImpl extends BasicSyncDataEvent implements Tic
             throw new ApiException("没有可核销的票");
         }
 
-        log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(orderItem.getId(), procTime,
+        log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(orderItem.getId(),
                 0,  "VOUCHER",
                 OrderConstant.LogOperateCode.TICKET_CONSUME_SUCCESS,
                 info.getConsumeQuantity(), String.format("散客票核销:接收信息:%s", JsonUtils.toJson(info))));
@@ -292,7 +292,7 @@ public class TicketCallbackServiceImpl extends BasicSyncDataEvent implements Tic
             throw new ApiException("没有可核销的票");
         }
 
-        log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(orderItem.getId(), procTime,
+        log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(orderItem.getId(),
                 0,  "VOUCHER",
                 OrderConstant.LogOperateCode.TICKET_CONSUME_SUCCESS,
                 info.getConsumeQuantity(), String.format("团队票核销:接收信息:%s", JsonUtils.toJson(info))));
@@ -350,7 +350,7 @@ public class TicketCallbackServiceImpl extends BasicSyncDataEvent implements Tic
             throw new ApiException("没有可反核销的票");
         }
 
-        log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(orderItem.getId(), procTime,
+        log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(orderItem.getId(),
                 0,  "VOUCHER",
                 OrderConstant.LogOperateCode.TICKET_RECONSUME_SUCCESS,
                 orderClearanceSerial.getQuantity(), String.format("散客票反核销:接收信息:%s", JsonUtils.toJson(info))));
@@ -424,7 +424,7 @@ public class TicketCallbackServiceImpl extends BasicSyncDataEvent implements Tic
             throw new ApiException("没有可反核销的票");
         }
 
-        log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(orderItem.getId(), procTime,
+        log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(orderItem.getId(),
                 0,  "VOUCHER",
                 OrderConstant.LogOperateCode.TICKET_RECONSUME_SUCCESS,
                 info.getQuantity(), String.format("团队票反核销:接收信息:%s", JsonUtils.toJson(info))));

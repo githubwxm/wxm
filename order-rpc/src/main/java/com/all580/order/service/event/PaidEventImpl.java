@@ -43,7 +43,7 @@ public class PaidEventImpl implements PaidEvent {
             throw new ApiException("订单不存在");
         }
 
-        log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(order.getId(), createDate,
+        log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(order.getId(),
                 0, "ORDER_EVENT", OrderConstant.LogOperateCode.PAID_SUCCESS,
                 0, "订单支付成功"));
 

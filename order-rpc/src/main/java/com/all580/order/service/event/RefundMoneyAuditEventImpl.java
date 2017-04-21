@@ -25,7 +25,7 @@ public class RefundMoneyAuditEventImpl implements RefundMoneyAuditEvent {
     @Override
     public Result process(String s, Integer integer, Date date) {
         RefundOrder refundOrder = refundOrderMapper.selectByPrimaryKey(integer);
-        log.info(OrderConstant.LogOperateCode.NAME, refundOrderManager.orderLog(refundOrder.getOrder_item_id(), new Date(),
+        log.info(OrderConstant.LogOperateCode.NAME, refundOrderManager.orderLog(refundOrder.getOrder_item_id(),
                 refundOrder.getAudit_money_user_id(), refundOrder.getAudit_money_user_name(), OrderConstant.LogOperateCode.REFUND_MONEY_AUDIT_SUCCESS,
                 refundOrder.getQuantity(), String.format("退订退款申请审核:退订订单:%s", refundOrder.getNumber())));
         return new Result(true);

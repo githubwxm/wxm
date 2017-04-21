@@ -49,7 +49,7 @@ public class OrderAuditEventImpl implements OrderAuditEvent {
         if (order == null) {
             throw new ApiException("订单不存在");
         }
-        log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(item.getId(), item.getAudit_time(),
+        log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(item.getId(),
                 item.getAudit_user_id(), item.getAudit_user_name(),
                 content.isStatus() ? OrderConstant.LogOperateCode.AUDIT_PASS_SUCCESS : OrderConstant.LogOperateCode.AUDIT_REJECT_SUCCESS,
                 item.getQuantity(), "订单预定审核"));

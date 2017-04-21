@@ -36,7 +36,7 @@ public class OrderCancelSyncDataEventImpl extends BasicSyncDataEvent implements 
         Order order = orderMapper.selectByPrimaryKey(content);
         Assert.notNull(order);
 
-        log.info(OrderConstant.LogOperateCode.NAME, refundOrderManager.orderLog(order.getId(), createDate,
+        log.info(OrderConstant.LogOperateCode.NAME, refundOrderManager.orderLog(order.getId(),
                 0,  "ORDER_EVENT",
                 OrderConstant.LogOperateCode.CANCEL_SUCCESS,
                 null, "订单取消"));

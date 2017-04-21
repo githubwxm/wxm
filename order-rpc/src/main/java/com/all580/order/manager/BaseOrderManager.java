@@ -362,7 +362,6 @@ public class BaseOrderManager {
     /**
      * 返回记录订单日志数据
      * @param id
-     * @param date
      * @param operateId
      * @param operateName
      * @param code
@@ -370,13 +369,13 @@ public class BaseOrderManager {
      * @param memo
      * @return
      */
-    public Object[] orderLog(Integer id, Date date, Object operateId, Object operateName, String code, Integer qty, String memo) {
+    public Object[] orderLog(Integer id, Object operateId, Object operateName, String code, Integer qty, String memo) {
         if (id == null) {
             throw new ApiException("记录日志异常:没有订单号");
         }
         Map result = orderMapper.selectByLog(id);
         return new Object[]{
-                DateFormatUtils.parseDateToDatetimeString(date),
+                DateFormatUtils.parseDateToDatetimeString(new Date()),
                 result.get("order_number"),
                 result.get("item_number"),
                 OrderConstant.LogOperateCode.SYSTEM,

@@ -26,7 +26,7 @@ public class RefundMoneyApplyEventImpl implements RefundMoneyApplyEvent {
     @Override
     public Result process(String s, Integer integer, Date date) {
         RefundOrder refundOrder = refundOrderMapper.selectByPrimaryKey(integer);
-        log.info(OrderConstant.LogOperateCode.NAME, refundOrderManager.orderLog(refundOrder.getOrder_item_id(), date,
+        log.info(OrderConstant.LogOperateCode.NAME, refundOrderManager.orderLog(refundOrder.getOrder_item_id(),
                 0, "ORDER_EVENT", OrderConstant.LogOperateCode.REFUND_MONEY_APPLY,
                 refundOrder.getQuantity(), String.format("退订退款申请:退订订单:%s", refundOrder.getNumber())));
         return new Result(true);

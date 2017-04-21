@@ -42,7 +42,7 @@ public class RefundAuditEventImpl implements RefundAuditEvent {
         RefundOrder refundOrder = refundOrderMapper.selectByPrimaryKey(content.getRefundId());
         Assert.notNull(refundOrder, "退订订单不存在");
 
-        log.info(OrderConstant.LogOperateCode.NAME, refundOrderManager.orderLog(refundOrder.getOrder_item_id(), refundOrder.getAudit_time(),
+        log.info(OrderConstant.LogOperateCode.NAME, refundOrderManager.orderLog(refundOrder.getOrder_item_id(),
                 refundOrder.getAudit_user_id(), refundOrder.getAudit_user_name(),
                 content.isStatus() ? OrderConstant.LogOperateCode.REFUND_AUDIT_PASS_SUCCESS : OrderConstant.LogOperateCode.REFUND_AUDIT_REJECT_SUCCESS,
                 refundOrder.getQuantity(), String.format("退订申请审核:退订订单:%s", refundOrder.getNumber())));
