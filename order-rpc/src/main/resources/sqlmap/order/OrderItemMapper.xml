@@ -791,14 +791,14 @@
     UPDATE t_order_item
     SET used_quantity = used_quantity + #{quantity}
     where id = #{id}
-    and used_quantity + #{quantity} + refund_quantity &lt;= quantity
+    and used_quantity + #{quantity} + refund_quantity &lt;= quantity * days
   </update>
 
   <update id="refundQuantity">
     UPDATE t_order_item
     SET refund_quantity = refund_quantity + #{quantity}
     where id = #{id}
-    and refund_quantity + used_quantity + #{quantity} &lt;= quantity
+    and refund_quantity + used_quantity + #{quantity} &lt;= quantity * days
   </update>
 
   <update id="resendTicket">

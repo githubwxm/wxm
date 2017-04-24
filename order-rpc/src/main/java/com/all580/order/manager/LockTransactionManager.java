@@ -633,14 +633,14 @@ public class LockTransactionManager {
             throw new ApiException("核销详情为空");
         }
 
-        List<RefundOrder> refundOrders = refundOrderMapper.selectByItemId(orderItem.getId());
-        if (refundOrders != null && refundOrders.size() > 0) {
-            throw new ApiException("该订单已退订");
-        }
-
         int count = orderClearanceSerialMapper.selectItemQuantityCount(orderItem.getId());
         if (count > 0) {
             throw new ApiException("该订单已核销");
+        }
+
+        List<RefundOrder> refundOrders = refundOrderMapper.selectByItemId(orderItem.getId());
+        if (refundOrders != null && refundOrders.size() > 0) {
+            throw new ApiException("该订单已退订");
         }
 
         // 核销
@@ -661,7 +661,7 @@ public class LockTransactionManager {
         int ret = orderItemMapper.useQuantity(orderItem.getId(), total);
         if (ret <= 0) {
             log.warn("酒店核销订单:{} 核销票不足", orderItemSn);
-            throw new ApiException("没有可核销的票");
+            throw new ApiException("没有可核销的房间");
         }
         if (total < orderItem.getQuantity() * orderItem.getDays()) {
             // 退票
