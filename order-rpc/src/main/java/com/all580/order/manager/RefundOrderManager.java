@@ -23,7 +23,6 @@ import com.framework.common.event.MnsEvent;
 import com.framework.common.event.MnsEventAspect;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.lang.UUIDGenerator;
-import com.framework.common.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,6 +96,7 @@ public class RefundOrderManager extends BaseOrderManager {
         if (order == null) {
             throw new ApiException("订单不存在");
         }
+        boolean paid = order.getStatus() == OrderConstant.OrderStatus.PAID || order.getStatus() == OrderConstant.OrderStatus.PAID_HANDLING;
         // 检查订单状态
         switch (order.getStatus()) {
             case OrderConstant.OrderStatus.CANCEL:
@@ -121,7 +121,7 @@ public class RefundOrderManager extends BaseOrderManager {
         // 更新主订单为已取消
         orderMapper.updateByPrimaryKeySelective(order);
         // 还库存
-        refundStock(orderItems);
+        refundStock(orderItems, paid);
 
         eventManager.addEvent(OrderConstant.EventType.ORDER_CANCEL, order.getId());
         return new Result(true);
@@ -624,7 +624,7 @@ public class RefundOrderManager extends BaseOrderManager {
      * @param orderItemList
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public void refundStock(List<OrderItem> orderItemList) {
+    public void refundStock(List<OrderItem> orderItemList, boolean paid) {
         if (orderItemList != null) {
             List<ProductSearchParams> lockParams = new ArrayList<>();
             for (OrderItem orderItem : orderItemList) {
@@ -637,7 +637,7 @@ public class RefundOrderManager extends BaseOrderManager {
             }
             // 还库存
             if (!lockParams.isEmpty()) {
-                com.framework.common.Result result = productSalesPlanRPCService.addProductStocks(lockParams);
+                com.framework.common.Result result = paid ? productSalesPlanRPCService.addReturnProductStock(lockParams) : productSalesPlanRPCService.addProductStocks(lockParams);
                 if (!result.isSuccess()) {
                     throw new ApiException(result.getError());
                 }
@@ -664,7 +664,7 @@ public class RefundOrderManager extends BaseOrderManager {
             }
             // 还库存
             if (!lockParams.isEmpty()) {
-                com.framework.common.Result result = productSalesPlanRPCService.addProductStocks(lockParams);
+                com.framework.common.Result result = productSalesPlanRPCService.addReturnProductStock(lockParams);
                 if (!result.isSuccess()) {
                     throw new ApiException(result.getError());
                 }
@@ -691,15 +691,6 @@ public class RefundOrderManager extends BaseOrderManager {
         p.setQuantity(quantity);
         p.setSubOrderId(orderItem.getId());
         return p;
-    }
-
-    /**
-     * 还可售库存
-     * @param orderItem
-     */
-    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public void refundStock(OrderItem orderItem) {
-        refundStock(CommonUtil.oneToList(orderItem));
     }
 
     /**
