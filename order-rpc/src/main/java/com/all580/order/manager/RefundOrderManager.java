@@ -627,17 +627,22 @@ public class RefundOrderManager extends BaseOrderManager {
     public void refundStock(List<OrderItem> orderItemList, boolean paid) {
         if (orderItemList != null) {
             List<ProductSearchParams> lockParams = new ArrayList<>();
+            List<ProductSearchParams> lockParams2 = new ArrayList<>();
             for (OrderItem orderItem : orderItemList) {
                 List<OrderItemDetail> detailList = orderItemDetailMapper.selectByItemId(orderItem.getId());
                 for (OrderItemDetail detail : detailList) {
                     if (!detail.getOversell()) {
                         lockParams.add(getProductSearchParams(orderItem, detail.getDay(), detail.getQuantity()));
+                    } else {
+                        if (paid) {
+                            lockParams2.add(getProductSearchParams(orderItem, detail.getDay(), detail.getQuantity()));
+                        }
                     }
                 }
             }
             // 还库存
             if (!lockParams.isEmpty()) {
-                com.framework.common.Result result = paid ? productSalesPlanRPCService.addReturnProductStock(lockParams) : productSalesPlanRPCService.addProductStocks(lockParams);
+                com.framework.common.Result result = paid ? productSalesPlanRPCService.addReturnProductStock(lockParams, lockParams2) : productSalesPlanRPCService.addProductStocks(lockParams, lockParams2);
                 if (!result.isSuccess()) {
                     throw new ApiException(result.getError());
                 }
@@ -653,6 +658,7 @@ public class RefundOrderManager extends BaseOrderManager {
     public void refundStock(RefundOrder refundOrder) {
         if (refundOrder != null) {
             List<ProductSearchParams> lockParams = new ArrayList<>();
+            List<ProductSearchParams> lockParams2 = new ArrayList<>();
             OrderItem orderItem = orderItemMapper.selectByPrimaryKey(refundOrder.getOrder_item_id());
             List<OrderItemDetail> details = orderItemDetailMapper.selectByItemId(orderItem.getId());
             Collection<RefundDay> refundDays = AccountUtil.decompileRefundDay(refundOrder.getData());
@@ -660,11 +666,13 @@ public class RefundOrderManager extends BaseOrderManager {
                 OrderItemDetail detail = AccountUtil.getDetailByDay(details, refundDay.getDay());
                 if (!detail.getOversell()) { // 没有超卖才还库存
                     lockParams.add(getProductSearchParams(orderItem, refundDay.getDay(), refundDay.getQuantity()));
+                } else {
+                    lockParams2.add(getProductSearchParams(orderItem, refundDay.getDay(), refundDay.getQuantity()));
                 }
             }
             // 还库存
             if (!lockParams.isEmpty()) {
-                com.framework.common.Result result = productSalesPlanRPCService.addReturnProductStock(lockParams);
+                com.framework.common.Result result = productSalesPlanRPCService.addReturnProductStock(lockParams, lockParams2);
                 if (!result.isSuccess()) {
                     throw new ApiException(result.getError());
                 }
