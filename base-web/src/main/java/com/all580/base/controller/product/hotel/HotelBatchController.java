@@ -9,6 +9,7 @@ import com.framework.common.validate.ParamsMapValidate;
 import com.framework.common.validate.ValidRule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -94,6 +95,19 @@ public class HotelBatchController {
 
 
          return hotelBatchService.selectBatchCount(batch_id);
+    }
+
+    /**
+     * 删除销售计划
+     * @param params
+     * @return
+     */
+    @RequestMapping(value = "delete_hotel_batch", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<?> deleteHotelBatch(@RequestBody Map params) {
+        Integer batch_id =CommonUtil.objectParseInteger(params.get("batch_id"));
+        Assert.isNull(batch_id);
+        return hotelBatchService.deleteHotelBatch(batch_id);
     }
     /**
      * 查询销售计划
