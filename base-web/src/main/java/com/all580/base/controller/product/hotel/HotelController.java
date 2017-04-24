@@ -91,7 +91,7 @@ public class HotelController {
         // 校验不为空的参数
         rules.put(new String[]{
                 "name", //
-                "team_num", //
+               // "team_num", //
                 "province", //
                 "city", //
                 "area", //
@@ -111,7 +111,7 @@ public class HotelController {
 
         // 校验整数
         rules.put(new String[]{
-                "team_num" ,// 企业id
+                //"team_num" ,// 企业id
                 "province" ,// 企业id
                 "city" ,// 企业id
                 "area" ,// 企业id
