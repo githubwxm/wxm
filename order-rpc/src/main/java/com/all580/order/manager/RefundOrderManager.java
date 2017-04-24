@@ -641,7 +641,7 @@ public class RefundOrderManager extends BaseOrderManager {
                 }
             }
             // 还库存
-            if (!lockParams.isEmpty()) {
+            if (!lockParams.isEmpty() || !lockParams2.isEmpty()) {
                 com.framework.common.Result result = paid ? productSalesPlanRPCService.addReturnProductStock(lockParams, lockParams2) : productSalesPlanRPCService.addProductStocks(lockParams, lockParams2);
                 if (!result.isSuccess()) {
                     throw new ApiException(result.getError());
@@ -671,7 +671,7 @@ public class RefundOrderManager extends BaseOrderManager {
                 }
             }
             // 还库存
-            if (!lockParams.isEmpty()) {
+            if (!lockParams.isEmpty() || !lockParams2.isEmpty()) {
                 com.framework.common.Result result = productSalesPlanRPCService.addReturnProductStock(lockParams, lockParams2);
                 if (!result.isSuccess()) {
                     throw new ApiException(result.getError());
