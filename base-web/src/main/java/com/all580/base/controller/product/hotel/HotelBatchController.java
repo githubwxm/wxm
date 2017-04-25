@@ -102,7 +102,7 @@ public class HotelBatchController {
      * @param params
      * @return
      */
-    @RequestMapping(value = "delete_hotel_batch", method = RequestMethod.GET)
+    @RequestMapping(value = "delete_hotel_batch", method = RequestMethod.POST)
     @ResponseBody
     public Result<?> deleteHotelBatch(@RequestBody Map params) {
         Integer batch_id =CommonUtil.objectParseInteger(params.get("batch_id"));
