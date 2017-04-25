@@ -106,7 +106,7 @@ public class HotelBatchController {
     @ResponseBody
     public Result<?> deleteHotelBatch(@RequestBody Map params) {
         Integer batch_id =CommonUtil.objectParseInteger(params.get("batch_id"));
-        Assert.isNull(batch_id);
+        Assert.notNull(batch_id);
         return hotelBatchService.deleteHotelBatch(batch_id);
     }
     /**
