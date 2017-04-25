@@ -258,7 +258,7 @@ public class ProductController extends BaseController {
                                        @RequestParam("order_str") Integer order,
                                        @RequestParam("record_start") Integer start,
                                        @RequestParam("record_count") Integer count,
-                                                                  Integer type) {
+                                                                  Integer type,Integer is_platfrom) {
 
         String orderStr = null;
         if(type==null){
@@ -272,7 +272,7 @@ public class ProductController extends BaseController {
                 case PRODUCT_NAME_DESC: orderStr = CanSaleOrderState.PRODUCT_NAME_DESC.getValue(); break;
             }
         }
-        Result<Paginator<ProductAndSubInfo>> result = productService.searchSubProductListByProductName(epId, productName, isSupplier, orderStr, start, count,type);
+        Result<Paginator<ProductAndSubInfo>> result = productService.searchSubProductListByProductName(is_platfrom,epId, productName, isSupplier, orderStr, start, count,type);
         return result;
     }
 
@@ -292,7 +292,7 @@ public class ProductController extends BaseController {
                                                                   @RequestParam("order_str") Integer order,
                                                                   @RequestParam("record_start") Integer start,
                                                                   @RequestParam("record_count") Integer count,
-                                                                  Integer type) {
+                                                                  Integer type,Integer is_platfrom) {
 
         String orderStr = null;
         if (order != null) {
@@ -303,7 +303,7 @@ public class ProductController extends BaseController {
                 case PRODUCT_NAME_DESC: orderStr = CanSaleOrderState.PRODUCT_NAME_DESC.getValue(); break;
             }
         }
-        Result<Paginator<ProductAndSubInfo>> result = productService.searchSubProductListByProductName(epId, productName, isSupplier, orderStr, start, count,0);
+        Result<Paginator<ProductAndSubInfo>> result = productService.searchSubProductListByProductName(is_platfrom,epId, productName, isSupplier, orderStr, start, count,0);
         // type 为int 类型 如不传修改地方太多， 这里传0  表示不传
         return result;
     }
@@ -325,7 +325,7 @@ public class ProductController extends BaseController {
                                                                   @RequestParam("order_str") Integer order,
                                                                   @RequestParam("record_start") Integer start,
                                                                   @RequestParam("record_count") Integer count
-                                                                 ) {
+                                                                ,Integer is_platfrom ) {
 
         String orderStr = null;
 
@@ -339,7 +339,7 @@ public class ProductController extends BaseController {
                 case PRODUCT_NAME_DESC: orderStr = CanSaleOrderState.PRODUCT_NAME_DESC.getValue(); break;
             }
         }
-        Result result = productService.searchSubProductListByProductNameHotel(epId, productName, isSupplier, orderStr, start, count,type);
+        Result result = productService.searchSubProductListByProductNameHotel(is_platfrom,epId, productName, isSupplier, orderStr, start, count,type);
         return result;
     }
 
@@ -390,12 +390,12 @@ public class ProductController extends BaseController {
     public Result<List<Map<String, Object>>> searchSelfAndOtherProduct(
             @RequestParam("ep_id") Integer epId,
             @RequestParam("platform_ep_id") Integer platformEpId,
-            @RequestParam("status") Integer distributionStatus,Integer type) {
+            @RequestParam("status") Integer distributionStatus,Integer type,Integer is_platfrom) {
         switch (CommonUtil.objectParseInteger(distributionStatus)) {
             case ProductConstants.ProductDistributionState.HAD_DISTRIBUTE:
                 return productDistributionService.searchAlreadyDistributionProduct(platformEpId, epId,type);
             case ProductConstants.ProductDistributionState.NOT_DISTRIBUTE:
-                return productDistributionService.searchNotDistributionProduct(platformEpId, epId,type);
+                return productDistributionService.searchNotDistributionProduct(is_platfrom,platformEpId, epId,type);
         }
         return new Result<>(false, "状态参数错误");
     }
@@ -524,8 +524,8 @@ public class ProductController extends BaseController {
     @ResponseBody
     public Result<List<Map<String, Object>>> searchDistributeProduct(
             @RequestParam("ep_id") Integer epId,
-            @RequestParam("sub_ep_id") Integer subEpId) {
-        return productDistributionService.searchNotDistributionProductSubEp(subEpId, epId);
+            @RequestParam("sub_ep_id") Integer subEpId,Integer is_platfrom) {
+        return productDistributionService.searchNotDistributionProductSubEp(is_platfrom,subEpId, epId);
     }
 
     /**
@@ -538,8 +538,8 @@ public class ProductController extends BaseController {
     @ResponseBody
     public Result<List<Map<String, Object>>> searchDistributeProductTypeAll(
             @RequestParam("ep_id") Integer epId,
-            @RequestParam("sub_ep_id") Integer subEpId) {
-        return productDistributionService.searchNotDistributionProductSubEpAll(subEpId, epId);
+            @RequestParam("sub_ep_id") Integer subEpId,Integer is_platfrom) {
+        return productDistributionService.searchNotDistributionProductSubEpAll(is_platfrom,subEpId, epId);
     }
 
     /**
