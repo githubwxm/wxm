@@ -646,6 +646,9 @@ public class LockTransactionManager {
         // 核销
         Date clearanceTime = new Date();
         List<OrderItemDetail> details = orderItemDetailMapper.selectByItemId(orderItem.getId());
+        if (details.get(0).getDay().after(clearanceTime)) {
+            throw new ApiException("请入住后核销");
+        }
         int total = 0;
         for (ConsumeDay consumeDay : consumeDays) {
             OrderItemDetail detail = AccountUtil.getDetailByDay(details, consumeDay.getDay());
