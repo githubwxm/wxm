@@ -369,6 +369,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
                     v.setName(name);
                     v.setPhone(visitor.get("phone").toString());
                     v.setSid(visitor.get("sid").toString());
+                    v.setIdType(CommonUtil.objectParseInteger(visitor.get("card_type")));
                     vs.add(v);
                 }
             }
