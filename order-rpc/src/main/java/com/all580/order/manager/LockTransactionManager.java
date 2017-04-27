@@ -397,7 +397,7 @@ public class LockTransactionManager {
             throw new ApiException("订单不存在");
         }
         if (order.getPay_amount() <= 0) {
-            throw new ApiException("该订单不需要支付");
+            return new Result<>(true, "该订单不需要支付");
         }
         if (!params.containsKey(EpConstant.EpKey.EP_ID)) {
             throw new ApiException("非法请求:企业ID为空");
