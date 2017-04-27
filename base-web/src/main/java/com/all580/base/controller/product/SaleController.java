@@ -17,10 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.lang.exception.ApiException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 分组，分销接口网关
@@ -214,6 +211,29 @@ public class SaleController extends BaseController {
         return productSalesPlanService.searchProductAllPrice(epId, productName);
     }
 
+    @RequestMapping(value = "reatil/price/list")
+    @ResponseBody
+    public Result<Map<String, Object>> selectProductPrice(Integer ep_id,  String product_name
+            , Integer type, Integer province,  Integer city,
+                                                          @RequestParam("retail_status") Integer retailStatus     ,
+                                                                   Integer record_start,
+                                                                   Integer record_count) {
+        if(type==null){
+            type=ProductConstants.ProductType.SCENERY;
+        }
+        return productSalesPlanService.selectProductPrice( ep_id,   product_name
+                ,  type,  province,   city,
+                 retailStatus,
+                 record_start,
+                 record_count);
+    }
+    @RequestMapping(value = "seller_price/update/status", method = RequestMethod.POST)
+    @ResponseBody
+    public Result updateRetailPriceStatus(@RequestBody Map params) {
+        Integer status = CommonUtil.objectParseInteger( params.get("status"));
+        Integer [] list   =(Integer [] )params.get("list");
+        return productSalesPlanService.updateRetailPriceStatus(status,list==null?null:  Arrays.asList(list));
+    }
     @RequestMapping(value = "seller_price/update", method = RequestMethod.POST)
     @ResponseBody
     public Result updateSalePriceAndRebateBatch(@RequestBody Map params) {
