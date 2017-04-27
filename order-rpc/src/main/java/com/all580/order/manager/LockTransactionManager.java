@@ -258,8 +258,8 @@ public class LockTransactionManager {
 
         refundOrderInterface.hasRemainAndInsertRefundVisitor(apply, refundOrder, detailList, refundDays, params);
 
-        // 退订分账 到付退订不分帐
-        if (apply.getItem().getPayment_flag() != ProductConstants.PayType.PAYS) {
+        // 退订分账 到付和0元退订不分帐
+        if (apply.getItem().getPayment_flag() != ProductConstants.PayType.PAYS && apply.getOrder().getPay_amount() > 0) {
             refundOrderManager.preRefundSplitAccount(apply.getFrom(), refundOrder.getId(), apply.getOrder(), apply.getDate(), refundOrder.getOrder_item_id(), detailList, refundDays);
         }
 
