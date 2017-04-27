@@ -435,7 +435,7 @@ public class LockTransactionManager {
         order.setPay_time(new Date());
         orderMapper.updateByPrimaryKeySelective(order);
 
-        log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(order.getId(),
+        log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(order.getId(), null,
                 params.get(EpConstant.EpKey.EP_ID),  params.get("operator_name"),
                 OrderConstant.LogOperateCode.PAID,
                 0, String.format("订单支付:参数:%s", JsonUtils.toJson(params))));
@@ -522,7 +522,7 @@ public class LockTransactionManager {
             log.error("退订订单:{} 退票回调异常: 退票人:{} 可退票不足, 小秘书重置为退票失败", refundOrder.getNumber(), info.getVisitorSeqId());
             info.setSuccess(false);
         }
-        log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(orderItem.getId(),
+        log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(null, orderItem.getId(),
                 0,  "VOUCHER",
                 OrderConstant.LogOperateCode.RECEIVE_REFUND_TICKETING,
                 refundOrder.getQuantity(), String.format("退票返回:退票信息:%s", JsonUtils.toJson(info))));

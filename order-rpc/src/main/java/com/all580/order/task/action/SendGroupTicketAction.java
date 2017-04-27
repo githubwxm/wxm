@@ -124,7 +124,7 @@ public class SendGroupTicketAction extends BasicSyncDataEvent implements JobRunn
         }
         sendGroupTicketParams.setVisitors(contacts);
         com.framework.common.Result r = voucherRPCService.sendGroupTicket(orderItem.getEp_ma_id(), sendGroupTicketParams);
-        Object[] orderLog = bookingOrderManager.orderLog(orderItem.getId(),
+        Object[] orderLog = bookingOrderManager.orderLog(null, orderItem.getId(),
                 0, "ORDER_ACTION", OrderConstant.LogOperateCode.SEND_TICKETING,
                 orderItem.getQuantity(), String.format("团队出票任务:发送状态:%s", String.valueOf(r.isSuccess())));
         if (!r.isSuccess()) {

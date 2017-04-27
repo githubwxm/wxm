@@ -393,8 +393,8 @@
     LEFT JOIN t_refund_order tro ON tro.order_item_id = toi.id AND tro.`status` in(340,342)
     LEFT JOIN t_order o ON o.id = toi.order_id
     WHERE
-        toi.id = #{id}
-        OR toi.order_id = #{id}
+        toi.id = #{itemId}
+        OR toi.order_id = #{orderId}
     LIMIT 1
   </select>
 </mapper>
