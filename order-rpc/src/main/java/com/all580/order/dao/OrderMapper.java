@@ -112,5 +112,5 @@ public interface OrderMapper {
      * 日志记录的查询
      * @return
      */
-    Map selectByLog(@Param("id") Integer id);
+    Map selectByLog(@Param("orderId") Integer orderId, @Param("itemId") Integer itemId);
 }
