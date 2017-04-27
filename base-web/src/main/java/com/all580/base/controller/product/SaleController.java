@@ -13,6 +13,7 @@ import com.framework.common.Result;
 import com.framework.common.util.CommonUtil;
 import com.framework.common.vo.Paginator;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -232,6 +233,8 @@ public class SaleController extends BaseController {
     public Result updateRetailPriceStatus(@RequestBody Map params) {
         Integer status = CommonUtil.objectParseInteger( params.get("status"));
         Integer [] list   =(Integer [] )params.get("list");
+        Assert.notNull(status);
+        Assert.notNull(list);
         return productSalesPlanService.updateRetailPriceStatus(status,list==null?null:  Arrays.asList(list));
     }
     @RequestMapping(value = "seller_price/update", method = RequestMethod.POST)
