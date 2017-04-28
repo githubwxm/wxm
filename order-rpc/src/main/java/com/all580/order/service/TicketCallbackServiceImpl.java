@@ -556,12 +556,12 @@ public class TicketCallbackServiceImpl extends BasicSyncDataEvent implements Tic
 
         orderItem.setStatus(success ? OrderConstant.OrderItemStatus.MODIFY : OrderConstant.OrderItemStatus.MODIFY_FAIL);
         orderItemMapper.updateByPrimaryKeySelective(orderItem);
-        visitorModifyMapper.modifyed(orderItem.getId());
-        shippingModifyMapper.modifyed(orderItem.getOrder_id());
         if (success) {
             visitorMapper.modify(orderItem.getId());
             shippingMapper.modify(orderItem.getOrder_id());
         }
+        visitorModifyMapper.modifyed(orderItem.getId());
+        shippingModifyMapper.modifyed(orderItem.getOrder_id());
 
         // 同步数据
         Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());

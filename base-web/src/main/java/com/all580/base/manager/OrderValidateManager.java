@@ -380,8 +380,7 @@ public class OrderValidateManager {
         }, new ValidRule[]{new ValidRule.Pattern(ValidRule.MOBILE_PHONE)});
 
         rules.put(new String[]{
-                "guide_sid",
-                "visitors.sid"
+                "guide_sid"
         }, new ValidRule[]{new ValidRule.IdCard()});
         rules.put(new String[]{
                 "visitors.card_type" // 证件类型
