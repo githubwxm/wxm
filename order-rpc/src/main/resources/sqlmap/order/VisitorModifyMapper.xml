@@ -178,7 +178,7 @@
     where `id` = #{id,jdbcType=INTEGER}
   </update>
 
-  <update id="modifyed">
-    update t_visitor_modify SET `status` = 1 WHERE item_id = #{itemId}
-  </update>
+  <delete id="modifyed">
+    DELETE FROM t_visitor_modify WHERE item_id = #{itemId}
+  </delete>
 </mapper>
