@@ -42,6 +42,10 @@ public class TicketCallbackServiceImpl extends BasicSyncDataEvent implements Tic
     @Autowired
     private OrderItemMapper orderItemMapper;
     @Autowired
+    private VisitorModifyMapper visitorModifyMapper;
+    @Autowired
+    private ShippingModifyMapper shippingModifyMapper;
+    @Autowired
     private OrderItemDetailMapper orderItemDetailMapper;
     @Autowired
     private OrderClearanceSerialMapper orderClearanceSerialMapper;
@@ -53,6 +57,8 @@ public class TicketCallbackServiceImpl extends BasicSyncDataEvent implements Tic
     private MaSendResponseMapper maSendResponseMapper;
     @Autowired
     private VisitorMapper visitorMapper;
+    @Autowired
+    private ShippingMapper shippingMapper;
     @Autowired
     private RefundOrderMapper refundOrderMapper;
     @Autowired
@@ -535,6 +541,7 @@ public class TicketCallbackServiceImpl extends BasicSyncDataEvent implements Tic
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public Result modifyGroupTicket(Long orderSn, boolean success, Date procTime) {
         OrderItem orderItem = orderItemMapper.selectBySN(orderSn);
         if (orderItem == null) {
@@ -549,12 +556,20 @@ public class TicketCallbackServiceImpl extends BasicSyncDataEvent implements Tic
 
         orderItem.setStatus(success ? OrderConstant.OrderItemStatus.MODIFY : OrderConstant.OrderItemStatus.MODIFY_FAIL);
         orderItemMapper.updateByPrimaryKeySelective(orderItem);
+        visitorModifyMapper.modifyed(orderItem.getId());
+        shippingModifyMapper.modifyed(orderItem.getOrder_id());
+        if (success) {
+            visitorMapper.modify(orderItem.getId());
+            shippingMapper.modify(orderItem.getOrder_id());
+        }
 
         // 同步数据
         Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
         SyncAccess syncAccess = getAccessKeys(order);
         syncAccess.getDataMap()
-                .add("t_order_item", orderItemMapper.selectByPrimaryKey(orderItem.getId()));
+                .add("t_order_item", orderItemMapper.selectByPrimaryKey(orderItem.getId()))
+                .add("t_visitor", visitorMapper.selectByOrderItem(orderItem.getId()))
+                .add("t_shipping", shippingMapper.selectByOrder(order.getId()));
         syncAccess.loop();
         sync(syncAccess.getDataMaps());
         return new Result(true);

@@ -244,6 +244,25 @@
         limit 1
     </select>
 
+    <select id="selectByIds" resultMap="BaseResultMap">
+        SELECT * FROM t_visitor WHERE id IN
+        <foreach collection="ids" open="(" close=")" separator="," item="item">
+          #{item}
+        </foreach>
+    </select>
+
+    <update id="modify">
+        UPDATE t_visitor v
+        INNER JOIN t_visitor_modify tvm ON tvm.visitor_id = v.id
+        SET v.phone = tvm.visitor_phone,
+         v.`name` = tvm.visitor_name,
+         v.sid = tvm.visitor_sid,
+         v.card_type = tvm.visitor_card_type
+        WHERE
+            tvm.item_id = #{refId}
+            and tvm.`status` = 0
+    </update>
+
   <update id="useQuantity">
     UPDATE t_visitor
     SET use_quantity = use_quantity + #{quantity}
