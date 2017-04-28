@@ -1,7 +1,6 @@
 package com.all580.order.manager;
 
 import com.all580.ep.api.conf.EpConstant;
-import com.all580.ep.api.service.EpService;
 import com.all580.order.adapter.RefundOrderInterface;
 import com.all580.order.api.OrderConstant;
 import com.all580.order.api.model.*;
@@ -19,6 +18,8 @@ import com.all580.payment.api.service.ThirdPayService;
 import com.all580.product.api.consts.ProductConstants;
 import com.all580.product.api.model.ProductSearchParams;
 import com.all580.product.api.service.ProductSalesPlanRPCService;
+import com.all580.voucher.api.model.group.ModifyGroupTicketParams;
+import com.all580.voucher.api.service.VoucherRPCService;
 import com.framework.common.Result;
 import com.framework.common.event.MnsEvent;
 import com.framework.common.event.MnsEventAspect;
@@ -53,6 +54,12 @@ public class LockTransactionManager {
     @Autowired
     private OrderItemMapper orderItemMapper;
     @Autowired
+    private ShippingModifyMapper shippingModifyMapper;
+    @Autowired
+    private ShippingMapper shippingMapper;
+    @Autowired
+    private VisitorModifyMapper visitorModifyMapper;
+    @Autowired
     private OrderItemAccountMapper orderItemAccountMapper;
     @Autowired
     private OrderMapper orderMapper;
@@ -75,9 +82,9 @@ public class LockTransactionManager {
     @Autowired
     private ProductSalesPlanRPCService productSalesPlanRPCService;
     @Autowired
-    private EpService epService;
-    @Autowired
     private ThirdPayService thirdPayService;
+    @Autowired
+    private VoucherRPCService voucherRPCService;
     @Autowired
     private MnsEventAspect eventManager;
     @Autowired
@@ -704,6 +711,123 @@ public class LockTransactionManager {
             eventManager.addEvent(OrderConstant.EventType.ORDER_REFUND_APPLY, refundOrder.getId());
         }
         return new Result(true);
+    }
+
+    public Result modifyTicketForGroup(Map params, long orderItemSn) {
+        OrderItem orderItem = orderItemMapper.selectBySN(orderItemSn);
+        if (orderItem == null) {
+            return new Result(false, "订单不存在");
+        }
+        if (!(orderItem.getGroup_id() != null && orderItem.getGroup_id() != 0 &&
+                orderItem.getPro_sub_ticket_type() != null && orderItem.getPro_sub_ticket_type() == ProductConstants.TeamTicketType.TEAM)) {
+            return new Result(false, "该订单不是团队订单");
+        }
+        // 订单状态不在:已出票/已修改/修改失败 或者 已用大于0 则不可以修改
+        if ((orderItem.getStatus() != OrderConstant.OrderItemStatus.SEND &&
+                orderItem.getStatus() != OrderConstant.OrderItemStatus.MODIFY &&
+                orderItem.getStatus() != OrderConstant.OrderItemStatus.MODIFY_FAIL) ||
+                (orderItem.getUsed_quantity() != null && orderItem.getUsed_quantity() > 0)) {
+            return new Result(false, "该订单不在可修改状态");
+        }
+
+        orderItem.setStatus(OrderConstant.OrderItemStatus.MODIFYING);
+        orderItemMapper.updateByPrimaryKeySelective(orderItem);
+        ModifyGroupTicketParams ticketParams = new ModifyGroupTicketParams();
+        ticketParams.setOrderSn(orderItem.getNumber());
+        Integer guideId = CommonUtil.objectParseInteger(params.get("guide_id"));
+        Date modifyDate = new Date();
+        if (guideId != null) {
+            Shipping shipping = shippingMapper.selectByPrimaryKey(guideId);
+            if (shipping == null) {
+                throw new ApiException("导游信息不存在");
+            }
+            String guideName = CommonUtil.objectParseString(params.get("guide_name"));
+            String guidePhone = CommonUtil.objectParseString(params.get("guide_phone"));
+            String guideSid = CommonUtil.objectParseString(params.get("guide_sid"));
+            guideName = StringUtils.isEmpty(guideName) ? shipping.getName() : guideName;
+            guidePhone = StringUtils.isEmpty(guidePhone) ? shipping.getPhone() : guidePhone;
+            guideSid = StringUtils.isEmpty(guideSid) ? shipping.getSid() : guideSid;
+            ticketParams.setGuideName(guideName);
+            ticketParams.setGuidePhone(guidePhone);
+            ticketParams.setGuideSid(guideSid);
+            ShippingModify shippingModify = new ShippingModify();
+            shippingModify.setShipping_id(guideId);
+            shippingModify.setOrder_id(orderItem.getOrder_id());
+            shippingModify.setCreate_time(modifyDate);
+            shippingModify.setStatus(false);
+            shippingModify.setShipping_name(guideName);
+            shippingModify.setShipping_phone(guidePhone);
+            shippingModify.setShipping_sid(guideSid);
+            shippingModifyMapper.insertSelective(shippingModify);
+        }
+        ticketParams.setVisitors(modifyGroupVisitor((List) params.get("visitors"), orderItem.getId()));
+        return voucherRPCService.modifyGroupTicket(orderItem.getEp_ma_id(), ticketParams);
+    }
+
+    private List<com.all580.voucher.api.model.Visitor> modifyGroupVisitor(List visitors, int itemId) {
+        List<com.all580.voucher.api.model.Visitor> vs = new ArrayList<>();
+        if (visitors != null && visitors.size() > 0) {
+            List<Integer> vIds = new ArrayList<>();
+            for (Object o : visitors) {
+                Map visitor = (Map) o;
+                Integer id = CommonUtil.objectParseInteger(visitor.get("id"));
+                if (id != null) {
+                    vIds.add(id);
+                }
+            }
+            if (!vIds.isEmpty()) {
+                Date modifyDate = new Date();
+                List<Visitor> visitorList = visitorMapper.selectByIds(vIds);
+                for (Object o : visitors) {
+                    Map vMap = (Map) o;
+                    Integer id = CommonUtil.objectParseInteger(vMap.get("id"));
+                    if (id != null) {
+                        String name = CommonUtil.objectParseString(vMap.get("name"));
+                        String phone = CommonUtil.objectParseString(vMap.get("phone"));
+                        String sid = CommonUtil.objectParseString(vMap.get("sid"));
+                        Integer type = CommonUtil.objectParseInteger(vMap.get("card_type"));
+                        boolean have = false;
+                        for (Visitor visitor : visitorList) {
+                            if (id.intValue() == visitor.getId()){
+                                name = StringUtils.isEmpty(name) ? visitor.getName() : name;
+                                phone = StringUtils.isEmpty(phone) ? visitor.getPhone() : phone;
+                                sid = StringUtils.isEmpty(sid) ? visitor.getSid() : sid;
+                                type = type == null ? visitor.getCard_type() : type;
+                                if ((visitor.getPhone() == null && phone == null) || (visitor.getPhone() != null && phone != null && visitor.getPhone().equals(phone)) &&
+                                        (visitor.getSid() == null && sid == null) || (visitor.getSid() != null && sid != null && visitor.getSid().equals(sid)) &&
+                                        (visitor.getCard_type() == null && type == null) || (visitor.getCard_type() != null && type != null && visitor.getCard_type().intValue() == type)) {
+                                    throw new ApiException("游客ID:" + id + "修改值中有重复的数据");
+                                }
+                                have = true;
+                            }
+                        }
+                        if (!have) {
+                            throw new ApiException("游客ID:" + id + "数据异常");
+                        }
+                        com.all580.voucher.api.model.Visitor v = new com.all580.voucher.api.model.Visitor();
+                        v.setId(id);
+                        v.setName(name);
+                        v.setPhone(phone);
+                        v.setSid(sid);
+                        if (type != null) {
+                            v.setIdType(type);
+                        }
+                        vs.add(v);
+                        VisitorModify visitorModify = new VisitorModify();
+                        visitorModify.setItem_id(itemId);
+                        visitorModify.setCreate_time(modifyDate);
+                        visitorModify.setStatus(false);
+                        visitorModify.setVisitor_card_type(type);
+                        visitorModify.setVisitor_id(id);
+                        visitorModify.setVisitor_name(name);
+                        visitorModify.setVisitor_phone(phone);
+                        visitorModify.setVisitor_sid(sid);
+                        visitorModifyMapper.insertSelective(visitorModify);
+                    }
+                }
+            }
+        }
+        return vs;
     }
 
     private void addRefundMoneyJob(Long ordCode, String serialNum) {

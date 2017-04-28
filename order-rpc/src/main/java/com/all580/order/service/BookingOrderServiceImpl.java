@@ -324,58 +324,20 @@ public class BookingOrderServiceImpl implements BookingOrderService {
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public Result<?> modifyTicketForGroup(Map params) {
-        OrderItem orderItem = orderItemMapper.selectBySN(Long.valueOf(params.get("order_item_sn").toString()));
-        if (orderItem == null) {
-            return new Result(false, "订单不存在");
-        }
-        if (!(orderItem.getGroup_id() != null && orderItem.getGroup_id() != 0 &&
-                orderItem.getPro_sub_ticket_type() != null && orderItem.getPro_sub_ticket_type() == ProductConstants.TeamTicketType.TEAM)) {
-            return new Result(false, "该订单不是团队订单");
-        }
-        if ((orderItem.getStatus() != OrderConstant.OrderItemStatus.SEND &&
-                orderItem.getStatus() != OrderConstant.OrderItemStatus.MODIFY &&
-                orderItem.getStatus() != OrderConstant.OrderItemStatus.MODIFY_FAIL) ||
-                (orderItem.getUsed_quantity() != null && orderItem.getUsed_quantity() > 0)) {
-            return new Result(false, "该订单不在可修改状态");
-        }
+        String orderItemSn = params.get("order_item_sn").toString();
+        Long sn = Long.valueOf(orderItemSn);
 
-        ModifyGroupTicketParams ticketParams = new ModifyGroupTicketParams();
-        ticketParams.setOrderSn(orderItem.getNumber());
-        String guideName = CommonUtil.objectParseString(params.get("guide_name"));
-        if (StringUtils.isNotEmpty(guideName)) {
-            ticketParams.setGuideName(guideName);
+        // 分布式锁
+        DistributedReentrantLock lock = distributedLockTemplate.execute(orderItemSn, lockTimeOut);
+
+        // 锁成功
+        try {
+            return lockTransactionManager.modifyTicketForGroup(params, sn);
+        } finally {
+            lock.unlock();
         }
-        String guidePhone = CommonUtil.objectParseString(params.get("guide_phone"));
-        if (StringUtils.isNotEmpty(guidePhone)) {
-            ticketParams.setGuidePhone(guidePhone);
-        }
-        String guideSid = CommonUtil.objectParseString(params.get("guide_sid"));
-        if (StringUtils.isNotEmpty(guideSid)) {
-            ticketParams.setGuideSid(guideSid);
-        }
-        String guideCard = CommonUtil.objectParseString(params.get("guide_card"));
-        if (StringUtils.isNotEmpty(guideCard)) {
-            ticketParams.setGuideCard(guideCard);
-        }
-        List visitors = (List) params.get("visitors");
-        if (visitors != null && visitors.size() > 0) {
-            List<com.all580.voucher.api.model.Visitor> vs = new ArrayList<>();
-            for (Object o : visitors) {
-                Map visitor = (Map) o;
-                String name = CommonUtil.objectParseString(visitor.get("name"));
-                if (StringUtils.isNotEmpty(name)) {
-                    com.all580.voucher.api.model.Visitor v = new com.all580.voucher.api.model.Visitor();
-                    v.setName(name);
-                    v.setPhone(visitor.get("phone").toString());
-                    v.setSid(visitor.get("sid").toString());
-                    v.setIdType(CommonUtil.objectParseInteger(visitor.get("card_type")));
-                    vs.add(v);
-                }
-            }
-            ticketParams.setVisitors(vs);
-        }
-        return voucherRPCService.modifyGroupTicket(orderItem.getEp_ma_id(), ticketParams);
     }
 
     @Override
