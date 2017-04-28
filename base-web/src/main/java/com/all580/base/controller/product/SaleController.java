@@ -232,10 +232,10 @@ public class SaleController extends BaseController {
     @ResponseBody
     public Result updateRetailPriceStatus(@RequestBody Map params) {
         Integer status = CommonUtil.objectParseInteger( params.get("status"));
-        Integer [] list   =(Integer [] )params.get("list");
+        List<Integer>  list   =(List<Integer>  )params.get("list");
         Assert.notNull(status);
         Assert.notNull(list);
-        return productSalesPlanService.updateRetailPriceStatus(status,list==null?null:  Arrays.asList(list));
+        return productSalesPlanService.updateRetailPriceStatus(status,list);
     }
     @RequestMapping(value = "seller_price/update", method = RequestMethod.POST)
     @ResponseBody
