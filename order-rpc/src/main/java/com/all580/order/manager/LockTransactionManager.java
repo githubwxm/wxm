@@ -29,6 +29,7 @@ import com.framework.common.lang.UUIDGenerator;
 import com.framework.common.outside.JobAspect;
 import com.framework.common.outside.JobTask;
 import com.framework.common.util.CommonUtil;
+import com.framework.common.validate.CheckIdCardUtils;
 import com.github.ltsopensource.core.domain.Action;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.BooleanUtils;
@@ -786,6 +787,9 @@ public class LockTransactionManager {
                         String phone = CommonUtil.objectParseString(vMap.get("phone"));
                         String sid = CommonUtil.objectParseString(vMap.get("sid"));
                         Integer type = CommonUtil.objectParseInteger(vMap.get("card_type"));
+                        if (type != null && type == OrderConstant.CardType.ID) {
+                            Assert.isTrue(CheckIdCardUtils.validateCard(sid), "请输入15或18位有效身份证号码");
+                        }
                         boolean have = false;
                         for (Visitor visitor : visitorList) {
                             if (id.intValue() == visitor.getId()){
@@ -793,9 +797,9 @@ public class LockTransactionManager {
                                 phone = StringUtils.isEmpty(phone) ? visitor.getPhone() : phone;
                                 sid = StringUtils.isEmpty(sid) ? visitor.getSid() : sid;
                                 type = type == null ? visitor.getCard_type() : type;
-                                if ((visitor.getPhone() == null && phone == null) || (visitor.getPhone() != null && phone != null && visitor.getPhone().equals(phone)) &&
-                                        (visitor.getSid() == null && sid == null) || (visitor.getSid() != null && sid != null && visitor.getSid().equals(sid)) &&
-                                        (visitor.getCard_type() == null && type == null) || (visitor.getCard_type() != null && type != null && visitor.getCard_type().intValue() == type)) {
+                                String newValue = String.format("%s-%s-%s", StringUtils.isEmpty(phone) ? "" : phone, StringUtils.isEmpty(sid) ? "" : sid, type == null ? "" : String.valueOf(type));
+                                String oldValue = String.format("%s-%s-%s", StringUtils.isEmpty(visitor.getPhone()) ? "" : visitor.getPhone(), StringUtils.isEmpty(visitor.getSid()) ? "" : visitor.getSid(), visitor.getCard_type() == null ? "" : String.valueOf(visitor.getCard_type()));
+                                if (newValue.equals(oldValue)) {
                                     throw new ApiException("游客ID:" + id + "修改值中有重复的数据");
                                 }
                                 have = true;
