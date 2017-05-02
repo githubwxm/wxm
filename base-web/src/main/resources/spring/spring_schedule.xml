@@ -30,7 +30,7 @@
 		<property name="configs">
 			<props>
 				<prop key="job.fail.store">mapdb</prop>
-				<prop key="jobtracker.job.retry.interval.millis">180</prop>
+				<prop key="jobtracker.job.retry.interval.millis">${task.retry.interval}</prop>
 			</props>
 		</property>
 	</bean>
@@ -44,7 +44,7 @@
 		<property name="configs">
 			<props>
 				<prop key="job.fail.store">mapdb</prop>
-				<prop key="jobtracker.job.retry.interval.millis">180</prop>
+				<prop key="jobtracker.job.retry.interval.millis">${task.retry.interval}</prop>
 			</props>
 		</property>
 	</bean>
