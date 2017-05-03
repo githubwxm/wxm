@@ -5,8 +5,6 @@ import com.all580.ep.api.conf.EpConstant;
 import com.all580.ep.api.service.EpService;
 import com.framework.common.BaseController;
 import com.framework.common.Result;
-
-import javax.lang.exception.ParamsMapValidationException;
 import com.framework.common.util.CommonUtil;
 import com.framework.common.validate.ParamsMapValidate;
 import com.framework.common.validate.ValidRule;
@@ -18,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-
+import javax.lang.exception.ParamsMapValidationException;
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
@@ -170,11 +168,12 @@ public class EpController extends BaseController {
      */
     @RequestMapping(value = "check_name_phone", method = RequestMethod.GET)
     @ResponseBody
-   public Result<Boolean> checkNamePhone(String name,String link_phone,Integer id){
+   public Result<Boolean> checkNamePhone(Integer ep_id,String name,String link_phone,Integer id){
        //where name =#{name} or link_phone=#{link_phone}
        Map<String,Object> map = new HashMap<>();
         map.put("id",id);
        map.put("name",name);
+        map.put(EpConstant.EpKey.CORE_EP_ID,epService.selectPlatformId(ep_id));
        map.put("link_phone",link_phone);
        return epService.checkNamePhone(map);
    }
