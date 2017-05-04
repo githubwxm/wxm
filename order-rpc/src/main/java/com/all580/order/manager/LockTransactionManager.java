@@ -210,7 +210,7 @@ public class LockTransactionManager {
         List<OrderItem> orderItems = orderItemMapper.selectByOrderId(orderId);
         List<BalanceChangeInfo> balanceChangeInfoList = bookingOrderManager.packagingPaySplitAccount(order, orderItems);
         Result<BalanceChangeRsp> result = bookingOrderManager.changeBalances(PaymentConstant.BalanceChangeType.PAY_SPLIT, String.valueOf(order.getNumber()), balanceChangeInfoList);
-        if (!result.isSuccess()) {
+        if (!result.isSuccess() && (result.getCode() == null || result.getCode().intValue() != Result.UNIQUE_KEY_ERROR)) {
             log.warn("支付分账失败:{}", JsonUtils.toJson(result.get()));
             throw new ApiException(result.getError());
         }
@@ -471,7 +471,7 @@ public class LockTransactionManager {
             Result result = bookingOrderManager.changeBalances(
                     PaymentConstant.BalanceChangeType.BALANCE_PAY,
                     order.getNumber().toString(), balanceChangeInfoList);
-            if (!result.isSuccess()) {
+            if (!result.isSuccess() && (result.getCode() == null || result.getCode().intValue() != Result.UNIQUE_KEY_ERROR)) {
                 log.warn("余额支付失败:{}", JsonUtils.toJson(result));
                 throw new ApiException(result.getError());
             }
