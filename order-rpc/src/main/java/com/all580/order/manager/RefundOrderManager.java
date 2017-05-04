@@ -390,7 +390,7 @@ public class RefundOrderManager extends BaseOrderManager {
             }
             // 调用分账
             Result<BalanceChangeRsp> result = changeBalances(PaymentConstant.BalanceChangeType.REFUND_PAY, String.valueOf(refundOrder.getNumber()), infoList);
-            if (!result.isSuccess()) {
+            if (!result.isSuccess() && (result.getCode() == null || result.getCode().intValue() != Result.UNIQUE_KEY_ERROR)) {
                 log.warn("退款分账失败:{}", result.get());
                 throw new ApiException(result.getError());
             }
@@ -599,7 +599,7 @@ public class RefundOrderManager extends BaseOrderManager {
             Result result = changeBalances(
                     PaymentConstant.BalanceChangeType.BALANCE_REFUND,
                     sn == null ? order.getNumber().toString() : sn, balanceChangeInfoList);
-            if (!result.isSuccess()) {
+            if (!result.isSuccess() && (result.getCode() == null || result.getCode().intValue() != Result.UNIQUE_KEY_ERROR)) {
                 log.warn("余额退款失败:{}", result.get());
                 throw new ApiException("调用余额退款失败:" + result.getError());
             }

@@ -1,7 +1,5 @@
 package com.all580.payment.service;
 
-import com.all580.order.api.service.PaymentCallbackService;
-import com.all580.payment.api.conf.PaymentConstant;
 import com.all580.payment.api.model.BalanceChangeInfo;
 import com.all580.payment.api.model.BalanceChangeRsp;
 import com.all580.payment.api.service.BalancePayService;
@@ -57,7 +55,7 @@ public class BalancePayServiceImpl implements BalancePayService {
             listLock.add(distributedLockTemplate.execute( type+serialNum, lockTimeOut));
             int ref=   capitalSerialMapper.selectSerialNumExists(type,serialNum);
             if(ref>0){
-                return new Result(false,"类型:"+ type+ "流水:" +serialNum + "重复操作");
+                return new Result<>(Result.UNIQUE_KEY_ERROR, "类型:"+ type+ "流水:" +serialNum + "重复操作");
             }
             for(String temp:set){
                 listLock.add(distributedLockTemplate.execute( temp, lockTimeOut));
