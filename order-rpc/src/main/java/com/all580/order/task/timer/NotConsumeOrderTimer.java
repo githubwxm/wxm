@@ -47,35 +47,30 @@ public class NotConsumeOrderTimer {
     private Integer hldMaConfId;
 
     public static final String HLD_NOT_CONSUME_LOCK = "HLD_NOT_CONSUME_LOCK_TIMER";
-    private AtomicBoolean hldRunning = new AtomicBoolean(false);
 
     @Scheduled(cron = "0 0 1 * * ?") // 每天凌晨1点执行
     public void notConsumeByHld() {
         try {
-            if (hldRunning.compareAndSet(false, true)) {
-                DistributedReentrantLock lock = distributedLockTemplate.execute(HLD_NOT_CONSUME_LOCK, 60);
-                try {
-                    Result result = voucherRPCService.selectMaByVoucherPlatform(hldMaConfId);
-                    List list = (List) result.get();
-                    if (list == null || list.isEmpty()) {
-                        return;
-                    }
-                    List<Integer> epMaIds = new ArrayList<>();
-                    for (Object o : list) {
-                        Map map = (Map) o;
-                        epMaIds.add(Integer.parseInt(map.get("id").toString()));
-                    }
-                    notConsumeByHld(epMaIds, 0);
-                } catch (Exception e) {
-                    log.error("未核销订单检查异常", e);
-                } finally {
-                    lock.unlock();
+            DistributedReentrantLock lock = distributedLockTemplate.execute(HLD_NOT_CONSUME_LOCK, 60);
+            try {
+                Result result = voucherRPCService.selectMaByVoucherPlatform(hldMaConfId);
+                List list = (List) result.get();
+                if (list == null || list.isEmpty()) {
+                    return;
                 }
+                List<Integer> epMaIds = new ArrayList<>();
+                for (Object o : list) {
+                    Map map = (Map) o;
+                    epMaIds.add(Integer.parseInt(map.get("id").toString()));
+                }
+                notConsumeByHld(epMaIds, 0);
+            } catch (Exception e) {
+                log.error("未核销订单检查异常", e);
+            } finally {
+                lock.unlock();
             }
         } catch (Exception e) {
             log.error("未核销订单检查异常", e);
-        } finally {
-            hldRunning.set(false);
         }
     }
 
