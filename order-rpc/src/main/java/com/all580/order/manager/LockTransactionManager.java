@@ -711,6 +711,10 @@ public class LockTransactionManager {
             // 触发事件
             eventManager.addEvent(OrderConstant.EventType.ORDER_REFUND_APPLY, refundOrder.getId());
         }
+        log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(null, orderItem.getId(),
+                params.get(EpConstant.EpKey.EP_ID),  params.get("operator_name"),
+                OrderConstant.LogOperateCode.TICKET_CONSUME_SUCCESS,
+                total, String.format("酒店核销:信息:%s", JsonUtils.toJson(params))));
         return new Result(true);
     }
 
