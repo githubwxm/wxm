@@ -9,6 +9,7 @@ import javax.crypto.spec.SecretKeySpec;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -53,6 +54,7 @@ public class BasicAuthorizationUtils {
         String authorization = MEITUAN_AUTH_METHOD + " " + clientId + ":" + encoding;
         request.addHeader(HTTP_HEADER_AUTHORIZATION, authorization);
         request.addHeader(HTTP_HEADER_DATE, date);
+        log.debug("美团BA认证:before:{},signature:{},headers:{}", new Object[]{stringToSign, encoding, Arrays.toString(request.getAllHeaders())});
     }
 
     /**
