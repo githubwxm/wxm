@@ -305,7 +305,7 @@ public class BaseOrderManager {
 
         // 调用分账
         Result<BalanceChangeRsp> result = changeBalances(PaymentConstant.BalanceChangeType.CONSUME_SPLIT, sn, balanceChangeInfoList);
-        if (!result.isSuccess()) {
+        if (!result.isSuccess() && (result.getCode() == null || result.getCode().intValue() != Result.UNIQUE_KEY_ERROR)) {
             log.warn("核销OR反核销:{},分账失败:{}", consume, result.get());
             throw new ApiException(result.getError());
         }
