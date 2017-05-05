@@ -223,6 +223,7 @@ public class BaseOrderManager {
      * @return
      */
     public Result<BalanceChangeRsp> changeBalances(int type, String sn, List<BalanceChangeInfo> infos) {
+        if (infos.isEmpty()) return new Result<>(true);
         return balancePayService.changeBalances(infos, type, sn);
     }
 
