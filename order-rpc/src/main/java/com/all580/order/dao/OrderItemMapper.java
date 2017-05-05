@@ -165,4 +165,10 @@ public interface OrderItemMapper {
     int resendTicket(@Param("id") Integer id);
 
     int refundQuantity(@Param("id") Integer id, @Param("quantity") Integer quantity);
+
+    /**
+     * 根据凭证商户查询未核销的订单
+     * @return
+     */
+    List<OrderItem> selectByNotConsumeAndEpMaId(@Param("epMaIds") List<Integer> epMaIds, @Param("current") Integer current);
 }

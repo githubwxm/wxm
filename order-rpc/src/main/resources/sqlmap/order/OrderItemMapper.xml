@@ -809,4 +809,29 @@
     and UNIX_TIMESTAMP(NOW())-UNIX_TIMESTAMP(last_resend_time) &gt;= resend_interval
   </update>
 
+  <select id="selectByNotConsumeAndEpMaId" resultMap="BaseResultMap">
+    SELECT
+        toi.*
+    FROM
+        t_order_item toi
+    LEFT JOIN t_order_item_detail toid ON toid.order_item_id = toi.id
+    WHERE
+        toi.`status` = 325
+    <if test="epMaIds != null">
+      AND toi.ep_ma_id IN
+      <foreach collection="epMaIds" item="epMaId" open="(" close=")" separator=",">
+        #{epMaId}
+      </foreach>
+    </if>
+    AND toi.used_quantity = 0
+    AND toi.refund_quantity != toi.quantity
+    AND NOW() BETWEEN toid.effective_date
+    AND toid.expiry_date
+    <if test="current != null">
+      AND toi.id &gt; #{current}
+    </if>
+    ORDER BY toi.id
+    limit 10
+  </select>
+
 </mapper>
