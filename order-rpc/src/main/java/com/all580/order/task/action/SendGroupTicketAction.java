@@ -93,6 +93,8 @@ public class SendGroupTicketAction extends BasicSyncDataEvent implements JobRunn
         sendGroupTicketParams.setConsumeType(VoucherConstant.ConsumeType.COUNT); // 默认
         sendGroupTicketParams.setValidTime(detail.getEffective_date());
         sendGroupTicketParams.setInvalidTime(detail.getExpiry_date());
+        sendGroupTicketParams.setProductName(orderItem.getPro_name());
+        sendGroupTicketParams.setProductSubName(orderItem.getPro_sub_name());
         // 设置团队信息
         sendGroupTicketParams.setGroupNumber(group.getNumber());
         sendGroupTicketParams.setGuideName(group.getGuide_name());
@@ -116,6 +118,7 @@ public class SendGroupTicketAction extends BasicSyncDataEvent implements JobRunn
         sendGroupTicketParams.setMaProductId(orderItem.getMa_product_id());
         sendGroupTicketParams.setSendSms(true);
         sendGroupTicketParams.setSms(orderItem.getVoucher_msg());
+        sendGroupTicketParams.setTicketMsg(orderItem.getTicket_msg());
 
         List<Visitor> visitorList = visitorMapper.selectByOrderItem(orderItemId);
         List<com.all580.voucher.api.model.Visitor> contacts = new ArrayList<>();

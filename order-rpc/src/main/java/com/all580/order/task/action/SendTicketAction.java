@@ -79,6 +79,8 @@ public class SendTicketAction extends BasicSyncDataEvent implements JobRunner {
         SendTicketParams sendTicketParams = new SendTicketParams();
         sendTicketParams.setOrderSn(orderItem.getNumber());
         sendTicketParams.setProductSn(orderItem.getPro_sub_number());
+        sendTicketParams.setProductName(orderItem.getPro_name());
+        sendTicketParams.setProductSubName(orderItem.getPro_sub_name());
         sendTicketParams.setPaymentType(orderItem.getPayment_flag() == ProductConstants.PayType.PREPAY ?
                 VoucherConstant.PaymentType.ONLINE : VoucherConstant.PaymentType.LIVE);
         sendTicketParams.setConsumeType(VoucherConstant.ConsumeType.COUNT); // 默认
@@ -90,6 +92,7 @@ public class SendTicketAction extends BasicSyncDataEvent implements JobRunner {
         // TODO: 2016/11/3 出票发送短信
         sendTicketParams.setSendSms(true);
         sendTicketParams.setSms(orderItem.getVoucher_msg());
+        sendTicketParams.setTicketMsg(orderItem.getTicket_msg());
 
         List<Visitor> visitorList = visitorMapper.selectByOrderItem(orderItemId);
         List<com.all580.voucher.api.model.Visitor> contacts = new ArrayList<>();
