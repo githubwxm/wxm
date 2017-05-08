@@ -29,7 +29,7 @@ public class OrderSupplierController extends BaseController {
     public Result selectSupplierOrderReserve(Integer pro_type,
                                              @RequestParam("statistic_ep_id") Integer statistic_ep_id,
                                              @RequestParam("statistics_type_id") String statistics_type_id,
-                                             String start  ,String end,String pro_name,
+                                             String start  ,String end,String pro_name,Integer group_id,
                                              Integer record_start,Integer record_count){
         Map<String,Object> map = new HashMap<>();
         if(null==pro_type){
@@ -40,6 +40,7 @@ public class OrderSupplierController extends BaseController {
         map.put("key",statistics_type_id);
         map.put("start",start);
         map.put("end",end);
+        map.put("group",group_id);
         map.put("pro_name",pro_name);
         map.put("record_start",record_start);
         map.put("record_count",record_count);
@@ -50,13 +51,14 @@ public class OrderSupplierController extends BaseController {
     @ResponseBody
     public Result selectSupplierOrderReserveDetail(Integer pro_type,
                                                    @RequestParam("statistic_ep_id") Integer statistic_ep_id,
-                                                   String start  ,String end,
+                                                   String start  ,String end,Integer group_id,
                                                    String date_time  ,String condition,String pro_name,
                                                    Integer record_start,Integer record_count){
         Map<String,Object> map = new HashMap<>();
         if(null==pro_type){
             pro_type= ProductConstants.ProductType.SCENERY;
         }
+        map.put("group",group_id);
         map.put("pro_type",pro_type);
         map.put("statistic_ep_id",statistic_ep_id);
         map.put("date_time",date_time);
@@ -71,7 +73,7 @@ public class OrderSupplierController extends BaseController {
 
     @RequestMapping(value = "supplier/consume", method = RequestMethod.GET)
     @ResponseBody
-    public Result selectSupplierOrderConsume(Integer pro_type,
+    public Result selectSupplierOrderConsume(Integer pro_type,Integer group_id,
                                              @RequestParam("statistic_ep_id") Integer statistic_ep_id,
                                              @RequestParam("statistics_type_id") String statistics_type_id,
                                              String start  ,String end,String pro_name,
@@ -80,6 +82,7 @@ public class OrderSupplierController extends BaseController {
         if(null==pro_type){
             pro_type= ProductConstants.ProductType.SCENERY;
         }
+        map.put("group",group_id);
         map.put("pro_type",pro_type);
         map.put("statistic_ep_id",statistic_ep_id);
         map.put("key",statistics_type_id);
@@ -95,13 +98,14 @@ public class OrderSupplierController extends BaseController {
     @ResponseBody
     public Result selectSupplierOrderConsumeDetail(Integer pro_type,
                                                    @RequestParam("statistic_ep_id") Integer statistic_ep_id,
-                                                   String start  ,String end,
+                                                   String start  ,String end,Integer group_id,
                                                    String date_time  ,String condition,String pro_name,
                                                    Integer record_start,Integer record_count){
         Map<String,Object> map = new HashMap<>();
         if(null==pro_type){
             pro_type= ProductConstants.ProductType.SCENERY;
         }
+        map.put("group",group_id);
         map.put("pro_type",pro_type);
         map.put("statistic_ep_id",statistic_ep_id);
         map.put("date_time",date_time);
@@ -119,12 +123,13 @@ public class OrderSupplierController extends BaseController {
     public Result selectSupplierOrderRefund(Integer pro_type,
                                             @RequestParam("statistic_ep_id") Integer statistic_ep_id,
                                             @RequestParam("statistics_type_id") String statistics_type_id,
-                                            String start  ,String end,String pro_name,
+                                            String start  ,String end,Integer group_id,String pro_name,
                                             Integer record_start,Integer record_count){
         Map<String,Object> map = new HashMap<>();
         if(null==pro_type){
             pro_type= ProductConstants.ProductType.SCENERY;
         }
+        map.put("group",group_id);
         map.put("pro_type",pro_type);
         map.put("statistic_ep_id",statistic_ep_id);
         map.put("key",statistics_type_id);
@@ -140,13 +145,14 @@ public class OrderSupplierController extends BaseController {
     @ResponseBody
     public Result selectSupplierOrderRefund(Integer pro_type,
                                             @RequestParam("statistic_ep_id") Integer statistic_ep_id,
-                                            String start  ,String end,
+                                            String start  ,String end,Integer group_id,
                                             String date_time  ,String condition,String pro_name,
                                             Integer record_start,Integer record_count){
         Map<String,Object> map = new HashMap<>();
         if(null==pro_type){
             pro_type= ProductConstants.ProductType.SCENERY;
         }
+        map.put("group",group_id);
         map.put("pro_type",pro_type);
         map.put("statistic_ep_id",statistic_ep_id);
         map.put("date_time",date_time);
