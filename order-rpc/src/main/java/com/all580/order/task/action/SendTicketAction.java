@@ -89,7 +89,7 @@ public class SendTicketAction extends BasicSyncDataEvent implements JobRunner {
         sendTicketParams.setMaProductId(orderItem.getMa_product_id());
         // TODO: 2016/11/3 出票发送短信
         sendTicketParams.setSendSms(true);
-        //sendTicketParams.setSms("");
+        sendTicketParams.setSms(orderItem.getVoucher_msg());
 
         List<Visitor> visitorList = visitorMapper.selectByOrderItem(orderItemId);
         List<com.all580.voucher.api.model.Visitor> contacts = new ArrayList<>();
