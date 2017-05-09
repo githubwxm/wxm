@@ -25,11 +25,19 @@ public class HotelController {
 
     @Autowired
     private HotelService hotelService;
+
     @RequestMapping(value = "create", method = RequestMethod.POST)
     @ResponseBody
     public Result<?> addHotel(@RequestBody Map params) {
         ParamsMapValidate.validate(params, generateCreateHotelValidate());
         return hotelService.addHotel(params);
+    }
+
+    @RequestMapping(value = "update", method = RequestMethod.POST)
+    @ResponseBody
+    public Result<?> updateHotel(@RequestBody Map params) {
+        ParamsMapValidate.validate(params, generateCreateHotelValidate());
+        return hotelService.updateHotel(params);
     }
 
 
@@ -55,8 +63,8 @@ public class HotelController {
 
     @RequestMapping(value = "can_sale/list")
     @ResponseBody
-    public Result<?> canSaleList(@RequestParam Integer ep_id,
-                                 Integer city, String in_date, String out_date, String keyword,
+    public Result<?> canSaleList( String from,@RequestParam Integer ep_id,
+                                 Integer city, Integer ticket_flag, String in_date, String out_date, String keyword,
                                  @RequestParam(defaultValue = "0") Integer price_min, Integer price_max,
                                  String star, String topic, @RequestParam(defaultValue = "0") Integer person_min,
                                  Integer person_max, @RequestParam(defaultValue = "ASC") String price_sort,
@@ -72,7 +80,7 @@ public class HotelController {
                 throw new ParamsMapValidationException("排序只能为 asc 或 desc");
             }
         }
-        return hotelService.selectCanSaleList(ep_id, city, start_time, end_time, keyword, price_min, price_max,
+        return hotelService.selectCanSaleList(from,ep_id, city, ticket_flag, start_time, end_time, keyword, price_min, price_max,
                 star, topic, person_min, person_max, price_sort, sale_sort, create_sort, record_start, record_count);
     }
 
@@ -83,7 +91,7 @@ public class HotelController {
         // 校验不为空的参数
         rules.put(new String[]{
                 "name", //
-                "team_num", //
+               // "team_num", //
                 "province", //
                 "city", //
                 "area", //
@@ -103,7 +111,7 @@ public class HotelController {
 
         // 校验整数
         rules.put(new String[]{
-                "team_num" ,// 企业id
+                //"team_num" ,// 企业id
                 "province" ,// 企业id
                 "city" ,// 企业id
                 "area" ,// 企业id

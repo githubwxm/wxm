@@ -5,7 +5,7 @@
 
 <generatorConfiguration>
     <classPathEntry
-            location="E:\mvn_repository\mysql\mysql-connector-java\5.1.11\mysql-connector-java-5.1.11.jar"/>
+            location="/home/alone/.m2/repository/mysql/mysql-connector-java/5.1.30/mysql-connector-java-5.1.30.jar"/>
     <context id="my" targetRuntime="MyBatis3">
         <!-- 抑制警告 -->
         <property name="suppressTypeWarnings" value="true" />
@@ -25,18 +25,18 @@
                         password="abcd1234"/>
 
         <javaModelGenerator targetPackage="com.all580.ep.entity"
-                            targetProject="E:\Gary\working\base\ep-rpc\src\main\java">
+                            targetProject="/home/alone/IdeaProjects/base/ep-rpc/src/main/java">
             <property name="enableSubPackages" value="true"/>
             <property name="trimStrings" value="true"/>
         </javaModelGenerator>
 
         <sqlMapGenerator targetPackage="sqlmap"
-                         targetProject="E:\Gary\working\base\ep-rpc\src\main\resources">
+                         targetProject="/home/alone/IdeaProjects/base/ep-rpc/src/main/resources">
             <property name="enableSubPackages" value="true"/>
         </sqlMapGenerator>
 
         <javaClientGenerator targetPackage="com.all580.ep.dao"
-                             targetProject="E:\Gary\working\base\ep-rpc\src\main\java" type="XMLMAPPER">
+                             targetProject="/home/alone/IdeaProjects/base/ep-rpc/src/main/java" type="XMLMAPPER">
             <property name="enableSubPackages" value="true"/>
         </javaClientGenerator>
 

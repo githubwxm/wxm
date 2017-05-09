@@ -54,8 +54,6 @@ public class BookingOrderManager extends BaseOrderManager {
     @Autowired
     private OrderItemAccountMapper orderItemAccountMapper;
     @Autowired
-    private ClearanceWashedSerialMapper clearanceWashedSerialMapper;
-    @Autowired
     private GroupMemberMapper groupMemberMapper;
     @Autowired
     @Getter
@@ -280,6 +278,8 @@ public class BookingOrderManager extends BaseOrderManager {
         orderItem.setResend_max_times(resendTicketMax);
         orderItem.setResend_interval(resendTicketInterval);
         orderItem.setLast_resend_time(new Date());
+        orderItem.setVoucher_msg(info.getVoucher_msg());
+        orderItem.setTicket_msg(info.getTicket_msg());
         orderItemMapper.insertSelective(orderItem);
         return orderItem;
     }
@@ -516,47 +516,5 @@ public class BookingOrderManager extends BaseOrderManager {
         jobParams.put("serialNum", "-1"); // 到付
         jobManager.addJob(OrderConstant.Actions.PAYMENT_CALLBACK, Collections.singleton(jobParams));
         orderMapper.updateByPrimaryKeySelective(order);
-    }
-
-    /**
-     * 同步订单分账数据
-     * @param itemId 子订单ID
-     */
-    public Map syncOrderAccountData(int itemId) {
-        return generateSyncByItem(itemId)
-                .put("t_order_item_account", orderItemAccountMapper.selectByOrderItem(itemId))
-                .sync().getDataMapForJsonMap();
-    }
-
-    /**
-     * 同步冲正数据
-     * @param itemId 子订单ID
-     */
-    public Map syncReConsumeData(int itemId, String sn) {
-        return generateSyncByItem(itemId)
-                .put("t_order_item_detail", orderItemDetailMapper.selectByItemId(itemId))
-                .put("t_clearance_washed_serial", CommonUtil.oneToList(clearanceWashedSerialMapper.selectBySn(sn)))
-                .put("t_visitor", visitorMapper.selectByOrderItem(itemId))
-                .sync().getDataMapForJsonMap();
-    }
-
-    /**
-     * 同步发票中数据
-     * @param itemId 订单ID
-     */
-    public Map syncSendingData(int itemId) {
-        return generateSyncByItem(itemId)
-                .put("t_order_item", CommonUtil.oneToList(orderItemMapper.selectByPrimaryKey(itemId)))
-                .sync().getDataMapForJsonMap();
-    }
-
-    /**
-     * 同步反核销分账数据
-     * @param itemId 子订单ID
-     */
-    public Map syncReConsumeSplitAccountData(int itemId) {
-        return generateSyncByItem(itemId)
-                .put("t_order_item_account", orderItemAccountMapper.selectByOrderItem(itemId))
-                .sync().getDataMapForJsonMap();
     }
 }

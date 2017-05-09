@@ -1,7 +1,6 @@
 package com.all580.order.manager;
 
 import com.all580.ep.api.conf.EpConstant;
-import com.all580.ep.api.service.EpService;
 import com.all580.order.adapter.RefundOrderInterface;
 import com.all580.order.api.OrderConstant;
 import com.all580.order.api.model.*;
@@ -19,6 +18,8 @@ import com.all580.payment.api.service.ThirdPayService;
 import com.all580.product.api.consts.ProductConstants;
 import com.all580.product.api.model.ProductSearchParams;
 import com.all580.product.api.service.ProductSalesPlanRPCService;
+import com.all580.voucher.api.model.group.ModifyGroupTicketParams;
+import com.all580.voucher.api.service.VoucherRPCService;
 import com.framework.common.Result;
 import com.framework.common.event.MnsEvent;
 import com.framework.common.event.MnsEventAspect;
@@ -28,6 +29,7 @@ import com.framework.common.lang.UUIDGenerator;
 import com.framework.common.outside.JobAspect;
 import com.framework.common.outside.JobTask;
 import com.framework.common.util.CommonUtil;
+import com.framework.common.validate.CheckIdCardUtils;
 import com.github.ltsopensource.core.domain.Action;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.BooleanUtils;
@@ -53,6 +55,12 @@ public class LockTransactionManager {
     @Autowired
     private OrderItemMapper orderItemMapper;
     @Autowired
+    private ShippingModifyMapper shippingModifyMapper;
+    @Autowired
+    private ShippingMapper shippingMapper;
+    @Autowired
+    private VisitorModifyMapper visitorModifyMapper;
+    @Autowired
     private OrderItemAccountMapper orderItemAccountMapper;
     @Autowired
     private OrderMapper orderMapper;
@@ -75,9 +83,9 @@ public class LockTransactionManager {
     @Autowired
     private ProductSalesPlanRPCService productSalesPlanRPCService;
     @Autowired
-    private EpService epService;
-    @Autowired
     private ThirdPayService thirdPayService;
+    @Autowired
+    private VoucherRPCService voucherRPCService;
     @Autowired
     private MnsEventAspect eventManager;
     @Autowired
@@ -202,7 +210,7 @@ public class LockTransactionManager {
         List<OrderItem> orderItems = orderItemMapper.selectByOrderId(orderId);
         List<BalanceChangeInfo> balanceChangeInfoList = bookingOrderManager.packagingPaySplitAccount(order, orderItems);
         Result<BalanceChangeRsp> result = bookingOrderManager.changeBalances(PaymentConstant.BalanceChangeType.PAY_SPLIT, String.valueOf(order.getNumber()), balanceChangeInfoList);
-        if (!result.isSuccess()) {
+        if (!result.isSuccess() && (result.getCode() == null || result.getCode().intValue() != Result.UNIQUE_KEY_ERROR)) {
             log.warn("支付分账失败:{}", JsonUtils.toJson(result.get()));
             throw new ApiException(result.getError());
         }
@@ -258,8 +266,8 @@ public class LockTransactionManager {
 
         refundOrderInterface.hasRemainAndInsertRefundVisitor(apply, refundOrder, detailList, refundDays, params);
 
-        // 退订分账 到付退订不分帐
-        if (apply.getItem().getPayment_flag() != ProductConstants.PayType.PAYS) {
+        // 退订分账 到付和0元退订不分帐
+        if (apply.getItem().getPayment_flag() != ProductConstants.PayType.PAYS && apply.getOrder().getPay_amount() > 0) {
             refundOrderManager.preRefundSplitAccount(apply.getFrom(), refundOrder.getId(), apply.getOrder(), apply.getDate(), refundOrder.getOrder_item_id(), detailList, refundDays);
         }
 
@@ -397,7 +405,7 @@ public class LockTransactionManager {
             throw new ApiException("订单不存在");
         }
         if (order.getPay_amount() <= 0) {
-            throw new ApiException("该订单不需要支付");
+            return new Result<>(true, "该订单不需要支付");
         }
         if (!params.containsKey(EpConstant.EpKey.EP_ID)) {
             throw new ApiException("非法请求:企业ID为空");
@@ -435,6 +443,11 @@ public class LockTransactionManager {
         order.setPay_time(new Date());
         orderMapper.updateByPrimaryKeySelective(order);
 
+        log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(order.getId(), null,
+                params.get(EpConstant.EpKey.EP_ID),  params.get("operator_name"),
+                OrderConstant.LogOperateCode.PAID,
+                0, String.format("订单支付:参数:%s", JsonUtils.toJson(params))));
+
         // 调用支付RPC
         // 余额支付
         if (payType == PaymentConstant.PaymentType.BALANCE.intValue()) {
@@ -458,7 +471,7 @@ public class LockTransactionManager {
             Result result = bookingOrderManager.changeBalances(
                     PaymentConstant.BalanceChangeType.BALANCE_PAY,
                     order.getNumber().toString(), balanceChangeInfoList);
-            if (!result.isSuccess()) {
+            if (!result.isSuccess() && (result.getCode() == null || result.getCode().intValue() != Result.UNIQUE_KEY_ERROR)) {
                 log.warn("余额支付失败:{}", JsonUtils.toJson(result));
                 throw new ApiException(result.getError());
             }
@@ -517,6 +530,10 @@ public class LockTransactionManager {
             log.error("退订订单:{} 退票回调异常: 退票人:{} 可退票不足, 小秘书重置为退票失败", refundOrder.getNumber(), info.getVisitorSeqId());
             info.setSuccess(false);
         }
+        log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(null, orderItem.getId(),
+                0,  "VOUCHER",
+                OrderConstant.LogOperateCode.RECEIVE_REFUND_TICKETING,
+                refundOrder.getQuantity(), String.format("退票返回:退票信息:%s", JsonUtils.toJson(info))));
         eventManager.addEvent(OrderConstant.EventType.REFUND_TICKET, new RefundTicketEventParam(refundOrder.getId(), info.isSuccess()));
         // 退票失败
         if (!info.isSuccess()) {
@@ -624,19 +641,22 @@ public class LockTransactionManager {
             throw new ApiException("核销详情为空");
         }
 
-        List<RefundOrder> refundOrders = refundOrderMapper.selectByItemId(orderItem.getId());
-        if (refundOrders != null && refundOrders.size() > 0) {
-            throw new ApiException("该订单已退订");
-        }
-
         int count = orderClearanceSerialMapper.selectItemQuantityCount(orderItem.getId());
         if (count > 0) {
             throw new ApiException("该订单已核销");
         }
 
+        List<RefundOrder> refundOrders = refundOrderMapper.selectByItemId(orderItem.getId());
+        if (refundOrders != null && refundOrders.size() > 0) {
+            throw new ApiException("该订单已退订");
+        }
+
         // 核销
         Date clearanceTime = new Date();
         List<OrderItemDetail> details = orderItemDetailMapper.selectByItemId(orderItem.getId());
+        if (details.get(0).getDay().after(clearanceTime)) {
+            throw new ApiException("请入住后核销");
+        }
         int total = 0;
         for (ConsumeDay consumeDay : consumeDays) {
             OrderItemDetail detail = AccountUtil.getDetailByDay(details, consumeDay.getDay());
@@ -652,7 +672,7 @@ public class LockTransactionManager {
         int ret = orderItemMapper.useQuantity(orderItem.getId(), total);
         if (ret <= 0) {
             log.warn("酒店核销订单:{} 核销票不足", orderItemSn);
-            throw new ApiException("没有可核销的票");
+            throw new ApiException("没有可核销的房间");
         }
         if (total < orderItem.getQuantity() * orderItem.getDays()) {
             // 退票
@@ -691,7 +711,131 @@ public class LockTransactionManager {
             // 触发事件
             eventManager.addEvent(OrderConstant.EventType.ORDER_REFUND_APPLY, refundOrder.getId());
         }
+        log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(null, orderItem.getId(),
+                params.get(EpConstant.EpKey.EP_ID),  params.get("operator_name"),
+                OrderConstant.LogOperateCode.TICKET_CONSUME_SUCCESS,
+                total, String.format("酒店核销:信息:%s", JsonUtils.toJson(params))));
         return new Result(true);
+    }
+
+    public Result modifyTicketForGroup(Map params, long orderItemSn) {
+        OrderItem orderItem = orderItemMapper.selectBySN(orderItemSn);
+        if (orderItem == null) {
+            return new Result(false, "订单不存在");
+        }
+        if (!(orderItem.getGroup_id() != null && orderItem.getGroup_id() != 0 &&
+                orderItem.getPro_sub_ticket_type() != null && orderItem.getPro_sub_ticket_type() == ProductConstants.TeamTicketType.TEAM)) {
+            return new Result(false, "该订单不是团队订单");
+        }
+        // 订单状态不在:已出票/已修改/修改失败 或者 已用大于0 则不可以修改
+        if ((orderItem.getStatus() != OrderConstant.OrderItemStatus.SEND &&
+                orderItem.getStatus() != OrderConstant.OrderItemStatus.MODIFY &&
+                orderItem.getStatus() != OrderConstant.OrderItemStatus.MODIFY_FAIL) ||
+                (orderItem.getUsed_quantity() != null && orderItem.getUsed_quantity() > 0)) {
+            return new Result(false, "该订单不在可修改状态");
+        }
+
+        orderItem.setStatus(OrderConstant.OrderItemStatus.MODIFYING);
+        orderItemMapper.updateByPrimaryKeySelective(orderItem);
+        ModifyGroupTicketParams ticketParams = new ModifyGroupTicketParams();
+        ticketParams.setOrderSn(orderItem.getNumber());
+        Integer guideId = CommonUtil.objectParseInteger(params.get("guide_id"));
+        Date modifyDate = new Date();
+        if (guideId != null) {
+            Shipping shipping = shippingMapper.selectByPrimaryKey(guideId);
+            if (shipping == null) {
+                throw new ApiException("导游信息不存在");
+            }
+            String guideName = CommonUtil.objectParseString(params.get("guide_name"));
+            String guidePhone = CommonUtil.objectParseString(params.get("guide_phone"));
+            String guideSid = CommonUtil.objectParseString(params.get("guide_sid"));
+            guideName = StringUtils.isEmpty(guideName) ? shipping.getName() : guideName;
+            guidePhone = StringUtils.isEmpty(guidePhone) ? shipping.getPhone() : guidePhone;
+            guideSid = StringUtils.isEmpty(guideSid) ? shipping.getSid() : guideSid;
+            ticketParams.setGuideName(guideName);
+            ticketParams.setGuidePhone(guidePhone);
+            ticketParams.setGuideSid(guideSid);
+            ShippingModify shippingModify = new ShippingModify();
+            shippingModify.setShipping_id(guideId);
+            shippingModify.setOrder_id(orderItem.getOrder_id());
+            shippingModify.setCreate_time(modifyDate);
+            shippingModify.setStatus(false);
+            shippingModify.setShipping_name(guideName);
+            shippingModify.setShipping_phone(guidePhone);
+            shippingModify.setShipping_sid(guideSid);
+            shippingModifyMapper.insertSelective(shippingModify);
+        }
+        ticketParams.setVisitors(modifyGroupVisitor((List) params.get("visitors"), orderItem.getId()));
+        return voucherRPCService.modifyGroupTicket(orderItem.getEp_ma_id(), ticketParams);
+    }
+
+    private List<com.all580.voucher.api.model.Visitor> modifyGroupVisitor(List visitors, int itemId) {
+        List<com.all580.voucher.api.model.Visitor> vs = new ArrayList<>();
+        if (visitors != null && visitors.size() > 0) {
+            List<Integer> vIds = new ArrayList<>();
+            for (Object o : visitors) {
+                Map visitor = (Map) o;
+                Integer id = CommonUtil.objectParseInteger(visitor.get("id"));
+                if (id != null) {
+                    vIds.add(id);
+                }
+            }
+            if (!vIds.isEmpty()) {
+                Date modifyDate = new Date();
+                List<Visitor> visitorList = visitorMapper.selectByIds(vIds);
+                for (Object o : visitors) {
+                    Map vMap = (Map) o;
+                    Integer id = CommonUtil.objectParseInteger(vMap.get("id"));
+                    if (id != null) {
+                        String name = CommonUtil.objectParseString(vMap.get("name"));
+                        String phone = CommonUtil.objectParseString(vMap.get("phone"));
+                        String sid = CommonUtil.objectParseString(vMap.get("sid"));
+                        Integer type = CommonUtil.objectParseInteger(vMap.get("card_type"));
+                        if (type != null && type == OrderConstant.CardType.ID) {
+                            Assert.isTrue(CheckIdCardUtils.validateCard(sid), "请输入15或18位有效身份证号码");
+                        }
+                        boolean have = false;
+                        for (Visitor visitor : visitorList) {
+                            if (id.intValue() == visitor.getId()){
+                                name = StringUtils.isEmpty(name) ? visitor.getName() : name;
+                                phone = StringUtils.isEmpty(phone) ? visitor.getPhone() : phone;
+                                sid = StringUtils.isEmpty(sid) ? visitor.getSid() : sid;
+                                type = type == null ? visitor.getCard_type() : type;
+                                String newValue = String.format("%s-%s-%s", StringUtils.isEmpty(phone) ? "" : phone, StringUtils.isEmpty(sid) ? "" : sid, type == null ? "" : String.valueOf(type));
+                                String oldValue = String.format("%s-%s-%s", StringUtils.isEmpty(visitor.getPhone()) ? "" : visitor.getPhone(), StringUtils.isEmpty(visitor.getSid()) ? "" : visitor.getSid(), visitor.getCard_type() == null ? "" : String.valueOf(visitor.getCard_type()));
+                                if (newValue.equals(oldValue)) {
+                                    throw new ApiException("游客ID:" + id + "修改值中有重复的数据");
+                                }
+                                have = true;
+                            }
+                        }
+                        if (!have) {
+                            throw new ApiException("游客ID:" + id + "数据异常");
+                        }
+                        com.all580.voucher.api.model.Visitor v = new com.all580.voucher.api.model.Visitor();
+                        v.setId(id);
+                        v.setName(name);
+                        v.setPhone(phone);
+                        v.setSid(sid);
+                        if (type != null) {
+                            v.setIdType(type);
+                        }
+                        vs.add(v);
+                        VisitorModify visitorModify = new VisitorModify();
+                        visitorModify.setItem_id(itemId);
+                        visitorModify.setCreate_time(modifyDate);
+                        visitorModify.setStatus(false);
+                        visitorModify.setVisitor_card_type(type);
+                        visitorModify.setVisitor_id(id);
+                        visitorModify.setVisitor_name(name);
+                        visitorModify.setVisitor_phone(phone);
+                        visitorModify.setVisitor_sid(sid);
+                        visitorModifyMapper.insertSelective(visitorModify);
+                    }
+                }
+            }
+        }
+        return vs;
     }
 
     private void addRefundMoneyJob(Long ordCode, String serialNum) {

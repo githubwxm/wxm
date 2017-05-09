@@ -379,4 +379,22 @@
     WHERE t.number=#{number}
 
   </select>
+
+  <select id="selectByLog" resultType="map">
+    SELECT
+        o.number order_number,
+        toi.number item_number,
+        toi.used_quantity,
+        toi.refund_quantity,
+        toi.quantity,
+        IFNULL(SUM(tro.quantity),0) refunding
+    FROM
+        t_order_item toi
+    LEFT JOIN t_refund_order tro ON tro.order_item_id = toi.id AND tro.`status` in(340,342)
+    LEFT JOIN t_order o ON o.id = toi.order_id
+    WHERE
+        toi.id = #{itemId}
+        OR toi.order_id = #{orderId}
+    LIMIT 1
+  </select>
 </mapper>

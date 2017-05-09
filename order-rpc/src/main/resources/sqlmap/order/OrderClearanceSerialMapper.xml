@@ -571,6 +571,12 @@
         select *  from t_order_clearance_serial where order_item_id=#{order_item_id}
     </select>
 
+    <select id="selectByOrder" resultMap="BaseResultMap">
+        SELECT tocs.* FROM t_order_clearance_serial tocs
+        LEFT JOIN t_order_item toi ON toi.id = tocs.order_item_id
+        WHERE toi.order_id = #{orderId}
+    </select>
+
     <sql id="limit">
         <if test="record_start != null and record_count != null">
             limit #{record_start},#{record_count}

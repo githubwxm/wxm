@@ -4,7 +4,6 @@ import com.all580.order.api.OrderConstant;
 import com.all580.order.api.service.PaymentCallbackService;
 import com.all580.order.dao.OrderMapper;
 import com.all580.order.entity.Order;
-import com.all580.order.manager.BookingOrderManager;
 import com.all580.order.manager.LockTransactionManager;
 import com.framework.common.Result;
 import com.framework.common.distributed.lock.DistributedLockTemplate;
@@ -29,8 +28,6 @@ import java.util.Map;
 @Service
 @Slf4j
 public class PaymentCallbackServiceImpl implements PaymentCallbackService {
-    @Autowired
-    private BookingOrderManager bookingOrderManager;
     @Autowired
     private LockTransactionManager lockTransactionManager;
 

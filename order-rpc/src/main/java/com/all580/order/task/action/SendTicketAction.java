@@ -3,11 +3,15 @@ package com.all580.order.task.action;
 import com.all580.order.api.OrderConstant;
 import com.all580.order.dao.OrderItemDetailMapper;
 import com.all580.order.dao.OrderItemMapper;
+import com.all580.order.dao.OrderMapper;
 import com.all580.order.dao.VisitorMapper;
+import com.all580.order.dto.SyncAccess;
+import com.all580.order.entity.Order;
 import com.all580.order.entity.OrderItem;
 import com.all580.order.entity.OrderItemDetail;
 import com.all580.order.entity.Visitor;
 import com.all580.order.manager.BookingOrderManager;
+import com.all580.order.service.event.BasicSyncDataEvent;
 import com.all580.product.api.consts.ProductConstants;
 import com.all580.voucher.api.conf.VoucherConstant;
 import com.all580.voucher.api.model.SendTicketParams;
@@ -25,10 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author zhouxianjun(Alone)
@@ -38,13 +39,15 @@ import java.util.Map;
  */
 @Component(OrderConstant.Actions.SEND_TICKET)
 @Slf4j
-public class SendTicketAction implements JobRunner {
+public class SendTicketAction extends BasicSyncDataEvent implements JobRunner {
     @Autowired
     private OrderItemMapper orderItemMapper;
     @Autowired
     private OrderItemDetailMapper orderItemDetailMapper;
     @Autowired
     private VisitorMapper visitorMapper;
+    @Autowired
+    private OrderMapper orderMapper;
 
     @Autowired
     private VoucherRPCService voucherRPCService;
@@ -76,6 +79,8 @@ public class SendTicketAction implements JobRunner {
         SendTicketParams sendTicketParams = new SendTicketParams();
         sendTicketParams.setOrderSn(orderItem.getNumber());
         sendTicketParams.setProductSn(orderItem.getPro_sub_number());
+        sendTicketParams.setProductName(orderItem.getPro_name());
+        sendTicketParams.setProductSubName(orderItem.getPro_sub_name());
         sendTicketParams.setPaymentType(orderItem.getPayment_flag() == ProductConstants.PayType.PREPAY ?
                 VoucherConstant.PaymentType.ONLINE : VoucherConstant.PaymentType.LIVE);
         sendTicketParams.setConsumeType(VoucherConstant.ConsumeType.COUNT); // 默认
@@ -86,7 +91,8 @@ public class SendTicketAction implements JobRunner {
         sendTicketParams.setMaProductId(orderItem.getMa_product_id());
         // TODO: 2016/11/3 出票发送短信
         sendTicketParams.setSendSms(true);
-        //sendTicketParams.setSms("");
+        sendTicketParams.setSms(orderItem.getVoucher_msg());
+        sendTicketParams.setTicketMsg(orderItem.getTicket_msg());
 
         List<Visitor> visitorList = visitorMapper.selectByOrderItem(orderItemId);
         List<com.all580.voucher.api.model.Visitor> contacts = new ArrayList<>();
@@ -100,12 +106,21 @@ public class SendTicketAction implements JobRunner {
         }
         sendTicketParams.setVisitors(contacts);
         com.framework.common.Result r = voucherRPCService.sendTicket(orderItem.getEp_ma_id(), sendTicketParams);
+        log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(null, orderItem.getId(),
+                0, "ORDER_ACTION", OrderConstant.LogOperateCode.SEND_TICKETING,
+                orderItem.getQuantity(), String.format("散客出票任务:发送状态:%s", String.valueOf(r.isSuccess()))));
+
         if (!r.isSuccess()) {
             log.warn("子订单:{},出票失败:{}", orderItem.getNumber(), r.getError());
             throw new Exception("出票失败:" + r.getError());
         }
 
-        bookingOrderManager.syncSendingData(orderItemId);
+        Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
+        SyncAccess syncAccess = getAccessKeys(order);
+        syncAccess.getDataMap()
+                .add("t_order_item", orderItemMapper.selectByPrimaryKey(orderItem.getId()));
+        syncAccess.loop();
+        sync(syncAccess.getDataMaps());
         return new Result(Action.EXECUTE_SUCCESS);
     }
 

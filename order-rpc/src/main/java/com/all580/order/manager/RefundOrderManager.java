@@ -23,7 +23,6 @@ import com.framework.common.event.MnsEvent;
 import com.framework.common.event.MnsEventAspect;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.lang.UUIDGenerator;
-import com.framework.common.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,6 +96,7 @@ public class RefundOrderManager extends BaseOrderManager {
         if (order == null) {
             throw new ApiException("订单不存在");
         }
+        boolean paid = order.getStatus() == OrderConstant.OrderStatus.PAID || order.getStatus() == OrderConstant.OrderStatus.PAID_HANDLING;
         // 检查订单状态
         switch (order.getStatus()) {
             case OrderConstant.OrderStatus.CANCEL:
@@ -121,7 +121,7 @@ public class RefundOrderManager extends BaseOrderManager {
         // 更新主订单为已取消
         orderMapper.updateByPrimaryKeySelective(order);
         // 还库存
-        refundStock(orderItems);
+        refundStock(orderItems, paid);
 
         eventManager.addEvent(OrderConstant.EventType.ORDER_CANCEL, order.getId());
         return new Result(true);
@@ -372,7 +372,16 @@ public class RefundOrderManager extends BaseOrderManager {
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public void refundSplitAccount(int refundId) {
-        RefundOrder refundOrder = refundOrderMapper.selectByPrimaryKey(refundId);
+        refundSplitAccount(refundOrderMapper.selectByPrimaryKey(refundId));
+    }
+
+    /**
+     * 退款分账
+     * @param refundOrder 退订订单
+     * @return
+     */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public void refundSplitAccount(RefundOrder refundOrder) {
         List<RefundAccount> accountList = refundAccountMapper.selectByRefundId(refundOrder.getId());
         if (accountList != null) {
             List<BalanceChangeInfo> infoList = AccountUtil.makerRefundBalanceChangeInfo(accountList);
@@ -381,7 +390,7 @@ public class RefundOrderManager extends BaseOrderManager {
             }
             // 调用分账
             Result<BalanceChangeRsp> result = changeBalances(PaymentConstant.BalanceChangeType.REFUND_PAY, String.valueOf(refundOrder.getNumber()), infoList);
-            if (!result.isSuccess()) {
+            if (!result.isSuccess() && (result.getCode() == null || result.getCode().intValue() != Result.UNIQUE_KEY_ERROR)) {
                 log.warn("退款分账失败:{}", result.get());
                 throw new ApiException(result.getError());
             }
@@ -525,6 +534,9 @@ public class RefundOrderManager extends BaseOrderManager {
                 log.warn("*****退票发起部分成功*****");
             }
         }
+        log.info(OrderConstant.LogOperateCode.NAME, orderLog(null, orderItem.getId(),
+                0, "ORDER", OrderConstant.LogOperateCode.SEND_REFUND_TICKETING,
+                refundOrder.getQuantity(), "退票发起"));
     }
 
     /**
@@ -543,9 +555,11 @@ public class RefundOrderManager extends BaseOrderManager {
                 refundOrder.getStatus() != OrderConstant.RefundOrderStatus.REFUND_MONEY_AUDITING) {
             refundOrder.setStatus(OrderConstant.RefundOrderStatus.REFUND_MONEY_AUDITING);
             refundOrderMapper.updateByPrimaryKeySelective(refundOrder);
+            eventManager.addEvent(OrderConstant.EventType.REFUND_MONEY_APPLY, refundOrder.getId());
             return new Result(true);
         }
         // 不需要审核
+        eventManager.addEvent(OrderConstant.EventType.REFUND_MONEY_AUDIT, refundOrder.getId());
         refundOrder.setStatus(OrderConstant.RefundOrderStatus.REFUND_MONEY);
         refundOrderMapper.updateByPrimaryKeySelective(refundOrder);
         // 非支付宝
@@ -585,7 +599,7 @@ public class RefundOrderManager extends BaseOrderManager {
             Result result = changeBalances(
                     PaymentConstant.BalanceChangeType.BALANCE_REFUND,
                     sn == null ? order.getNumber().toString() : sn, balanceChangeInfoList);
-            if (!result.isSuccess()) {
+            if (!result.isSuccess() && (result.getCode() == null || result.getCode().intValue() != Result.UNIQUE_KEY_ERROR)) {
                 log.warn("余额退款失败:{}", result.get());
                 throw new ApiException("调用余额退款失败:" + result.getError());
             }
@@ -610,20 +624,25 @@ public class RefundOrderManager extends BaseOrderManager {
      * @param orderItemList
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public void refundStock(List<OrderItem> orderItemList) {
+    public void refundStock(List<OrderItem> orderItemList, boolean paid) {
         if (orderItemList != null) {
             List<ProductSearchParams> lockParams = new ArrayList<>();
+            List<ProductSearchParams> lockParams2 = new ArrayList<>();
             for (OrderItem orderItem : orderItemList) {
                 List<OrderItemDetail> detailList = orderItemDetailMapper.selectByItemId(orderItem.getId());
                 for (OrderItemDetail detail : detailList) {
                     if (!detail.getOversell()) {
                         lockParams.add(getProductSearchParams(orderItem, detail.getDay(), detail.getQuantity()));
+                    } else {
+                        if (paid) {
+                            lockParams2.add(getProductSearchParams(orderItem, detail.getDay(), detail.getQuantity()));
+                        }
                     }
                 }
             }
             // 还库存
-            if (!lockParams.isEmpty()) {
-                com.framework.common.Result result = productSalesPlanRPCService.addProductStocks(lockParams);
+            if (!lockParams.isEmpty() || !lockParams2.isEmpty()) {
+                com.framework.common.Result result = paid ? productSalesPlanRPCService.addReturnProductStock(lockParams, lockParams2) : productSalesPlanRPCService.addProductStocks(lockParams, lockParams2);
                 if (!result.isSuccess()) {
                     throw new ApiException(result.getError());
                 }
@@ -639,6 +658,7 @@ public class RefundOrderManager extends BaseOrderManager {
     public void refundStock(RefundOrder refundOrder) {
         if (refundOrder != null) {
             List<ProductSearchParams> lockParams = new ArrayList<>();
+            List<ProductSearchParams> lockParams2 = new ArrayList<>();
             OrderItem orderItem = orderItemMapper.selectByPrimaryKey(refundOrder.getOrder_item_id());
             List<OrderItemDetail> details = orderItemDetailMapper.selectByItemId(orderItem.getId());
             Collection<RefundDay> refundDays = AccountUtil.decompileRefundDay(refundOrder.getData());
@@ -646,11 +666,13 @@ public class RefundOrderManager extends BaseOrderManager {
                 OrderItemDetail detail = AccountUtil.getDetailByDay(details, refundDay.getDay());
                 if (!detail.getOversell()) { // 没有超卖才还库存
                     lockParams.add(getProductSearchParams(orderItem, refundDay.getDay(), refundDay.getQuantity()));
+                } else {
+                    lockParams2.add(getProductSearchParams(orderItem, refundDay.getDay(), refundDay.getQuantity()));
                 }
             }
             // 还库存
-            if (!lockParams.isEmpty()) {
-                com.framework.common.Result result = productSalesPlanRPCService.addProductStocks(lockParams);
+            if (!lockParams.isEmpty() || !lockParams2.isEmpty()) {
+                com.framework.common.Result result = productSalesPlanRPCService.addReturnProductStock(lockParams, lockParams2);
                 if (!result.isSuccess()) {
                     throw new ApiException(result.getError());
                 }
@@ -677,15 +699,6 @@ public class RefundOrderManager extends BaseOrderManager {
         p.setQuantity(quantity);
         p.setSubOrderId(orderItem.getId());
         return p;
-    }
-
-    /**
-     * 还可售库存
-     * @param orderItem
-     */
-    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public void refundStock(OrderItem orderItem) {
-        refundStock(CommonUtil.oneToList(orderItem));
     }
 
     /**
@@ -727,17 +740,6 @@ public class RefundOrderManager extends BaseOrderManager {
                 throw new ApiException("非法请求:当前企业不能退订该订单");
             }
         }
-    }
-
-    /**
-     * 同步退款分账数据
-     * @param refundId 退订订单ID
-     */
-    public Map syncRefundAccountData(int refundId) {
-        RefundOrder refundOrder = refundOrderMapper.selectByPrimaryKey(refundId);
-        return generateSyncByItem(refundOrder.getOrder_item_id())
-                .put("t_refund_account", refundAccountMapper.selectByRefundId(refundId))
-                .sync().getDataMapForJsonMap();
     }
 
     private MaSendResponse getMaResponse(List<MaSendResponse> responses, Integer visitorId, Integer epMaId) {

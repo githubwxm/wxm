@@ -58,4 +58,6 @@ public interface ShippingMapper {
      * @return
      */
     Shipping selectByOrder(@Param("orderId") Integer orderId);
+
+    int modify(@Param("orderId") Integer orderId);
 }

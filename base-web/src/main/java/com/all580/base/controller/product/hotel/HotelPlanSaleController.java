@@ -1,6 +1,7 @@
 package com.all580.base.controller.product.hotel;
 
 import com.all580.ep.api.service.EpService;
+import com.all580.product.api.consts.ProductConstants;
 import com.all580.product.api.hotel.service.HotelPlanSaleService;
 import com.all580.product.api.hotel.service.HotelService;
 import com.framework.common.Result;
@@ -110,6 +111,8 @@ public class HotelPlanSaleController {
     }
 
 
+
+
     /**
      * 指定一个或多个企业下架    商家的话  mpa list 里是一个上级供应商 （下游）
      * @param params
@@ -170,6 +173,27 @@ public class HotelPlanSaleController {
         ParamsMapValidate.validate(params, generateSaleUpdateUpValidate());
         return hotelPlanSaleService.productGroupUp(params);
     }
+
+    @RequestMapping(value = "sale/batch/group/down", method = RequestMethod.POST)
+    @ResponseBody
+    public Result<?> productGroupDown(@RequestBody Map params) {
+        ParamsMapValidate.validate(params, generateSaleUpdateUpValidate());
+        return hotelPlanSaleService.productGroupDown(params);
+    }
+    @RequestMapping(value = "sale/batch/group/up_list", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<?> selectNotSaleGroupList(@RequestParam("ep_id") Integer ep_id,
+                                        @RequestParam("batch_id") Integer batch_id) {
+        return hotelPlanSaleService.selectNotSaleGroupList(ep_id,batch_id);
+    }
+
+    @RequestMapping(value = "sale/batch/group/down_list", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<?> selectSaleGroupList(@RequestParam("ep_id") Integer ep_id,
+                                        @RequestParam("batch_id") Integer batch_id) {
+        return hotelPlanSaleService.selectSaleGroupList(ep_id,batch_id);
+    }
+
 
 
 

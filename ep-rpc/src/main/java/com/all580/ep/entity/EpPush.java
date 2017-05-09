@@ -43,6 +43,11 @@ public class EpPush implements Serializable {
     private String access_id;
 
     /**
+     *  ,所属表字段为t_ep_push.access_key
+     */
+    private String access_key;
+
+    /**
      *  运营平台地址,所属表字段为t_ep_push.client_url
      */
     private String client_url;

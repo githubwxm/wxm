@@ -1,6 +1,8 @@
 package com.all580.base.controller.product;
 
 import com.all580.ep.api.service.EpService;
+import com.all580.product.api.consts.ProductConstants;
+import com.all580.product.api.hotel.service.HotelPlanSaleService;
 import com.all580.product.api.model.AddProductPlanParams;
 import com.all580.product.api.model.CanSaleOrderState;
 import com.all580.product.api.model.OnSalesParams;
@@ -34,6 +36,8 @@ public class PlanController extends BaseController {
 
     @Resource
     EpService epService;
+    @Resource
+    HotelPlanSaleService hotelPlanSaleService;
 
     /**
      * 增加销售计划
@@ -153,14 +157,45 @@ public class PlanController extends BaseController {
     @RequestMapping(value = "sale_batch/group", method = RequestMethod.POST)
     @ResponseBody
     public Result ProductSubBatchDistributionGroup(@RequestBody  Map params) {
-        return productService.productBatchOnSaleToGroup(initGroupPlanSalesParams(params));
+        Integer group_id=CommonUtil.objectParseInteger(params.get("group_id"));
+        Result result=new Result(true);
+        Map<String,List<Map<String, Object>>> map =initGroupPlanSalesParams(params);
+        if(!map.get("hotel").isEmpty()){
+//            Map<String,Object> hotelMap = new HashMap<>();
+//            hotelMap.putAll(params);
+//            hotelMap.put("saled_array",map.get("hotel"));
+            for(Map<String, Object> tempMap:map.get("hotel")){
+                List<Map<String,Object>> list = new ArrayList<>();
+                Map<String,Object> tMap = new HashMap<>();
+                tMap.putAll(tempMap);
+                list.add(tMap);
+                tempMap.put("group_id",group_id);
+                tempMap.put("saled_array",list);
+                tempMap.put("ep_id",params.get("ep_id"));
+                result=  hotelPlanSaleService.productGroupUp(tempMap);//  分组上架酒店产品
+            }
+        }
+        if(!map.get("scenery").isEmpty()){
+            result= productService.productBatchOnSaleToGroup(map.get("scenery"));
+        }
+        return result;
     }
 
-    private List<Map<String, Object>> initGroupPlanSalesParams(Map params) {
+    private Map initGroupPlanSalesParams(Map params) {
+        Map<String,List<Map<String, Object>>> map = new HashMap<String,List<Map<String, Object>>>();
+        List<Map<String, Object>> scenery = new ArrayList<Map<String, Object>> ();
+        List<Map<String, Object>> hotel = new ArrayList<Map<String, Object>> ();
         List<Map<String, Object>> onSales = (List<Map<String, Object>>) params.get("saled_array");
         for (Map<String, Object> planSale : onSales) {
             planSale.put("sale_ep_id", params.get("ep_id"));
             planSale.put("group_id", params.get("group_id"));
+             Integer type = CommonUtil.objectParseInteger(planSale.get("type"))  ;
+            if(ProductConstants.ProductType.HOTEL-type==0){
+                hotel.add(planSale);
+            }else{
+                scenery.add(planSale);
+            }
+            //planSale.put("batch_id",params.get("batch_id"));
             // planSale内有product_sub_id
             // planSale内有batch_id
             // planSale内有price
@@ -168,13 +203,15 @@ public class PlanController extends BaseController {
             // planSale内有price_pixed
             // planSale内有price_percent
         }
-        return onSales;
+        map.put("scenery",scenery);
+        map.put("hotel",hotel);
+        return map;
     }
 
     @RequestMapping(value = "sale/ep/creator", method = RequestMethod.POST)
     @ResponseBody
     public Result productSubDistributionCreatorEp(@RequestBody Map params) {
-        return productService.productOnSaleBatch(updateEpOnsalesParams(params));
+       return productService.productOnSaleBatch(updateEpOnsalesParams(params));
     }
 
     @RequestMapping(value = "salp/lst")
@@ -218,6 +255,7 @@ public class PlanController extends BaseController {
             planSale.put("sale_ep_id", saleEpId);
             planSale.put("ep_id", ep.get("id"));
             planSale.put("name", ep.get("name"));
+            //planSale.put("batch_id",ep.get("batch_id"));
             // planSale内有product_sub_id
             // planSale内有batch_id
             // planSale内有price
@@ -280,6 +318,8 @@ public class PlanController extends BaseController {
         map.put("price_percent",params.get("price_percent"));
         map.put("price_pixed",params.get("price_pixed"));
         map.put("product_sub_id",params.get("product_sub_id"));
+        map.put("product_type",params.get("product_type"));
+        map.put("batch_id",params.get("batch_id"));
         list.add(map);
         return list;
     }
@@ -289,6 +329,8 @@ public class PlanController extends BaseController {
         for (Map ep : onSalesEps) {
             ep.put("product_sub_id", params.get("product_sub_id"));
             ep.put("sale_ep_id", params.get("ep_id"));
+            ep.put("batch_id",params.get("batch_id"));
+            ep.put("product_type",params.get("product_type"));
         }
         return onSalesEps;
     }

@@ -4,9 +4,11 @@ import com.all580.order.api.OrderConstant;
 import com.all580.order.api.model.*;
 import com.all580.order.api.service.TicketCallbackService;
 import com.all580.order.dao.*;
+import com.all580.order.dto.SyncAccess;
 import com.all580.order.entity.*;
 import com.all580.order.manager.BookingOrderManager;
 import com.all580.order.manager.LockTransactionManager;
+import com.all580.order.service.event.BasicSyncDataEvent;
 import com.all580.product.api.consts.ProductConstants;
 import com.framework.common.Result;
 import com.framework.common.distributed.lock.DistributedLockTemplate;
@@ -34,11 +36,15 @@ import java.util.*;
  */
 @Service
 @Slf4j
-public class TicketCallbackServiceImpl implements TicketCallbackService {
+public class TicketCallbackServiceImpl extends BasicSyncDataEvent implements TicketCallbackService {
     @Autowired
     private OrderMapper orderMapper;
     @Autowired
     private OrderItemMapper orderItemMapper;
+    @Autowired
+    private VisitorModifyMapper visitorModifyMapper;
+    @Autowired
+    private ShippingModifyMapper shippingModifyMapper;
     @Autowired
     private OrderItemDetailMapper orderItemDetailMapper;
     @Autowired
@@ -51,6 +57,8 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
     private MaSendResponseMapper maSendResponseMapper;
     @Autowired
     private VisitorMapper visitorMapper;
+    @Autowired
+    private ShippingMapper shippingMapper;
     @Autowired
     private RefundOrderMapper refundOrderMapper;
     @Autowired
@@ -106,6 +114,11 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
             maSendResponseMapper.insertSelective(response);
         }
 
+        log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(null, orderItem.getId(),
+                0,  "VOUCHER",
+                OrderConstant.LogOperateCode.RECEIVE_TICKETING,
+                orderItem.getQuantity(), String.format("散客出票接收:接收信息:%s", JsonUtils.toJson(infoList))));
+
         // 触发事件
         eventManager.addEvent(OrderConstant.EventType.SEND_TICKET, orderItem.getId());
         return new Result(true);
@@ -148,6 +161,10 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         response.setCreate_time(procTime);
         maSendResponseMapper.insertSelective(response);
 
+        log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(null, orderItem.getId(),
+                0,  "VOUCHER",
+                OrderConstant.LogOperateCode.RECEIVE_TICKETING,
+                orderItem.getQuantity(), String.format("团队出票接收:接收信息:%s", JsonUtils.toJson(info))));
         // 触发事件
         eventManager.addEvent(OrderConstant.EventType.SEND_TICKET, orderItem.getId());
         return new Result(true);
@@ -214,6 +231,11 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
             throw new ApiException("没有可核销的票");
         }
 
+        log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(null, orderItem.getId(),
+                0,  "VOUCHER",
+                OrderConstant.LogOperateCode.TICKET_CONSUME_SUCCESS,
+                info.getConsumeQuantity(), String.format("散客票核销:接收信息:%s", JsonUtils.toJson(info))));
+
         eventManager.addEvent(OrderConstant.EventType.CONSUME_TICKET, new ConsumeTicketEventParam(orderItem.getId(), serial.getId()));
         return new Result(true);
     }
@@ -276,6 +298,11 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
             throw new ApiException("没有可核销的票");
         }
 
+        log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(null, orderItem.getId(),
+                0,  "VOUCHER",
+                OrderConstant.LogOperateCode.TICKET_CONSUME_SUCCESS,
+                info.getConsumeQuantity(), String.format("团队票核销:接收信息:%s", JsonUtils.toJson(info))));
+
         eventManager.addEvent(OrderConstant.EventType.CONSUME_TICKET, new ConsumeTicketEventParam(orderItem.getId(), serial.getId()));
         return new Result(true);
     }
@@ -329,6 +356,11 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
             throw new ApiException("没有可反核销的票");
         }
 
+        log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(null, orderItem.getId(),
+                0,  "VOUCHER",
+                OrderConstant.LogOperateCode.TICKET_RECONSUME_SUCCESS,
+                orderClearanceSerial.getQuantity(), String.format("散客票反核销:接收信息:%s", JsonUtils.toJson(info))));
+
         // 发送短信
         //smsManager.sendReConsumeSms(orderItem, orderClearanceSerial.getQuantity(), orderClearanceSerial.getQuantity());
 
@@ -339,7 +371,13 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         jobManager.addJob(OrderConstant.Actions.RE_CONSUME_SPLIT_ACCOUNT, Collections.singleton(jobParams));
 
         // 同步数据
-        bookingOrderManager.syncReConsumeData(orderItem.getId(), info.getReValidateSn());
+        SyncAccess syncAccess = getAccessKeys(order);
+        syncAccess.getDataMap()
+                .add("t_order_item_detail", orderItemDetailMapper.selectByItemId(orderItem.getId()))
+                .add("t_clearance_washed_serial", clearanceWashedSerialMapper.selectBySn(info.getReValidateSn()))
+                .add("t_visitor", visitorMapper.selectByOrderItem(orderItem.getId()));
+        syncAccess.loop();
+        sync(syncAccess.getDataMaps());
         return new Result(true);
     }
 
@@ -392,6 +430,11 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
             throw new ApiException("没有可反核销的票");
         }
 
+        log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(null, orderItem.getId(),
+                0,  "VOUCHER",
+                OrderConstant.LogOperateCode.TICKET_RECONSUME_SUCCESS,
+                info.getQuantity(), String.format("团队票反核销:接收信息:%s", JsonUtils.toJson(info))));
+
         // 发送短信
         //smsManager.sendReConsumeSms(orderItem, info.getQuantity(), orderClearanceSerial.getQuantity());
 
@@ -402,7 +445,13 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
         jobManager.addJob(OrderConstant.Actions.RE_CONSUME_SPLIT_ACCOUNT, Collections.singleton(jobParams));
 
         // 同步数据
-        bookingOrderManager.syncReConsumeData(orderItem.getId(), info.getReValidateSn());
+        SyncAccess syncAccess = getAccessKeys(order);
+        syncAccess.getDataMap()
+                .add("t_order_item_detail", orderItemDetailMapper.selectByItemId(orderItem.getId()))
+                .add("t_clearance_washed_serial", clearanceWashedSerialMapper.selectBySn(info.getReValidateSn()))
+                .add("t_visitor", visitorMapper.selectByOrderItem(orderItem.getId()));
+        syncAccess.loop();
+        sync(syncAccess.getDataMaps());
         return new Result(true);
     }
 
@@ -492,6 +541,7 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public Result modifyGroupTicket(Long orderSn, boolean success, Date procTime) {
         OrderItem orderItem = orderItemMapper.selectBySN(orderSn);
         if (orderItem == null) {
@@ -506,9 +556,22 @@ public class TicketCallbackServiceImpl implements TicketCallbackService {
 
         orderItem.setStatus(success ? OrderConstant.OrderItemStatus.MODIFY : OrderConstant.OrderItemStatus.MODIFY_FAIL);
         orderItemMapper.updateByPrimaryKeySelective(orderItem);
+        if (success) {
+            visitorMapper.modify(orderItem.getId());
+            shippingMapper.modify(orderItem.getOrder_id());
+        }
+        visitorModifyMapper.modifyed(orderItem.getId());
+        shippingModifyMapper.modifyed(orderItem.getOrder_id());
 
         // 同步数据
-        bookingOrderManager.syncSendingData(orderItem.getId());
+        Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
+        SyncAccess syncAccess = getAccessKeys(order);
+        syncAccess.getDataMap()
+                .add("t_order_item", orderItemMapper.selectByPrimaryKey(orderItem.getId()))
+                .add("t_visitor", visitorMapper.selectByOrderItem(orderItem.getId()))
+                .add("t_shipping", shippingMapper.selectByOrder(order.getId()));
+        syncAccess.loop();
+        sync(syncAccess.getDataMaps());
         return new Result(true);
     }
 

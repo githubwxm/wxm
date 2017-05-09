@@ -151,4 +151,11 @@
     select serial_no from t_order_clearance_serial where order_item_id=#{itemId}
     )
   </select>
+
+  <select id="selectByOrder" resultMap="BaseResultMap">
+    SELECT tocd.* FROM t_order_clearance_detail tocd
+    LEFT JOIN t_order_clearance_serial tocs ON tocs.serial_no = tocd.serial_no
+    LEFT JOIN t_order_item toi ON toi.id = tocs.order_item_id
+    WHERE toi.order_id = #{orderId}
+  </select>
 </mapper>

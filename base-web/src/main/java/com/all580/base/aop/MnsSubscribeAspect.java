@@ -43,11 +43,11 @@ public class MnsSubscribeAspect {
         // 请求合法性校验, json串的key必须是带双引号的
         String mnsMsgId = request.getHeader("x-mns-message-id");
         String tag = request.getHeader("x-mns-message-tag");
-        log.info("MNS MESSAGE ID: {}, TAG: {}", mnsMsgId, tag);
+        log.info("MNS-SUBSCRIBE-_-{}-_-{}-_-{}", new Object[]{mnsMsgId, tag, null});
         // 获取请求参数
         String msg = (String) getReqParams.invoke(thisJoinPoint.getThis(), request);
         // 处理消息
-        log.info("MNS: {} 消息: {}", mnsMsgId, msg);
+        log.info("MNS-SUBSCRIBE-_-{}-_-{}-_-{}", new Object[]{mnsMsgId, tag, msg});
         // 保存消息
 
         // 处理消息
@@ -57,7 +57,7 @@ public class MnsSubscribeAspect {
         thisJoinPoint.proceed(new Object[]{response, model});
 
         // 处理成功
-        log.debug("MNS:{} TAG:{} 处理成功.", mnsMsgId, tag);
+        log.info("MNS-SUBSCRIBE-_-{}-_-{}-_-{}", new Object[]{mnsMsgId, tag, "处理成功"});
         return null;
     }
 }

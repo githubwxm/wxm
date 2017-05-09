@@ -2,8 +2,10 @@ package com.all580.order.task.action;
 
 import com.all580.order.api.OrderConstant;
 import com.all580.order.dao.*;
+import com.all580.order.dto.SyncAccess;
 import com.all580.order.entity.*;
 import com.all580.order.manager.BookingOrderManager;
+import com.all580.order.service.event.BasicSyncDataEvent;
 import com.all580.product.api.consts.ProductConstants;
 import com.all580.voucher.api.conf.VoucherConstant;
 import com.all580.voucher.api.model.group.SendGroupTicketParams;
@@ -33,7 +35,7 @@ import java.util.Map;
  */
 @Component(OrderConstant.Actions.SEND_GROUP_TICKET)
 @Slf4j
-public class SendGroupTicketAction implements JobRunner {
+public class SendGroupTicketAction extends BasicSyncDataEvent implements JobRunner {
     @Autowired
     private OrderItemMapper orderItemMapper;
     @Autowired
@@ -91,6 +93,8 @@ public class SendGroupTicketAction implements JobRunner {
         sendGroupTicketParams.setConsumeType(VoucherConstant.ConsumeType.COUNT); // 默认
         sendGroupTicketParams.setValidTime(detail.getEffective_date());
         sendGroupTicketParams.setInvalidTime(detail.getExpiry_date());
+        sendGroupTicketParams.setProductName(orderItem.getPro_name());
+        sendGroupTicketParams.setProductSubName(orderItem.getPro_sub_name());
         // 设置团队信息
         sendGroupTicketParams.setGroupNumber(group.getNumber());
         sendGroupTicketParams.setGuideName(group.getGuide_name());
@@ -113,6 +117,8 @@ public class SendGroupTicketAction implements JobRunner {
         }
         sendGroupTicketParams.setMaProductId(orderItem.getMa_product_id());
         sendGroupTicketParams.setSendSms(true);
+        sendGroupTicketParams.setSms(orderItem.getVoucher_msg());
+        sendGroupTicketParams.setTicketMsg(orderItem.getTicket_msg());
 
         List<Visitor> visitorList = visitorMapper.selectByOrderItem(orderItemId);
         List<com.all580.voucher.api.model.Visitor> contacts = new ArrayList<>();
@@ -124,12 +130,20 @@ public class SendGroupTicketAction implements JobRunner {
         }
         sendGroupTicketParams.setVisitors(contacts);
         com.framework.common.Result r = voucherRPCService.sendGroupTicket(orderItem.getEp_ma_id(), sendGroupTicketParams);
+        Object[] orderLog = bookingOrderManager.orderLog(null, orderItem.getId(),
+                0, "ORDER_ACTION", OrderConstant.LogOperateCode.SEND_TICKETING,
+                orderItem.getQuantity(), String.format("团队出票任务:发送状态:%s", String.valueOf(r.isSuccess())));
         if (!r.isSuccess()) {
-            log.warn("子订单:{},出票失败:{}", orderItem.getNumber(), r.getError());
+            log.error(OrderConstant.LogOperateCode.NAME, orderLog);
             throw new Exception("出票失败:" + r.getError());
         }
+        log.info(OrderConstant.LogOperateCode.NAME, orderLog);
 
-        bookingOrderManager.syncSendingData(orderItemId);
+        SyncAccess syncAccess = getAccessKeys(order);
+        syncAccess.getDataMap()
+                .add("t_order_item", orderItemMapper.selectByPrimaryKey(orderItem.getId()));
+        syncAccess.loop();
+        sync(syncAccess.getDataMaps());
         return new Result(Action.EXECUTE_SUCCESS);
     }
 

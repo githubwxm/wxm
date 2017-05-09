@@ -2,16 +2,12 @@ package com.all580.order.manager;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.all580.ep.api.service.CoreEpAccessService;
 import com.all580.ep.api.service.CoreEpChannelService;
 import com.all580.ep.api.service.EpService;
-import com.all580.order.dao.OrderClearanceSerialMapper;
-import com.all580.order.dao.OrderItemAccountMapper;
-import com.all580.order.dao.OrderMapper;
-import com.all580.order.entity.Order;
-import com.all580.order.entity.OrderClearanceSerial;
-import com.all580.order.entity.OrderItem;
-import com.all580.order.entity.OrderItemAccount;
+import com.all580.order.api.OrderConstant;
+import com.all580.order.dao.*;
+import com.all580.order.dto.SyncAccess;
+import com.all580.order.entity.*;
 import com.all580.order.util.AccountUtil;
 import com.all580.payment.api.conf.PaymentConstant;
 import com.all580.payment.api.model.BalanceChangeInfo;
@@ -24,11 +20,11 @@ import com.all580.product.api.service.ProductSalesPlanRPCService;
 import com.framework.common.Result;
 import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.UUIDGenerator;
-import com.framework.common.synchronize.SynchronizeAction;
-import com.framework.common.synchronize.SynchronizeDataManager;
+import com.framework.common.synchronize.SynchronizeDataMap;
 import com.framework.common.util.CommonUtil;
 import com.github.ltsopensource.core.domain.Job;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -57,14 +53,31 @@ public class BaseOrderManager {
     @Autowired
     private OrderMapper orderMapper;
     @Autowired
-    private SynchronizeDataManager synchronizeDataManager;
-
-    @Autowired
-    private CoreEpAccessService coreEpAccessService;
-    @Autowired
     private CoreEpChannelService coreEpChannelService;
     @Autowired
     private ProductSalesPlanRPCService productSalesPlanRPCService;
+    @Autowired
+    private OrderItemMapper orderItemMapper;
+    @Autowired
+    private OrderItemDetailMapper orderItemDetailMapper;
+    @Autowired
+    private RefundOrderMapper refundOrderMapper;
+    @Autowired
+    private RefundAccountMapper refundAccountMapper;
+    @Autowired
+    private RefundSerialMapper refundSerialMapper;
+    @Autowired
+    private RefundVisitorMapper refundVisitorMapper;
+    @Autowired
+    private ShippingMapper shippingMapper;
+    @Autowired
+    private VisitorMapper visitorMapper;
+    @Autowired
+    private OrderClearanceDetailMapper orderClearanceDetailMapper;
+    @Autowired
+    private MaSendResponseMapper maSendResponseMapper;
+    @Autowired
+    private ClearanceWashedSerialMapper clearanceWashedSerialMapper;
 
     @Value("${task.tracker}")
     private String taskTracker;
@@ -210,6 +223,7 @@ public class BaseOrderManager {
      * @return
      */
     public Result<BalanceChangeRsp> changeBalances(int type, String sn, List<BalanceChangeInfo> infos) {
+        if (infos.isEmpty()) return new Result<>(true);
         return balancePayService.changeBalances(infos, type, sn);
     }
 
@@ -292,7 +306,7 @@ public class BaseOrderManager {
 
         // 调用分账
         Result<BalanceChangeRsp> result = changeBalances(PaymentConstant.BalanceChangeType.CONSUME_SPLIT, sn, balanceChangeInfoList);
-        if (!result.isSuccess()) {
+        if (!result.isSuccess() && (result.getCode() == null || result.getCode().intValue() != Result.UNIQUE_KEY_ERROR)) {
             log.warn("核销OR反核销:{},分账失败:{}", consume, result.get());
             throw new ApiException(result.getError());
         }
@@ -350,6 +364,9 @@ public class BaseOrderManager {
     }
 
     public int[] getAuditConfig(Order order, OrderItem orderItem) {
+        if (orderItem.getPro_type() == ProductConstants.ProductType.HOTEL) {
+            return new int[]{ProductConstants.RefundAudit.NO, ProductConstants.RefundMoneyAudit.NO};
+        }
         // 获取退订审核
         int[] auditSupplierConfig = getAuditConfig(orderItem.getPro_sub_id(), orderItem.getSupplier_core_ep_id());
         int auditTicket = auditSupplierConfig[0];
@@ -364,41 +381,113 @@ public class BaseOrderManager {
     }
 
     /**
-     * 开始同步数据
-     * @param orderId 订单ID
+     * 返回记录订单日志数据
+     * @param id
+     * @param operateId
+     * @param operateName
+     * @param code
+     * @param qty
+     * @param memo
      * @return
      */
-    public SynchronizeAction generateSyncByOrder(int orderId) {
-        return generateSync(orderItemAccountMapper.selectCoreEpIdByOrder(orderId));
+    public Object[] orderLog(Integer orderId, Integer itemId, Object operateId, Object operateName, String code, Integer qty, String memo) {
+        if (orderId == null && itemId == null) {
+            throw new ApiException("记录日志异常:没有订单号");
+        }
+        Map result = orderMapper.selectByLog(orderId == null ? 0 : orderId, itemId == null ? 0 : itemId);
+        return new Object[]{
+                DateFormatUtils.parseDateToDatetimeString(new Date()),
+                result.get("order_number"),
+                result.get("item_number"),
+                OrderConstant.LogOperateCode.SYSTEM,
+                operateId,
+                operateName,
+                code,
+                qty == null && (code.equals(OrderConstant.LogOperateCode.CREATE_SUCCESS) || code.equals(OrderConstant.LogOperateCode.CANCEL_SUCCESS)) ? result.get("quantity") : qty,
+                result.get("used_quantity"),
+                result.get("refund_quantity"),
+                result.get("refunding"),
+                memo
+        };
     }
 
     /**
-     * 开始同步数据
-     * @param itemId 子订单ID
-     * @return
+     * 同步订单数据
+     * @param syncAccess
+     * @param accessKeys 要同步的平台 可选
+     * @param tables 要同步的表 可选
      */
-    public SynchronizeAction generateSyncByItem(int itemId) {
-        return generateSync(orderItemAccountMapper.selectCoreEpIdByOrderItem(itemId));
-    }
-
-    private SynchronizeAction generateSync(List<Integer> coreEpIds) {
-        if (coreEpIds == null) {
-            throw new ApiException("sync core ep ids is not null.");
+    public void addAllOrderTableSync(SyncAccess syncAccess, String[] accessKeys, String[] tables) {
+        SynchronizeDataMap dataMap = syncAccess.getDataMap();
+        Order order = syncAccess.getOrder();
+        tables = tables == null || tables.length == 0 ? OrderConstant.ORDER_TABLES : tables;
+        if (tables != null && tables.length > 0) {
+            for (String table : tables) {
+                if (ArrayUtils.contains(tables, table)) {
+                    switch (table) {
+                        case "t_order":
+                            dataMap.add("t_order", order);
+                            break;
+                        case "t_order_item":
+                            dataMap.add("t_order_item", orderItemMapper.selectByOrderId(order.getId()));
+                            break;
+                        case "t_order_item_detail":
+                            dataMap.add("t_order_item_detail", orderItemDetailMapper.selectByOrderId(order.getId()));
+                            break;
+                        case "t_refund_order":
+                            dataMap.add("t_refund_order", refundOrderMapper.selectByOrder(order.getId()));
+                            break;
+                        case "t_refund_serial":
+                            dataMap.add("t_refund_serial", refundSerialMapper.selectRefundSerialByOrder(order.getId()));
+                            break;
+                        case "t_refund_visitor":
+                            dataMap.add("t_refund_visitor", refundVisitorMapper.selectByOrderId(order.getId()));
+                            break;
+                        case "t_shipping":
+                            dataMap.add("t_shipping", shippingMapper.selectByOrder(order.getId()));
+                            break;
+                        case "t_visitor":
+                            dataMap.add("t_visitor", visitorMapper.selectByOrder(order.getId()));
+                            break;
+                        case "t_order_clearance_detail":
+                            dataMap.add("t_order_clearance_detail", orderClearanceDetailMapper.selectByOrder(order.getId()));
+                            break;
+                        case "t_order_clearance_serial":
+                            dataMap.add("t_order_clearance_serial", orderClearanceSerialMapper.selectByOrder(order.getId()));
+                            break;
+                        case "t_ma_send_response":
+                            dataMap.add("t_ma_send_response", maSendResponseMapper.selectByOrder(order.getId()));
+                            break;
+                        case "t_clearance_washed_serial":
+                            dataMap.add("t_clearance_washed_serial", clearanceWashedSerialMapper.selectByOrder(order.getId()));
+                            break;
+                    }
+                }
+            }
         }
-        Result<List<String>> accessKeyResult = coreEpAccessService.selectAccessList(coreEpIds);
-        if (!accessKeyResult.isSuccess()) {
-            throw new ApiException(accessKeyResult.getError());
+        for (Integer coreEpId : syncAccess.getAccessKeyMap().keySet()) {
+            if (accessKeys != null && accessKeys.length > 0 && !ArrayUtils.contains(accessKeys, syncAccess.getAccessKeyMap().get(coreEpId))) {
+                continue;
+            }
+            List<RefundAccount> refundAccounts = refundAccountMapper.selectByOrderIdAndCore(order.getId(), coreEpId);
+            List<OrderItemAccount> accounts = orderItemAccountMapper.selectByOrderAndCore(order.getId(), coreEpId);
+            if (coreEpId.intValue() == syncAccess.getCoreEpId()) {
+                if (ArrayUtils.contains(tables, "t_refund_account")) {
+                    dataMap.add("t_refund_account", refundAccounts);
+                }
+                if (ArrayUtils.contains(tables, "t_order_item_account")) {
+                    dataMap.add("t_order_item_account", accounts);
+                }
+            } else {
+                SynchronizeDataMap copy = syncAccess.copy(coreEpId);
+                if (ArrayUtils.contains(tables, "t_refund_account")) {
+                    copy.add("t_refund_account", refundAccounts);
+                }
+                if (ArrayUtils.contains(tables, "t_order_item_account")) {
+                    copy.add("t_order_item_account", accounts);
+                }
+                syncAccess.addDataMap(copy);
+            }
         }
-        List<String> accessKeyList = accessKeyResult.get();
-        return synchronizeDataManager.generate(accessKeyList.toArray(new String[accessKeyList.size()]));
-    }
-
-    public String getAccessKey(Integer coreEpId) {
-        Result<List<String>> accessKeyResult = coreEpAccessService.selectAccessList(CommonUtil.oneToList(coreEpId));
-        if (!accessKeyResult.isSuccess()) {
-            throw new ApiException(accessKeyResult.getError());
-        }
-        List<String> accessKeyList = accessKeyResult.get();
-        return accessKeyList.get(0);
     }
 }

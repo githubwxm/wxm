@@ -61,4 +61,11 @@ public interface OrderClearanceDetailMapper {
      */
     OrderClearanceDetail selectBySn(@Param("sn") String sn);
     List<OrderClearanceDetail> selectItemClearanceDetail(Integer itemId);
+
+    /**
+     * 根据订单号查询
+     * @param orderId
+     * @return
+     */
+    List<OrderClearanceDetail> selectByOrder(@Param("orderId") Integer orderId);
 }
