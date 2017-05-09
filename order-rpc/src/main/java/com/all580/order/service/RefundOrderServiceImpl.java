@@ -15,6 +15,7 @@ import com.all580.order.manager.RefundOrderManager;
 import com.framework.common.Result;
 import com.framework.common.distributed.lock.DistributedLockTemplate;
 import com.framework.common.distributed.lock.DistributedReentrantLock;
+import com.framework.common.synchronize.SynchronizeDataMap;
 import com.framework.common.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -173,6 +174,6 @@ public class RefundOrderServiceImpl implements RefundOrderService {
         if (result == null) {
             throw new ApiException("调用退款返回null");
         }
-        return result;
+        return result.putExt(Result.SYNC_DATA, new SynchronizeDataMap("Manual").add("t_refund_order", refundOrderMapper.selectByPrimaryKey(refundOrder.getId())).asMap());
     }
 }
