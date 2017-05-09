@@ -131,7 +131,7 @@ public class HotelSubController {
                // "ep_ma_id", //
                 "window", //
                 "ischeck_in_latest", //
-                "return_money", //
+                //"return_money", //
         }, new ValidRule[]{new ValidRule.NotNull()});
 
         // 校验整数
