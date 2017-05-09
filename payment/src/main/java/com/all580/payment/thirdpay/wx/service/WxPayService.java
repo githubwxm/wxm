@@ -117,7 +117,7 @@ public class WxPayService {
 
     public AccessTokenBean getAccessToken(Integer coreEpId) {
         WxProperties wxProperties = wxPropertiesMap.get(coreEpId);
-        return accessToken.get(wxProperties);
+        return accessToken.getForWeb(wxProperties);
     }
 
     public Map getOpenid(Integer coreEpId, String code) {

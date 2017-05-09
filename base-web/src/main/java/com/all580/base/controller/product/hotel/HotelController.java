@@ -63,7 +63,7 @@ public class HotelController {
 
     @RequestMapping(value = "can_sale/list")
     @ResponseBody
-    public Result<?> canSaleList(@RequestParam Integer ep_id,
+    public Result<?> canSaleList( String from,@RequestParam Integer ep_id,
                                  Integer city, String in_date, String out_date, String keyword,
                                  @RequestParam(defaultValue = "0") Integer price_min, Integer price_max,
                                  String star, String topic, @RequestParam(defaultValue = "0") Integer person_min,
@@ -80,7 +80,7 @@ public class HotelController {
                 throw new ParamsMapValidationException("排序只能为 asc 或 desc");
             }
         }
-        return hotelService.selectCanSaleList(ep_id, city, start_time, end_time, keyword, price_min, price_max,
+        return hotelService.selectCanSaleList(from,ep_id, city, start_time, end_time, keyword, price_min, price_max,
                 star, topic, person_min, person_max, price_sort, sale_sort, create_sort, record_start, record_count);
     }
 
