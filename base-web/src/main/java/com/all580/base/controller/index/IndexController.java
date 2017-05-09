@@ -87,4 +87,12 @@ public class IndexController extends BaseController {
         }
 		return tokenResult;
 	}
+
+	@RequestMapping(value = "heartbeat", method = RequestMethod.POST)
+	@ResponseBody
+	public Result heartbeat() {
+		Result result = new Result(true);
+		result.put(System.currentTimeMillis());
+		return result;
+	}
 }
