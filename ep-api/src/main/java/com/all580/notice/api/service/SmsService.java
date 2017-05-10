@@ -24,6 +24,14 @@ public interface SmsService {
     Result send(String destPhoneNum, Integer smsType, Integer epId, Map<String, String> params);
 
     /**
+     * 发送短信（畅天游）
+     * @param phone 接收号码
+     * @param content 发送内容
+     * @return
+     */
+    Result<?> sendForCty(String content, String... phone) throws Exception;
+
+    /**
      * 创建企业短信通道配置
      *
      * @param epId 企业ID

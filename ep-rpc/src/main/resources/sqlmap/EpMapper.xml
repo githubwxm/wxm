@@ -279,6 +279,9 @@
     <select id="checkNamePhone" resultType="java.util.Map">
         select name,link_phone from t_ep
          where (name =#{name} or link_phone=#{link_phone})
+        <if test="core_ep_id != null">
+            and core_ep_id =#{core_ep_id}
+        </if>
          <if test="id != null">
              and id !=#{id}
          </if>

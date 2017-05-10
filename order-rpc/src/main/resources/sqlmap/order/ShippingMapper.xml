@@ -170,4 +170,14 @@
         SELECT * FROM t_shipping
         WHERE `order_id` = #{orderId,jdbcType=INTEGER}
     </select>
+
+    <update id="modify">
+      UPDATE t_shipping ts
+      INNER JOIN t_shipping_modify tsm ON tsm.shipping_id = ts.id
+      SET ts.`name` = tsm.shipping_name,
+       ts.phone = tsm.shipping_phone,
+       ts.sid = tsm.shipping_sid
+      WHERE tsm.order_id = #{orderId}
+      AND tsm.`status` = 0
+    </update>
 </mapper>
