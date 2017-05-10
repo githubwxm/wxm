@@ -252,16 +252,16 @@ public class PlatfromController extends BaseController {
     @RequestMapping(value = "list/down", method = RequestMethod.GET)
     @ResponseBody
     public Result<Map<String,Object>> platformListDown( String ep_id,
-                                        String ep_name,
-                                        String ep_province,
-                                         String ep_city,
-                                        String ep_phone,Integer record_start,Integer record_count) {
+                                        String name,
+                                        String province,
+                                         String city,
+                                        String link_phone,Integer record_start,Integer record_count) {
         Map<String,Object> map = new HashMap<String,Object>();
         map.put("ep_id", ep_id);
-        map.put("name", ep_name);
-        map.put("province", ep_province);
-        map.put("city", ep_city);
-        map.put("link_phone", ep_phone);
+        map.put("name", name);
+        map.put("province", province);
+        map.put("city", city);
+        map.put("link_phone", link_phone);
         map.put("record_start",record_start);
         map.put("record_count",record_count);
         ParamsMapValidate.validate(map, platfromValidateManager.generateCreateDownUpValidate());
