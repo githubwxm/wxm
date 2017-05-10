@@ -90,6 +90,20 @@ public interface VisitorMapper {
     List<Visitor> selectByOrderItem(@Param("itemId") Integer itemId);
 
     /**
+     * 根据主键查询
+     * @param ids
+     * @return
+     */
+    List<Visitor> selectByIds(@Param("ids") List<Integer> ids);
+
+    /**
+     * 修改
+     * @param refId
+     * @return
+     */
+    int modify(@Param("refId") Integer refId);
+
+    /**
      * 根据身份证和团队ID查询游客
      * @param sid 身份证
      * @param groupId 团队ID

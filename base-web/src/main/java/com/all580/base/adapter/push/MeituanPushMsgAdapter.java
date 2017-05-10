@@ -70,7 +70,7 @@ public class MeituanPushMsgAdapter extends GeneralPushMsgAdapter implements Init
                 body.put("responseTime", map.get("audit_time"));
                 break;
             case "SENT":
-                params.put("issueType", 0);
+                params.put("issueType", 1);
                 body.put("orderId", map.get("outer_id"));
                 body.put("partnerOrderId", map.get("number"));
                 body.put("voucherType", 2);
@@ -94,8 +94,9 @@ public class MeituanPushMsgAdapter extends GeneralPushMsgAdapter implements Init
     @Override
     public void push(String epId, String url, Map msg, Map originMsg, Map config) {
         String opCode = originMsg.get("op_code").toString();
-        if (!opCodeUrl.containsKey(opCode)) {
-            throw new ApiException("请配置美团推送OPCODE:" + opCode);
+        boolean ok = validate(opCode, msg, originMsg, config);
+        if (!ok) {
+            return;
         }
         CloseableHttpClient httpClient = HttpClientBuilder.create().build();
         JSONObject res = null;
@@ -110,10 +111,13 @@ public class MeituanPushMsgAdapter extends GeneralPushMsgAdapter implements Init
             String clientSecret = configJson.getString("clientSecret");
             String partnerId = configJson.getString("partnerId");
             msg.put("partnerId", partnerId);
-            StringEntity postingString = new StringEntity(JsonUtils.toJson(msg));// json传递
+            String string = JsonUtils.toJson(msg);
+            StringEntity postingString = new StringEntity(string);// json传递
             request.setEntity(postingString);
+            request.setHeader("PartnerId", partnerId);
             request.setHeader("Content-type", "application/json");
             BasicAuthorizationUtils.generateAuthAndDateHeader(request, clientId, clientSecret);
+            log.debug("推送美团信息:url:{},content:{}", request.getURI().getPath(), string);
             HttpResponse response = httpClient.execute(request);
             String responseContent = IOUtils.toString(response.getEntity().getContent());
             res = JSONObject.fromObject(responseContent);
@@ -169,6 +173,24 @@ public class MeituanPushMsgAdapter extends GeneralPushMsgAdapter implements Init
                 jobClient.submitJob(jobs);
             }
         }
+    }
+
+    private boolean validate(String opCode, Map msg, Map originMsg, Map config) {
+        if (!opCodeUrl.containsKey(opCode)) {
+            log.warn("请配置美团推送OPCODE:{}", opCode);
+            return false;
+        }
+
+        switch (opCode) {
+            case "REFUND":
+            case "REFUND_FAIL":
+                String refundId = CommonUtil.objectParseString(msg.get("refundId"));
+                if (StringUtils.isEmpty(refundId) || refundId.startsWith("_")) {
+                    log.warn("不是美团发起的退订不予推送");
+                    return false;
+                }
+        }
+        return true;
     }
 
     @Override

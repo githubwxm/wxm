@@ -110,7 +110,7 @@ public class HotelBatchController {
         return hotelBatchService.deleteHotelBatch(batch_id);
     }
     /**
-     * 查询销售计划
+     * 查询剩余销售计划
      * @param batch_id
      * @return
      */
@@ -119,10 +119,44 @@ public class HotelBatchController {
     public Result<?> selectHotelBatch(int batch_id) {
         return hotelBatchService.selectHotelBatch(batch_id);
     }
+    @RequestMapping(value = "select_hotel_batch_detail", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<?> selectHotelBatchDetail(int batch_id) {
+        return hotelBatchService.selectHotelBatchDetail(batch_id);
+    }
+
+    /**
+     * 查询销售计划信息
+     * @param batch_id
+     * @return
+     */
+    @RequestMapping(value = "select_hotel_batch_summary", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<?> selectHotelBatchSummary(int batch_id) {
+        return hotelBatchService.selectHotelBatchSummary(batch_id);
+    }
+
+    @RequestMapping(value = "update", method = RequestMethod.POST)
+    @ResponseBody
+    public Result<?> updateBatch(@RequestBody Map params) {
+        return hotelBatchService.updateBatch(params);
+    }
+
+    /**
+     * 查询子产品有效销售列表，（价格。。）
+     * @param product_sub_id
+     * @return
+     */
+    @RequestMapping(value = "select/product/batch/price", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<?> selectProductSubBatchPrice(int product_sub_id) {
+        return hotelBatchService.selectProductSubBatchPrice(product_sub_id);
+    }
+
 
 
     /**
-     * 查询销售计划
+     * 查询剩余销售计划
      * @param batch_id
      * @return
      */

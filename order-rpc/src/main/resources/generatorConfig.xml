@@ -5,7 +5,7 @@
 
 <generatorConfiguration>
     <classPathEntry
-            location="E:\mvn_repository\mysql\mysql-connector-java\5.1.11\mysql-connector-java-5.1.11.jar"/>
+            location="/home/alone/.m2/repository/mysql/mysql-connector-java/5.1.30/mysql-connector-java-5.1.30.jar"/>
     <context id="my" targetRuntime="MyBatis3">
         <!-- 抑制警告 -->
         <property name="suppressTypeWarnings" value="true" />
@@ -24,18 +24,18 @@
                         password="abcd1234"/>
 
         <javaModelGenerator targetPackage="com.all580.order.entity"
-                            targetProject="E:\Gary\working\base\order-rpc\src\main\java">
+                            targetProject="/data/IdeaProjects/base/order-rpc/src/main/java">
             <property name="enableSubPackages" value="true"/>
             <property name="trimStrings" value="true"/>
         </javaModelGenerator>
 
         <sqlMapGenerator targetPackage="sqlmap.order"
-                         targetProject="E:\Gary\working\base\order-rpc\src\main\resources">
+                         targetProject="/data/IdeaProjects/base/order-rpc/src/main/resources">
             <property name="enableSubPackages" value="true"/>
         </sqlMapGenerator>
 
         <javaClientGenerator targetPackage="com.all580.order.dao"
-                             targetProject="E:\Gary\working\base\order-rpc\src\main\java" type="XMLMAPPER">
+                             targetProject="/data/IdeaProjects/base/order-rpc/src/main/java" type="XMLMAPPER">
             <property name="enableSubPackages" value="true"/>
         </javaClientGenerator>
 
@@ -276,6 +276,28 @@
                selectByExampleQueryId="false"
                delimitAllColumns="true"
                domainObjectName="PaymentJob">
+            <property name="useActualColumnNames" value="true"/>
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+        </table>
+        <table tableName="t_shipping_modify"
+               enableCountByExample="false"
+               enableUpdateByExample="false"
+               enableDeleteByExample="false"
+               enableSelectByExample="false"
+               selectByExampleQueryId="false"
+               delimitAllColumns="true"
+               domainObjectName="ShippingModify">
+            <property name="useActualColumnNames" value="true"/>
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+        </table>
+        <table tableName="t_visitor_modify"
+               enableCountByExample="false"
+               enableUpdateByExample="false"
+               enableDeleteByExample="false"
+               enableSelectByExample="false"
+               selectByExampleQueryId="false"
+               delimitAllColumns="true"
+               domainObjectName="VisitorModify">
             <property name="useActualColumnNames" value="true"/>
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
         </table>

@@ -1,5 +1,6 @@
 package com.all580.base.manager;
 
+import com.all580.order.api.OrderConstant;
 import com.all580.product.api.consts.ProductConstants;
 import com.framework.common.validate.ValidRule;
 import org.springframework.stereotype.Component;
@@ -379,9 +380,11 @@ public class OrderValidateManager {
         }, new ValidRule[]{new ValidRule.Pattern(ValidRule.MOBILE_PHONE)});
 
         rules.put(new String[]{
-                "guide_sid",
-                "visitors.sid"
+                "guide_sid"
         }, new ValidRule[]{new ValidRule.IdCard()});
+        rules.put(new String[]{
+                "visitors.card_type" // 证件类型
+        }, new ValidRule[]{new ValidRule.Digits(new Long[]{Long.valueOf(OrderConstant.CardType.ID), Long.valueOf(OrderConstant.CardType.OTHER)})});
         return rules;
     }
 

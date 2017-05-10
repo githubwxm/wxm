@@ -37,4 +37,10 @@ public class SmsServiceTest {
         Result send = smsService.send(destPhoneNum, smsType, epId, null);
         Assert.isTrue(send.isSuccess());
     }
+
+    @Test
+    public void sendCty() throws Exception {
+        Result send = smsService.sendForCty("测试短信", "18229950359");
+        Assert.isTrue(send.isSuccess());
+    }
 }

@@ -223,6 +223,7 @@ public class BaseOrderManager {
      * @return
      */
     public Result<BalanceChangeRsp> changeBalances(int type, String sn, List<BalanceChangeInfo> infos) {
+        if (infos.isEmpty()) return new Result<>(true);
         return balancePayService.changeBalances(infos, type, sn);
     }
 
@@ -305,7 +306,7 @@ public class BaseOrderManager {
 
         // 调用分账
         Result<BalanceChangeRsp> result = changeBalances(PaymentConstant.BalanceChangeType.CONSUME_SPLIT, sn, balanceChangeInfoList);
-        if (!result.isSuccess()) {
+        if (!result.isSuccess() && (result.getCode() == null || result.getCode().intValue() != Result.UNIQUE_KEY_ERROR)) {
             log.warn("核销OR反核销:{},分账失败:{}", consume, result.get());
             throw new ApiException(result.getError());
         }
@@ -363,6 +364,9 @@ public class BaseOrderManager {
     }
 
     public int[] getAuditConfig(Order order, OrderItem orderItem) {
+        if (orderItem.getPro_type() == ProductConstants.ProductType.HOTEL) {
+            return new int[]{ProductConstants.RefundAudit.NO, ProductConstants.RefundMoneyAudit.NO};
+        }
         // 获取退订审核
         int[] auditSupplierConfig = getAuditConfig(orderItem.getPro_sub_id(), orderItem.getSupplier_core_ep_id());
         int auditTicket = auditSupplierConfig[0];
@@ -386,11 +390,11 @@ public class BaseOrderManager {
      * @param memo
      * @return
      */
-    public Object[] orderLog(Integer id, Object operateId, Object operateName, String code, Integer qty, String memo) {
-        if (id == null) {
+    public Object[] orderLog(Integer orderId, Integer itemId, Object operateId, Object operateName, String code, Integer qty, String memo) {
+        if (orderId == null && itemId == null) {
             throw new ApiException("记录日志异常:没有订单号");
         }
-        Map result = orderMapper.selectByLog(id);
+        Map result = orderMapper.selectByLog(orderId == null ? 0 : orderId, itemId == null ? 0 : itemId);
         return new Object[]{
                 DateFormatUtils.parseDateToDatetimeString(new Date()),
                 result.get("order_number"),
