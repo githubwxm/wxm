@@ -54,6 +54,8 @@ public interface EpMapper {
      * @return
      */
     List<Map<String,String>> selectSingleTable(Map<String,Object> map);
+
+    List<Map<String,String>>selectSingleTableStatus(Map<String,Object> map);
     /**
      * 只查询了ep单表的数据
      * @param

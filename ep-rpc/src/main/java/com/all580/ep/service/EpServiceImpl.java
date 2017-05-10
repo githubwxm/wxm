@@ -14,7 +14,6 @@ import com.all580.notice.api.service.SmsService;
 import com.all580.payment.api.conf.PaymentConstant;
 import com.all580.payment.api.service.BalancePayService;
 import com.all580.payment.api.service.PlatfromFundService;
-import com.all580.payment.api.service.EpPaymentConfService;
 import com.all580.product.api.service.PlanGroupRPCService;
 import com.framework.common.Result;
 import com.framework.common.lang.UUIDGenerator;
@@ -445,7 +444,7 @@ public class EpServiceImpl implements EpService {
             }
             int ref = epMapper.updateStatus(params);
             if (ref > 0) {
-                List<Map<String, String>> listMap = epMapper.selectSingleTable(params);
+                List<Map<String, String>> listMap = epMapper.selectSingleTableStatus(params);
                 // int id = CommonUtil.objectParseInteger(params.get(EpConstant.EpKey.CORE_EP_ID));
                 Map<String,Object> syncData=  syncEpData.syncEpData(selectPlatformId(CommonUtil.objectParseInteger(params.get("id"))).get(), EpConstant.Table.T_EP, listMap);//同步数据
                 result.put(ref);
@@ -508,7 +507,7 @@ public class EpServiceImpl implements EpService {
             Result<Integer> result = new Result<Integer>(true);
             Integer ref = updateStatus(params).get();
             if (ref > 0) {//是否有更新
-                List<Map<String, String>> listMap = epMapper.selectSingleTable(params);
+                List<Map<String, String>> listMap = epMapper.selectSingleTableStatus(params);
                 Map<String,Object> syncData=  syncEpData.syncEpData(map.get("ep_id"), EpConstant.Table.T_EP, listMap);
                 result.setSuccess();
                 result.putExt(Result.SYNC_DATA, syncData);
@@ -591,7 +590,7 @@ public class EpServiceImpl implements EpService {
             result.setSuccess();
             Map<String, Object> paramsMap = new HashMap<>();//数据同步条件
             paramsMap.put("core_ep_id", map.get("id"));
-            List<Map<String, String>> listMap = epMapper.selectSingleTable(paramsMap);
+            List<Map<String, String>> listMap = epMapper.selectSingleTableStatus(paramsMap);
             Map<String,Object> syncData=  syncEpData.syncEpData(map.get("id"), EpConstant.Table.T_EP, listMap);
             // result.putExt(Result.SYNC_DATA, syncData);
             String destPhoneNum = selectPhone(CommonUtil.objectParseInteger(map.get("id"))).get();
@@ -638,7 +637,7 @@ public class EpServiceImpl implements EpService {
             result.setSuccess();
             Map<String, Object> paramsMap = new HashMap<>();
             paramsMap.put("core_ep_id", map.get("id"));
-            List<Map<String, String>> listMap = epMapper.selectSingleTable(paramsMap);
+            List<Map<String, String>> listMap = epMapper.selectSingleTableStatus(paramsMap);
             Map<String,Object> syncData=   syncEpData.syncEpData(map.get("id"), EpConstant.Table.T_EP, listMap);
             //result.putExt(Result.SYNC_DATA, syncData);
         } catch (ApiException e) {
