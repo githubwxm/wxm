@@ -315,6 +315,12 @@
         where 1=1<include refid="ep_list_where"/>
     </select>
 
+    <select id="selectSingleTableStatus" resultType="java.util.Map">
+        select  id,status,status_bak,
+        CONCAT('',update_time,'') update_time  from t_ep ep
+        where 1=1<include refid="ep_list_where"/>
+    </select>
+
     <select id="selectPhone" resultType="java.lang.String">
         select link_phone from t_ep where id=#{id};
     </select>
