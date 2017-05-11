@@ -3,14 +3,17 @@ package com.all580.order.adapter;
 import com.all580.order.api.OrderConstant;
 import com.all580.order.dao.GroupMapper;
 import com.all580.order.dao.ShippingMapper;
+import com.all580.order.dto.PriceDto;
 import com.all580.order.dto.ValidateProductSub;
 import com.all580.order.entity.*;
 import com.all580.product.api.model.ProductSalesInfo;
 import com.framework.common.util.CommonUtil;
+import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -49,5 +52,11 @@ public class HotelGroupCreateOrderImpl extends TicketGroupCreateOrderImpl {
         shipping.setSid(group.getGuide_sid());
         shippingMapper.insertSelective(shipping);
         return shipping;
+    }
+
+    @Override
+    public OrderItem insertItem(Order order, ValidateProductSub sub, ProductSalesInfo salesInfo, PriceDto price, Map item) {
+        Date endTime = DateUtils.addDays(sub.getBooking(), sub.getDays());
+        return bookingOrderManager.generateItem(salesInfo, endTime, price.getSale(), sub.getBooking(), sub.getDays(), order.getId(), sub.getQuantity(), sub.getGroupId(), CommonUtil.objectParseString(item.get("memo")));
     }
 }
