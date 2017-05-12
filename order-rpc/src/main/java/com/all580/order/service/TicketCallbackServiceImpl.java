@@ -243,6 +243,23 @@ public class TicketCallbackServiceImpl extends BasicSyncDataEvent implements Tic
     @Override
     @MnsEvent
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public Result consumeVoucherTicket(Collection<Integer> maIds, ConsumeTicketInfo info, Date procTime) {
+        Assert.notEmpty(maIds, "凭证商户不能为空");
+        Assert.notNull(info.getTicketId(), "凭证订单号不能为空");
+        List<MaSendResponse> maSendResponses = maSendResponseMapper.selectByMaOrderIdAndInMaIds(info.getTicketId(), maIds);
+        Assert.notEmpty(maSendResponses, "查不到凭证码");
+        if (maSendResponses.size() > 1) {
+            throw new ApiException("该凭证订单有多个凭证码");
+        }
+        MaSendResponse maSendResponse = maSendResponses.get(0);
+        OrderItem orderItem = orderItemMapper.selectByPrimaryKey(maSendResponse.getOrder_item_id());
+        Assert.notNull(orderItem, "订单不存在");
+        return consumeTicket(orderItem.getNumber(), info, procTime);
+    }
+
+    @Override
+    @MnsEvent
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public Result consumeGroupTicket(Long orderSn, ConsumeGroupTicketInfo info, Date procTime) {
         OrderItem orderItem = orderItemMapper.selectBySN(orderSn);
         if (orderItem == null) {
