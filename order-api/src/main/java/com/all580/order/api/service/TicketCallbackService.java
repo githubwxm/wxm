@@ -3,6 +3,7 @@ package com.all580.order.api.service;
 import com.all580.order.api.model.*;
 import com.framework.common.Result;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -39,6 +40,15 @@ public interface TicketCallbackService {
      * @return
      */
     Result consumeTicket(Long orderSn, ConsumeTicketInfo info, Date procTime);
+
+    /**
+     * 根据凭证ID核销
+     * @param maIds 凭证商户IDS
+     * @param info 验票信息
+     * @param procTime 处理时间
+     * @return
+     */
+    Result consumeVoucherTicket(Collection<Integer> maIds, ConsumeTicketInfo info, Date procTime);
 
     /**
      * 消费验票通知
