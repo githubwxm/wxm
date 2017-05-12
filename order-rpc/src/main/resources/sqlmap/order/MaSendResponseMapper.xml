@@ -239,4 +239,13 @@
         LEFT JOIN t_order_item toi ON toi.id = tmsr.order_item_id
         WHERE toi.order_id = #{orderId}
     </select>
+
+    <select id="selectByMaOrderIdAndInMaIds" resultMap="BaseResultMap">
+        SELECT * FROM t_ma_send_response
+        WHERE `ma_order_id` = #{maOrderId,jdbcType=VARCHAR}
+        AND `ep_ma_id` in
+        <foreach collection="maIds" item="item" open="(" close=")" separator=",">
+          #{item}
+        </foreach>
+    </select>
 </mapper>

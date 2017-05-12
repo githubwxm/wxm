@@ -3,6 +3,7 @@ package com.all580.order.dao;
 import com.all580.order.entity.MaSendResponse;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Collection;
 import java.util.List;
 
 public interface MaSendResponseMapper {
@@ -85,4 +86,12 @@ public interface MaSendResponseMapper {
      * @return
      */
     List<MaSendResponse> selectByOrder(@Param("orderId") Integer orderId);
+
+    /**
+     * 根据凭证码ID和凭证商户查询
+     * @param maOrderId 凭证码ID
+     * @param maIds 凭证商户
+     * @return
+     */
+    List<MaSendResponse> selectByMaOrderIdAndInMaIds(@Param("maOrderId") String maOrderId, @Param("maIds") Collection<Integer> maIds);
 }
