@@ -253,11 +253,11 @@ public class ProductController extends BaseController {
     @RequestMapping(value = "sale/list")
     @ResponseBody
     public Result<Paginator<ProductAndSubInfo>> searchCanSaleList(@RequestParam("ep_id") Integer epId,
-                                       @RequestParam("product_name") String productName,
-                                       @RequestParam("is_supplier") Integer isSupplier,
-                                       @RequestParam("order_str") Integer order,
-                                       @RequestParam("record_start") Integer start,
-                                       @RequestParam("record_count") Integer count,
+                                                                  @RequestParam("product_name") String productName,
+                                                                  @RequestParam("is_supplier") Integer isSupplier,
+                                                                  @RequestParam("order_str") Integer order,
+                                                                  @RequestParam("record_start") Integer start,
+                                                                  @RequestParam("record_count") Integer count,
                                                                   Integer type,Integer is_platfrom) {
 
         String orderStr = null;
@@ -287,12 +287,12 @@ public class ProductController extends BaseController {
     @RequestMapping(value = "sale/list/all")
     @ResponseBody
     public Result<Paginator<ProductAndSubInfo>> searchCanSaleListAll(@RequestParam("ep_id") Integer epId,
-                                                                  @RequestParam("product_name") String productName,
-                                                                  @RequestParam("is_supplier") Integer isSupplier,
-                                                                  @RequestParam("order_str") Integer order,
-                                                                  @RequestParam("record_start") Integer start,
-                                                                  @RequestParam("record_count") Integer count,
-                                                                  Integer type,Integer is_platfrom) {
+                                                                     @RequestParam("product_name") String productName,
+                                                                     @RequestParam("is_supplier") Integer isSupplier,
+                                                                     @RequestParam("order_str") Integer order,
+                                                                     @RequestParam("record_start") Integer start,
+                                                                     @RequestParam("record_count") Integer count,
+                                                                     Integer type,Integer is_platfrom) {
 
         String orderStr = null;
         if (order != null) {
@@ -320,16 +320,16 @@ public class ProductController extends BaseController {
     @RequestMapping(value = "sale/list/hotel")
     @ResponseBody
     public Result<Paginator<ProductAndSubInfo>> searchCanSaleListHotel(@RequestParam("ep_id") Integer epId,
-                                                                  @RequestParam("product_name") String productName,
-                                                                  @RequestParam("is_supplier") Integer isSupplier,
-                                                                  @RequestParam("order_str") Integer order,
-                                                                  @RequestParam("record_start") Integer start,
-                                                                  @RequestParam("record_count") Integer count
-                                                                ,Integer is_platfrom ) {
+                                                                       @RequestParam("product_name") String productName,
+                                                                       @RequestParam("is_supplier") Integer isSupplier,
+                                                                       @RequestParam("order_str") Integer order,
+                                                                       @RequestParam("record_start") Integer start,
+                                                                       @RequestParam("record_count") Integer count
+            ,Integer is_platfrom ) {
 
         String orderStr = null;
 
-          Integer  type=ProductConstants.ProductType.HOTEL;
+        Integer  type=ProductConstants.ProductType.HOTEL;
 
         if (order != null) {
             switch (CanSaleOrderState.getCanSaleOrderSate(order)) {
@@ -361,11 +361,11 @@ public class ProductController extends BaseController {
     @RequestMapping("sale/group/list")
     @ResponseBody
     public Result<Paginator<DistributionGroupInfo>> searchDistributionGroupInfo (
-        @RequestParam("ep_id") Integer epId,
-        @RequestParam("product_sub_id") Integer productSubId,
-        @RequestParam("status") Integer distributionStatus,
-        @RequestParam("record_start") Integer start,
-        @RequestParam("record_count") Integer count
+            @RequestParam("ep_id") Integer epId,
+            @RequestParam("product_sub_id") Integer productSubId,
+            @RequestParam("status") Integer distributionStatus,
+            @RequestParam("record_start") Integer start,
+            @RequestParam("record_count") Integer count
     ) {
         switch (CommonUtil.objectParseInteger(distributionStatus)) {
             case ProductConstants.ProductDistributionState.HAD_DISTRIBUTE:
@@ -420,13 +420,13 @@ public class ProductController extends BaseController {
     @RequestMapping(value = "self/list")
     @ResponseBody
     public Result<Map<String,Object>> searchSelfProviderProduct(@RequestParam("ep_id") Integer epId,
-                                                                           @RequestParam("product_name") String productName,
-                                                                           @RequestParam("product_sub_name") String productSubName,
-                                                                           @RequestParam("record_start") Integer recordStart,
-                                                                           @RequestParam("record_count") Integer recordCount) {
-       // TODO: 验证入参
+                                                                @RequestParam("product_name") String productName,
+                                                                @RequestParam("product_sub_name") String productSubName,
+                                                                @RequestParam("record_start") Integer recordStart,
+                                                                @RequestParam("record_count") Integer recordCount) {
+        // TODO: 验证入参
         return productService.searchSelfProviderProductListMap(epId, productName, productSubName, recordStart, recordCount);
-       //return productService.searchSelfProviderProductList(epId, productName, productSubName, recordStart, recordCount);
+        //return productService.searchSelfProviderProductList(epId, productName, productSubName, recordStart, recordCount);
     }
 
     /**
