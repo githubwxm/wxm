@@ -2,9 +2,9 @@ package com.all580.order.service.event;
 
 import com.all580.order.api.service.event.SplitCreateOrderSyncDataEvent;
 import com.all580.order.dao.OrderMapper;
-import com.all580.order.dto.SyncAccess;
 import com.all580.order.entity.Order;
 import com.framework.common.Result;
+import com.framework.common.synchronize.SyncAccess;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;

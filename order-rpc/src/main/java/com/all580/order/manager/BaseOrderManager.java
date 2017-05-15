@@ -6,7 +6,6 @@ import com.all580.ep.api.service.CoreEpChannelService;
 import com.all580.ep.api.service.EpService;
 import com.all580.order.api.OrderConstant;
 import com.all580.order.dao.*;
-import com.all580.order.dto.SyncAccess;
 import com.all580.order.entity.*;
 import com.all580.order.util.AccountUtil;
 import com.all580.payment.api.conf.PaymentConstant;
@@ -20,6 +19,7 @@ import com.all580.product.api.service.ProductSalesPlanRPCService;
 import com.framework.common.Result;
 import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.UUIDGenerator;
+import com.framework.common.synchronize.SyncAccess;
 import com.framework.common.synchronize.SynchronizeDataMap;
 import com.framework.common.util.CommonUtil;
 import com.github.ltsopensource.core.domain.Job;
@@ -417,9 +417,8 @@ public class BaseOrderManager {
      * @param accessKeys 要同步的平台 可选
      * @param tables 要同步的表 可选
      */
-    public void addAllOrderTableSync(SyncAccess syncAccess, String[] accessKeys, String[] tables) {
+    public void addAllOrderTableSync(SyncAccess syncAccess, Order order, String[] accessKeys, String[] tables) {
         SynchronizeDataMap dataMap = syncAccess.getDataMap();
-        Order order = syncAccess.getOrder();
         tables = tables == null || tables.length == 0 ? OrderConstant.ORDER_TABLES : tables;
         if (tables != null && tables.length > 0) {
             for (String table : tables) {
