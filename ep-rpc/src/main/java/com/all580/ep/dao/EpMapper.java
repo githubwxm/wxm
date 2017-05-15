@@ -62,6 +62,8 @@ public interface EpMapper {
      * @return
      */
     List<Map<String,String>> selectEpList(@Param("epids") List<Integer> epids);
+    List<Map<String,String>> selectEpGroupList(@Param("epids") List<Integer> epids);
+
     String selectPhone(int id);
     int updateEpRole(Map<String,Object> map);
 

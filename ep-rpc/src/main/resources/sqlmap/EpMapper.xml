@@ -307,6 +307,14 @@
             #{item}
         </foreach>
     </select>
+    <select id="selectEpGroupList" resultType="java.util.Map">
+        select  id,group_id,group_name,
+        CONCAT('',update_time,'') update_time  from t_ep ep
+        where id in
+        <foreach item="item" index="index" collection="epids" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
 
     <select id="selectSingleTable" resultType="java.util.Map">
         select  ep_role,id,name,en_name,ep_type,linkman,link_phone,address,code,license,logo_pic,status,access_id,access_key,
