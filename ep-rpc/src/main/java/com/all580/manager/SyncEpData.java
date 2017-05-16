@@ -91,7 +91,7 @@ public class SyncEpData {
         Map map ;
         Map mapAll = new HashMap();
         if (null != dataList && dataList.size() > 0) {
-            int pointsDataLimit = 500;//限制条数
+            int pointsDataLimit = 100;//限制条数
             Integer size = dataList.size();
             //判断是否有必要分批
             if (pointsDataLimit < size) {

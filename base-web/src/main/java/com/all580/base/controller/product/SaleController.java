@@ -50,6 +50,10 @@ public class SaleController extends BaseController {
     @RequestMapping(value = "group/add", method = RequestMethod.POST)
     @ResponseBody
     public Result addSaleGroup(@RequestBody Map params) {
+        String name = CommonUtil.objectParseString(params.get("name"));
+        if(name!=null&&name.length()>10){
+            return new Result(false,"分组名字过长");
+        }
         //TODO 数据验证
         return planGroupService.addPlanGroup(
                 CommonUtil.objectParseString(params.get("name")),
@@ -66,6 +70,10 @@ public class SaleController extends BaseController {
     @RequestMapping(value = "group/update", method = RequestMethod.POST)
     @ResponseBody
     public Result<?> updateSaleGroup(@RequestBody Map params) {
+        String name = CommonUtil.objectParseString(params.get("name"));
+        if(name!=null&&name.length()>10){
+           return new Result(false,"分组名字过长");
+        }
         return planGroupService.updatePlanGroup(
                 CommonUtil.objectParseInteger(params.get("id")),
                 CommonUtil.objectParseString(params.get("name")),
