@@ -113,6 +113,11 @@ public class SyncEpData {
                             .sync().getDataMapForJsonMap();
                     mapAll.putAll(map);
                 }
+            }else{
+                map=   synchronizeDataManager.generate((String[]) list.toArray(new String[list.size()]))
+                        .put(table, dataList)
+                        .sync().getDataMapForJsonMap();
+                mapAll.putAll(map);
             }
         }
         return mapAll;
