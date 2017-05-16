@@ -7,11 +7,9 @@ import com.all580.payment.api.conf.PaymentConstant;
 import com.all580.payment.api.service.EpPaymentConfService;
 import com.framework.common.BaseController;
 import com.framework.common.Result;
-
 import com.framework.common.util.CommonUtil;
 import com.framework.common.validate.ParamsMapValidate;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.Assert;

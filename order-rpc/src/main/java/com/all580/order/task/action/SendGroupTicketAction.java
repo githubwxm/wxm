@@ -2,7 +2,6 @@ package com.all580.order.task.action;
 
 import com.all580.order.api.OrderConstant;
 import com.all580.order.dao.*;
-import com.all580.order.dto.SyncAccess;
 import com.all580.order.entity.*;
 import com.all580.order.manager.BookingOrderManager;
 import com.all580.order.service.event.BasicSyncDataEvent;
@@ -10,6 +9,7 @@ import com.all580.product.api.consts.ProductConstants;
 import com.all580.voucher.api.conf.VoucherConstant;
 import com.all580.voucher.api.model.group.SendGroupTicketParams;
 import com.all580.voucher.api.service.VoucherRPCService;
+import com.framework.common.synchronize.SyncAccess;
 import com.framework.common.validate.ParamsMapValidate;
 import com.framework.common.validate.ValidRule;
 import com.github.ltsopensource.core.domain.Action;

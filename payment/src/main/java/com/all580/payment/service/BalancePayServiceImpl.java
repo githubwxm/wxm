@@ -130,6 +130,12 @@ public class BalancePayServiceImpl implements BalancePayService {
     }
 
     @Override
+    public Result<List<Map<String,Object>>> listCapitalAll(){
+        Result result = new Result(true);
+        result.put(capitalMapper.listCapitalAll());
+        return  result;
+    }
+    @Override
     public Result<List<Map<String, String>>> getBalanceList(List<Integer> epIdList, Integer coreEpId) {
         logger.debug("开始 -> 批量获取余额账户");
         Result<List<Map<String, String>>> result = new Result<>();

@@ -5,13 +5,12 @@ import com.all580.order.api.service.OrderService;
 import com.all580.order.dao.OrderClearanceSerialMapper;
 import com.all580.order.dao.OrderItemMapper;
 import com.all580.order.dao.OrderMapper;
-import com.all580.order.dto.SyncAccess;
 import com.all580.order.entity.Order;
 import com.all580.order.manager.BookingOrderManager;
-import com.all580.order.manager.RefundOrderManager;
 import com.all580.order.service.event.BasicSyncDataEvent;
 import com.framework.common.Result;
 import com.framework.common.lang.JsonUtils;
+import com.framework.common.synchronize.SyncAccess;
 import com.framework.common.util.CommonUtil;
 import com.framework.common.vo.PageRecord;
 import lombok.extern.slf4j.Slf4j;
@@ -191,7 +190,7 @@ public class OrderServiceImpl extends BasicSyncDataEvent implements OrderService
         Order order = orderMapper.selectBySN(number);
         Assert.notNull(order, "订单不存在");
         SyncAccess syncAccess = getAccessKeys(order);
-        bookingOrderManager.addAllOrderTableSync(syncAccess, accessKeys, tables);
+        bookingOrderManager.addAllOrderTableSync(syncAccess, order, accessKeys, tables);
         sync(syncAccess.getDataMaps());
         return new Result<>(true);
     }

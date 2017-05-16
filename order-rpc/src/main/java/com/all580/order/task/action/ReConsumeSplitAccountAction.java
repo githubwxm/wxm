@@ -2,13 +2,13 @@ package com.all580.order.task.action;
 
 import com.all580.order.api.OrderConstant;
 import com.all580.order.dao.*;
-import com.all580.order.dto.SyncAccess;
 import com.all580.order.entity.ClearanceWashedSerial;
 import com.all580.order.entity.Order;
 import com.all580.order.entity.OrderClearanceSerial;
 import com.all580.order.entity.OrderItem;
 import com.all580.order.manager.BookingOrderManager;
 import com.all580.order.service.event.BasicSyncDataEvent;
+import com.framework.common.synchronize.SyncAccess;
 import com.github.ltsopensource.core.domain.Action;
 import com.github.ltsopensource.tasktracker.Result;
 import com.github.ltsopensource.tasktracker.runner.JobContext;

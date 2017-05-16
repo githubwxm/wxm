@@ -8,13 +8,13 @@
     <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
       SELECT LAST_INSERT_ID()
     </selectKey>
-    insert into t_sms_send (ep_id, send_phone1,send_phone2, threshold_status
+    insert into t_sms_send (ep_id, send_phone1,send_phone2, threshold_status,core_ep_id
       )
-    values (#{send_ep_id}, #{send_phone1}, #{send_phone2}, #{threshold_status}
+    values (#{send_ep_id}, #{send_phone1}, #{send_phone2}, #{threshold_status},#{core_ep_id}
       )
   </insert>
   <select id="selectByEpId" resultType="java.util.Map" >
-      select * from t_sms_send where ep_id =#{ep_id};
+      select * from t_sms_send where ep_id =#{ep_id} and core_ep_id=#{core_ep_id};
   </select>
   <update id="updateByPrimaryKey" >
     update t_sms_send
@@ -30,14 +30,16 @@
     </if>
   </sql>
   <sql id="selectThreshold">
-   select  te.id  as  send_ep_id,ts.id,ts.send_phone1,ts.send_phone2,IFNULL(ts.threshold_status,0) as threshold_status,te.name,te.ep_type ,
-   '销售商' as type_name,tet.threshold from t_ep  te
-   LEFT JOIN t_sms_send  ts on(ts.ep_id=te.id)
-   LEFT JOIN t_ep_balance_threshold tet on
-   (te.id=tet.ep_id and tet.core_ep_id=te.core_ep_id)
-    where te.core_ep_id=#{ep_id} and te.ep_type=10003
+      select  te.id  as  send_ep_id,ts.id,ts.send_phone1,ts.send_phone2,IFNULL(ts.threshold_status,0) as threshold_status,
+      te.name,te.ep_type ,
+      tp.`name` as type_name,tet.threshold from t_ep  te
+      right JOIN t_ep_balance_threshold tet on
+      (te.id=tet.ep_id and tet.core_ep_id=#{ep_id})
+      LEFT JOIN t_sms_send  ts on(ts.ep_id=te.id)
+      join t_ep_param tp on tp.id=ep_type
+      where (te.core_ep_id=#{ep_id} or tet.core_ep_id=#{ep_id} )
       <if test="name != null">
-          and name  like    CONCAT('%',#{name},'%')
+          and te.name  like    CONCAT('%',#{name},'%')
       </if>
     <if test="start_threshold != null and end_threshold != null ">
       and threshold BETWEEN #{start_threshold}  AND #{end_threshold}
@@ -52,4 +54,15 @@
     select count(*) from (
     <include refid="selectThreshold"/>) t
   </select>
+    <update id="updateSmSSendInit">
+        update t_sms_send set send_number=0 where ep_id=#{ep_id} and core_ep_id =#{core_ep_id};
+    </update>
+    <select id="selectThreshold" resultType="java.util.Map">
+        select send.*,t.threshold from t_sms_send  send
+        join  t_ep_balance_threshold t on send.ep_id=t.ep_id and send.core_ep_id  = t.core_ep_id
+        where threshold_status=1 and send_number  &lt; 3;
+    </select>
+    <update id="sendUpdateNumber">
+       update  t_sms_send set send_number=send_number+1 where ep_id=#{ep_id} and core_ep_id =#{core_ep_id};
+    </update>
 </mapper>

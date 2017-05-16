@@ -33,6 +33,9 @@
             #{item}
         </foreach>
     </select>
+    <select id="listCapitalAll" resultType="java.util.Map">
+       select  ep_id,core_ep_id,balance from t_capital
+    </select>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from t_capital
     where id = #{id,jdbcType=INTEGER}
