@@ -167,9 +167,9 @@ public interface OrderItemMapper {
     List<OrderItem> selectByNotConsumeAndEpMaId(@Param("epMaIds") List<Integer> epMaIds, @Param("current") Integer current);
 
     /**
-     * 查询订单信息
+     * 查询OTA订单信息
      * @param sn 流水号
      * @return
      */
-    List<Map> selectInfoBySn(@Param("sn") Long sn);
+    Map selectInfoForOtaBySn(@Param("sn") Long sn);
 }

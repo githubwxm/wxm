@@ -127,5 +127,5 @@ public interface OrderService {
      * @param number
      * @return
      */
-    Result<?> selectOrderItemInfoByOneVoucher(long number);
+    Result<?> selectOrderItemInfoByOta(long number);
 }

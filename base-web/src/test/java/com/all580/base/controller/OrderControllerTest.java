@@ -231,7 +231,7 @@ public class OrderControllerTest {
     }
 
     @Test
-    public void otaStatusInfo() throws Exception {
+    public void otaStatusInfo() throws Exception    {
         mockMvc.perform(
                 get("/api/order/item/status/info/ota").param("number", "1490929842728350")
         ).andExpect(

@@ -196,12 +196,10 @@ public class OrderServiceImpl extends BasicSyncDataEvent implements OrderService
     }
 
     @Override
-    public Result<?> selectOrderItemInfoByOneVoucher(long number) {
+    public Result<?> selectOrderItemInfoByOta(long number) {
         Result<Map> result = new Result<>(true);
-        List<Map> list = orderItemMapper.selectInfoBySn(number);
-        if (list != null && !list.isEmpty()) {
-            result.put(list.get(0));
-        }
+        Map map = orderItemMapper.selectInfoForOtaBySn(number);
+        result.put(map);
         return result;
     }
 }
