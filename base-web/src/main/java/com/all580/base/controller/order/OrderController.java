@@ -278,7 +278,7 @@ public class OrderController extends BaseController {
     @RequestMapping("item/status/info/ota")
     @ResponseBody
     public Result<?> selectOrderItemInfoForOta(@RequestParam Long number) {
-        return orderService.selectOrderItemInfoByOneVoucher(number);
+        return orderService.selectOrderItemInfoByOta(number);
     }
 
     private void checkPlatformOrderParams(String start_time, String end_time, String phone) {

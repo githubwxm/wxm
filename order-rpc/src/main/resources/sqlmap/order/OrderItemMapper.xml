@@ -856,10 +856,11 @@
     limit 10
   </select>
 
-  <select id="selectInfoBySn" resultType="map">
+  <select id="selectInfoForOtaBySn" resultType="map">
     SELECT
         toi.id,
         toi.number,
+        toi.pro_sub_name,
         o.`status`,
         toi.`status` item_status,
         toi.quantity,
@@ -867,12 +868,21 @@
         toi.refund_quantity,
         toi.payment_flag,
         tmsr.image_url,
-        tmsr.voucher_value
+        tmsr.voucher_value,
+        toid.expiry_date,
+        tmsr.create_time,
+        tro.refund_ticket_time,
+        tocs.clearance_time
     FROM
         t_order_item toi
     LEFT JOIN t_order o ON o.id = toi.order_id
     LEFT JOIN t_ma_send_response tmsr ON tmsr.order_item_id = toi.id
+    LEFT JOIN t_order_item_detail toid ON toid.order_item_id = toi.id
+    LEFT JOIN t_refund_order tro ON tro.order_item_id = toi.id AND tro.`status` > 342
+    LEFT JOIN t_order_clearance_serial tocs ON tocs.order_item_id = toi.id
     WHERE
         toi.number = #{sn}
+    ORDER BY tocs.clearance_time desc
+    LIMIT 1
   </select>
 </mapper>
