@@ -194,4 +194,14 @@ public class OrderServiceImpl extends BasicSyncDataEvent implements OrderService
         sync(syncAccess.getDataMaps());
         return new Result<>(true);
     }
+
+    @Override
+    public Result<?> selectOrderItemInfoByOneVoucher(long number) {
+        Result<Map> result = new Result<>(true);
+        List<Map> list = orderItemMapper.selectInfoBySn(number);
+        if (list != null && !list.isEmpty()) {
+            result.put(list.get(0));
+        }
+        return result;
+    }
 }
