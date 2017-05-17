@@ -275,6 +275,12 @@ public class OrderController extends BaseController {
         return orderService.syncOrder(number, accessKeys, tables);
     }
 
+    @RequestMapping("item/status/info/ota")
+    @ResponseBody
+    public Result<?> selectOrderItemInfoForOta(@RequestParam Long number) {
+        return orderService.selectOrderItemInfoByOneVoucher(number);
+    }
+
     private void checkPlatformOrderParams(String start_time, String end_time, String phone) {
         Map<String, Object> params = new HashMap<>();
         params.put("start_time", start_time);

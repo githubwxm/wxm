@@ -856,4 +856,23 @@
     limit 10
   </select>
 
+  <select id="selectInfoBySn" resultType="map">
+    SELECT
+        toi.id,
+        toi.number,
+        o.`status`,
+        toi.`status` item_status,
+        toi.quantity,
+        toi.used_quantity,
+        toi.refund_quantity,
+        toi.payment_flag,
+        tmsr.image_url,
+        tmsr.voucher_value
+    FROM
+        t_order_item toi
+    LEFT JOIN t_order o ON o.id = toi.order_id
+    LEFT JOIN t_ma_send_response tmsr ON tmsr.order_item_id = toi.id
+    WHERE
+        toi.number = #{sn}
+  </select>
 </mapper>

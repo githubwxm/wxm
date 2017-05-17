@@ -20,6 +20,7 @@ import java.util.Map;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -227,5 +228,16 @@ public class OrderControllerTest {
                 ).andExpect(
                     jsonPath("$.code", is("200"))
                 ).andDo(print());
+    }
+
+    @Test
+    public void otaStatusInfo() throws Exception {
+        mockMvc.perform(
+                get("/api/order/item/status/info/ota").param("number", "1490929842728350")
+        ).andExpect(
+                status().isOk()
+        ).andExpect(
+                jsonPath("$.code", is("200"))
+        ).andDo(print());
     }
 }
