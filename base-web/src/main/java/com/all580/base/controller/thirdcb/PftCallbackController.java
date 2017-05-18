@@ -21,7 +21,7 @@ public class PftCallbackController {
         return "success";
     }
 
-    @RequestMapping(value="/notify")
+    @RequestMapping(value="notify", method = RequestMethod.GET)
     public String getNotify() {
         return "success";
     }
