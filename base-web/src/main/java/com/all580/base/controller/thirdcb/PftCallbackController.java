@@ -15,11 +15,11 @@ import java.util.Map;
 @RequestMapping("thirdcb/pft")
 public class PftCallbackController {
 
-    @RequestMapping(value = "notify", method = RequestMethod.POST)
-    @ResponseBody
-    public String notify(@RequestBody Map<String, Object> params) {
-        return "success";
-    }
+//    @RequestMapping(value = "notify", method = RequestMethod.POST)
+//    @ResponseBody
+//    public String notify(@RequestBody Map<String, Object> params) {
+//        return "success";
+//    }
 
     @RequestMapping(value="notify", method = RequestMethod.GET)
     public String getNotify() {
