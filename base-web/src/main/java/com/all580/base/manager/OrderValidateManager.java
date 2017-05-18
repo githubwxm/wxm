@@ -123,6 +123,54 @@ public class OrderValidateManager {
     }
 
     /**
+     * 生成酒店团队创建订单验证
+     * @return
+     */
+    public Map<String[], ValidRule[]> createHotelGroupValidate() {
+        Map<String[], ValidRule[]> rules = new HashMap<>();
+        // 校验不为空的参数
+        rules.put(new String[]{
+                "items.product_sub_code", // 订单子产品CODE
+                "items.start", // 计划开始时间
+                "items.days", // 天数：景点固定1
+                "items.quantity", // 订票数量
+                "items.group_id", // 团队ID
+                "ep_id", // 订票企业ID
+                "operator_id", // 订票用户ID
+                "operator_name", // 订票用户名称
+                "from", // 来源 0-平台下单 1-接口下单
+                "remark" // 备注
+        }, new ValidRule[]{new ValidRule.NotNull()});
+
+        // 校验整数
+        rules.put(new String[]{
+                "items.product_sub_code", // 订单子产品CODE
+                "items.days", // 天数：景点固定1
+                "items.quantity", // 订票数量
+                "items.group_id", // 团队ID
+                "ep_id", // 订票企业ID
+                "operator_id" // 订票用户ID
+        }, new ValidRule[]{new ValidRule.Digits()});
+
+        rules.put(new String[]{
+                "items.days", // 天数：景点固定1
+                "items.quantity" // 订票数量
+        }, new ValidRule[]{new ValidRule.Digits(1L, 10000L)});
+
+        // 校验手机号码
+        rules.put(new String[]{
+                "items.phone" // 订单联系人手机号码
+        }, new ValidRule[]{new ValidRule.Pattern(ValidRule.MOBILE_PHONE)});
+
+        // 校验日期
+        rules.put(new String[]{
+                "items.start" // 计划开始时间
+        }, new ValidRule[]{new ValidRule.Date()});
+
+        return rules;
+    }
+
+    /**
      * 生成创建团队订单验证
      * @return
      */

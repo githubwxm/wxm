@@ -7,14 +7,12 @@ import com.all580.order.api.service.OrderService;
 import com.all580.order.api.service.RefundOrderService;
 import com.framework.common.BaseController;
 import com.framework.common.Result;
-import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.validate.ParamsMapValidate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -69,6 +67,14 @@ public class OrderController extends BaseController {
         // 验证参数
         ParamsMapValidate.validate(params, orderValidateManager.createHotelValidate());
         return bookingOrderService.create(params, "HOTEL");
+    }
+
+    @RequestMapping(value = "hotel/group/create", method = RequestMethod.POST)
+    @ResponseBody
+    public Result<?> createForHotelGroup(@RequestBody Map params) throws Exception {
+        // 验证参数
+        ParamsMapValidate.validate(params, orderValidateManager.createHotelGroupValidate());
+        return bookingOrderService.create(params, "HOTEL_GROUP");
     }
 
     @RequestMapping(value = "audit", method = RequestMethod.POST)
@@ -267,6 +273,12 @@ public class OrderController extends BaseController {
     @ResponseBody
     public Result<?> syncOrder(@RequestParam Long number, String[] accessKeys, String[] tables) {
         return orderService.syncOrder(number, accessKeys, tables);
+    }
+
+    @RequestMapping("item/status/info/ota")
+    @ResponseBody
+    public Result<?> selectOrderItemInfoForOta(@RequestParam Long number) {
+        return orderService.selectOrderItemInfoByOta(number);
     }
 
     private void checkPlatformOrderParams(String start_time, String end_time, String phone) {

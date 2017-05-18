@@ -121,4 +121,11 @@ public interface OrderService {
      * @return
      */
     Result<?> syncOrder(long number, String[] accessKeys, String[] tables);
+
+    /**
+     * 查询子订单信息(一个凭证码)
+     * @param number
+     * @return
+     */
+    Result<?> selectOrderItemInfoByOta(long number);
 }

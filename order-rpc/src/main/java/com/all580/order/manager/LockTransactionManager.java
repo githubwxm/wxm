@@ -28,6 +28,7 @@ import com.framework.common.lang.JsonUtils;
 import com.framework.common.lang.UUIDGenerator;
 import com.framework.common.outside.JobAspect;
 import com.framework.common.outside.JobTask;
+import com.framework.common.synchronize.SynchronizeDataMap;
 import com.framework.common.util.CommonUtil;
 import com.framework.common.validate.CheckIdCardUtils;
 import com.github.ltsopensource.core.domain.Action;
@@ -333,7 +334,7 @@ public class LockTransactionManager {
 
         refundOrderMapper.updateByPrimaryKeySelective(refundOrder);
         eventManager.addEvent(OrderConstant.EventType.ORDER_REFUND_AUDIT, new RefundAuditEventParam(refundOrder.getId(), status));
-        return new Result<>(true);
+        return new Result<>(true).putExt(Result.SYNC_DATA, new SynchronizeDataMap("Manual").add("t_refund_order", refundOrderMapper.selectByPrimaryKey(refundOrder.getId())).asMap());
     }
 
     /**
@@ -389,7 +390,9 @@ public class LockTransactionManager {
         }
         orderItemMapper.updateByPrimaryKeySelective(orderItem);
         eventManager.addEvent(OrderConstant.EventType.ORDER_AUDIT, new OrderAuditEventParam(orderItem.getId(), status));
-        return new Result<>(true);
+
+        // 同步返回数据
+        return new Result<>(true).putExt(Result.SYNC_DATA, new SynchronizeDataMap("Manual").add("t_order_item", orderItemMapper.selectByOrderId(order.getId())).asMap());
     }
 
     /**

@@ -9,15 +9,14 @@ import com.all580.ep.dao.SmsSendMapper;
 import com.all580.notice.api.conf.SmsType;
 import com.all580.notice.api.service.SmsService;
 import com.framework.common.Result;
-import javax.lang.exception.ApiException;
 import com.framework.common.util.CommonUtil;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
+import javax.lang.exception.ApiException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -196,7 +195,7 @@ public class EpBalanceThresholdServiceImpl implements EpBalanceThresholdService 
                      }else if(jinqian.length()==1){
                          params.put("jinqian","0.0"+jinqian);
                      }
-                       Map<String,Object> mapSend = smsSendMapper.selectByEpId(ep_id);//   余额修改之后的发送短信
+                       Map<String,Object> mapSend = smsSendMapper.selectByEpId(ep_id,core_ep_id);//   余额修改之后的发送短信
                      if(null!=mapSend && "1".equals(CommonUtil.objectParseString( mapSend.get("threshold_status")))){
                          String send_phone2=CommonUtil.objectParseString(mapSend.get("send_phone2"));
                          if( null != send_phone2 && !"".equals(send_phone2.trim())){
@@ -206,10 +205,13 @@ public class EpBalanceThresholdServiceImpl implements EpBalanceThresholdService 
                          if(  null != send_phone1 && !"".equals(send_phone1.trim())){
                              return smsService.send(send_phone1, SmsType.Ep.BALANCE_SHORTAGE,core_ep_id,params);//发送短信
                          }else{
-                             return  smsService.send(destPhoneNum, SmsType.Ep.BALANCE_SHORTAGE,core_ep_id,params);//发送短信
+                             return  smsService.send(destPhoneNum, SmsType.Ep.BALANCE_SHORTAGE,core_ep_id,params);//发送没有在系统参数里面配置的短信
                          }
                      }
                  }
+            }
+            if(balance>=threshold &&history_balance<balance&&history_balance<=threshold){//余额大于阀值，并且是加钱
+                smsSendMapper.updateSmSSendInit(map);
             }
         } catch (Exception e) {
             log.error("查询数据库出错", e);
