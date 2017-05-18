@@ -159,13 +159,13 @@ public class BalancePayServiceImpl implements BalancePayService {
         List<Map<String, String>> capitalSerials=null;
         if(null==export){
            capitalSerials = capitalSerialMapper.listByCapitalId(capital.getId(),
-                    balanceSatatus ,startDate,endDate,ref_id,startRecord, maxRecords,type);
+                    balanceSatatus ,startDate,endDate,ref_id,startRecord, maxRecords,type,balance_type);
         }else{
             capitalSerials = capitalSerialMapper.listByCapitalIdExport(capital.getId(),
-                    balanceSatatus ,startDate,endDate,ref_id,startRecord, maxRecords,type);
+                    balanceSatatus ,startDate,endDate,ref_id,startRecord, maxRecords,type,balance_type);
         }
 
-        int count = capitalSerialMapper.countByCapitalId(capital.getId(), balanceSatatus ,startDate,endDate,ref_id,type);
+        int count = capitalSerialMapper.countByCapitalId(capital.getId(), balanceSatatus ,startDate,endDate,ref_id,type,balance_type);
         PageRecord<Map<String, String>> record = new PageRecord<>(count, capitalSerials);
         result.setSuccess();
         result.put(record);
