@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.Map;
 
 @Slf4j
@@ -21,8 +23,12 @@ public class PftCallbackController {
 //        return "success";
 //    }
 
-    @RequestMapping(value="notify", method = RequestMethod.GET)
-    public String getNotify() {
-        return "success";
+    @RequestMapping(value="/notify", method = RequestMethod.GET)
+    public void getNotify(HttpServletResponse response) {
+        try {
+            response.getWriter().write("success");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
