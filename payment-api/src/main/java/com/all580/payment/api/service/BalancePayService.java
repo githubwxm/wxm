@@ -105,6 +105,6 @@ public interface BalancePayService {
                                                                  Integer export ,
                                                                  Integer startRecord, Integer maxRecords,Integer type,Integer balance_type);
 
-    Result<Map<String,Object>>getBalanceType();
+    Result<List<Map<String,Object>>>getBalanceType();
 
 }
