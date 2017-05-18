@@ -181,8 +181,8 @@ public class BalancePayServiceImpl implements BalancePayService {
         return result;
     }
 
-    public Result<Map<String,Object>> getBalanceType(){
-        Result<Map<String,Object>> result = new Result<>(true);
+    public Result<List<Map<String,Object>>> getBalanceType(){
+        Result<List<Map<String,Object>>> result = new Result<>(true);
         result.put(capitalMapper.getBalanceType());
         return  result;
     }

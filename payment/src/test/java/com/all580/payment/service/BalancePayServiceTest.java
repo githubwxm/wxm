@@ -45,6 +45,7 @@ public class BalancePayServiceTest extends BaseTest {
         fundSerialService.updateFundSerialSummary(map);
         capital= capitalMapper.selectByEpIdAndCoreEpId(1,11);
         System.out.println(null==capital );
+        print(balancePayService.getBalanceType().get().toString());
 
     }
     private void print(String str){
