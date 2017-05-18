@@ -103,5 +103,8 @@ public interface BalancePayService {
     Result<PageRecord<Map<String, String>>> getBalanceSerialList(Integer epId, Integer coreEpId,
                                                                  String balanceSatatus,String startDate,String endDate,String ref_id,
                                                                  Integer export ,
-                                                                 Integer startRecord, Integer maxRecords,Integer type);
+                                                                 Integer startRecord, Integer maxRecords,Integer type,Integer balance_type);
+
+    Result<Map<String,Object>>getBalanceType();
+
 }

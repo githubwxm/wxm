@@ -28,4 +28,5 @@ public interface CapitalMapper {
     int updateByEpIdAndCoreEpId(Capital record);
 
     int batchUpdateById(@Param("capitalList") List<Capital> capitalList);
+    Map<String,Object> getBalanceType();
 }

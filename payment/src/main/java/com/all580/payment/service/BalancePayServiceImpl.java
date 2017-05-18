@@ -151,7 +151,8 @@ public class BalancePayServiceImpl implements BalancePayService {
     @Override
     public Result<PageRecord<Map<String, String>>> getBalanceSerialList(Integer epId, Integer coreEpId,
                                                                         String balanceSatatus,String startDate,String endDate,String ref_id,
-                                                                        Integer export ,    Integer startRecord, Integer maxRecords,Integer type) {
+                                                                        Integer export ,    Integer startRecord, Integer maxRecords,
+                                                                        Integer type,Integer balance_type) {
         Result<PageRecord<Map<String, String>>> result = new Result<>();
         Capital capital = capitalMapper.selectByEpIdAndCoreEpId(epId, coreEpId);
         Assert.notNull(capital, MessageFormat.format("没有找到余额账户:epId={0}|coreEpId={1}", epId, coreEpId));
@@ -178,5 +179,9 @@ public class BalancePayServiceImpl implements BalancePayService {
         result.put(ref);
         result.setSuccess();
         return result;
+    }
+
+    public Result<Map<String,Object>> getBalanceType(){
+        return  null;
     }
 }

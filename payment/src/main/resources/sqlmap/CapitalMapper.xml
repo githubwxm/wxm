@@ -166,6 +166,8 @@
             where id = #{item.id}
         </foreach>
     </update>
-
+  <select id="getBalanceType" resultType="java.util.Map">
+      select * from t_payment_param where category=7001;
+  </select>
 
 </mapper>

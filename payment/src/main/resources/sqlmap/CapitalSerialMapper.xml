@@ -168,7 +168,7 @@
 
     <select id="listByCapitalIdExport"  resultType="map">
         select * from(
-        select
+        select  balance_type as balance_type_id,
         c.id,c.ref_id,c.ref_type, c.create_time as create_time, truncate((c.new_balance-c.old_balance)/100,2) as balance_add,truncate(( c.new_can_cash-c.old_can_cash)/100,2) as
         can_cash_add,p.name as change_type ,truncate(new_balance/100,2) new_balance, CASE WHEN c.new_balance-c.old_balance >0 THEN '收入' else '支出' end as balance_status
         ,CASE WHEN c.new_balance-c.old_balance >0 THEN '0' else '1' end as balance_status_code,IFNULL(summary,'') as summary
@@ -189,6 +189,9 @@
         <if test="balance_status != null  and balance_status != ''">
             and   f.balance_status= #{balance_status}
         </if>
+        <if test="balance_type_id != null  and balance_type_id != ''">
+            and   f.balance_type_id= #{balance_type_id}
+        </if>
         <if test="start_date != null and end_date != null and start_date != '' and end_date != ''">
             and create_time between  #{start_date} and #{end_date}
         </if>
@@ -205,7 +208,7 @@
     </select>
     <select id="listByCapitalId"  resultType="map">
         select * from(
-        select
+        select balance_type as balance_type_id,
         c.id,c.ref_id,c.ref_type, c.create_time as create_time,c.new_balance-c.old_balance as balance_add,c.new_can_cash-c.old_can_cash as
         can_cash_add,p.name as change_type ,new_balance , CASE WHEN c.new_balance-c.old_balance >0 THEN '收入' else '支出' end as balance_status
         ,CASE WHEN c.new_balance-c.old_balance >0 THEN '0' else '1' end as balance_status_code,IFNULL(summary,'') as summary
@@ -224,12 +227,19 @@
         <if test="type == 1">
             and can_cash_add !=0
         </if>
+        <if test="balance_type_id != null  and balance_type_id != ''">
+          and   balance_type_id= #{balance_type_id}
+        </if>
         <if test="balance_status != null  and balance_status != ''">
-          and   f.balance_status= #{balance_status}
+            and   f.balance_status= #{balance_status}
         </if>
         <if test="start_date != null and end_date != null and start_date != '' and end_date != ''">
             and create_time between  #{start_date} and #{end_date}
         </if>
+        <if test="ref_id != null  and ref_id != ''">
+            and   ref_id=#{ref_id}
+        </if>
+
         <if test="ref_id != null  and ref_id != ''">
             and   ref_id=#{ref_id}
         </if>
@@ -258,6 +268,9 @@
         </if>
         <if test="balance_status != null  and balance_status != ''">
             and   f.balance_status= #{balance_status}
+        </if>
+        <if test="balance_type_id != null  and balance_type_id != ''">
+            and   f.balance_type_id= #{balance_type_id}
         </if>
         <if test="start_date != null and end_date != null and start_date != '' and end_date != ''">
             and create_time between  #{start_date} and #{end_date}
