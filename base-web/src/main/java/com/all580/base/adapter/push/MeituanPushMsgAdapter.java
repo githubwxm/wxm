@@ -120,6 +120,7 @@ public class MeituanPushMsgAdapter extends GeneralPushMsgAdapter implements Init
             log.debug("推送美团信息:url:{},content:{}", request.getURI().getPath(), string);
             HttpResponse response = httpClient.execute(request);
             String responseContent = IOUtils.toString(response.getEntity().getContent());
+            log.debug("推送美团信息:url:{},response:{}", request.getURI().getPath(), responseContent);
             res = JSONObject.fromObject(responseContent);
         } catch (Exception e) {
             log.warn("推送美团请求失败", e);
@@ -184,8 +185,14 @@ public class MeituanPushMsgAdapter extends GeneralPushMsgAdapter implements Init
         switch (opCode) {
             case "REFUND":
             case "REFUND_FAIL":
-                String refundId = CommonUtil.objectParseString(msg.get("refundId"));
-                if (StringUtils.isEmpty(refundId) || refundId.startsWith("_")) {
+                Object object = msg.get("body");
+                if (object instanceof Map) {
+                    String refundId = CommonUtil.objectParseString(((Map)object).get("refundId"));
+                    if (StringUtils.isEmpty(refundId) || refundId.startsWith("_")) {
+                        log.warn("不是美团发起的退订不予推送");
+                        return false;
+                    }
+                } else {
                     log.warn("不是美团发起的退订不予推送");
                     return false;
                 }
