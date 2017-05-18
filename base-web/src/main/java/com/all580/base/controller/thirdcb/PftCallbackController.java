@@ -20,4 +20,9 @@ public class PftCallbackController {
     public String notify(@RequestBody Map<String, Object> params) {
         return "success";
     }
+
+    @RequestMapping(value="/notify")
+    public String getNotify() {
+        return "success";
+    }
 }
