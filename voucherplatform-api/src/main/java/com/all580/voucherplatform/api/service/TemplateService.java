@@ -63,10 +63,10 @@ public interface TemplateService {
      */
     Result get(Integer supplierId, Integer prodId);
 
-    Result setDefault(Integer id);
 
     /**
      * 获取模版的总数量
+     *
      * @param name
      * @param supplierId
      * @param prodId
@@ -78,6 +78,7 @@ public interface TemplateService {
 
     /**
      * 获取模版集合
+     *
      * @param name
      * @param len
      * @param prefix

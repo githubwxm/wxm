@@ -2,10 +2,10 @@ package com.all580.voucherplatform.service;
 
 import com.all580.voucherplatform.api.service.TemplateService;
 import com.all580.voucherplatform.dao.TemplateMapper;
-import com.all580.voucherplatform.entity.QrRule;
 import com.all580.voucherplatform.entity.Template;
 import com.framework.common.Result;
 import com.framework.common.lang.JsonUtils;
+import com.framework.common.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,7 +30,7 @@ public class TemplateServiceImpl implements TemplateService {
         Result result = new Result(false);
         Template template = JsonUtils.map2obj(map, Template.class);
         template.setId(null);
-        if (templateMapper.getTemplate(template.getSupplier_id(), template.getSupplierproduct_id()) != null) {
+        if (templateMapper.getTemplate(template.getSupply_id(), template.getSupplyprod_id()) != null) {
             result.setError("对同一商户和产品不能重复添加模版");
         } else {
             template.setStatus(true);
@@ -43,12 +43,21 @@ public class TemplateServiceImpl implements TemplateService {
 
     @Override
     public Result update(Map map) {
-        return null;
+        Template template = new Template();
+        template.setId(CommonUtil.objectParseInteger(map.get("id")));
+        template.setSms(CommonUtil.objectParseString(map.get("sms")));
+        template.setPrintText(CommonUtil.objectParseString(map.get("printText")));
+        templateMapper.updateByPrimaryKeySelective(template);
+        return new Result(true);
     }
 
     @Override
     public Result delete(Integer id) {
-        return null;
+        Template template = new Template();
+        template.setId(id);
+        template.setStatus(false);
+        templateMapper.updateByPrimaryKeySelective(template);
+        return new Result(true);
     }
 
     @Override
@@ -71,18 +80,14 @@ public class TemplateServiceImpl implements TemplateService {
         return result;
     }
 
-    @Override
-    public Result setDefault(Integer id) {
-        return null;
-    }
 
     @Override
     public int getCount(String name, Integer supplierId, Integer prodId, Boolean defaultOption) {
-        return 0;
+        return templateMapper.getCount(name, supplierId, prodId, defaultOption);
     }
 
     @Override
-    public List<Map> getList(String name, Integer len, String prefix, String postfix, Integer supplierId, Integer prodId, Boolean defaultOption, Integer recordStart, Integer recordSCount) {
-        return null;
+    public List<Map> getList(String name, Integer len, String prefix, String postfix, Integer supplierId, Integer prodId, Boolean defaultOption, Integer recordStart, Integer recordCount) {
+        return templateMapper.getList(name, supplierId, prodId, defaultOption, recordStart, recordCount);
     }
 }

@@ -4,6 +4,10 @@ import com.all580.voucherplatform.entity.QrRule;
 import com.all580.voucherplatform.entity.Template;
 import org.apache.ibatis.annotations.Param;
 
+import javax.annotation.PostConstruct;
+import java.util.List;
+import java.util.Map;
+
 public interface TemplateMapper {
     /**
      *  根据主键删除数据库的记录,t_template
@@ -47,5 +51,19 @@ public interface TemplateMapper {
      */
     int updateByPrimaryKey(Template record);
 
-    Template getTemplate(@Param("supplierId") Integer supplierId, @Param("prodId") Integer prodId);
+    Template getTemplate(@Param("supppyId") Integer supppyId, @Param("prodId") Integer prodId);
+
+
+    int getCount(@Param("name") String name,
+                 @Param("supppyId") Integer supppyId,
+                 @Param("prod_Id") Integer prodId,
+                 @Param("defaultOption") Boolean defaultOption);
+
+    List<Map> getList(@Param("name") String name,
+                      @Param("supplierId") Integer supplierId,
+                      @Param("prod_Id") Integer prodId,
+                      @Param("defaultOption") Boolean defaultOption,
+                      @Param("record_start") Integer recordStart,
+                      @Param("record_count") Integer recordCount);
+
 }

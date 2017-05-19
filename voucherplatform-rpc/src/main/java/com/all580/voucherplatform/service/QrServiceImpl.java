@@ -30,7 +30,7 @@ public class QrServiceImpl implements QrService {
         Result result = new Result(false);
         QrRule qrRole = JsonUtils.map2obj(map, QrRule.class);
         qrRole.setId(null);
-        if (qrRuleMapper.getQrRule(qrRole.getSupplier_id(), qrRole.getSupplierproduct_id()) != null) {
+        if (qrRuleMapper.getQrRule(qrRole.getSupply_id(), qrRole.getSupplyprod_id()) != null) {
             result.setError("对同一商户和产品不能重复添加模版");
         } else {
             qrRole.setStatus(true);
@@ -87,12 +87,7 @@ public class QrServiceImpl implements QrService {
         return result;
     }
 
-    @Override
-    public Result setDefault(Integer id) {
-        qrRuleMapper.updateOldDefault();
-        qrRuleMapper.setNewDefault(id);
-        return new Result(true);
-    }
+
 
     @Override
     public int getCount(String name, Integer len, String prefix, String postfix, Integer supplierId, Integer prodId, Boolean defaultOption) {

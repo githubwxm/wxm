@@ -60,19 +60,19 @@ public class Consume implements Serializable {
     private Integer platform_id;
 
     /**
-     *  平台商产品id,所属表字段为t_consume.platformproduct_id
+     *  平台商产品id,所属表字段为t_consume.platformprod_id
      */
-    private Integer platformproduct_id;
+    private Integer platformprod_id;
 
     /**
-     *  供应商id,所属表字段为t_consume.supplier_id
+     *  供应商id,所属表字段为t_consume.supply_id
      */
-    private Integer supplier_id;
+    private Integer supply_id;
 
     /**
-     *  供应商产品id,所属表字段为t_consume.supplierproduct_id
+     *  供应商产品id,所属表字段为t_consume.supplyprod_id
      */
-    private Integer supplierproduct_id;
+    private Integer supplyprod_id;
 
     /**
      *  是否发生过冲正,所属表字段为t_consume.reverseStatus
@@ -288,57 +288,57 @@ public class Consume implements Serializable {
     }
 
     /**
-     * 获取 平台商产品id 字段:t_consume.platformproduct_id
+     * 获取 平台商产品id 字段:t_consume.platformprod_id
      *
-     * @return t_consume.platformproduct_id, 平台商产品id
+     * @return t_consume.platformprod_id, 平台商产品id
      */
-    public Integer getPlatformproduct_id() {
-        return platformproduct_id;
+    public Integer getPlatformprod_id() {
+        return platformprod_id;
     }
 
     /**
-     * 设置 平台商产品id 字段:t_consume.platformproduct_id
+     * 设置 平台商产品id 字段:t_consume.platformprod_id
      *
-     * @param platformproduct_id t_consume.platformproduct_id, 平台商产品id
+     * @param platformprod_id t_consume.platformprod_id, 平台商产品id
      */
-    public void setPlatformproduct_id(Integer platformproduct_id) {
-        this.platformproduct_id = platformproduct_id;
+    public void setPlatformprod_id(Integer platformprod_id) {
+        this.platformprod_id = platformprod_id;
     }
 
     /**
-     * 获取 供应商id 字段:t_consume.supplier_id
+     * 获取 供应商id 字段:t_consume.supply_id
      *
-     * @return t_consume.supplier_id, 供应商id
+     * @return t_consume.supply_id, 供应商id
      */
-    public Integer getSupplier_id() {
-        return supplier_id;
+    public Integer getSupply_id() {
+        return supply_id;
     }
 
     /**
-     * 设置 供应商id 字段:t_consume.supplier_id
+     * 设置 供应商id 字段:t_consume.supply_id
      *
-     * @param supplier_id t_consume.supplier_id, 供应商id
+     * @param supply_id t_consume.supply_id, 供应商id
      */
-    public void setSupplier_id(Integer supplier_id) {
-        this.supplier_id = supplier_id;
+    public void setSupply_id(Integer supply_id) {
+        this.supply_id = supply_id;
     }
 
     /**
-     * 获取 供应商产品id 字段:t_consume.supplierproduct_id
+     * 获取 供应商产品id 字段:t_consume.supplyprod_id
      *
-     * @return t_consume.supplierproduct_id, 供应商产品id
+     * @return t_consume.supplyprod_id, 供应商产品id
      */
-    public Integer getSupplierproduct_id() {
-        return supplierproduct_id;
+    public Integer getSupplyprod_id() {
+        return supplyprod_id;
     }
 
     /**
-     * 设置 供应商产品id 字段:t_consume.supplierproduct_id
+     * 设置 供应商产品id 字段:t_consume.supplyprod_id
      *
-     * @param supplierproduct_id t_consume.supplierproduct_id, 供应商产品id
+     * @param supplyprod_id t_consume.supplyprod_id, 供应商产品id
      */
-    public void setSupplierproduct_id(Integer supplierproduct_id) {
-        this.supplierproduct_id = supplierproduct_id;
+    public void setSupplyprod_id(Integer supplyprod_id) {
+        this.supplyprod_id = supplyprod_id;
     }
 
     /**

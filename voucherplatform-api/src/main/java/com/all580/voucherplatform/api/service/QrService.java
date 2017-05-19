@@ -69,8 +69,6 @@ public interface QrService {
      */
     Result get(Integer supplierId, Integer prodId);
 
-    Result setDefault(Integer id);
-
     /**
      * 获取模版的总数量
      *

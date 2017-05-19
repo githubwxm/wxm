@@ -35,14 +35,14 @@ public class PlatformProduct implements Serializable {
     private Integer platformrole_id;
 
     /**
-     *  产品对应的供应商id,所属表字段为t_platformproduct.supplier_id
+     *  产品对应的供应商id,所属表字段为t_platformproduct.supply_id
      */
-    private Integer supplier_id;
+    private Integer supply_id;
 
     /**
-     *  产品对应的供应商产品id,所属表字段为t_platformproduct.supplierprod_id
+     *  产品对应的供应商产品id,所属表字段为t_platformproduct.supplyprod_id
      */
-    private Integer supplierprod_id;
+    private Integer supplyprod_id;
 
     /**
      *  启用状态,所属表字段为t_platformproduct.status
@@ -173,39 +173,39 @@ public class PlatformProduct implements Serializable {
     }
 
     /**
-     * 获取 产品对应的供应商id 字段:t_platformproduct.supplier_id
+     * 获取 产品对应的供应商id 字段:t_platformproduct.supply_id
      *
-     * @return t_platformproduct.supplier_id, 产品对应的供应商id
+     * @return t_platformproduct.supply_id, 产品对应的供应商id
      */
-    public Integer getSupplier_id() {
-        return supplier_id;
+    public Integer getSupply_id() {
+        return supply_id;
     }
 
     /**
-     * 设置 产品对应的供应商id 字段:t_platformproduct.supplier_id
+     * 设置 产品对应的供应商id 字段:t_platformproduct.supply_id
      *
-     * @param supplier_id t_platformproduct.supplier_id, 产品对应的供应商id
+     * @param supply_id t_platformproduct.supply_id, 产品对应的供应商id
      */
-    public void setSupplier_id(Integer supplier_id) {
-        this.supplier_id = supplier_id;
+    public void setSupply_id(Integer supply_id) {
+        this.supply_id = supply_id;
     }
 
     /**
-     * 获取 产品对应的供应商产品id 字段:t_platformproduct.supplierprod_id
+     * 获取 产品对应的供应商产品id 字段:t_platformproduct.supplyprod_id
      *
-     * @return t_platformproduct.supplierprod_id, 产品对应的供应商产品id
+     * @return t_platformproduct.supplyprod_id, 产品对应的供应商产品id
      */
-    public Integer getSupplierprod_id() {
-        return supplierprod_id;
+    public Integer getSupplyprod_id() {
+        return supplyprod_id;
     }
 
     /**
-     * 设置 产品对应的供应商产品id 字段:t_platformproduct.supplierprod_id
+     * 设置 产品对应的供应商产品id 字段:t_platformproduct.supplyprod_id
      *
-     * @param supplierprod_id t_platformproduct.supplierprod_id, 产品对应的供应商产品id
+     * @param supplyprod_id t_platformproduct.supplyprod_id, 产品对应的供应商产品id
      */
-    public void setSupplierprod_id(Integer supplierprod_id) {
-        this.supplierprod_id = supplierprod_id;
+    public void setSupplyprod_id(Integer supplyprod_id) {
+        this.supplyprod_id = supplyprod_id;
     }
 
     /**

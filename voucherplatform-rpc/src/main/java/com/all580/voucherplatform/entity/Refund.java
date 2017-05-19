@@ -55,9 +55,9 @@ public class Refund implements Serializable {
     private Date successTime;
 
     /**
-     *  票务退票流水号,所属表字段为t_refund.supplierRefSeqId
+     *  票务退票流水号,所属表字段为t_refund.supplyRefSeqId
      */
-    private String supplierRefSeqId;
+    private String supplyRefSeqId;
 
     /**
      *  ,所属表字段为t_refund.platform_id
@@ -65,19 +65,19 @@ public class Refund implements Serializable {
     private Integer platform_id;
 
     /**
-     *  ,所属表字段为t_refund.platformproduct_id
+     *  ,所属表字段为t_refund.platformprod_id
      */
-    private Integer platformproduct_id;
+    private Integer platformprod_id;
 
     /**
-     *  供应商id,所属表字段为t_refund.supplier_id
+     *  供应商id,所属表字段为t_refund.supply_id
      */
-    private Integer supplier_id;
+    private Integer supply_id;
 
     /**
-     *  供应商产品id,所属表字段为t_refund.supplierproduct_id
+     *  供应商产品id,所属表字段为t_refund.supplyprod_id
      */
-    private Integer supplierproduct_id;
+    private Integer supplyprod_id;
 
     /**
      *  数据创建时间,所属表字段为t_refund.createTime
@@ -270,21 +270,21 @@ public class Refund implements Serializable {
     }
 
     /**
-     * 获取 票务退票流水号 字段:t_refund.supplierRefSeqId
+     * 获取 票务退票流水号 字段:t_refund.supplyRefSeqId
      *
-     * @return t_refund.supplierRefSeqId, 票务退票流水号
+     * @return t_refund.supplyRefSeqId, 票务退票流水号
      */
-    public String getSupplierRefSeqId() {
-        return supplierRefSeqId;
+    public String getSupplyRefSeqId() {
+        return supplyRefSeqId;
     }
 
     /**
-     * 设置 票务退票流水号 字段:t_refund.supplierRefSeqId
+     * 设置 票务退票流水号 字段:t_refund.supplyRefSeqId
      *
-     * @param supplierRefSeqId t_refund.supplierRefSeqId, 票务退票流水号
+     * @param supplyRefSeqId t_refund.supplyRefSeqId, 票务退票流水号
      */
-    public void setSupplierRefSeqId(String supplierRefSeqId) {
-        this.supplierRefSeqId = supplierRefSeqId == null ? null : supplierRefSeqId.trim();
+    public void setSupplyRefSeqId(String supplyRefSeqId) {
+        this.supplyRefSeqId = supplyRefSeqId == null ? null : supplyRefSeqId.trim();
     }
 
     /**
@@ -306,57 +306,57 @@ public class Refund implements Serializable {
     }
 
     /**
-     * 获取  字段:t_refund.platformproduct_id
+     * 获取  字段:t_refund.platformprod_id
      *
-     * @return t_refund.platformproduct_id, 
+     * @return t_refund.platformprod_id, 
      */
-    public Integer getPlatformproduct_id() {
-        return platformproduct_id;
+    public Integer getPlatformprod_id() {
+        return platformprod_id;
     }
 
     /**
-     * 设置  字段:t_refund.platformproduct_id
+     * 设置  字段:t_refund.platformprod_id
      *
-     * @param platformproduct_id t_refund.platformproduct_id, 
+     * @param platformprod_id t_refund.platformprod_id, 
      */
-    public void setPlatformproduct_id(Integer platformproduct_id) {
-        this.platformproduct_id = platformproduct_id;
+    public void setPlatformprod_id(Integer platformprod_id) {
+        this.platformprod_id = platformprod_id;
     }
 
     /**
-     * 获取 供应商id 字段:t_refund.supplier_id
+     * 获取 供应商id 字段:t_refund.supply_id
      *
-     * @return t_refund.supplier_id, 供应商id
+     * @return t_refund.supply_id, 供应商id
      */
-    public Integer getSupplier_id() {
-        return supplier_id;
+    public Integer getSupply_id() {
+        return supply_id;
     }
 
     /**
-     * 设置 供应商id 字段:t_refund.supplier_id
+     * 设置 供应商id 字段:t_refund.supply_id
      *
-     * @param supplier_id t_refund.supplier_id, 供应商id
+     * @param supply_id t_refund.supply_id, 供应商id
      */
-    public void setSupplier_id(Integer supplier_id) {
-        this.supplier_id = supplier_id;
+    public void setSupply_id(Integer supply_id) {
+        this.supply_id = supply_id;
     }
 
     /**
-     * 获取 供应商产品id 字段:t_refund.supplierproduct_id
+     * 获取 供应商产品id 字段:t_refund.supplyprod_id
      *
-     * @return t_refund.supplierproduct_id, 供应商产品id
+     * @return t_refund.supplyprod_id, 供应商产品id
      */
-    public Integer getSupplierproduct_id() {
-        return supplierproduct_id;
+    public Integer getSupplyprod_id() {
+        return supplyprod_id;
     }
 
     /**
-     * 设置 供应商产品id 字段:t_refund.supplierproduct_id
+     * 设置 供应商产品id 字段:t_refund.supplyprod_id
      *
-     * @param supplierproduct_id t_refund.supplierproduct_id, 供应商产品id
+     * @param supplyprod_id t_refund.supplyprod_id, 供应商产品id
      */
-    public void setSupplierproduct_id(Integer supplierproduct_id) {
-        this.supplierproduct_id = supplierproduct_id;
+    public void setSupplyprod_id(Integer supplyprod_id) {
+        this.supplyprod_id = supplyprod_id;
     }
 
     /**

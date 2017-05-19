@@ -52,14 +52,15 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public int getOrderCount(Integer platformId, Integer supplierId, String orderCode, String platformOrderId, String mobile, String idNumber, String voucherNumber, Integer status, Date startTime, Date endTime) {
-        return orderMapper.getOrderCount(platformId, supplierId, orderCode, platformOrderId, mobile, idNumber, voucherNumber, status, startTime, endTime);
+//        return orderMapper.getOrderCount(platformId, supplierId, orderCode, platformOrderId, mobile, idNumber, voucherNumber, status, startTime, endTime);
+        return 0;
     }
 
     @Override
     public Result getOrderList(Integer platformId, Integer supplierId, String orderCode, String platformOrderId, String mobile, String idNumber, String voucherNumber, Integer status, Date startTime, Date endTime, Integer recordStart, Integer recordCount) {
         Result result = new Result(true);
-        List<Map> list = orderMapper.getOrderList(platformId, supplierId, orderCode, platformOrderId, mobile, idNumber, voucherNumber, status, startTime, endTime, recordStart, recordCount);
-        result.put(list);
+//        List<Map> list = orderMapper.getOrderList(platformId, supplierId, orderCode, platformOrderId, mobile, idNumber, voucherNumber, status, startTime, endTime, recordStart, recordCount);
+        //  result.put(list);
         return result;
     }
 }

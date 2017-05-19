@@ -25,9 +25,9 @@ public class Order implements Serializable {
     private Integer platformprod_id;
 
     /**
-     *  所属供应商的id,所属表字段为t_order.supplier_id
+     *  所属供应商的id,所属表字段为t_order.supply_id
      */
-    private Integer supplier_id;
+    private Integer supply_id;
 
     /**
      *  所对应票务系统的id,所属表字段为t_order.ticketsys_id
@@ -42,12 +42,12 @@ public class Order implements Serializable {
     /**
      *  订单来源平台的产品号,所属表字段为t_order.platformProdId
      */
-    private String platformProdId;
+    private Integer platformProdId;
 
     /**
-     *  供应商的订单号,所属表字段为t_order.supplierOrderId
+     *  供应商的订单号,所属表字段为t_order.supplyOrderId
      */
-    private String supplierOrderId;
+    private String supplyOrderId;
 
     /**
      *  供应商的产品号,所属表字段为t_order.supplierProdId
@@ -222,21 +222,21 @@ public class Order implements Serializable {
     }
 
     /**
-     * 获取 所属供应商的id 字段:t_order.supplier_id
+     * 获取 所属供应商的id 字段:t_order.supply_id
      *
-     * @return t_order.supplier_id, 所属供应商的id
+     * @return t_order.supply_id, 所属供应商的id
      */
-    public Integer getSupplier_id() {
-        return supplier_id;
+    public Integer getSupply_id() {
+        return supply_id;
     }
 
     /**
-     * 设置 所属供应商的id 字段:t_order.supplier_id
+     * 设置 所属供应商的id 字段:t_order.supply_id
      *
-     * @param supplier_id t_order.supplier_id, 所属供应商的id
+     * @param supply_id t_order.supply_id, 所属供应商的id
      */
-    public void setSupplier_id(Integer supplier_id) {
-        this.supplier_id = supplier_id;
+    public void setSupply_id(Integer supply_id) {
+        this.supply_id = supply_id;
     }
 
     /**
@@ -280,7 +280,7 @@ public class Order implements Serializable {
      *
      * @return t_order.platformProdId, 订单来源平台的产品号
      */
-    public String getPlatformProdId() {
+    public Integer getPlatformProdId() {
         return platformProdId;
     }
 
@@ -289,26 +289,26 @@ public class Order implements Serializable {
      *
      * @param platformProdId t_order.platformProdId, 订单来源平台的产品号
      */
-    public void setPlatformProdId(String platformProdId) {
-        this.platformProdId = platformProdId == null ? null : platformProdId.trim();
+    public void setPlatformProdId(Integer platformProdId) {
+        this.platformProdId = platformProdId;
     }
 
     /**
-     * 获取 供应商的订单号 字段:t_order.supplierOrderId
+     * 获取 供应商的订单号 字段:t_order.supplyOrderId
      *
-     * @return t_order.supplierOrderId, 供应商的订单号
+     * @return t_order.supplyOrderId, 供应商的订单号
      */
-    public String getSupplierOrderId() {
-        return supplierOrderId;
+    public String getSupplyOrderId() {
+        return supplyOrderId;
     }
 
     /**
-     * 设置 供应商的订单号 字段:t_order.supplierOrderId
+     * 设置 供应商的订单号 字段:t_order.supplyOrderId
      *
-     * @param supplierOrderId t_order.supplierOrderId, 供应商的订单号
+     * @param supplyOrderId t_order.supplyOrderId, 供应商的订单号
      */
-    public void setSupplierOrderId(String supplierOrderId) {
-        this.supplierOrderId = supplierOrderId == null ? null : supplierOrderId.trim();
+    public void setSupplyOrderId(String supplyOrderId) {
+        this.supplyOrderId = supplyOrderId == null ? null : supplyOrderId.trim();
     }
 
     /**

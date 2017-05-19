@@ -5,7 +5,7 @@
 
 <generatorConfiguration>
     <classPathEntry
-            location="/Users/Linv2/.m2/repository/mysql/mysql-connector-java/5.1.30/mysql-connector-java-5.1.30.jar"/>
+            location="c:/Users/libin/.m2/repository/mysql/mysql-connector-java/5.1.30/mysql-connector-java-5.1.30.jar"/>
     <context id="my" targetRuntime="MyBatis3">
         <!-- 抑制警告 -->
         <property name="suppressTypeWarnings" value="true" />
@@ -51,26 +51,26 @@
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
             <!--<columnOverride column="update_time" javaType="java.lang.String"/>-->
         </table>
-        <table tableName="t_supplier"
+        <table tableName="t_supply"
                enableCountByExample="false"
                enableUpdateByExample="false"
                enableDeleteByExample="false"
                enableSelectByExample="false"
                selectByExampleQueryId="false"
                delimitAllColumns="true"
-               domainObjectName="Supplier">
+               domainObjectName="Supply">
             <property name="useActualColumnNames" value="true"/>
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
             <!--<columnOverride column="update_time" javaType="java.lang.String"/>-->
         </table>
-        <table tableName="t_supplierproduct"
+        <table tableName="t_supplyproduct"
                enableCountByExample="false"
                enableUpdateByExample="false"
                enableDeleteByExample="false"
                enableSelectByExample="false"
                selectByExampleQueryId="false"
                delimitAllColumns="true"
-               domainObjectName="SupplierProduct">
+               domainObjectName="SupplyProduct">
             <property name="useActualColumnNames" value="true"/>
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
             <!--<columnOverride column="update_time" javaType="java.lang.String"/>-->

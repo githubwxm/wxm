@@ -15,9 +15,9 @@ public class DeviceProduct implements Serializable {
     private Integer device_group_id;
 
     /**
-     *  产品id,所属表字段为t_device_product.supplierproduct_id
+     *  产品id,所属表字段为t_device_product.supplyprod_id
      */
-    private Integer supplierproduct_id;
+    private Integer supplyprod_id;
 
     /**
      *  创建时间,所属表字段为t_device_product.createTime
@@ -71,21 +71,21 @@ public class DeviceProduct implements Serializable {
     }
 
     /**
-     * 获取 产品id 字段:t_device_product.supplierproduct_id
+     * 获取 产品id 字段:t_device_product.supplyprod_id
      *
-     * @return t_device_product.supplierproduct_id, 产品id
+     * @return t_device_product.supplyprod_id, 产品id
      */
-    public Integer getSupplierproduct_id() {
-        return supplierproduct_id;
+    public Integer getSupplyprod_id() {
+        return supplyprod_id;
     }
 
     /**
-     * 设置 产品id 字段:t_device_product.supplierproduct_id
+     * 设置 产品id 字段:t_device_product.supplyprod_id
      *
-     * @param supplierproduct_id t_device_product.supplierproduct_id, 产品id
+     * @param supplyprod_id t_device_product.supplyprod_id, 产品id
      */
-    public void setSupplierproduct_id(Integer supplierproduct_id) {
-        this.supplierproduct_id = supplierproduct_id;
+    public void setSupplyprod_id(Integer supplyprod_id) {
+        this.supplyprod_id = supplyprod_id;
     }
 
     /**

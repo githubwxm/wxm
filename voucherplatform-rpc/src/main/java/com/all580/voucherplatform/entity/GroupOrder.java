@@ -26,9 +26,9 @@ public class GroupOrder implements Serializable {
     private Integer platformprod_id;
 
     /**
-     *  ,所属表字段为t_group_order.supplier_id
+     *  ,所属表字段为t_group_order.supply_id
      */
-    private Integer supplier_id;
+    private Integer supply_id;
 
     /**
      *  ,所属表字段为t_group_order.ticketsys_id
@@ -46,14 +46,14 @@ public class GroupOrder implements Serializable {
     private Integer platformProdId;
 
     /**
-     *  ,所属表字段为t_group_order.supplierOrderId
+     *  ,所属表字段为t_group_order.supplyOrderId
      */
-    private Integer supplierOrderId;
+    private Integer supplyOrderId;
 
     /**
-     *  ,所属表字段为t_group_order.supplierProdId
+     *  ,所属表字段为t_group_order.supplyProdId
      */
-    private Integer supplierProdId;
+    private Integer supplyProdId;
 
     /**
      *  ,所属表字段为t_group_order.formAreaCode
@@ -233,21 +233,21 @@ public class GroupOrder implements Serializable {
     }
 
     /**
-     * 获取  字段:t_group_order.supplier_id
+     * 获取  字段:t_group_order.supply_id
      *
-     * @return t_group_order.supplier_id, 
+     * @return t_group_order.supply_id, 
      */
-    public Integer getSupplier_id() {
-        return supplier_id;
+    public Integer getSupply_id() {
+        return supply_id;
     }
 
     /**
-     * 设置  字段:t_group_order.supplier_id
+     * 设置  字段:t_group_order.supply_id
      *
-     * @param supplier_id t_group_order.supplier_id, 
+     * @param supply_id t_group_order.supply_id, 
      */
-    public void setSupplier_id(Integer supplier_id) {
-        this.supplier_id = supplier_id;
+    public void setSupply_id(Integer supply_id) {
+        this.supply_id = supply_id;
     }
 
     /**
@@ -305,39 +305,39 @@ public class GroupOrder implements Serializable {
     }
 
     /**
-     * 获取  字段:t_group_order.supplierOrderId
+     * 获取  字段:t_group_order.supplyOrderId
      *
-     * @return t_group_order.supplierOrderId, 
+     * @return t_group_order.supplyOrderId, 
      */
-    public Integer getSupplierOrderId() {
-        return supplierOrderId;
+    public Integer getSupplyOrderId() {
+        return supplyOrderId;
     }
 
     /**
-     * 设置  字段:t_group_order.supplierOrderId
+     * 设置  字段:t_group_order.supplyOrderId
      *
-     * @param supplierOrderId t_group_order.supplierOrderId, 
+     * @param supplyOrderId t_group_order.supplyOrderId, 
      */
-    public void setSupplierOrderId(Integer supplierOrderId) {
-        this.supplierOrderId = supplierOrderId;
+    public void setSupplyOrderId(Integer supplyOrderId) {
+        this.supplyOrderId = supplyOrderId;
     }
 
     /**
-     * 获取  字段:t_group_order.supplierProdId
+     * 获取  字段:t_group_order.supplyProdId
      *
-     * @return t_group_order.supplierProdId, 
+     * @return t_group_order.supplyProdId, 
      */
-    public Integer getSupplierProdId() {
-        return supplierProdId;
+    public Integer getSupplyProdId() {
+        return supplyProdId;
     }
 
     /**
-     * 设置  字段:t_group_order.supplierProdId
+     * 设置  字段:t_group_order.supplyProdId
      *
-     * @param supplierProdId t_group_order.supplierProdId, 
+     * @param supplyProdId t_group_order.supplyProdId, 
      */
-    public void setSupplierProdId(Integer supplierProdId) {
-        this.supplierProdId = supplierProdId;
+    public void setSupplyProdId(Integer supplyProdId) {
+        this.supplyProdId = supplyProdId;
     }
 
     /**

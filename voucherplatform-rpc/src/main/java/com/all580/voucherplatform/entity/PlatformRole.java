@@ -30,9 +30,9 @@ public class PlatformRole implements Serializable {
     private Integer platform_id;
 
     /**
-     *  所授权的供应商id,所属表字段为t_platformrole.supplier_id
+     *  所授权的供应商id,所属表字段为t_platformrole.supply_id
      */
-    private Integer supplier_id;
+    private Integer supply_id;
 
     /**
      *  创建时间,所属表字段为t_platformrole.createTime
@@ -150,21 +150,21 @@ public class PlatformRole implements Serializable {
     }
 
     /**
-     * 获取 所授权的供应商id 字段:t_platformrole.supplier_id
+     * 获取 所授权的供应商id 字段:t_platformrole.supply_id
      *
-     * @return t_platformrole.supplier_id, 所授权的供应商id
+     * @return t_platformrole.supply_id, 所授权的供应商id
      */
-    public Integer getSupplier_id() {
-        return supplier_id;
+    public Integer getSupply_id() {
+        return supply_id;
     }
 
     /**
-     * 设置 所授权的供应商id 字段:t_platformrole.supplier_id
+     * 设置 所授权的供应商id 字段:t_platformrole.supply_id
      *
-     * @param supplier_id t_platformrole.supplier_id, 所授权的供应商id
+     * @param supply_id t_platformrole.supply_id, 所授权的供应商id
      */
-    public void setSupplier_id(Integer supplier_id) {
-        this.supplier_id = supplier_id;
+    public void setSupply_id(Integer supply_id) {
+        this.supply_id = supply_id;
     }
 
     /**
