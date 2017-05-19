@@ -10,8 +10,10 @@
 
 	<!---->
 	<!-- 使用zookeeper广播注册中心暴露服务地址 -->
-	<dubbo:registry address="${dubbo.registry.zk}" file="${order.dubbo.cache}" />
+	<dubbo:registry address="${dubbo.registry.zk}" file="${voucherplatform.dubbo.cache}" />
 	<dubbo:protocol name="dubbo" port="${dubbo.port}" />
 	<dubbo:monitor protocol="registry" />
+	<dubbo:service interface="com.all580.voucherplatform.api.service.UserService" ref="useSerivceImpl" />
+	<dubbo:service interface="com.all580.voucherplatform.api.service.QrService" ref="qrSerivceImpl" />
 
 </beans>
