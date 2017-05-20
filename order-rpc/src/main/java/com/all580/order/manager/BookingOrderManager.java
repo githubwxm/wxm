@@ -317,7 +317,7 @@ public class BookingOrderManager extends BaseOrderManager {
             expiryDate = DateUtils.setMinutes(expiryDate, DateFormatUtils.get(info.getEnd_time(), Calendar.MINUTE));
             expiryDate = DateUtils.setSeconds(expiryDate, DateFormatUtils.get(info.getEnd_time(), Calendar.SECOND));
         } else {
-            effectiveDate = date.after(info.getEffective_start_date()) ? (orderItemDetail.getUse_hours_limit() != null ? DateUtils.addHours(date, orderItemDetail.getUse_hours_limit()) : date) : info.getEffective_end_date();
+            effectiveDate = date.after(info.getEffective_start_date()) ? (orderItemDetail.getUse_hours_limit() != null ? DateUtils.addHours(date, orderItemDetail.getUse_hours_limit()) : date) : info.getEffective_start_date();
             expiryDate = info.getEffective_end_date();
         }
         if (effectiveDate.after(expiryDate)) {

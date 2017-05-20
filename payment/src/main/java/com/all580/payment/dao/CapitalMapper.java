@@ -20,7 +20,7 @@ public interface CapitalMapper {
     List<Capital> selectForUpdateByEpList(@Param("changeInfos") List<BalanceChangeInfo> changeInfos);
     List<Map<String,String>> listByEpIdAndCoreEpId(@Param("epIdList") List<Integer> epIdList,@Param("core_ep_id")
                                                    Integer coreEpId);
-
+    List<Map<String,Object>> listCapitalAll();
     int updateByPrimaryKeySelective(Capital record);
 
     int updateByPrimaryKey(Capital record);

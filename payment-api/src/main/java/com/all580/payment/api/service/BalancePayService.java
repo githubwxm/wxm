@@ -15,6 +15,14 @@ import java.util.Map;
  */
 public interface BalancePayService {
 
+
+    /**
+     * ep_id,core_ep_id,balance
+     * 获取所有企业账户余额，包含跨平台企业
+     * @return
+     */
+    Result<List<Map<String,Object>>> listCapitalAll();
+
     /**
      * 修改流水备注
      * @param id
@@ -74,6 +82,9 @@ public interface BalancePayService {
      * @return [{id,epId,coreEpId,balance,canCash,credit}]
      */
     Result<List<Map<String, String>>> getBalanceList(List<Integer> epIdList, Integer coreEpId);
+
+
+
 
     /**
      * 获取指定企业的余额流水
