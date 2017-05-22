@@ -13,7 +13,7 @@
     <result column="printText" jdbcType="VARCHAR" property="printText" />
     <result column="supply_id" jdbcType="INTEGER" property="supply_id" />
     <result column="supplyprod_id" jdbcType="INTEGER" property="supplyprod_id" />
-    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="status" jdbcType="BIT" property="status" />
     <result column="createTime" jdbcType="TIMESTAMP" property="createTime" />
     <result column="defaultOption" jdbcType="BIT" property="defaultOption" />
   </resultMap>
@@ -59,7 +59,7 @@
       `supply_id`, `supplyprod_id`, `status`, 
       `createTime`, `defaultOption`)
     values (#{name,jdbcType=VARCHAR}, #{sms,jdbcType=VARCHAR}, #{printText,jdbcType=VARCHAR}, 
-      #{supply_id,jdbcType=INTEGER}, #{supplyprod_id,jdbcType=INTEGER}, #{status,jdbcType=INTEGER}, 
+      #{supply_id,jdbcType=INTEGER}, #{supplyprod_id,jdbcType=INTEGER}, #{status,jdbcType=BIT},
       #{createTime,jdbcType=TIMESTAMP}, #{defaultOption,jdbcType=BIT})
   </insert>
   <insert id="insertSelective" parameterType="com.all580.voucherplatform.entity.Template">
@@ -115,7 +115,7 @@
         #{supplyprod_id,jdbcType=INTEGER},
       </if>
       <if test="status != null">
-        #{status,jdbcType=INTEGER},
+        #{status,jdbcType=BIT},
       </if>
       <if test="createTime != null">
         #{createTime,jdbcType=TIMESTAMP},
@@ -149,7 +149,7 @@
         `supplyprod_id` = #{supplyprod_id,jdbcType=INTEGER},
       </if>
       <if test="status != null">
-        `status` = #{status,jdbcType=INTEGER},
+        `status` = #{status,jdbcType=BIT},
       </if>
       <if test="createTime != null">
         `createTime` = #{createTime,jdbcType=TIMESTAMP},
@@ -172,7 +172,7 @@
       `printText` = #{printText,jdbcType=VARCHAR},
       `supply_id` = #{supply_id,jdbcType=INTEGER},
       `supplyprod_id` = #{supplyprod_id,jdbcType=INTEGER},
-      `status` = #{status,jdbcType=INTEGER},
+      `status` = #{status,jdbcType=BIT},
       `createTime` = #{createTime,jdbcType=TIMESTAMP},
       `defaultOption` = #{defaultOption,jdbcType=BIT}
     where `id` = #{id,jdbcType=INTEGER}

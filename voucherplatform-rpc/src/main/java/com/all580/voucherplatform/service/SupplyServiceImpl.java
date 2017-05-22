@@ -11,7 +11,9 @@ import com.all580.voucherplatform.utils.sign.SignService;
 import com.framework.common.Result;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.util.CommonUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.lang.exception.ApiException;
@@ -21,6 +23,9 @@ import java.util.Map;
 /**
  * Created by Linv2 on 2017-05-19.
  */
+@Service
+@Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+@Slf4j
 public class SupplyServiceImpl implements SupplyService {
     @Autowired
     private SignInstance signInstance;
@@ -37,6 +42,63 @@ public class SupplyServiceImpl implements SupplyService {
         supply.setPrivateKey(signKey.getPrivateKey());
         supply.setPublicKey(signKey.getPublicKey());
         supplyMapper.insertSelective(supply);
+        return new Result(true);
+    }
+
+    /**
+     * 修改供应商信息
+     *
+     * @param map {id:xx,name:xx,address:xx,region:xx,description:xx}
+     *            id  -int    -要修改的供应商id
+     *            name    -string -名字
+     *            address -string -地址
+     *            region    -string -区域
+     *            description   -string -描述
+     * @return
+     */
+    @Override
+    public Result update(Map map) {
+        Supply supply = new Supply();
+        supply.setId(CommonUtil.objectParseInteger(map.get("id")));
+        supply.setName(CommonUtil.objectParseString(map.get("name")));
+        supply.setAddress(CommonUtil.objectParseString(map.get("address")));
+        supply.setRegion(CommonUtil.objectParseString(map.get("region")));
+        supply.setDescription(CommonUtil.objectParseString(map.get("description")));
+        supplyMapper.updateByPrimaryKeySelective(supply);
+        return new Result(true);
+    }
+
+    /**
+     * 修改配置
+     *
+     * @param map {id:xx,conf:xx}
+     *            id  -int    -要修改的供应商id
+     *            conf  -string -配置数据
+     * @return
+     */
+    @Override
+    public Result updateConf(Map map) {
+        Supply supply = new Supply();
+        supply.setId(CommonUtil.objectParseInteger(map.get("id")));
+        supply.setConf(CommonUtil.objectParseString(map.get("conf")));
+        supplyMapper.updateByPrimaryKeySelective(supply);
+        return new Result(true);
+    }
+
+    /**
+     * 修改票务对接信息
+     *
+     * @param map {id:xx,ticketsysId:xx}
+     *            id  -int    -要修改的供应商id
+     *            ticketsysId  -int -票务系统id
+     * @return
+     */
+    @Override
+    public Result updateTicketSys(Map map) {
+        Supply supply = new Supply();
+        supply.setId(CommonUtil.objectParseInteger(map.get("id")));
+        supply.setTicketsys_id(CommonUtil.objectParseInteger(map.get("ticketsysId")));
+        supplyMapper.updateByPrimaryKeySelective(supply);
         return new Result(true);
     }
 
@@ -58,6 +120,20 @@ public class SupplyServiceImpl implements SupplyService {
     @Override
     public Result getList(String name, Integer recordStart, Integer recordCount) {
         return null;
+    }
+
+
+    /**
+     * 根据供应商的id，获取产品信息
+     *
+     * @param supplyId
+     * @return
+     */
+    @Override
+    public Result getProdList(int supplyId) {
+        Result result = new Result(true);
+        result.put(supplyProductMapper.getSupplyProdBySupplyId(supplyId));
+        return result;
     }
 
     @Override

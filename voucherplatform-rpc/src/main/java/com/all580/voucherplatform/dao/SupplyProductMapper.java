@@ -3,6 +3,7 @@ package com.all580.voucherplatform.dao;
 import com.all580.voucherplatform.entity.SupplyProduct;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
 import java.util.Map;
 
 public interface SupplyProductMapper {
@@ -49,4 +50,6 @@ public interface SupplyProductMapper {
     int updateByPrimaryKey(SupplyProduct record);
 
     Map getSupplyProdByProdId(@Param("supply_Id") int supplyId, @Param("prod_Id") String prodId);
+
+    List<Map>  getSupplyProdBySupplyId(@Param("supply_Id") int supplyId);
 }

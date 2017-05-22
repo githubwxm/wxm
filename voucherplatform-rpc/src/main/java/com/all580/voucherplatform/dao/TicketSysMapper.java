@@ -1,6 +1,10 @@
 package com.all580.voucherplatform.dao;
 
 import com.all580.voucherplatform.entity.TicketSys;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
+import java.util.Map;
 
 public interface TicketSysMapper {
     /**
@@ -44,4 +48,9 @@ public interface TicketSysMapper {
      * @param record
      */
     int updateByPrimaryKey(TicketSys record);
+
+
+    int getCount();
+
+    List<Map> getList(@Param("record_start") int recordStart, @Param("record_count")  int recordCount);
 }

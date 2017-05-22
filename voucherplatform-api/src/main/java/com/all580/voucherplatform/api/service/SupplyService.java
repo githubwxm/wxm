@@ -10,15 +10,68 @@ import java.util.Map;
  */
 public interface SupplyService {
 
+    /**
+     * 添加供应商信息
+     *
+     * @param map {name:xx,address:xx,region:xx,description:xx,signType:xx}
+     *            name    -string -名字
+     *            address -string -地址
+     *            region    -string -区域
+     *            description   -string -描述
+     *            signTye   -enum   -签名类型
+     * @return
+     */
     Result create(Map map);
 
     Result getSupply(Integer id);
+
+    /**
+     * 修改供应商信息
+     *
+     * @param map {id:xx,name:xx,address:xx,region:xx,description:xx}
+     *            id  -int    -要修改的供应商id
+     *            name    -string -名字
+     *            address -string -地址
+     *            region    -string -区域
+     *            description   -string -描述
+     * @return
+     */
+    Result update(Map map);
+
+    /**
+     * 修改配置
+     *
+     * @param map {id:xx,conf:xx}
+     *            id  -int    -要修改的供应商id
+     *            conf  -string -配置数据
+     * @return
+     */
+    Result updateConf(Map map);
+
+    /**
+     * 修改票务对接信息
+     *
+     * @param map {id:xx,ticketsysId:xx}
+     *            id  -int    -要修改的供应商id
+     *            ticketsysId  -int -票务系统id
+     * @return
+     */
+    Result updateTicketSys(Map map);
 
     int getCount(String name);
 
     Result getList(String name, Integer recordStart, Integer recordCount);
 
 
+
+
+    /**
+     * 根据供应商的id，获取产品信息
+     *
+     * @param supplyId
+     * @return
+     */
+    Result getProdList(int supplyId);
     /**
      * 根据供应商的身份id和产品id，获取产品信息
      *

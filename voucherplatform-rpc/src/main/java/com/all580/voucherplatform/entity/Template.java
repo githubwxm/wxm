@@ -37,7 +37,7 @@ public class Template implements Serializable {
     /**
      *  ,所属表字段为t_template.status
      */
-    private Integer status;
+    private Boolean status;
 
     /**
      *  ,所属表字段为t_template.createTime
@@ -167,7 +167,7 @@ public class Template implements Serializable {
      *
      * @return t_template.status, 
      */
-    public Integer getStatus() {
+    public Boolean getStatus() {
         return status;
     }
 
@@ -176,7 +176,7 @@ public class Template implements Serializable {
      *
      * @param status t_template.status, 
      */
-    public void setStatus(Integer status) {
+    public void setStatus(Boolean status) {
         this.status = status;
     }
 

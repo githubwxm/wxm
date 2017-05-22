@@ -1,6 +1,9 @@
 package com.all580.voucherplatform.dao;
 
 import com.all580.voucherplatform.entity.User;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.Map;
 
 public interface UserMapper {
     /**
@@ -44,4 +47,6 @@ public interface UserMapper {
      * @param record
      */
     int updateByPrimaryKey(User record);
+
+    User selectByName(@Param("selectByName") String userName);
 }

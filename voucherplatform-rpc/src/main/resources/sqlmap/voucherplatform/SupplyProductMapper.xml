@@ -184,5 +184,13 @@
     where `status`=1
     and supply_id=#{supply_Id}
     and code=#{prod_Id}
+    limit 1
+  </select>
+  <select id="getSupplyProdBySupplyId" resultType="java.util.Map">
+    select
+    <include refid="Base_Column_List" />
+    from t_supplyproduct
+    where `status`=1
+    and supply_id=#{supply_Id}
   </select>
 </mapper>

@@ -143,6 +143,9 @@
   </update>
 
     <select id="getCount" resultType="java.lang.Integer">
+      select
+      count(0)
+      from t_ticketsys
     </select>
     <select id="getList" resultType="java.util.Map">
 
