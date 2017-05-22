@@ -52,7 +52,8 @@ public class SplitCreateOrderEventImpl implements SplitCreateOrderEvent {
             jobParam.put("orderItemId", orderItem.getId().toString());
             // 团队票
             if (orderItem.getGroup_id() != null && orderItem.getGroup_id() != 0 &&
-                    orderItem.getPro_sub_ticket_type() != null && orderItem.getPro_sub_ticket_type() == ProductConstants.TeamTicketType.TEAM) {
+                    orderItem.getPro_sub_ticket_type() != null && orderItem.getPro_sub_ticket_type() == ProductConstants.TeamTicketType.TEAM &&
+                    orderItem.getPro_type() != ProductConstants.ProductType.HOTEL) {
                 jobGroupParams.add(jobParam);
                 continue;
             }
