@@ -50,7 +50,7 @@ public class RefundTicketEventImpl implements RefundTicketEvent {
         OrderItem orderItem = orderItemMapper.selectByPrimaryKey(refundOrder.getOrder_item_id());
         log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(null, orderItem.getId(),
                 0, "ORDER_EVENT", OrderConstant.LogOperateCode.REFUND_TICKET,
-                refundOrder.getQuantity(), String.format("退票成功:%s", refundOrder.getNumber())));
+                refundOrder.getQuantity(), String.format("退票%s:%s", content.isStatus() ? "成功" : "失败", refundOrder.getNumber())));
         if (content.isStatus()) {
             // 还库存 记录任务
             Map<String, String> jobParams = new HashMap<>();
