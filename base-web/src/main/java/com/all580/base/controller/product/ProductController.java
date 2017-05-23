@@ -240,6 +240,8 @@ public class ProductController extends BaseController {
         subProductInfo.setRefund_audit(CommonUtil.objectParseInteger(params.get("refund_audit")));
         subProductInfo.setRefund_money_audit(CommonUtil.objectParseInteger(params.get("refund_money_audit")));
         subProductInfo.setLow_use_quantity(CommonUtil.objectParseInteger(params.get("low_use_quantity")));
+        subProductInfo.setMa_provider_id(CommonUtil.objectParseString(params.get("ma_provider_id")));
+        subProductInfo.setMa_pid(CommonUtil.objectParseString(params.get("ma_pid")));
         return subProductInfo;
     }
 
