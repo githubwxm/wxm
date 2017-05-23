@@ -784,6 +784,7 @@ public class LockTransactionManager {
                 }
             }
             if (!vIds.isEmpty()) {
+                Set<String> sids = new HashSet<>();
                 Date modifyDate = new Date();
                 List<Visitor> visitorList = visitorMapper.selectByIds(vIds);
                 for (Object o : visitors) {
@@ -815,6 +816,11 @@ public class LockTransactionManager {
                         if (!have) {
                             throw new ApiException("游客ID:" + id + "数据异常");
                         }
+                        String key = String.format("%s-%d", sid, type == null ? -1 : type);
+                        if (sids.contains(key)) {
+                            throw new ApiException("游客ID:" + id + "修改值中的身份证重复");
+                        }
+                        sids.add(key);
                         com.all580.voucher.api.model.Visitor v = new com.all580.voucher.api.model.Visitor();
                         v.setId(id);
                         v.setName(name);
