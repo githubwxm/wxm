@@ -468,10 +468,14 @@ public class AccountUtil {
             RefundDay refundDay = new RefundDay();
             refundDay.setDay(detail.getDay());
             int quantity;
-            if (detail.getLow_quantity() != null && detail.getLow_quantity() > 0 && detail.getUsed_quantity() < detail.getLow_quantity()) {
-                quantity = detail.getQuantity() - detail.getLow_quantity();
+            if (detail.getUsed_quantity() != null && detail.getUsed_quantity() > 0) {
+                if (detail.getLow_quantity() != null && detail.getLow_quantity() > 0 && detail.getUsed_quantity() < detail.getLow_quantity()) {
+                    quantity = detail.getQuantity() - detail.getLow_quantity();
+                } else {
+                    quantity = detail.getQuantity() - detail.getUsed_quantity();
+                }
             } else {
-                quantity = detail.getQuantity() - detail.getUsed_quantity();
+                quantity = detail.getQuantity();
             }
             if (quantity <= 0) continue;
             refundDay.setQuantity(quantity);
