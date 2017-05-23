@@ -47,6 +47,8 @@
 					 id="ldlService" />
 	<dubbo:reference interface="com.all580.voucher.api.service.third.HwRPCService"
 					 id="hwService" />
+	<dubbo:reference interface="com.all580.voucher.api.service.third.PftRPCService"
+					 id="pftService" />
 	<dubbo:reference interface="com.all580.voucher.api.service.third.ThirdProductService" id="thirdProductService" />
 
 
