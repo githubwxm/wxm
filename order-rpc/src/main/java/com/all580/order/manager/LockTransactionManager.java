@@ -671,6 +671,14 @@ public class LockTransactionManager {
             total += consumeDay.getQuantity();
             eventManager.addEvent(OrderConstant.EventType.CONSUME_TICKET, new ConsumeTicketEventParam(orderItem.getId(), serial.getId()));
         }
+        // 团队最低使用数验证
+        if (orderItem.getGroup_id() != null && orderItem.getGroup_id() != 0 &&
+                orderItem.getPro_sub_ticket_type() != null && orderItem.getPro_sub_ticket_type() == ProductConstants.TeamTicketType.TEAM) {
+            if (orderItem.getLow_quantity() != null && orderItem.getLow_quantity() > total) {
+                throw new ApiException("不得小于最低使用数");
+            }
+        }
+
         // 修改已使用数量
         int ret = orderItemMapper.useQuantity(orderItem.getId(), total);
         if (ret <= 0) {
@@ -784,6 +792,7 @@ public class LockTransactionManager {
                 }
             }
             if (!vIds.isEmpty()) {
+                Set<String> sids = new HashSet<>();
                 Date modifyDate = new Date();
                 List<Visitor> visitorList = visitorMapper.selectByIds(vIds);
                 for (Object o : visitors) {
@@ -815,6 +824,11 @@ public class LockTransactionManager {
                         if (!have) {
                             throw new ApiException("游客ID:" + id + "数据异常");
                         }
+                        String key = String.format("%s-%d", sid, type == null ? -1 : type);
+                        if (sids.contains(key)) {
+                            throw new ApiException("游客ID:" + id + "修改值中的身份证重复");
+                        }
+                        sids.add(key);
                         com.all580.voucher.api.model.Visitor v = new com.all580.voucher.api.model.Visitor();
                         v.setId(id);
                         v.setName(name);
