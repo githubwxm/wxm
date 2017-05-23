@@ -348,6 +348,7 @@ public class BookingOrderManager extends BaseOrderManager {
         visitor.setName(CommonUtil.objectParseString(v.get("name")));
         visitor.setPhone(CommonUtil.objectParseString(v.get("phone")));
         visitor.setSid(CommonUtil.objectParseString(v.get("sid")));
+        visitor.setGroup_id(CommonUtil.objectParseInteger(v.get("group_id")));
         visitor.setQuantity(CommonUtil.objectParseInteger(v.get("quantity")));
         visitor.setCard_type(OrderConstant.CardType.ID);
         visitorMapper.insertSelective(visitor);

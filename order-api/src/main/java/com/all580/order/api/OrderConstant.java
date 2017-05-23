@@ -94,6 +94,15 @@ public class OrderConstant {
     }
 
     /**
+     * 线路团队状态
+     */
+    public static class LineGroupStatus {
+        public static final int NONE = 390; //未出团
+        public static final int SEND = 391; //已发团
+        public static final int COMPLETE = 392; //已完成
+    }
+
+    /**
      * 任务执行器
      */
     public static class Actions {
