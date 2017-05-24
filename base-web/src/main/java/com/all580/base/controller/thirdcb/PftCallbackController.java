@@ -3,6 +3,7 @@ package com.all580.base.controller.thirdcb;
 
 import com.all580.voucher.api.conf.VoucherConstant;
 import com.all580.voucher.api.service.third.PftRPCService;
+import com.framework.common.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
+import javax.lang.exception.ApiException;
 import java.util.Map;
 
 @Slf4j
@@ -24,7 +26,7 @@ public class PftCallbackController {
     @RequestMapping(value = "notify", method = RequestMethod.POST)
     @ResponseBody
     public String notify(@RequestBody Map<String, Object> params) {
-        pftService.pftOrderStateCallback(
+        Result<String> result = pftService.pftOrderStateCallback(
                 VoucherConstant.Provider.PFT,
                 params.get("VerifyCode") == null? null : params.get("VerifyCode").toString(),
                 params.get("Order16U") == null? null : params.get("Order16U").toString(),
@@ -39,7 +41,8 @@ public class PftCallbackController {
                 params.get("AllCheckNum") == null? null : params.get("AllCheckNum").toString(),
                 params.get("RefundAmount") == null? null : params.get("RefundAmount").toString(),
                 params.get("RefundFee") == null? null : params.get("RefundFee").toString());
-        return "200";
+        if (result == null) throw new ApiException("票付通服务回调接口调用失败");
+        return result.get();
     }
 
     @RequestMapping(value = "notify", method = RequestMethod.GET)
