@@ -62,6 +62,7 @@ public class SmsType {
         public static final int SUPPLIER_ORDER_REFUSE = 12034; // 供应商拒绝游客订购 供应商拒绝订购（库存不足等原因）
         public static final int SUPPLIER_PAY = 12035; // 供应商发起支付告知
         public static final int HOTEL_TICKET = 12050; // 酒店出票
+        public static final int ITINERARY_ORDER = 12051; // 线路预定成功
 
     }
 }
