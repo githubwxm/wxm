@@ -105,6 +105,15 @@ public abstract class AbstractRefundOrderImpl implements RefundOrderInterface {
     }
 
     @Override
+    public void validateRefundVisitor(RefundOrderApply apply, Collection<RefundDay> refundDays, Map params) {
+        for (RefundDay refundDay : refundDays) {
+            if (refundDay.getVisitors() != null && refundDay.getVisitors().size() > 1) {
+                throw new ApiException("暂不支持一次退多人");
+            }
+        }
+    }
+
+    @Override
     public int getRefundQuantity(RefundOrderApply apply, Collection<RefundDay> refundDays, Map params) {
         return apply.getQuantity();
     }

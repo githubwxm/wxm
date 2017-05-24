@@ -328,4 +328,10 @@
       SET used_quantity = used_quantity + #{quantity}
       where id = #{id}
     </update>
+
+    <update id="useRemain">
+      UPDATE t_order_item_detail
+      SET used_quantity = quantity - refund_quantity
+      where id = #{id}
+    </update>
 </mapper>
