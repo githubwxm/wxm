@@ -94,4 +94,11 @@ public interface OrderItemDetailMapper {
     String selectExpiryMaxDate(@Param("itemId") Integer itemId);
 
     int useQuantity(@Param("id") Integer id, @Param("quantity") Integer quantity);
+
+    /**
+     * 使用剩余所有票
+     * @param id
+     * @return
+     */
+    int useRemain(@Param("id") Integer id);
 }

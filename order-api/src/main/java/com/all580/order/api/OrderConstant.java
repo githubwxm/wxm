@@ -103,6 +103,15 @@ public class OrderConstant {
     }
 
     /**
+     * 性别
+     */
+    public static class SexType {
+        public static final int NONE = 3000; // 未知
+        public static final int MAN = 3001; // 男
+        public static final int FEMALE = 3002; // 女
+    }
+
+    /**
      * 任务执行器
      */
     public static class Actions {

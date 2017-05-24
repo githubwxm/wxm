@@ -18,7 +18,6 @@ import com.all580.product.api.model.ProductSalesInfo;
 import com.all580.product.api.model.ProductSearchParams;
 import com.all580.product.api.service.ProductSalesPlanRPCService;
 import com.all580.voucher.api.model.ReSendTicketParams;
-import com.all580.voucher.api.model.group.ModifyGroupTicketParams;
 import com.all580.voucher.api.service.VoucherRPCService;
 import com.framework.common.Result;
 import com.framework.common.distributed.lock.DistributedLockTemplate;
@@ -351,6 +350,22 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         // 锁成功
         try {
             return lockTransactionManager.consumeHotelTicket(params, sn);
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    @Override
+    public Result<?> consumeLineBySupplier(Map params) {
+        String orderItemSn = params.get("order_item_sn").toString();
+        Long sn = Long.valueOf(orderItemSn);
+
+        // 分布式锁
+        DistributedReentrantLock lock = distributedLockTemplate.execute(orderItemSn, lockTimeOut);
+
+        // 锁成功
+        try {
+            return lockTransactionManager.consumeLineTicket(params, sn);
         } finally {
             lock.unlock();
         }

@@ -140,7 +140,9 @@ public class RefundOrderManager extends BaseOrderManager {
         if (refundOrder.getAudit_time() == null) {
             refundOrder.setAudit_time(new Date());
         }
-        if (orderItem.getStatus() == OrderConstant.OrderItemStatus.SEND && orderItem.getPro_type() != ProductConstants.ProductType.HOTEL) {
+        if (orderItem.getStatus() == OrderConstant.OrderItemStatus.SEND &&
+                orderItem.getPro_type() != ProductConstants.ProductType.HOTEL &&
+                orderItem.getPro_type() != ProductConstants.ProductType.ITINERARY) {
             // 调用退票
             refundTicket(refundOrder);
             refundOrderMapper.updateByPrimaryKeySelective(refundOrder);
