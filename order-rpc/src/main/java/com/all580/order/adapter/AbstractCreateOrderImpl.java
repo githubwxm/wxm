@@ -2,11 +2,13 @@ package com.all580.order.adapter;
 
 import com.all580.ep.api.conf.EpConstant;
 import com.all580.ep.api.service.EpService;
+import com.all580.order.api.OrderConstant;
 import com.all580.order.dto.CreateOrder;
 import com.all580.order.dto.PriceDto;
 import com.all580.order.dto.ValidateProductSub;
 import com.all580.order.entity.*;
 import com.all580.order.manager.BookingOrderManager;
+import com.all580.product.api.model.EpSalesInfo;
 import com.all580.product.api.model.ProductSalesDayInfo;
 import com.all580.product.api.model.ProductSalesInfo;
 import com.all580.product.api.model.ProductSearchParams;
@@ -19,6 +21,7 @@ import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
+import org.springframework.util.Assert;
 
 import javax.lang.exception.ApiException;
 import java.text.ParseException;
@@ -153,11 +156,19 @@ public abstract class AbstractCreateOrderImpl implements CreateOrderInterface {
     }
 
     @Override
-    public List<OrderItemDetail> insertDetail(OrderItem item, ValidateProductSub sub, ProductSalesInfo salesInfo) {
+    public List<OrderItemDetail> insertDetail(Order order, OrderItem item, ValidateProductSub sub, ProductSalesInfo salesInfo, List<List<EpSalesInfo>> allDaysSales) {
         List<OrderItemDetail> details = new ArrayList<>();
         int i = 0;
         for (ProductSalesDayInfo dayInfo : salesInfo.getDay_info_list()) {
-            OrderItemDetail orderItemDetail = bookingOrderManager.generateDetail(dayInfo, item.getId(), DateUtils.addDays(sub.getBooking(), i), sub.getQuantity(), salesInfo.getLow_use_quantity());
+            List<EpSalesInfo> daySales = allDaysSales.get(i);
+            Assert.notEmpty(daySales, "该产品销售计划不全");
+            EpSalesInfo saleInfo = bookingOrderManager.getSalePrice(daySales, item.getSupplier_ep_id());
+            EpSalesInfo buyInfo = bookingOrderManager.getBuyingPrice(daySales, order.getBuy_ep_id());
+            Assert.notNull(saleInfo, "该产品未正确配置");
+            Assert.notNull(buyInfo, "该产品未正确配置");
+            OrderItemDetail orderItemDetail = bookingOrderManager.generateDetail(dayInfo, item.getId(),
+                    DateUtils.addDays(sub.getBooking(), i), sub.getQuantity(), salesInfo.getLow_use_quantity(),
+                    saleInfo.getPrice(), order.getFrom_type() == OrderConstant.FromType.TRUST ? buyInfo.getShop_price() : buyInfo.getPrice());
             details.add(orderItemDetail);
             i++;
         }

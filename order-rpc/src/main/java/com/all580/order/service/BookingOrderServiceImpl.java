@@ -137,7 +137,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
 
 
             // 创建子订单详情
-            List<OrderItemDetail> details = orderInterface.insertDetail(orderItem, sub, salesInfo);
+            List<OrderItemDetail> details = orderInterface.insertDetail(order, orderItem, sub, salesInfo, allDaysSales);
 
             orderInterface.insertVisitor(visitors, orderItem, salesInfo, sub, item);
 
