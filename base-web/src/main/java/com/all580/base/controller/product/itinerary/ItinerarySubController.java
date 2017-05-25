@@ -25,7 +25,7 @@ public class ItinerarySubController {
 
     @Autowired
     ItinerarySubService itinerarySubService;
-    @RequestMapping(value = "sub", method = RequestMethod.POST)
+    @RequestMapping(value = "add", method = RequestMethod.POST)
     @ResponseBody
     public Result<?> addItinerary(@RequestBody Map params) {
         ParamsMapValidate.validate(params, generateCreateItinerarySubValidate());
