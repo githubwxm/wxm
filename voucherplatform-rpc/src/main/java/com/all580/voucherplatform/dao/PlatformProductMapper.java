@@ -49,9 +49,19 @@ public interface PlatformProductMapper {
      */
     int updateByPrimaryKey(PlatformProduct record);
 
-    PlatformProduct getProdByPlatformCode(@Param("platform_Id") Integer platformId, @Param("supply_Id") Integer supplyId, @Param("code") String code);
+    PlatformProduct getProdByPlatform(@Param("platform_Id") Integer platformId, @Param("supply_Id") Integer supplyId, @Param("code") String code);
 
-    int getProdCount(@Param("name") String name, @Param("platform_Id") Integer platformId, @Param("supply_Id") Integer supplyId, @Param("supplyprod_Id") Integer supplyprodId, @Param("productType_id") Integer productTypeId);
+    int getProdCount(@Param("name") String name,
+                     @Param("platform_Id") Integer platformId,
+                     @Param("supply_Id") Integer supplyId,
+                     @Param("supplyprod_Id") Integer supplyprodId,
+                     @Param("productType_id") Integer productTypeId);
 
-    List<Map> getProdList(@Param("name") String name, @Param("platform_Id") Integer platformId, @Param("supply_Id") Integer supplyId, @Param("supplyprod_Id") Integer supplyprodId, @Param("productType_id") Integer productTypeId, @Param("record_start") Integer recordStart, @Param("record_count") Integer recordCount);
+    List<Map> getProdList(@Param("name") String name,
+                          @Param("platform_Id") Integer platformId,
+                          @Param("supply_Id") Integer supplyId,
+                          @Param("supplyprod_Id") Integer supplyprodId,
+                          @Param("productType_id") Integer productTypeId,
+                          @Param("record_start") Integer recordStart,
+                          @Param("record_count") Integer recordCount);
 }

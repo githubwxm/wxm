@@ -195,8 +195,8 @@
         SELECT
         <include refid="Base_Column_List"/>
         from t_platformrole
-        where `platform_id`=#{platform_id}
-        and `supply_id`=#{supply_id}
+        where `platform_id`=#{platform_Id}
+        and `supply_id`=#{supply_Id}
         limit 1
     </select>
     <select id="getRoleByAuthInfo" resultMap="BaseResultMap">

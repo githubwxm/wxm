@@ -28,7 +28,7 @@ public class SupplyTest extends AbstractTransactionalJUnit4SpringContextTests {
 
     @Test
     public void testCreate() {
-        Map map = new HashMap<String, Object>();
+        Map map = new HashMap();
         map.put("name", "湖南畅旅");
         map.put("phone", "13888888888");
         map.put("address", "新长海");

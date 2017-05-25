@@ -64,12 +64,15 @@ public interface PlatformService {
     Result getPlatform(Integer id);
 
     /**
-     * @param platformId
-     * @param map        {code:xx,name:xx,productTypeId:xx,supplyprodId:xx}
-     *                   code   -string -商品编号
+     * @param roleId
+     * @param map        {code:xxx,name:xxx,productTypeId:xxx,supplyprodId:xxx}
+     *                   code    -string     -产品id
+     *                   name    -string     -产品名称
+     *                   productTypeId   -int    -产品类型，可空
+     *                   supplyprodId    -int    -供应产品id
      * @return
      */
-    Result setProd(int platformId, int supplyId, Map map);
+    Result setProd(int roleId, Map map);
 
     /**
      * 获取产品信息
@@ -86,7 +89,7 @@ public interface PlatformService {
      * @param prodCode
      * @return
      */
-    Result getProdByPlatformId(int platformId, String prodCode);
+    Result getProdByPlatform(int platformId, String prodCode);
 
     int getProdCount(String name, Integer platformId, Integer supplyId, Integer supplyprodId, Integer productTypeId);
 

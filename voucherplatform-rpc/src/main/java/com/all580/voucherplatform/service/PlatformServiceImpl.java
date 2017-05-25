@@ -13,8 +13,11 @@ import com.all580.voucherplatform.utils.sign.SignService;
 import com.framework.common.Result;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.util.CommonUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.lang.exception.ApiException;
 import java.util.Date;
@@ -25,6 +28,9 @@ import java.util.UUID;
 /**
  * Created by Linv2 on 2017-05-23.
  */
+@Service
+@Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+@Slf4j
 public class PlatformServiceImpl implements PlatformService {
     @Autowired
     private SignInstance signInstance;
@@ -109,10 +115,9 @@ public class PlatformServiceImpl implements PlatformService {
             return result;
         }
         if (StringUtils.isEmpty(platformRole.getName())) {
-            platformRole.setModifyTime(new Date());
-        } else {
-
             platformRole.setAuthTime(new Date());
+        } else {
+            platformRole.setModifyTime(new Date());
         }
         platformRole.setName(CommonUtil.objectParseString(map.get("name")));
         platformRole.setCode(CommonUtil.objectParseString(map.get("code")));
@@ -132,52 +137,54 @@ public class PlatformServiceImpl implements PlatformService {
     }
 
     @Override
-    public Result setProd(int platformId, int supplyId, Map map) {
+    public Result setProd(int roleId, Map map) {
+        PlatformRole platformRole = platformRoleMapper.selectByPrimaryKey(roleId);
         String code = CommonUtil.objectParseString(map.get("code"));
         if (StringUtils.isEmpty(code)) {
             throw new ApiException("参数不完整，缺少参数code");
         }
-        PlatformProduct platformProduct = prodMapper.getProdByPlatformCode(platformId, supplyId, code);
+        PlatformProduct platformProduct = prodMapper.getProdByPlatform(platformRole.getPlatform_id(), platformRole.getSupply_id(), code);
         if (platformProduct == null) {
             platformProduct = new PlatformProduct();
+            platformProduct.setPlatformrole_id(platformRole.getId());
             platformProduct.setCode(CommonUtil.objectParseString(map.get("code")));
             platformProduct.setName(CommonUtil.objectParseString(map.get("name")));
             platformProduct.setProducttype_id(map.containsKey("productTypeId") ? CommonUtil.objectParseInteger(map.get("productTypeId")) : defaultPordType);
-            platformProduct.setPlatform_id(platformId);
-            platformProduct.setSupply_id(supplyId);
+            platformProduct.setPlatform_id(platformRole.getPlatform_id());
+            platformProduct.setSupply_id(platformRole.getSupply_id());
             platformProduct.setSupplyprod_id(CommonUtil.objectParseInteger(map.get("supplyprodId")));
             platformProduct.setStatus(true);
             platformProduct.setCreateTime(new Date());
             prodMapper.insertSelective(platformProduct);
         } else {
             platformProduct.setModifyTime(new Date());
-            platformProduct.setProducttype_id(map.containsKey("productTypeId") ? CommonUtil.objectParseInteger(map.get("productTypeId")) : defaultPordType);
-            if (map.containsKey("name")) {
-                platformProduct.setName(CommonUtil.objectParseString(map.get("name")));
-            } if (map.containsKey("supplyprodId")) {
-                platformProduct.setSupplyprod_id(CommonUtil.objectParseInteger(map.get("supplyprodId")));
-            }
+            platformProduct.setProducttype_id(CommonUtil.objectParseInteger(map.get("productTypeId")));
+            platformProduct.setName(CommonUtil.objectParseString(map.get("name")));
+            platformProduct.setSupplyprod_id(CommonUtil.objectParseInteger(map.get("supplyprodId")));
+
             prodMapper.updateByPrimaryKey(platformProduct);
         }
-        return null;
+        return new Result(true);
     }
+
+
 
     @Override
     public Result getProd(int prodId) {
         Result result = new Result(true);
         PlatformProduct platformProduct = prodMapper.selectByPrimaryKey(prodId);
         if (platformProduct != null) {
-            result.put(platformProduct);
+            result.put(JsonUtils.obj2map(platformProduct));
         }
         return result;
     }
 
     @Override
-    public Result getProdByPlatformId(int platformId, String prodCode) {
+    public Result getProdByPlatform(int platformId, String prodCode) {
         Result result = new Result(true);
-        PlatformProduct platformProduct = prodMapper.getProdByPlatformCode(platformId, null, prodCode);
+        PlatformProduct platformProduct = prodMapper.getProdByPlatform(platformId, null, prodCode);
         if (platformProduct != null) {
-            result.put(platformProduct);
+            result.put(JsonUtils.obj2map(platformProduct));
         }
         return result;
     }

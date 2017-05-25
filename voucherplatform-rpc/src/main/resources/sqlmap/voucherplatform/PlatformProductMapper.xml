@@ -202,19 +202,19 @@
         where `id` = #{id,jdbcType=INTEGER}
     </update>
 
-    <select id="getProdByPlatformCode" resultMap="BaseResultMap">
+    <select id="getProdByPlatform" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from t_platformproduct
         where `status`=1
         <if test="platform_Id!=null">
-            `platform_id`=#{platform_Id}
+            and `platform_id`=#{platform_Id}
         </if>
         <if test="supply_Id!=null">
-            `supply_id`=#{supply_Id}
+            and `supply_id`=#{supply_Id}
         </if>
         <if test="code!=null">
-            `code`=#{code}
+            and `code`=#{code}
         </if>
     </select>
     <select id="getProdCount" resultType="java.lang.Integer">
@@ -223,7 +223,7 @@
         from t_platformproduct
         where `status`=1
         <if test="name!=null">
-            and `name` LIKE '%'+#{name}+'%'
+            and `name` LIKE CONCAT('%',#{name},'%')
         </if>
         <if test="platform_Id!=null">
             and `platform_id`=#{platform_Id}
@@ -231,7 +231,7 @@
         <if test="supply_Id!=null">
             and `supply_id`=#{supply_Id}
         </if>
-        <if test="supplyprod_id!=null">
+        <if test="supplyprod_Id!=null">
             and `supplyprod_id`=#{supplyprod_Id}
         </if>
         <if test="productType_id!=null">
@@ -240,11 +240,11 @@
     </select>
     <select id="getProdList" resultType="java.util.Map">
         select
-        <include refid="Base_Column_List" />
+        <include refid="Base_Column_List"/>
         from t_platformproduct
         where `status`=1
         <if test="name!=null">
-            and `name` LIKE '%'+#{name}+'%'
+            and `name` LIKE CONCAT('%',#{name},'%')
         </if>
         <if test="platform_Id!=null">
             and `platform_id`=#{platform_Id}
@@ -252,7 +252,7 @@
         <if test="supply_Id!=null">
             and `supply_id`=#{supply_Id}
         </if>
-        <if test="supplyprod_id!=null">
+        <if test="supplyprod_Id!=null">
             and `supplyprod_id`=#{supplyprod_Id}
         </if>
         <if test="productType_id!=null">

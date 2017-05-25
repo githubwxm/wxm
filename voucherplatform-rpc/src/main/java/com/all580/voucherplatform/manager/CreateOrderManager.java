@@ -68,7 +68,7 @@ public class CreateOrderManager {
             throw new Exception("订单已处理！");
         }
         String prodId = CommonUtil.objectParseString(map.get("prodId"));
-        platformProduct = prodMapper.getProdByPlatformCode(platformId, null, prodId);
+        platformProduct = prodMapper.getProdByPlatform(platformId, null, prodId);
         if (platformProduct == null) {
             log.error("产品号为{}的产品不存在，请检查是否导入，订单号{}", prodId, orderId);
             throw new Exception("订单产品不存在！");
