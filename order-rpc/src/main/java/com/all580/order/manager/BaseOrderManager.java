@@ -114,6 +114,20 @@ public class BaseOrderManager {
         }
         return null;
     }
+    /**
+     * 获取出货结构
+     * @param epSalesInfos 销售链
+     * @param saleEpId 出货企业ID
+     * @return
+     */
+    public EpSalesInfo getSalePrice(List<EpSalesInfo> epSalesInfos, Integer saleEpId) {
+        for (EpSalesInfo info : epSalesInfos) {
+            if (info.getSale_ep_id() == saleEpId.intValue()) {
+                return info;
+            }
+        }
+        return null;
+    }
 
     /**
      * 判断企业状态

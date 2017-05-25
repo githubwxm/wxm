@@ -293,8 +293,11 @@ public class BookingOrderManager extends BaseOrderManager {
      * @return
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public OrderItemDetail generateDetail(ProductSalesDayInfo info, int itemId, Date day, int quantity, Integer lowQuantity) {
+    public OrderItemDetail generateDetail(ProductSalesDayInfo info, int itemId, Date day, int quantity, Integer lowQuantity, Integer supplyPrice, Integer salePrice) {
         OrderItemDetail orderItemDetail = new OrderItemDetail();
+        orderItemDetail.setSettle_price(info.getSettle_price());
+        orderItemDetail.setSupply_price(supplyPrice);
+        orderItemDetail.setSale_price(salePrice);
         orderItemDetail.setDay(day);
         orderItemDetail.setQuantity(quantity);
         orderItemDetail.setCust_refund_rule(info.getCust_refund_rule()); // 销售方退货规则
