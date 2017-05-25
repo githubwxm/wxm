@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.lang.exception.ApiException;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -41,6 +42,9 @@ public class SupplyServiceImpl implements SupplyService {
         SignKey signKey = signService.generate();
         supply.setPrivateKey(signKey.getPrivateKey());
         supply.setPublicKey(signKey.getPublicKey());
+        supply.setCreateTime(new Date());
+        supply.setStatus(true);
+        supply.setTicketsys_id(0);
         supplyMapper.insertSelective(supply);
         return new Result(true);
     }
@@ -61,6 +65,7 @@ public class SupplyServiceImpl implements SupplyService {
         Supply supply = new Supply();
         supply.setId(CommonUtil.objectParseInteger(map.get("id")));
         supply.setName(CommonUtil.objectParseString(map.get("name")));
+        supply.setPhone(CommonUtil.objectParseString(map.get("phone")));
         supply.setAddress(CommonUtil.objectParseString(map.get("address")));
         supply.setRegion(CommonUtil.objectParseString(map.get("region")));
         supply.setDescription(CommonUtil.objectParseString(map.get("description")));
@@ -164,18 +169,15 @@ public class SupplyServiceImpl implements SupplyService {
         if (prodMap == null) {//先判断数据库是否存在改数据
             SupplyProduct supplyProduct = JsonUtils.map2obj(map, SupplyProduct.class);
             supplyProduct.setStatus(true);
+            supplyProduct.setCreateTime(new Date());
+            supplyProduct.setSyncTime(new Date());
             supplyProduct.setSupply_id(supplyId);
-            if (map.containsKey("data")) {
-                supplyProduct.setData(JsonUtils.toJson(map.get("data")));
-            }
             supplyProductMapper.insertSelective(supplyProduct);
         } else {
             //如果存在就修改
             SupplyProduct supplyProduct = JsonUtils.map2obj(map, SupplyProduct.class);
-            if (map.containsKey("data")) {
-                supplyProduct.setData(JsonUtils.toJson(map.get("data")));
-            }
-            supplyProduct.setId(CommonUtil.objectParseInteger("id"));
+            supplyProduct.setSyncTime(new Date());
+            supplyProduct.setId(CommonUtil.objectParseInteger(prodMap.get("id")));
             supplyProductMapper.updateByPrimaryKeySelective(supplyProduct);
         }
         return new Result(true);
@@ -184,6 +186,9 @@ public class SupplyServiceImpl implements SupplyService {
     @Override
     public Result delProd(int supplyId, String prodId) {
         Map map = getProdMap(supplyId, prodId);
+        if (map == null) {
+            return new Result(false);
+        }
         Integer id = CommonUtil.objectParseInteger(map.get("id"));
         if (id == null) {
             return new Result(false);

@@ -14,6 +14,6 @@
 	<dubbo:protocol name="dubbo" port="${dubbo.port}" />
 	<dubbo:monitor protocol="registry" />
 	<dubbo:service interface="com.all580.voucherplatform.api.service.UserService" ref="useSerivceImpl" />
-	<dubbo:service interface="com.all580.voucherplatform.api.service.QrService" ref="qrSerivceImpl" />
+	<dubbo:service interface="com.all580.voucherplatform.api.service.QrService" ref="qrServiceImpl" />
 
 </beans>

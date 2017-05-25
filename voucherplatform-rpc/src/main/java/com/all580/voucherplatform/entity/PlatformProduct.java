@@ -5,57 +5,57 @@ import java.util.Date;
 
 public class PlatformProduct implements Serializable {
     /**
-     *  ,所属表字段为t_platformproduct.id
+     * ,所属表字段为t_platformproduct.id
      */
     private Integer id;
 
     /**
-     *  外部平台的产品号,所属表字段为t_platformproduct.code
+     * 外部平台的产品号,所属表字段为t_platformproduct.code
      */
     private String code;
 
     /**
-     *  外部平台的产品名称,所属表字段为t_platformproduct.name
+     * 外部平台的产品名称,所属表字段为t_platformproduct.name
      */
     private String name;
 
     /**
-     *  产品类型,所属表字段为t_platformproduct.producttype_id
+     * 产品类型,所属表字段为t_platformproduct.producttype_id
      */
-    private String producttype_id;
+    private Integer producttype_id;
 
     /**
-     *  所属的平台的id,所属表字段为t_platformproduct.platform_id
+     * 所属的平台的id,所属表字段为t_platformproduct.platform_id
      */
     private Integer platform_id;
 
     /**
-     *  所属的平台的授权id,所属表字段为t_platformproduct.platformrole_id
+     * 所属的平台的授权id,所属表字段为t_platformproduct.platformrole_id
      */
     private Integer platformrole_id;
 
     /**
-     *  产品对应的供应商id,所属表字段为t_platformproduct.supply_id
+     * 产品对应的供应商id,所属表字段为t_platformproduct.supply_id
      */
     private Integer supply_id;
 
     /**
-     *  产品对应的供应商产品id,所属表字段为t_platformproduct.supplyprod_id
+     * 产品对应的供应商产品id,所属表字段为t_platformproduct.supplyprod_id
      */
     private Integer supplyprod_id;
 
     /**
-     *  启用状态,所属表字段为t_platformproduct.status
+     * 启用状态,所属表字段为t_platformproduct.status
      */
     private Boolean status;
 
     /**
-     *  创建时间,所属表字段为t_platformproduct.createTime
+     * 创建时间,所属表字段为t_platformproduct.createTime
      */
     private Date createTime;
 
     /**
-     *  修改时间,所属表字段为t_platformproduct.modifyTime
+     * 修改时间,所属表字段为t_platformproduct.modifyTime
      */
     private Date modifyTime;
 
@@ -67,7 +67,7 @@ public class PlatformProduct implements Serializable {
     /**
      * 获取  字段:t_platformproduct.id
      *
-     * @return t_platformproduct.id, 
+     * @return t_platformproduct.id,
      */
     public Integer getId() {
         return id;
@@ -76,7 +76,7 @@ public class PlatformProduct implements Serializable {
     /**
      * 设置  字段:t_platformproduct.id
      *
-     * @param id t_platformproduct.id, 
+     * @param id t_platformproduct.id,
      */
     public void setId(Integer id) {
         this.id = id;
@@ -123,7 +123,7 @@ public class PlatformProduct implements Serializable {
      *
      * @return t_platformproduct.producttype_id, 产品类型
      */
-    public String getProducttype_id() {
+    public Integer getProducttype_id() {
         return producttype_id;
     }
 
@@ -132,8 +132,8 @@ public class PlatformProduct implements Serializable {
      *
      * @param producttype_id t_platformproduct.producttype_id, 产品类型
      */
-    public void setProducttype_id(String producttype_id) {
-        this.producttype_id = producttype_id == null ? null : producttype_id.trim();
+    public void setProducttype_id(Integer producttype_id) {
+        this.producttype_id = producttype_id;
     }
 
     /**

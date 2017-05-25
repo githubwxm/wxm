@@ -1,6 +1,10 @@
 package com.all580.voucherplatform.dao;
 
 import com.all580.voucherplatform.entity.Platform;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
+import java.util.Map;
 
 public interface PlatformMapper {
     /**
@@ -44,4 +48,8 @@ public interface PlatformMapper {
      * @param record
      */
     int updateByPrimaryKey(Platform record);
+
+    int getPlatformCount(@Param("name") String name);
+
+    List<Map> getPlatformtList(@Param("name") String name, @Param("record_start") Integer recordStart, @Param("record_count") Integer recordCount);
 }

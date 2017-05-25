@@ -52,7 +52,7 @@ public interface QrRuleMapper {
 
     QrRule getQrRule(@Param("supply_id") Integer supplyId, @Param("prodId") Integer prodId);
 
-
+    QrRule getDefaultQrRule();
 
     int getCount(@Param("name") String name,
                  @Param("len") Integer len,

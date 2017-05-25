@@ -17,7 +17,7 @@ public class PlatformRole implements Serializable {
     /**
      *  ,所属表字段为t_platformrole.authId
      */
-    private Integer authId;
+    private String authId;
 
     /**
      *  ,所属表字段为t_platformrole.authKey
@@ -47,7 +47,7 @@ public class PlatformRole implements Serializable {
     /**
      *  外部的商户id,所属表字段为t_platformrole.merchantCode
      */
-    private String merchantCode;
+    private String code;
 
     /**
      *  修改时间,所属表字段为t_platformrole.modifyTime
@@ -100,7 +100,7 @@ public class PlatformRole implements Serializable {
      *
      * @return t_platformrole.authId, 
      */
-    public Integer getAuthId() {
+    public String getAuthId() {
         return authId;
     }
 
@@ -109,7 +109,7 @@ public class PlatformRole implements Serializable {
      *
      * @param authId t_platformrole.authId, 
      */
-    public void setAuthId(Integer authId) {
+    public void setAuthId(String authId) {
         this.authId = authId;
     }
 
@@ -208,8 +208,8 @@ public class PlatformRole implements Serializable {
      *
      * @return t_platformrole.merchantCode, 外部的商户id
      */
-    public String getMerchantCode() {
-        return merchantCode;
+    public String getCode() {
+        return code;
     }
 
     /**
@@ -217,8 +217,8 @@ public class PlatformRole implements Serializable {
      *
      * @param merchantCode t_platformrole.merchantCode, 外部的商户id
      */
-    public void setMerchantCode(String merchantCode) {
-        this.merchantCode = merchantCode == null ? null : merchantCode.trim();
+    public void setCode(String merchantCode) {
+        this.code = merchantCode == null ? null : merchantCode.trim();
     }
 
     /**

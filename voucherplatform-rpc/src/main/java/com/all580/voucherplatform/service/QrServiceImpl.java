@@ -1,5 +1,6 @@
 package com.all580.voucherplatform.service;
 
+import com.all580.voucherplatform.api.service.OrderService;
 import com.all580.voucherplatform.api.service.QrService;
 import com.all580.voucherplatform.dao.QrRuleMapper;
 import com.all580.voucherplatform.entity.QrRule;
@@ -86,7 +87,6 @@ public class QrServiceImpl implements QrService {
         }
         return result;
     }
-
 
 
     @Override

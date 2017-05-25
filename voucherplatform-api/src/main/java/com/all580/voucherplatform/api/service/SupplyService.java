@@ -13,8 +13,9 @@ public interface SupplyService {
     /**
      * 添加供应商信息
      *
-     * @param map {name:xx,address:xx,region:xx,description:xx,signType:xx}
+     * @param map {name:xx,phone,xx,address:xx,region:xx,description:xx,signType:xx}
      *            name    -string -名字
+     *            phone -string -手机号码
      *            address -string -地址
      *            region    -string -区域
      *            description   -string -描述
@@ -28,9 +29,10 @@ public interface SupplyService {
     /**
      * 修改供应商信息
      *
-     * @param map {id:xx,name:xx,address:xx,region:xx,description:xx}
+     * @param map {id:xx,name:xx,phone,xx,address:xx,region:xx,description:xx}
      *            id  -int    -要修改的供应商id
      *            name    -string -名字
+     *            phone -string -手机号码
      *            address -string -地址
      *            region    -string -区域
      *            description   -string -描述
@@ -87,7 +89,7 @@ public interface SupplyService {
      *
      * @param supplyId
      * @param map      {id:xx,name:xx:descripton:xx:data:object}
-     *                 id-   string- id
+     *                 code-   string- code
      *                 name- string- 名字
      *                 description-  string- 描述
      *                 data- object- 对象数据
