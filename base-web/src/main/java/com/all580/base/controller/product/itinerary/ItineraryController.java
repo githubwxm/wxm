@@ -37,6 +37,13 @@ public class ItineraryController {
         return itineraryService.updateItinerary(params);
     }
 
+    @RequestMapping(value = "delete", method = RequestMethod.POST)
+    @ResponseBody
+    public Result<?> deleteItinerary(@RequestBody Map params) {
+        ParamsMapValidate.validate(params, generateCreateItineraryValidate());
+        return itineraryService.deleteItinerary(params);
+    }
+
     @RequestMapping(value = "select/list", method = RequestMethod.GET)
     @ResponseBody
     public Result<?> selectItineraryList(HttpServletRequest request, String name, String ep_id,Integer product_id
@@ -85,8 +92,10 @@ public class ItineraryController {
         rules.put(new String[]{
                 "name", //
                 "subhead", //
-                "start_area", //
-                "end_area", //
+                "start_province", //
+                "start_city", //
+                "end_province", //
+                "end_city", //
                 "label", //
                 "vehicle", //
                 "imgs", //
@@ -101,6 +110,10 @@ public class ItineraryController {
         // 校验整数
         rules.put(new String[]{
                 "visa_type" ,
+                "start_province", //
+                "start_city", //
+                "end_province", //
+                "end_city", //
         }, new ValidRule[]{new ValidRule.Digits()});
         return rules;
     }
