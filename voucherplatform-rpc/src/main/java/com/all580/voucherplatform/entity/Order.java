@@ -5,142 +5,137 @@ import java.util.Date;
 
 public class Order implements Serializable {
     /**
-     * ,所属表字段为t_order.id
+     *  ,所属表字段为t_order.id
      */
     private Integer id;
 
     /**
-     * 凭证平台的订单号,所属表字段为t_order.orderCode
+     *  凭证平台的订单号,所属表字段为t_order.orderCode
      */
     private String orderCode;
 
     /**
-     * 下订单的平台id,所属表字段为t_order.platform_id
+     *  下订单的平台id,所属表字段为t_order.platform_id
      */
     private Integer platform_id;
 
     /**
-     * 下订单的平台的产品id,所属表字段为t_order.platformprod_id
+     *  下订单的平台的产品id,所属表字段为t_order.platformprod_id
      */
     private Integer platformprod_id;
 
     /**
-     * 所属供应商的id,所属表字段为t_order.supply_id
+     *  所属供应商的id,所属表字段为t_order.supply_id
      */
     private Integer supply_id;
 
     /**
-     * 所对应票务系统的id,所属表字段为t_order.ticketsys_id
+     *  所对应票务系统的id,所属表字段为t_order.ticketsys_id
      */
     private Integer ticketsys_id;
 
     /**
-     * 订单来源平台的订单号码,所属表字段为t_order.platformOrderId
+     *  订单来源平台的订单号码,所属表字段为t_order.platformOrderId
      */
     private String platformOrderId;
 
     /**
-     * 订单来源平台的产品号,所属表字段为t_order.platformProdId
-     */
-    private Integer platformProdId;
-
-    /**
-     * 供应商的订单号,所属表字段为t_order.supplyOrderId
+     *  供应商的订单号,所属表字段为t_order.supplyOrderId
      */
     private String supplyOrderId;
 
     /**
-     * 供应商的产品号,所属表字段为t_order.supplierProdId
+     *  供应商的产品号,所属表字段为t_order.supplyProdId
      */
-    private Integer supplierProdId;
+    private Integer supplyProdId;
 
     /**
-     * 凭证类型 "0"-不限,"1"-身份证，"2"-二维码，不大于1个字符,所属表字段为t_order.voucherType
+     *  凭证类型 "0"-不限,"1"-身份证，"2"-二维码，不大于1个字符,所属表字段为t_order.voucherType
      */
     private Integer voucherType;
 
     /**
-     * 0-按次消费_可多刷(可多次消费)，2-按次消费_一码一刷(一次消费完), 3-包具体时长的消费 (不限消费次数)，不大于1个字符,所属表字段为t_order.consumeType
+     *  0-按次消费_可多刷(可多次消费)，2-按次消费_一码一刷(一次消费完), 3-包具体时长的消费 (不限消费次数)，不大于1个字符,所属表字段为t_order.consumeType
      */
     private Integer consumeType;
 
     /**
-     * 游客姓名,所属表字段为t_order.customName
+     *  游客姓名,所属表字段为t_order.customName
      */
     private String customName;
 
     /**
-     * 游客手机号码,所属表字段为t_order.mobile
+     *  游客手机号码,所属表字段为t_order.mobile
      */
     private String mobile;
 
     /**
-     * 游客身份证号码,所属表字段为t_order.idNumber
+     *  游客身份证号码,所属表字段为t_order.idNumber
      */
     private String idNumber;
 
     /**
-     * 总数量,所属表字段为t_order.number
+     *  总数量,所属表字段为t_order.number
      */
     private Integer number;
 
     /**
-     * 凭证号,所属表字段为t_order.voucherNumber
+     *  凭证号,所属表字段为t_order.voucherNumber
      */
     private String voucherNumber;
 
     /**
-     * 凭证生效时间,所属表字段为t_order.validTime
+     *  凭证生效时间,所属表字段为t_order.validTime
      */
     private Date validTime;
 
     /**
-     * 凭证失效时间,所属表字段为t_order.invalidTime
+     *  凭证失效时间,所属表字段为t_order.invalidTime
      */
     private Date invalidTime;
 
     /**
-     * 星期几有效(格式,7位数字，从星期一开始，用1和0代表可用和不可用),所属表字段为t_order.validWeek
+     *  星期几有效(格式,7位数字，从星期一开始，用1和0代表可用和不可用),所属表字段为t_order.validWeek
      */
     private String validWeek;
 
     /**
-     * 不可用日期,所属表字段为t_order.invalidDate
+     *  不可用日期,所属表字段为t_order.invalidDate
      */
     private String invalidDate;
 
     /**
-     * 是否要发送短信,所属表字段为t_order.sendType
+     *  是否要发送短信,所属表字段为t_order.sendType
      */
     private Integer sendType;
 
     /**
-     * 订单创建时间,所属表字段为t_order.createTime
+     *  订单创建时间,所属表字段为t_order.createTime
      */
     private Date createTime;
 
     /**
-     * 游客流水Id,所属表字段为t_order.seqId
+     *  游客流水Id,所属表字段为t_order.seqId
      */
     private String seqId;
 
     /**
-     * 订单支付时间,所属表字段为t_order.payTime
+     *  订单支付时间,所属表字段为t_order.payTime
      */
     private Date payTime;
 
     /**
-     * 短信内容,所属表字段为t_order.sms
+     *  短信内容,所属表字段为t_order.sms
      */
     private String sms;
 
     /**
-     * 打印小票内容,所属表字段为t_order.printText
+     *  打印小票内容,所属表字段为t_order.printText
      */
     private String printText;
 
     /**
-     * ,所属表字段为t_order.imgUrl
+     *  ,所属表字段为t_order.imgUrl
      */
     private String imgUrl;
 
@@ -152,7 +147,7 @@ public class Order implements Serializable {
     /**
      * 获取  字段:t_order.id
      *
-     * @return t_order.id,
+     * @return t_order.id, 
      */
     public Integer getId() {
         return id;
@@ -161,7 +156,7 @@ public class Order implements Serializable {
     /**
      * 设置  字段:t_order.id
      *
-     * @param id t_order.id,
+     * @param id t_order.id, 
      */
     public void setId(Integer id) {
         this.id = id;
@@ -276,24 +271,6 @@ public class Order implements Serializable {
     }
 
     /**
-     * 获取 订单来源平台的产品号 字段:t_order.platformProdId
-     *
-     * @return t_order.platformProdId, 订单来源平台的产品号
-     */
-    public Integer getPlatformProdId() {
-        return platformProdId;
-    }
-
-    /**
-     * 设置 订单来源平台的产品号 字段:t_order.platformProdId
-     *
-     * @param platformProdId t_order.platformProdId, 订单来源平台的产品号
-     */
-    public void setPlatformProdId(Integer platformProdId) {
-        this.platformProdId = platformProdId;
-    }
-
-    /**
      * 获取 供应商的订单号 字段:t_order.supplyOrderId
      *
      * @return t_order.supplyOrderId, 供应商的订单号
@@ -312,21 +289,21 @@ public class Order implements Serializable {
     }
 
     /**
-     * 获取 供应商的产品号 字段:t_order.supplierProdId
+     * 获取 供应商的产品号 字段:t_order.supplyProdId
      *
-     * @return t_order.supplierProdId, 供应商的产品号
+     * @return t_order.supplyProdId, 供应商的产品号
      */
-    public Integer getSupplierProdId() {
-        return supplierProdId;
+    public Integer getSupplyProdId() {
+        return supplyProdId;
     }
 
     /**
-     * 设置 供应商的产品号 字段:t_order.supplierProdId
+     * 设置 供应商的产品号 字段:t_order.supplyProdId
      *
-     * @param supplierProdId t_order.supplierProdId, 供应商的产品号
+     * @param supplyProdId t_order.supplyProdId, 供应商的产品号
      */
-    public void setSupplierProdId(Integer supplierProdId) {
-        this.supplierProdId = supplierProdId;
+    public void setSupplyProdId(Integer supplyProdId) {
+        this.supplyProdId = supplyProdId;
     }
 
     /**
@@ -638,7 +615,7 @@ public class Order implements Serializable {
     /**
      * 获取  字段:t_order.imgUrl
      *
-     * @return t_order.imgUrl,
+     * @return t_order.imgUrl, 
      */
     public String getImgUrl() {
         return imgUrl;
@@ -647,7 +624,7 @@ public class Order implements Serializable {
     /**
      * 设置  字段:t_order.imgUrl
      *
-     * @param imgUrl t_order.imgUrl,
+     * @param imgUrl t_order.imgUrl, 
      */
     public void setImgUrl(String imgUrl) {
         this.imgUrl = imgUrl == null ? null : imgUrl.trim();

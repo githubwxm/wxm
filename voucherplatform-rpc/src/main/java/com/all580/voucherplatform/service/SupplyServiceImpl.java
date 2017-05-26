@@ -144,9 +144,9 @@ public class SupplyServiceImpl implements SupplyService {
     @Override
     public Result getProd(int supplyId, String prodId) {
         Result result = new Result(true);
-        Map map = getProdMap(supplyId, prodId);
-        if (map != null) {
-            result.put(map);
+        SupplyProduct supplyProduct = getProdMap(supplyId, prodId);
+        if (supplyProduct != null) {
+            result.put(JsonUtils.obj2map(supplyProduct));
         }
         return result;
     }
@@ -158,16 +158,16 @@ public class SupplyServiceImpl implements SupplyService {
      * @param prodId
      * @return
      */
-    private Map getProdMap(int supplyId, String prodId) {
+    private SupplyProduct getProdMap(int supplyId, String prodId) {
         return supplyProductMapper.getSupplyProdByProdId(supplyId, prodId);
     }
 
     @Override
     public Result setProd(int supplyId, Map map) {
         String prodId = CommonUtil.objectParseString(map.get("code"));
-        Map prodMap = getProdMap(supplyId, prodId);
-        if (prodMap == null) {//先判断数据库是否存在改数据
-            SupplyProduct supplyProduct = JsonUtils.map2obj(map, SupplyProduct.class);
+        SupplyProduct supplyProduct = getProdMap(supplyId, prodId);
+        if (supplyProduct == null) {//先判断数据库是否存在改数据
+            supplyProduct = JsonUtils.map2obj(map, SupplyProduct.class);
             supplyProduct.setStatus(true);
             supplyProduct.setCreateTime(new Date());
             supplyProduct.setSyncTime(new Date());
@@ -175,26 +175,22 @@ public class SupplyServiceImpl implements SupplyService {
             supplyProductMapper.insertSelective(supplyProduct);
         } else {
             //如果存在就修改
-            SupplyProduct supplyProduct = JsonUtils.map2obj(map, SupplyProduct.class);
-            supplyProduct.setSyncTime(new Date());
-            supplyProduct.setId(CommonUtil.objectParseInteger(prodMap.get("id")));
-            supplyProductMapper.updateByPrimaryKeySelective(supplyProduct);
+            SupplyProduct updateProd=new SupplyProduct();
+            updateProd.setName(CommonUtil.objectParseString("name"));
+            updateProd.setDescription(CommonUtil.objectParseString("description"));
+            updateProd.setSyncTime(new Date());
+            updateProd.setId(supplyProduct.getId());
+            supplyProductMapper.updateByPrimaryKeySelective(updateProd);
         }
         return new Result(true);
     }
 
     @Override
     public Result delProd(int supplyId, String prodId) {
-        Map map = getProdMap(supplyId, prodId);
-        if (map == null) {
+        SupplyProduct supplyProduct = getProdMap(supplyId, prodId);
+        if (supplyProduct == null) {
             return new Result(false);
         }
-        Integer id = CommonUtil.objectParseInteger(map.get("id"));
-        if (id == null) {
-            return new Result(false);
-        }
-        SupplyProduct supplyProduct = new SupplyProduct();
-        supplyProduct.setId(id);
         supplyProduct.setStatus(false);
         supplyProductMapper.updateByPrimaryKeySelective(supplyProduct);
         return new Result(true);

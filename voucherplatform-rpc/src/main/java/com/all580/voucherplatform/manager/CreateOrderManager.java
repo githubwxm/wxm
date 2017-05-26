@@ -2,7 +2,10 @@ package com.all580.voucherplatform.manager;
 
 import com.all580.voucherplatform.dao.*;
 import com.all580.voucherplatform.entity.*;
+import com.all580.voucherplatform.utils.sign.voucher.VoucherGenerate;
+import com.all580.voucherplatform.utils.sign.voucher.VoucherUrlGenerate;
 import com.framework.common.lang.DateFormatUtils;
+import com.framework.common.lang.UUIDGenerator;
 import com.framework.common.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -10,10 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by Linv2 on 2017-05-24.
@@ -33,6 +33,10 @@ public class CreateOrderManager {
     private QrRuleMapper qrRuleMapper;
     @Autowired
     private TemplateMapper templateMapper;
+    @Autowired
+    private VoucherGenerate voucherGenerate;
+    @Autowired
+    private VoucherUrlGenerate voucherUrlGenerate;
 
 
     private Integer platformId;
@@ -78,54 +82,68 @@ public class CreateOrderManager {
         } else {
             log.warn("订单号为{}的票务产品未配置", orderId);
         }
-        if (supplyProduct != null) {
-            loadTemplate(supplyProduct.getSupply_id(), supplyProduct.getId());
-            loadQrRule(supplyProduct.getSupply_id(), supplyProduct.getId());
-        }
+
+        loadTemplate(platformProduct.getSupplyprod_id(), supplyProduct == null ? null : supplyProduct.getId());
+        loadQrRule(platformProduct.getSupplyprod_id(), supplyProduct == null ? null : supplyProduct.getId());
+
 
         voucherType = CommonUtil.objectParseInteger(map.get("voucherType"), 0);
-        consumeType = CommonUtil.objectParseInteger(map.get("consumeType"));
+        consumeType = CommonUtil.objectParseInteger(map.get("consumeType"), 0);
         validTime = CommonUtil.objectParseString(map.get("validTime"));
         invalidTime = CommonUtil.objectParseString(map.get("invalidTime"));
         validWeek = CommonUtil.objectParseString(map.get("validWeek"));
         invalidDate = CommonUtil.objectParseString(map.get("invalidDate"));
-        sendType = CommonUtil.objectParseInteger(map.get("sendType"));
+        sendType = CommonUtil.objectParseInteger(map.get("sendType"), 1);
         payTime = CommonUtil.objectParseString(map.get("payTime"));
         sms = CommonUtil.objectParseString(map.get("sms"));
         sms = replaceSmsTemplate();
+
+        if (StringUtils.isEmpty(validWeek)) {
+            validWeek = "1111111";
+        }
         this.check();
     }
 
 
     public void setVisitor(Map... maps) {
-
         for (Map map : maps) {
             String seqId = CommonUtil.objectParseString(map.get("seqId"));
             String customName = CommonUtil.objectParseString(map.get("customName"));
+            String mobile = CommonUtil.objectParseString(map.get("mobile"));
             String idNumber = CommonUtil.objectParseString(map.get("idNumber"));
             Integer number = CommonUtil.objectParseInteger(map.get("number"), 1);
+
             Order order = getOrder();
             order.setSeqId(seqId);
             order.setCustomName(customName);
+            order.setMobile(mobile);
             order.setIdNumber(idNumber);
             order.setNumber(number);
             orderList.add(order);
         }
     }
 
+    public void saveOrder() {
+        for (Order order : orderList) {
+            orderMapper.insertSelective(order);
+        }
+    }
+
 
     private void check() throws Exception {
         long _validTime = DateFormatUtils.converToDateTime(validTime).getTime();
-        long _invalidTime = DateFormatUtils.converToDateTime(invalidDate).getTime();
+        long _invalidTime = DateFormatUtils.converToDateTime(invalidTime).getTime();
         long nowDate = System.currentTimeMillis();
-        if (_validTime < nowDate || _invalidTime < _validTime) {
+        if (_invalidTime < nowDate || _invalidTime < _validTime) {
             throw new Exception("时间段错误");
         }
     }
 
     private void loadTemplate(Integer supplyId, Integer supplyProdId) {
-        template = templateMapper.getTemplate(null, supplyProdId);//根据产品读取当前配置
-        if (template == null) {
+        if (supplyProdId != null) {
+            template = templateMapper.getTemplate(null, supplyProdId);//根据产品读取当前配置
+        }
+        if (template == null && supplyId != null) {
             template = templateMapper.getTemplate(supplyId, null);//根据商户读取当前配置
         }
         if (template == null) {
@@ -137,8 +155,10 @@ public class CreateOrderManager {
     }
 
     private void loadQrRule(Integer supplyId, Integer supplyProdId) {
-        qrRule = qrRuleMapper.getQrRule(null, supplyProdId);//根据产品读取当前配置
-        if (qrRule == null) {
+        if (supplyProdId != null) {
+            qrRule = qrRuleMapper.getQrRule(null, supplyProdId);//根据产品读取当前配置
+        }
+        if (qrRule == null & supplyId != null) {
             qrRule = qrRuleMapper.getQrRule(supplyId, null);//根据商户读取当前配置
         }
         if (qrRule == null) {
@@ -151,7 +171,9 @@ public class CreateOrderManager {
 
     private String replaceSmsTemplate() {
         if (StringUtils.isEmpty(sms)) {
-            sms = template.getSms();
+            if (template != null) {
+                sms = template.getSms();
+            }
         }
         sms = sms.replace("{标题}", platformProduct.getName())
                 //.replace("{份数}")
@@ -163,14 +185,15 @@ public class CreateOrderManager {
 
     private Order getOrder() {
         Order order = new Order();
-        order.setOrderCode("");//生成订单号
+        order.setOrderCode(String.valueOf(UUIDGenerator.generateUUID()));//生成订单号
+        order.setPlatformOrderId(orderId);
         order.setPlatform_id(platformId);
         order.setPlatformprod_id(platformProduct.getPlatform_id());
         order.setSupply_id(platformProduct.getSupply_id());
         order.setTicketsys_id(null);
         order.setSupplyOrderId(orderId);
         if (supplyProduct != null) {
-            order.setSupplierProdId(supplyProduct.getId());
+            order.setSupplyProdId(supplyProduct.getId());
         }
         order.setVoucherType(voucherType);
         order.setConsumeType(consumeType);
@@ -180,6 +203,11 @@ public class CreateOrderManager {
         order.setInvalidDate(invalidDate);
         order.setSendType(sendType);
         order.setCreateTime(new Date());
+
+        String voucherNumber = voucherGenerate.getVoucher(qrRule.getSize(), qrRule.getPrefix(), qrRule.getPostfix());
+        order.setVoucherNumber(voucherNumber);
+        String voucherImgUrl = voucherUrlGenerate.getVoucherUrl(voucherNumber, qrRule.getErrorRate(), qrRule.getSize(), qrRule.getForeColor());
+        order.setImgUrl(voucherImgUrl);
         return order;
     }
 

@@ -43,7 +43,7 @@ public interface QrRuleMapper {
     int updateByPrimaryKeySelective(QrRule record);
 
     /**
-     * 根据主键来更新符合条件的数据库记录,t_qrrule
+     *  根据主键来更新符合条件的数据库记录,t_qrrule
      *
      * @param record
      */

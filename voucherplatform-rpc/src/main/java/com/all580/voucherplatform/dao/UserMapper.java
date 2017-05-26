@@ -3,8 +3,6 @@ package com.all580.voucherplatform.dao;
 import com.all580.voucherplatform.entity.User;
 import org.apache.ibatis.annotations.Param;
 
-import java.util.Map;
-
 public interface UserMapper {
     /**
      *  根据主键删除数据库的记录,t_user

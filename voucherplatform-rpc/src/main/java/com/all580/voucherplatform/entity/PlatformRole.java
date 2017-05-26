@@ -10,6 +10,11 @@ public class PlatformRole implements Serializable {
     private Integer id;
 
     /**
+     *  外部的商户id,所属表字段为t_platformrole.code
+     */
+    private String code;
+
+    /**
      *  商户的自定义名称,所属表字段为t_platformrole.name
      */
     private String name;
@@ -45,11 +50,6 @@ public class PlatformRole implements Serializable {
     private Date authTime;
 
     /**
-     *  外部的商户id,所属表字段为t_platformrole.merchantCode
-     */
-    private String code;
-
-    /**
      *  修改时间,所属表字段为t_platformrole.modifyTime
      */
     private Date modifyTime;
@@ -75,6 +75,24 @@ public class PlatformRole implements Serializable {
      */
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    /**
+     * 获取 外部的商户id 字段:t_platformrole.code
+     *
+     * @return t_platformrole.code, 外部的商户id
+     */
+    public String getCode() {
+        return code;
+    }
+
+    /**
+     * 设置 外部的商户id 字段:t_platformrole.code
+     *
+     * @param code t_platformrole.code, 外部的商户id
+     */
+    public void setCode(String code) {
+        this.code = code == null ? null : code.trim();
     }
 
     /**
@@ -110,7 +128,7 @@ public class PlatformRole implements Serializable {
      * @param authId t_platformrole.authId, 
      */
     public void setAuthId(String authId) {
-        this.authId = authId;
+        this.authId = authId == null ? null : authId.trim();
     }
 
     /**
@@ -201,24 +219,6 @@ public class PlatformRole implements Serializable {
      */
     public void setAuthTime(Date authTime) {
         this.authTime = authTime;
-    }
-
-    /**
-     * 获取 外部的商户id 字段:t_platformrole.merchantCode
-     *
-     * @return t_platformrole.merchantCode, 外部的商户id
-     */
-    public String getCode() {
-        return code;
-    }
-
-    /**
-     * 设置 外部的商户id 字段:t_platformrole.merchantCode
-     *
-     * @param merchantCode t_platformrole.merchantCode, 外部的商户id
-     */
-    public void setCode(String merchantCode) {
-        this.code = merchantCode == null ? null : merchantCode.trim();
     }
 
     /**

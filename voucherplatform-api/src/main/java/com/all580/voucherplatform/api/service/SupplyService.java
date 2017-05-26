@@ -88,7 +88,7 @@ public interface SupplyService {
      * 根据供应商的身份id，更新产品信息
      *
      * @param supplyId
-     * @param map      {id:xx,name:xx:descripton:xx:data:object}
+     * @param map      {code:xx,name:xx:descripton:xx:data:object}
      *                 code-   string- code
      *                 name- string- 名字
      *                 description-  string- 描述
