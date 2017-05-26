@@ -46,9 +46,6 @@ public class ItineraryBatchController {
         rules.put(new String[]{
                 "stock" ,
                 "product_sub_id", //
-                "start_city", //
-                "end_province", //
-                "end_city", //
         }, new ValidRule[]{new ValidRule.Digits()});
         return rules;
     }
