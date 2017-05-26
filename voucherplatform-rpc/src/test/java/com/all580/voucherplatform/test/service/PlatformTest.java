@@ -1,8 +1,6 @@
 package com.all580.voucherplatform.test.service;
 
 import com.all580.voucherplatform.api.service.PlatformService;
-import com.all580.voucherplatform.api.service.SupplyService;
-import com.all580.voucherplatform.dao.PlatformProductMapper;
 import com.framework.common.Result;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;

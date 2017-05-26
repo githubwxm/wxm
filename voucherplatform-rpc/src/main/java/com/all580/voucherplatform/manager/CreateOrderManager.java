@@ -51,15 +51,15 @@ public class CreateOrderManager {
     private String payTime;
     private String sms;
     private List<Order> orderList;
+    private static Integer a = 1;
 
-    /**
-     * @param platformId
-     */
-    public CreateOrderManager(Integer platformId) {
-        this.platformId = platformId;
+    public CreateOrderManager() {
+        System.out.println(a);
+        a++;
     }
 
-    public void setProd(Map map) throws Exception {
+    public void setProd(Integer platformId, Map map) throws Exception {
+        this.platformId = platformId;
         orderList = new ArrayList<>();
         orderId = CommonUtil.objectParseString(map.get("orderId"));
         if (orderMapper.getOrderCount(platformId, null, null, orderId, null, null, null, null, null, null) > 0) {
