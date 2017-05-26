@@ -38,7 +38,6 @@ public class ItinerarySubController {
         rules.put(new String[]{
                 "name", //
                 "product_id", //
-                "stock_limit", //
                 "require_sid", //
                 "pay_type", //
                 "market_price", //
