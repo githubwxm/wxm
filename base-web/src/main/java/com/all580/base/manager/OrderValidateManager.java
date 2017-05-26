@@ -35,10 +35,8 @@ public class OrderValidateManager {
                 "items.quantity", // 订票数量
                 "ep_id", // 订票企业ID
                 "operator_id", // 订票用户ID
-                "operator_name", // 订票用户名称
                 //"sale_amount", // 销售金额
-                "from", // 来源 0-平台下单 1-接口下单
-                "remark" // 备注
+                "from" // 来源 0-平台下单 1-接口下单
         }, new ValidRule[]{new ValidRule.NotNull()});
 
         // 校验整数
@@ -90,9 +88,7 @@ public class OrderValidateManager {
                 "items.quantity", // 订票数量
                 "ep_id", // 订票企业ID
                 "operator_id", // 订票用户ID
-                "operator_name", // 订票用户名称
-                "from", // 来源 0-平台下单 1-接口下单
-                "remark" // 备注
+                "from" // 来源 0-平台下单 1-接口下单
         }, new ValidRule[]{new ValidRule.NotNull()});
 
         // 校验整数
@@ -137,9 +133,7 @@ public class OrderValidateManager {
                 "items.group_id", // 团队ID
                 "ep_id", // 订票企业ID
                 "operator_id", // 订票用户ID
-                "operator_name", // 订票用户名称
-                "from", // 来源 0-平台下单 1-接口下单
-                "remark" // 备注
+                "from" // 来源 0-平台下单 1-接口下单
         }, new ValidRule[]{new ValidRule.NotNull()});
 
         // 校验整数
@@ -185,10 +179,8 @@ public class OrderValidateManager {
                 "items.quantity", // 订票数量
                 "ep_id", // 订票企业ID
                 "operator_id", // 订票用户ID
-                "operator_name", // 订票用户名称
                 //"sale_amount", // 销售金额
-                "from", // 来源 0-平台下单 1-接口下单
-                "remark" // 备注
+                "from" // 来源 0-平台下单 1-接口下单
         }, new ValidRule[]{new ValidRule.NotNull()});
 
         // 校验整数
@@ -325,8 +317,7 @@ public class OrderValidateManager {
         }, new ValidRule[]{new ValidRule.NotNull(), new ValidRule.Boolean()});
 
         rules.put(new String[]{
-                "reason", // 原因
-                "operator_name" // 操作人名称
+                "reason" // 原因
         }, new ValidRule[]{new ValidRule.NotNull()});
 
         return rules;
@@ -342,10 +333,6 @@ public class OrderValidateManager {
                 "refund_sn", // 订单编号(流水)
                 "operator_id" // 操作人ID
         }, new ValidRule[]{new ValidRule.NotNull(), new ValidRule.Digits()});
-
-        rules.put(new String[]{
-                "operator_name" // 操作人名称
-        }, new ValidRule[]{new ValidRule.NotNull()});
 
         return rules;
     }

@@ -2,7 +2,6 @@ package com.all580.ep.service;
 
 import com.all580.ep.api.conf.EpConstant;
 import com.all580.ep.api.service.EpFinanceService;
-import com.all580.ep.api.service.EpService;
 import com.all580.ep.com.Common;
 import com.all580.ep.dao.EpBankMapper;
 import com.all580.ep.dao.EpMapper;
@@ -10,20 +9,17 @@ import com.all580.payment.api.conf.PaymentConstant;
 import com.all580.payment.api.model.BalanceChangeInfo;
 import com.all580.payment.api.service.BalancePayService;
 import com.framework.common.Result;
-import javax.lang.exception.ApiException;
-
 import com.framework.common.event.MnsEvent;
 import com.framework.common.event.MnsEventAspect;
-import com.framework.common.lang.StringUtils;
 import com.framework.common.mns.TopicPushManager;
 import com.framework.common.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.lang.exception.ApiException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -204,8 +200,8 @@ public class EpFinanceServiceImpl implements EpFinanceService {
     @Override
     public Result getBalanceSerialList(Integer epId, Integer coreEpId,
                                        String balanceSatatus,String startDate,String endDate,String ref_id,Integer export ,
-                                       Integer startRecord, Integer maxRecords,Integer type) {
+                                       Integer startRecord, Integer maxRecords,Integer type,Integer balance_type) {
 //changType   用余提现  暂时未用到
-        return balancePayService.getBalanceSerialList(epId,coreEpId,balanceSatatus,startDate,endDate,ref_id,export,startRecord,maxRecords,type);
+        return balancePayService.getBalanceSerialList(epId,coreEpId,balanceSatatus,startDate,endDate,ref_id,export,startRecord,maxRecords,type,balance_type);
     }
 }

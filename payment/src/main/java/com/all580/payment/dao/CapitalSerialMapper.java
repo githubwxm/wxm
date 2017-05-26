@@ -24,7 +24,7 @@ public interface CapitalSerialMapper {
                                              @Param("ref_id") String ref_id,
                                              @Param("start_record")Integer startRecord,
                                              @Param("max_records")Integer maxRecords,
-                                             @Param("type")Integer type);
+                                             @Param("type")Integer type, @Param("balance_type_id")Integer balance_type_id);
     List<Map<String,String>> listByCapitalIdExport (@Param("capital_id") Integer capital_id,
                                              @Param("balance_status") String balance_status,
                                              @Param("start_date") String startDate,
@@ -32,12 +32,13 @@ public interface CapitalSerialMapper {
                                              @Param("ref_id") String ref_id,
                                              @Param("start_record")Integer startRecord,
                                              @Param("max_records")Integer maxRecords,
-                                             @Param("type")Integer type);
+                                             @Param("type")Integer type,@Param("balance_type_id")Integer balance_type_id);
 
     int countByCapitalId(@Param("capital_id") Integer capital_id,
                          @Param("balance_status") String balance_status,
                           @Param("start_date") String startDate,
-                         @Param("end_date") String endDate,   @Param("ref_id") String ref_id,@Param("type")Integer type);
+                         @Param("end_date") String endDate,   @Param("ref_id") String ref_id,@Param("type")Integer type,
+    @Param("balance_type_id")Integer balance_type_id);
 
     int updateByPrimaryKeySelective(CapitalSerial record);
 

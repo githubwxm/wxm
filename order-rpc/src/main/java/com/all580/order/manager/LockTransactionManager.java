@@ -671,6 +671,14 @@ public class LockTransactionManager {
             total += consumeDay.getQuantity();
             eventManager.addEvent(OrderConstant.EventType.CONSUME_TICKET, new ConsumeTicketEventParam(orderItem.getId(), serial.getId()));
         }
+        // 团队最低使用数验证
+        if (orderItem.getGroup_id() != null && orderItem.getGroup_id() != 0 &&
+                orderItem.getPro_sub_ticket_type() != null && orderItem.getPro_sub_ticket_type() == ProductConstants.TeamTicketType.TEAM) {
+            if (orderItem.getLow_quantity() != null && orderItem.getLow_quantity() > total) {
+                throw new ApiException("不得小于最低使用数");
+            }
+        }
+
         // 修改已使用数量
         int ret = orderItemMapper.useQuantity(orderItem.getId(), total);
         if (ret <= 0) {

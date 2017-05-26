@@ -19,7 +19,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
-import javax.lang.exception.ApiException;
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
@@ -223,17 +222,26 @@ public class EpFinanceController extends BaseController {
      Integer coreEpId = CommonUtil.objectParseInteger(getAttribute(EpConstant.EpKey.CORE_EP_ID));
         return epFinanceService.getBalanceAccountInfo(balance_ep_id,coreEpId);
     }
+
+    @RequestMapping(value = "get/balance/type", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<?> getBalanceType(){
+        return balancePayService.getBalanceType();
+    }
+
+
+
     @RequestMapping(value = "lst_balance", method = RequestMethod.GET)
     @ResponseBody
     public Result<?> lstBalance(@RequestParam(value = "balance_ep_id") Integer balance_ep_id,
                                 String balance_status,String start_date,String end_date,String ref_id,Integer export ,
-                                Integer record_start, Integer record_count,Integer type){
+                                Integer record_start, Integer record_count,Integer type,Integer balance_type){
         Integer coreEpId = CommonUtil.objectParseInteger(getAttribute(EpConstant.EpKey.CORE_EP_ID));
         if(type==null||type.equals("")){
             type=0;
         }
         return epFinanceService.getBalanceSerialList(balance_ep_id,coreEpId,balance_status,
-                start_date,end_date,ref_id,export,record_start,record_count,type);
+                start_date,end_date,ref_id,export,record_start,record_count,type,balance_type);
     }
 
     /**
