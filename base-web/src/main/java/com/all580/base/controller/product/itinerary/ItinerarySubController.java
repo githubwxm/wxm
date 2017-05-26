@@ -37,6 +37,12 @@ public class ItinerarySubController {
         return itinerarySubService.addItinerarylSub(params);
     }
 
+    @RequestMapping(value = "select/id", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<?>selectIdSummary(Integer id){
+        return itinerarySubService.selectIdSummary(id);
+    }
+
     public Map<String[], ValidRule[]> generateCreateItinerarySubValidate() {
         Map<String[], ValidRule[]> rules = new HashMap<>();
         // 校验不为空的参数
