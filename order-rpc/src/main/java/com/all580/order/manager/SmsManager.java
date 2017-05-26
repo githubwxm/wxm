@@ -350,13 +350,12 @@ public class SmsManager {
         }
 
         Map<String, String> sendSmsParams = new HashMap<>();
-        sendSmsParams.put("productname", orderItem.getPro_name());
-        sendSmsParams.put("productsubname", orderItem.getPro_sub_name());
+        sendSmsParams.put("productname", orderItem.getPro_name() + "-" + orderItem.getPro_sub_name());
         sendSmsParams.put("number", String.valueOf(order.getNumber()));
         sendSmsParams.put("date", DateFormatUtils.converToStringDate(orderItem.getStart()));
         sendSmsParams.put("count", String.valueOf(orderItem.getQuantity()));
         sendSmsParams.put("dianhuahaoma", "");
-        Result result = smsService.send(shipping.getPhone(), 12051, order.getPayee_ep_id(), sendSmsParams);//发送短信
+        Result result = smsService.send(shipping.getPhone(), SmsType.Order.ITINERARY_ORDER, order.getPayee_ep_id(), sendSmsParams);//发送短信
         if (!result.isSuccess()) {
             throw new ApiException("发送线路出票短信失败:" + result.getError());
         }
