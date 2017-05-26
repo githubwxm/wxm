@@ -279,4 +279,324 @@
         and ep_id = #{epId}
         and core_ep_id = #{coreEpId}
     </select>
+
+  <sql id="listGroup_where">
+      <if test="product_name != null">
+        AND INSTR(t.pro_name,#{product_name})>0
+      </if>
+      <if test="number != null">
+        AND INSTR(t.number,#{number})>0
+      </if>
+      <!--<if test="booking_start_date != null">
+        AND CAST(t.`booking_date` AS DATE) >= CAST(#{booking_start_date} AS DATE)
+      </if>
+      <if test="booking_end_date != null">
+        AND CAST(t.`booking_date` AS DATE) <= CAST(#{booking_end_date} AS DATE)
+      </if>-->
+      <if test="booking_start_date != null and booking_end_date != null">
+        AND CAST(t.booking_date AS DATE) BETWEEN CAST(#{booking_start_date} AS DATE) AND CAST(#{booking_end_date} AS DATE)
+      </if>
+      <if test="status != null">
+        AND t.status = #{status}
+      </if>
+  </sql>
+  
+  <select id="countLineGroup" parameterType="java.util.Map" resultType="java.lang.Integer">
+    SELECT
+    COUNT(DISTINCT (t.id))
+    FROM
+    (SELECT
+    t1.id,
+    t2.pro_sub_name,
+    t1.number,
+    t1.booking_date,
+    t1.status
+    FROM
+    t_line_group t1
+    LEFT JOIN t_order_item t2
+    ON t1.`id` = t2.`group_id`) t
+    WHERE 1 = 1
+    <include refid="listGroup_where"></include>
+  </select>
+
+  <sql id="limit">
+    <if test="record_start != null and record_count != null">
+      limit #{record_start},#{record_count}
+    </if>
+    <if test="record_start != null and record_count == null">
+      limit #{record_start}
+    </if>
+    <if test="record_start == null and record_count != null">
+      limit 0,#{record_count}
+    </if>
+  </sql>
+
+  <select id="listGroup" parameterType="java.util.Map" resultType="java.util.Map">
+      SELECT
+        *
+      FROM
+        (SELECT
+          g.`id`,
+          g.`number`,
+          toi.pro_sub_name AS product_name,
+          g.`booking_date`,
+          v.booking_visitor_count,
+          r.refund_visitor_count,
+          g.`place_of_departure`,
+          CONCAT(g.`days`, '天', g.`nights`, '晚') AS days_of_trip,
+          g.`guide_name`,
+          g.`guide_phone`,
+          CASE
+            IFNULL(g.`status`, 0)
+            WHEN 390
+            THEN '未出团'
+            WHEN 391
+            THEN '已出团'
+            WHEN 392
+            THEN '已完成'
+            ELSE ''
+          END AS STATUS
+        FROM
+          t_line_group g
+          LEFT JOIN t_order_item toi
+            ON g.id = toi.group_id
+          LEFT JOIN
+            (SELECT
+              COUNT(1) booking_visitor_count,
+              t1.group_id
+            FROM
+              t_visitor t1
+            GROUP BY t1.group_id) v
+            ON g.id = v.group_id
+          LEFT JOIN
+            (SELECT
+              COUNT(1) refund_visitor_count,
+              t2.group_id
+            FROM
+              t_refund_visitor t1
+              LEFT JOIN t_visitor t2
+                ON t1.`visitor_id` = t2.`id`
+            GROUP BY t2.group_id) r
+            ON g.id = r.group_id) t WHERE 1=1
+      <include refid="listGroup_where"></include>
+      ORDER BY t.booking_date DESC
+      <include refid="limit"></include>
+  </select>
+
+  <select id="getLineGroupDetailByNumber" resultType="java.util.Map">
+      SELECT
+        *
+      FROM
+        (SELECT
+          g.id,
+          g.number,
+          toi.pro_sub_name AS product_name,
+          g.booking_date,
+          v.booking_visitor_count,
+          r.refund_visitor_count,
+          g.place_of_departure,
+          CONCAT(g.days, '天', g.nights, '晚') AS days_of_trip,
+          g.guide_name,
+          g.guide_phone,
+          CASE
+            IFNULL(g.status, 0)
+            WHEN 390
+            THEN '未出团'
+            WHEN 391
+            THEN '已出团'
+            WHEN 392
+            THEN '已完成'
+            ELSE ''
+          END AS STATUS,
+          o.confirmed_orders_count,
+          o.unconfirmed_orders_count,
+          o.paid_orders_count,
+          o.unpaid_orders_count
+        FROM
+          t_line_group g
+          LEFT JOIN t_order_item toi
+            ON g.id = toi.group_id
+          LEFT JOIN
+            (SELECT
+              COUNT(1) booking_visitor_count,
+              t1.group_id
+            FROM
+              t_visitor t1
+            GROUP BY t1.group_id) v
+            ON g.id = v.group_id
+          LEFT JOIN
+            (SELECT
+              COUNT(1) refund_visitor_count,
+              t2.group_id
+            FROM
+              t_refund_visitor t1
+              LEFT JOIN t_visitor t2
+                ON t1.visitor_id = t2.id
+            GROUP BY t2.group_id) r
+            ON g.id = r.group_id
+          LEFT JOIN
+            (SELECT
+              t4.id,
+              SUM(t4.confirmed_orders_count) AS confirmed_orders_count,
+              SUM(t4.unconfirmed_orders_count) AS unconfirmed_orders_count,
+              SUM(t4.paid_orders_count) AS paid_orders_count,
+              SUM(t4.unpaid_orders_count) AS unpaid_orders_count
+            FROM
+              (
+                (SELECT
+                  t1.id,
+                  COUNT(1) AS confirmed_orders_count,
+                  0 AS unconfirmed_orders_count,
+                  0 AS paid_orders_count,
+                  0 AS unpaid_orders_count
+                FROM
+                  t_group t1,
+                  t_order_item t2,
+                  t_order t3
+                WHERE t1.id = t2.group_id
+                  AND t2.order_id = t3.id
+                  AND t3.status IN (311, 312, 313, 314, 315)
+                GROUP BY t1.id,
+                  t3.status)
+                UNION
+                (SELECT
+                  t1.id,
+                  0 AS confirmed_orders_count,
+                  COUNT(1) AS unconfirmed_orders_count,
+                  0 AS paid_orders_count,
+                  0 AS unpaid_orders_count
+                FROM
+                  t_group t1,
+                  t_order_item t2,
+                  t_order t3
+                WHERE t1.id = t2.group_id
+                  AND t2.order_id = t3.id
+                  AND t3.status = 310
+                GROUP BY t1.id,
+                  t3.status)
+                UNION
+                (SELECT
+                  t1.id,
+                  0 AS confirmed_orders_count,
+                  0 AS unconfirmed_orders_count,
+                  COUNT(1) AS paid_orders_count,
+                  0 AS unpaid_orders_count
+                FROM
+                  t_group t1,
+                  t_order_item t2,
+                  t_order t3
+                WHERE t1.id = t2.group_id
+                  AND t2.order_id = t3.id
+                  AND t3.status IN (314, 315)
+                GROUP BY t1.id,
+                  t3.status)
+                UNION
+                (SELECT
+                  t1.id,
+                  0 AS confirmed_orders_count,
+                  0 AS unconfirmed_orders_count,
+                  0 AS paid_orders_count,
+                  COUNT(1) AS unpaid_orders_count
+                FROM
+                  t_group t1,
+                  t_order_item t2,
+                  t_order t3
+                WHERE t1.id = t2.group_id
+                  AND t2.order_id = t3.id
+                  AND t3.status IN (311, 312, 313)
+                GROUP BY t1.id,
+                  t3.status)
+              ) t4
+            GROUP BY t4.id) o
+            ON o.id = g.id) t WHERE t.number = #{number} limit 1
+  </select>
+
+  <select id="countLineGroupVisitorByGroupNumber" resultType="int">
+    SELECT
+      COUNT(1)
+    FROM
+      t_visitor t1,
+      t_group t2,
+      t_order_item t3
+    WHERE t1.group_id = t2.id
+      AND t1.ref_id = t3.id
+      AND t2.number = #{groupNumber}
+  </select>
+
+  <select id="getLineOrderVisitorsByNumber" resultType="java.util.Map">
+    SELECT
+      t1.id,
+      t1.name,
+      CASE IFNULL(t1.sex,'')
+      WHEN '3000' THEN '未知性别'
+      WHEN '3001' THEN '男'
+      WHEN '3002' THEN '女'
+      ELSE '' END AS sex
+      t1.phone,
+      t1.sid,
+      CASE
+        IFNULL(
+          (SELECT
+            1
+          FROM
+            t_refund_visitor t4
+          WHERE t4.visitor_id = t1.id
+            AND t4.order_item_id = t3.id),
+          ''
+        )
+        WHEN '1'
+        THEN '已退'
+        ELSE ''
+      END AS STATUS,
+      t3.number AS order_number
+    FROM
+      t_visitor t1,
+      t_group t2,
+      t_order_item t3
+    WHERE t1.group_id = t2.id
+      AND t1.ref_id = t3.id
+      AND t2.number = #{number}
+      <include refid="limit"></include>
+  </select>
+
+  <select id="getLineOrdersByNumbers" resultType="java.util.Map">
+    SELECT
+      t1.id,
+      t1.number,
+      t1.audit_time,
+      t1.audit_user_name,
+      t2.create_time,
+      t3.travel_name,
+      CASE IFNULL(t2.status,'')
+      WHEN 310 THEN '待审核'
+      WHEN 311 THEN '待支付'
+      WHEN 312 THEN '支付中'
+      WHEN 313 THEN '支付失败'
+      WHEN 314 THEN '已支付,处理中'
+      WHEN 315 THEN '已支付,交易成功'
+      WHEN 316 THEN '已取消'
+      ELSE '' END  AS order_status,
+      CASE IFNULL(t1.status,'')
+      WHEN 310 THEN '待审核'
+      WHEN 311 THEN '审核通过'
+      WHEN 312 THEN '未出票'
+      WHEN 313 THEN '出票失败'
+      WHEN 314 THEN '出票中'
+      WHEN 315 THEN '已出票'
+      WHEN 316 THEN '已取消'
+      ELSE '' END  AS  sub_order_status,
+      t2.remark
+    FROM
+      t_order_item t1,
+      t_order t2,
+      t_group t3
+    WHERE t1.order_id = t2.id
+      AND t1.group_id = t3.id
+      AND t3.number = #{groupNumber}
+      AND t1.number IN
+      <foreach collection="orderNumbers" item="orderNumber" open="("  close=")" separator=",">
+        #{orderNumber}
+      </foreach>
+    ORDER BY t1.audit_time DESC
+  </select>
 </mapper>
