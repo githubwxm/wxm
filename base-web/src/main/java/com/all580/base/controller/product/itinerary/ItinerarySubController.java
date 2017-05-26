@@ -6,6 +6,7 @@ package com.all580.base.controller.product.itinerary;
 
 import com.all580.product.api.hotel.service.ItinerarySubService;
 import com.framework.common.Result;
+import com.framework.common.util.CommonUtil;
 import com.framework.common.validate.ParamsMapValidate;
 import com.framework.common.validate.ValidRule;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,10 @@ public class ItinerarySubController {
     @RequestMapping(value = "add", method = RequestMethod.POST)
     @ResponseBody
     public Result<?> addItinerary(@RequestBody Map params) {
+         String temp = CommonUtil.objectParseString(params.get("max_buy_quantity"));
+        if(temp == null || "".equals(temp)){
+            params.put("max_buy_quantity",0);
+        }
         ParamsMapValidate.validate(params, generateCreateItinerarySubValidate());
         return itinerarySubService.addItinerarylSub(params);
     }
