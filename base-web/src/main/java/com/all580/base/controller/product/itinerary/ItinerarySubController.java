@@ -42,6 +42,7 @@ public class ItinerarySubController {
                 "pay_type", //
                 "market_price", //
                 "min_sell_price", //
+                "max_buy_quantity", //
                 "cust_refund_rule", //
                 "supplier_audit", //
                 "team_prefix", //
