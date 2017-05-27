@@ -71,7 +71,8 @@ public class ItinerarySaleController {
      */
     @RequestMapping(value = "product/plan", method = RequestMethod.GET)
     @ResponseBody
-    public Result<?>selectItinerary(Integer ep_id,Integer product_sub_id,String start,String end){
+    public Result<?>selectItinerary(Integer ep_id,@RequestParam("product_sub_id")Integer product_sub_id,
+                                    @RequestParam("start")String start,@RequestParam("end")String end){
         Map map = new HashMap<>();
         map.put("ep_id",ep_id);
         map.put("product_sub_id",product_sub_id);
