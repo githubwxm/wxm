@@ -214,7 +214,7 @@ public class SmsManager {
 
         Map<String, String> sendSmsParams = new HashMap<>();
         sendSmsParams.put("dingdanhao", orderItem.getNumber().toString());
-        sendSmsParams.put("zichanpinming", orderItem.getPro_sub_name());
+        sendSmsParams.put("zichanpinming", orderItem.getPro_name() + "-" + orderItem.getPro_sub_name());
         sendSmsParams.put("date", DateFormatUtils.parseDateToDatetimeString(orderItem.getStart()));
         sendSmsParams.put("xingmin", shipping.getName());
         sendSmsParams.put("shuliang", String.valueOf(orderItem.getQuantity()));
