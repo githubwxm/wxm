@@ -323,7 +323,7 @@ public class SmsManager {
         }
 
         Map<String, String> sendSmsParams = new HashMap<>();
-        sendSmsParams.put("productname", orderItem.getPro_sub_name());
+        sendSmsParams.put("productname", orderItem.getPro_name() + "-" + orderItem.getPro_sub_name());
         sendSmsParams.put("number", String.valueOf(order.getNumber()));
         sendSmsParams.put("indate", DateFormatUtils.converToStringDate(orderItem.getStart()));
         sendSmsParams.put("outdate", DateFormatUtils.converToStringDate(orderItem.getEnd()));

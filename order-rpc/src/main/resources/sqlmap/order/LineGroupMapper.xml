@@ -282,7 +282,7 @@
 
   <sql id="listGroup_where">
       <if test="product_name != null">
-        AND INSTR(t.pro_name,#{product_name})>0
+        AND INSTR(t.product_name,#{product_name})>0
       </if>
       <if test="number != null">
         AND INSTR(t.number,#{number})>0
@@ -307,14 +307,15 @@
     FROM
     (SELECT
     t1.id,
-    t2.pro_sub_name,
+    t2.pro_sub_name AS product_name,
     t1.number,
     t1.booking_date,
     t1.status
     FROM
     t_line_group t1
     LEFT JOIN t_order_item t2
-    ON t1.`id` = t2.`group_id`) t
+    ON t1.id = t2.group_id
+    WHERE t1.ep_id = #{ep_id}) t
     WHERE 1 = 1
     <include refid="listGroup_where"></include>
   </select>
@@ -377,7 +378,8 @@
               LEFT JOIN t_visitor t2
                 ON t1.`visitor_id` = t2.`id`
             GROUP BY t2.group_id) r
-            ON g.id = r.group_id) t WHERE 1=1
+            ON g.id = r.group_id
+      WHERE g.ep_id = #{ep_id}) t WHERE 1=1
       <include refid="listGroup_where"></include>
       ORDER BY t.booking_date DESC
       <include refid="limit"></include>
@@ -503,12 +505,14 @@
                   t_order t3
                 WHERE t1.id = t2.group_id
                   AND t2.order_id = t3.id
+                  AND g.ep_id = #{ep_id}
                   AND t3.status IN (311, 312, 313)
                 GROUP BY t1.id,
                   t3.status)
               ) t4
             GROUP BY t4.id) o
-            ON o.id = g.id) t WHERE t.number = #{number} limit 1
+            ON o.id = g.id
+            WHERE g.ep_id = #{ep_id}) t WHERE t.number = #{number} limit 1
   </select>
 
   <select id="countLineGroupVisitorByGroupNumber" resultType="int">
@@ -516,11 +520,12 @@
       COUNT(1)
     FROM
       t_visitor t1,
-      t_group t2,
+      t_line_group t2,
       t_order_item t3
     WHERE t1.group_id = t2.id
       AND t1.ref_id = t3.id
       AND t2.number = #{groupNumber}
+      AND t2.ep_id = #{ep_id}
   </select>
 
   <select id="getLineOrderVisitorsByNumber" resultType="java.util.Map">
@@ -551,11 +556,12 @@
       t3.number AS order_number
     FROM
       t_visitor t1,
-      t_group t2,
+      t_line_group t2,
       t_order_item t3
     WHERE t1.group_id = t2.id
       AND t1.ref_id = t3.id
       AND t2.number = #{number}
+      AND t2.ep_id = #{ep_id}
       <include refid="limit"></include>
   </select>
 
@@ -589,10 +595,11 @@
     FROM
       t_order_item t1,
       t_order t2,
-      t_group t3
+      t_line_group t3
     WHERE t1.order_id = t2.id
       AND t1.group_id = t3.id
       AND t3.number = #{groupNumber}
+      AND t3.ep_id = #{ep_id}
       AND t1.number IN
       <foreach collection="orderNumbers" item="orderNumber" open="("  close=")" separator=",">
         #{orderNumber}

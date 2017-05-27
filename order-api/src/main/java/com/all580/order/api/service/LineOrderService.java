@@ -1,7 +1,6 @@
 package com.all580.order.api.service;
 
 import com.framework.common.Result;
-import org.apache.ibatis.annotations.Param;
 
 import java.util.Map;
 
@@ -20,16 +19,18 @@ public interface LineOrderService {
     /**
      * 线路团队详情接口
      * @param number
+     * @param epId
      * @return
      */
-    Result<?> getLineGroupDetailByNumber(@Param("number") String number);
+    Result<?> getLineGroupDetailByNumber(String number, String epId);
 
     /**
      * 线路订单游客列表
      * @param number
+     * @param epId
      * @param record_start
      * @param record_count
      * @return
      */
-    Result<?> listOrderVisitor(String number, int record_start,int record_count);
+    Result<?> listOrderVisitor(String number, String epId, int record_start,int record_count);
 }
