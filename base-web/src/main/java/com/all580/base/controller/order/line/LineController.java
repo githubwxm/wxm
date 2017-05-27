@@ -28,7 +28,7 @@ public class LineController extends BaseController{
     @Autowired
     private LineOrderService lineOrderService;
 
-    @RequestMapping(value = "group/list", method = RequestMethod.GET)
+    @RequestMapping(value = "group/list", method = RequestMethod.POST)
     @ResponseBody
     public Result<?> listGroup(@RequestBody Map params) {
         ValidRule dateValidRule = new ValidRule.Date("yyyy-mm-dd");
