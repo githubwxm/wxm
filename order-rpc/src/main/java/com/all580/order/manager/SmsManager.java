@@ -271,7 +271,7 @@ public class SmsManager {
 
         Date date = DateUtils.addMinutes(order.getAudit_time(), payTimeOut);
         Map<String, String> sendSmsParams = new HashMap<>();
-        sendSmsParams.put("chanpinmingcheng", orderItem.getPro_sub_name());
+        sendSmsParams.put("chanpinmingcheng", orderItem.getPro_name() + "-" + orderItem.getPro_sub_name());
         sendSmsParams.put("date", DateFormatUtils.parseDateToDatetimeString(orderItem.getStart()));
         sendSmsParams.put("shuliang", String.valueOf(orderItem.getQuantity()));
         sendSmsParams.put("buydate", DateFormatUtils.parseDateToDatetimeString(date));
