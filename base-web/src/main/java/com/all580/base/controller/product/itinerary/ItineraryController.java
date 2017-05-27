@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import javax.lang.exception.ParamsMapValidationException;
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
@@ -67,22 +66,23 @@ public class ItineraryController {
 
     @RequestMapping(value = "can_sale/list")
     @ResponseBody
-    public Result<?> canSaleList( String from,@RequestParam Integer ep_id,
-                                  Integer city, Integer ticket_flag, String in_date, String out_date, String keyword,
-                                  @RequestParam(defaultValue = "0") Integer price_min, Integer price_max,
-                                  String star, String topic, @RequestParam(defaultValue = "0") Integer person_min,
-                                  Integer person_max, @RequestParam(defaultValue = "ASC") String price_sort,
-                                  @RequestParam(defaultValue = "ASC") String sale_sort,
-                                  @RequestParam(defaultValue = "ASC") String create_sort,
-                                  @RequestParam(defaultValue = "0") Integer record_start,
-                                  @RequestParam(defaultValue = "20") Integer record_count) throws Exception {
+    public Result<?> canSaleList( String from,@RequestParam Integer ep_id,Integer end_city,Integer end_province,
+                                  String label,String product_name,String start_date,String end_date,
+                                  String product_sub_name ,Integer record_start,
+                                  Integer record_count
+                                 ) {
         Map map = new HashMap();
-        String[] sorts = new String[]{price_sort, sale_sort, create_sort};
-        for (String sort : sorts) {
-            if (!sort.equalsIgnoreCase("asc")) {
-                throw new ParamsMapValidationException("排序只能为 asc 或 desc");
-            }
-        }
+        map.put("ep_id",ep_id);
+        map.put("end_city",end_city);
+        map.put("end_province",end_province);
+        map.put("label",label);
+        map.put("product_name",product_name);
+        map.put("start_date",start_date);
+        map.put("end_date",end_date);
+        map.put("product_sub_name",product_sub_name);
+        map.put("from",from);
+        map.put("record_start",record_start);
+        map.put("record_count",record_count);
         return itineraryService.selectCanSaleList(map);
     }
 
