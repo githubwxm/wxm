@@ -38,26 +38,27 @@ public class ItinerarySaleController {
     @RequestMapping(value = "list")
     @ResponseBody
     public Result<Paginator<ProductAndSubInfo>> searchCanSaleListHotel(@RequestParam("ep_id") Integer epId,
-                                                                       @RequestParam("product_name") String productName,
-                                                                       @RequestParam("is_supplier") Integer isSupplier,
-                                                                       @RequestParam("order_str") Integer order,
-                                                                       @RequestParam("record_start") Integer start,
-                                                                       @RequestParam("record_count") Integer count
+                                                                        String product_name,
+                                                                      Integer is_supplier,
+                                                                       Integer order_str,
+                                                                        Integer record_start,
+                                                                        Integer record_count
             , Integer is_platfrom,Integer type ) {
 
         String orderStr = null;
         if(type==null){
             type= ProductConstants.ProductType.ITINERARY;
         }
-        if (order != null) {
-            switch (CanSaleOrderState.getCanSaleOrderSate(order)) {
+        if (order_str != null) {
+            switch (CanSaleOrderState.getCanSaleOrderSate(order_str)) {
                 case CREATE_TIME_ASC: orderStr = CanSaleOrderState.CREATE_TIME_ASC.getValue(); break;
                 case CREATE_TIME_DESC: orderStr = CanSaleOrderState.CREATE_TIME_DESC.getValue(); break;
                 case PRODUCT_NAME_ASC: orderStr = CanSaleOrderState.PRODUCT_NAME_ASC.getValue(); break;
                 case PRODUCT_NAME_DESC: orderStr = CanSaleOrderState.PRODUCT_NAME_DESC.getValue(); break;
             }
         }
-        Result result = productService.searchSubProductListByProductNameHotel(is_platfrom,epId, productName, isSupplier, orderStr, start, count,type);
+        Result result = productService.searchSubProductListByProductNameHotel(is_platfrom,epId, product_name, is_supplier,
+                orderStr, record_start, record_count,type);
         return result;
     }
 
