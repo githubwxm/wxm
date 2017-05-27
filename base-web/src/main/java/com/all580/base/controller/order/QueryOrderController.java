@@ -2,6 +2,7 @@ package com.all580.base.controller.order;
 
 import com.all580.base.util.Utils;
 import com.all580.ep.api.conf.EpConstant;
+import com.all580.product.api.consts.ProductConstants;
 import com.all580.report.api.service.QueryOrderService;
 import com.framework.common.BaseController;
 import com.framework.common.Result;
@@ -47,5 +48,21 @@ public class QueryOrderController extends BaseController {
         Date[] dates = Utils.checkDate(start_date, end_date);
         return queryOrderService.queryLineOrderItemList(number, product_name, group_number, status, item_status, name,
                 phone, ep_type, coreEpId, epId, dates[0], dates[1], record_start, record_count);
+    }
+
+    @RequestMapping(value = "line/view")
+    @ResponseBody
+    public Result<?> viewLine(@RequestParam Integer ep_type, @RequestParam Long item_number) {
+        Integer coreEpId = CommonUtil.objectParseInteger(getAttribute(EpConstant.EpKey.CORE_EP_ID));
+        Integer epId = CommonUtil.objectParseInteger(getAttribute(EpConstant.EpKey.EP_ID));
+        return queryOrderService.viewLineOrderItemInfo(item_number, ep_type, coreEpId, epId);
+    }
+
+    @RequestMapping(value = "line/prerefund")
+    @ResponseBody
+    public Result<?> preRefund(@RequestParam Integer ep_type, @RequestParam Long item_number) {
+        Integer coreEpId = CommonUtil.objectParseInteger(getAttribute(EpConstant.EpKey.CORE_EP_ID));
+        Integer epId = CommonUtil.objectParseInteger(getAttribute(EpConstant.EpKey.EP_ID));
+        return queryOrderService.preRefundLineInfo(item_number, ep_type, coreEpId, epId, ProductConstants.RefundEqType.SELLER);
     }
 }
