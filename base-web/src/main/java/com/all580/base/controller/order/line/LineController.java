@@ -31,8 +31,10 @@ public class LineController extends BaseController{
     @RequestMapping(value = "group/list", method = RequestMethod.GET)
     @ResponseBody
     public Result<?> listGroup(@RequestBody Map params) {
+        ValidRule dateValidRule = new ValidRule.Date("yyyy-mm-dd");
+        this.gernerateValidate(params,new String[]{"booking_start_date","booking_end_date"},new ValidRule[]{dateValidRule, dateValidRule});
+
         params.put(EpConstant.EpKey.EP_ID, this.getRequest().getAttribute(EpConstant.EpKey.EP_ID));
-        System.out.println("params--->"+params);
         if(params.get("record_start") == null){
             params.put("record_start",0);
         }

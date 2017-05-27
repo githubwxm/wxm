@@ -322,13 +322,13 @@
 
   <sql id="limit">
     <if test="record_start != null and record_count != null">
-      limit #{record_start},#{record_count}
+      limit #{record_start,jdbcType=INTEGER},#{record_count,jdbcType=INTEGER}
     </if>
     <if test="record_start != null and record_count == null">
-      limit #{record_start}
+      limit #{record_start,jdbcType=INTEGER}
     </if>
     <if test="record_start == null and record_count != null">
-      limit 0,#{record_count}
+      limit 0,#{record_count,jdbcType=INTEGER}
     </if>
   </sql>
 
@@ -452,7 +452,7 @@
                   0 AS paid_orders_count,
                   0 AS unpaid_orders_count
                 FROM
-                  t_group t1,
+                  t_line_group t1,
                   t_order_item t2,
                   t_order t3
                 WHERE t1.id = t2.group_id
@@ -468,7 +468,7 @@
                   0 AS paid_orders_count,
                   0 AS unpaid_orders_count
                 FROM
-                  t_group t1,
+                  t_line_group t1,
                   t_order_item t2,
                   t_order t3
                 WHERE t1.id = t2.group_id
@@ -484,7 +484,7 @@
                   COUNT(1) AS paid_orders_count,
                   0 AS unpaid_orders_count
                 FROM
-                  t_group t1,
+                  t_line_group t1,
                   t_order_item t2,
                   t_order t3
                 WHERE t1.id = t2.group_id
@@ -500,12 +500,12 @@
                   0 AS paid_orders_count,
                   COUNT(1) AS unpaid_orders_count
                 FROM
-                  t_group t1,
+                  t_line_group t1,
                   t_order_item t2,
                   t_order t3
                 WHERE t1.id = t2.group_id
                   AND t2.order_id = t3.id
-                  AND g.ep_id = #{ep_id}
+                  AND t1.ep_id = #{ep_id}
                   AND t3.status IN (311, 312, 313)
                 GROUP BY t1.id,
                   t3.status)
@@ -536,7 +536,7 @@
       WHEN '3000' THEN '未知性别'
       WHEN '3001' THEN '男'
       WHEN '3002' THEN '女'
-      ELSE '' END AS sex
+      ELSE '' END AS sex,
       t1.phone,
       t1.sid,
       CASE
