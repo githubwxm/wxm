@@ -76,16 +76,18 @@ public interface LineGroupMapper {
     /**
      * 根据团号查询线路团队详情
      * @param number
+     * @param epId
      * @return
      */
-    Map getLineGroupDetailByNumber(@Param("number") String number);
+    Map getLineGroupDetailByNumber(@Param("number") String number, @Param("ep_id") String epId);
 
     /**
      * 根据团号统计线路团队游客数
      * @param groupNumber
+     * @param epId
      * @return
      */
-    int countLineGroupVisitorByGroupNumber(@Param("groupNumber") String groupNumber);
+    int countLineGroupVisitorByGroupNumber(@Param("groupNumber") String groupNumber, @Param("ep_id") String epId);
 
     /**
      * 根据团号分页查询线路游客信息
@@ -94,13 +96,14 @@ public interface LineGroupMapper {
      * @param record_count
      * @return
      */
-    List<Map> getLineOrderVisitorsByNumber(@Param("number") String number, @Param("record_start") int record_start, @Param("record_count") int record_count);
+    List<Map> getLineOrderVisitorsByNumber(@Param("number") String number, @Param("ep_id") String epId, @Param("record_start") int record_start, @Param("record_count") int record_count);
 
     /**
      * 根据团号和子订单号查询子订单信息
+     * @param epId
      * @param groupNumber
      * @param orderNumbers
      * @return
      */
-    List<Map> getLineOrdersByNumbers(@Param("groupNumber") String groupNumber, @Param("orderNumbers") Collection<?> orderNumbers);
+    List<Map> getLineOrdersByNumbers(@Param("ep_id") String epId, @Param("groupNumber") String groupNumber, @Param("orderNumbers") Collection<?> orderNumbers);
 }

@@ -49,12 +49,13 @@ public class LineOrderServiceImpl implements LineOrderService {
      * 线路团队详情接口
      *
      * @param number
+     * @param epId
      * @return
      */
     @Override
-    public Result<?> getLineGroupDetailByNumber(String number) {
+    public Result<?> getLineGroupDetailByNumber(String number, String epId) {
         Result<Map> result = new Result<>(true);
-        Map map = lineGroupMapper.getLineGroupDetailByNumber(number);
+        Map map = lineGroupMapper.getLineGroupDetailByNumber(number, epId);
         result.put(map);
         return result;
     }
@@ -63,23 +64,25 @@ public class LineOrderServiceImpl implements LineOrderService {
      * 线路订单游客列表
      *
      * @param groupNumber
+     * @param epId
      * @param record_start
      * @param record_count
      * @return
      */
     @Override
-    public Result<?> listOrderVisitor(String groupNumber, int record_start, int record_count) {
+    public Result<?> listOrderVisitor(String groupNumber, String epId, int record_start, int record_count) {
         PageRecord<Map> record = new PageRecord<>();
         Result<PageRecord<Map>> result = new Result<>(true);
         result.put(record);
 
-        int count = lineGroupMapper.countLineGroupVisitorByGroupNumber(groupNumber);
+        int count = lineGroupMapper.countLineGroupVisitorByGroupNumber(groupNumber, epId);
         record.setTotalCount(count);
         if(count == 0){
             record.setList(Collections.EMPTY_LIST);
             return result;
         }
-        List<Map> visitorList = lineGroupMapper.getLineOrderVisitorsByNumber(groupNumber,record_start,record_count);
+
+        List<Map> visitorList = lineGroupMapper.getLineOrderVisitorsByNumber(groupNumber,epId,record_start,record_count);
         Collection<String> orderNumbers = new HashSet<>();
         Map<String,List<Map>> orderVisitorMap = new HashMap<>();
         for (Map visitor : visitorList) {
@@ -92,7 +95,8 @@ public class LineOrderServiceImpl implements LineOrderService {
                 orderVisitorMap.put(orderNumber,Arrays.asList(visitor));
             }
         }
-        List<Map> orderList = lineGroupMapper.getLineOrdersByNumbers(groupNumber, orderNumbers);
+
+        List<Map> orderList = lineGroupMapper.getLineOrdersByNumbers(epId, groupNumber, orderNumbers);
         for (Map order : orderList) {
             String orderNumber = String.valueOf(order.get("number"));
             order.put("visitors",orderVisitorMap.get(orderNumber));

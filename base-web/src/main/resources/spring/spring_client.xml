@@ -32,7 +32,8 @@
 	<dubbo:reference id="hotelPlanSaleService"
 					 interface="com.all580.product.api.hotel.service.HotelPlanSaleService" />
 
-
+	<dubbo:reference id="lineOrderService"
+					 interface="com.all580.order.api.service.LineOrderService" />
 
 	<dubbo:reference id="bookingOrderService"
 					 interface="com.all580.order.api.service.BookingOrderService" />
