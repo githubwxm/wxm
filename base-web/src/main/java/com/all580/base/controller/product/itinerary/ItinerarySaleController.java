@@ -31,8 +31,8 @@ public class ItinerarySaleController {
     /**
      * 产品分销列表
      * @param epId
-     * @param productName
-     * @param order
+     * @param
+     * @param
      * @return
      */
     @RequestMapping(value = "list")
@@ -41,8 +41,8 @@ public class ItinerarySaleController {
                                                                         String product_name,
                                                                       Integer is_supplier,
                                                                        Integer order_str,
-                                                                        Integer record_start,
-                                                                        Integer record_count
+                                                                       @RequestParam("record_start")  Integer record_start,
+                                                                       @RequestParam("record_count") Integer record_count
             , Integer is_platfrom,Integer type ) {
 
         String orderStr = null;
@@ -62,13 +62,21 @@ public class ItinerarySaleController {
         return result;
     }
 
+    /***
+     * 查询子产品  日期价格
+     * @param ep_id
+     * @param product_sub_id
+     * @param start
+     * @return
+     */
     @RequestMapping(value = "product/plan", method = RequestMethod.GET)
     @ResponseBody
-    public Result<?>selectItinerary(Integer ep_id,Integer product_sub_id,String start){
+    public Result<?>selectItinerary(Integer ep_id,Integer product_sub_id,String start,String end){
         Map map = new HashMap<>();
         map.put("ep_id",ep_id);
         map.put("product_sub_id",product_sub_id);
         map.put("start",start);
+        map.put("end",end);
         return itineraryPlanSaleService.selectProductPlan(map);
     }
 }
