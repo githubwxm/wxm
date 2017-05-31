@@ -36,6 +36,16 @@ public class ItinerarySubController {
         ParamsMapValidate.validate(params, generateCreateItinerarySubValidate());
         return itinerarySubService.addItinerarylSub(params);
     }
+    @RequestMapping(value = "update", method = RequestMethod.POST)
+    @ResponseBody
+    public Result<?> updateItinerarylSub(@RequestBody Map params) {
+        String temp = CommonUtil.objectParseString(params.get("max_buy_quantity"));
+        if(temp == null || "".equals(temp)){
+            params.put("max_buy_quantity",0);
+        }
+        ParamsMapValidate.validate(params, generateCreateItinerarySubValidate());
+        return itinerarySubService.updateItinerarylSub(params);
+    }
 
     @RequestMapping(value = "select/id", method = RequestMethod.GET)
     @ResponseBody

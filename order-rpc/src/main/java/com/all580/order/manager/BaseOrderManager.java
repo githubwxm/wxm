@@ -378,7 +378,7 @@ public class BaseOrderManager {
     }
 
     public int[] getAuditConfig(Order order, OrderItem orderItem) {
-        if (orderItem.getPro_type() == ProductConstants.ProductType.HOTEL) {
+        if (orderItem.getPro_type() == ProductConstants.ProductType.HOTEL || orderItem.getPro_type() == ProductConstants.ProductType.ITINERARY) {
             return new int[]{ProductConstants.RefundAudit.NO, ProductConstants.RefundMoneyAudit.NO};
         }
         // 获取退订审核
