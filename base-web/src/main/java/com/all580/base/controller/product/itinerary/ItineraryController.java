@@ -7,6 +7,7 @@ import com.framework.common.validate.ParamsMapValidate;
 import com.framework.common.validate.ValidRule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -39,7 +40,7 @@ public class ItineraryController {
     @RequestMapping(value = "delete", method = RequestMethod.POST)
     @ResponseBody
     public Result<?> deleteItinerary(@RequestBody Map params) {
-        ParamsMapValidate.validate(params, generateCreateItineraryValidate());
+       Assert.notNull( params.get("id"));
         return itineraryService.deleteItinerary(params);
     }
 
