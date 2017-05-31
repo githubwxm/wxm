@@ -400,6 +400,8 @@
           CONCAT(g.days, '天', g.nights, '晚') AS days_of_trip,
           g.guide_name,
           g.guide_phone,
+          g.guide_sid,
+          g.guide_card
           CASE
             IFNULL(g.status, 0)
             WHEN 390
@@ -583,13 +585,16 @@
       WHEN 316 THEN '已取消'
       ELSE '' END  AS order_status,
       CASE IFNULL(t1.status,'')
-      WHEN 310 THEN '待审核'
-      WHEN 311 THEN '审核通过'
-      WHEN 312 THEN '未出票'
-      WHEN 313 THEN '出票失败'
-      WHEN 314 THEN '出票中'
-      WHEN 315 THEN '已出票'
-      WHEN 316 THEN '已取消'
+      WHEN 320 THEN '待审核'
+      WHEN 321 THEN '审核通过'
+      WHEN 322 THEN '未出票'
+      WHEN 323 THEN '出票失败'
+      WHEN 324 THEN '出票中'
+      WHEN 325 THEN '已出票'
+      WHEN 326 THEN '已取消'
+      WHEN 327 THEN '修改中'
+      WHEN 328 THEN '已修改'
+      WHEN 329 THEN '修改失败'
       ELSE '' END  AS  sub_order_status,
       t2.remark
     FROM
@@ -606,4 +611,7 @@
       </foreach>
     ORDER BY t1.audit_time DESC
   </select>
+  <update id="updateByNumberSelective" parameterType="com.all580.order.entity.LineGroup">
+
+  </update>
 </mapper>
