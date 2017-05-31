@@ -281,10 +281,10 @@
     </select>
 
   <sql id="listGroup_where">
-      <if test="product_name != null">
+      <if test='product_name != null and product_name != ""'>
         AND INSTR(t.product_name,#{product_name})>0
       </if>
-      <if test="number != null">
+      <if test='number != null and number != ""'>
         AND INSTR(t.number,#{number})>0
       </if>
       <!--<if test="booking_start_date != null">
@@ -293,10 +293,10 @@
       <if test="booking_end_date != null">
         AND CAST(t.`booking_date` AS DATE) <= CAST(#{booking_end_date} AS DATE)
       </if>-->
-      <if test="booking_start_date != null and booking_end_date != null">
+      <if test='booking_start_date != null and booking_start_date != "" and booking_end_date != null and booking_end_date != ""'>
         AND CAST(t.booking_date AS DATE) BETWEEN CAST(#{booking_start_date} AS DATE) AND CAST(#{booking_end_date} AS DATE)
       </if>
-      <if test="status != null">
+      <if test='status != null and status != ""'>
         AND t.status = #{status}
       </if>
   </sql>
