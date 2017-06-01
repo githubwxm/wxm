@@ -56,6 +56,7 @@ public class LineCreateOrderImpl extends TicketCreateOrderImpl {
             group.setNumber(number);
             group.setBooking_date(bookingDate);
             group.setId(null);
+            group.setStatus(OrderConstant.LineGroupStatus.NONE);
             lineGroupMapper.insertSelective(group);
         }
         sub.setGroupId(group.getId());
