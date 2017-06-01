@@ -11,6 +11,7 @@ import com.framework.common.validate.ParamsMapValidate;
 import com.framework.common.validate.ValidRule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -46,7 +47,12 @@ public class ItinerarySubController {
         ParamsMapValidate.validate(params, generateCreateItinerarySubValidate());
         return itinerarySubService.updateItinerarylSub(params);
     }
-
+    @RequestMapping(value = "delete", method = RequestMethod.POST)
+    @ResponseBody
+    public Result<?> deleteItinerary(@RequestBody Map params) {
+        Assert.notNull( params.get("id"));
+        return itinerarySubService.delete(params);
+    }
     @RequestMapping(value = "select/id", method = RequestMethod.GET)
     @ResponseBody
     public Result<?>selectIdSummary(Integer id){
