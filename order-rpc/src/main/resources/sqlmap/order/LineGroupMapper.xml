@@ -357,7 +357,7 @@
             WHEN 392
             THEN '已完成'
             ELSE ''
-          END AS STATUS
+          END AS status
         FROM
           t_line_group g
           LEFT JOIN t_order_item toi
@@ -398,6 +398,7 @@
           v.booking_visitor_count,
           r.refund_visitor_count,
           g.place_of_departure,
+          g.destination,
           CONCAT(g.days, '天', g.nights, '晚') AS days_of_trip,
           g.guide_name,
           g.guide_phone,
@@ -412,7 +413,7 @@
             WHEN 392
             THEN '已完成'
             ELSE ''
-          END AS STATUS,
+          END AS status,
           o.confirmed_orders_count,
           o.unconfirmed_orders_count,
           o.paid_orders_count,
@@ -555,7 +556,7 @@
         WHEN '1'
         THEN '已退'
         ELSE ''
-      END AS STATUS,
+      END AS status,
       t3.number AS order_number
     FROM
       t_visitor t1,
@@ -575,7 +576,6 @@
       t1.audit_time,
       t1.audit_user_name,
       t2.create_time,
-      t3.travel_name,
       CASE IFNULL(t2.status,'')
       WHEN 310 THEN '待审核'
       WHEN 311 THEN '待支付'

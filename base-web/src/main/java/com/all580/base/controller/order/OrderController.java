@@ -137,7 +137,7 @@ public class OrderController extends BaseController {
     @ResponseBody
     public Result<?> refundApplyForLine(@RequestBody Map params) throws Exception {
         // 验证参数
-        ParamsMapValidate.validate(params, orderValidateManager.refundAlipayValidate());
+        ParamsMapValidate.validate(params, orderValidateManager.refundApplyValidate());
         return refundOrderService.apply(params, "LINE");
     }
 
