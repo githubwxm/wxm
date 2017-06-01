@@ -33,4 +33,11 @@ public interface LineOrderService {
      * @return
      */
     Result<?> listOrderVisitor(String number, String epId, int record_start,int record_count);
+
+    /**
+     * 线路团队设置导游
+     * @param params
+     * @return
+     */
+    Result<?> setLineGroupGuide(Map params);
 }

@@ -2,9 +2,11 @@ package com.all580.order.service;
 
 import com.all580.order.api.service.LineOrderService;
 import com.all580.order.dao.LineGroupMapper;
+import com.all580.order.entity.LineGroup;
 import com.framework.common.Result;
 import com.framework.common.vo.PageRecord;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -103,5 +105,16 @@ public class LineOrderServiceImpl implements LineOrderService {
         }
         record.setList(orderList);
         return result;
+    }
+
+    public Result<?> setLineGroupGuide(Map params){
+        LineGroup lineGroup = new LineGroup();
+        try{
+            BeanUtils.populate(lineGroup, params);
+        }catch (Exception e){
+            throw new IllegalArgumentException("请求参数转化为实体类出错", e);
+        }
+        lineGroupMapper.updateByNumberSelective(lineGroup);
+        return new Result(true);
     }
 }

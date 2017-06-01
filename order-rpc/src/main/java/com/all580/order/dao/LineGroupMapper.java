@@ -106,4 +106,11 @@ public interface LineGroupMapper {
      * @return
      */
     List<Map> getLineOrdersByNumbers(@Param("ep_id") String epId, @Param("groupNumber") String groupNumber, @Param("orderNumbers") Collection<?> orderNumbers);
+
+    /**
+     * 根据团号修改
+     * @param lineGroup
+     * @return
+     */
+    int updateByNumberSelective(LineGroup lineGroup);
 }

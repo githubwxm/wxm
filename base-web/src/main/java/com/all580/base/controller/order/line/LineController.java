@@ -34,7 +34,7 @@ public class LineController extends BaseController{
         ValidRule dateValidRule = new ValidRule.Date("yyyy-mm-dd");
         this.gernerateValidate(params,new String[]{"booking_start_date","booking_end_date"},new ValidRule[]{dateValidRule, dateValidRule});
 
-        params.put(EpConstant.EpKey.EP_ID, this.getRequest().getAttribute(EpConstant.EpKey.EP_ID));
+        //params.put(EpConstant.EpKey.EP_ID, this.getRequest().getAttribute(EpConstant.EpKey.EP_ID));
         if(params.get("record_start") == null){
             params.put("record_start",0);
         }
@@ -66,6 +66,17 @@ public class LineController extends BaseController{
 
         String epId = String.valueOf(this.getRequest().getAttribute(EpConstant.EpKey.EP_ID));
         return lineOrderService.listOrderVisitor(number,epId,record_start,record_count);
+    }
+
+    @RequestMapping(value = "guide/set", method = RequestMethod.POST)
+    @ResponseBody
+    public Result<?> setLineGroupGuide(@RequestBody Map params) {
+        ValidRule nullValidate = new ValidRule.NotNull();
+        this.gernerateValidate(params, new String[]{"number","guide_name","guide_phone","guide_card","guide_sid"},
+                new ValidRule[]{nullValidate, nullValidate, new ValidRule.Pattern(ValidRule.MOBILE_PHONE), nullValidate, new ValidRule.IdCard()});
+        params.put(EpConstant.EpKey.EP_ID, this.getRequest().getAttribute(EpConstant.EpKey.EP_ID));
+
+        return lineOrderService.setLineGroupGuide(params);
     }
 
     private void gernerateValidate(Map<String,Object> params, String[] fields,ValidRule[] validRules){
