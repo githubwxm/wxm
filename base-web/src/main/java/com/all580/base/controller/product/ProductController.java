@@ -18,7 +18,10 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.lang.exception.ApiException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * 产品，子产品，计划批次接口网关
@@ -326,13 +329,15 @@ public class ProductController extends BaseController {
                                                                        @RequestParam("is_supplier") Integer isSupplier,
                                                                        @RequestParam("order_str") Integer order,
                                                                        @RequestParam("record_start") Integer start,
-                                                                       @RequestParam("record_count") Integer count
+                                                                       @RequestParam("record_count") Integer count,
+                                                                       Integer  type
             ,Integer is_platfrom ) {
 
         String orderStr = null;
 
-        Integer  type=ProductConstants.ProductType.HOTEL;
-
+        if(type==null){
+            type =ProductConstants.ProductType.HOTEL;
+        }
         if (order != null) {
             switch (CanSaleOrderState.getCanSaleOrderSate(order)) {
                 case CREATE_TIME_ASC: orderStr = CanSaleOrderState.CREATE_TIME_ASC.getValue(); break;
