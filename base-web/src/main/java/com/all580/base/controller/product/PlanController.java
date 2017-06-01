@@ -190,10 +190,10 @@ public class PlanController extends BaseController {
             planSale.put("sale_ep_id", params.get("ep_id"));
             planSale.put("group_id", params.get("group_id"));
              Integer type = CommonUtil.objectParseInteger(planSale.get("type"))  ;
-            if(ProductConstants.ProductType.HOTEL-type==0){
-                hotel.add(planSale);
-            }else{
+            if(ProductConstants.ProductType.SCENERY-type==0){
                 scenery.add(planSale);
+            }else{// 酒店与线路一致 使用 batch_id 来操作
+                hotel.add(planSale);
             }
             //planSale.put("batch_id",params.get("batch_id"));
             // planSale内有product_sub_id
