@@ -334,6 +334,7 @@
 
   <select id="listGroup" parameterType="java.util.Map" resultType="java.util.Map">
       SELECT
+        DISTINCT
         *
       FROM
         (SELECT
@@ -401,7 +402,7 @@
           g.guide_name,
           g.guide_phone,
           g.guide_sid,
-          g.guide_card
+          g.guide_card,
           CASE
             IFNULL(g.status, 0)
             WHEN 390
