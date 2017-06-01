@@ -67,15 +67,15 @@ public class ItineraryController {
 
     @RequestMapping(value = "can_sale/list")
     @ResponseBody
-    public Result<?> canSaleList( String from,@RequestParam Integer ep_id,Integer end_city,Integer end_province,
+    public Result<?> canSaleList( String from,@RequestParam Integer ep_id,Integer city,Integer province,
                                   String label,String product_name,String start_date,String end_date,
                                   String product_sub_name ,Integer record_start,
                                   Integer record_count
                                  ) {
         Map map = new HashMap();
         map.put("ep_id",ep_id);
-        map.put("end_city",end_city);
-        map.put("end_province",end_province);
+        map.put("city",city);
+        map.put("province",province);
         map.put("label",label);
         map.put("product_name",product_name);
         map.put("start_date",start_date);
