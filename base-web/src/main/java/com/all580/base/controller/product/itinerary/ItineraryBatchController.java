@@ -30,6 +30,13 @@ public class ItineraryBatchController {
         return itineraryBatchService.addItineraryBatch(params);
     }
 
+    @RequestMapping(value = "update", method = RequestMethod.POST)
+    @ResponseBody
+    public Result<?> updateItineraryBatch(@RequestBody Map params) {
+        ParamsMapValidate.validate(params, generateCreateItineraryBatchValidate());
+        return itineraryBatchService.updateItineraryBatch(params);
+    }
+
     public Map<String[], ValidRule[]> generateCreateItineraryBatchValidate() {
         Map<String[], ValidRule[]> rules = new HashMap<>();
         // 校验不为空的参数

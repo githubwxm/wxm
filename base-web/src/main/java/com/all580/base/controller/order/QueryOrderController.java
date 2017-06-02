@@ -41,28 +41,26 @@ public class QueryOrderController extends BaseController {
                                           String name,
                                           String phone,
                                           Long number,
+                                          @RequestParam Integer ep_id,
                                           @RequestParam(defaultValue = "0") Integer record_start,
                                           @RequestParam(defaultValue = "20") Integer record_count) {
         Integer coreEpId = CommonUtil.objectParseInteger(getAttribute(EpConstant.EpKey.CORE_EP_ID));
-        Integer epId = CommonUtil.objectParseInteger(getAttribute(EpConstant.EpKey.EP_ID));
         Date[] dates = Utils.checkDate(start_date, end_date);
         return queryOrderService.queryLineOrderItemList(number, product_name, group_number, status, item_status, name,
-                phone, ep_type, coreEpId, epId, dates[0], dates[1], record_start, record_count);
+                phone, ep_type, coreEpId, ep_id, dates[0], dates[1], record_start, record_count);
     }
 
     @RequestMapping(value = "line/view")
     @ResponseBody
-    public Result<?> viewLine(@RequestParam Integer ep_type, @RequestParam Long item_number) {
+    public Result<?> viewLine(@RequestParam Integer ep_type, @RequestParam Integer ep_id, @RequestParam Long item_number) {
         Integer coreEpId = CommonUtil.objectParseInteger(getAttribute(EpConstant.EpKey.CORE_EP_ID));
-        Integer epId = CommonUtil.objectParseInteger(getAttribute(EpConstant.EpKey.EP_ID));
-        return queryOrderService.viewLineOrderItemInfo(item_number, ep_type, coreEpId, epId);
+        return queryOrderService.viewLineOrderItemInfo(item_number, ep_type, coreEpId, ep_id);
     }
 
     @RequestMapping(value = "line/prerefund")
     @ResponseBody
-    public Result<?> preRefund(@RequestParam Integer ep_type, @RequestParam Long item_number) {
+    public Result<?> preRefund(@RequestParam Integer ep_type, @RequestParam Integer ep_id, @RequestParam Long item_number) {
         Integer coreEpId = CommonUtil.objectParseInteger(getAttribute(EpConstant.EpKey.CORE_EP_ID));
-        Integer epId = CommonUtil.objectParseInteger(getAttribute(EpConstant.EpKey.EP_ID));
-        return queryOrderService.preRefundLineInfo(item_number, ep_type, coreEpId, epId, ProductConstants.RefundEqType.SELLER);
+        return queryOrderService.preRefundLineInfo(item_number, ep_type, coreEpId, ep_id, ProductConstants.RefundEqType.SELLER);
     }
 }
