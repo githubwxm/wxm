@@ -613,6 +613,58 @@
     ORDER BY t1.audit_time DESC
   </select>
   <update id="updateByNumberSelective" parameterType="com.all580.order.entity.LineGroup">
+    update t_line_group
+    <set>
+      <if test="team_prefix != null">
+        `team_prefix` = #{team_prefix,jdbcType=VARCHAR},
+      </if>
+      <if test="team_suffix != null">
+        `team_suffix` = #{team_suffix,jdbcType=VARCHAR},
+      </if>
+      <if test="guide_name != null">
+        `guide_name` = #{guide_name,jdbcType=VARCHAR},
+      </if>
+      <if test="guide_phone != null">
+        `guide_phone` = #{guide_phone,jdbcType=VARCHAR},
+      </if>
+      <if test="guide_sid != null">
+        `guide_sid` = #{guide_sid,jdbcType=VARCHAR},
+      </if>
+      <if test="guide_card != null">
+        `guide_card` = #{guide_card,jdbcType=VARCHAR},
+      </if>
+      <if test="place_of_departure != null">
+        `place_of_departure` = #{place_of_departure,jdbcType=VARCHAR},
+      </if>
+      <if test="destination != null">
+        `destination` = #{destination,jdbcType=VARCHAR},
+      </if>
+      <if test="days != null">
+        `days` = #{days,jdbcType=INTEGER},
+      </if>
+      <if test="nights != null">
+        `nights` = #{nights,jdbcType=INTEGER},
+      </if>
+      <if test="booking_date != null">
+        `booking_date` = #{booking_date,jdbcType=VARCHAR},
+      </if>
+      <if test="core_ep_id != null">
+        `core_ep_id` = #{core_ep_id,jdbcType=INTEGER},
+      </if>
+      <if test="ep_id != null">
+        `ep_id` = #{ep_id,jdbcType=INTEGER},
+      </if>
+      <if test="status != null">
+        `status` = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="create_time != null">
+        `create_time` = #{create_time,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where `number` = #{number,jdbcType=VARCHAR}
+  </update>
 
+  <update id="updateStatusByNumber" parameterType="java.util.Map">
+    update t_line_group SET status = #{status} where number = #{number}
   </update>
 </mapper>

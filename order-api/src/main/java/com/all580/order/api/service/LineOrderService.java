@@ -40,4 +40,11 @@ public interface LineOrderService {
      * @return
      */
     Result<?> setLineGroupGuide(Map params);
+
+    /**
+     * 线路团队修改状态
+     * @param params
+     * @return
+     */
+    Result<?> updateLineGroupStatus(Map params);
 }
