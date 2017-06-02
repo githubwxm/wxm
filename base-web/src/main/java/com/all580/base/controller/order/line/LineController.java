@@ -27,14 +27,12 @@ import java.util.Map;
 public class LineController extends BaseController{
 
     @Autowired
-    private GernerateValidate gernerateValidate;
-
-    @Autowired
     private LineOrderService lineOrderService;
 
     @RequestMapping(value = "group/list", method = RequestMethod.POST)
     @ResponseBody
     public Result<?> listGroup(@RequestBody Map params) {
+        GernerateValidate gernerateValidate = new GernerateValidate();
         gernerateValidate.addRules(new String[]{"booking_start_date","booking_end_date"},
                                     new ValidRule[]{new ValidRule.Date("yyyy-mm-dd")})
                         .validate(params);
@@ -53,6 +51,7 @@ public class LineController extends BaseController{
     public Result<?> getLineGroupDetailByNumber(@RequestParam String number, @RequestParam String ep_id) {
         Map<String,Object> params = new HashMap<>();
         params.put("number",number);
+        GernerateValidate gernerateValidate = new GernerateValidate();
         gernerateValidate.addRules(new String[]{"number"}, new ValidRule[]{new ValidRule.NotNull()}).validate(params);
 
         //String epId = String.valueOf(this.getRequest().getParameter("ep_id"));
@@ -67,6 +66,7 @@ public class LineController extends BaseController{
                                       @RequestParam(defaultValue = "20") Integer record_count) {
         Map<String,Object> params = new HashMap<>();
         params.put("number",number);
+        GernerateValidate gernerateValidate = new GernerateValidate();
         gernerateValidate.addRules(new String[]{"number"},new ValidRule[]{new ValidRule.NotNull()}).validate(params);
 
         String epId = String.valueOf(this.getRequest().getParameter(EpConstant.EpKey.EP_ID));
@@ -76,6 +76,7 @@ public class LineController extends BaseController{
     @RequestMapping(value = "guide/set", method = RequestMethod.POST)
     @ResponseBody
     public Result<?> setLineGroupGuide(@RequestBody Map params) {
+        GernerateValidate gernerateValidate = new GernerateValidate();
         gernerateValidate.addRules(new String[]{"number","guide_name","guide_phone","guide_card","guide_sid"},new ValidRule[]{new ValidRule.NotNull()})
                         .addRules(new String[]{"guide_phone"}, new ValidRule[]{new ValidRule.Pattern(ValidRule.MOBILE_PHONE)})
                         .addRules(new String[]{"guide_sid"}, new ValidRule[]{new ValidRule.IdCard()})
@@ -87,6 +88,7 @@ public class LineController extends BaseController{
     @RequestMapping(value = "group_status/update", method = RequestMethod.POST)
     @ResponseBody
     public Result<?> updateLineGroupStatus(@RequestBody Map params) {
+        GernerateValidate gernerateValidate = new GernerateValidate();
         gernerateValidate.addRules(new String[]{"number","status"}, new ValidRule[]{new ValidRule.NotNull()}).validate(params);
 
         return lineOrderService.updateLineGroupStatus(params);

@@ -2,7 +2,6 @@ package com.all580.base.manager;
 
 import com.framework.common.validate.ParamsMapValidate;
 import com.framework.common.validate.ValidRule;
-import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,7 +9,6 @@ import java.util.Map;
 /**
  * Created by xiangzw on 2017/6/2.
  */
-@Component
 public class GernerateValidate {
     private Map<String[], ValidRule[]> rules = new HashMap<>();
     public GernerateValidate(){}
