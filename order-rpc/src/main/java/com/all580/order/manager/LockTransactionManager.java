@@ -563,11 +563,6 @@ public class LockTransactionManager {
             throw new ApiException("没有可退的票");
         }
         refundSerialMapper.updateByPrimaryKeySelective(refundSerial);
-
-        // 退款
-        Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
-        refundOrderManager.refundMoney(order, refundOrder.getMoney(), String.valueOf(refundOrder.getNumber()), refundOrder);
-
         return new Result(true);
     }
 
@@ -607,11 +602,6 @@ public class LockTransactionManager {
             throw new ApiException("没有可退的票");
         }
         refundSerialMapper.updateByPrimaryKeySelective(refundSerial);
-
-        // 退款
-        Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
-        refundOrderManager.refundMoney(order, refundOrder.getMoney(), String.valueOf(refundOrder.getNumber()), refundOrder);
-
         return new Result(true);
     }
 
