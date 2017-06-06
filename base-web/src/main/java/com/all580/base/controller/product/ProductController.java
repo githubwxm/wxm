@@ -427,8 +427,8 @@ public class ProductController extends BaseController {
     @RequestMapping(value = "self/list")
     @ResponseBody
     public Result<Map<String,Object>> searchSelfProviderProduct(@RequestParam("ep_id") Integer epId,
-                                                                @RequestParam("product_name") String productName,
-                                                                @RequestParam("product_sub_name") String productSubName,
+                                                                @RequestParam(value = "product_name", required = false) String productName,
+                                                                @RequestParam(value = "product_sub_name", required = false) String productSubName,
                                                                 @RequestParam("record_start") Integer recordStart,
                                                                 @RequestParam("record_count") Integer recordCount) {
         // TODO: 验证入参
