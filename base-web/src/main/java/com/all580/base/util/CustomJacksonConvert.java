@@ -1,7 +1,6 @@
 package com.all580.base.util;
 
 
-import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.*;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -9,6 +8,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.framework.common.Result;
+import com.framework.common.lang.JsonUtils;
 import com.framework.common.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpOutputMessage;
@@ -79,7 +79,8 @@ public class CustomJacksonConvert extends MappingJackson2HttpMessageConverter {
 			String key = CommonUtil.objectParseString(r.getExt("access_key"));
 		 	key = key == null ? "" : key;
 
-			String data = JSONObject.toJSONString(result, config, SerializerFeature.SortField);
+			//String data = JSONObject.toJSONString(result, config, SerializerFeature.SortField);
+			String data = JsonUtils.toJson(result);
 			data=data.replace("null","");
 			//['"',"\\","[","]","{","}",'null'
 			data=data.replaceAll("[\"\\\\\\[\\]\\{\\}]","");

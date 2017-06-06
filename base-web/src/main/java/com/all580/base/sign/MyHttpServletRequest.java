@@ -4,7 +4,6 @@ package com.all580.base.sign;
  * Created by wxming on 2016/10/28 0028.
  */
 
-import com.alibaba.fastjson.JSONObject;
 
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -13,7 +12,6 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.HashMap;
 
 /**
  * getInputStream()和getReader() 都只能读取一次，由于RequestBody是流的形式读取，那么流读了一次就没有了，所以只能被调用一次。
@@ -50,9 +48,9 @@ public class MyHttpServletRequest extends HttpServletRequestWrapper {
         }
         //获取到提交测json，将密码解密后重新复制给requestBody
         try{
-            JSONObject json = JSONObject.parseObject(jsonStr.toString());
-            _body = json.toJSONString();
-            request.setAttribute("sign", json.get("sign"));
+          //  JSONObject json = JSONObject.parseObject(jsonStr.toString());
+            _body = jsonStr.toString();
+           // request.setAttribute("sign", json.get("sign"));
             request.setAttribute("_body",jsonStr.toString());
         }catch (Exception e){
             _body="";
