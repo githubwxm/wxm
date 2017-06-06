@@ -818,6 +818,11 @@ public class LockTransactionManager {
             shippingModifyMapper.insertSelective(shippingModify);
         }
         ticketParams.setVisitors(modifyGroupVisitor((List) params.get("visitors"), orderItem.getId()));
+
+        log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(null, orderItem.getId(),
+                params.get(EpConstant.EpKey.EP_ID),  params.get("operator_name"),
+                OrderConstant.LogOperateCode.MODIFY_TICKET_SEND,
+                0, String.format("团队修改:信息:%s", JsonUtils.toJson(params))));
         return voucherRPCService.modifyGroupTicket(orderItem.getEp_ma_id(), ticketParams);
     }
 
