@@ -117,4 +117,9 @@ public class LineOrderServiceImpl implements LineOrderService {
         lineGroupMapper.updateByNumberSelective(lineGroup);
         return new Result(true);
     }
+
+    public Result<?> updateLineGroupStatus(Map params){
+        lineGroupMapper.updateStatusByNumber(params);
+        return new Result(true);
+    }
 }

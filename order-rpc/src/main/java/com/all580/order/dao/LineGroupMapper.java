@@ -113,4 +113,11 @@ public interface LineGroupMapper {
      * @return
      */
     int updateByNumberSelective(LineGroup lineGroup);
+
+    /**
+     * 根据团号修改状态
+     * @param params
+     * @return
+     */
+    int updateStatusByNumber(Map params);
 }

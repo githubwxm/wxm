@@ -4,7 +4,9 @@ import com.all580.order.api.OrderConstant;
 import com.all580.order.api.model.RefundTicketEventParam;
 import com.all580.order.api.service.event.RefundTicketEvent;
 import com.all580.order.dao.OrderItemMapper;
+import com.all580.order.dao.OrderMapper;
 import com.all580.order.dao.RefundOrderMapper;
+import com.all580.order.entity.Order;
 import com.all580.order.entity.OrderItem;
 import com.all580.order.entity.RefundOrder;
 import com.all580.order.manager.BookingOrderManager;
@@ -36,6 +38,8 @@ public class RefundTicketEventImpl implements RefundTicketEvent {
     @Autowired
     private OrderItemMapper orderItemMapper;
     @Autowired
+    private OrderMapper orderMapper;
+    @Autowired
     private SmsManager smsManager;
     @Autowired
     private JobAspect jobManager;
@@ -56,6 +60,13 @@ public class RefundTicketEventImpl implements RefundTicketEvent {
             Map<String, String> jobParams = new HashMap<>();
             jobParams.put("refundId", String.valueOf(refundOrder.getId()));
             jobManager.addJob(OrderConstant.Actions.REFUND_STOCK, Collections.singleton(jobParams));
+
+            // 退款
+            Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
+            Map<String, String> jobRefundMoneyParams = new HashMap<>();
+            jobRefundMoneyParams.put("ordCode", String.valueOf(order.getNumber()));
+            jobRefundMoneyParams.put("serialNum", String.valueOf(order.getNumber()));
+            jobManager.addJob(OrderConstant.Actions.REFUND_MONEY, Collections.singleton(jobRefundMoneyParams));
         } else {
             // 发送短信
             smsManager.sendRefundFailSms(orderItem, refundOrder);

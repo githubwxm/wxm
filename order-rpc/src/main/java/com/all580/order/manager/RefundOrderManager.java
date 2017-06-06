@@ -157,8 +157,6 @@ public class RefundOrderManager extends BaseOrderManager {
                 nonSendTicketRefund(refundOrder);
             }
             orderItemMapper.refundQuantity(orderItem.getId(), refundOrder.getQuantity());
-            // 退款
-            refundMoney(order, refundOrder.getMoney(), String.valueOf(refundOrder.getNumber()), refundOrder);
         }
     }
 
