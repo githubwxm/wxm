@@ -94,7 +94,7 @@ public class LineOrderServiceImpl implements LineOrderService {
             if(orderVisitorMap.containsKey(orderNumber)){
                 orderVisitorMap.get(orderNumber).add(visitor);
             }else{
-                orderVisitorMap.put(orderNumber,Arrays.asList(visitor));
+                orderVisitorMap.put(orderNumber,new ArrayList<>(Arrays.asList(visitor)));
             }
         }
 
