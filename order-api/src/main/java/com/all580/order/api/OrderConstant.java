@@ -179,6 +179,8 @@ public class OrderConstant {
         public static final String TICKET_RECONSUME_FAIL = "CA10000100";
         public static final String AUDIT_PASS_SUCCESS = "CA20000100";
         public static final String AUDIT_REJECT_SUCCESS = "CA20000200";
+        public static final String MODIFY_TICKET_SEND = "CA30000100";
+        public static final String MODIFY_TICKET_SUCCESS = "CA30000200";
     }
 
     public static String[] ORDER_TABLES = new String[]{
