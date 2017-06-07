@@ -738,11 +738,6 @@ public class LockTransactionManager {
             throw new ApiException("该订单已核销");
         }
 
-        List<RefundOrder> refundOrders = refundOrderMapper.selectByItemId(orderItem.getId());
-        if (refundOrders != null && refundOrders.size() > 0) {
-            throw new ApiException("该订单已退订");
-        }
-
         // 核销
         Date clearanceTime = new Date();
         List<OrderItemDetail> details = orderItemDetailMapper.selectByItemId(orderItem.getId());
