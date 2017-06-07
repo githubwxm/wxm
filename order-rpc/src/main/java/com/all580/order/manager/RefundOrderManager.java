@@ -145,7 +145,6 @@ public class RefundOrderManager extends BaseOrderManager {
                 orderItem.getPro_type() != ProductConstants.ProductType.ITINERARY) {
             // 调用退票
             refundTicket(refundOrder);
-            refundOrderMapper.updateByPrimaryKeySelective(refundOrder);
         } else {
             // 触发退票成功事件
             eventManager.addEvent(OrderConstant.EventType.REFUND_TICKET, new RefundTicketEventParam(refundOrder.getId(), true));
@@ -158,6 +157,7 @@ public class RefundOrderManager extends BaseOrderManager {
             }
             orderItemMapper.refundQuantity(orderItem.getId(), refundOrder.getQuantity());
         }
+        refundOrderMapper.updateByPrimaryKeySelective(refundOrder);
     }
 
     /**
