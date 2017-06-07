@@ -65,7 +65,7 @@ public class RefundTicketEventImpl implements RefundTicketEvent {
             Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
             Map<String, String> jobRefundMoneyParams = new HashMap<>();
             jobRefundMoneyParams.put("ordCode", String.valueOf(order.getNumber()));
-            jobRefundMoneyParams.put("serialNum", String.valueOf(order.getNumber()));
+            jobRefundMoneyParams.put("serialNum", String.valueOf(refundOrder.getNumber()));
             jobRefundMoneyParams.put("apply", "true");
             jobManager.addJob(OrderConstant.Actions.REFUND_MONEY, Collections.singleton(jobRefundMoneyParams));
         } else {
