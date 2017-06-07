@@ -207,7 +207,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
 
         log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(order.getId(), null,
                 order.getBuy_ep_id(), order.getBuy_ep_name(), OrderConstant.LogOperateCode.CREATE_SUCCESS,
-                null, String.format("订单创建成功:%s", JsonUtils.toJson(params))));
+                null, String.format("订单创建成功:%s", JsonUtils.toJson(params)), null));
         return result;
     }
 

@@ -45,7 +45,7 @@ public class PaidEventImpl implements PaidEvent {
 
         log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(order.getId(), null,
                 0, "ORDER_EVENT", OrderConstant.LogOperateCode.PAID_SUCCESS,
-                0, "订单支付成功"));
+                0, "订单支付成功", order.getLocal_payment_serial_no()));
 
         // 添加分账任务 余额不做后续分账(和支付的时候一起)
         if (order.getPayment_type() != null && order.getPayment_type() != PaymentConstant.PaymentType.BALANCE.intValue()) {

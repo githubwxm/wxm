@@ -536,7 +536,7 @@ public class RefundOrderManager extends BaseOrderManager {
         }
         log.info(OrderConstant.LogOperateCode.NAME, orderLog(null, orderItem.getId(),
                 0, "ORDER", OrderConstant.LogOperateCode.SEND_REFUND_TICKETING,
-                refundOrder.getQuantity(), "退票发起"));
+                refundOrder.getQuantity(), "退票发起", String.valueOf(refundSerial.getLocal_serial_no())));
     }
 
     /**

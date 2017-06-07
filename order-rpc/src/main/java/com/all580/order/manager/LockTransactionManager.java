@@ -444,7 +444,7 @@ public class LockTransactionManager {
         log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(order.getId(), null,
                 params.get(EpConstant.EpKey.EP_ID),  params.get("operator_name"),
                 OrderConstant.LogOperateCode.PAID,
-                0, String.format("订单支付:参数:%s", JsonUtils.toJson(params))));
+                0, String.format("订单支付:参数:%s", JsonUtils.toJson(params)), order.getLocal_payment_serial_no()));
 
         // 调用支付RPC
         // 余额支付
@@ -531,7 +531,7 @@ public class LockTransactionManager {
         log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(null, orderItem.getId(),
                 0,  "VOUCHER",
                 OrderConstant.LogOperateCode.RECEIVE_REFUND_TICKETING,
-                refundOrder.getQuantity(), String.format("退票返回:退票信息:%s", JsonUtils.toJson(info))));
+                refundOrder.getQuantity(), String.format("退票返回:退票信息:%s", JsonUtils.toJson(info)), info.getRefId()));
         eventManager.addEvent(OrderConstant.EventType.REFUND_TICKET, new RefundTicketEventParam(refundOrder.getId(), info.isSuccess()));
         // 退票失败
         if (!info.isSuccess()) {
@@ -710,7 +710,7 @@ public class LockTransactionManager {
         log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(null, orderItem.getId(),
                 params.get(EpConstant.EpKey.EP_ID),  params.get("operator_name"),
                 OrderConstant.LogOperateCode.TICKET_CONSUME_SUCCESS,
-                total, String.format("酒店核销:信息:%s", JsonUtils.toJson(params))));
+                total, String.format("酒店核销:信息:%s", JsonUtils.toJson(params)), null));
         return new Result(true);
     }
 
@@ -766,7 +766,7 @@ public class LockTransactionManager {
         log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(null, orderItem.getId(),
                 params.get(EpConstant.EpKey.EP_ID),  params.get("operator_name"),
                 OrderConstant.LogOperateCode.TICKET_CONSUME_SUCCESS,
-                total, String.format("线路核销:信息:%s", JsonUtils.toJson(params))));
+                total, String.format("线路核销:信息:%s", JsonUtils.toJson(params)), null));
         return new Result(true);
     }
 
@@ -822,7 +822,7 @@ public class LockTransactionManager {
         log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(null, orderItem.getId(),
                 params.get(EpConstant.EpKey.EP_ID),  params.get("operator_name"),
                 OrderConstant.LogOperateCode.MODIFY_TICKET_SEND,
-                0, String.format("团队修改:信息:%s", JsonUtils.toJson(params))));
+                0, String.format("团队修改:信息:%s", JsonUtils.toJson(params)), null));
         return voucherRPCService.modifyGroupTicket(orderItem.getEp_ma_id(), ticketParams);
     }
 

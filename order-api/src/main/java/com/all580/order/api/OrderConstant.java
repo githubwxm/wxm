@@ -151,7 +151,7 @@ public class OrderConstant {
      * 日志操作码
      */
     public static class LogOperateCode {
-        public static final String NAME = "order-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}";
+        public static final String NAME = "order-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}";
         public static final String SYSTEM = "all580";
         public static final String CREATE_SUCCESS = "CA1000100";
         public static final String CANCEL_SUCCESS = "CA3000100";

@@ -407,7 +407,7 @@ public class BaseOrderManager {
      * @param memo
      * @return
      */
-    public Object[] orderLog(Integer orderId, Integer itemId, Object operateId, Object operateName, String code, Integer qty, String memo) {
+    public Object[] orderLog(Integer orderId, Integer itemId, Object operateId, Object operateName, String code, Integer qty, String memo, String sn) {
         if (orderId == null && itemId == null) {
             throw new ApiException("记录日志异常:没有订单号");
         }
@@ -424,7 +424,8 @@ public class BaseOrderManager {
                 result.get("used_quantity"),
                 result.get("refund_quantity"),
                 result.get("refunding"),
-                memo
+                memo,
+                sn
         };
     }
 

@@ -91,7 +91,7 @@ public class TicketCallbackServiceImpl extends BasicSyncDataEvent implements Tic
         log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(null, orderItem.getId(),
                 0,  "VOUCHER",
                 OrderConstant.LogOperateCode.RECEIVE_TICKETING,
-                orderItem.getQuantity(), String.format("散客出票接收:接收信息:%s", JsonUtils.toJson(infoList))));
+                orderItem.getQuantity(), String.format("散客出票接收:接收信息:%s", JsonUtils.toJson(infoList)), null));
 
         if (orderItem.getStatus() != OrderConstant.OrderItemStatus.TICKETING) {
             return new Result(false, "订单状态不在出票中");
@@ -136,7 +136,7 @@ public class TicketCallbackServiceImpl extends BasicSyncDataEvent implements Tic
         log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(null, orderItem.getId(),
                 0,  "VOUCHER",
                 OrderConstant.LogOperateCode.RECEIVE_TICKETING,
-                orderItem.getQuantity(), String.format("团队出票接收:接收信息:%s", JsonUtils.toJson(info))));
+                orderItem.getQuantity(), String.format("团队出票接收:接收信息:%s", JsonUtils.toJson(info)), null));
 
         if (orderItem.getStatus() != OrderConstant.OrderItemStatus.TICKETING) {
             return new Result(false, "订单状态不在出票中");
@@ -184,7 +184,7 @@ public class TicketCallbackServiceImpl extends BasicSyncDataEvent implements Tic
         log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(null, orderItem.getId(),
                 0,  "VOUCHER",
                 OrderConstant.LogOperateCode.TICKET_CONSUME_SUCCESS,
-                info.getConsumeQuantity(), String.format("散客票核销:接收信息:%s", JsonUtils.toJson(info))));
+                info.getConsumeQuantity(), String.format("散客票核销:接收信息:%s", JsonUtils.toJson(info)), info.getValidateSn()));
 
         // 获取订单详情 设置核销数量
         List<OrderItemDetail> detailList = orderItemDetailMapper.selectByItemId(orderItem.getId());
@@ -271,7 +271,7 @@ public class TicketCallbackServiceImpl extends BasicSyncDataEvent implements Tic
         log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(null, orderItem.getId(),
                 0,  "VOUCHER",
                 OrderConstant.LogOperateCode.TICKET_CONSUME_SUCCESS,
-                info.getConsumeQuantity(), String.format("团队票核销:接收信息:%s", JsonUtils.toJson(info))));
+                info.getConsumeQuantity(), String.format("团队票核销:接收信息:%s", JsonUtils.toJson(info)), info.getValidateSn()));
 
         // 获取订单详情 设置核销数量
         List<OrderItemDetail> detailList = orderItemDetailMapper.selectByItemId(orderItem.getId());
@@ -343,7 +343,7 @@ public class TicketCallbackServiceImpl extends BasicSyncDataEvent implements Tic
         log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(null, orderItem.getId(),
                 0,  "VOUCHER",
                 OrderConstant.LogOperateCode.TICKET_RECONSUME_SUCCESS,
-                orderClearanceSerial.getQuantity(), String.format("散客票反核销:接收信息:%s", JsonUtils.toJson(info))));
+                orderClearanceSerial.getQuantity(), String.format("散客票反核销:接收信息:%s", JsonUtils.toJson(info)), info.getReValidateSn()));
 
         // 获取订单详情 设置核销数量
         List<OrderItemDetail> detailList = orderItemDetailMapper.selectByItemId(orderItem.getId());
@@ -412,7 +412,7 @@ public class TicketCallbackServiceImpl extends BasicSyncDataEvent implements Tic
         log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(null, orderItem.getId(),
                 0,  "VOUCHER",
                 OrderConstant.LogOperateCode.TICKET_RECONSUME_SUCCESS,
-                info.getQuantity(), String.format("团队票反核销:接收信息:%s", JsonUtils.toJson(info))));
+                info.getQuantity(), String.format("团队票反核销:接收信息:%s", JsonUtils.toJson(info)), info.getReValidateSn()));
 
         OrderClearanceSerial orderClearanceSerial = orderClearanceSerialMapper.selectBySn(info.getValidateSn());
         if (orderClearanceSerial == null) {
@@ -569,7 +569,7 @@ public class TicketCallbackServiceImpl extends BasicSyncDataEvent implements Tic
         log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(null, orderItem.getId(),
                 0,  "VOUCHER",
                 OrderConstant.LogOperateCode.MODIFY_TICKET_SUCCESS,
-                0, "团队修改返回"));
+                0, "团队修改返回", null));
 
         if (orderItem.getGroup_id() == null || orderItem.getGroup_id() == 0) {
             return new Result(false, "该订单不是团队订单");
