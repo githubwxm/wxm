@@ -45,7 +45,7 @@ public class QueryOrderController extends BaseController {
                                           @RequestParam(defaultValue = "0") Integer record_start,
                                           @RequestParam(defaultValue = "20") Integer record_count) {
         Integer coreEpId = CommonUtil.objectParseInteger(getAttribute(EpConstant.EpKey.CORE_EP_ID));
-        Date[] dates = Utils.checkDate(start_date, end_date);
+        Date[] dates = Utils.checkDateTime(start_date, end_date);
         return queryOrderService.queryLineOrderItemList(number, product_name, group_number, status, item_status, name,
                 phone, ep_type, coreEpId, ep_id, dates[0], dates[1], record_start, record_count);
     }
