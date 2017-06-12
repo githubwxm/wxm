@@ -5,13 +5,17 @@ import com.all580.ep.api.conf.EpConstant;
 import com.all580.order.api.service.LineOrderService;
 import com.framework.common.BaseController;
 import com.framework.common.Result;
+import com.framework.common.validate.ParamsMapValidate;
 import com.framework.common.validate.ValidRule;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import sun.applet.Main;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -32,12 +36,18 @@ public class LineController extends BaseController{
         gernerateValidate.addRules(new String[]{"booking_start_date","booking_end_date"},
                                     new ValidRule[]{new ValidRule.Date("yyyy-mm-dd")})
                         .validate(params);
-
+         logger.info("count"+params.get("record_count"));
         if(params.get("record_start") == null){
             params.put("record_start",0);
+        }else{
+            String temp = CommonUtil.objectParseString(params.get("record_start"));
+            params.put("record_start",CommonUtil.objectParseInteger(temp.replaceAll("\\D","")) );
         }
         if(params.get("record_count") == null){
             params.put("record_count",20);
+        }else{
+            String temp = CommonUtil.objectParseString(params.get("record_count"));
+            params.put("record_count",CommonUtil.objectParseInteger(temp.replaceAll("\\D","")) );
         }
         return lineOrderService.listGroup(params);
     }
