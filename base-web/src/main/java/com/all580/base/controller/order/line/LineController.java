@@ -5,17 +5,14 @@ import com.all580.ep.api.conf.EpConstant;
 import com.all580.order.api.service.LineOrderService;
 import com.framework.common.BaseController;
 import com.framework.common.Result;
-import com.framework.common.validate.ParamsMapValidate;
+import com.framework.common.util.CommonUtil;
 import com.framework.common.validate.ValidRule;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import sun.applet.Main;
 
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
