@@ -47,13 +47,14 @@ public class ItineraryController {
     @RequestMapping(value = "select/list", method = RequestMethod.GET)
     @ResponseBody
     public Result<?> selectItineraryList(HttpServletRequest request, String name, String ep_id,Integer product_id
-                                      ,Integer id   ,Integer record_start,
+                                      ,Integer id   ,Integer record_start,String sub_name,
                                      Integer record_count) {
         Map<String,Object> map = new HashMap();
         map.put("ep_id",ep_id);
         map.put("product_id",product_id);
         map.put("id",id);
         map.put("name",name);
+        map.put("sub_name",sub_name);
         map.put("record_start", record_start);
         map.put("record_count", record_count);
         map.put(EpConstant.EpKey.CORE_EP_ID, request.getAttribute(EpConstant.EpKey.CORE_EP_ID));
