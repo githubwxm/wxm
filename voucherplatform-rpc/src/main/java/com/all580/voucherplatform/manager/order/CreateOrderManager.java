@@ -1,9 +1,11 @@
-package com.all580.voucherplatform.manager;
+package com.all580.voucherplatform.manager.order;
 
+import com.all580.voucherplatform.api.VoucherConstant;
 import com.all580.voucherplatform.dao.*;
 import com.all580.voucherplatform.entity.*;
 import com.all580.voucherplatform.utils.sign.voucher.VoucherGenerate;
 import com.all580.voucherplatform.utils.sign.voucher.VoucherUrlGenerate;
+import com.framework.common.io.cache.redis.RedisUtils;
 import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.UUIDGenerator;
 import com.framework.common.util.CommonUtil;
@@ -13,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.text.MessageFormat;
 import java.util.*;
 
 /**
@@ -38,6 +41,9 @@ public class CreateOrderManager {
     @Autowired
     private VoucherUrlGenerate voucherUrlGenerate;
 
+    @Autowired
+    private RedisUtils redisUtils;
+
 
     private Integer platformId;
     private PlatformProduct platformProduct;
@@ -55,13 +61,15 @@ public class CreateOrderManager {
     private String payTime;
     private String sms;
     private List<Order> orderList;
-    private static Integer a = 1;
 
     public CreateOrderManager() {
-        System.out.println(a);
-        a++;
     }
 
+    /**
+     * @param platformId
+     * @param map
+     * @throws Exception
+     */
     public void setProd(Integer platformId, Map map) throws Exception {
         this.platformId = platformId;
         orderList = new ArrayList<>();
@@ -93,7 +101,7 @@ public class CreateOrderManager {
         invalidTime = CommonUtil.objectParseString(map.get("invalidTime"));
         validWeek = CommonUtil.objectParseString(map.get("validWeek"));
         invalidDate = CommonUtil.objectParseString(map.get("invalidDate"));
-        sendType = CommonUtil.objectParseInteger(map.get("sendType"), 1);
+        sendType = CommonUtil.objectParseInteger(map.get("sendType"), VoucherConstant.SmsSendType.YES);
         payTime = CommonUtil.objectParseString(map.get("payTime"));
         sms = CommonUtil.objectParseString(map.get("sms"));
         sms = replaceSmsTemplate();
@@ -105,6 +113,12 @@ public class CreateOrderManager {
     }
 
 
+    public void setVisitor(List<Map> maps) {
+        for (Map map : maps) {
+            setVisitor(map);
+        }
+    }
+
     public void setVisitor(Map... maps) {
         for (Map map : maps) {
             String seqId = CommonUtil.objectParseString(map.get("seqId"));
@@ -113,12 +127,11 @@ public class CreateOrderManager {
             String idNumber = CommonUtil.objectParseString(map.get("idNumber"));
             Integer number = CommonUtil.objectParseInteger(map.get("number"), 1);
 
-            Order order = getOrder();
+            Order order = getOrder(number);
             order.setSeqId(seqId);
             order.setCustomName(customName);
             order.setMobile(mobile);
             order.setIdNumber(idNumber);
-            order.setNumber(number);
             orderList.add(order);
         }
     }
@@ -183,7 +196,12 @@ public class CreateOrderManager {
         return sms;
     }
 
-    private Order getOrder() {
+    private String repaceSmsByVisitor(Integer number, String voucherCode, String imgUrl) {
+        String s = new String(sms);
+        return s.replace("{份数}", String.valueOf(number)).replace("{验证码}", MessageFormat.format("{0}，打开二维码: {1} ", voucherCode, imgUrl));
+    }
+
+    private Order getOrder(Integer number) {
         Order order = new Order();
         order.setOrderCode(String.valueOf(UUIDGenerator.generateUUID()));//生成订单号
         order.setPlatformOrderId(orderId);
@@ -191,7 +209,6 @@ public class CreateOrderManager {
         order.setPlatformprod_id(platformProduct.getPlatform_id());
         order.setSupply_id(platformProduct.getSupply_id());
         order.setTicketsys_id(null);
-        order.setSupplyOrderId(orderId);
         if (supplyProduct != null) {
             order.setSupplyProdId(supplyProduct.getId());
         }
@@ -208,6 +225,10 @@ public class CreateOrderManager {
         order.setVoucherNumber(voucherNumber);
         String voucherImgUrl = voucherUrlGenerate.getVoucherUrl(voucherNumber, qrRule.getErrorRate(), qrRule.getSize(), qrRule.getForeColor());
         order.setImgUrl(voucherImgUrl);
+        order.setSms(repaceSmsByVisitor(number, voucherNumber, voucherImgUrl));
+        if (template != null) {
+            order.setPrintText(template.getPrintText());
+        }
         return order;
     }
 

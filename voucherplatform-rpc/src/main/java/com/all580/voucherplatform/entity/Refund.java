@@ -85,6 +85,11 @@ public class Refund implements Serializable {
     private Date createTime;
 
     /**
+     *  ,所属表字段为t_refund.prodType
+     */
+    private Integer prodType;
+
+    /**
      * 序列化ID,t_refund
      */
     private static final long serialVersionUID = 1L;
@@ -375,5 +380,23 @@ public class Refund implements Serializable {
      */
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
+    }
+
+    /**
+     * 获取  字段:t_refund.prodType
+     *
+     * @return t_refund.prodType, 
+     */
+    public Integer getProdType() {
+        return prodType;
+    }
+
+    /**
+     * 设置  字段:t_refund.prodType
+     *
+     * @param prodType t_refund.prodType, 
+     */
+    public void setProdType(Integer prodType) {
+        this.prodType = prodType;
     }
 }

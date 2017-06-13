@@ -8,19 +8,20 @@
             location="c:/Users/libin/.m2/repository/mysql/mysql-connector-java/5.1.30/mysql-connector-java-5.1.30.jar"/>
     <context id="my" targetRuntime="MyBatis3">
         <!-- 抑制警告 -->
-        <property name="suppressTypeWarnings" value="true" />
+        <property name="suppressTypeWarnings" value="true"/>
         <property name="autoDelimitKeywords" value="true"/>
         <property name="beginningDelimiter" value="`"/>
         <property name="endingDelimiter" value="`"/>
         <!-- generate entity时，生成serialVersionUID -->
-        <plugin type="org.mybatis.generator.plugins.SerializablePlugin" />
+        <plugin type="org.mybatis.generator.plugins.SerializablePlugin"/>
         <commentGenerator>
             <property name="suppressDate" value="false"/>
             <property name="suppressAllComments" value="false"/>
         </commentGenerator>
 
         <jdbcConnection driverClass="com.mysql.jdbc.Driver"
-                        connectionURL="jdbc:mysql://192.168.1.249:3306/voucherplatform?characterEncoding=utf8" userId="root"
+                        connectionURL="jdbc:mysql://192.168.1.249:3306/voucherplatform?characterEncoding=utf8"
+                        userId="root"
                         password="admin_web580"/>
 
         <javaModelGenerator targetPackage="com.all580.voucherplatform.entity"
@@ -39,163 +40,6 @@
             <property name="enableSubPackages" value="true"/>
         </javaClientGenerator>
 
-        <table tableName="t_user"
-               enableCountByExample="false"
-               enableUpdateByExample="false"
-               enableDeleteByExample="false"
-               enableSelectByExample="false"
-               selectByExampleQueryId="false"
-               delimitAllColumns="true"
-               domainObjectName="User">
-            <property name="useActualColumnNames" value="true"/>
-            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
-            <!--<columnOverride column="update_time" javaType="java.lang.String"/>-->
-        </table>
-        <table tableName="t_supply"
-               enableCountByExample="false"
-               enableUpdateByExample="false"
-               enableDeleteByExample="false"
-               enableSelectByExample="false"
-               selectByExampleQueryId="false"
-               delimitAllColumns="true"
-               domainObjectName="Supply">
-            <property name="useActualColumnNames" value="true"/>
-            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
-            <!--<columnOverride column="update_time" javaType="java.lang.String"/>-->
-        </table>
-        <table tableName="t_supplyproduct"
-               enableCountByExample="false"
-               enableUpdateByExample="false"
-               enableDeleteByExample="false"
-               enableSelectByExample="false"
-               selectByExampleQueryId="false"
-               delimitAllColumns="true"
-               domainObjectName="SupplyProduct">
-            <property name="useActualColumnNames" value="true"/>
-            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
-            <!--<columnOverride column="update_time" javaType="java.lang.String"/>-->
-        </table>
-        <table tableName="t_platform"
-               enableCountByExample="false"
-               enableUpdateByExample="false"
-               enableDeleteByExample="false"
-               enableSelectByExample="false"
-               selectByExampleQueryId="false"
-               delimitAllColumns="true"
-               domainObjectName="Platform">
-            <property name="useActualColumnNames" value="true"/>
-            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
-            <!--<columnOverride column="update_time" javaType="java.lang.String"/>-->
-        </table>
-        <table tableName="t_platformproduct"
-               enableCountByExample="false"
-               enableUpdateByExample="false"
-               enableDeleteByExample="false"
-               enableSelectByExample="false"
-               selectByExampleQueryId="false"
-               delimitAllColumns="true"
-               domainObjectName="PlatformProduct">
-            <property name="useActualColumnNames" value="true"/>
-            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
-            <!--<columnOverride column="update_time" javaType="java.lang.String"/>-->
-        </table>
-        <table tableName="t_platformrole"
-               enableCountByExample="false"
-               enableUpdateByExample="false"
-               enableDeleteByExample="false"
-               enableSelectByExample="false"
-               selectByExampleQueryId="false"
-               delimitAllColumns="true"
-               domainObjectName="PlatformRole">
-            <property name="useActualColumnNames" value="true"/>
-            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
-            <!--<columnOverride column="update_time" javaType="java.lang.String"/>-->
-        </table>
-        <table tableName="t_ticketsys"
-               enableCountByExample="false"
-               enableUpdateByExample="false"
-               enableDeleteByExample="false"
-               enableSelectByExample="false"
-               selectByExampleQueryId="false"
-               delimitAllColumns="true"
-               domainObjectName="TicketSys">
-            <property name="useActualColumnNames" value="true"/>
-            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
-            <!--<columnOverride column="update_time" javaType="java.lang.String"/>-->
-        </table>
-        <table tableName="t_template"
-               enableCountByExample="false"
-               enableUpdateByExample="false"
-               enableDeleteByExample="false"
-               enableSelectByExample="false"
-               selectByExampleQueryId="false"
-               delimitAllColumns="true"
-               domainObjectName="Template">
-            <property name="useActualColumnNames" value="true"/>
-            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
-            <!--<columnOverride column="update_time" javaType="java.lang.String"/>-->
-        </table>
-        <table tableName="t_qrrule"
-               enableCountByExample="false"
-               enableUpdateByExample="false"
-               enableDeleteByExample="false"
-               enableSelectByExample="false"
-               selectByExampleQueryId="false"
-               delimitAllColumns="true"
-               domainObjectName="QrRule">
-            <property name="useActualColumnNames" value="true"/>
-            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
-            <!--<columnOverride column="update_time" javaType="java.lang.String"/>-->
-        </table>
-        <table tableName="t_smshistory"
-               enableCountByExample="false"
-               enableUpdateByExample="false"
-               enableDeleteByExample="false"
-               enableSelectByExample="false"
-               selectByExampleQueryId="false"
-               delimitAllColumns="true"
-               domainObjectName="SmsHistory">
-            <property name="useActualColumnNames" value="true"/>
-            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
-            <!--<columnOverride column="update_time" javaType="java.lang.String"/>-->
-        </table>
-
-        <table tableName="t_mnshistoru"
-               enableCountByExample="false"
-               enableUpdateByExample="false"
-               enableDeleteByExample="false"
-               enableSelectByExample="false"
-               selectByExampleQueryId="false"
-               delimitAllColumns="true"
-               domainObjectName="MnsHistory">
-            <property name="useActualColumnNames" value="true"/>
-            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
-            <!--<columnOverride column="update_time" javaType="java.lang.String"/>-->
-        </table>
-        <table tableName="t_order"
-               enableCountByExample="false"
-               enableUpdateByExample="false"
-               enableDeleteByExample="false"
-               enableSelectByExample="false"
-               selectByExampleQueryId="false"
-               delimitAllColumns="true"
-               domainObjectName="Order">
-            <property name="useActualColumnNames" value="true"/>
-            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
-            <!--<columnOverride column="update_time" javaType="java.lang.String"/>-->
-        </table>
-        <table tableName="t_consume"
-               enableCountByExample="false"
-               enableUpdateByExample="false"
-               enableDeleteByExample="false"
-               enableSelectByExample="false"
-               selectByExampleQueryId="false"
-               delimitAllColumns="true"
-               domainObjectName="Consume">
-            <property name="useActualColumnNames" value="true"/>
-            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
-            <!--<columnOverride column="update_time" javaType="java.lang.String"/>-->
-        </table>
         <table tableName="t_refund"
                enableCountByExample="false"
                enableUpdateByExample="false"
@@ -208,103 +52,283 @@
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
             <!--<columnOverride column="update_time" javaType="java.lang.String"/>-->
         </table>
-        <table tableName="t_reverse"
-               enableCountByExample="false"
-               enableUpdateByExample="false"
-               enableDeleteByExample="false"
-               enableSelectByExample="false"
-               selectByExampleQueryId="false"
-               delimitAllColumns="true"
-               domainObjectName="Reverse">
-            <property name="useActualColumnNames" value="true"/>
-            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
-            <!--<columnOverride column="update_time" javaType="java.lang.String"/>-->
-        </table>
-        <table tableName="t_group_order"
-               enableCountByExample="false"
-               enableUpdateByExample="false"
-               enableDeleteByExample="false"
-               enableSelectByExample="false"
-               selectByExampleQueryId="false"
-               delimitAllColumns="true"
-               domainObjectName="GroupOrder">
-            <property name="useActualColumnNames" value="true"/>
-            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
-            <!--<columnOverride column="update_time" javaType="java.lang.String"/>-->
-        </table>
-        <table tableName="t_group_visitor"
-               enableCountByExample="false"
-               enableUpdateByExample="false"
-               enableDeleteByExample="false"
-               enableSelectByExample="false"
-               selectByExampleQueryId="false"
-               delimitAllColumns="true"
-               domainObjectName="GroupVisitor">
-            <property name="useActualColumnNames" value="true"/>
-            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
-            <!--<columnOverride column="update_time" javaType="java.lang.String"/>-->
-        </table>
+        <!--<table tableName="t_user"-->
+        <!--enableCountByExample="false"-->
+        <!--enableUpdateByExample="false"-->
+        <!--enableDeleteByExample="false"-->
+        <!--enableSelectByExample="false"-->
+        <!--selectByExampleQueryId="false"-->
+        <!--delimitAllColumns="true"-->
+        <!--domainObjectName="User">-->
+        <!--<property name="useActualColumnNames" value="true"/>-->
+        <!--<generatedKey column="id" sqlStatement="MySql" identity="true"/>-->
+        <!--&lt;!&ndash;<columnOverride column="update_time" javaType="java.lang.String"/>&ndash;&gt;-->
+        <!--</table>-->
+        <!--<table tableName="t_supply"-->
+        <!--enableCountByExample="false"-->
+        <!--enableUpdateByExample="false"-->
+        <!--enableDeleteByExample="false"-->
+        <!--enableSelectByExample="false"-->
+        <!--selectByExampleQueryId="false"-->
+        <!--delimitAllColumns="true"-->
+        <!--domainObjectName="Supply">-->
+        <!--<property name="useActualColumnNames" value="true"/>-->
+        <!--<generatedKey column="id" sqlStatement="MySql" identity="true"/>-->
+        <!--&lt;!&ndash;<columnOverride column="update_time" javaType="java.lang.String"/>&ndash;&gt;-->
+        <!--</table>-->
+        <!--<table tableName="t_supplyproduct"-->
+        <!--enableCountByExample="false"-->
+        <!--enableUpdateByExample="false"-->
+        <!--enableDeleteByExample="false"-->
+        <!--enableSelectByExample="false"-->
+        <!--selectByExampleQueryId="false"-->
+        <!--delimitAllColumns="true"-->
+        <!--domainObjectName="SupplyProduct">-->
+        <!--<property name="useActualColumnNames" value="true"/>-->
+        <!--<generatedKey column="id" sqlStatement="MySql" identity="true"/>-->
+        <!--&lt;!&ndash;<columnOverride column="update_time" javaType="java.lang.String"/>&ndash;&gt;-->
+        <!--</table>-->
+        <!--<table tableName="t_platform"-->
+        <!--enableCountByExample="false"-->
+        <!--enableUpdateByExample="false"-->
+        <!--enableDeleteByExample="false"-->
+        <!--enableSelectByExample="false"-->
+        <!--selectByExampleQueryId="false"-->
+        <!--delimitAllColumns="true"-->
+        <!--domainObjectName="Platform">-->
+        <!--<property name="useActualColumnNames" value="true"/>-->
+        <!--<generatedKey column="id" sqlStatement="MySql" identity="true"/>-->
+        <!--&lt;!&ndash;<columnOverride column="update_time" javaType="java.lang.String"/>&ndash;&gt;-->
+        <!--</table>-->
+        <!--<table tableName="t_platformproduct"-->
+        <!--enableCountByExample="false"-->
+        <!--enableUpdateByExample="false"-->
+        <!--enableDeleteByExample="false"-->
+        <!--enableSelectByExample="false"-->
+        <!--selectByExampleQueryId="false"-->
+        <!--delimitAllColumns="true"-->
+        <!--domainObjectName="PlatformProduct">-->
+        <!--<property name="useActualColumnNames" value="true"/>-->
+        <!--<generatedKey column="id" sqlStatement="MySql" identity="true"/>-->
+        <!--&lt;!&ndash;<columnOverride column="update_time" javaType="java.lang.String"/>&ndash;&gt;-->
+        <!--</table>-->
+        <!--<table tableName="t_platformrole"-->
+        <!--enableCountByExample="false"-->
+        <!--enableUpdateByExample="false"-->
+        <!--enableDeleteByExample="false"-->
+        <!--enableSelectByExample="false"-->
+        <!--selectByExampleQueryId="false"-->
+        <!--delimitAllColumns="true"-->
+        <!--domainObjectName="PlatformRole">-->
+        <!--<property name="useActualColumnNames" value="true"/>-->
+        <!--<generatedKey column="id" sqlStatement="MySql" identity="true"/>-->
+        <!--&lt;!&ndash;<columnOverride column="update_time" javaType="java.lang.String"/>&ndash;&gt;-->
+        <!--</table>-->
+        <!--<table tableName="t_ticketsys"-->
+        <!--enableCountByExample="false"-->
+        <!--enableUpdateByExample="false"-->
+        <!--enableDeleteByExample="false"-->
+        <!--enableSelectByExample="false"-->
+        <!--selectByExampleQueryId="false"-->
+        <!--delimitAllColumns="true"-->
+        <!--domainObjectName="TicketSys">-->
+        <!--<property name="useActualColumnNames" value="true"/>-->
+        <!--<generatedKey column="id" sqlStatement="MySql" identity="true"/>-->
+        <!--&lt;!&ndash;<columnOverride column="update_time" javaType="java.lang.String"/>&ndash;&gt;-->
+        <!--</table>-->
+        <!--<table tableName="t_template"-->
+        <!--enableCountByExample="false"-->
+        <!--enableUpdateByExample="false"-->
+        <!--enableDeleteByExample="false"-->
+        <!--enableSelectByExample="false"-->
+        <!--selectByExampleQueryId="false"-->
+        <!--delimitAllColumns="true"-->
+        <!--domainObjectName="Template">-->
+        <!--<property name="useActualColumnNames" value="true"/>-->
+        <!--<generatedKey column="id" sqlStatement="MySql" identity="true"/>-->
+        <!--&lt;!&ndash;<columnOverride column="update_time" javaType="java.lang.String"/>&ndash;&gt;-->
+        <!--</table>-->
+        <!--<table tableName="t_qrrule"-->
+        <!--enableCountByExample="false"-->
+        <!--enableUpdateByExample="false"-->
+        <!--enableDeleteByExample="false"-->
+        <!--enableSelectByExample="false"-->
+        <!--selectByExampleQueryId="false"-->
+        <!--delimitAllColumns="true"-->
+        <!--domainObjectName="QrRule">-->
+        <!--<property name="useActualColumnNames" value="true"/>-->
+        <!--<generatedKey column="id" sqlStatement="MySql" identity="true"/>-->
+        <!--&lt;!&ndash;<columnOverride column="update_time" javaType="java.lang.String"/>&ndash;&gt;-->
+        <!--</table>-->
+        <!--<table tableName="t_smshistory"-->
+        <!--enableCountByExample="false"-->
+        <!--enableUpdateByExample="false"-->
+        <!--enableDeleteByExample="false"-->
+        <!--enableSelectByExample="false"-->
+        <!--selectByExampleQueryId="false"-->
+        <!--delimitAllColumns="true"-->
+        <!--domainObjectName="SmsHistory">-->
+        <!--<property name="useActualColumnNames" value="true"/>-->
+        <!--<generatedKey column="id" sqlStatement="MySql" identity="true"/>-->
+        <!--&lt;!&ndash;<columnOverride column="update_time" javaType="java.lang.String"/>&ndash;&gt;-->
+        <!--</table>-->
 
-        <table tableName="t_device"
-               enableCountByExample="false"
-               enableUpdateByExample="false"
-               enableDeleteByExample="false"
-               enableSelectByExample="false"
-               selectByExampleQueryId="false"
-               delimitAllColumns="true"
-               domainObjectName="Device">
-            <property name="useActualColumnNames" value="true"/>
-            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
-            <!--<columnOverride column="update_time" javaType="java.lang.String"/>-->
-        </table>
-        <table tableName="t_device_group"
-               enableCountByExample="false"
-               enableUpdateByExample="false"
-               enableDeleteByExample="false"
-               enableSelectByExample="false"
-               selectByExampleQueryId="false"
-               delimitAllColumns="true"
-               domainObjectName="DeviceGroup">
-            <property name="useActualColumnNames" value="true"/>
-            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
-            <!--<columnOverride column="update_time" javaType="java.lang.String"/>-->
-        </table>
-        <table tableName="t_device_apply"
-               enableCountByExample="false"
-               enableUpdateByExample="false"
-               enableDeleteByExample="false"
-               enableSelectByExample="false"
-               selectByExampleQueryId="false"
-               delimitAllColumns="true"
-               domainObjectName="DeviceApply">
-            <property name="useActualColumnNames" value="true"/>
-            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
-            <!--<columnOverride column="update_time" javaType="java.lang.String"/>-->
-        </table>
-        <table tableName="t_device_product"
-               enableCountByExample="false"
-               enableUpdateByExample="false"
-               enableDeleteByExample="false"
-               enableSelectByExample="false"
-               selectByExampleQueryId="false"
-               delimitAllColumns="true"
-               domainObjectName="DeviceProduct">
-            <property name="useActualColumnNames" value="true"/>
-            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
-            <!--<columnOverride column="update_time" javaType="java.lang.String"/>-->
-        </table>
-        <table tableName="t_producttype"
-               enableCountByExample="false"
-               enableUpdateByExample="false"
-               enableDeleteByExample="false"
-               enableSelectByExample="false"
-               selectByExampleQueryId="false"
-               delimitAllColumns="true"
-               domainObjectName="ProductType">
-            <property name="useActualColumnNames" value="true"/>
-            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
-            <!--<columnOverride column="update_time" javaType="java.lang.String"/>-->
-        </table>
+        <!--<table tableName="t_mnshistoru"-->
+        <!--enableCountByExample="false"-->
+        <!--enableUpdateByExample="false"-->
+        <!--enableDeleteByExample="false"-->
+        <!--enableSelectByExample="false"-->
+        <!--selectByExampleQueryId="false"-->
+        <!--delimitAllColumns="true"-->
+        <!--domainObjectName="MnsHistory">-->
+        <!--<property name="useActualColumnNames" value="true"/>-->
+        <!--<generatedKey column="id" sqlStatement="MySql" identity="true"/>-->
+        <!--&lt;!&ndash;<columnOverride column="update_time" javaType="java.lang.String"/>&ndash;&gt;-->
+        <!--</table>-->
+        <!--<table tableName="t_order"-->
+        <!--enableCountByExample="false"-->
+        <!--enableUpdateByExample="false"-->
+        <!--enableDeleteByExample="false"-->
+        <!--enableSelectByExample="false"-->
+        <!--selectByExampleQueryId="false"-->
+        <!--delimitAllColumns="true"-->
+        <!--domainObjectName="Order">-->
+        <!--<property name="useActualColumnNames" value="true"/>-->
+        <!--<generatedKey column="id" sqlStatement="MySql" identity="true"/>-->
+        <!--&lt;!&ndash;<columnOverride column="update_time" javaType="java.lang.String"/>&ndash;&gt;-->
+        <!--</table>-->
+        <!--<table tableName="t_consume"-->
+        <!--enableCountByExample="false"-->
+        <!--enableUpdateByExample="false"-->
+        <!--enableDeleteByExample="false"-->
+        <!--enableSelectByExample="false"-->
+        <!--selectByExampleQueryId="false"-->
+        <!--delimitAllColumns="true"-->
+        <!--domainObjectName="Consume">-->
+        <!--<property name="useActualColumnNames" value="true"/>-->
+        <!--<generatedKey column="id" sqlStatement="MySql" identity="true"/>-->
+        <!--&lt;!&ndash;<columnOverride column="update_time" javaType="java.lang.String"/>&ndash;&gt;-->
+        <!--</table>-->
+        <!--<table tableName="t_refund"-->
+        <!--enableCountByExample="false"-->
+        <!--enableUpdateByExample="false"-->
+        <!--enableDeleteByExample="false"-->
+        <!--enableSelectByExample="false"-->
+        <!--selectByExampleQueryId="false"-->
+        <!--delimitAllColumns="true"-->
+        <!--domainObjectName="Refund">-->
+        <!--<property name="useActualColumnNames" value="true"/>-->
+        <!--<generatedKey column="id" sqlStatement="MySql" identity="true"/>-->
+        <!--&lt;!&ndash;<columnOverride column="update_time" javaType="java.lang.String"/>&ndash;&gt;-->
+        <!--</table>-->
+        <!--<table tableName="t_reverse"-->
+        <!--enableCountByExample="false"-->
+        <!--enableUpdateByExample="false"-->
+        <!--enableDeleteByExample="false"-->
+        <!--enableSelectByExample="false"-->
+        <!--selectByExampleQueryId="false"-->
+        <!--delimitAllColumns="true"-->
+        <!--domainObjectName="Reverse">-->
+        <!--<property name="useActualColumnNames" value="true"/>-->
+        <!--<generatedKey column="id" sqlStatement="MySql" identity="true"/>-->
+        <!--&lt;!&ndash;<columnOverride column="update_time" javaType="java.lang.String"/>&ndash;&gt;-->
+        <!--</table>-->
+        <!--<table tableName="t_group_order"-->
+        <!--enableCountByExample="false"-->
+        <!--enableUpdateByExample="false"-->
+        <!--enableDeleteByExample="false"-->
+        <!--enableSelectByExample="false"-->
+        <!--selectByExampleQueryId="false"-->
+        <!--delimitAllColumns="true"-->
+        <!--domainObjectName="GroupOrder">-->
+        <!--<property name="useActualColumnNames" value="true"/>-->
+        <!--<generatedKey column="id" sqlStatement="MySql" identity="true"/>-->
+        <!--&lt;!&ndash;<columnOverride column="update_time" javaType="java.lang.String"/>&ndash;&gt;-->
+        <!--</table>-->
+        <!--<table tableName="t_group_visitor"-->
+        <!--enableCountByExample="false"-->
+        <!--enableUpdateByExample="false"-->
+        <!--enableDeleteByExample="false"-->
+        <!--enableSelectByExample="false"-->
+        <!--selectByExampleQueryId="false"-->
+        <!--delimitAllColumns="true"-->
+        <!--domainObjectName="GroupVisitor">-->
+        <!--<property name="useActualColumnNames" value="true"/>-->
+        <!--<generatedKey column="id" sqlStatement="MySql" identity="true"/>-->
+        <!--&lt;!&ndash;<columnOverride column="update_time" javaType="java.lang.String"/>&ndash;&gt;-->
+        <!--</table>-->
+
+        <!--<table tableName="t_device"-->
+        <!--enableCountByExample="false"-->
+        <!--enableUpdateByExample="false"-->
+        <!--enableDeleteByExample="false"-->
+        <!--enableSelectByExample="false"-->
+        <!--selectByExampleQueryId="false"-->
+        <!--delimitAllColumns="true"-->
+        <!--domainObjectName="Device">-->
+        <!--<property name="useActualColumnNames" value="true"/>-->
+        <!--<generatedKey column="id" sqlStatement="MySql" identity="true"/>-->
+        <!--&lt;!&ndash;<columnOverride column="update_time" javaType="java.lang.String"/>&ndash;&gt;-->
+        <!--</table>-->
+        <!--<table tableName="t_device_group"-->
+        <!--enableCountByExample="false"-->
+        <!--enableUpdateByExample="false"-->
+        <!--enableDeleteByExample="false"-->
+        <!--enableSelectByExample="false"-->
+        <!--selectByExampleQueryId="false"-->
+        <!--delimitAllColumns="true"-->
+        <!--domainObjectName="DeviceGroup">-->
+        <!--<property name="useActualColumnNames" value="true"/>-->
+        <!--<generatedKey column="id" sqlStatement="MySql" identity="true"/>-->
+        <!--&lt;!&ndash;<columnOverride column="update_time" javaType="java.lang.String"/>&ndash;&gt;-->
+        <!--</table>-->
+        <!--<table tableName="t_device_apply"-->
+        <!--enableCountByExample="false"-->
+        <!--enableUpdateByExample="false"-->
+        <!--enableDeleteByExample="false"-->
+        <!--enableSelectByExample="false"-->
+        <!--selectByExampleQueryId="false"-->
+        <!--delimitAllColumns="true"-->
+        <!--domainObjectName="DeviceApply">-->
+        <!--<property name="useActualColumnNames" value="true"/>-->
+        <!--<generatedKey column="id" sqlStatement="MySql" identity="true"/>-->
+        <!--&lt;!&ndash;<columnOverride column="update_time" javaType="java.lang.String"/>&ndash;&gt;-->
+        <!--</table>-->
+        <!--<table tableName="t_device_product"-->
+        <!--enableCountByExample="false"-->
+        <!--enableUpdateByExample="false"-->
+        <!--enableDeleteByExample="false"-->
+        <!--enableSelectByExample="false"-->
+        <!--selectByExampleQueryId="false"-->
+        <!--delimitAllColumns="true"-->
+        <!--domainObjectName="DeviceProduct">-->
+        <!--<property name="useActualColumnNames" value="true"/>-->
+        <!--<generatedKey column="id" sqlStatement="MySql" identity="true"/>-->
+        <!--&lt;!&ndash;<columnOverride column="update_time" javaType="java.lang.String"/>&ndash;&gt;-->
+        <!--</table>-->
+        <!--<table tableName="t_producttype"-->
+        <!--enableCountByExample="false"-->
+        <!--enableUpdateByExample="false"-->
+        <!--enableDeleteByExample="false"-->
+        <!--enableSelectByExample="false"-->
+        <!--selectByExampleQueryId="false"-->
+        <!--delimitAllColumns="true"-->
+        <!--domainObjectName="ProductType">-->
+        <!--<property name="useActualColumnNames" value="true"/>-->
+        <!--<generatedKey column="id" sqlStatement="MySql" identity="true"/>-->
+        <!--&lt;!&ndash;<columnOverride column="update_time" javaType="java.lang.String"/>&ndash;&gt;-->
+        <!--</table>-->
+        <!--<table tableName="t_synctaskview"-->
+        <!--enableCountByExample="false"-->
+        <!--enableUpdateByExample="false"-->
+        <!--enableDeleteByExample="false"-->
+        <!--enableSelectByExample="false"-->
+        <!--selectByExampleQueryId="false"-->
+        <!--delimitAllColumns="true"-->
+        <!--domainObjectName="SyncTaskView">-->
+        <!--<property name="useActualColumnNames" value="true"/>-->
+        <!--<generatedKey column="id" sqlStatement="MySql" identity="true"/>-->
+        <!--</table>-->
 
     </context>
 </generatorConfiguration>

@@ -1,12 +1,8 @@
 package com.all580.voucherplatform.service;
 
 import com.all580.voucherplatform.api.service.PlatformService;
-import com.all580.voucherplatform.dao.PlatformMapper;
-import com.all580.voucherplatform.dao.PlatformProductMapper;
-import com.all580.voucherplatform.dao.PlatformRoleMapper;
-import com.all580.voucherplatform.entity.Platform;
-import com.all580.voucherplatform.entity.PlatformProduct;
-import com.all580.voucherplatform.entity.PlatformRole;
+import com.all580.voucherplatform.dao.*;
+import com.all580.voucherplatform.entity.*;
 import com.all580.voucherplatform.utils.sign.SignInstance;
 import com.all580.voucherplatform.utils.sign.SignKey;
 import com.all580.voucherplatform.utils.sign.SignService;
@@ -40,6 +36,9 @@ public class PlatformServiceImpl implements PlatformService {
     private PlatformRoleMapper platformRoleMapper;
     @Autowired
     private PlatformProductMapper prodMapper;
+    @Autowired
+    private SupplyMapper supplyMapper;
+
 
     private Integer defaultPordType = 1;
 
@@ -119,10 +118,16 @@ public class PlatformServiceImpl implements PlatformService {
         } else {
             platformRole.setModifyTime(new Date());
         }
-        platformRole.setName(CommonUtil.objectParseString(map.get("name")));
+        String name = CommonUtil.objectParseString(map.get("name"));
+        if (StringUtils.isEmpty(name)) {
+            Supply supply = supplyMapper.selectByPrimaryKey(platformRole.getSupply_id());
+            name = supply.getName();
+        }
+        platformRole.setName(name);
         platformRole.setCode(CommonUtil.objectParseString(map.get("code")));
         platformRoleMapper.updateByPrimaryKeySelective(platformRole);
         result.setSuccess(true);
+        result.put(JsonUtils.obj2map(platformRole));
         return result;
     }
 
@@ -166,7 +171,6 @@ public class PlatformServiceImpl implements PlatformService {
         }
         return new Result(true);
     }
-
 
 
     @Override

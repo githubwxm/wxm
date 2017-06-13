@@ -25,9 +25,14 @@ public class Consume implements Serializable {
     private String order_code;
 
     /**
-     *  供应商消费id,所属表字段为t_consume.supplierConsumeSeqId
+     *  供应商消费id,所属表字段为t_consume.supplyConsumeSeqId
      */
-    private String supplierConsumeSeqId;
+    private String supplyConsumeSeqId;
+
+    /**
+     *  ,所属表字段为t_consume.consumeNumber
+     */
+    private Integer consumeNumber;
 
     /**
      *  消费前数量,所属表字段为t_consume.prevNumber
@@ -162,21 +167,39 @@ public class Consume implements Serializable {
     }
 
     /**
-     * 获取 供应商消费id 字段:t_consume.supplierConsumeSeqId
+     * 获取 供应商消费id 字段:t_consume.supplyConsumeSeqId
      *
-     * @return t_consume.supplierConsumeSeqId, 供应商消费id
+     * @return t_consume.supplyConsumeSeqId, 供应商消费id
      */
-    public String getSupplierConsumeSeqId() {
-        return supplierConsumeSeqId;
+    public String getSupplyConsumeSeqId() {
+        return supplyConsumeSeqId;
     }
 
     /**
-     * 设置 供应商消费id 字段:t_consume.supplierConsumeSeqId
+     * 设置 供应商消费id 字段:t_consume.supplyConsumeSeqId
      *
-     * @param supplierConsumeSeqId t_consume.supplierConsumeSeqId, 供应商消费id
+     * @param supplyConsumeSeqId t_consume.supplyConsumeSeqId, 供应商消费id
      */
-    public void setSupplierConsumeSeqId(String supplierConsumeSeqId) {
-        this.supplierConsumeSeqId = supplierConsumeSeqId == null ? null : supplierConsumeSeqId.trim();
+    public void setSupplyConsumeSeqId(String supplyConsumeSeqId) {
+        this.supplyConsumeSeqId = supplyConsumeSeqId == null ? null : supplyConsumeSeqId.trim();
+    }
+
+    /**
+     * 获取  字段:t_consume.consumeNumber
+     *
+     * @return t_consume.consumeNumber, 
+     */
+    public Integer getConsumeNumber() {
+        return consumeNumber;
+    }
+
+    /**
+     * 设置  字段:t_consume.consumeNumber
+     *
+     * @param consumeNumber t_consume.consumeNumber, 
+     */
+    public void setConsumeNumber(Integer consumeNumber) {
+        this.consumeNumber = consumeNumber;
     }
 
     /**

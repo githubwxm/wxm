@@ -3,6 +3,7 @@ package com.all580.voucherplatform.api.service;
 import com.framework.common.Result;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -14,7 +15,7 @@ public interface OrderService {
      * @param map
      * @return
      */
-    Result createOrder(Map map);
+    Result createOrder(Integer platformId,Map map);
 
     Result getOrder(int id);
 
@@ -35,16 +36,16 @@ public interface OrderService {
                       Date startTime,
                       Date endTime);
 
-    Result getOrderList(Integer platformId,
-                   Integer supplierId,
-                   String orderCode,
-                   String platformOrderId,
-                   String mobile,
-                   String idNumber,
-                   String voucherNumber,
-                   Integer status,
-                   Date startTime,
-                   Date endTime,
-                   Integer recordStart,
-                   Integer recordCount);
+    List<Map> getOrderList(Integer platformId,
+                           Integer supplierId,
+                           String orderCode,
+                           String platformOrderId,
+                           String mobile,
+                           String idNumber,
+                           String voucherNumber,
+                           Integer status,
+                           Date startTime,
+                           Date endTime,
+                           Integer recordStart,
+                           Integer recordCount);
 }

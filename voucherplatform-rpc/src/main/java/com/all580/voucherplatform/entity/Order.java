@@ -80,6 +80,26 @@ public class Order implements Serializable {
     private Integer number;
 
     /**
+     *  ,所属表字段为t_order.consume
+     */
+    private Integer consume;
+
+    /**
+     *  ,所属表字段为t_order.reverse
+     */
+    private Integer reverse;
+
+    /**
+     *  ,所属表字段为t_order.refunding
+     */
+    private Integer refunding;
+
+    /**
+     *  ,所属表字段为t_order.refund
+     */
+    private Integer refund;
+
+    /**
      *  凭证号,所属表字段为t_order.voucherNumber
      */
     private String voucherNumber;
@@ -412,6 +432,78 @@ public class Order implements Serializable {
      */
     public void setNumber(Integer number) {
         this.number = number;
+    }
+
+    /**
+     * 获取  字段:t_order.consume
+     *
+     * @return t_order.consume, 
+     */
+    public Integer getConsume() {
+        return consume;
+    }
+
+    /**
+     * 设置  字段:t_order.consume
+     *
+     * @param consume t_order.consume, 
+     */
+    public void setConsume(Integer consume) {
+        this.consume = consume;
+    }
+
+    /**
+     * 获取  字段:t_order.reverse
+     *
+     * @return t_order.reverse, 
+     */
+    public Integer getReverse() {
+        return reverse;
+    }
+
+    /**
+     * 设置  字段:t_order.reverse
+     *
+     * @param reverse t_order.reverse, 
+     */
+    public void setReverse(Integer reverse) {
+        this.reverse = reverse;
+    }
+
+    /**
+     * 获取  字段:t_order.refunding
+     *
+     * @return t_order.refunding, 
+     */
+    public Integer getRefunding() {
+        return refunding;
+    }
+
+    /**
+     * 设置  字段:t_order.refunding
+     *
+     * @param refunding t_order.refunding, 
+     */
+    public void setRefunding(Integer refunding) {
+        this.refunding = refunding;
+    }
+
+    /**
+     * 获取  字段:t_order.refund
+     *
+     * @return t_order.refund, 
+     */
+    public Integer getRefund() {
+        return refund;
+    }
+
+    /**
+     * 设置  字段:t_order.refund
+     *
+     * @param refund t_order.refund, 
+     */
+    public void setRefund(Integer refund) {
+        this.refund = refund;
     }
 
     /**

@@ -41,7 +41,7 @@ public class GroupVisitor implements Serializable {
     /**
      *  证件号码,所属表字段为t_group_visitor.idNumber
      */
-    private Integer idNumber;
+    private String idNumber;
 
     /**
      *  是否使用,所属表字段为t_group_visitor.activate
@@ -184,7 +184,7 @@ public class GroupVisitor implements Serializable {
      *
      * @return t_group_visitor.idNumber, 证件号码
      */
-    public Integer getIdNumber() {
+    public String getIdNumber() {
         return idNumber;
     }
 
@@ -193,8 +193,8 @@ public class GroupVisitor implements Serializable {
      *
      * @param idNumber t_group_visitor.idNumber, 证件号码
      */
-    public void setIdNumber(Integer idNumber) {
-        this.idNumber = idNumber;
+    public void setIdNumber(String idNumber) {
+        this.idNumber = idNumber == null ? null : idNumber.trim();
     }
 
     /**

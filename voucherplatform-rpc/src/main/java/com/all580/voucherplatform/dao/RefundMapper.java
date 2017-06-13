@@ -1,6 +1,8 @@
 package com.all580.voucherplatform.dao;
 
+import com.all580.voucherplatform.entity.Consume;
 import com.all580.voucherplatform.entity.Refund;
+import org.apache.ibatis.annotations.Param;
 
 public interface RefundMapper {
     /**
@@ -44,4 +46,25 @@ public interface RefundMapper {
      * @param record
      */
     int updateByPrimaryKey(Refund record);
+
+    /**
+     *
+     * @param refCode
+     * @return
+     */
+    Refund selectByRefCode(@Param("ref_code") String refCode);
+
+    /**
+     *
+     * @param orderId
+     * @param orderCode
+     * @param platformId
+     * @param seqId
+     * @return
+     */
+    Refund selectBySeqId(@Param("order_Id") Integer orderId,
+                          @Param("order_Code") String orderCode,
+                          @Param("platform_Id") Integer platformId,
+                          @Param("seqId") String seqId,
+                          @Param("prodType") Integer prodType);
 }

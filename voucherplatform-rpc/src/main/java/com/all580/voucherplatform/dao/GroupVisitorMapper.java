@@ -1,6 +1,10 @@
 package com.all580.voucherplatform.dao;
 
 import com.all580.voucherplatform.entity.GroupVisitor;
+import org.apache.ibatis.annotations.Param;
+
+import java.security.acl.Group;
+import java.util.List;
 
 public interface GroupVisitorMapper {
     /**
@@ -44,4 +48,8 @@ public interface GroupVisitorMapper {
      * @param record
      */
     int updateByPrimaryKey(GroupVisitor record);
+
+    int updateByVisitorSeqId(GroupVisitor record);
+
+    List<GroupVisitor> selectByGroupOrderId(Integer groupId);
 }
