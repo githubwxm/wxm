@@ -16,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -39,7 +41,14 @@ public class All580ServiceImpl implements All580Service {
         Integer identity = CommonUtil.objectParseInteger(map.get("identity"));
         String signed = CommonUtil.objectParseString(map.get("signed"));
         String content = CommonUtil.objectParseString(map.get("content"));
-        Map mapContent = JsonUtils.json2Map(content);
+        Map mapContent = null;
+        if (content.startsWith("[") && content.endsWith("]")) {
+            List list = JsonUtils.json2List(content);
+            mapContent = new HashMap();
+            mapContent.put("data", list);
+        } else {
+            mapContent = JsonUtils.json2Map(content);
+        }
         Platform platform = platformMapper.selectByPrimaryKey(identity);
         if (platform == null) {
             return new Result(false, "身份数据校检失败");

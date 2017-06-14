@@ -37,6 +37,6 @@ public abstract class SupplyAdapterService extends AbstractProcessorAdapter<Supp
 
     public abstract void refundGroup(Integer groupRefId);
 
-    public abstract void updateGroup(Integer groupOrderId);
+    public abstract void updateGroup(Integer groupOrderId,Integer...seqId);
 
 }

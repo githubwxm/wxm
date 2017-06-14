@@ -200,11 +200,37 @@
         and `group_order_id`=#{groupId}
         and `seqId`=#{seqId}
     </update>
+    <update id="updateActivateByIdNumber">
+        update t_group_visitor
+        set `activate`=TRUE
+        WHERE group_order_id=#{group_order_id}
+        and `idNumber` in
+        <foreach collection="IdNumbers" separator="," open="(" close=")" item="item">
+            #{item}
+        </foreach>
+    </update>
 
     <select id="selectByGroupOrderId" resultMap="BaseResultMap">
         SELECT
-        <include refid="Base_Column_List" />
+        <include refid="Base_Column_List"/>
         from t_group_visitor
         where `group_order_id`=#{groupId}
+    </select>
+    <select id="selectByGroupSeqId" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        from t_group_visitor
+        where `group_order_id`=#{groupId}
+        and `seqId` in
+        <foreach collection="seqId" separator="," open="(" close=")" item="item">
+            #{item}
+        </foreach>
+    </select>
+    <select id="selectByActivate" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        from t_group_visitor
+        where `group_order_id`=#{groupId}
+        and `activate`=TRUE
     </select>
 </mapper>

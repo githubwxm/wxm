@@ -3,10 +3,7 @@ package com.all580.voucherplatform.adapter.platform.all580V3;
 import com.all580.voucherplatform.adapter.platform.PlatformAdapterService;
 import com.all580.voucherplatform.api.VoucherConstant;
 import com.all580.voucherplatform.dao.*;
-import com.all580.voucherplatform.entity.Consume;
-import com.all580.voucherplatform.entity.Order;
-import com.all580.voucherplatform.entity.Refund;
-import com.all580.voucherplatform.entity.Reverse;
+import com.all580.voucherplatform.entity.*;
 import com.framework.common.lang.DateFormatUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -31,12 +28,14 @@ public class All580V3AdapterIImpl extends PlatformAdapterService {
     private ReverseMapper reverseMapper;
     @Autowired
     private GroupOrderMapper groupOrderMapper;
+    @Autowired
+    private GroupVisitorMapper groupVisitorMapper;
 
     @Override
     public Object sendOrder(Integer... orderIds) {
         Map map = new HashMap();
         String orderId = null;
-        List<Map> mapData = new ArrayList<>();
+        List<Map> mapList = new ArrayList<>();
         for (Integer id : orderIds) {
             Order order = orderMapper.selectByPrimaryKey(id);
             if (!StringUtils.isEmpty(orderId)) {
@@ -50,9 +49,9 @@ public class All580V3AdapterIImpl extends PlatformAdapterService {
             mapSub.put("maProductId", order.getPlatformprod_id());
             mapSub.put("sid", order.getIdNumber());
             mapSub.put("phone", order.getMobile());
-            mapData.add(mapSub);
+            mapList.add(mapSub);
         }
-        map.put("data", mapData);
+        map.put("data", mapList);
         map.put("orderSn", orderId);
         map.put("procTime", DateFormatUtils.converToStringTime(new Date()));
         map.put("status", 1);
@@ -115,26 +114,71 @@ public class All580V3AdapterIImpl extends PlatformAdapterService {
 
     @Override
     public Object sendGroupOrder(Integer groupOrderId) {
+        GroupOrder order = groupOrderMapper.selectByPrimaryKey(groupOrderId);
+        Map map = new HashMap();
+        map.put("orderSn", order.getPlatformOrderId());
+        map.put("procTime", DateFormatUtils.converToStringTime(new Date()));
+        map.put("status", 1);
+        map.put("imageUrl", order.getImgUrl());
+        map.put("voucherNumber", order.getVoucherNumber());
+        map.put("voucherId", order.getOrderCode());
+        map.put("sid", order.getGuideIdNumber());
+        map.put("phone", order.getGuideMobile());
         return null;
     }
 
     @Override
     public Object refundGroup(Integer groupOrderId) {
+        Refund refund = refundMapper.selectByPrimaryKey(groupOrderId);
+        GroupOrder order = groupOrderMapper.selectByPrimaryKey(refund.getOrder_id());
+        Map map = new HashMap();
+        map.put("orderSn", order.getPlatformOrderId());
+        map.put("refId", refund.getPlatformRefId());
+        map.put("success", refund.getRefStatus().equals(VoucherConstant.RefundStatus.SUCCESS));
+        map.put("procTime", DateFormatUtils.converToStringTime(new Date()));
         return null;
     }
 
     @Override
     public Object updateGroup(Integer groupOrderId) {
+        GroupOrder order = groupOrderMapper.selectByPrimaryKey(groupOrderId);
+        Map map = new HashMap();
+        map.put("orderSn", order.getPlatformOrderId());
+        map.put("success", true);
+        map.put("procTime", DateFormatUtils.converToStringTime(new Date()));
         return null;
     }
 
     @Override
     public Object activateGroupOrder(Integer groupOrderId) {
+        GroupOrder order = groupOrderMapper.selectByPrimaryKey(groupOrderId);
+        List<GroupVisitor> visitorList = groupVisitorMapper.selectByActivate(order.getId());
+        Map map = new HashMap();
+        map.put("orderSn", order.getPlatformOrderId());
+        map.put("validateSn", order.getOrderCode());
+        StringBuilder builder = new StringBuilder();
+        for (GroupVisitor visitor : visitorList) {
+            builder.append(visitor.getIdNumber());
+            builder.append(",");
+        }
+        if (!StringUtils.isEmpty(builder.toString())) {
+            builder.deleteCharAt(builder.length() - 1);
+        }
+        map.put("sids", builder.toString());
+        map.put("consumeQuantity", order.getActivateNum());
+        map.put("procTime", DateFormatUtils.converToStringTime(new Date()));
         return null;
     }
 
     @Override
     public Object reverseGroupOrder(Integer groupOrderId) {
+        GroupOrder order = groupOrderMapper.selectByPrimaryKey(groupOrderId);
+        Map map = new HashMap();
+        map.put("orderSn", order.getPlatformOrderId());
+        map.put("validateSn", order.getOrderCode());
+        map.put("reValidataSn", order.getOrderCode());
+        map.put("quantity", order.getActivateNum());
+        map.put("procTime", DateFormatUtils.converToStringTime(new Date()));
         return null;
     }
 

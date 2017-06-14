@@ -46,7 +46,7 @@ public class ConsumeOrderManager {
         this.order = orderMapper.selectBySupply(supplyId, supplyOrderId);
     }
 
-    public void Comsume(String seqId, Integer number, String address, String consumeTime, String deviceId) throws Exception {
+    public void Comsume(String seqId, Integer number, String address, Date consumeTime, String deviceId) throws Exception {
         if (order == null) {
             throw new Exception("订单不存在");
         }
@@ -76,7 +76,7 @@ public class ConsumeOrderManager {
         consume.setConsumeNumber(number);
         consume.setPrevNumber(availableNumber);
         consume.setAfterNumber(consume.getPrevNumber() - consume.getConsumeNumber());
-        consume.setConsumeTime(DateFormatUtils.converToDateTime(consumeTime));
+        consume.setConsumeTime(consumeTime);
         consume.setAddress(address);
         consume.setDeviceId(deviceId);
         consume.setSupply_id(order.getSupply_id());

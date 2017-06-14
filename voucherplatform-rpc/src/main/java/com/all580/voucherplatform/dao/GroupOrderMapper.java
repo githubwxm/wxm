@@ -50,6 +50,7 @@ public interface GroupOrderMapper {
      */
     int updateByPrimaryKey(GroupOrder record);
 
+    GroupOrder selectByOrderCode(@Param("orderCode") String orderCode);
 
     /**
      * @param platformId

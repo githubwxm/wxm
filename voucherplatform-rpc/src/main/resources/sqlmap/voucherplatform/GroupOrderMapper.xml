@@ -439,6 +439,12 @@
         where `id` = #{id,jdbcType=INTEGER}
     </update>
 
+    <select id="selectByOrderCode"  resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from t_grouporder
+        where `orderCode`=#{orderCode}
+    </select>
     <select id="getOrderCount" resultType="java.lang.Integer">
         SELECT COUNT(0)
         from t_grouporder
@@ -477,9 +483,10 @@
 
         </if>
     </select>
+
     <select id="getOrderList" resultType="java.util.Map">
         SELECT *
-        from t_order
+        from t_grouporder
         where 1=1
         <if test="platform_Id!=null">
             and `platform_id`=#{platform_Id}
