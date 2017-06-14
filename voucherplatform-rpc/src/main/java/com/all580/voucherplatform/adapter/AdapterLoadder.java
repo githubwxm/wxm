@@ -60,6 +60,14 @@ public class AdapterLoadder {
         }
     }
 
+    public SupplyAdapterService getSupplyAdapterService(Integer ticketSysId) {
+        if (!serviceMap.containsKey(ticketSysId)) {
+            return loadTicketSystem(ticketSysId);
+        } else {
+            return serviceMap.get(ticketSysId);
+        }
+    }
+
     public <T> T getBean(Class<T> cls) {
         return applicationContext.getBean(cls);
     }

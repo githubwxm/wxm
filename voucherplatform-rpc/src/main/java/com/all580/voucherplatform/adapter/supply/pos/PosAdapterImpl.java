@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 public class PosAdapterImpl extends SupplyAdapterService {
 
 
-
     @Override
     public void queryProd(Integer supplyId) {
 
@@ -22,7 +21,7 @@ public class PosAdapterImpl extends SupplyAdapterService {
     }
 
     @Override
-    public void sendGroupOrder(Integer orderId) {
+    public void sendGroupOrder(Integer groupOrderId) {
 
     }
 
@@ -47,12 +46,12 @@ public class PosAdapterImpl extends SupplyAdapterService {
     }
 
     @Override
-    public void refundGroup(Integer orderId) {
+    public void refundGroup(Integer groupRefId) {
 
     }
 
     @Override
-    public void updateGroup(Integer orderId) {
+    public void updateGroup(Integer groupOrderId, Integer... seqId) {
 
     }
 }

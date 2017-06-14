@@ -40,8 +40,6 @@ public abstract class AbstractProcessorAdapter<Identity> {
             } catch (Exception ex) {
                 throw new ApiException(ex);
             }
-
-
         }
         return result;
     }

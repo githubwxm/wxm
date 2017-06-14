@@ -40,6 +40,7 @@ public class RefundProcessorImpl implements ProcessorService<Platform> {
         try {
             refundApplyManager.setOrder(platform.getId(), orderId, visitorSeqId);
             refundApplyManager.apply(refId, refNumber, DateFormatUtils.converToDateTime(refTime), refReason);
+            refundApplyManager.notitySupply();
         } catch (Exception ex) {
             throw new ApiException(ex);
         }

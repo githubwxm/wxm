@@ -1,5 +1,7 @@
 package com.all580.voucherplatform.manager.order;
 
+import com.all580.voucherplatform.adapter.AdapterLoadder;
+import com.all580.voucherplatform.adapter.supply.SupplyAdapterService;
 import com.all580.voucherplatform.api.VoucherConstant;
 import com.all580.voucherplatform.dao.*;
 import com.all580.voucherplatform.entity.*;
@@ -30,6 +32,8 @@ public class CreateOrderManager {
     @Autowired
     private PlatformProductMapper prodMapper;
     @Autowired
+    private SupplyMapper supplyMapper;
+    @Autowired
     private SupplyProductMapper supplyProductMapper;
 
     @Autowired
@@ -40,6 +44,8 @@ public class CreateOrderManager {
     private VoucherGenerate voucherGenerate;
     @Autowired
     private VoucherUrlGenerate voucherUrlGenerate;
+    @Autowired
+    private AdapterLoadder adapterLoadder;
 
     @Autowired
     private RedisUtils redisUtils;
@@ -47,6 +53,7 @@ public class CreateOrderManager {
 
     private Integer platformId;
     private PlatformProduct platformProduct;
+    private Supply supply;
     private SupplyProduct supplyProduct;
     private QrRule qrRule;
     private Template template;
@@ -61,6 +68,7 @@ public class CreateOrderManager {
     private String payTime;
     private String sms;
     private List<Order> orderList;
+    private Integer[] orderIdList;
 
     public CreateOrderManager() {
     }
@@ -90,6 +98,7 @@ public class CreateOrderManager {
         } else {
             log.warn("订单号为{}的票务产品未配置", orderId);
         }
+        supply = supplyMapper.selectByPrimaryKey(platformProduct.getSupply_id());
 
         loadTemplate(platformProduct.getSupplyprod_id(), supplyProduct == null ? null : supplyProduct.getId());
         loadQrRule(platformProduct.getSupplyprod_id(), supplyProduct == null ? null : supplyProduct.getId());
@@ -136,9 +145,19 @@ public class CreateOrderManager {
         }
     }
 
+
     public void saveOrder() {
-        for (Order order : orderList) {
-            orderMapper.insertSelective(order);
+        orderIdList = new Integer[orderList.size()];
+        for (int i = 0; i < orderList.size(); i++) {
+            Integer orderId = orderMapper.insertSelective(orderList.get(i));
+            orderIdList[i] = orderId;
+        }
+    }
+
+    public void notitySupply() {
+        SupplyAdapterService supplyAdapterService = adapterLoadder.getSupplyAdapterService(supply);
+        if (supplyAdapterService != null) {
+            supplyAdapterService.sendOrder(orderIdList);
         }
     }
 
@@ -208,7 +227,7 @@ public class CreateOrderManager {
         order.setPlatform_id(platformId);
         order.setPlatformprod_id(platformProduct.getPlatform_id());
         order.setSupply_id(platformProduct.getSupply_id());
-        order.setTicketsys_id(null);
+        order.setTicketsys_id(supply.getTicketsys_id());
         if (supplyProduct != null) {
             order.setSupplyProdId(supplyProduct.getId());
         }

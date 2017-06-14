@@ -53,7 +53,7 @@ public class OrderManageTest extends AbstractTransactionalJUnit4SpringContextTes
     public void testConsume() throws Exception {
         ConsumeOrderManager consumeOrderManager = applicationContext.getBean(ConsumeOrderManager.class);
         consumeOrderManager.setOrder(1);
-        consumeOrderManager.Comsume("12", 1, "aaa", DateFormatUtils.converToStringTime(new Date()), "11");
+        consumeOrderManager.Comsume("12", 1, "aaa", new Date(), "11");
     }
 
     @Test

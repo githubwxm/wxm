@@ -4,14 +4,14 @@ package com.all580.voucherplatform.manager.order;
  * Created by Linv2 on 2017-06-05.
  */
 
+import com.all580.voucherplatform.adapter.AdapterLoadder;
+import com.all580.voucherplatform.adapter.supply.SupplyAdapterService;
 import com.all580.voucherplatform.api.VoucherConstant;
-import com.all580.voucherplatform.dao.ConsumeMapper;
-import com.all580.voucherplatform.dao.GroupOrderMapper;
-import com.all580.voucherplatform.dao.OrderMapper;
-import com.all580.voucherplatform.dao.RefundMapper;
+import com.all580.voucherplatform.dao.*;
 import com.all580.voucherplatform.entity.GroupOrder;
 import com.all580.voucherplatform.entity.Order;
 import com.all580.voucherplatform.entity.Refund;
+import com.all580.voucherplatform.entity.Supply;
 import com.framework.common.lang.UUIDGenerator;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -31,13 +31,17 @@ public class RefundApplyManager {
     @Autowired
     private OrderMapper orderMapper;
     @Autowired
+    private SupplyMapper supplyMapper;
+    @Autowired
     private GroupOrderMapper groupOrderMapper;
     @Autowired
     private RefundMapper refundMapper;
     @Autowired
-    private ConsumeMapper consumeMapper;
+    private AdapterLoadder adapterLoadder;
     private Order order;
     private GroupOrder groupOrder;
+    private Supply supply;
+    private Integer refundId;
     private Integer prodType = VoucherConstant.ProdType.GENERAL;
 
     public RefundApplyManager() {}
@@ -102,13 +106,20 @@ public class RefundApplyManager {
         refund.setSupplyprod_id(order.getSupplyProdId());
         refund.setCreateTime(new Date());
         refund.setProdType(prodType);
-        refundMapper.insertSelective(refund);
+        refundId = refundMapper.insertSelective(refund);
         if (prodType == VoucherConstant.ProdType.GENERAL) {
             Order updateOrder = new Order();
             updateOrder.setId(order.getId());
             updateOrder.setRefunding(order.getRefunding() + refund.getRefNumber());
             orderMapper.updateByPrimaryKeySelective(updateOrder);
 
+        }
+    }
+
+    public void notitySupply() {
+        SupplyAdapterService supplyAdapterService = adapterLoadder.getSupplyAdapterService(supply);
+        if (supplyAdapterService != null) {
+            supplyAdapterService.refund(refundId);
         }
     }
 }
