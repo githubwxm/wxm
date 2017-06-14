@@ -82,7 +82,7 @@ public class BookingOrderManager extends BaseOrderManager {
             if (sids.contains(sid)) {
                 throw new ApiException("身份证:" + sid + "重复");
             }
-            if (maxCount > 0) {
+            if (maxCount != null && maxCount > 0) {
                 int count = getOrderByCount(productSubCode, sid, bookingDate);
                 if (count >= maxCount) {
                     throw new ApiException(String.format("身份证:%s超出该产品当天最大订单次数,已定次数:%d,最大次数:%d",
@@ -95,7 +95,7 @@ public class BookingOrderManager extends BaseOrderManager {
                 throw new ApiException(String.format("身份证:%s预定张数%d 不能小于1", sid, qty));
             }
             total += qty;
-            if (maxQuantity > 0) {
+            if (maxQuantity != null && maxQuantity > 0) {
                 int quantity = getOrderByQuantity(productSubCode, sid, bookingDate);
                 if (quantity + qty > maxQuantity) {
                     throw new ApiException(String.format("身份证:%s超出该产品当天最大购票数,已定张数%d,最大购票张数%d",
