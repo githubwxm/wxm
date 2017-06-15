@@ -56,6 +56,8 @@ public class BookingOrderManager extends BaseOrderManager {
     @Autowired
     private GroupMemberMapper groupMemberMapper;
     @Autowired
+    private OrderItemSalesChainMapper orderItemSalesChainMapper;
+    @Autowired
     @Getter
     private MnsEventAspect eventManager;
     @Autowired
@@ -336,6 +338,22 @@ public class BookingOrderManager extends BaseOrderManager {
         orderItemDetail.setUsed_quantity(0);
         orderItemDetailMapper.insertSelective(orderItemDetail);
         return orderItemDetail;
+    }
+
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public OrderItemSalesChain generateChain(OrderItem item, Integer epId, Date day, List<EpSalesInfo> daySales) {
+        AccountDataDto dataDto = AccountUtil.generateAccountData(daySales, epId, day);
+        OrderItemSalesChain chain = new OrderItemSalesChain();
+        chain.setOrder_item_id(item.getId());
+        chain.setDay(day);
+        chain.setEp_id(epId);
+        chain.setCore_ep_id(getCoreEpId(getCoreEpId(epId)));
+        chain.setSale_ep_id(dataDto.getSaleEpId());
+        chain.setSale_core_ep_id(getCoreEpId(getCoreEpId(dataDto.getSaleEpId())));
+        chain.setIn_price(dataDto.getInPrice());
+        chain.setOut_price(dataDto.getOutPrice());
+        orderItemSalesChainMapper.insertSelective(chain);
+        return chain;
     }
 
     /**
