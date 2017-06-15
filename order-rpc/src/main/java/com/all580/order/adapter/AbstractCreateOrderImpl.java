@@ -176,6 +176,27 @@ public abstract class AbstractCreateOrderImpl implements CreateOrderInterface {
     }
 
     @Override
+    public List<OrderItemSalesChain> insertSalesChain(OrderItem item, ValidateProductSub sub, List<List<EpSalesInfo>> allDaysSales) {
+        List<OrderItemSalesChain> chains = new ArrayList<>();
+        for (int i = 0; i < allDaysSales.size(); i++) {
+            List<EpSalesInfo> daySales = allDaysSales.get(i);
+            Date day = DateUtils.addDays(sub.getBooking(), i);
+            Set<Integer> eps = new HashSet<>();
+            for (EpSalesInfo daySale : daySales) {
+                if (!eps.contains(daySale.getEp_id())) {
+                    chains.add(bookingOrderManager.generateChain(item, daySale.getEp_id(), day, daySales));
+                    eps.add(daySale.getEp_id());
+                }
+                if (!eps.contains(daySale.getSale_ep_id())) {
+                    chains.add(bookingOrderManager.generateChain(item, daySale.getSale_ep_id(), day, daySales));
+                    eps.add(daySale.getSale_ep_id());
+                }
+            }
+        }
+        return chains;
+    }
+
+    @Override
     public List<Visitor> insertVisitor(List<?> visitorList, OrderItem orderItem, ProductSalesInfo salesInfo, ValidateProductSub sub, Map item) {
         List<Visitor> visitors = new ArrayList<>();
         for (Object o : visitorList) {
