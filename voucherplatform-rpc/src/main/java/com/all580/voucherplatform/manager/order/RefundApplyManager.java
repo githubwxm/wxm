@@ -12,6 +12,7 @@ import com.all580.voucherplatform.entity.GroupOrder;
 import com.all580.voucherplatform.entity.Order;
 import com.all580.voucherplatform.entity.Refund;
 import com.all580.voucherplatform.entity.Supply;
+import com.all580.voucherplatform.utils.sign.async.AsyncService;
 import com.framework.common.lang.UUIDGenerator;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -31,17 +32,17 @@ public class RefundApplyManager {
     @Autowired
     private OrderMapper orderMapper;
     @Autowired
-    private SupplyMapper supplyMapper;
-    @Autowired
     private GroupOrderMapper groupOrderMapper;
     @Autowired
     private RefundMapper refundMapper;
     @Autowired
     private AdapterLoadder adapterLoadder;
+
+    @Autowired
+    private AsyncService asyncService;
+
     private Order order;
     private GroupOrder groupOrder;
-    private Supply supply;
-    private Integer refundId;
     private Integer prodType = VoucherConstant.ProdType.GENERAL;
 
     public RefundApplyManager() {}
@@ -106,20 +107,30 @@ public class RefundApplyManager {
         refund.setSupplyprod_id(order.getSupplyProdId());
         refund.setCreateTime(new Date());
         refund.setProdType(prodType);
-        refundId = refundMapper.insertSelective(refund);
+        Integer refundId = refundMapper.insertSelective(refund);
         if (prodType == VoucherConstant.ProdType.GENERAL) {
             Order updateOrder = new Order();
             updateOrder.setId(order.getId());
             updateOrder.setRefunding(order.getRefunding() + refund.getRefNumber());
             orderMapper.updateByPrimaryKeySelective(updateOrder);
-
         }
+        notifySupply(order.getSupply_id(), refundId, prodType);
+
     }
 
-    public void notitySupply() {
-        SupplyAdapterService supplyAdapterService = adapterLoadder.getSupplyAdapterService(supply);
-        if (supplyAdapterService != null) {
-            supplyAdapterService.refund(refundId);
-        }
+    private void notifySupply(final Integer supplyId, final Integer refundId, final Integer prodType) {
+        asyncService.run(new Runnable() {
+            @Override
+            public void run() {
+                SupplyAdapterService supplyAdapterService = adapterLoadder.getSupplyAdapterService(supplyId);
+                if (supplyAdapterService != null) {
+                    if (prodType == VoucherConstant.ProdType.GENERAL) {
+                        supplyAdapterService.refund(refundId);
+                    } else {
+                        supplyAdapterService.refundGroup(refundId);
+                    }
+                }
+            }
+        });
     }
 }

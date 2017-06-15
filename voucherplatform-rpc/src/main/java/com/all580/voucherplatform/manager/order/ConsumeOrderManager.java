@@ -1,9 +1,14 @@
 package com.all580.voucherplatform.manager.order;
 
+import com.all580.voucherplatform.adapter.AdapterLoadder;
+import com.all580.voucherplatform.adapter.platform.PlatformAdapterService;
+import com.all580.voucherplatform.adapter.supply.SupplyAdapterService;
 import com.all580.voucherplatform.dao.ConsumeMapper;
 import com.all580.voucherplatform.dao.OrderMapper;
 import com.all580.voucherplatform.entity.Consume;
 import com.all580.voucherplatform.entity.Order;
+import com.all580.voucherplatform.entity.Supply;
+import com.all580.voucherplatform.utils.sign.async.AsyncService;
 import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.UUIDGenerator;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +31,11 @@ public class ConsumeOrderManager {
     private OrderMapper orderMapper;
     @Autowired
     private ConsumeMapper consumeMapper;
+
+    @Autowired
+    private AdapterLoadder adapterLoadder;
+    @Autowired
+    private AsyncService asyncService;
     private Order order;
 
     public ConsumeOrderManager() {}
@@ -85,12 +95,24 @@ public class ConsumeOrderManager {
         consume.setPlatformprod_id(order.getPlatformprod_id());
         consume.setReverseStatus(false);
         consume.setCreateTime(new Date());
-        consumeMapper.insertSelective(consume);
+        Integer consumeId = consumeMapper.insertSelective(consume);
         Order updateOrder = new Order();
         updateOrder.setId(order.getId());
         updateOrder.setConsume(order.getConsume() + consume.getConsumeNumber());
         orderMapper.updateByPrimaryKeySelective(updateOrder);
+        notifyPlatform(order.getPlatform_id(), consumeId);
+    }
 
+    private void notifyPlatform(final Integer platformId, final Integer consumeId) {
+        asyncService.run(new Runnable() {
+            @Override
+            public void run() {
+                PlatformAdapterService platformAdapterService = adapterLoadder.getPlatformAdapterService(platformId);
+                if (platformAdapterService != null) {
+                    platformAdapterService.consume(consumeId);
+                }
+            }
+        });
     }
 
 

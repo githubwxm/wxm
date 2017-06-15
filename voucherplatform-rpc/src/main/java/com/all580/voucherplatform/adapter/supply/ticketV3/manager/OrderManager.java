@@ -42,6 +42,7 @@ public class OrderManager {
         }
         map.put("batch", batchNo);
         map.put("orders", getVisitorMap(orderList, supplyProduct.getCode()));
+        map.put("supplyId", supplyProduct.getSupply_id());
         return map;
     }
 

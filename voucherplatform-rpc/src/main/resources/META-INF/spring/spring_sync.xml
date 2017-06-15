@@ -10,4 +10,9 @@
 		<property name="accountEndpoint" value="${mns.endpoint}"/>
 		<property name="tagPrefix" value="${mns.tag.prefix}"/>
 	</bean>
+	<bean id="queuePushManager" class="com.framework.common.mns.QueuePushManager">
+		<property name="accessId" value="${mns.access.id}"/>
+		<property name="accessKey" value="${mns.access.key}"/>
+		<property name="accountEndpoint" value="${mns.endpoint}"/>
+	</bean>
 </beans>

@@ -5,6 +5,7 @@ import com.all580.voucherplatform.adapter.supply.SupplyAdapterService;
 import com.all580.voucherplatform.api.VoucherConstant;
 import com.all580.voucherplatform.dao.*;
 import com.all580.voucherplatform.entity.*;
+import com.all580.voucherplatform.utils.sign.async.AsyncService;
 import com.all580.voucherplatform.utils.sign.voucher.VoucherGenerate;
 import com.all580.voucherplatform.utils.sign.voucher.VoucherUrlGenerate;
 import com.framework.common.io.cache.redis.RedisUtils;
@@ -18,7 +19,10 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Linv2 on 2017-05-24.
@@ -46,6 +50,8 @@ public class CreateOrderManager {
     private VoucherUrlGenerate voucherUrlGenerate;
     @Autowired
     private AdapterLoadder adapterLoadder;
+    @Autowired
+    private AsyncService asyncService;
 
     @Autowired
     private RedisUtils redisUtils;
@@ -68,7 +74,6 @@ public class CreateOrderManager {
     private String payTime;
     private String sms;
     private List<Order> orderList;
-    private Integer[] orderIdList;
 
     public CreateOrderManager() {
     }
@@ -147,18 +152,24 @@ public class CreateOrderManager {
 
 
     public void saveOrder() {
-        orderIdList = new Integer[orderList.size()];
+        Integer[] orderIdList = new Integer[orderList.size()];
         for (int i = 0; i < orderList.size(); i++) {
             Integer orderId = orderMapper.insertSelective(orderList.get(i));
             orderIdList[i] = orderId;
         }
+        notifySupply(supply, orderIdList);
     }
 
-    public void notitySupply() {
-        SupplyAdapterService supplyAdapterService = adapterLoadder.getSupplyAdapterService(supply);
-        if (supplyAdapterService != null) {
-            supplyAdapterService.sendOrder(orderIdList);
-        }
+    private void notifySupply(final Supply supply, final Integer[] orderIdList) {
+        asyncService.run(new Runnable() {
+            @Override
+            public void run() {
+                SupplyAdapterService supplyAdapterService = adapterLoadder.getSupplyAdapterService(supply);
+                if (supplyAdapterService != null) {
+                    supplyAdapterService.sendOrder(orderIdList);
+                }
+            }
+        });
     }
 
 
@@ -215,7 +226,7 @@ public class CreateOrderManager {
         return sms;
     }
 
-    private String repaceSmsByVisitor(Integer number, String voucherCode, String imgUrl) {
+    private String replaceSmsByVisitor(Integer number, String voucherCode, String imgUrl) {
         String s = new String(sms);
         return s.replace("{份数}", String.valueOf(number)).replace("{验证码}", MessageFormat.format("{0}，打开二维码: {1} ", voucherCode, imgUrl));
     }
@@ -244,7 +255,7 @@ public class CreateOrderManager {
         order.setVoucherNumber(voucherNumber);
         String voucherImgUrl = voucherUrlGenerate.getVoucherUrl(voucherNumber, qrRule.getErrorRate(), qrRule.getSize(), qrRule.getForeColor());
         order.setImgUrl(voucherImgUrl);
-        order.setSms(repaceSmsByVisitor(number, voucherNumber, voucherImgUrl));
+        order.setSms(replaceSmsByVisitor(number, voucherNumber, voucherImgUrl));
         if (template != null) {
             order.setPrintText(template.getPrintText());
         }

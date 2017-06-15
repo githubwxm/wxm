@@ -15,7 +15,7 @@ public abstract class PlatformAdapterService extends AbstractProcessorAdapter<Pl
 
     public abstract Object sendOrder(Integer... orderIds);
 
-    public abstract Object consumeTicketRet(Integer consumeId);
+    public abstract Object consume(Integer consumeId);
 
     public abstract Object refundOrder(Integer refundId);
 

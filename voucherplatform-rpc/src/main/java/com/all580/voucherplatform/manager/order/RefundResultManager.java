@@ -1,5 +1,7 @@
 package com.all580.voucherplatform.manager.order;
 
+import com.all580.voucherplatform.adapter.AdapterLoadder;
+import com.all580.voucherplatform.adapter.platform.PlatformAdapterService;
 import com.all580.voucherplatform.api.VoucherConstant;
 import com.all580.voucherplatform.dao.GroupOrderMapper;
 import com.all580.voucherplatform.dao.OrderMapper;
@@ -7,6 +9,7 @@ import com.all580.voucherplatform.dao.RefundMapper;
 import com.all580.voucherplatform.entity.GroupOrder;
 import com.all580.voucherplatform.entity.Order;
 import com.all580.voucherplatform.entity.Refund;
+import com.all580.voucherplatform.utils.sign.async.AsyncService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -27,6 +30,11 @@ public class RefundResultManager {
     private OrderMapper orderMapper;
     @Autowired
     private GroupOrderMapper groupOrderMapper;
+
+    @Autowired
+    private AdapterLoadder adapterLoadder;
+    @Autowired
+    private AsyncService asyncService;
 
     private Order order;
     private GroupOrder groupOrder;
@@ -67,7 +75,6 @@ public class RefundResultManager {
         refundUpdate.setSupplyRefSeqId(supplyRefId);
         refundUpdate.setSuccessTime(procTime);
         refundMapper.updateByPrimaryKeySelective(refundUpdate);
-
         if (refund.getProdType() == VoucherConstant.ProdType.GENERAL) {
             Order updateOrder = new Order();
             updateOrder.setId(order.getId());
@@ -75,6 +82,8 @@ public class RefundResultManager {
             updateOrder.setRefund((updateOrder.getRefund() == null ? 0 : updateOrder.getRefund()) + refund.getRefNumber());
             orderMapper.updateByPrimaryKeySelective(updateOrder);
         }
+
+        notifyPlatform(order.getPlatform_id(), refund.getId(), refund.getProdType());
     }
 
     public void refundFail() {
@@ -89,6 +98,23 @@ public class RefundResultManager {
             updateOrder.setRefunding((updateOrder.getRefunding() == null ? 0 : updateOrder.getRefunding()) - refund.getRefNumber());
             orderMapper.updateByPrimaryKeySelective(updateOrder);
         }
+        notifyPlatform(order.getPlatform_id(), refund.getId(), refund.getProdType());
+    }
+
+    public void notifyPlatform(final Integer platformId, final Integer refundId, final Integer prodType) {
+        asyncService.run(new Runnable() {
+            @Override
+            public void run() {
+                PlatformAdapterService platformAdapterService = adapterLoadder.getPlatformAdapterService(platformId);
+                if (platformAdapterService != null) {
+                    if (prodType == VoucherConstant.ProdType.GENERAL) {
+                        platformAdapterService.refundOrder(refundId);
+                    } else {
+                        platformAdapterService.refundGroup(refundId);
+                    }
+                }
+            }
+        });
     }
 
     public Order getOrder() {

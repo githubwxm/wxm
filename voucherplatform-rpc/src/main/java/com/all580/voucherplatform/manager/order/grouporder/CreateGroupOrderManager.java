@@ -1,7 +1,10 @@
 package com.all580.voucherplatform.manager.order.grouporder;
 
+import com.all580.voucherplatform.adapter.AdapterLoadder;
+import com.all580.voucherplatform.adapter.supply.SupplyAdapterService;
 import com.all580.voucherplatform.dao.*;
 import com.all580.voucherplatform.entity.*;
+import com.all580.voucherplatform.utils.sign.async.AsyncService;
 import com.all580.voucherplatform.utils.sign.voucher.VoucherGenerate;
 import com.all580.voucherplatform.utils.sign.voucher.VoucherUrlGenerate;
 import com.framework.common.lang.DateFormatUtils;
@@ -44,6 +47,10 @@ public class CreateGroupOrderManager {
     private VoucherGenerate voucherGenerate;
     @Autowired
     private VoucherUrlGenerate voucherUrlGenerate;
+    @Autowired
+    private AdapterLoadder adapterLoadder;
+    @Autowired
+    private AsyncService asyncService;
 
 
     private PlatformProduct platformProduct;
@@ -176,6 +183,19 @@ public class CreateGroupOrderManager {
             groupVisitor.setGroup_order_id(groupId);
             groupVisitorMapper.insertSelective(groupVisitor);
         }
+        notifySupply(groupOrder.getSupply_id(), groupId);
+    }
+
+    private void notifySupply(final Integer supplyId, final Integer groupOrderId) {
+        asyncService.run(new Runnable() {
+            @Override
+            public void run() {
+                SupplyAdapterService supplyAdapterService = adapterLoadder.getSupplyAdapterService(supplyId);
+                if (supplyAdapterService != null) {
+                    supplyAdapterService.sendGroupOrder(groupOrderId);
+                }
+            }
+        });
     }
 
 

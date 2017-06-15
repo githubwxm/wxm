@@ -1,6 +1,7 @@
 package com.all580.voucherplatform.adapter.supply.ticketV3.processor;
 
 import com.all580.voucherplatform.adapter.ProcessorService;
+import com.all580.voucherplatform.entity.Order;
 import com.all580.voucherplatform.entity.Supply;
 import com.all580.voucherplatform.manager.order.OrderSupplyReceiveManager;
 import com.framework.common.util.CommonUtil;
@@ -25,11 +26,20 @@ public class SendOrderProcessorImpl implements ProcessorService<Supply> {
     public Object processor(Supply supply, Map map) {
         String batch = CommonUtil.objectParseString(map.get("batch"));
         List<Map> mapList = (List<Map>) map.get("orders");
-        for (Map mapOrder : mapList) {
+        Integer[] orderIdList = new Integer[mapList.size()];
+        Integer platformId = null;
+        for (int i = 0; i < mapList.size(); i++) {
+            Map mapOrder = mapList.get(i);
             String voucherId = CommonUtil.objectParseString(mapOrder.get("voucherId"));
             String ticketOrderId = CommonUtil.objectParseString(mapOrder.get("ticketOrderId"));
-            orderSupplyReceiveManager.Receive(voucherId, ticketOrderId);
+            Order order = orderSupplyReceiveManager.Receive(voucherId, ticketOrderId);
+            orderIdList[i] = order.getId();
+            if (platformId == null) {
+                platformId = order.getPlatform_id();
+            }
         }
+        orderSupplyReceiveManager.notifyPlatform(platformId, orderIdList);
+
         return null;
     }
 

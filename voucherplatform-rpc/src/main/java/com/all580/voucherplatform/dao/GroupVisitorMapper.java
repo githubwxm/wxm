@@ -55,5 +55,5 @@ public interface GroupVisitorMapper {
 
     List<GroupVisitor> selectByActivate(Integer groupId);
     List<GroupVisitor> selectByGroupOrderId(Integer groupId);
-    List<GroupVisitor> selectByGroupSeqId(@Param("groupId") Integer groupId,@Param("seqId") Integer... seqId);
+    List<GroupVisitor> selectByGroupSeqId(@Param("groupId") Integer groupId,@Param("seqId") String... seqId);
 }

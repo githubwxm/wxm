@@ -23,6 +23,11 @@
         </dependency>
         <dependency>
             <groupId>com.all580</groupId>
+            <artifactId>ep-api</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.all580</groupId>
             <artifactId>voucherplatform-api</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>

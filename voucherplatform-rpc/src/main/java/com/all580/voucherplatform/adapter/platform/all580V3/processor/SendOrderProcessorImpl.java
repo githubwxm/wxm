@@ -32,7 +32,6 @@ public class SendOrderProcessorImpl implements ProcessorService<Platform> {
             List<Map> visitorList = (List<Map>) map.get("visitors");
             createOrderManager.setVisitor(visitorList);
             createOrderManager.saveOrder();
-            createOrderManager.notitySupply();
         } catch (Exception ex) {
             throw new ApiException(ex);
         }

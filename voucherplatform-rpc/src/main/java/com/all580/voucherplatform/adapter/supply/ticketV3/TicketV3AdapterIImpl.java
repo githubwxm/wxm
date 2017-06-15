@@ -4,20 +4,20 @@ import com.all580.voucherplatform.adapter.supply.SupplyAdapterService;
 import com.all580.voucherplatform.adapter.supply.ticketV3.manager.GroupOrderManager;
 import com.all580.voucherplatform.adapter.supply.ticketV3.manager.OrderManager;
 import com.all580.voucherplatform.adapter.supply.ticketV3.manager.UpdateGroupManager;
-import com.all580.voucherplatform.dao.ConsumeMapper;
-import com.all580.voucherplatform.dao.OrderMapper;
-import com.all580.voucherplatform.dao.RefundMapper;
-import com.all580.voucherplatform.dao.SupplyProductMapper;
+import com.all580.voucherplatform.dao.*;
 import com.all580.voucherplatform.entity.Consume;
 import com.all580.voucherplatform.entity.Order;
 import com.all580.voucherplatform.entity.Refund;
+import com.all580.voucherplatform.entity.Supply;
 import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.JsonUtils;
+import com.framework.common.mns.QueuePushManager;
+import com.framework.common.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,9 +29,9 @@ import java.util.Map;
 public class TicketV3AdapterIImpl extends SupplyAdapterService {
 
     @Autowired
-    public OrderMapper orderMapper;
+    private OrderMapper orderMapper;
     @Autowired
-    public SupplyProductMapper supplyProductMapper;
+    private SupplyMapper supplyMapper;
     @Autowired
     private RefundMapper refundMapper;
     @Autowired
@@ -44,8 +44,15 @@ public class TicketV3AdapterIImpl extends SupplyAdapterService {
     private OrderManager orderManager;
     @Autowired
     private UpdateGroupManager updateGroupManager;
+    @Autowired
+    private QueuePushManager queuePushManager;
 
-    protected String generateMnsFormat(String action, Object value) {
+    private void sendMnsMessage(Integer supplyId, String action, Object value) {
+        Supply supply = supplyMapper.selectByPrimaryKey(supplyId);
+        sendMnsMessage(supply, action, value);
+    }
+
+    private void sendMnsMessage(Supply supply, String action, Object value) {
         Map map = new HashMap();
         map.put("action", action);
         if (value == null) {
@@ -53,19 +60,27 @@ public class TicketV3AdapterIImpl extends SupplyAdapterService {
         } else {
             map.put("createTime", JsonUtils.toJson(value));
         }
-        return JsonUtils.toJson(map);
+        Map mapConf = JsonUtils.json2Map(supply.getConf());
+        if (mapConf != null) {
+            String queueName = CommonUtil.objectParseString(mapConf.get("queueName"));
+            if (!StringUtils.isEmpty(queueName)) {
+                String content = JsonUtils.toJson(map);
+                queuePushManager.pushAsync(queueName, content);
+            }
+        }
     }
 
     @Override
     public void queryProd(Integer supplyId) {
-        String content = generateMnsFormat("queryProduct", null);
+        sendMnsMessage(supplyId, "queryProduct", null);
     }
 
     @Override
     public void sendOrder(Integer... orderId) {
         try {
             Map map = orderManager.getMap(orderId);
-            String content = generateMnsFormat("saveOrder", map);
+            Integer supplyId = CommonUtil.objectParseInteger(map.get("supplyId"));
+            sendMnsMessage(supplyId, "saveOrder", map);
         } catch (Exception ex) {
 
         }
@@ -76,7 +91,8 @@ public class TicketV3AdapterIImpl extends SupplyAdapterService {
     public void sendGroupOrder(Integer groupOrderId) {
         try {
             Map map = groupOrderManager.getMap(groupOrderId);
-            String content = generateMnsFormat("sendGroupOrder", map);
+            Integer supplyId = CommonUtil.objectParseInteger(map.get("supplyId"));
+            sendMnsMessage(supplyId, "sendGroupOrder", map);
         } catch (Exception ex) {
 
         }
@@ -87,7 +103,7 @@ public class TicketV3AdapterIImpl extends SupplyAdapterService {
         Order order = orderMapper.selectByPrimaryKey(orderId);
         Map map = new HashMap();
         map.put("voucherId", order.getOrderCode());
-        String content = generateMnsFormat("queryOrder", map);
+        sendMnsMessage(order.getSupply_id(), "queryOrder", map);
     }
 
     @Override
@@ -100,7 +116,7 @@ public class TicketV3AdapterIImpl extends SupplyAdapterService {
         map.put("consumeTime", DateFormatUtils.converToStringDate(consume.getConsumeTime()));
         map.put("consumeNumber", consume.getConsumeNumber());
         map.put("consumeReason", consume.getAddress());
-        String content = generateMnsFormat("verifyOrder", map);
+        sendMnsMessage(consume.getSupply_id(), "verifyOrder", map);
 
     }
 
@@ -118,7 +134,7 @@ public class TicketV3AdapterIImpl extends SupplyAdapterService {
         map.put("refNumber", refund.getRefNumber());
         map.put("refTime", DateFormatUtils.converToStringDate(refund.getRefTime()));
         map.put("refReason", refund.getRefCause());
-        String content = generateMnsFormat(action, map);
+        sendMnsMessage(refund.getSupply_id(), action, map);
     }
 
     @Override
@@ -131,7 +147,7 @@ public class TicketV3AdapterIImpl extends SupplyAdapterService {
         map.put("qrCode", order.getVoucherNumber());
         map.put("validTime", DateFormatUtils.converToStringDate(order.getValidTime()));
         map.put("invalidTime", DateFormatUtils.converToStringDate(order.getInvalidTime()));
-        String content = generateMnsFormat("updateOrder", map);
+        sendMnsMessage(order.getSupply_id(), "updateOrder", map);
     }
 
     @Override
@@ -140,8 +156,9 @@ public class TicketV3AdapterIImpl extends SupplyAdapterService {
     }
 
     @Override
-    public void updateGroup(Integer groupOrderId, Integer... seqId) {
+    public void updateGroup(Integer groupOrderId, String... seqId) {
         Map map = updateGroupManager.getMap(groupOrderId, seqId);
-        String content = generateMnsFormat("updateGroupOrder", map);
+        Integer supplyId = CommonUtil.objectParseInteger(map.get("supplyId"));
+        sendMnsMessage(supplyId, "updateGroupOrder", map);
     }
 }

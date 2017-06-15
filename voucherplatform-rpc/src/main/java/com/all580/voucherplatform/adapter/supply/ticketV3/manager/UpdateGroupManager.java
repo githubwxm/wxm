@@ -25,11 +25,12 @@ public class UpdateGroupManager {
     @Autowired
     private GroupVisitorMapper groupVisitorMapper;
 
-    public Map getMap(Integer groupOrderId, Integer... seqId) {
+    public Map getMap(Integer groupOrderId, String... seqId) {
         GroupOrder groupOrder = groupOrderMapper.selectByPrimaryKey(groupOrderId);
         List<GroupVisitor> visitorList = groupVisitorMapper.selectByGroupSeqId(groupOrderId, seqId);
         Map map = getOrderMap(groupOrder);
         map.put("visitors", getVisitorMap(visitorList));
+        map.put("supplyId", groupOrder.getSupply_id());
         return map;
     }
 

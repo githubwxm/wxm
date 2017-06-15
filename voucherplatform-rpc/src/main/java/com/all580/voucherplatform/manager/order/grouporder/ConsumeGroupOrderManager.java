@@ -1,8 +1,11 @@
 package com.all580.voucherplatform.manager.order.grouporder;
 
+import com.all580.voucherplatform.adapter.AdapterLoadder;
+import com.all580.voucherplatform.adapter.platform.PlatformAdapterService;
 import com.all580.voucherplatform.dao.GroupOrderMapper;
 import com.all580.voucherplatform.dao.GroupVisitorMapper;
 import com.all580.voucherplatform.entity.GroupOrder;
+import com.all580.voucherplatform.utils.sign.async.AsyncService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -19,6 +22,10 @@ public class ConsumeGroupOrderManager {
     private GroupOrderMapper groupOrderMapper;
     @Autowired
     private GroupVisitorMapper groupVisitorMapper;
+    @Autowired
+    private AdapterLoadder adapterLoadder;
+    @Autowired
+    private AsyncService asyncService;
     private GroupOrder groupOrder;
 
     public void setOrder(String orderCode) {
@@ -35,6 +42,20 @@ public class ConsumeGroupOrderManager {
         updateGroupOrder.setActivateNum(number);
         groupOrderMapper.updateByPrimaryKeySelective(updateGroupOrder);
         groupVisitorMapper.updateActivateByIdNumber(groupOrder.getId(), IdNumbers);
+        notifyPlatform(groupOrder.getPlatform_id(), groupOrder.getId());
 
+    }
+
+
+    private void notifyPlatform(final Integer platformId, final Integer groupOrderId) {
+        asyncService.run(new Runnable() {
+            @Override
+            public void run() {
+                PlatformAdapterService platformAdapterService = adapterLoadder.getPlatformAdapterService(platformId);
+                if (platformAdapterService != null) {
+                    platformAdapterService.activateGroupOrder(groupOrderId);
+                }
+            }
+        });
     }
 }

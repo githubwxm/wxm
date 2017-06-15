@@ -1,9 +1,13 @@
 package com.all580.voucherplatform.manager.order.grouporder;
 
+import com.all580.voucherplatform.adapter.AdapterLoadder;
+import com.all580.voucherplatform.adapter.supply.SupplyAdapterService;
 import com.all580.voucherplatform.dao.GroupOrderMapper;
 import com.all580.voucherplatform.dao.GroupVisitorMapper;
 import com.all580.voucherplatform.entity.GroupOrder;
 import com.all580.voucherplatform.entity.GroupVisitor;
+import com.all580.voucherplatform.entity.Supply;
+import com.all580.voucherplatform.utils.sign.async.AsyncService;
 import com.framework.common.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +29,10 @@ public class UpdateGroupOrderManager {
     public GroupOrderMapper groupOrderMapper;
     @Autowired
     public GroupVisitorMapper groupVisitorMapper;
+    @Autowired
+    private AdapterLoadder adapterLoadder;
+    @Autowired
+    private AsyncService asyncService;
 
     private GroupOrder order;
     private GroupOrder updateOrder;
@@ -61,8 +69,24 @@ public class UpdateGroupOrderManager {
 
     public void saveOrder() {
         groupOrderMapper.updateByPrimaryKeySelective(updateOrder);
-        for (GroupVisitor visitor : visitorList) {
+        String[] seqIdList = new String[visitorList.size()];
+        for (int i = 0; i < visitorList.size(); i++) {
+            GroupVisitor visitor = visitorList.get(i);
             groupVisitorMapper.updateByVisitorSeqId(visitor);
+            seqIdList[i] = visitor.getSeqId();
         }
+        notifySupply(order.getSupply_id(), order.getId(), seqIdList);
+    }
+
+    private void notifySupply(final Integer supplyId, final Integer groupId, final String... seqId) {
+        asyncService.run(new Runnable() {
+            @Override
+            public void run() {
+                SupplyAdapterService supplyAdapterService = adapterLoadder.getSupplyAdapterService(supplyId);
+                if (supplyAdapterService != null) {
+                    supplyAdapterService.updateGroup(groupId, seqId);
+                }
+            }
+        });
     }
 }

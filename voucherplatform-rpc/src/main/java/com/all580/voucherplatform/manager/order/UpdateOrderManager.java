@@ -1,7 +1,12 @@
 package com.all580.voucherplatform.manager.order;
 
+import com.all580.voucherplatform.adapter.AdapterLoadder;
+import com.all580.voucherplatform.adapter.platform.PlatformAdapterService;
+import com.all580.voucherplatform.adapter.supply.SupplyAdapterService;
 import com.all580.voucherplatform.dao.OrderMapper;
 import com.all580.voucherplatform.entity.Order;
+import com.all580.voucherplatform.entity.Platform;
+import com.all580.voucherplatform.utils.sign.async.AsyncService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -18,6 +23,10 @@ import java.util.Date;
 public class UpdateOrderManager {
     @Autowired
     private OrderMapper orderMapper;
+    @Autowired
+    private AdapterLoadder adapterLoadder;
+    @Autowired
+    private AsyncService asyncService;
     private Order order;
 
     private Order updateOrder;
@@ -49,5 +58,17 @@ public class UpdateOrderManager {
 
     public void saveOrder() {
         orderMapper.updateByPrimaryKeySelective(updateOrder);
+    }
+
+    private void notifyPlatform(final Integer platformId, final Integer orderId) {
+        asyncService.run(new Runnable() {
+            @Override
+            public void run() {
+                PlatformAdapterService platformAdapterService = adapterLoadder.getPlatformAdapterService(platformId);
+                if (platformAdapterService != null) {
+                    platformAdapterService.update(orderId);
+                }
+            }
+        });
     }
 }

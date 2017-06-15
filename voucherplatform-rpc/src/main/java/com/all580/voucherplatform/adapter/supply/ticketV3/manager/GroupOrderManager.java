@@ -58,6 +58,7 @@ public class GroupOrderManager {
         map.put("invalidTime", DateFormatUtils.converToStringDate(groupOrder.getInvalidTime()));
         map.put("products", getProdMap(groupOrder));
         map.put("visitors", getVisitorMap(groupOrder));
+        map.put("supplyId", groupOrder.getSupply_id());
         return map;
     }
 

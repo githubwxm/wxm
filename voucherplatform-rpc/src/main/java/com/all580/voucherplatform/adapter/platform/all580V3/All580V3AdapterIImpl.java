@@ -59,7 +59,7 @@ public class All580V3AdapterIImpl extends PlatformAdapterService {
     }
 
     @Override
-    public Object consumeTicketRet(Integer consumeId) {
+    public Object consume(Integer consumeId) {
         Consume consume = consumeMapper.selectByPrimaryKey(consumeId);
         Order order = orderMapper.selectByPrimaryKey(consume.getOrder_id());
         Map map = new HashMap();

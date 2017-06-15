@@ -2,6 +2,7 @@ package com.all580.voucherplatform.adapter;
 
 import com.all580.voucherplatform.adapter.platform.PlatformAdapterService;
 import com.all580.voucherplatform.adapter.supply.SupplyAdapterService;
+import com.all580.voucherplatform.dao.PlatformMapper;
 import com.all580.voucherplatform.dao.TicketSysMapper;
 import com.all580.voucherplatform.entity.Platform;
 import com.all580.voucherplatform.entity.Supply;
@@ -23,48 +24,73 @@ public class AdapterLoadder {
     private ApplicationContext applicationContext;
     @Autowired
     private TicketSysMapper ticketSysMapper;
-    private Map<Integer, SupplyAdapterService> serviceMap = new HashMap<>();
+    @Autowired
+    private PlatformMapper platformMapper;
+    private Map<Integer, SupplyAdapterService> supplyServiceMap = new HashMap<>();
+    private Map<Integer, PlatformAdapterService> platformSerivceMap = new HashMap<>();
+
 
     private synchronized SupplyAdapterService loadTicketSystem(Integer ticketSysId) {
-        if (!serviceMap.containsKey(ticketSysId)) {
+        if (!supplyServiceMap.containsKey(ticketSysId)) {
             TicketSys ticketSys = ticketSysMapper.selectByPrimaryKey(ticketSysId);
             if (ticketSys != null) {
                 SupplyAdapterService supplyAdapterService = applicationContext.getBean(ticketSys.getImplPacket(), SupplyAdapterService.class);
                 if (supplyAdapterService != null) {
-                    serviceMap.put(ticketSysId, supplyAdapterService);
+                    supplyServiceMap.put(ticketSysId, supplyAdapterService);
                 }
                 return supplyAdapterService;
             }
             return null;
         } else {
-            return serviceMap.get(ticketSysId);
+            return supplyServiceMap.get(ticketSysId);
         }
     }
 
+    private synchronized PlatformAdapterService loadPlatform(Integer platformId) {
+        if (!platformSerivceMap.containsKey(platformId)) {
+            Platform platform = platformMapper.selectByPrimaryKey(platformId);
+            if (platform != null) {
+                PlatformAdapterService platformAdapterService = applicationContext.getBean(platform.getImplPackage(), PlatformAdapterService.class);
+                if (platformAdapterService != null) {
+                    platformSerivceMap.put(platformId, platformAdapterService);
+                }
+                return platformAdapterService;
+            }
+            return null;
+        } else {
+            return platformSerivceMap.get(platformId);
+        }
+    }
 
     public PlatformAdapterService getPlatformAdapterService(Platform platform) {
-        try {
-            Class cls = Class.forName(platform.getImplPackage());
-            return (PlatformAdapterService) applicationContext.getBean(cls);
-        } catch (Exception ex) {
-            return null;
+        if (!platformSerivceMap.containsKey(platform.getId())) {
+            return loadPlatform(platform.getId());
+        } else {
+            return platformSerivceMap.get(platform.getId());
         }
-//        return applicationContext.getBean(platform.getImplPackage(), PlatformAdapterService.class);
+    }
+
+    public PlatformAdapterService getPlatformAdapterService(Integer platformId) {
+        if (!platformSerivceMap.containsKey(platformId)) {
+            return loadPlatform(platformId);
+        } else {
+            return platformSerivceMap.get(platformId);
+        }
     }
 
     public SupplyAdapterService getSupplyAdapterService(Supply supply) {
-        if (!serviceMap.containsKey(supply.getTicketsys_id())) {
+        if (!supplyServiceMap.containsKey(supply.getTicketsys_id())) {
             return loadTicketSystem(supply.getTicketsys_id());
         } else {
-            return serviceMap.get(supply.getTicketsys_id());
+            return supplyServiceMap.get(supply.getTicketsys_id());
         }
     }
 
     public SupplyAdapterService getSupplyAdapterService(Integer ticketSysId) {
-        if (!serviceMap.containsKey(ticketSysId)) {
+        if (!supplyServiceMap.containsKey(ticketSysId)) {
             return loadTicketSystem(ticketSysId);
         } else {
-            return serviceMap.get(ticketSysId);
+            return supplyServiceMap.get(ticketSysId);
         }
     }
 
