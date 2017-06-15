@@ -603,6 +603,9 @@ public class RefundOrderManager extends BaseOrderManager {
                 log.warn("余额退款失败:{}", result.get());
                 throw new ApiException("调用余额退款失败:" + result.getError());
             }
+            for (RefundAccount refundAccount : accountList) {
+                refundAccountMapper.updateByPrimaryKeySelective(refundAccount);
+            }
             return new Result(true);
         }
         // 第三方退款
