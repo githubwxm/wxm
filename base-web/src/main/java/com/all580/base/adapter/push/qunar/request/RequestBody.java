@@ -16,7 +16,9 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "RequestBody")
 @XmlSeeAlso({
-        NoticeOrderEticketSendedRequestBody.class
+        NoticeOrderEticketSendedRequestBody.class,
+        NoticeOrderRefundApproveResultRequestBody.class,
+        NoticeOrderConsumedRequestBody.class
 })
 public class RequestBody {
 
