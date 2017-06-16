@@ -8,8 +8,7 @@
 
 	<!-- 远程rpc类声明 -->
 	<!-- 提供方应用信息，用于计算依赖关系 -->
-	<dubbo:consumer check="false"/>
-
+	<dubbo:consumer check="false" retries="0" timeout="120000"/>
 	<dubbo:reference id="balancePayService"
 					 interface="com.all580.payment.api.service.BalancePayService"/>
 	<dubbo:reference id="epPaymentConfService"
