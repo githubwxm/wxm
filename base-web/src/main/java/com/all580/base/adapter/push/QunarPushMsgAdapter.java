@@ -10,6 +10,7 @@ package com.all580.base.adapter.push;
 import com.all580.base.adapter.push.qunar.request.*;
 import com.all580.ep.api.conf.EpConstant;
 import com.framework.common.lang.DateFormatUtils;
+import com.framework.common.lang.JsonUtils;
 import com.framework.common.lang.codec.TranscodeUtil;
 import com.framework.common.net.HttpUtils;
 import com.framework.common.util.CommonUtil;
@@ -72,7 +73,7 @@ public class QunarPushMsgAdapter extends GeneralPushMsgAdapter implements PushMs
             String identity = configJson.getString("supplier_identity");
             String key = configJson.getString("remote_access_key");
             String xml = parseRequestXml(body, user, identity);
-            log.debug("推送去哪儿信息:{}", xml);
+            log.debug("推送去哪儿信息XML:{}", xml);
             JSONObject param = new JSONObject();
             String value = TranscodeUtil.strToBase64Str(xml);
             param.put("data", value);
@@ -82,17 +83,20 @@ public class QunarPushMsgAdapter extends GeneralPushMsgAdapter implements PushMs
             map.put("method", opCodeUrl.get(opCode));
             map.put("requestParam", param.toString());
             String response = HttpUtils.post(url, map, "UTF-8");
-            log.debug("推送去哪儿信息:{}", response);
-            int startIndex = response.indexOf("<code>");
-            int endIndex = response.indexOf("</code>", startIndex);
+            log.debug("推送去哪儿返回信息:{}", response);
+            String data = JsonUtils.json2Map(response).get("data").toString();
+            String resultXml = TranscodeUtil.base64StrToStr(data);
+            log.debug("推送去哪儿返回XML:{}", resultXml);
+            int startIndex = resultXml.indexOf("<code>");
+            int endIndex = resultXml.indexOf("</code>", startIndex);
             if (startIndex > -1 && endIndex > -1) {
-                String result = response.substring(startIndex + 6, endIndex);
+                String result = resultXml.substring(startIndex + 6, endIndex);
                 if (result.equals("1000")) {
                     return;
                 }
             }
-            log.warn("推送信息URL:{} 推送失败:{}", new Object[]{url, response});
-            throw new ApiException(response);
+            log.warn("推送信息URL:{} 推送失败:{}", new Object[]{url, resultXml});
+            throw new ApiException(resultXml);
         } catch (Exception e) {
             log.warn("推送去哪儿请求失败", e);
             throw new ApiException("推送去哪儿请求失败", e);
