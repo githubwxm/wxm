@@ -43,6 +43,7 @@ public class UpdateOrderProcessorImpl implements ProcessorService<Platform> {
                 updateOrderManager.setValidTime(DateFormatUtils.converToDateTime(invalidTime));
             } if (!StringUtils.isEmpty(validTime)) {
                 updateOrderManager.setInvalidTime(DateFormatUtils.converToDateTime(invalidTime));
+                updateOrderManager.saveOrder();
             }
         } catch (Exception ex) {
             throw new ApiException(ex);

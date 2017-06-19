@@ -1,6 +1,8 @@
 package com.all580.voucherplatform.dao;
 
+import com.all580.voucherplatform.entity.Consume;
 import com.all580.voucherplatform.entity.Reverse;
+import org.apache.ibatis.annotations.Param;
 
 public interface ReverseMapper {
     /**
@@ -44,4 +46,17 @@ public interface ReverseMapper {
      * @param record
      */
     int updateByPrimaryKey(Reverse record);
+
+    /**
+     *
+     * @param orderId
+     * @param orderCode
+     * @param supplyId
+     * @param seqId
+     * @return
+     */
+    Reverse selectBySeqId(@Param("order_Id") Integer orderId,
+                          @Param("order_Code") String orderCode,
+                          @Param("supply_Id") Integer supplyId,
+                          @Param("seqId") String seqId);
 }

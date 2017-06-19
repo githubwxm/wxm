@@ -58,6 +58,7 @@ public class UpdateOrderManager {
 
     public void saveOrder() {
         orderMapper.updateByPrimaryKeySelective(updateOrder);
+        notifyPlatform(order.getPlatform_id(), order.getId());
     }
 
     private void notifyPlatform(final Integer platformId, final Integer orderId) {
