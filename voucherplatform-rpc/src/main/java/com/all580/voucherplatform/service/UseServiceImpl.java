@@ -20,7 +20,7 @@ import java.util.Map;
 @Service
 @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
 @Slf4j
-public class UseSerivceImpl implements UserService {
+public class UseServiceImpl implements UserService {
 
     @Autowired
     UserMapper userMapper;

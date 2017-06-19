@@ -144,4 +144,6 @@
 	<dubbo:reference id="sendTicketEvent" interface="com.all580.order.api.service.event.SendTicketEvent" />
 	<dubbo:reference id="refundMoneyApplyEvent" interface="com.all580.order.api.service.event.RefundMoneyApplyEvent" />
 	<dubbo:reference id="refundMoneyAuditEvent" interface="com.all580.order.api.service.event.RefundMoneyAuditEvent" />
+
+	<dubbo:reference id="qrService" interface="com.all580.voucherplatform.api.service.QrService" />
 </beans>

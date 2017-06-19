@@ -1,7 +1,7 @@
 package com.all580.voucherplatform.adapter;
 
-import com.all580.voucherplatform.entity.Supply;
 import com.framework.common.Result;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
@@ -13,6 +13,7 @@ import java.util.Map;
 /**
  * Created by Linv2 on 2017-06-08.
  */
+@Slf4j
 public abstract class AbstractProcessorAdapter<Identity> {
 
     @Autowired

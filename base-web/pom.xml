@@ -21,6 +21,11 @@
 		</dependency>
 		<dependency>
 			<groupId>com.all580</groupId>
+			<artifactId>voucher-api</artifactId>
+			<version>3.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.all580</groupId>
 			<artifactId>order-api</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
@@ -145,6 +150,11 @@
 			<groupId>org.aspectj</groupId>
 			<artifactId>aspectjweaver</artifactId>
 			<version>1.7.2</version>
+		</dependency>
+		<dependency>
+			<groupId>com.all580</groupId>
+			<artifactId>voucherplatform-api</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 
