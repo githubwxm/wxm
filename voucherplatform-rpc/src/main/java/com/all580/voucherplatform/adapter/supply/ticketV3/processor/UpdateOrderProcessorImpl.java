@@ -14,7 +14,7 @@ import java.util.Map;
  * Created by Linv2 on 2017-06-14.
  */
 
-@Service
+@Service(value = "ticketV3UpdateOrderProcessorImpl")
 @Slf4j
 public class UpdateOrderProcessorImpl implements ProcessorService<Supply> {
 

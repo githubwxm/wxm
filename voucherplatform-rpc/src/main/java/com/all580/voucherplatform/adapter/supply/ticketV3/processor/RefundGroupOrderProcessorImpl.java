@@ -12,7 +12,7 @@ import java.util.Map;
  * Created by Linv2 on 2017-06-14.
  */
 
-@Service
+@Service(value = "ticketV3RefundGroupOrderProcessorImpl")
 @Slf4j
 public class RefundGroupOrderProcessorImpl implements ProcessorService<Supply> {
 

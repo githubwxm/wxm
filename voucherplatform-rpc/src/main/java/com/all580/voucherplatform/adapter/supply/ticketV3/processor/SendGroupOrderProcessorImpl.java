@@ -14,7 +14,7 @@ import java.util.Map;
  * Created by Linv2 on 2017-06-14.
  */
 
-@Service
+@Service(value = "ticketV3SendGroupOrderProcessorImpl")
 @Slf4j
 public class SendGroupOrderProcessorImpl implements ProcessorService<Supply> {
     private static final String ACTION = "sendGroupOrderRsp";

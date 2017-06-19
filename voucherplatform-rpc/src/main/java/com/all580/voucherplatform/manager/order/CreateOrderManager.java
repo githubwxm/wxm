@@ -218,18 +218,18 @@ public class CreateOrderManager {
                 sms = template.getSms();
             }
         }
-        sms = sms.replace("{标题}", platformProduct.getName())
-                //.replace("{份数}")
-                //.replace("{验证码}", MessageFormat.format("{0}，打开二维码: {1} ", order.getVoucherNumber(), order.getImgUrl()))
-                .replace("{生效日期}", validTime)
-                .replace("{有效年月日}", invalidTime);
+        sms = sms.replace("{标题}", platformProduct.getName());
+        //.replace("{份数}")
+        //.replace("{验证码}", MessageFormat.format("{0}，打开二维码: {1} ", order.getVoucherNumber(), order.getImgUrl()))
+        //.replace("{生效日期}", validTime)
+        //.replace("{有效年月日}", invalidTime);
         return sms;
     }
 
-    private String replaceSmsByVisitor(Integer number, String voucherCode, String imgUrl) {
-        String s = new String(sms);
-        return s.replace("{份数}", String.valueOf(number)).replace("{验证码}", MessageFormat.format("{0}，打开二维码: {1} ", voucherCode, imgUrl));
-    }
+//    private String replaceSmsByVisitor(Integer number, String voucherCode, String imgUrl) {
+//        String s = new String(sms);
+//        return s.replace("{份数}", String.valueOf(number)).replace("{验证码}", MessageFormat.format("{0}，打开二维码: {1} ", voucherCode, imgUrl));
+//    }
 
     private Order getOrder(Integer number) {
         Order order = new Order();
@@ -255,7 +255,7 @@ public class CreateOrderManager {
         order.setVoucherNumber(voucherNumber);
         String voucherImgUrl = voucherUrlGenerate.getVoucherUrl(voucherNumber, qrRule.getErrorRate(), qrRule.getSize(), qrRule.getForeColor());
         order.setImgUrl(voucherImgUrl);
-        order.setSms(replaceSmsByVisitor(number, voucherNumber, voucherImgUrl));
+        order.setSms(sms);
         if (template != null) {
             order.setPrintText(template.getPrintText());
         }

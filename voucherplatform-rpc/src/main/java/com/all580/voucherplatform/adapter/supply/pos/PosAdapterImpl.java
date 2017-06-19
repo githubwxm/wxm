@@ -51,7 +51,7 @@ public class PosAdapterImpl extends SupplyAdapterService {
     }
 
     @Override
-    public void updateGroup(Integer groupOrderId, Integer... seqId) {
+    public void updateGroup(Integer groupOrderId, String... seqId) {
 
     }
 }

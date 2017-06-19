@@ -38,7 +38,6 @@ public class RefundGroupOrderProcessorImpl implements ProcessorService<Platform>
         try {
             refundApplyManager.setGroupOrder(platform.getId(), orderId);
             refundApplyManager.apply(refId, refNumber, refTime, refReason);
-            refundApplyManager.notitySupply();
         } catch (Exception ex) {
             throw new ApiException(ex);
         }

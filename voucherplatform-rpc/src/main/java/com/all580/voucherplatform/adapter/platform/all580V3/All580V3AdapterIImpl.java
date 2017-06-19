@@ -1,15 +1,19 @@
 package com.all580.voucherplatform.adapter.platform.all580V3;
 
+import com.all580.voucher.api.service.VoucherCallbackService;
 import com.all580.voucherplatform.adapter.platform.PlatformAdapterService;
 import com.all580.voucherplatform.api.VoucherConstant;
 import com.all580.voucherplatform.dao.*;
 import com.all580.voucherplatform.entity.*;
+import com.framework.common.Result;
 import com.framework.common.lang.DateFormatUtils;
+import com.framework.common.lang.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.management.relation.RelationSupport;
 import java.util.*;
 
 /**
@@ -30,6 +34,21 @@ public class All580V3AdapterIImpl extends PlatformAdapterService {
     private GroupOrderMapper groupOrderMapper;
     @Autowired
     private GroupVisitorMapper groupVisitorMapper;
+
+    @Autowired
+    private VoucherCallbackService voucherCallbackService;
+
+    private final String MSGID = "70a7bce2-548d-11e7-b114-b2f933d5fe66";
+
+    private void sendMessage(String action, Object value) {
+        String content = JsonUtils.toJson(value);
+        try {
+            Result result = voucherCallbackService.process(action, MSGID, content, new Date());
+        } catch (Exception ex) {
+
+        }
+    }
+
 
     @Override
     public Object sendOrder(Integer... orderIds) {
@@ -55,6 +74,7 @@ public class All580V3AdapterIImpl extends PlatformAdapterService {
         map.put("orderSn", orderId);
         map.put("procTime", DateFormatUtils.converToStringTime(new Date()));
         map.put("status", 1);
+        sendMessage("SEND", map);
         return null;
     }
 
@@ -70,6 +90,7 @@ public class All580V3AdapterIImpl extends PlatformAdapterService {
         map.put("ticketId", order.getOrderCode());
         map.put("consumeQuantity", consume.getConsumeNumber());
         map.put("procTime", DateFormatUtils.converToStringTime(new Date()));
+        sendMessage("CONSUME", map);
         return null;
     }
 
@@ -83,6 +104,7 @@ public class All580V3AdapterIImpl extends PlatformAdapterService {
         map.put("refId", refund.getPlatformRefId());
         map.put("success", refund.getRefStatus().equals(VoucherConstant.RefundStatus.SUCCESS));
         map.put("procTime", DateFormatUtils.converToStringTime(new Date()));
+        sendMessage("REFUND", map);
         return null;
     }
 
@@ -97,6 +119,7 @@ public class All580V3AdapterIImpl extends PlatformAdapterService {
         map.put("validateSn", consume.getConsumeCode());
         map.put("reValidateSn", reverse.getId());
         map.put("procTime", DateFormatUtils.converToStringTime(new Date()));
+        sendMessage("RE_CONSUME", map);
         return null;
     }
 
@@ -109,6 +132,7 @@ public class All580V3AdapterIImpl extends PlatformAdapterService {
         map.put("voucherNumber", order.getVoucherNumber());
         map.put("success", true);
         map.put("procTime", DateFormatUtils.converToStringTime(new Date()));
+        sendMessage("", map);
         return null;
     }
 
@@ -124,6 +148,7 @@ public class All580V3AdapterIImpl extends PlatformAdapterService {
         map.put("voucherId", order.getOrderCode());
         map.put("sid", order.getGuideIdNumber());
         map.put("phone", order.getGuideMobile());
+        sendMessage("SEND_GROUP", map);
         return null;
     }
 
@@ -136,6 +161,7 @@ public class All580V3AdapterIImpl extends PlatformAdapterService {
         map.put("refId", refund.getPlatformRefId());
         map.put("success", refund.getRefStatus().equals(VoucherConstant.RefundStatus.SUCCESS));
         map.put("procTime", DateFormatUtils.converToStringTime(new Date()));
+        sendMessage("REFUND_GROUP", map);
         return null;
     }
 
@@ -146,6 +172,7 @@ public class All580V3AdapterIImpl extends PlatformAdapterService {
         map.put("orderSn", order.getPlatformOrderId());
         map.put("success", true);
         map.put("procTime", DateFormatUtils.converToStringTime(new Date()));
+        sendMessage("MODIFY_GROUP", map);
         return null;
     }
 
@@ -167,6 +194,7 @@ public class All580V3AdapterIImpl extends PlatformAdapterService {
         map.put("sids", builder.toString());
         map.put("consumeQuantity", order.getActivateNum());
         map.put("procTime", DateFormatUtils.converToStringTime(new Date()));
+        sendMessage("CONSUME_GROUP", map);
         return null;
     }
 
@@ -179,6 +207,7 @@ public class All580V3AdapterIImpl extends PlatformAdapterService {
         map.put("reValidataSn", order.getOrderCode());
         map.put("quantity", order.getActivateNum());
         map.put("procTime", DateFormatUtils.converToStringTime(new Date()));
+        sendMessage("RE_CONSUME_GROUP", map);
         return null;
     }
 
