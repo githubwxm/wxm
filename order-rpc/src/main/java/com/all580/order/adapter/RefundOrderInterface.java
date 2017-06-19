@@ -26,6 +26,8 @@ public interface RefundOrderInterface {
 
     Collection<RefundDay> getRefundDays(RefundOrderApply apply, List<OrderItemDetail> detailList, Map params);
 
+    void validateRefundVisitor(RefundOrderApply apply, Collection<RefundDay> refundDays, Map params);
+
     int getRefundQuantity(RefundOrderApply apply, Collection<RefundDay> refundDays, Map params);
 
     int[] calcRefundMoneyAndFee(RefundOrderApply apply, List<OrderItemDetail> detailList, Collection<RefundDay> refundDays, Map params);

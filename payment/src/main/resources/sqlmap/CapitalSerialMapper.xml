@@ -253,7 +253,7 @@
     </select>
     <select id="countByCapitalId"  resultType="java.lang.Integer">
         select count(1) from(
-        select
+        select  balance_type as balance_type_id,
         c.id,c.ref_id,c.ref_type, c.create_time as create_time,c.new_balance-c.old_balance as balance_add,c.new_can_cash-c.old_can_cash as
         can_cash_add,p.name as change_type ,new_balance , CASE WHEN c.new_balance-c.old_balance >0 THEN '收入' else '支出' end as balance_status
         from t_capital_serial c

@@ -214,7 +214,7 @@ public class SmsManager {
 
         Map<String, String> sendSmsParams = new HashMap<>();
         sendSmsParams.put("dingdanhao", orderItem.getNumber().toString());
-        sendSmsParams.put("zichanpinming", orderItem.getPro_sub_name());
+        sendSmsParams.put("zichanpinming", orderItem.getPro_name() + "-" + orderItem.getPro_sub_name());
         sendSmsParams.put("date", DateFormatUtils.parseDateToDatetimeString(orderItem.getStart()));
         sendSmsParams.put("xingmin", shipping.getName());
         sendSmsParams.put("shuliang", String.valueOf(orderItem.getQuantity()));
@@ -271,7 +271,7 @@ public class SmsManager {
 
         Date date = DateUtils.addMinutes(order.getAudit_time(), payTimeOut);
         Map<String, String> sendSmsParams = new HashMap<>();
-        sendSmsParams.put("chanpinmingcheng", orderItem.getPro_sub_name());
+        sendSmsParams.put("chanpinmingcheng", orderItem.getPro_name() + "-" + orderItem.getPro_sub_name());
         sendSmsParams.put("date", DateFormatUtils.parseDateToDatetimeString(orderItem.getStart()));
         sendSmsParams.put("shuliang", String.valueOf(orderItem.getQuantity()));
         sendSmsParams.put("buydate", DateFormatUtils.parseDateToDatetimeString(date));
@@ -323,7 +323,7 @@ public class SmsManager {
         }
 
         Map<String, String> sendSmsParams = new HashMap<>();
-        sendSmsParams.put("productname", orderItem.getPro_sub_name());
+        sendSmsParams.put("productname", orderItem.getPro_name() + "-" + orderItem.getPro_sub_name());
         sendSmsParams.put("number", String.valueOf(order.getNumber()));
         sendSmsParams.put("indate", DateFormatUtils.converToStringDate(orderItem.getStart()));
         sendSmsParams.put("outdate", DateFormatUtils.converToStringDate(orderItem.getEnd()));
@@ -331,6 +331,33 @@ public class SmsManager {
         Result result = smsService.send(shipping.getPhone(), SmsType.Order.HOTEL_TICKET, order.getPayee_ep_id(), sendSmsParams);//发送短信
         if (!result.isSuccess()) {
             throw new ApiException("发送酒店出票短信失败:" + result.getError());
+        }
+    }
+
+    /**
+     * 发送线路出票短信
+     * @param orderItem
+     */
+    public void sendLineSendTicket(OrderItem orderItem) {
+        Shipping shipping = shippingMapper.selectByOrder(orderItem.getOrder_id());
+        if (shipping == null) {
+            throw new ApiException("订单联系人不存在");
+        }
+
+        Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
+        if (order == null) {
+            throw new ApiException("订单不存在");
+        }
+
+        Map<String, String> sendSmsParams = new HashMap<>();
+        sendSmsParams.put("productname", orderItem.getPro_name() + "-" + orderItem.getPro_sub_name());
+        sendSmsParams.put("number", String.valueOf(order.getNumber()));
+        sendSmsParams.put("date", DateFormatUtils.converToStringDate(orderItem.getStart()));
+        sendSmsParams.put("count", String.valueOf(orderItem.getQuantity()));
+        sendSmsParams.put("dianhuahaoma", "");
+        Result result = smsService.send(shipping.getPhone(), SmsType.Order.ITINERARY_ORDER, order.getPayee_ep_id(), sendSmsParams);//发送短信
+        if (!result.isSuccess()) {
+            throw new ApiException("发送线路出票短信失败:" + result.getError());
         }
     }
 }

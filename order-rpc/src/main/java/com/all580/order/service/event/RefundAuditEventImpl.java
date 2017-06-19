@@ -48,7 +48,7 @@ public class RefundAuditEventImpl implements RefundAuditEvent {
         log.info(OrderConstant.LogOperateCode.NAME, refundOrderManager.orderLog(null, refundOrder.getOrder_item_id(),
                 refundOrder.getAudit_user_id(), refundOrder.getAudit_user_name(),
                 content.isStatus() ? OrderConstant.LogOperateCode.REFUND_AUDIT_PASS_SUCCESS : OrderConstant.LogOperateCode.REFUND_AUDIT_REJECT_SUCCESS,
-                refundOrder.getQuantity(), String.format("退订申请审核:退订订单:%s", refundOrder.getNumber())));
+                refundOrder.getQuantity(), String.format("退订申请审核:退订订单:%s", refundOrder.getNumber()), String.valueOf(refundOrder.getNumber())));
 
         OrderItem orderItem = orderItemMapper.selectByPrimaryKey(refundOrder.getOrder_item_id());
         if (content.isStatus()) {

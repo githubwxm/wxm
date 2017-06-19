@@ -77,6 +77,14 @@ public class OrderController extends BaseController {
         return bookingOrderService.create(params, "HOTEL_GROUP");
     }
 
+    @RequestMapping(value = "line/create", method = RequestMethod.POST)
+    @ResponseBody
+    public Result<?> createForLine(@RequestBody Map params) throws Exception {
+        // 验证参数
+        ParamsMapValidate.validate(params, orderValidateManager.createLineValidate());
+        return bookingOrderService.create(params, "LINE");
+    }
+
     @RequestMapping(value = "audit", method = RequestMethod.POST)
     @ResponseBody
     public Result<?> audit(@RequestBody Map params) {
@@ -123,6 +131,14 @@ public class OrderController extends BaseController {
         // 验证参数
         ParamsMapValidate.validate(params, orderValidateManager.refundApplyForHotelValidate());
         return refundOrderService.apply(params, "HOTEL");
+    }
+
+    @RequestMapping(value = "refund/line/apply", method = RequestMethod.POST)
+    @ResponseBody
+    public Result<?> refundApplyForLine(@RequestBody Map params) throws Exception {
+        // 验证参数
+        ParamsMapValidate.validate(params, orderValidateManager.refundApplyValidate());
+        return refundOrderService.apply(params, "LINE");
     }
 
     @RequestMapping(value = "refund/audit", method = RequestMethod.POST)
@@ -195,6 +211,14 @@ public class OrderController extends BaseController {
         // 验证参数
         ParamsMapValidate.validate(params, orderValidateManager.consumeHotelValidate());
         return bookingOrderService.consumeHotelBySupplier(params);
+    }
+
+    @RequestMapping(value = "consume/line/ticket", method = RequestMethod.POST)
+    @ResponseBody
+    public Result<?> consumeTicketForLine(@RequestBody Map params) throws Exception {
+        // 验证参数
+        ParamsMapValidate.validate(params, orderValidateManager.consumeLineValidate());
+        return bookingOrderService.consumeLineBySupplier(params);
     }
 
     @RequestMapping(value = "platform/list/supplier")

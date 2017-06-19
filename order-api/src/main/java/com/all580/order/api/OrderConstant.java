@@ -94,6 +94,24 @@ public class OrderConstant {
     }
 
     /**
+     * 线路团队状态
+     */
+    public static class LineGroupStatus {
+        public static final int NONE = 390; //未出团
+        public static final int SEND = 391; //已发团
+        public static final int COMPLETE = 392; //已完成
+    }
+
+    /**
+     * 性别
+     */
+    public static class SexType {
+        public static final int NONE = 3000; // 未知
+        public static final int MAN = 3001; // 男
+        public static final int FEMALE = 3002; // 女
+    }
+
+    /**
      * 任务执行器
      */
     public static class Actions {
@@ -133,7 +151,7 @@ public class OrderConstant {
      * 日志操作码
      */
     public static class LogOperateCode {
-        public static final String NAME = "order-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}";
+        public static final String NAME = "order-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}";
         public static final String SYSTEM = "all580";
         public static final String CREATE_SUCCESS = "CA1000100";
         public static final String CANCEL_SUCCESS = "CA3000100";
@@ -161,6 +179,8 @@ public class OrderConstant {
         public static final String TICKET_RECONSUME_FAIL = "CA10000100";
         public static final String AUDIT_PASS_SUCCESS = "CA20000100";
         public static final String AUDIT_REJECT_SUCCESS = "CA20000200";
+        public static final String MODIFY_TICKET_SEND = "CA30000100";
+        public static final String MODIFY_TICKET_SUCCESS = "CA30000200";
     }
 
     public static String[] ORDER_TABLES = new String[]{

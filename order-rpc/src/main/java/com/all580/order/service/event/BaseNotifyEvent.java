@@ -147,9 +147,9 @@ public class BaseNotifyEvent {
         }
         Map<String, Object> map = new HashMap<>();
         map.put("op_code", opCode);
-        map.put("order_id", order.getNumber());
+        map.put("order_id", String.valueOf(order.getNumber()));
         map.put("outer_id", order.getOuter_id());
-        map.put("order_item_id", item.getNumber());
+        map.put("order_item_id", String.valueOf(item.getNumber()));
         map.put("ticket_status", itemStatus);
         map.put("order_status", orderStatus);
         map.put("ep_id", order.getBuy_ep_id());
@@ -165,7 +165,7 @@ public class BaseNotifyEvent {
 //            MaSendResponse maSendResponse =list.get(0);
 //            map.put("ma_send_response",maSendResponse.getImage_url());
 //        }
-        map.put("number",item.getNumber());
+        map.put("number",String.valueOf(item.getNumber()));
         if(tempMap!=null){
             map.putAll(tempMap);
         }

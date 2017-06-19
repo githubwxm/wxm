@@ -53,7 +53,11 @@ public class RefundMoneyAction implements JobRunner {
             log.warn("退款失败任务,退订订单不存在");
             throw new Exception("退订订单不存在");
         }
-        refundOrderManager.refundMoney(order, refundOrder == null ? order.getPay_amount() : refundOrder.getMoney(), String.valueOf(refundOrder == null ? order.getNumber() : refundOrder.getNumber()), refundOrder == null ? -1 : refundOrder.getId());
+        if (params.containsKey("apply") && refundOrder != null) {
+            refundOrderManager.refundMoney(order, refundOrder.getMoney(), String.valueOf(refundOrder.getNumber()), refundOrder);
+        } else {
+            refundOrderManager.refundMoney(order, refundOrder == null ? order.getPay_amount() : refundOrder.getMoney(), String.valueOf(refundOrder == null ? order.getNumber() : refundOrder.getNumber()), refundOrder == null ? -1 : refundOrder.getId());
+        }
         return new Result(Action.EXECUTE_SUCCESS);
     }
 

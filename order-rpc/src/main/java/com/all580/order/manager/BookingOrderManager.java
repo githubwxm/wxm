@@ -56,6 +56,8 @@ public class BookingOrderManager extends BaseOrderManager {
     @Autowired
     private GroupMemberMapper groupMemberMapper;
     @Autowired
+    private OrderItemSalesChainMapper orderItemSalesChainMapper;
+    @Autowired
     @Getter
     private MnsEventAspect eventManager;
     @Autowired
@@ -82,7 +84,7 @@ public class BookingOrderManager extends BaseOrderManager {
             if (sids.contains(sid)) {
                 throw new ApiException("身份证:" + sid + "重复");
             }
-            if (maxCount > 0) {
+            if (maxCount != null && maxCount > 0) {
                 int count = getOrderByCount(productSubCode, sid, bookingDate);
                 if (count >= maxCount) {
                     throw new ApiException(String.format("身份证:%s超出该产品当天最大订单次数,已定次数:%d,最大次数:%d",
@@ -95,7 +97,7 @@ public class BookingOrderManager extends BaseOrderManager {
                 throw new ApiException(String.format("身份证:%s预定张数%d 不能小于1", sid, qty));
             }
             total += qty;
-            if (maxQuantity > 0) {
+            if (maxQuantity != null && maxQuantity > 0) {
                 int quantity = getOrderByQuantity(productSubCode, sid, bookingDate);
                 if (quantity + qty > maxQuantity) {
                     throw new ApiException(String.format("身份证:%s超出该产品当天最大购票数,已定张数%d,最大购票张数%d",
@@ -293,8 +295,11 @@ public class BookingOrderManager extends BaseOrderManager {
      * @return
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public OrderItemDetail generateDetail(ProductSalesDayInfo info, int itemId, Date day, int quantity, Integer lowQuantity) {
+    public OrderItemDetail generateDetail(ProductSalesDayInfo info, int itemId, Date day, int quantity, Integer lowQuantity, Integer supplyPrice, Integer salePrice) {
         OrderItemDetail orderItemDetail = new OrderItemDetail();
+        orderItemDetail.setSettle_price(info.getSettle_price());
+        orderItemDetail.setSupply_price(supplyPrice);
+        orderItemDetail.setSale_price(salePrice);
         orderItemDetail.setDay(day);
         orderItemDetail.setQuantity(quantity);
         orderItemDetail.setCust_refund_rule(info.getCust_refund_rule()); // 销售方退货规则
@@ -335,6 +340,22 @@ public class BookingOrderManager extends BaseOrderManager {
         return orderItemDetail;
     }
 
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public OrderItemSalesChain generateChain(OrderItem item, Integer epId, Date day, List<EpSalesInfo> daySales) {
+        AccountDataDto dataDto = AccountUtil.generateAccountData(daySales, epId, day);
+        OrderItemSalesChain chain = new OrderItemSalesChain();
+        chain.setOrder_item_id(item.getId());
+        chain.setDay(day);
+        chain.setEp_id(epId);
+        chain.setCore_ep_id(getCoreEpId(getCoreEpId(epId)));
+        chain.setSale_ep_id(dataDto.getSaleEpId());
+        chain.setSale_core_ep_id(getCoreEpId(getCoreEpId(dataDto.getSaleEpId())));
+        chain.setIn_price(dataDto.getInPrice());
+        chain.setOut_price(dataDto.getOutPrice());
+        orderItemSalesChainMapper.insertSelective(chain);
+        return chain;
+    }
+
     /**
      * 创建子订单游客信息
      * @param v 游客参数
@@ -348,6 +369,7 @@ public class BookingOrderManager extends BaseOrderManager {
         visitor.setName(CommonUtil.objectParseString(v.get("name")));
         visitor.setPhone(CommonUtil.objectParseString(v.get("phone")));
         visitor.setSid(CommonUtil.objectParseString(v.get("sid")));
+        visitor.setGroup_id(CommonUtil.objectParseInteger(v.get("group_id")));
         visitor.setQuantity(CommonUtil.objectParseInteger(v.get("quantity")));
         visitor.setCard_type(OrderConstant.CardType.ID);
         visitorMapper.insertSelective(visitor);

@@ -17,6 +17,15 @@
 	<dubbo:consumer check="false" retries="0" timeout="60000"/>
 
 
+	<dubbo:reference id="itineraryPlanSaleService"
+					 interface="com.all580.product.api.hotel.service.ItineraryPlanSaleService" />
+
+	<dubbo:reference id="itineraryBatchService"
+					 interface="com.all580.product.api.hotel.service.ItineraryBatchService" />
+	<dubbo:reference id="itineraryService"
+					 interface="com.all580.product.api.hotel.service.ItineraryService" />
+	<dubbo:reference id="itinerarySubService"
+					 interface="com.all580.product.api.hotel.service.ItinerarySubService" />
 	<dubbo:reference id="hotelService"
 					 interface="com.all580.product.api.hotel.service.HotelService" />
 	<dubbo:reference id="hotelSubService"
@@ -26,7 +35,8 @@
 	<dubbo:reference id="hotelPlanSaleService"
 					 interface="com.all580.product.api.hotel.service.HotelPlanSaleService" />
 
-
+	<dubbo:reference id="lineOrderService"
+					 interface="com.all580.order.api.service.LineOrderService" />
 
 	<dubbo:reference id="bookingOrderService"
 					 interface="com.all580.order.api.service.BookingOrderService" />
@@ -47,6 +57,8 @@
 					 id="ldlService" />
 	<dubbo:reference interface="com.all580.voucher.api.service.third.HwRPCService"
 					 id="hwService" />
+	<dubbo:reference interface="com.all580.voucher.api.service.third.PftRPCService"
+					 id="pftService" />
 	<dubbo:reference interface="com.all580.voucher.api.service.third.ThirdProductService" id="thirdProductService" />
 
 
@@ -90,6 +102,7 @@
 	<dubbo:reference id="epInfoService" interface="com.all580.report.api.service.EpInfoService" />
 	<dubbo:reference id="epOrderService" interface="com.all580.report.api.service.EpOrderService" />
 	<dubbo:reference id="dataAnalysisService" interface="com.all580.report.api.service.DataAnalysisService" />
+	<dubbo:reference id="queryOrderService" interface="com.all580.report.api.service.QueryOrderService" />
 
 
 

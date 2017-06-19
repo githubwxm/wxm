@@ -18,7 +18,10 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.lang.exception.ApiException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * 产品，子产品，计划批次接口网关
@@ -240,6 +243,8 @@ public class ProductController extends BaseController {
         subProductInfo.setRefund_audit(CommonUtil.objectParseInteger(params.get("refund_audit")));
         subProductInfo.setRefund_money_audit(CommonUtil.objectParseInteger(params.get("refund_money_audit")));
         subProductInfo.setLow_use_quantity(CommonUtil.objectParseInteger(params.get("low_use_quantity")));
+        subProductInfo.setMa_provider_id(CommonUtil.objectParseString(params.get("ma_provider_id")));
+        subProductInfo.setMa_pid(CommonUtil.objectParseString(params.get("ma_pid")));
         return subProductInfo;
     }
 
@@ -324,13 +329,15 @@ public class ProductController extends BaseController {
                                                                        @RequestParam("is_supplier") Integer isSupplier,
                                                                        @RequestParam("order_str") Integer order,
                                                                        @RequestParam("record_start") Integer start,
-                                                                       @RequestParam("record_count") Integer count
+                                                                       @RequestParam("record_count") Integer count,
+                                                                       Integer  type
             ,Integer is_platfrom ) {
 
         String orderStr = null;
 
-        Integer  type=ProductConstants.ProductType.HOTEL;
-
+        if(type==null){
+            type =ProductConstants.ProductType.HOTEL;
+        }
         if (order != null) {
             switch (CanSaleOrderState.getCanSaleOrderSate(order)) {
                 case CREATE_TIME_ASC: orderStr = CanSaleOrderState.CREATE_TIME_ASC.getValue(); break;
@@ -420,8 +427,8 @@ public class ProductController extends BaseController {
     @RequestMapping(value = "self/list")
     @ResponseBody
     public Result<Map<String,Object>> searchSelfProviderProduct(@RequestParam("ep_id") Integer epId,
-                                                                @RequestParam("product_name") String productName,
-                                                                @RequestParam("product_sub_name") String productSubName,
+                                                                @RequestParam(value = "product_name", required = false) String productName,
+                                                                @RequestParam(value = "product_sub_name", required = false) String productSubName,
                                                                 @RequestParam("record_start") Integer recordStart,
                                                                 @RequestParam("record_count") Integer recordCount) {
         // TODO: 验证入参

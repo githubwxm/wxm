@@ -35,10 +35,8 @@ public class OrderValidateManager {
                 "items.quantity", // 订票数量
                 "ep_id", // 订票企业ID
                 "operator_id", // 订票用户ID
-                "operator_name", // 订票用户名称
                 //"sale_amount", // 销售金额
-                "from", // 来源 0-平台下单 1-接口下单
-                "remark" // 备注
+                "from" // 来源 0-平台下单 1-接口下单
         }, new ValidRule[]{new ValidRule.NotNull()});
 
         // 校验整数
@@ -90,9 +88,7 @@ public class OrderValidateManager {
                 "items.quantity", // 订票数量
                 "ep_id", // 订票企业ID
                 "operator_id", // 订票用户ID
-                "operator_name", // 订票用户名称
-                "from", // 来源 0-平台下单 1-接口下单
-                "remark" // 备注
+                "from" // 来源 0-平台下单 1-接口下单
         }, new ValidRule[]{new ValidRule.NotNull()});
 
         // 校验整数
@@ -137,9 +133,7 @@ public class OrderValidateManager {
                 "items.group_id", // 团队ID
                 "ep_id", // 订票企业ID
                 "operator_id", // 订票用户ID
-                "operator_name", // 订票用户名称
-                "from", // 来源 0-平台下单 1-接口下单
-                "remark" // 备注
+                "from" // 来源 0-平台下单 1-接口下单
         }, new ValidRule[]{new ValidRule.NotNull()});
 
         // 校验整数
@@ -171,6 +165,68 @@ public class OrderValidateManager {
     }
 
     /**
+     * 生成创建线路订单验证
+     * @return
+     */
+    public Map<String[], ValidRule[]> createLineValidate() {
+        Map<String[], ValidRule[]> rules = new HashMap<>();
+        // 校验不为空的参数
+        rules.put(new String[]{
+                "shipping.name", // 订单联系人姓名
+                "shipping.phone", // 订单联系人手机号码
+                "items.visitor.name", // 订单游客姓名
+                "items.visitor.phone", // 订单游客手机号码
+                "items.product_sub_code", // 订单子产品CODE
+                "items.start", // 计划开始时间
+                "items.days", // 天数：景点固定1
+                "items.quantity", // 订票数量
+                "ep_id", // 订票企业ID
+                "from" // 来源 0-平台下单 1-接口下单
+        }, new ValidRule[]{new ValidRule.NotNull()});
+
+        // 校验整数
+        rules.put(new String[]{
+                "items.product_sub_code", // 订单子产品CODE
+                "items.days", // 天数：景点固定1
+                "items.quantity", // 订票数量
+                "ep_id", // 订票企业ID
+                "operator_id" // 订票用户ID
+        }, new ValidRule[]{new ValidRule.Digits()});
+
+        rules.put(new String[]{
+                "items.days", // 天数：景点固定1
+                "items.quantity" // 订票数量
+        }, new ValidRule[]{new ValidRule.Digits(1L, 10000L)});
+
+        // 校验身份证
+        rules.put(new String[]{
+                "items.visitor.sid" // 订单游客身份证号码
+        }, new ValidRule[]{new ValidRule.IdCard()});
+
+        // 校验性别
+        rules.put(new String[]{
+                "items.visitor.sex"
+        }, new ValidRule[]{new ValidRule.Digits(new Long[]{
+                (long) OrderConstant.SexType.NONE,
+                (long) OrderConstant.SexType.MAN,
+                (long) OrderConstant.SexType.FEMALE
+        })});
+
+        // 校验手机号码
+        rules.put(new String[]{
+                "shipping.phone", // 订单联系人手机号码
+                "items.visitor.phone" // 订单游客手机号码
+        }, new ValidRule[]{new ValidRule.Pattern(ValidRule.MOBILE_PHONE)});
+
+        // 校验日期
+        rules.put(new String[]{
+                "items.start" // 计划开始时间
+        }, new ValidRule[]{new ValidRule.Date()});
+
+        return rules;
+    }
+
+    /**
      * 生成创建团队订单验证
      * @return
      */
@@ -185,10 +241,8 @@ public class OrderValidateManager {
                 "items.quantity", // 订票数量
                 "ep_id", // 订票企业ID
                 "operator_id", // 订票用户ID
-                "operator_name", // 订票用户名称
                 //"sale_amount", // 销售金额
-                "from", // 来源 0-平台下单 1-接口下单
-                "remark" // 备注
+                "from" // 来源 0-平台下单 1-接口下单
         }, new ValidRule[]{new ValidRule.NotNull()});
 
         // 校验整数
@@ -325,8 +379,7 @@ public class OrderValidateManager {
         }, new ValidRule[]{new ValidRule.NotNull(), new ValidRule.Boolean()});
 
         rules.put(new String[]{
-                "reason", // 原因
-                "operator_name" // 操作人名称
+                "reason" // 原因
         }, new ValidRule[]{new ValidRule.NotNull()});
 
         return rules;
@@ -342,10 +395,6 @@ public class OrderValidateManager {
                 "refund_sn", // 订单编号(流水)
                 "operator_id" // 操作人ID
         }, new ValidRule[]{new ValidRule.NotNull(), new ValidRule.Digits()});
-
-        rules.put(new String[]{
-                "operator_name" // 操作人名称
-        }, new ValidRule[]{new ValidRule.NotNull()});
 
         return rules;
     }
@@ -472,6 +521,19 @@ public class OrderValidateManager {
         rules.put(new String[]{
                 "days.day" // 日期
         }, new ValidRule[]{new ValidRule.NotNull(), new ValidRule.Date()});
+
+        return rules;
+    }
+
+    /**
+     * 酒店核销验证
+     * @return
+     */
+    public Map<String[], ValidRule[]> consumeLineValidate() {
+        Map<String[], ValidRule[]> rules = new HashMap<>();
+        rules.put(new String[]{
+                "order_item_sn" // 订单编号(流水)
+        }, new ValidRule[]{new ValidRule.NotNull(), new ValidRule.Digits()});
 
         return rules;
     }

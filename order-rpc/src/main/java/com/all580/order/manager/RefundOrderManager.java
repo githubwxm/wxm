@@ -140,10 +140,11 @@ public class RefundOrderManager extends BaseOrderManager {
         if (refundOrder.getAudit_time() == null) {
             refundOrder.setAudit_time(new Date());
         }
-        if (orderItem.getStatus() == OrderConstant.OrderItemStatus.SEND && orderItem.getPro_type() != ProductConstants.ProductType.HOTEL) {
+        if (orderItem.getStatus() == OrderConstant.OrderItemStatus.SEND &&
+                orderItem.getPro_type() != ProductConstants.ProductType.HOTEL &&
+                orderItem.getPro_type() != ProductConstants.ProductType.ITINERARY) {
             // 调用退票
             refundTicket(refundOrder);
-            refundOrderMapper.updateByPrimaryKeySelective(refundOrder);
         } else {
             // 触发退票成功事件
             eventManager.addEvent(OrderConstant.EventType.REFUND_TICKET, new RefundTicketEventParam(refundOrder.getId(), true));
@@ -155,9 +156,8 @@ public class RefundOrderManager extends BaseOrderManager {
                 nonSendTicketRefund(refundOrder);
             }
             orderItemMapper.refundQuantity(orderItem.getId(), refundOrder.getQuantity());
-            // 退款
-            refundMoney(order, refundOrder.getMoney(), String.valueOf(refundOrder.getNumber()), refundOrder);
         }
+        refundOrderMapper.updateByPrimaryKeySelective(refundOrder);
     }
 
     /**
@@ -536,7 +536,7 @@ public class RefundOrderManager extends BaseOrderManager {
         }
         log.info(OrderConstant.LogOperateCode.NAME, orderLog(null, orderItem.getId(),
                 0, "ORDER", OrderConstant.LogOperateCode.SEND_REFUND_TICKETING,
-                refundOrder.getQuantity(), "退票发起"));
+                refundOrder.getQuantity(), "退票发起", String.valueOf(refundSerial.getLocal_serial_no())));
     }
 
     /**
@@ -602,6 +602,9 @@ public class RefundOrderManager extends BaseOrderManager {
             if (!result.isSuccess() && (result.getCode() == null || result.getCode().intValue() != Result.UNIQUE_KEY_ERROR)) {
                 log.warn("余额退款失败:{}", result.get());
                 throw new ApiException("调用余额退款失败:" + result.getError());
+            }
+            for (RefundAccount refundAccount : accountList) {
+                refundAccountMapper.updateByPrimaryKeySelective(refundAccount);
             }
             return new Result(true);
         }

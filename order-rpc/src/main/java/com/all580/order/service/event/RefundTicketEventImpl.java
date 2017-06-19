@@ -4,7 +4,9 @@ import com.all580.order.api.OrderConstant;
 import com.all580.order.api.model.RefundTicketEventParam;
 import com.all580.order.api.service.event.RefundTicketEvent;
 import com.all580.order.dao.OrderItemMapper;
+import com.all580.order.dao.OrderMapper;
 import com.all580.order.dao.RefundOrderMapper;
+import com.all580.order.entity.Order;
 import com.all580.order.entity.OrderItem;
 import com.all580.order.entity.RefundOrder;
 import com.all580.order.manager.BookingOrderManager;
@@ -36,6 +38,8 @@ public class RefundTicketEventImpl implements RefundTicketEvent {
     @Autowired
     private OrderItemMapper orderItemMapper;
     @Autowired
+    private OrderMapper orderMapper;
+    @Autowired
     private SmsManager smsManager;
     @Autowired
     private JobAspect jobManager;
@@ -50,12 +54,20 @@ public class RefundTicketEventImpl implements RefundTicketEvent {
         OrderItem orderItem = orderItemMapper.selectByPrimaryKey(refundOrder.getOrder_item_id());
         log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(null, orderItem.getId(),
                 0, "ORDER_EVENT", OrderConstant.LogOperateCode.REFUND_TICKET,
-                refundOrder.getQuantity(), String.format("退票成功:%s", refundOrder.getNumber())));
+                refundOrder.getQuantity(), String.format("退票%s:%s", content.isStatus() ? "成功" : "失败", refundOrder.getNumber()), String.valueOf(refundOrder.getLocal_refund_serial_no())));
         if (content.isStatus()) {
             // 还库存 记录任务
             Map<String, String> jobParams = new HashMap<>();
             jobParams.put("refundId", String.valueOf(refundOrder.getId()));
             jobManager.addJob(OrderConstant.Actions.REFUND_STOCK, Collections.singleton(jobParams));
+
+            // 退款
+            Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
+            Map<String, String> jobRefundMoneyParams = new HashMap<>();
+            jobRefundMoneyParams.put("ordCode", String.valueOf(order.getNumber()));
+            jobRefundMoneyParams.put("serialNum", String.valueOf(refundOrder.getNumber()));
+            jobRefundMoneyParams.put("apply", "true");
+            jobManager.addJob(OrderConstant.Actions.REFUND_MONEY, Collections.singleton(jobRefundMoneyParams));
         } else {
             // 发送短信
             smsManager.sendRefundFailSms(orderItem, refundOrder);

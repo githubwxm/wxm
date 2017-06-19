@@ -21,6 +21,7 @@
 	<bean id="ticketCallbackService" class="com.all580.order.service.TicketCallbackServiceImpl" />
 	<bean id="groupService" class="com.all580.order.service.GroupServiceImpl" />
 	<bean id="syncExceptionOrder" class="com.all580.order.service.SyncExceptionOrderImpl" />
+	<bean id="lineOrderService" class="com.all580.order.service.LineOrderServiceImpl" />
 	<dubbo:service interface="com.all580.order.api.service.SyncExceptionOrder" ref="syncExceptionOrder" />
 	<dubbo:service interface="com.all580.order.api.service.BookingOrderService" ref="bookingOrderService" />
 	<dubbo:service interface="com.all580.order.api.service.PaymentCallbackService" ref="paymentCallbackService" />
@@ -28,6 +29,7 @@
 	<dubbo:service interface="com.all580.order.api.service.TicketCallbackService" ref="ticketCallbackService" />
 	<dubbo:service interface="com.all580.order.api.service.RefundOrderService" ref="refundOrderService" />
 	<dubbo:service interface="com.all580.order.api.service.GroupService" ref="groupService" />
+	<dubbo:service interface="com.all580.order.api.service.LineOrderService" ref="lineOrderService" />
 
 	<dubbo:service interface="com.all580.order.api.service.event.OrderAuditEvent" ref="orderAuditEventImpl" />
 	<dubbo:service interface="com.all580.order.api.service.event.OrderAuditSyncDataEvent" ref="orderAuditEventSyncDataImpl" />

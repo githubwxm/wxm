@@ -8,9 +8,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletResponse;
 
 @Slf4j
 @Controller
@@ -24,13 +24,14 @@ public class HwCallbackController {
     String HW_PASSWORD;
 
     @RequestMapping(value="/notify",method= RequestMethod.GET)
-    public void notify(
+    @ResponseBody
+    public String notify(
             String consume_id,
             String order_id,
             String voucher_number,
             String consume_amount,
             String vocher_remaining,
-            String authkey, HttpServletResponse response) {
+            String authkey) {
         try{
             // 整个小秘书只能配一个好哇帐号
             String trueAuthKey = Md5Utils.getMD5(consume_id + order_id + voucher_number + consume_amount + HW_PASSWORD).toString();
@@ -40,11 +41,12 @@ public class HwCallbackController {
                 if (StringUtils.isBlank(vocher_remaining))
                     consume_amount = "0";
                 hwService.consumeOrderCallback(consume_id, order_id, voucher_number, consume_amount, vocher_remaining);
-                response.getWriter().write("OK");
+                return "OK";
             }
             log.error("好哇凭证回调签名不匹配");
         }catch(Exception e){
             log.error("好哇凭证回调出错", e);
         }
+        return null;
     }
 }
