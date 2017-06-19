@@ -59,4 +59,11 @@ public interface BookingOrderService {
      * @return
      */
     Result<?> consumeHotelBySupplier(Map params);
+
+    /**
+     * 供应商线路核销
+     * @param params
+     * @return
+     */
+    Result<?> consumeLineBySupplier(Map params);
 }

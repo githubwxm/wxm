@@ -243,12 +243,7 @@ public class LockTransactionManager {
         if (refundDays == null || refundDays.isEmpty()) {
             throw new ApiException(Result.REFUNDABLE_LACK, "没有可退的票");
         }
-        // TODO: 2017/3/2  因为线下不支持批量退票,so 暂时关闭多人退订
-        for (RefundDay refundDay : refundDays) {
-            if (refundDay.getVisitors() != null && refundDay.getVisitors().size() > 1) {
-                throw new ApiException("暂不支持一次退多人");
-            }
-        }
+        refundOrderInterface.validateRefundVisitor(apply, refundDays, params);
         // 总退票数量
         Integer quantity = refundOrderInterface.getRefundQuantity(apply, refundDays, params);
         Assert.notNull(quantity, "退票数量异常");
@@ -449,7 +444,7 @@ public class LockTransactionManager {
         log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(order.getId(), null,
                 params.get(EpConstant.EpKey.EP_ID),  params.get("operator_name"),
                 OrderConstant.LogOperateCode.PAID,
-                0, String.format("订单支付:参数:%s", JsonUtils.toJson(params))));
+                0, String.format("订单支付:参数:%s", JsonUtils.toJson(params)), order.getLocal_payment_serial_no()));
 
         // 调用支付RPC
         // 余额支付
@@ -536,7 +531,7 @@ public class LockTransactionManager {
         log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(null, orderItem.getId(),
                 0,  "VOUCHER",
                 OrderConstant.LogOperateCode.RECEIVE_REFUND_TICKETING,
-                refundOrder.getQuantity(), String.format("退票返回:退票信息:%s", JsonUtils.toJson(info))));
+                refundOrder.getQuantity(), String.format("退票返回:退票信息:%s", JsonUtils.toJson(info)), info.getRefId()));
         eventManager.addEvent(OrderConstant.EventType.REFUND_TICKET, new RefundTicketEventParam(refundOrder.getId(), info.isSuccess()));
         // 退票失败
         if (!info.isSuccess()) {
@@ -568,11 +563,6 @@ public class LockTransactionManager {
             throw new ApiException("没有可退的票");
         }
         refundSerialMapper.updateByPrimaryKeySelective(refundSerial);
-
-        // 退款
-        Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
-        refundOrderManager.refundMoney(order, refundOrder.getMoney(), String.valueOf(refundOrder.getNumber()), refundOrder);
-
         return new Result(true);
     }
 
@@ -612,11 +602,6 @@ public class LockTransactionManager {
             throw new ApiException("没有可退的票");
         }
         refundSerialMapper.updateByPrimaryKeySelective(refundSerial);
-
-        // 退款
-        Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
-        refundOrderManager.refundMoney(order, refundOrder.getMoney(), String.valueOf(refundOrder.getNumber()), refundOrder);
-
         return new Result(true);
     }
 
@@ -725,7 +710,58 @@ public class LockTransactionManager {
         log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(null, orderItem.getId(),
                 params.get(EpConstant.EpKey.EP_ID),  params.get("operator_name"),
                 OrderConstant.LogOperateCode.TICKET_CONSUME_SUCCESS,
-                total, String.format("酒店核销:信息:%s", JsonUtils.toJson(params))));
+                total, String.format("酒店核销:信息:%s", JsonUtils.toJson(params)), null));
+        return new Result(true);
+    }
+
+    @MnsEvent
+    public Result consumeLineTicket(Map params, long orderItemSn) {
+        OrderItem orderItem = orderItemMapper.selectBySN(orderItemSn);
+        if (orderItem == null) {
+            throw new ApiException("订单不存在");
+        }
+        if (orderItem.getStatus() != OrderConstant.OrderItemStatus.SEND) {
+            throw new ApiException("订单不在可核销状态");
+        }
+        if (!params.containsKey(EpConstant.EpKey.EP_ID)) {
+            throw new ApiException("非法请求:企业ID为空");
+        }
+        if (!String.valueOf(params.get(EpConstant.EpKey.EP_ID)).equals(String.valueOf(orderItem.getSupplier_ep_id()))) {
+            throw new ApiException("非法请求:当前企业不能核销该订单");
+        }
+
+        Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
+        Assert.notNull(order, "订单不存在");
+
+        int count = orderClearanceSerialMapper.selectItemQuantityCount(orderItem.getId());
+        if (count > 0) {
+            throw new ApiException("该订单已核销");
+        }
+
+        // 核销
+        Date clearanceTime = new Date();
+        List<OrderItemDetail> details = orderItemDetailMapper.selectByItemId(orderItem.getId());
+        int total = 0;
+        for (OrderItemDetail detail : details) {
+            orderItemDetailMapper.useRemain(detail.getId());
+            detail.setUsed_quantity(detail.getQuantity() - detail.getRefund_quantity());
+            total += detail.getUsed_quantity();
+            // 保存核销流水
+            OrderClearanceSerial serial = bookingOrderManager.saveClearanceSerial(orderItem, order.getPayee_ep_id(), detail.getDay(), detail.getUsed_quantity(), String.valueOf(UUIDGenerator.generateUUID()), clearanceTime);
+            eventManager.addEvent(OrderConstant.EventType.CONSUME_TICKET, new ConsumeTicketEventParam(orderItem.getId(), serial.getId()));
+        }
+
+        // 修改已使用数量
+        int ret = orderItemMapper.useQuantity(orderItem.getId(), total);
+        if (ret <= 0) {
+            log.warn("线路核销订单:{} 核销票不足", orderItemSn);
+            throw new ApiException("没有可核销的票");
+        }
+
+        log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(null, orderItem.getId(),
+                params.get(EpConstant.EpKey.EP_ID),  params.get("operator_name"),
+                OrderConstant.LogOperateCode.TICKET_CONSUME_SUCCESS,
+                total, String.format("线路核销:信息:%s", JsonUtils.toJson(params)), null));
         return new Result(true);
     }
 
@@ -777,6 +813,11 @@ public class LockTransactionManager {
             shippingModifyMapper.insertSelective(shippingModify);
         }
         ticketParams.setVisitors(modifyGroupVisitor((List) params.get("visitors"), orderItem.getId()));
+
+        log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(null, orderItem.getId(),
+                params.get(EpConstant.EpKey.EP_ID),  params.get("operator_name"),
+                OrderConstant.LogOperateCode.MODIFY_TICKET_SEND,
+                0, String.format("团队修改:信息:%s", JsonUtils.toJson(params)), null));
         return voucherRPCService.modifyGroupTicket(orderItem.getEp_ma_id(), ticketParams);
     }
 

@@ -59,7 +59,7 @@ public class RefundMoneyEventImpl implements RefundMoneyEvent {
 
         log.info(OrderConstant.LogOperateCode.NAME, refundOrderManager.orderLog(order.getId(), null,
                 0, "ORDER_EVENT", content.isSuccess() ? OrderConstant.LogOperateCode.REFUND_MONEY_SUCCESS : OrderConstant.LogOperateCode.REFUND_MONEY_FAIL,
-                0, "订单退款回调"));
+                0, "订单退款回调", content.getSerialNo()));
 
         if (content.isSuccess()) {
             // 发送短信 退款

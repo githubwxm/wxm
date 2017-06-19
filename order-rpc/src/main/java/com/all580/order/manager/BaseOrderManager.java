@@ -114,6 +114,20 @@ public class BaseOrderManager {
         }
         return null;
     }
+    /**
+     * 获取出货结构
+     * @param epSalesInfos 销售链
+     * @param saleEpId 出货企业ID
+     * @return
+     */
+    public EpSalesInfo getSalePrice(List<EpSalesInfo> epSalesInfos, Integer saleEpId) {
+        for (EpSalesInfo info : epSalesInfos) {
+            if (info.getSale_ep_id() == saleEpId.intValue()) {
+                return info;
+            }
+        }
+        return null;
+    }
 
     /**
      * 判断企业状态
@@ -192,8 +206,11 @@ public class BaseOrderManager {
     }
 
     public Job createJob(String action, Map<String, String> params, boolean once) {
+        return createJob("ORDER-JOB-" + UUIDGenerator.getUUID(), action, params, once);
+    }
+    public Job createJob(String taskId, String action, Map<String, String> params, boolean once) {
         Job job = new Job();
-        job.setTaskId("ORDER-JOB-" + UUIDGenerator.getUUID());
+        job.setTaskId(taskId);
         job.setExtParams(params);
         job.setParam("$ACTION$", action);
         job.setTaskTrackerNodeGroup(taskTracker);
@@ -364,7 +381,7 @@ public class BaseOrderManager {
     }
 
     public int[] getAuditConfig(Order order, OrderItem orderItem) {
-        if (orderItem.getPro_type() == ProductConstants.ProductType.HOTEL) {
+        if (orderItem.getPro_type() == ProductConstants.ProductType.HOTEL || orderItem.getPro_type() == ProductConstants.ProductType.ITINERARY) {
             return new int[]{ProductConstants.RefundAudit.NO, ProductConstants.RefundMoneyAudit.NO};
         }
         // 获取退订审核
@@ -390,7 +407,7 @@ public class BaseOrderManager {
      * @param memo
      * @return
      */
-    public Object[] orderLog(Integer orderId, Integer itemId, Object operateId, Object operateName, String code, Integer qty, String memo) {
+    public Object[] orderLog(Integer orderId, Integer itemId, Object operateId, Object operateName, String code, Integer qty, String memo, String sn) {
         if (orderId == null && itemId == null) {
             throw new ApiException("记录日志异常:没有订单号");
         }
@@ -407,7 +424,8 @@ public class BaseOrderManager {
                 result.get("used_quantity"),
                 result.get("refund_quantity"),
                 result.get("refunding"),
-                memo
+                memo,
+                sn
         };
     }
 

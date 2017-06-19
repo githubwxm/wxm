@@ -333,4 +333,31 @@ public class SmsManager {
             throw new ApiException("发送酒店出票短信失败:" + result.getError());
         }
     }
+
+    /**
+     * 发送线路出票短信
+     * @param orderItem
+     */
+    public void sendLineSendTicket(OrderItem orderItem) {
+        Shipping shipping = shippingMapper.selectByOrder(orderItem.getOrder_id());
+        if (shipping == null) {
+            throw new ApiException("订单联系人不存在");
+        }
+
+        Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
+        if (order == null) {
+            throw new ApiException("订单不存在");
+        }
+
+        Map<String, String> sendSmsParams = new HashMap<>();
+        sendSmsParams.put("productname", orderItem.getPro_name() + "-" + orderItem.getPro_sub_name());
+        sendSmsParams.put("number", String.valueOf(order.getNumber()));
+        sendSmsParams.put("date", DateFormatUtils.converToStringDate(orderItem.getStart()));
+        sendSmsParams.put("count", String.valueOf(orderItem.getQuantity()));
+        sendSmsParams.put("dianhuahaoma", "");
+        Result result = smsService.send(shipping.getPhone(), SmsType.Order.ITINERARY_ORDER, order.getPayee_ep_id(), sendSmsParams);//发送短信
+        if (!result.isSuccess()) {
+            throw new ApiException("发送线路出票短信失败:" + result.getError());
+        }
+    }
 }

@@ -40,9 +40,13 @@ public class SendTicketEventImpl implements SendTicketEvent {
         if (item.getPro_type() == ProductConstants.ProductType.HOTEL) {
             smsManager.sendHotelSendTicket(item);
         }
+        // 线路发送短信
+        if (item.getPro_type() == ProductConstants.ProductType.ITINERARY) {
+            smsManager.sendLineSendTicket(item);
+        }
         log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(null, item.getId(),
                 0, "ORDER_EVENT", OrderConstant.LogOperateCode.SENDED,
-                item.getQuantity(), "已出票"));
+                item.getQuantity(), "已出票", null));
         return new Result(true);
     }
 }

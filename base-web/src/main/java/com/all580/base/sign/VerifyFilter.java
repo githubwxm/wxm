@@ -196,7 +196,7 @@ public class VerifyFilter implements  Filter {
              }
          }
      }catch(Exception e){
-         log.error("权限校验失败url{},ep_id:{}",url,ep_id);
+         log.error("权限校验失败url{},ep_id 错误:{}  ",url,ep_id+e.getMessage());
          renderingByJsonPData(httpResponse, JSON.toJSONString(getOutPutMap(false,"权限校验失败 url"+url+" ep_id"+ep_id, Result.SIGN_FAIL,null)));
          return false;
       }

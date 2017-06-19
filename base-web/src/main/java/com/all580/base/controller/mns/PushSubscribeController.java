@@ -5,10 +5,12 @@ import com.all580.base.aop.MnsSubscribeAspect;
 import com.all580.base.manager.PushMsgManager;
 import com.all580.ep.api.service.EpPushService;
 import com.framework.common.Result;
+import com.framework.common.lang.JsonUtils;
 import com.framework.common.util.CommonUtil;
 import com.github.ltsopensource.core.domain.Job;
 import com.github.ltsopensource.jobclient.JobClient;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.lang.exception.ApiException;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
@@ -57,6 +60,28 @@ public class PushSubscribeController extends AbstractSubscribeController {
             return;
         }
         Map map = JSONObject.parseObject(msg, Map.class);
+        push(response, id, msg, map);
+    }
+
+    @RequestMapping(value = "manual", method = RequestMethod.POST)
+    public void manualPush(HttpServletResponse response, HttpServletRequest request) throws Exception {
+        String body = getReqParams(request);
+        String sign = request.getHeader("sign");
+        if (StringUtils.isEmpty(body) || StringUtils.isEmpty(sign) || !sign.equals(DigestUtils.md5Hex(body + "all580!@#$%^"))) {
+            throw new ApiException("签名错误");
+        }
+
+        List list = JsonUtils.json2List(body);
+        for (Object o : list) {
+            try {
+                push(response, "MANUAL", JsonUtils.toJson(o), (Map) o);
+            } catch (Exception e) {
+                log.warn("MANUAL PUSH ERROR", e);
+            }
+        }
+    }
+
+    private void push(HttpServletResponse response, String id, String msg, Map map) {
         String epId = CommonUtil.objectParseString(map.get("ep_id"));
         try {
             responseWrite(response, "OK");

@@ -33,7 +33,7 @@ public class RefundMoneyApplyEventImpl extends BasicSyncDataEvent implements Ref
         RefundOrder refundOrder = refundOrderMapper.selectByPrimaryKey(integer);
         log.info(OrderConstant.LogOperateCode.NAME, refundOrderManager.orderLog(null, refundOrder.getOrder_item_id(),
                 0, "ORDER_EVENT", OrderConstant.LogOperateCode.REFUND_MONEY_APPLY,
-                refundOrder.getQuantity(), String.format("退订退款申请:退订订单:%s", refundOrder.getNumber())));
+                refundOrder.getQuantity(), String.format("退订退款申请:退订订单:%s", refundOrder.getNumber()), String.valueOf(refundOrder.getNumber())));
         Order order = orderMapper.selectByRefundSn(refundOrder.getNumber());
         Assert.notNull(order, "订单不存在");
 

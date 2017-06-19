@@ -108,7 +108,7 @@ public class SendTicketAction extends BasicSyncDataEvent implements JobRunner {
         com.framework.common.Result r = voucherRPCService.sendTicket(orderItem.getEp_ma_id(), sendTicketParams);
         log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(null, orderItem.getId(),
                 0, "ORDER_ACTION", OrderConstant.LogOperateCode.SEND_TICKETING,
-                orderItem.getQuantity(), String.format("散客出票任务:发送状态:%s", String.valueOf(r.isSuccess()))));
+                orderItem.getQuantity(), String.format("散客出票任务:发送状态:%s", String.valueOf(r.isSuccess())), null));
 
         if (!r.isSuccess()) {
             log.warn("子订单:{},出票失败:{}", orderItem.getNumber(), r.getError());

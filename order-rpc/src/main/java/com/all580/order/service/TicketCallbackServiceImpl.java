@@ -87,6 +87,12 @@ public class TicketCallbackServiceImpl extends BasicSyncDataEvent implements Tic
         if (orderItem == null) {
             return new Result(false, "订单不存在");
         }
+
+        log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(null, orderItem.getId(),
+                0,  "VOUCHER",
+                OrderConstant.LogOperateCode.RECEIVE_TICKETING,
+                orderItem.getQuantity(), String.format("散客出票接收:接收信息:%s", JsonUtils.toJson(infoList)), null));
+
         if (orderItem.getStatus() != OrderConstant.OrderItemStatus.TICKETING) {
             return new Result(false, "订单状态不在出票中");
         }
@@ -114,11 +120,6 @@ public class TicketCallbackServiceImpl extends BasicSyncDataEvent implements Tic
             maSendResponseMapper.insertSelective(response);
         }
 
-        log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(null, orderItem.getId(),
-                0,  "VOUCHER",
-                OrderConstant.LogOperateCode.RECEIVE_TICKETING,
-                orderItem.getQuantity(), String.format("散客出票接收:接收信息:%s", JsonUtils.toJson(infoList))));
-
         // 触发事件
         eventManager.addEvent(OrderConstant.EventType.SEND_TICKET, orderItem.getId());
         return new Result(true);
@@ -132,6 +133,11 @@ public class TicketCallbackServiceImpl extends BasicSyncDataEvent implements Tic
         if (orderItem == null) {
             return new Result(false, "订单不存在");
         }
+        log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(null, orderItem.getId(),
+                0,  "VOUCHER",
+                OrderConstant.LogOperateCode.RECEIVE_TICKETING,
+                orderItem.getQuantity(), String.format("团队出票接收:接收信息:%s", JsonUtils.toJson(info)), null));
+
         if (orderItem.getStatus() != OrderConstant.OrderItemStatus.TICKETING) {
             return new Result(false, "订单状态不在出票中");
         }
@@ -161,10 +167,6 @@ public class TicketCallbackServiceImpl extends BasicSyncDataEvent implements Tic
         response.setCreate_time(procTime);
         maSendResponseMapper.insertSelective(response);
 
-        log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(null, orderItem.getId(),
-                0,  "VOUCHER",
-                OrderConstant.LogOperateCode.RECEIVE_TICKETING,
-                orderItem.getQuantity(), String.format("团队出票接收:接收信息:%s", JsonUtils.toJson(info))));
         // 触发事件
         eventManager.addEvent(OrderConstant.EventType.SEND_TICKET, orderItem.getId());
         return new Result(true);
@@ -178,6 +180,11 @@ public class TicketCallbackServiceImpl extends BasicSyncDataEvent implements Tic
         if (orderItem == null) {
             return new Result(false, "订单不存在");
         }
+
+        log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(null, orderItem.getId(),
+                0,  "VOUCHER",
+                OrderConstant.LogOperateCode.TICKET_CONSUME_SUCCESS,
+                info.getConsumeQuantity(), String.format("散客票核销:接收信息:%s", JsonUtils.toJson(info)), info.getValidateSn()));
 
         // 获取订单详情 设置核销数量
         List<OrderItemDetail> detailList = orderItemDetailMapper.selectByItemId(orderItem.getId());
@@ -231,11 +238,6 @@ public class TicketCallbackServiceImpl extends BasicSyncDataEvent implements Tic
             throw new ApiException("没有可核销的票");
         }
 
-        log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(null, orderItem.getId(),
-                0,  "VOUCHER",
-                OrderConstant.LogOperateCode.TICKET_CONSUME_SUCCESS,
-                info.getConsumeQuantity(), String.format("散客票核销:接收信息:%s", JsonUtils.toJson(info))));
-
         eventManager.addEvent(OrderConstant.EventType.CONSUME_TICKET, new ConsumeTicketEventParam(orderItem.getId(), serial.getId()));
         return new Result(true);
     }
@@ -265,6 +267,11 @@ public class TicketCallbackServiceImpl extends BasicSyncDataEvent implements Tic
         if (orderItem == null) {
             return new Result(false, "订单不存在");
         }
+
+        log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(null, orderItem.getId(),
+                0,  "VOUCHER",
+                OrderConstant.LogOperateCode.TICKET_CONSUME_SUCCESS,
+                info.getConsumeQuantity(), String.format("团队票核销:接收信息:%s", JsonUtils.toJson(info)), info.getValidateSn()));
 
         // 获取订单详情 设置核销数量
         List<OrderItemDetail> detailList = orderItemDetailMapper.selectByItemId(orderItem.getId());
@@ -315,11 +322,6 @@ public class TicketCallbackServiceImpl extends BasicSyncDataEvent implements Tic
             throw new ApiException("没有可核销的票");
         }
 
-        log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(null, orderItem.getId(),
-                0,  "VOUCHER",
-                OrderConstant.LogOperateCode.TICKET_CONSUME_SUCCESS,
-                info.getConsumeQuantity(), String.format("团队票核销:接收信息:%s", JsonUtils.toJson(info))));
-
         eventManager.addEvent(OrderConstant.EventType.CONSUME_TICKET, new ConsumeTicketEventParam(orderItem.getId(), serial.getId()));
         return new Result(true);
     }
@@ -337,6 +339,11 @@ public class TicketCallbackServiceImpl extends BasicSyncDataEvent implements Tic
         if (orderClearanceSerial == null) {
             return new Result(false, "核销流水不存在");
         }
+
+        log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(null, orderItem.getId(),
+                0,  "VOUCHER",
+                OrderConstant.LogOperateCode.TICKET_RECONSUME_SUCCESS,
+                orderClearanceSerial.getQuantity(), String.format("散客票反核销:接收信息:%s", JsonUtils.toJson(info)), info.getReValidateSn()));
 
         // 获取订单详情 设置核销数量
         List<OrderItemDetail> detailList = orderItemDetailMapper.selectByItemId(orderItem.getId());
@@ -373,11 +380,6 @@ public class TicketCallbackServiceImpl extends BasicSyncDataEvent implements Tic
             throw new ApiException("没有可反核销的票");
         }
 
-        log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(null, orderItem.getId(),
-                0,  "VOUCHER",
-                OrderConstant.LogOperateCode.TICKET_RECONSUME_SUCCESS,
-                orderClearanceSerial.getQuantity(), String.format("散客票反核销:接收信息:%s", JsonUtils.toJson(info))));
-
         // 发送短信
         //smsManager.sendReConsumeSms(orderItem, orderClearanceSerial.getQuantity(), orderClearanceSerial.getQuantity());
 
@@ -406,6 +408,11 @@ public class TicketCallbackServiceImpl extends BasicSyncDataEvent implements Tic
         if (orderItem == null) {
             return new Result(false, "订单不存在");
         }
+
+        log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(null, orderItem.getId(),
+                0,  "VOUCHER",
+                OrderConstant.LogOperateCode.TICKET_RECONSUME_SUCCESS,
+                info.getQuantity(), String.format("团队票反核销:接收信息:%s", JsonUtils.toJson(info)), info.getReValidateSn()));
 
         OrderClearanceSerial orderClearanceSerial = orderClearanceSerialMapper.selectBySn(info.getValidateSn());
         if (orderClearanceSerial == null) {
@@ -446,11 +453,6 @@ public class TicketCallbackServiceImpl extends BasicSyncDataEvent implements Tic
             log.warn("反核销流水: {} 订单:{} 反核销票不足 反核销信息:{}", new Object[]{info.getValidateSn(), orderSn, JsonUtils.toJson(info)});
             throw new ApiException("没有可反核销的票");
         }
-
-        log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(null, orderItem.getId(),
-                0,  "VOUCHER",
-                OrderConstant.LogOperateCode.TICKET_RECONSUME_SUCCESS,
-                info.getQuantity(), String.format("团队票反核销:接收信息:%s", JsonUtils.toJson(info))));
 
         // 发送短信
         //smsManager.sendReConsumeSms(orderItem, info.getQuantity(), orderClearanceSerial.getQuantity());
@@ -564,6 +566,11 @@ public class TicketCallbackServiceImpl extends BasicSyncDataEvent implements Tic
         if (orderItem == null) {
             return new Result(false, "订单不存在");
         }
+        log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(null, orderItem.getId(),
+                0,  "VOUCHER",
+                OrderConstant.LogOperateCode.MODIFY_TICKET_SUCCESS,
+                0, "团队修改返回", null));
+
         if (orderItem.getGroup_id() == null || orderItem.getGroup_id() == 0) {
             return new Result(false, "该订单不是团队订单");
         }

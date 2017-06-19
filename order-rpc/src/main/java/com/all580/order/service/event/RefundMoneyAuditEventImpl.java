@@ -27,7 +27,7 @@ public class RefundMoneyAuditEventImpl implements RefundMoneyAuditEvent {
         RefundOrder refundOrder = refundOrderMapper.selectByPrimaryKey(integer);
         log.info(OrderConstant.LogOperateCode.NAME, refundOrderManager.orderLog(null, refundOrder.getOrder_item_id(),
                 refundOrder.getAudit_money_user_id(), refundOrder.getAudit_money_user_name(), OrderConstant.LogOperateCode.REFUND_MONEY_AUDIT_SUCCESS,
-                refundOrder.getQuantity(), String.format("退订退款申请审核:退订订单:%s", refundOrder.getNumber())));
+                refundOrder.getQuantity(), String.format("退订退款申请审核:退订订单:%s", refundOrder.getNumber()), String.valueOf(refundOrder.getNumber())));
         return new Result(true);
     }
 }
