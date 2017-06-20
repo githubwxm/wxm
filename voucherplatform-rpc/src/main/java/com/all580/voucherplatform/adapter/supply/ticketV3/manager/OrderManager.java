@@ -31,13 +31,12 @@ public class OrderManager {
         Map map = new HashMap();
         String batchNo = orderList.get(0).getOrderCode();
         if (orderList.get(0).getSupplyProdId() == null) {
-            log.debug("订单未绑定票务产品");
+            log.debug("订单号为{}未绑定票务产品", new Object[]{orderList.get(0).getOrderCode()});
             throw new Exception("订单未绑定票务产品");
         }
         SupplyProduct supplyProduct = supplyProductMapper.selectByPrimaryKey(orderList.get(0).getSupplyProdId());
 
-        if (supplyProduct == null) {
-            log.debug("订单未绑定票务产品");
+        if (supplyProduct == null) { log.debug("订单号为{}未绑定票务产品", new Object[]{orderList.get(0).getOrderCode()});
             throw new Exception("订单未绑定票务产品");
         }
         map.put("batch", batchNo);

@@ -3,6 +3,7 @@ package com.all580.voucherplatform.adapter.supply.ticketV3.processor;
 import com.all580.voucherplatform.adapter.ProcessorService;
 import com.all580.voucherplatform.api.service.SupplyService;
 import com.all580.voucherplatform.entity.Supply;
+import com.framework.common.lang.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,7 +32,7 @@ public class QueryProdProcessorImpl implements ProcessorService<Supply> {
             Map mapProd = (Map) value;
             mapProd.put("code", mapProd.get("productId"));
             mapProd.put("name", mapProd.get("productName"));
-            mapProd.put("data", mapProd.get("attachs"));
+            mapProd.put("data", JsonUtils.toJson(mapProd.get("attachs")));
             mapList.add(mapProd);
         }
         supplyService.setProd(supply.getId(), mapList);

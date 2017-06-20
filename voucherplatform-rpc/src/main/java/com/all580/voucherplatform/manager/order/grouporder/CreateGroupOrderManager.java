@@ -178,12 +178,13 @@ public class CreateGroupOrderManager {
     }
 
     public void saveOrder() {
-        Integer groupId = orderMapper.insertSelective(groupOrder);
+        orderMapper.insertSelective(groupOrder);
+
         for (GroupVisitor groupVisitor : visitorList) {
-            groupVisitor.setGroup_order_id(groupId);
+            groupVisitor.setGroup_order_id(groupOrder.getId());
             groupVisitorMapper.insertSelective(groupVisitor);
         }
-        notifySupply(groupOrder.getSupply_id(), groupId);
+        notifySupply(groupOrder.getSupply_id(), groupOrder.getId());
     }
 
     private void notifySupply(final Integer supplyId, final Integer groupOrderId) {

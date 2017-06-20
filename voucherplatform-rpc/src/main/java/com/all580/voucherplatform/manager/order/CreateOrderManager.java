@@ -146,6 +146,7 @@ public class CreateOrderManager {
             order.setCustomName(customName);
             order.setMobile(mobile);
             order.setIdNumber(idNumber);
+            order.setNumber(number);
             orderList.add(order);
         }
     }
@@ -154,8 +155,8 @@ public class CreateOrderManager {
     public void saveOrder() {
         Integer[] orderIdList = new Integer[orderList.size()];
         for (int i = 0; i < orderList.size(); i++) {
-            Integer orderId = orderMapper.insertSelective(orderList.get(i));
-            orderIdList[i] = orderId;
+            orderMapper.insertSelective(orderList.get(i));
+            orderIdList[i] = orderList.get(i).getId();
         }
         notifySupply(supply, orderIdList);
     }

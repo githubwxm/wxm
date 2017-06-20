@@ -49,18 +49,18 @@ public interface TemplateMapper {
      */
     int updateByPrimaryKey(Template record);
 
-    Template getTemplate(@Param("supppyId") Integer supppyId, @Param("prodId") Integer prodId);
+    Template getTemplate(@Param("supppy_Id") Integer supppyId, @Param("prod_Id") Integer prodId);
 
     Template getDefaultTemplate();
 
 
     int getCount(@Param("name") String name,
-                 @Param("supppyId") Integer supppyId,
+                 @Param("supppy_Id") Integer supppyId,
                  @Param("prod_Id") Integer prodId,
                  @Param("defaultOption") Boolean defaultOption);
 
     List<Map> getList(@Param("name") String name,
-                      @Param("supplierId") Integer supplierId,
+                      @Param("supppy_Id") Integer supppyId,
                       @Param("prod_Id") Integer prodId,
                       @Param("defaultOption") Boolean defaultOption,
                       @Param("record_start") Integer recordStart,

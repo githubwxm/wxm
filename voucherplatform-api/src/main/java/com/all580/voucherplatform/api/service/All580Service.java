@@ -10,4 +10,6 @@ import java.util.Map;
  */
 public interface All580Service {
     Result process(Map map);
+
+    Result supplyProcess(Map map);
 }

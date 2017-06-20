@@ -107,14 +107,14 @@ public class RefundApplyManager {
         refund.setSupplyprod_id(order.getSupplyProdId());
         refund.setCreateTime(new Date());
         refund.setProdType(prodType);
-        Integer refundId = refundMapper.insertSelective(refund);
+        refundMapper.insertSelective(refund);
         if (prodType == VoucherConstant.ProdType.GENERAL) {
             Order updateOrder = new Order();
             updateOrder.setId(order.getId());
             updateOrder.setRefunding(order.getRefunding() + refund.getRefNumber());
             orderMapper.updateByPrimaryKeySelective(updateOrder);
         }
-        notifySupply(order.getSupply_id(), refundId, prodType);
+        notifySupply(order.getSupply_id(), refund.getId(), prodType);
 
     }
 

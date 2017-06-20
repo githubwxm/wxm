@@ -95,12 +95,12 @@ public class ConsumeOrderManager {
         consume.setPlatformprod_id(order.getPlatformprod_id());
         consume.setReverseStatus(false);
         consume.setCreateTime(new Date());
-        Integer consumeId = consumeMapper.insertSelective(consume);
+        consumeMapper.insertSelective(consume);
         Order updateOrder = new Order();
         updateOrder.setId(order.getId());
         updateOrder.setConsume(order.getConsume() + consume.getConsumeNumber());
         orderMapper.updateByPrimaryKeySelective(updateOrder);
-        notifyPlatform(order.getPlatform_id(), consumeId);
+        notifyPlatform(order.getPlatform_id(), consume.getId());
     }
 
     private void notifyPlatform(final Integer platformId, final Integer consumeId) {
