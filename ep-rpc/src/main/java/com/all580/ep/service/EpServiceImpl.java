@@ -121,6 +121,7 @@ public class EpServiceImpl implements EpService {
         map.put("status_bak", EpConstant.EpStatus.ACTIVE);// 状态默认未初始化
         map.put("ep_type", EpConstant.EpType.PLATFORM);
         map.put("access_id", Common.getAccessId());
+        map.put("access_key", Common.getAccessKey());
         // CommonUtil.formtAddress(map);
         int epId = 0;
         try {
@@ -129,7 +130,7 @@ public class EpServiceImpl implements EpService {
             log.error("添加平台商异常", e);
             throw new ApiException("添加平台商异常", e);
         }
-        map.put("access_key", Common.getAccessKey());
+
 
         Integer coreEpId = null;//企业id 平台商id
         Result<Map<String, Object>> result = new Result<>();
