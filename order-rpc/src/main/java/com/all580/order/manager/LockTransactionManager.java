@@ -402,14 +402,14 @@ public class LockTransactionManager {
         if (order == null) {
             throw new ApiException("订单不存在");
         }
-        if (order.getPay_amount() <= 0) {
-            return new Result<>(true, "该订单不需要支付");
-        }
         if (!params.containsKey(EpConstant.EpKey.EP_ID)) {
             throw new ApiException("非法请求:企业ID为空");
         }
         if (!String.valueOf(params.get(EpConstant.EpKey.EP_ID)).equals(String.valueOf(order.getBuy_ep_id()))) {
             throw new ApiException("非法请求:当前企业不能支付该订单");
+        }
+        if (order.getPay_amount() <= 0) {
+            return new Result<>(true);
         }
 
         if (order.getStatus() != OrderConstant.OrderStatus.PAY_WAIT &&
