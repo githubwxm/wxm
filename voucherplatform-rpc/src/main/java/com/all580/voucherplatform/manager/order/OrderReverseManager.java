@@ -60,8 +60,7 @@ public class OrderReverseManager {
         reverse.setPlatformprod_id(order.getPlatformprod_id());
         reverse.setSupply_id(order.getSupply_id());
         reverse.setSupplyprod_id(order.getSupplyProdId());
-        Integer reverseId = reverseMapper.insertSelective(reverse);
-
+        reverseMapper.insertSelective(reverse);
         Consume updateConsume = new Consume();
         updateConsume.setId(consume.getId());
         updateConsume.setReverseStatus(true);
@@ -71,7 +70,7 @@ public class OrderReverseManager {
         Integer reverseNum = order.getReverse() == null ? 0 : order.getReverse();
         reverseNum += consume.getConsumeNumber();
         updateOrder.setReverse(reverseNum);
-        notifyPlatform(order.getPlatform_id(), reverseId);
+        notifyPlatform(order.getPlatform_id(), reverse.getId());
     }
 
     private void notifyPlatform(final Integer platformId, final Integer reverseId) {

@@ -7,6 +7,7 @@ import com.all580.voucherplatform.dao.TicketSysMapper;
 import com.all580.voucherplatform.entity.Platform;
 import com.all580.voucherplatform.entity.Supply;
 import com.all580.voucherplatform.entity.TicketSys;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,7 @@ import java.util.Map;
  * Created by Linv2 on 2017-06-08.
  */
 @Service
+@Slf4j
 public class AdapterLoadder {
 
     @Autowired
@@ -34,7 +36,14 @@ public class AdapterLoadder {
         if (!supplyServiceMap.containsKey(ticketSysId)) {
             TicketSys ticketSys = ticketSysMapper.selectByPrimaryKey(ticketSysId);
             if (ticketSys != null) {
-                SupplyAdapterService supplyAdapterService = applicationContext.getBean(ticketSys.getImplPacket(), SupplyAdapterService.class);
+                Class cls = null;
+                try {
+                    cls = Class.forName(ticketSys.getImplPacket());
+                } catch (Exception ex) {
+                    log.error("票务{}--{}加载适配器失败", ticketSysId, ticketSys.getImplPacket());
+                    return null;
+                }
+                SupplyAdapterService supplyAdapterService = (SupplyAdapterService) applicationContext.getBean(cls);
                 if (supplyAdapterService != null) {
                     supplyServiceMap.put(ticketSysId, supplyAdapterService);
                 }
@@ -50,7 +59,14 @@ public class AdapterLoadder {
         if (!platformSerivceMap.containsKey(platformId)) {
             Platform platform = platformMapper.selectByPrimaryKey(platformId);
             if (platform != null) {
-                PlatformAdapterService platformAdapterService = applicationContext.getBean(platform.getImplPackage(), PlatformAdapterService.class);
+                Class cls = null;
+                try {
+                    cls = Class.forName(platform.getImplPackage());
+                } catch (Exception ex) {
+                    log.error("平台商{}--{}加载适配器失败", platform.getName(), platform.getImplPackage());
+                    return null;
+                }
+                PlatformAdapterService platformAdapterService = (PlatformAdapterService) applicationContext.getBean(cls);
                 if (platformAdapterService != null) {
                     platformSerivceMap.put(platformId, platformAdapterService);
                 }

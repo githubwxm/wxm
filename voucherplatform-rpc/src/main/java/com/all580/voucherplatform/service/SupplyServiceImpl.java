@@ -167,7 +167,10 @@ public class SupplyServiceImpl implements SupplyService {
         String prodId = CommonUtil.objectParseString(map.get("code"));
         SupplyProduct supplyProduct = getProdMap(supplyId, prodId);
         if (supplyProduct == null) {//先判断数据库是否存在改数据
-            supplyProduct = JsonUtils.map2obj(map, SupplyProduct.class);
+            supplyProduct = new SupplyProduct();
+            supplyProduct.setCode(prodId);
+            supplyProduct.setName(CommonUtil.objectParseString(map.get("name")));
+            supplyProduct.setData(CommonUtil.objectParseString(map.get("data")));
             supplyProduct.setStatus(true);
             supplyProduct.setCreateTime(new Date());
             supplyProduct.setSyncTime(new Date());
@@ -175,7 +178,7 @@ public class SupplyServiceImpl implements SupplyService {
             supplyProductMapper.insertSelective(supplyProduct);
         } else {
             //如果存在就修改
-            SupplyProduct updateProd=new SupplyProduct();
+            SupplyProduct updateProd = new SupplyProduct();
             updateProd.setName(CommonUtil.objectParseString("name"));
             updateProd.setDescription(CommonUtil.objectParseString("description"));
             updateProd.setSyncTime(new Date());

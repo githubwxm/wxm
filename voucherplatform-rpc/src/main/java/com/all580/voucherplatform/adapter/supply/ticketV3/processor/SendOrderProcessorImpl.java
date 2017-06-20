@@ -18,7 +18,7 @@ import java.util.Map;
 @Service(value = "ticketV3SendOrderProcessorImpl")
 @Slf4j
 public class SendOrderProcessorImpl implements ProcessorService<Supply> {
-    private static final String ACTION = "queryProductRsp";
+    private static final String ACTION = "saveOrderRsp";
     @Autowired
     private OrderSupplyReceiveManager orderSupplyReceiveManager;
 
@@ -26,19 +26,15 @@ public class SendOrderProcessorImpl implements ProcessorService<Supply> {
     public Object processor(Supply supply, Map map) {
         String batch = CommonUtil.objectParseString(map.get("batch"));
         List<Map> mapList = (List<Map>) map.get("orders");
-        Integer[] orderIdList = new Integer[mapList.size()];
-        Integer platformId = null;
         for (int i = 0; i < mapList.size(); i++) {
             Map mapOrder = mapList.get(i);
-            String voucherId = CommonUtil.objectParseString(mapOrder.get("voucherId"));
-            String ticketOrderId = CommonUtil.objectParseString(mapOrder.get("ticketOrderId"));
-            Order order = orderSupplyReceiveManager.Receive(voucherId, ticketOrderId);
-            orderIdList[i] = order.getId();
-            if (platformId == null) {
-                platformId = order.getPlatform_id();
-            }
+            mapOrder.put("orderCode", mapOrder.get("voucherId"));
+            mapOrder.put("supplyOrderId", mapOrder.get("ticketOrderId"));
+
         }
-        orderSupplyReceiveManager.notifyPlatform(platformId, orderIdList);
+        try {
+            orderSupplyReceiveManager.Receive(mapList);
+        } catch (Exception ex) {}
 
         return null;
     }
