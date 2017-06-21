@@ -1,11 +1,9 @@
 package com.all580.voucherplatform.manager.order.grouporder;
 
-import com.all580.voucherplatform.adapter.AdapterLoadder;
+import com.all580.voucherplatform.adapter.AdapterLoader;
 import com.all580.voucherplatform.adapter.platform.PlatformAdapterService;
 import com.all580.voucherplatform.dao.GroupOrderMapper;
-import com.all580.voucherplatform.dao.OrderMapper;
 import com.all580.voucherplatform.entity.GroupOrder;
-import com.all580.voucherplatform.entity.Order;
 import com.all580.voucherplatform.utils.sign.async.AsyncService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +19,7 @@ public class GroupOrderSupplyReceiveManager {
     @Autowired
     private GroupOrderMapper orderMapper;
     @Autowired
-    private AdapterLoadder adapterLoadder;
+    private AdapterLoader adapterLoader;
     @Autowired
     private AsyncService asyncService;
 
@@ -30,11 +28,11 @@ public class GroupOrderSupplyReceiveManager {
         Receive(order, supplyOrderId);
     }
 
-    private void Receive(Integer orderId, String supplyOrderId) {
+    public void Receive(Integer orderId, String supplyOrderId) {
         GroupOrder order = orderMapper.selectByPrimaryKey(orderId);
         Receive(order, supplyOrderId);
     }
-    public void Receive(GroupOrder order, String supplyOrderId){
+    private void Receive(GroupOrder order, String supplyOrderId){
         GroupOrder groupOrder = new GroupOrder();
         groupOrder.setId(order.getId());
         groupOrder.setSupplyOrderId(supplyOrderId);
@@ -43,11 +41,11 @@ public class GroupOrderSupplyReceiveManager {
     }
 
 
-    public void notifyPlatform(final Integer platformId, final Integer groupOrderId) {
+    private void notifyPlatform(final Integer platformId, final Integer groupOrderId) {
         asyncService.run(new Runnable() {
             @Override
             public void run() {
-                PlatformAdapterService platformAdapterService = adapterLoadder.getPlatformAdapterService(platformId);
+                PlatformAdapterService platformAdapterService = adapterLoader.getPlatformAdapterService(platformId);
                 if (platformAdapterService != null) {
                     platformAdapterService.sendGroupOrder(groupOrderId);
                 }

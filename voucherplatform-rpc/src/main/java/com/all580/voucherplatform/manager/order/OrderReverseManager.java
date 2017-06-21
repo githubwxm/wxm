@@ -1,6 +1,6 @@
 package com.all580.voucherplatform.manager.order;
 
-import com.all580.voucherplatform.adapter.AdapterLoadder;
+import com.all580.voucherplatform.adapter.AdapterLoader;
 import com.all580.voucherplatform.adapter.platform.PlatformAdapterService;
 import com.all580.voucherplatform.dao.ConsumeMapper;
 import com.all580.voucherplatform.dao.OrderMapper;
@@ -31,7 +31,7 @@ public class OrderReverseManager {
     @Autowired
     private ReverseMapper reverseMapper;
     @Autowired
-    private AdapterLoadder adapterLoadder;
+    private AdapterLoader adapterLoader;
     @Autowired
     private AsyncService asyncService;
 
@@ -77,7 +77,7 @@ public class OrderReverseManager {
         asyncService.run(new Runnable() {
             @Override
             public void run() {
-                PlatformAdapterService platformAdapterService = adapterLoadder.getPlatformAdapterService(platformId);
+                PlatformAdapterService platformAdapterService = adapterLoader.getPlatformAdapterService(platformId);
                 if (platformAdapterService != null) {
                     platformAdapterService.reverse(reverseId);
                 }

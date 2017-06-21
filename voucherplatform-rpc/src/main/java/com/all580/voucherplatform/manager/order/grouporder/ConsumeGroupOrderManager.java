@@ -1,6 +1,6 @@
 package com.all580.voucherplatform.manager.order.grouporder;
 
-import com.all580.voucherplatform.adapter.AdapterLoadder;
+import com.all580.voucherplatform.adapter.AdapterLoader;
 import com.all580.voucherplatform.adapter.platform.PlatformAdapterService;
 import com.all580.voucherplatform.dao.GroupOrderMapper;
 import com.all580.voucherplatform.dao.GroupVisitorMapper;
@@ -23,7 +23,7 @@ public class ConsumeGroupOrderManager {
     @Autowired
     private GroupVisitorMapper groupVisitorMapper;
     @Autowired
-    private AdapterLoadder adapterLoadder;
+    private AdapterLoader adapterLoader;
     @Autowired
     private AsyncService asyncService;
     private GroupOrder groupOrder;
@@ -51,7 +51,7 @@ public class ConsumeGroupOrderManager {
         asyncService.run(new Runnable() {
             @Override
             public void run() {
-                PlatformAdapterService platformAdapterService = adapterLoadder.getPlatformAdapterService(platformId);
+                PlatformAdapterService platformAdapterService = adapterLoader.getPlatformAdapterService(platformId);
                 if (platformAdapterService != null) {
                     platformAdapterService.activateGroupOrder(groupOrderId);
                 }

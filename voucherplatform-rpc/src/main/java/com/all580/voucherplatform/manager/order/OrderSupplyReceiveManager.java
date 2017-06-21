@@ -1,6 +1,6 @@
 package com.all580.voucherplatform.manager.order;
 
-import com.all580.voucherplatform.adapter.AdapterLoadder;
+import com.all580.voucherplatform.adapter.AdapterLoader;
 import com.all580.voucherplatform.adapter.platform.PlatformAdapterService;
 import com.all580.voucherplatform.dao.OrderMapper;
 import com.all580.voucherplatform.entity.Order;
@@ -24,7 +24,7 @@ public class OrderSupplyReceiveManager {
     @Autowired
     private OrderMapper orderMapper;
     @Autowired
-    private AdapterLoadder adapterLoadder;
+    private AdapterLoader adapterLoader;
     @Autowired
     private AsyncService asyncService;
     @Autowired
@@ -86,7 +86,7 @@ public class OrderSupplyReceiveManager {
         asyncService.run(new Runnable() {
             @Override
             public void run() {
-                PlatformAdapterService platformAdapterService = adapterLoadder.getPlatformAdapterService(platformId);
+                PlatformAdapterService platformAdapterService = adapterLoader.getPlatformAdapterService(platformId);
                 if (platformAdapterService != null) {
                     platformAdapterService.sendOrder(orderId);
                 }

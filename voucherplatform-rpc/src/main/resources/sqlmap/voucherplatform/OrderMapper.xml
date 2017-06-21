@@ -519,7 +519,7 @@
     <select id="selectByOrderCode" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
-        from t_orders
+        from t_order
         where `orderCode`=#{order_Code}
     </select>
     <select id="selectBySupply" resultMap="BaseResultMap">

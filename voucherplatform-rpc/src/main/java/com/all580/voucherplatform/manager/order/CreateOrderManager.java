@@ -1,6 +1,6 @@
 package com.all580.voucherplatform.manager.order;
 
-import com.all580.voucherplatform.adapter.AdapterLoadder;
+import com.all580.voucherplatform.adapter.AdapterLoader;
 import com.all580.voucherplatform.adapter.supply.SupplyAdapterService;
 import com.all580.voucherplatform.api.VoucherConstant;
 import com.all580.voucherplatform.dao.*;
@@ -18,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -49,7 +48,7 @@ public class CreateOrderManager {
     @Autowired
     private VoucherUrlGenerate voucherUrlGenerate;
     @Autowired
-    private AdapterLoadder adapterLoadder;
+    private AdapterLoader adapterLoader;
     @Autowired
     private AsyncService asyncService;
 
@@ -165,7 +164,7 @@ public class CreateOrderManager {
         asyncService.run(new Runnable() {
             @Override
             public void run() {
-                SupplyAdapterService supplyAdapterService = adapterLoadder.getSupplyAdapterService(supply);
+                SupplyAdapterService supplyAdapterService = adapterLoader.getSupplyAdapterService(supply);
                 if (supplyAdapterService != null) {
                     supplyAdapterService.sendOrder(orderIdList);
                 }

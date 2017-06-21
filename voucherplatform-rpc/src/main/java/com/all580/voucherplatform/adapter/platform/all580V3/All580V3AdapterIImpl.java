@@ -57,7 +57,7 @@ public class All580V3AdapterIImpl extends PlatformAdapterService {
         List<Map> mapList = new ArrayList<>();
         for (Integer id : orderIds) {
             Order order = orderMapper.selectByPrimaryKey(id);
-            if (!StringUtils.isEmpty(orderId)) {
+            if (StringUtils.isEmpty(orderId)) {
                 orderId = order.getPlatformOrderId();
             }
             Map mapSub = new HashMap();

@@ -1,9 +1,10 @@
 package com.all580.voucherplatform.adapter.platform.all580V3.processor;
 
-import com.all580.voucherplatform.adapter.AdapterLoadder;
+import com.all580.voucherplatform.adapter.AdapterLoader;
 import com.all580.voucherplatform.adapter.ProcessorService;
 import com.all580.voucherplatform.entity.Platform;
 import com.all580.voucherplatform.manager.order.RefundApplyManager;
+import com.all580.voucherplatform.manager.order.grouporder.GroupRefundApplyManager;
 import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +25,7 @@ public class RefundGroupOrderProcessorImpl implements ProcessorService<Platform>
 
     private static final String ACTION = "cancelGroupTicket";
     @Autowired
-    private AdapterLoadder adapterLoadder;
+    private AdapterLoader adapterLoader;
 
     @Override
     public Object processor(Platform platform, Map map) {
@@ -34,7 +35,7 @@ public class RefundGroupOrderProcessorImpl implements ProcessorService<Platform>
         Date refTime = DateFormatUtils.converToDateTime(CommonUtil.objectParseString(map.get("refTime")));
         String refReason = CommonUtil.objectParseString(map.get("refReason"));
 
-        RefundApplyManager refundApplyManager = adapterLoadder.getBean(RefundApplyManager.class);
+        GroupRefundApplyManager refundApplyManager = adapterLoader.getBean(GroupRefundApplyManager.class);
         try {
             refundApplyManager.setGroupOrder(platform.getId(), orderId);
             refundApplyManager.apply(refId, refNumber, refTime, refReason);

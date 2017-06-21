@@ -1,11 +1,9 @@
 package com.all580.voucherplatform.manager.order;
 
-import com.all580.voucherplatform.adapter.AdapterLoadder;
+import com.all580.voucherplatform.adapter.AdapterLoader;
 import com.all580.voucherplatform.adapter.platform.PlatformAdapterService;
-import com.all580.voucherplatform.adapter.supply.SupplyAdapterService;
 import com.all580.voucherplatform.dao.OrderMapper;
 import com.all580.voucherplatform.entity.Order;
-import com.all580.voucherplatform.entity.Platform;
 import com.all580.voucherplatform.utils.sign.async.AsyncService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +22,7 @@ public class UpdateOrderManager {
     @Autowired
     private OrderMapper orderMapper;
     @Autowired
-    private AdapterLoadder adapterLoadder;
+    private AdapterLoader adapterLoader;
     @Autowired
     private AsyncService asyncService;
     private Order order;
@@ -65,7 +63,7 @@ public class UpdateOrderManager {
         asyncService.run(new Runnable() {
             @Override
             public void run() {
-                PlatformAdapterService platformAdapterService = adapterLoadder.getPlatformAdapterService(platformId);
+                PlatformAdapterService platformAdapterService = adapterLoader.getPlatformAdapterService(platformId);
                 if (platformAdapterService != null) {
                     platformAdapterService.update(orderId);
                 }
