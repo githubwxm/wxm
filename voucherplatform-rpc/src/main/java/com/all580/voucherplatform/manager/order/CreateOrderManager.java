@@ -146,6 +146,7 @@ public class CreateOrderManager {
             order.setMobile(mobile);
             order.setIdNumber(idNumber);
             order.setNumber(number);
+            order.setStatus(VoucherConstant.OrderStatus.WAIT_CONFIRM);
             orderList.add(order);
         }
     }

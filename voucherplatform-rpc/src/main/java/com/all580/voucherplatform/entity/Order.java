@@ -160,6 +160,11 @@ public class Order implements Serializable {
     private String imgUrl;
 
     /**
+     *  ,所属表字段为t_order.status
+     */
+    private Integer status;
+
+    /**
      * 序列化ID,t_order
      */
     private static final long serialVersionUID = 1L;
@@ -720,5 +725,23 @@ public class Order implements Serializable {
      */
     public void setImgUrl(String imgUrl) {
         this.imgUrl = imgUrl == null ? null : imgUrl.trim();
+    }
+
+    /**
+     * 获取  字段:t_order.status
+     *
+     * @return t_order.status, 
+     */
+    public Integer getStatus() {
+        return status;
+    }
+
+    /**
+     * 设置  字段:t_order.status
+     *
+     * @param status t_order.status, 
+     */
+    public void setStatus(Integer status) {
+        this.status = status;
     }
 }

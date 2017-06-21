@@ -55,7 +55,7 @@ public class GroupRefundApplyManager {
         refund.setRefCause(refReason);
         refund.setRefStatus(VoucherConstant.RefundStatus.WAIT_CONFIRM);
         refund.setPlatform_id(groupOrder.getPlatform_id());
-        refund.setPlatformprod_id(groupOrder.getPlatformprod_id());
+        refund.setPlatformprod_id(groupOrder.getPlatformProdId());
         refund.setSupply_id(groupOrder.getSupply_id());
         refund.setSupplyprod_id(groupOrder.getSupplyProdId());
         refund.setCreateTime(new Date());

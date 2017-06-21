@@ -79,7 +79,7 @@ public class CreateGroupOrderManager {
         groupOrder.setManager(CommonUtil.objectParseString(map.get("manager")));
         groupOrder.setGroupNumber(CommonUtil.objectParseString(map.get("groupNumber")));
         groupOrder.setGuideName(CommonUtil.objectParseString(map.get("guideName")));
-        groupOrder.setGuideMobile(CommonUtil.objectParseString(map.get("guideName")));
+        groupOrder.setGuideMobile(CommonUtil.objectParseString(map.get("guideMobile")));
         groupOrder.setGuideIdNumber(CommonUtil.objectParseString(map.get("guideIdNumber")));
         groupOrder.setPayment(CommonUtil.objectParseInteger(map.get("payment"), 0));
         if (map.containsKey("payTime")) {
@@ -108,7 +108,6 @@ public class CreateGroupOrderManager {
         groupOrder.setOrderCode(String.valueOf(UUIDGenerator.generateUUID()));//生成订单号
         groupOrder.setPlatform_id(platformId);
         groupOrder.setPlatformOrderId(orderId);
-        groupOrder.setPlatformprod_id(platformProduct.getId());
         groupOrder.setPlatformProdId(platformProduct.getId());
         groupOrder.setSupply_id(platformProduct.getSupply_id());
 
@@ -125,6 +124,7 @@ public class CreateGroupOrderManager {
         groupOrder.setVoucherNumber(voucherNumber);
         String voucherImgUrl = voucherUrlGenerate.getVoucherUrl(voucherNumber, qrRule.getErrorRate(), qrRule.getSize(), qrRule.getForeColor());
         groupOrder.setImgUrl(voucherImgUrl);
+        groupOrder.setActivateStatus(false);
         setVisitor(map);
     }
 
