@@ -1,6 +1,6 @@
 package com.all580.voucherplatform.adapter.platform.all580V3.processor;
 
-import com.all580.voucherplatform.adapter.AdapterLoadder;
+import com.all580.voucherplatform.adapter.AdapterLoader;
 import com.all580.voucherplatform.adapter.ProcessorService;
 import com.all580.voucherplatform.entity.Platform;
 import com.all580.voucherplatform.manager.order.grouporder.UpdateGroupOrderManager;
@@ -21,11 +21,11 @@ public class UpdateGroupOrderProcessorImpl implements ProcessorService<Platform>
 
     private static final String ACTION = "updateGroupTicket";
     @Autowired
-    private AdapterLoadder adapterLoadder;
+    private AdapterLoader adapterLoader;
 
     @Override
     public Object processor(Platform platform, Map map) {
-        UpdateGroupOrderManager updateGroupOrderManager = adapterLoadder.getBean(UpdateGroupOrderManager.class);
+        UpdateGroupOrderManager updateGroupOrderManager = adapterLoader.getBean(UpdateGroupOrderManager.class);
         String orderId = CommonUtil.objectParseString(map.get("orderId"));
         updateGroupOrderManager.setOrder(platform.getId(), orderId);
         updateGroupOrderManager.setData(map);

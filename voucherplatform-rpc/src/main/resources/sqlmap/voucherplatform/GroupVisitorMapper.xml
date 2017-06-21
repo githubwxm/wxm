@@ -204,10 +204,15 @@
         update t_group_visitor
         set `activate`=TRUE
         WHERE group_order_id=#{group_order_id}
-        and `idNumber` in
-        <foreach collection="IdNumbers" separator="," open="(" close=")" item="item">
-            #{item}
-        </foreach>
+        <if test="IdNumbers!=null and IdNumbers.length>0">
+            and `idNumber` in
+            <foreach collection="IdNumbers" separator="," open="(" close=")" item="item">
+                #{item}
+            </foreach>
+        </if>
+        <if test="IdNumbers==null or IdNumbers.length==0">
+            and `idNumber`='-'
+        </if>
     </update>
 
     <select id="selectByGroupOrderId" resultMap="BaseResultMap">

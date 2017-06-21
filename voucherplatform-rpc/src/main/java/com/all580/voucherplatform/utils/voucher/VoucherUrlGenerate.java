@@ -1,4 +1,4 @@
-package com.all580.voucherplatform.utils.sign.voucher;
+package com.all580.voucherplatform.utils.voucher;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;

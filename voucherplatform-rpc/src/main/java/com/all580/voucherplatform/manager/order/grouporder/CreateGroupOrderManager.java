@@ -1,12 +1,13 @@
 package com.all580.voucherplatform.manager.order.grouporder;
 
-import com.all580.voucherplatform.adapter.AdapterLoadder;
+import com.all580.voucherplatform.adapter.AdapterLoader;
 import com.all580.voucherplatform.adapter.supply.SupplyAdapterService;
+import com.all580.voucherplatform.api.VoucherConstant;
 import com.all580.voucherplatform.dao.*;
 import com.all580.voucherplatform.entity.*;
-import com.all580.voucherplatform.utils.sign.async.AsyncService;
-import com.all580.voucherplatform.utils.sign.voucher.VoucherGenerate;
-import com.all580.voucherplatform.utils.sign.voucher.VoucherUrlGenerate;
+import com.all580.voucherplatform.utils.async.AsyncService;
+import com.all580.voucherplatform.utils.voucher.VoucherGenerate;
+import com.all580.voucherplatform.utils.voucher.VoucherUrlGenerate;
 import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.lang.UUIDGenerator;
@@ -38,6 +39,8 @@ public class CreateGroupOrderManager {
     @Autowired
     private PlatformProductMapper prodMapper;
     @Autowired
+    private SupplyMapper supplyMapper;
+    @Autowired
     private SupplyProductMapper supplyProductMapper;
     @Autowired
     private QrRuleMapper qrRuleMapper;
@@ -48,7 +51,7 @@ public class CreateGroupOrderManager {
     @Autowired
     private VoucherUrlGenerate voucherUrlGenerate;
     @Autowired
-    private AdapterLoadder adapterLoadder;
+    private AdapterLoader adapterLoader;
     @Autowired
     private AsyncService asyncService;
 
@@ -60,6 +63,7 @@ public class CreateGroupOrderManager {
     private List<GroupVisitor> visitorList;
     private QrRule qrRule;
     private Template template;
+    private Supply supply;
 
     public void setProd(Integer platformId, Map map) throws Exception {
 
@@ -76,7 +80,7 @@ public class CreateGroupOrderManager {
         groupOrder.setManager(CommonUtil.objectParseString(map.get("manager")));
         groupOrder.setGroupNumber(CommonUtil.objectParseString(map.get("groupNumber")));
         groupOrder.setGuideName(CommonUtil.objectParseString(map.get("guideName")));
-        groupOrder.setGuideMobile(CommonUtil.objectParseString(map.get("guideName")));
+        groupOrder.setGuideMobile(CommonUtil.objectParseString(map.get("guideMobile")));
         groupOrder.setGuideIdNumber(CommonUtil.objectParseString(map.get("guideIdNumber")));
         groupOrder.setPayment(CommonUtil.objectParseInteger(map.get("payment"), 0));
         if (map.containsKey("payTime")) {
@@ -88,7 +92,7 @@ public class CreateGroupOrderManager {
         groupOrder.setInvalidTime(DateFormatUtils.converToDateTime(CommonUtil.objectParseString(map.get("invalidTime"))));
 
         Map mapProd = (Map) map.get("products");
-        String prodId = CommonUtil.objectParseString(mapProd.get("prodId"));
+        String prodId = CommonUtil.objectParseString(mapProd.get("productId"));
         platformProduct = prodMapper.getProdByPlatform(platformId, null, prodId);
         if (platformProduct == null) {
             log.error("产品号为{}的产品不存在，请检查是否导入，订单号{}", prodId, orderId);
@@ -105,19 +109,24 @@ public class CreateGroupOrderManager {
         groupOrder.setOrderCode(String.valueOf(UUIDGenerator.generateUUID()));//生成订单号
         groupOrder.setPlatform_id(platformId);
         groupOrder.setPlatformOrderId(orderId);
-        groupOrder.setPlatformprod_id(platformProduct.getPlatform_id());
+        groupOrder.setPlatformProdId(platformProduct.getId());
         groupOrder.setSupply_id(platformProduct.getSupply_id());
-        groupOrder.setTicketsys_id(null);
+
+        supply = supplyMapper.selectByPrimaryKey(platformProduct.getSupply_id());
+        groupOrder.setTicketsys_id(supply.getTicketsys_id());
+
         if (supplyProduct != null) {
             groupOrder.setSupplyProdId(supplyProduct.getId());
         }
-        groupOrder.setPrice(BigDecimal.valueOf(Long.valueOf(CommonUtil.objectParseString(mapProd.get("price")))));
+        groupOrder.setPrice(new BigDecimal(CommonUtil.objectParseString(mapProd.get("price"))));
         groupOrder.setNumber(CommonUtil.objectParseInteger(mapProd.get("number")));
         groupOrder.setCreateTime(new Date());
         String voucherNumber = voucherGenerate.getVoucher(qrRule.getSize(), qrRule.getPrefix(), qrRule.getPostfix());
         groupOrder.setVoucherNumber(voucherNumber);
         String voucherImgUrl = voucherUrlGenerate.getVoucherUrl(voucherNumber, qrRule.getErrorRate(), qrRule.getSize(), qrRule.getForeColor());
         groupOrder.setImgUrl(voucherImgUrl);
+        groupOrder.setActivateStatus(false);
+        groupOrder.setStatus(VoucherConstant.OrderSyncStatus.WAIT_SYNC);
         setVisitor(map);
     }
 
@@ -155,7 +164,7 @@ public class CreateGroupOrderManager {
         this.visitorList = new ArrayList<>();
         dataUrl = CommonUtil.objectParseString(map.get("dataUrl"));
         List<Map> visitorList = null;
-        if (StringUtils.isEmpty(dataUrl)) {
+        if (!StringUtils.isEmpty(dataUrl)) {
             String content = HttpUtils.get(dataUrl, null, "utf-8");
             visitorList = JsonUtils.json2List(content);
         } else {
@@ -184,14 +193,14 @@ public class CreateGroupOrderManager {
             groupVisitor.setGroup_order_id(groupOrder.getId());
             groupVisitorMapper.insertSelective(groupVisitor);
         }
-        notifySupply(groupOrder.getSupply_id(), groupOrder.getId());
+        notifySupply(groupOrder.getTicketsys_id(), groupOrder.getId());
     }
 
-    private void notifySupply(final Integer supplyId, final Integer groupOrderId) {
+    private void notifySupply(final Integer ticketSysId, final Integer groupOrderId) {
         asyncService.run(new Runnable() {
             @Override
             public void run() {
-                SupplyAdapterService supplyAdapterService = adapterLoadder.getSupplyAdapterService(supplyId);
+                SupplyAdapterService supplyAdapterService = adapterLoader.getSupplyAdapterService(ticketSysId);
                 if (supplyAdapterService != null) {
                     supplyAdapterService.sendGroupOrder(groupOrderId);
                 }

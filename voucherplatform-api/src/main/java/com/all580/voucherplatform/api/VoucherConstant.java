@@ -21,11 +21,21 @@ public class VoucherConstant {
         public static final int NO = 0;
     }
 
+
     /**
      * 产品类型
      */
     public static class ProdType {
         public static final int GENERAL = 1;//通用散客产品
         public static final int GROUP = 2;//团队
+    }
+
+    /**
+     * 订单状态
+     */
+    public static class OrderSyncStatus {
+        public static final int WAIT_SYNC = 0; // 等待同步
+        public static final int SYNCED = 1;//已同步
+
     }
 }
