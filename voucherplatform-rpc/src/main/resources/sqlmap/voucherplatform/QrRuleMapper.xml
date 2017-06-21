@@ -232,13 +232,13 @@
         from `t_qrrule`
         where `status`=1
         <if test="supply_id!=null">
-            `supply_id`=#{supply_id}
+            and   `supply_id`=#{supply_id}
         </if>
         <if test="prod_Id!=null">
-            `supplyprod_id`=#{prod_Id}
+            and  `supplyprod_id`=#{prod_Id}
         </if>
         <if test="prod_Id==null">
-            `supplyprod_id` is null
+            and  `supplyprod_id` is null
         </if>
         limit 1;
     </select>
@@ -255,34 +255,34 @@
         from `t_qrrule`
         where `status`=1
         <if test="name != null">
-            `name` = #{name,jdbcType=VARCHAR},
+            and  `name` = #{name,jdbcType=VARCHAR},
         </if>
         <if test="len != null">
-            `len` = #{len,jdbcType=INTEGER},
+            and  `len` = #{len,jdbcType=INTEGER},
         </if>
         <if test="prefix != null">
-            `prefix` = #{prefix,jdbcType=VARCHAR},
+            and  `prefix` = #{prefix,jdbcType=VARCHAR},
         </if>
         <if test="postfix != null">
-            `postfix` = #{postfix,jdbcType=VARCHAR},
+            and `postfix` = #{postfix,jdbcType=VARCHAR},
         </if>
         <if test="errorRate != null">
-            `errorRate` = #{errorRate,jdbcType=VARCHAR},
+            and `errorRate` = #{errorRate,jdbcType=VARCHAR},
         </if>
         <if test="size != null">
-            `size` = #{size,jdbcType=INTEGER},
+            and `size` = #{size,jdbcType=INTEGER},
         </if>
         <if test="foreColor != null">
-            `foreColor` = #{foreColor,jdbcType=VARCHAR},
+            and `foreColor` = #{foreColor,jdbcType=VARCHAR},
         </if>
         <if test="supply_id != null">
-            `supply_id` = #{supply_id,jdbcType=INTEGER},
+            and `supply_id` = #{supply_id,jdbcType=INTEGER},
         </if>
         <if test="prod_Id != null">
-            `supplyprod_id` = #{prod_Id},
+            and  `supplyprod_id` = #{prod_Id},
         </if>
         <if test="defaultOption != null">
-            `defaultOption` = #{defaultOption,jdbcType=BIT},
+            and `defaultOption` = #{defaultOption,jdbcType=BIT},
         </if>
     </select>
     <select id="getList" resultType="java.util.Map">
@@ -291,34 +291,34 @@
         from `t_qrrule`
         where `status`=1
         <if test="name != null">
-            `name` = #{name},
+            and  `name` = #{name},
         </if>
         <if test="len != null">
-            `len` = #{len},
+            and `len` = #{len},
         </if>
         <if test="prefix != null">
-            `prefix` = #{prefix},
+            and  `prefix` = #{prefix},
         </if>
         <if test="postfix != null">
-            `postfix` = #{postfix},
+            and `postfix` = #{postfix},
         </if>
         <if test="errorRate != null">
-            `errorRate` = #{errorRate},
+            and `errorRate` = #{errorRate},
         </if>
         <if test="size != null">
-            `size` = #{size},
+            and `size` = #{size},
         </if>
         <if test="foreColor != null">
-            `foreColor` = #{foreColor},
+            and `foreColor` = #{foreColor},
         </if>
         <if test="supply_id != null">
-            `supply_id` = #{supply_id},
+            and  `supply_id` = #{supply_id},
         </if>
         <if test="prod_Id != null">
-            `supplyprod_id` = #{prod_Id},
+            and `supplyprod_id` = #{prod_Id},
         </if>
         <if test="defaultOption != null">
-            `defaultOption` = #{defaultOption},
+            and `defaultOption` = #{defaultOption},
         </if>
         order by id desc
         limit #{record_start},#{record_count}

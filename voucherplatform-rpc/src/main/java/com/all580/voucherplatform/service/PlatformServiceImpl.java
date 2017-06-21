@@ -51,9 +51,8 @@ public class PlatformServiceImpl implements PlatformService {
         platform.setPublicKey(signKey.getPublicKey());
         platform.setCreateTime(new Date());
         platform.setStatus(true);
-        int platformId = platformMapper.insertSelective(platform);
-
-        return new Result(platformId > 0);
+        platformMapper.insertSelective(platform);
+        return new Result(platform.getId() > 0);
     }
 
     @Override

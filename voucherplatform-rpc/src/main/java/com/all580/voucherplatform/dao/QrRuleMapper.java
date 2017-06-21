@@ -50,7 +50,7 @@ public interface QrRuleMapper {
     int updateByPrimaryKey(QrRule record);
 
 
-    QrRule getQrRule(@Param("supply_id") Integer supplyId, @Param("prodId") Integer prodId);
+    QrRule getQrRule(@Param("supply_id") Integer supplyId, @Param("prod_Id") Integer prodId);
 
     QrRule getDefaultQrRule();
 

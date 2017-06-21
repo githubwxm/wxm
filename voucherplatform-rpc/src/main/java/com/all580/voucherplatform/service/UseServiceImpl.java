@@ -7,6 +7,7 @@ import com.framework.common.Result;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +30,7 @@ public class UseServiceImpl implements UserService {
     public Result login(Map map) {
         String userName = CommonUtil.emptyStringParseNull(map.get("userName"));
         String passWord = CommonUtil.emptyStringParseNull(map.get("passWord"));
+        passWord = new String(DigestUtils.md5(passWord));
         //password加密
         Result result = new Result(false);
         // 先根据用户名查出用户再比对是否正确，如果直接使用用户名和密码sql查询则会导致sql注入问题。
@@ -49,7 +51,7 @@ public class UseServiceImpl implements UserService {
     public Result update(Map map) {
         Integer id = CommonUtil.objectParseInteger(map.get("id"));
         String passWord = CommonUtil.objectParseString(map.get("passWord"));
-        //password加密
+        passWord = new String(DigestUtils.md5(passWord));
         User user = new User();
         user.setId(id);
         user.setPassword(passWord);

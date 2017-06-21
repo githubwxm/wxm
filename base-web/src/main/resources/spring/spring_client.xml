@@ -1,149 +1,172 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	   xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
-	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
 	http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
 
-	<!-- 远程rpc类声明 -->
-	<!-- 提供方应用信息，用于计算依赖关系-->
-	<dubbo:application name="base-web" />
+    <!-- 远程rpc类声明 -->
+    <!-- 提供方应用信息，用于计算依赖关系-->
+    <dubbo:application name="base-web"/>
 
-	<!---->
-	<!-- 使用zookeeper广播注册中心暴露服务地址 -->
-	<dubbo:registry address="${dubbo.registry.zk}" file="${gateway.dubbo.cache}" />
-	<dubbo:protocol name="dubbo" port="${dubbo.port}" />
+    <!---->
+    <!-- 使用zookeeper广播注册中心暴露服务地址 -->
+    <dubbo:registry address="${dubbo.registry.zk}" file="${gateway.dubbo.cache}"/>
+    <dubbo:protocol name="dubbo" port="${dubbo.port}"/>
 
-	<dubbo:consumer check="false" retries="0" timeout="60000"/>
-
-
-	<dubbo:reference id="itineraryPlanSaleService"
-					 interface="com.all580.product.api.hotel.service.ItineraryPlanSaleService" />
-
-	<dubbo:reference id="itineraryBatchService"
-					 interface="com.all580.product.api.hotel.service.ItineraryBatchService" />
-	<dubbo:reference id="itineraryService"
-					 interface="com.all580.product.api.hotel.service.ItineraryService" />
-	<dubbo:reference id="itinerarySubService"
-					 interface="com.all580.product.api.hotel.service.ItinerarySubService" />
-	<dubbo:reference id="hotelService"
-					 interface="com.all580.product.api.hotel.service.HotelService" />
-	<dubbo:reference id="hotelSubService"
-					 interface="com.all580.product.api.hotel.service.HotelSubService" />
-	<dubbo:reference id="hotelBatchService"
-					 interface="com.all580.product.api.hotel.service.HotelBatchService" />
-	<dubbo:reference id="hotelPlanSaleService"
-					 interface="com.all580.product.api.hotel.service.HotelPlanSaleService" />
-
-	<dubbo:reference id="lineOrderService"
-					 interface="com.all580.order.api.service.LineOrderService" />
-
-	<dubbo:reference id="bookingOrderService"
-					 interface="com.all580.order.api.service.BookingOrderService" />
-	<dubbo:reference id="refundOrderService"
-					 interface="com.all580.order.api.service.RefundOrderService" />
-	<dubbo:reference id="orderService"
-					 interface="com.all580.order.api.service.OrderService" />
-	<dubbo:reference id="groupService"
-					 interface="com.all580.order.api.service.GroupService" />
-	<dubbo:reference id="syncExceptionOrder"
-					 interface="com.all580.order.api.service.SyncExceptionOrder" />
-
-	<dubbo:reference id="voucherRPCService"
-					 interface="com.all580.voucher.api.service.VoucherRPCService" />
-	<dubbo:reference id="voucherCallbackService"
-					 interface="com.all580.voucher.api.service.VoucherCallbackService" />
-	<dubbo:reference interface="com.all580.voucher.api.service.third.LdlRPCService"
-					 id="ldlService" />
-	<dubbo:reference interface="com.all580.voucher.api.service.third.HwRPCService"
-					 id="hwService" />
-	<dubbo:reference interface="com.all580.voucher.api.service.third.PftRPCService"
-					 id="pftService" />
-	<dubbo:reference interface="com.all580.voucher.api.service.third.ThirdProductService" id="thirdProductService" />
+    <dubbo:consumer check="false" retries="0" timeout="60000"/>
 
 
-	<dubbo:reference id="epService"
-					 interface="com.all580.ep.api.service.EpService" />
-	<dubbo:reference id="creEpChannelService"
-					 interface="com.all580.ep.api.service.CoreEpChannelService" />
-	<dubbo:reference id="coreEpAccessService"
-					 interface="com.all580.ep.api.service.CoreEpAccessService" />
-	<dubbo:reference id="epBalanceThresholdService"
-					 interface="com.all580.ep.api.service.EpBalanceThresholdService" />
-	<dubbo:reference id="logCreditService"
-					 interface="com.all580.ep.api.service.LogCreditService" />
-	<dubbo:reference id="funcService"
-					 interface="com.all580.role.api.service.FuncService"/>
-	<dubbo:reference id="intfService"
-					 interface="com.all580.role.api.service.IntfService"/>
-	<dubbo:reference id="epRoleService"
-					 interface="com.all580.role.api.service.EpRoleService"/>
-	<dubbo:reference id="smsService"
-					 interface="com.all580.notice.api.service.SmsService"/>
-	<dubbo:reference id="epPushService"
-					 interface="com.all580.ep.api.service.EpPushService"/>
+    <dubbo:reference id="itineraryPlanSaleService"
+                     interface="com.all580.product.api.hotel.service.ItineraryPlanSaleService"/>
 
-	<dubbo:reference id="planGroupService" interface="com.all580.product.api.service.PlanGroupRPCService" />
-	<dubbo:reference id="productDistributionService" interface="com.all580.product.api.service.ProductDistributionRPCService" />
-	<dubbo:reference id="productRefundRuleService" interface="com.all580.product.api.service.ProductRefundRuleRPCService" />
-	<dubbo:reference id="epFinanceService"
-					 interface="com.all580.ep.api.service.EpFinanceService" />
-	<dubbo:reference id="productSalesPlanService" interface="com.all580.product.api.service.ProductSalesPlanRPCService" />
-	<dubbo:reference id="productService" interface="com.all580.product.api.service.ProductRPCService" />
+    <dubbo:reference id="itineraryBatchService"
+                     interface="com.all580.product.api.hotel.service.ItineraryBatchService"/>
+    <dubbo:reference id="itineraryService"
+                     interface="com.all580.product.api.hotel.service.ItineraryService"/>
+    <dubbo:reference id="itinerarySubService"
+                     interface="com.all580.product.api.hotel.service.ItinerarySubService"/>
+    <dubbo:reference id="hotelService"
+                     interface="com.all580.product.api.hotel.service.HotelService"/>
+    <dubbo:reference id="hotelSubService"
+                     interface="com.all580.product.api.hotel.service.HotelSubService"/>
+    <dubbo:reference id="hotelBatchService"
+                     interface="com.all580.product.api.hotel.service.HotelBatchService"/>
+    <dubbo:reference id="hotelPlanSaleService"
+                     interface="com.all580.product.api.hotel.service.HotelPlanSaleService"/>
 
-	<dubbo:reference id="thirdPayService" interface="com.all580.payment.api.service.ThirdPayService"/>
-	<dubbo:reference id="balancePayService" interface="com.all580.payment.api.service.BalancePayService"/>
-	<dubbo:reference id="epPaymentConfService" interface="com.all580.payment.api.service.EpPaymentConfService"/>
+    <dubbo:reference id="lineOrderService"
+                     interface="com.all580.order.api.service.LineOrderService"/>
 
-	<dubbo:reference id="platfromFundService" interface="com.all580.payment.api.service.PlatfromFundService"/>
-	<dubbo:reference id="fundSerialService" interface="com.all580.payment.api.service.FundSerialService"/>
+    <dubbo:reference id="bookingOrderService"
+                     interface="com.all580.order.api.service.BookingOrderService"/>
+    <dubbo:reference id="refundOrderService"
+                     interface="com.all580.order.api.service.RefundOrderService"/>
+    <dubbo:reference id="orderService"
+                     interface="com.all580.order.api.service.OrderService"/>
+    <dubbo:reference id="groupService"
+                     interface="com.all580.order.api.service.GroupService"/>
+    <dubbo:reference id="syncExceptionOrder"
+                     interface="com.all580.order.api.service.SyncExceptionOrder"/>
 
-	<dubbo:reference id="ticketOrderReportService" interface="com.all580.report.api.service.TicketOrderReportRPCService" />
-	<dubbo:reference id="epInfoService" interface="com.all580.report.api.service.EpInfoService" />
-	<dubbo:reference id="epOrderService" interface="com.all580.report.api.service.EpOrderService" />
-	<dubbo:reference id="dataAnalysisService" interface="com.all580.report.api.service.DataAnalysisService" />
-	<dubbo:reference id="queryOrderService" interface="com.all580.report.api.service.QueryOrderService" />
+    <dubbo:reference id="voucherRPCService"
+                     interface="com.all580.voucher.api.service.VoucherRPCService"/>
+    <dubbo:reference id="voucherCallbackService"
+                     interface="com.all580.voucher.api.service.VoucherCallbackService"/>
+    <dubbo:reference interface="com.all580.voucher.api.service.third.LdlRPCService"
+                     id="ldlService"/>
+    <dubbo:reference interface="com.all580.voucher.api.service.third.HwRPCService"
+                     id="hwService"/>
+    <dubbo:reference interface="com.all580.voucher.api.service.third.PftRPCService"
+                     id="pftService"/>
+    <dubbo:reference interface="com.all580.voucher.api.service.third.ThirdProductService" id="thirdProductService"/>
 
 
+    <dubbo:reference id="epService"
+                     interface="com.all580.ep.api.service.EpService"/>
+    <dubbo:reference id="creEpChannelService"
+                     interface="com.all580.ep.api.service.CoreEpChannelService"/>
+    <dubbo:reference id="coreEpAccessService"
+                     interface="com.all580.ep.api.service.CoreEpAccessService"/>
+    <dubbo:reference id="epBalanceThresholdService"
+                     interface="com.all580.ep.api.service.EpBalanceThresholdService"/>
+    <dubbo:reference id="logCreditService"
+                     interface="com.all580.ep.api.service.LogCreditService"/>
+    <dubbo:reference id="funcService"
+                     interface="com.all580.role.api.service.FuncService"/>
+    <dubbo:reference id="intfService"
+                     interface="com.all580.role.api.service.IntfService"/>
+    <dubbo:reference id="epRoleService"
+                     interface="com.all580.role.api.service.EpRoleService"/>
+    <dubbo:reference id="smsService"
+                     interface="com.all580.notice.api.service.SmsService"/>
+    <dubbo:reference id="epPushService"
+                     interface="com.all580.ep.api.service.EpPushService"/>
 
-	<!--事件订阅器-->
-	<dubbo:reference id="balanceChangeSubscribeService" interface="com.all580.notice.api.service.BalanceChangeSubscribeService"/>
-	<dubbo:reference id="fundChangeSubscribeService" interface="com.all580.notice.api.service.FundChangeSubscribeService"/>
-	<dubbo:reference id="orderCreateSyncDataEvent" interface="com.all580.order.api.service.event.OrderCreateSyncDataEvent"/>
-	<dubbo:reference id="orderCreateEvent" interface="com.all580.order.api.service.event.OrderCreateEvent"/>
-	<dubbo:reference id="splitCreateOrderEvent" interface="com.all580.order.api.service.event.SplitCreateOrderEvent"/>
-	<dubbo:reference id="splitCreateOrderSyncDataEvent" interface="com.all580.order.api.service.event.SplitCreateOrderSyncDataEvent"/>
-	<dubbo:reference id="paidEvent" interface="com.all580.order.api.service.event.PaidEvent"/>
-	<dubbo:reference id="paidSyncDataEvent" interface="com.all580.order.api.service.event.PaidSyncDataEvent"/>
-	<dubbo:reference id="orderAuditEvent" interface="com.all580.order.api.service.event.OrderAuditEvent"/>
-	<dubbo:reference id="orderAuditSyncDataEvent" interface="com.all580.order.api.service.event.OrderAuditSyncDataEvent"/>
-	<dubbo:reference id="orderCancelSyncDataEvent" interface="com.all580.order.api.service.event.OrderCancelSyncDataEvent"/>
-	<dubbo:reference id="sendTicketSyncDataEvent" interface="com.all580.order.api.service.event.SendTicketSyncDataEvent"/>
-	<dubbo:reference id="refundApplyEvent" interface="com.all580.order.api.service.event.RefundApplyEvent"/>
-	<dubbo:reference id="refundApplySyncDataEvent" interface="com.all580.order.api.service.event.RefundApplySyncDataEvent"/>
-	<dubbo:reference id="refundAuditEvent" interface="com.all580.order.api.service.event.RefundAuditEvent"/>
-	<dubbo:reference id="refundAuditSyncDataEvent" interface="com.all580.order.api.service.event.RefundAuditSyncDataEvent"/>
-	<dubbo:reference id="refundAliPaySyncDataEvent" interface="com.all580.order.api.service.event.RefundAliPaySyncDataEvent" />
-	<dubbo:reference id="refundTicketEvent" interface="com.all580.order.api.service.event.RefundTicketEvent" />
-	<dubbo:reference id="refundTicketSyncDataEvent" interface="com.all580.order.api.service.event.RefundTicketSyncDataEvent" />
-	<dubbo:reference id="refundMoneyEvent" interface="com.all580.order.api.service.event.RefundMoneyEvent" />
-	<dubbo:reference id="refundMoneySyncDataEvent" interface="com.all580.order.api.service.event.RefundMoneySyncDataEvent" />
-	<dubbo:reference id="refundSuccessEvent" interface="com.all580.order.api.service.event.RefundSuccessEvent" />
-	<dubbo:reference id="refundSuccessSyncDataEvent" interface="com.all580.order.api.service.event.RefundSuccessSyncDataEvent" />
-	<dubbo:reference id="consumeTicketEvent" interface="com.all580.order.api.service.event.ConsumeTicketEvent" />
-	<dubbo:reference id="consumeTicketSyncDataEvent" interface="com.all580.order.api.service.event.ConsumeTicketSyncDataEvent" />
-	<dubbo:reference id="orderItemWaitAuditEvent" interface="com.all580.order.api.service.event.OrderItemWaitAuditEvent" />
-	<dubbo:reference id="sendTicketNotifyEvent" interface="com.all580.order.api.service.event.SendTicketNotifyEvent" />
-	<dubbo:reference id="cancelTicketNotifyEvent" interface="com.all580.order.api.service.event.CancelTicketNotifyEvent" />
-	<dubbo:reference id="refundMoneyNotifyEvent" interface="com.all580.order.api.service.event.RefundMoneyNotifyEvent" />
-	<dubbo:reference id="orderAuditNotifyEvent" interface="com.all580.order.api.service.event.OrderAuditNotifyEvent" />
-	<dubbo:reference id="refundApplyNotifyEvent" interface="com.all580.order.api.service.event.RefundApplyNotifyEvent" />
-	<dubbo:reference id="consumeTicketNotifyEvent" interface="com.all580.order.api.service.event.ConsumeTicketNotifyEvent" />
-	<dubbo:reference id="refundTicketNotifyEvent" interface="com.all580.order.api.service.event.RefundTicketNotifyEvent" />
-	<dubbo:reference id="refundAuditNotifyEvent" interface="com.all580.order.api.service.event.RefundAuditNotifyEvent" />
-	<dubbo:reference id="sendTicketEvent" interface="com.all580.order.api.service.event.SendTicketEvent" />
-	<dubbo:reference id="refundMoneyApplyEvent" interface="com.all580.order.api.service.event.RefundMoneyApplyEvent" />
-	<dubbo:reference id="refundMoneyAuditEvent" interface="com.all580.order.api.service.event.RefundMoneyAuditEvent" />
+    <dubbo:reference id="planGroupService" interface="com.all580.product.api.service.PlanGroupRPCService"/>
+    <dubbo:reference id="productDistributionService"
+                     interface="com.all580.product.api.service.ProductDistributionRPCService"/>
+    <dubbo:reference id="productRefundRuleService"
+                     interface="com.all580.product.api.service.ProductRefundRuleRPCService"/>
+    <dubbo:reference id="epFinanceService"
+                     interface="com.all580.ep.api.service.EpFinanceService"/>
+    <dubbo:reference id="productSalesPlanService"
+                     interface="com.all580.product.api.service.ProductSalesPlanRPCService"/>
+    <dubbo:reference id="productService" interface="com.all580.product.api.service.ProductRPCService"/>
 
-	<dubbo:reference id="qrService" interface="com.all580.voucherplatform.api.service.QrService" />
+    <dubbo:reference id="thirdPayService" interface="com.all580.payment.api.service.ThirdPayService"/>
+    <dubbo:reference id="balancePayService" interface="com.all580.payment.api.service.BalancePayService"/>
+    <dubbo:reference id="epPaymentConfService" interface="com.all580.payment.api.service.EpPaymentConfService"/>
+
+    <dubbo:reference id="platfromFundService" interface="com.all580.payment.api.service.PlatfromFundService"/>
+    <dubbo:reference id="fundSerialService" interface="com.all580.payment.api.service.FundSerialService"/>
+
+    <dubbo:reference id="ticketOrderReportService"
+                     interface="com.all580.report.api.service.TicketOrderReportRPCService"/>
+    <dubbo:reference id="epInfoService" interface="com.all580.report.api.service.EpInfoService"/>
+    <dubbo:reference id="epOrderService" interface="com.all580.report.api.service.EpOrderService"/>
+    <dubbo:reference id="dataAnalysisService" interface="com.all580.report.api.service.DataAnalysisService"/>
+    <dubbo:reference id="queryOrderService" interface="com.all580.report.api.service.QueryOrderService"/>
+
+
+    <!--事件订阅器-->
+    <dubbo:reference id="balanceChangeSubscribeService"
+                     interface="com.all580.notice.api.service.BalanceChangeSubscribeService"/>
+    <dubbo:reference id="fundChangeSubscribeService"
+                     interface="com.all580.notice.api.service.FundChangeSubscribeService"/>
+    <dubbo:reference id="orderCreateSyncDataEvent"
+                     interface="com.all580.order.api.service.event.OrderCreateSyncDataEvent"/>
+    <dubbo:reference id="orderCreateEvent" interface="com.all580.order.api.service.event.OrderCreateEvent"/>
+    <dubbo:reference id="splitCreateOrderEvent" interface="com.all580.order.api.service.event.SplitCreateOrderEvent"/>
+    <dubbo:reference id="splitCreateOrderSyncDataEvent"
+                     interface="com.all580.order.api.service.event.SplitCreateOrderSyncDataEvent"/>
+    <dubbo:reference id="paidEvent" interface="com.all580.order.api.service.event.PaidEvent"/>
+    <dubbo:reference id="paidSyncDataEvent" interface="com.all580.order.api.service.event.PaidSyncDataEvent"/>
+    <dubbo:reference id="orderAuditEvent" interface="com.all580.order.api.service.event.OrderAuditEvent"/>
+    <dubbo:reference id="orderAuditSyncDataEvent"
+                     interface="com.all580.order.api.service.event.OrderAuditSyncDataEvent"/>
+    <dubbo:reference id="orderCancelSyncDataEvent"
+                     interface="com.all580.order.api.service.event.OrderCancelSyncDataEvent"/>
+    <dubbo:reference id="sendTicketSyncDataEvent"
+                     interface="com.all580.order.api.service.event.SendTicketSyncDataEvent"/>
+    <dubbo:reference id="refundApplyEvent" interface="com.all580.order.api.service.event.RefundApplyEvent"/>
+    <dubbo:reference id="refundApplySyncDataEvent"
+                     interface="com.all580.order.api.service.event.RefundApplySyncDataEvent"/>
+    <dubbo:reference id="refundAuditEvent" interface="com.all580.order.api.service.event.RefundAuditEvent"/>
+    <dubbo:reference id="refundAuditSyncDataEvent"
+                     interface="com.all580.order.api.service.event.RefundAuditSyncDataEvent"/>
+    <dubbo:reference id="refundAliPaySyncDataEvent"
+                     interface="com.all580.order.api.service.event.RefundAliPaySyncDataEvent"/>
+    <dubbo:reference id="refundTicketEvent" interface="com.all580.order.api.service.event.RefundTicketEvent"/>
+    <dubbo:reference id="refundTicketSyncDataEvent"
+                     interface="com.all580.order.api.service.event.RefundTicketSyncDataEvent"/>
+    <dubbo:reference id="refundMoneyEvent" interface="com.all580.order.api.service.event.RefundMoneyEvent"/>
+    <dubbo:reference id="refundMoneySyncDataEvent"
+                     interface="com.all580.order.api.service.event.RefundMoneySyncDataEvent"/>
+    <dubbo:reference id="refundSuccessEvent" interface="com.all580.order.api.service.event.RefundSuccessEvent"/>
+    <dubbo:reference id="refundSuccessSyncDataEvent"
+                     interface="com.all580.order.api.service.event.RefundSuccessSyncDataEvent"/>
+    <dubbo:reference id="consumeTicketEvent" interface="com.all580.order.api.service.event.ConsumeTicketEvent"/>
+    <dubbo:reference id="consumeTicketSyncDataEvent"
+                     interface="com.all580.order.api.service.event.ConsumeTicketSyncDataEvent"/>
+    <dubbo:reference id="orderItemWaitAuditEvent"
+                     interface="com.all580.order.api.service.event.OrderItemWaitAuditEvent"/>
+    <dubbo:reference id="sendTicketNotifyEvent" interface="com.all580.order.api.service.event.SendTicketNotifyEvent"/>
+    <dubbo:reference id="cancelTicketNotifyEvent"
+                     interface="com.all580.order.api.service.event.CancelTicketNotifyEvent"/>
+    <dubbo:reference id="refundMoneyNotifyEvent" interface="com.all580.order.api.service.event.RefundMoneyNotifyEvent"/>
+    <dubbo:reference id="orderAuditNotifyEvent" interface="com.all580.order.api.service.event.OrderAuditNotifyEvent"/>
+    <dubbo:reference id="refundApplyNotifyEvent" interface="com.all580.order.api.service.event.RefundApplyNotifyEvent"/>
+    <dubbo:reference id="consumeTicketNotifyEvent"
+                     interface="com.all580.order.api.service.event.ConsumeTicketNotifyEvent"/>
+    <dubbo:reference id="refundTicketNotifyEvent"
+                     interface="com.all580.order.api.service.event.RefundTicketNotifyEvent"/>
+    <dubbo:reference id="refundAuditNotifyEvent" interface="com.all580.order.api.service.event.RefundAuditNotifyEvent"/>
+    <dubbo:reference id="sendTicketEvent" interface="com.all580.order.api.service.event.SendTicketEvent"/>
+    <dubbo:reference id="refundMoneyApplyEvent" interface="com.all580.order.api.service.event.RefundMoneyApplyEvent"/>
+    <dubbo:reference id="refundMoneyAuditEvent" interface="com.all580.order.api.service.event.RefundMoneyAuditEvent"/>
+
+    <dubbo:reference id="userService" interface="com.all580.voucherplatform.api.service.UserService"/>
+    <dubbo:reference id="qrService" interface="com.all580.voucherplatform.api.service.QrService"/>
+    <dubbo:reference id="all580Service" interface="com.all580.voucherplatform.api.service.All580Service"/>
 </beans>
