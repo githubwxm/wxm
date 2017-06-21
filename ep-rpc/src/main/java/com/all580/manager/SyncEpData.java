@@ -2,6 +2,7 @@ package com.all580.manager;
 
 import com.all580.ep.api.conf.EpConstant;
 import com.all580.ep.dao.CoreEpAccessMapper;
+import com.framework.common.synchronize.SyncAccess;
 import com.framework.common.synchronize.SynchronizeDataManager;
 import com.framework.common.util.CommonUtil;
 import com.google.common.collect.Lists;
@@ -23,7 +24,7 @@ import java.util.Map;
 @Slf4j
 @Component(value = "syncEpData")
 @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-public class SyncEpData {
+public class SyncEpData  extends BasicSyncDataEvent{
 
     @Autowired
     private CoreEpAccessMapper coreEpAccessMapper;//ddd
@@ -31,6 +32,77 @@ public class SyncEpData {
     @Autowired
     private SynchronizeDataManager synchronizeDataManager;
 
+
+    /**
+     * 同步数据
+     *
+     * @param
+     */
+    public Map syncEpDataNew(Object coreEpId, String table, List<Map<String, String>> data) {
+        try {
+            if (!CommonUtil.objectIsNumber(coreEpId)) {
+                log.error("同步数据平台商错误 {} {}", table, data);
+            }
+            if (data.isEmpty()) {
+                log.warn("没有要同步的数据");
+                return null;
+            }
+            Map<String, Object> tempMap = new HashMap<>();
+            tempMap.put("id", coreEpId);
+            List<Map<String, Object>> keyList = coreEpAccessMapper.select(tempMap);
+            String key = "";
+            if (keyList.isEmpty()) {
+                log.error("未找到{} 对应的key", coreEpId);
+                throw new ApiException("未找到" + coreEpId + "对应的key");
+            } else {
+                key = CommonUtil.objectParseString(keyList.get(0).get(EpConstant.EpKey.ACCESS_KEY));
+            }
+
+            if (null != data && data.size() > 0) {
+                int pointsDataLimit = 100;//限制条数
+                Integer size = data.size();
+                //判断是否有必要分批
+                if (pointsDataLimit < size) {
+                    int part = size / pointsDataLimit;//分批数
+                    for (int i = 0; i < part; i++) {
+                        System.out.println("sizi:"+i);
+                        //1000条
+                        List<Map<String, String>> listPage = data.subList(0, pointsDataLimit);
+                        List tempList = new ArrayList();
+                        for(Map m:listPage){
+                            tempList.add(m);
+                        }
+                        sync(coreEpId,key,table,tempList);
+                        //剔除
+                        data.subList(0, pointsDataLimit).clear();
+                    }
+                    if (!data.isEmpty()) {
+                        //表示最后剩下的数据
+                        sync(coreEpId,key,table,data);
+
+                    }
+                }else{
+                    sync(coreEpId,key,table,data);
+                }
+            }
+
+            return  null;
+        } catch (ApiException e) {
+            log.error(e.getMessage());
+            throw new ApiException(e.getMessage());
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new ApiException("同步数据异常");
+        }
+    }
+    private Map sync(Object coreEpId, String key,String table, List<?> listPage){
+        SyncAccess syncAccess =   getAccessKeys(CommonUtil.objectParseInteger(coreEpId) ,key);
+        syncAccess.getDataMap().add(table, listPage);
+        syncAccess.loop();
+        Map data = syncAccess.getDataMap().asMap();
+        sync(syncAccess.getDataMaps());
+        return data;
+    }
     /**
      * 同步数据
      *
@@ -97,18 +169,18 @@ public class SyncEpData {
             if (pointsDataLimit < size) {
                 int part = size / pointsDataLimit;//分批数
                 for (int i = 0; i < part; i++) {
-                  //1000条
-                  List<?> listPage = dataList.subList(0, pointsDataLimit);
-                  map=  synchronizeDataManager.generate((String[]) list.toArray(new String[list.size()]))
+                    //1000条
+                    List<?> listPage = dataList.subList(0, pointsDataLimit);
+                    map=  synchronizeDataManager.generate((String[]) list.toArray(new String[list.size()]))
                             .put(table, listPage)
                             .sync().getDataMapForJsonMap();
                     mapAll.putAll(map);
-                  //剔除
+                    //剔除
                     dataList.subList(0, pointsDataLimit).clear();
                 }
                 if (!dataList.isEmpty()) {
                     //表示最后剩下的数据
-                 map=   synchronizeDataManager.generate((String[]) list.toArray(new String[list.size()]))
+                    map=   synchronizeDataManager.generate((String[]) list.toArray(new String[list.size()]))
                             .put(table, dataList)
                             .sync().getDataMapForJsonMap();
                     mapAll.putAll(map);

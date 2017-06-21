@@ -866,7 +866,7 @@ public class EpServiceImpl implements EpService {
             if (ref > 0) {
                 Integer core_ep_id = selectPlatformId(epIds.get(0)).get();
                 List<Map<String, String>> listMap = epMapper.selectEpGroupList(epIds);
-               Map<String,Object> syncData= syncEpData.syncEpData(core_ep_id, EpConstant.Table.T_EP, listMap);
+               Map<String,Object> syncData= syncEpData.syncEpDataNew(core_ep_id, EpConstant.Table.T_EP, listMap);
                 return new Result(true).putExt(Result.SYNC_DATA, syncData);
             }
         } catch (ApiException e) {
