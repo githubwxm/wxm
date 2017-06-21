@@ -52,7 +52,7 @@ public class OrderAuditEventImpl implements OrderAuditEvent {
         log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(null, item.getId(),
                 item.getAudit_user_id(), item.getAudit_user_name(),
                 content.isStatus() ? OrderConstant.LogOperateCode.AUDIT_PASS_SUCCESS : OrderConstant.LogOperateCode.AUDIT_REJECT_SUCCESS,
-                item.getQuantity(), "订单预定审核", null));
+                item.getQuantity() * item.getDays(), "订单预定审核", null));
         if (content.isStatus()) {
             boolean allAudit = bookingOrderManager.isOrderAllAudit(item.getOrder_id());
             if (allAudit) {
