@@ -1,5 +1,6 @@
 package com.all580.voucherplatform.adapter.supply.ticketV3;
 
+import com.aliyun.mns.model.Message;
 import com.all580.voucherplatform.adapter.supply.SupplyAdapterService;
 import com.all580.voucherplatform.adapter.supply.ticketV3.manager.GroupOrderManager;
 import com.all580.voucherplatform.adapter.supply.ticketV3.manager.OrderManager;
@@ -18,6 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -55,17 +57,20 @@ public class TicketV3AdapterIImpl extends SupplyAdapterService {
     private void sendMnsMessage(Supply supply, String action, Object value) {
         Map map = new HashMap();
         map.put("action", action);
+        map.put("createTime", DateFormatUtils.converToStringDate(new Date()));
         if (value == null) {
             map.put("content", "{}");
         } else {
-            map.put("createTime", JsonUtils.toJson(value));
+            map.put("content", JsonUtils.toJson(value));
         }
         Map mapConf = JsonUtils.json2Map(supply.getConf());
         if (mapConf != null) {
             String queueName = CommonUtil.objectParseString(mapConf.get("queueName"));
+            String content = JsonUtils.toJson(map);
             if (!StringUtils.isEmpty(queueName)) {
-                String content = JsonUtils.toJson(map);
-                queuePushManager.pushAsync(queueName, content);
+                log.debug("发送消息到MNS队列 supplyId={},queueName={},content={}", new Object[]{supply.getId(), queueName, content});
+                Message message = queuePushManager.push(queueName, content);
+                log.debug(message.getMessageId());
             }
         }
     }

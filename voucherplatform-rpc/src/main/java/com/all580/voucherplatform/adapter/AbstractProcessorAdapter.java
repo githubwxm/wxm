@@ -8,6 +8,7 @@ import org.springframework.context.ApplicationContext;
 import javax.annotation.PostConstruct;
 import javax.lang.exception.ApiException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -36,7 +37,11 @@ public abstract class AbstractProcessorAdapter<Identity> {
             try {
                 Object ret = processorService.processor(identity, map);
                 if (ret != null) {
-                    result.put(ret);
+                    if (ret instanceof Map) {
+                        result.putExtAll((Map) ret);
+                    } else {
+                        result.put(ret);
+                    }
                 }
             } catch (Exception ex) {
                 throw new ApiException(ex);

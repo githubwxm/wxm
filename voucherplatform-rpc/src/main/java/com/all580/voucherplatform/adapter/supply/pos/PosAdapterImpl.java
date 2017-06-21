@@ -1,6 +1,9 @@
 package com.all580.voucherplatform.adapter.supply.pos;
 
 import com.all580.voucherplatform.adapter.supply.SupplyAdapterService;
+import com.all580.voucherplatform.entity.Order;
+import com.all580.voucherplatform.manager.order.OrderSupplyReceiveManager;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -9,6 +12,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class PosAdapterImpl extends SupplyAdapterService {
 
+    @Autowired
+    private OrderSupplyReceiveManager orderSupplyReceiveManager;
 
     @Override
     public void queryProd(Integer supplyId) {
@@ -17,7 +22,13 @@ public class PosAdapterImpl extends SupplyAdapterService {
 
     @Override
     public void sendOrder(Integer... orderId) {
-
+//        Integer platformId = null;
+//        for (Integer id : orderId) {
+//            Order order = orderSupplyReceiveManager.Receive(id, "");
+//            if (platformId == null) {
+//                platformId = order.getPlatform_id();
+//            }
+//        }
     }
 
     @Override

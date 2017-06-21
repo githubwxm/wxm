@@ -257,7 +257,8 @@ public class EpFinanceController extends BaseController {
         Integer balance=CommonUtil.objectParseInteger(params.get("balance")) ;
 
         Integer balanceEpId=CommonUtil.objectParseInteger(params.get("balance_ep_id")) ;
-        return epFinanceService.addBalance(balanceEpId,coreEpId,balance,params.get("operator_name"));
+        Integer balance_type =CommonUtil.objectParseInteger(params.get("balance_type"));
+        return epFinanceService.addBalance(balanceEpId,coreEpId,balance,params.get("operator_name"),balance_type);
     }
 
 

@@ -161,7 +161,10 @@ public class EpFinanceServiceImpl implements EpFinanceService {
 
     @Override
     @MnsEvent
-    public Result addBalance(Integer epId,Integer coreEpId,Integer balance,Object operator_name){
+    public Result addBalance(Integer epId,Integer coreEpId,Integer balance,Object operator_name,Integer balance_type){
+        if(null == balance_type){
+            balance_type=PaymentConstant.BalanceChangeType.MANUAL_CHANGE_BALANCE_ADD;
+        }
         List<BalanceChangeInfo> balanceList=new ArrayList<>();
         BalanceChangeInfo b= new BalanceChangeInfo();
         b.setBalance(balance);
@@ -174,19 +177,19 @@ public class EpFinanceServiceImpl implements EpFinanceService {
         }
         b.setEp_id(epId);
         b.setCore_ep_id(coreEpId);
-        b.setBalance_type(PaymentConstant.BalanceChangeType.MANUAL_CHANGE_BALANCE_ADD);
-        b.setCan_cash_type(PaymentConstant.BalanceChangeType.MANUAL_CHANGE_BALANCE_ADD);
+        b.setBalance_type(balance_type);
+        b.setCan_cash_type(balance_type);
         balanceList.add(b);
         String  serialNum=System.currentTimeMillis()+"";
         Map<String,Object> map = new HashMap<>();
         map.put("ref_id",serialNum);
         map.put(EpConstant.EpKey.CORE_EP_ID,coreEpId);
         map.put("money",balance);
-        map.put("ref_type",PaymentConstant.BalanceChangeType.MANUAL_CHANGE_BALANCE_ADD);
+        map.put("ref_type",balance_type);
         map.put("operator_name",operator_name);
         //fireBalanceChangedEvent(map);
         eventAspect.addEvent("FUND_CHANGE", map);
-        return balancePayService.changeBalances(balanceList, PaymentConstant.BalanceChangeType.MANUAL_CHANGE_BALANCE_ADD,serialNum);
+        return balancePayService.changeBalances(balanceList, balance_type,serialNum);
     }
     /**
      * 发布余额变更事件

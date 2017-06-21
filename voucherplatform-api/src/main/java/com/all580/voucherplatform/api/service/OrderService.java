@@ -11,8 +11,14 @@ import java.util.Map;
  */
 public interface OrderService {
     /**
-     * 创建订单{}
-     * @param map
+     * 创建一个新的平台商
+     * 目前只有小秘书一个平台商
+     * 尽量简化调用过程
+     *
+     * @param map {name:xx,description:xx,signType:xx}
+     *            name  -string -名字
+     *            description   -string -描述
+     *            signType  -euun   -签名类型
      * @return
      */
     Result createOrder(Integer platformId,Map map);

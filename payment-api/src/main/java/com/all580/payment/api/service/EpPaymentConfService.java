@@ -28,6 +28,12 @@ public interface EpPaymentConfService {
     Result create(Map<String, Object> data);
 
     /**
+     * 删除收款方式配置
+     * @param data
+     * @return
+     */
+    Result delete (Map<String, Object> data);
+    /**
      * 修改收款方式配置
      *
      * @param data {"coreEpId":xxx,"paymentType":7112,"confData":"...","certP12":微信证书文件base64，支付宝传空}

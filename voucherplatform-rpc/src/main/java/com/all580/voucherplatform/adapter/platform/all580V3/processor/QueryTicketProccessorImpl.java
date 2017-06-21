@@ -53,7 +53,9 @@ public class QueryTicketProccessorImpl implements ProcessorService<Platform> {
             mapRet.put("attachs", itemMap.get("data"));
             mapList.add(mapRet);
         }
-        return mapList;
+        Map mapRet = new HashMap();
+        mapRet.put("data", mapList);
+        return mapRet;
     }
 
     @Override
