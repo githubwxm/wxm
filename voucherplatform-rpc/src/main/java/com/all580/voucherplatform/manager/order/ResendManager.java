@@ -3,7 +3,7 @@ package com.all580.voucherplatform.manager.order;
 import com.all580.voucherplatform.api.VoucherConstant;
 import com.all580.voucherplatform.dao.OrderMapper;
 import com.all580.voucherplatform.entity.Order;
-import com.all580.voucherplatform.manager.MessageManager;
+import com.all580.voucherplatform.manager.OrderMessageManager;
 import com.framework.common.validate.ValidRule;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -23,7 +23,7 @@ public class ResendManager {
     @Autowired
     private OrderMapper orderMapper;
     @Autowired
-    private MessageManager messageManager;
+    private OrderMessageManager orderMessageManager;
 
 
     private Order order;
@@ -70,7 +70,7 @@ public class ResendManager {
         if (!pattern.valid(mobile, null)) {
             throw new Exception("手机号码格式错误");
         }
-        messageManager.sendOrderMessage(mobile, order);
+        orderMessageManager.sendOrderMessage(mobile, order);
 
     }
 }

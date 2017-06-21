@@ -33,8 +33,9 @@ public class VoucherConstant {
     /**
      * 订单状态
      */
-    public static class OrderStatus{
-        public static final int WAIT_CONFIRM = 0; // 订单待确认
+    public static class OrderSyncStatus {
+        public static final int WAIT_SYNC = 0; // 等待同步
+        public static final int SYNCED = 1;//已同步
 
     }
 }

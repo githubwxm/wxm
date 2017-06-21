@@ -1,4 +1,4 @@
-package com.all580.voucherplatform.utils.sign.async;
+package com.all580.voucherplatform.utils.async;
 
 import org.springframework.stereotype.Service;
 

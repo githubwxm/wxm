@@ -6,7 +6,7 @@ import com.all580.voucherplatform.dao.GroupOrderMapper;
 import com.all580.voucherplatform.dao.GroupVisitorMapper;
 import com.all580.voucherplatform.entity.GroupOrder;
 import com.all580.voucherplatform.entity.GroupVisitor;
-import com.all580.voucherplatform.utils.sign.async.AsyncService;
+import com.all580.voucherplatform.utils.async.AsyncService;
 import com.framework.common.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

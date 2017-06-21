@@ -2,7 +2,7 @@ package com.all580.voucherplatform.manager;
 
 import com.all580.notice.api.service.SmsService;
 import com.all580.voucherplatform.entity.Order;
-import com.all580.voucherplatform.utils.sign.async.AsyncService;
+import com.all580.voucherplatform.utils.async.AsyncService;
 import com.framework.common.lang.DateFormatUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +15,7 @@ import java.text.MessageFormat;
  */
 @Service
 @Slf4j
-public class MessageManager {
+public class OrderMessageManager {
 
     @Autowired
     private AsyncService asyncService;
@@ -31,17 +31,19 @@ public class MessageManager {
                     String message = order.getSms();
                     message = message.replace("{份数}", String.valueOf(order.getNumber()))
                             .replace("{验证码}", MessageFormat.format("{0}，打开二维码: {1} ", order.getVoucherNumber(), order.getImgUrl()))
-                            .replace("{生效日期}", DateFormatUtils.converToStringDate(order.getValidTime()))
-                            .replace("{有效年月日}", DateFormatUtils.converToStringDate(order.getInvalidTime()));
+                            .replace("{生效日期}", DateFormatUtils.converToStringTime(order.getValidTime()))
+                            .replace("{有效年月日}", DateFormatUtils.converToStringTime(order.getInvalidTime()));
                     try {
                         smsService.sendForCty(message, order.getMobile());
-                    } catch (Exception ex) {}
+                    } catch (Exception ex) {
+                        log.error("调用短信RPC失败：mobile={},content={}", new Object[]{order.getMobile(), message});
+                    }
                 }
             }
         });
     }
 
-    public void sendOrderMessage(final String mobie, final Order... orders) {
+    public void sendOrderMessage(final String mobile, final Order... orders) {
         asyncService.run(new Runnable() {
             @Override
             public void run() {
@@ -49,11 +51,13 @@ public class MessageManager {
                     String message = order.getSms();
                     message = message.replace("{份数}", String.valueOf(order.getNumber()))
                             .replace("{验证码}", MessageFormat.format("{0}，打开二维码: {1} ", order.getVoucherNumber(), order.getImgUrl()))
-                            .replace("{生效日期}", DateFormatUtils.converToStringDate(order.getValidTime()))
-                            .replace("{有效年月日}", DateFormatUtils.converToStringDate(order.getInvalidTime()));
+                            .replace("{生效日期}", DateFormatUtils.converToStringTime(order.getValidTime()))
+                            .replace("{有效年月日}", DateFormatUtils.converToStringTime(order.getInvalidTime()));
                     try {
-                        smsService.sendForCty(message, mobie);
-                    } catch (Exception ex) {}
+                        smsService.sendForCty(message, mobile);
+                    } catch (Exception ex) {
+                        log.error("调用短信RPC失败：mobile={},content={}", new Object[]{mobile, message});
+                    }
                 }
             }
         });

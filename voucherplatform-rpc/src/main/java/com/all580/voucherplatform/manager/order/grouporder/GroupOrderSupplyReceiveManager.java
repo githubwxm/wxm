@@ -2,9 +2,10 @@ package com.all580.voucherplatform.manager.order.grouporder;
 
 import com.all580.voucherplatform.adapter.AdapterLoader;
 import com.all580.voucherplatform.adapter.platform.PlatformAdapterService;
+import com.all580.voucherplatform.api.VoucherConstant;
 import com.all580.voucherplatform.dao.GroupOrderMapper;
 import com.all580.voucherplatform.entity.GroupOrder;
-import com.all580.voucherplatform.utils.sign.async.AsyncService;
+import com.all580.voucherplatform.utils.async.AsyncService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,6 +36,7 @@ public class GroupOrderSupplyReceiveManager {
     private void Receive(GroupOrder order, String supplyOrderId){
         GroupOrder groupOrder = new GroupOrder();
         groupOrder.setId(order.getId());
+        groupOrder.setStatus(VoucherConstant.OrderSyncStatus.SYNCED);
         groupOrder.setSupplyOrderId(supplyOrderId);
         orderMapper.updateByPrimaryKeySelective(groupOrder);
         notifyPlatform(order.getPlatform_id(),order.getId());

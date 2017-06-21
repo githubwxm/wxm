@@ -4,7 +4,7 @@ import com.all580.voucherplatform.adapter.AdapterLoader;
 import com.all580.voucherplatform.adapter.platform.PlatformAdapterService;
 import com.all580.voucherplatform.dao.OrderMapper;
 import com.all580.voucherplatform.entity.Order;
-import com.all580.voucherplatform.utils.sign.async.AsyncService;
+import com.all580.voucherplatform.utils.async.AsyncService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
