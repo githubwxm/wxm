@@ -8,9 +8,14 @@ import com.all580.voucherplatform.entity.*;
 import com.framework.common.Result;
 import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.JsonUtils;
+import com.framework.common.lang.UUIDGenerator;
+import com.github.ltsopensource.core.domain.Job;
+import com.github.ltsopensource.jobclient.JobClient;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.management.relation.RelationSupport;
@@ -38,14 +43,32 @@ public class All580V3AdapterIImpl extends PlatformAdapterService {
     @Autowired
     private VoucherCallbackService voucherCallbackService;
 
+    @Autowired
+    private JobClient jobClient;
+    @Value("${task.tracker}")
+    private String taskTracker;
+
+    @Value("${task.maxRetryTimes}")
+    private Integer maxRetryTimes;
+
     private final String MSGID = "70a7bce2-548d-11e7-b114-b2f933d5fe66";
 
     private void sendMessage(String action, Object value) {
         String content = JsonUtils.toJson(value);
         try {
-            Result result = voucherCallbackService.process(action, MSGID, content, new Date());
+            voucherCallbackService.process(action, MSGID, content, new Date());
         } catch (Exception ex) {
-
+            log.error("调用小秘书RPC异常:", ex);
+            Job job = new Job();
+            job.setTaskId("V-PLATFORM-" + UUIDGenerator.getUUID());
+            job.setParam("$ACTION$", "ALL580V3_RETRY_ACTION");
+            job.setParam("action", action);
+            job.setParam("messageId", MSGID);
+            job.setParam("content", content);
+            job.setTaskTrackerNodeGroup(taskTracker);
+            job.setMaxRetryTimes(maxRetryTimes);
+            job.setNeedFeedback(false);
+            jobClient.submitJob(job);
         }
     }
 
@@ -57,7 +80,7 @@ public class All580V3AdapterIImpl extends PlatformAdapterService {
         List<Map> mapList = new ArrayList<>();
         for (Integer id : orderIds) {
             Order order = orderMapper.selectByPrimaryKey(id);
-            if (!StringUtils.isEmpty(orderId)) {
+            if (StringUtils.isEmpty(orderId)) {
                 orderId = order.getPlatformOrderId();
             }
             Map mapSub = new HashMap();

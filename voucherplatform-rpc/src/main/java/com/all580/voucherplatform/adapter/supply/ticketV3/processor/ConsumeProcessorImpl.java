@@ -1,6 +1,6 @@
 package com.all580.voucherplatform.adapter.supply.ticketV3.processor;
 
-import com.all580.voucherplatform.adapter.AdapterLoadder;
+import com.all580.voucherplatform.adapter.AdapterLoader;
 import com.all580.voucherplatform.adapter.ProcessorService;
 import com.all580.voucherplatform.entity.Supply;
 import com.all580.voucherplatform.manager.order.ConsumeOrderManager;
@@ -23,7 +23,7 @@ public class ConsumeProcessorImpl implements ProcessorService<Supply> {
 
     private static final String ACTION = "consumeOrder";
     @Autowired
-    AdapterLoadder adapterLoadder;
+    AdapterLoader adapterLoader;
 
     @Override
     public Object processor(Supply supply, Map map) {
@@ -35,7 +35,7 @@ public class ConsumeProcessorImpl implements ProcessorService<Supply> {
         String consumeAddress = CommonUtil.objectParseString(map.get("consumeAddress"));
         String deviceId = CommonUtil.objectParseString(map.get("deviceId"));
         String voucherSeqId = CommonUtil.objectParseString(map.get("voucherSeqId"));
-        ConsumeOrderManager consumeOrderManager = adapterLoadder.getBean(ConsumeOrderManager.class);
+        ConsumeOrderManager consumeOrderManager = adapterLoader.getBean(ConsumeOrderManager.class);
         consumeOrderManager.setOrder(voucherId);
         try {
             consumeOrderManager.Comsume(consumeSeqId, consumeNumber, consumeAddress, consumeTime, deviceId);

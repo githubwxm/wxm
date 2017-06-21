@@ -1,6 +1,6 @@
 package com.all580.voucherplatform.adapter.supply.ticketV3.processor;
 
-import com.all580.voucherplatform.adapter.AdapterLoadder;
+import com.all580.voucherplatform.adapter.AdapterLoader;
 import com.all580.voucherplatform.adapter.ProcessorService;
 import com.all580.voucherplatform.entity.Supply;
 import com.all580.voucherplatform.manager.order.grouporder.ConsumeGroupOrderManager;
@@ -22,7 +22,7 @@ public class ActivateGroupOrderProcessorImpl implements ProcessorService<Supply>
 
     private static final String ACTION = "activateGroupOrder";
     @Autowired
-    private AdapterLoadder adapterLoadder;
+    private AdapterLoader adapterLoader;
 
     @Override
     public Object processor(Supply supply, Map map) {
@@ -31,7 +31,7 @@ public class ActivateGroupOrderProcessorImpl implements ProcessorService<Supply>
         Map mapProd = (Map) map.get("product");
         Integer number = CommonUtil.objectParseInteger(mapProd.get("number"));
 
-        ConsumeGroupOrderManager consumeGroupOrderManager = adapterLoadder.getBean(ConsumeGroupOrderManager.class);
+        ConsumeGroupOrderManager consumeGroupOrderManager = adapterLoader.getBean(ConsumeGroupOrderManager.class);
         consumeGroupOrderManager.setOrder(voucherId);
         try {
             consumeGroupOrderManager.Consume(number, StringUtils.split("idNumbers", ","));

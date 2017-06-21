@@ -1,6 +1,6 @@
 package com.all580.voucherplatform.test.adapter;
 
-import com.all580.voucherplatform.adapter.AdapterLoadder;
+import com.all580.voucherplatform.adapter.AdapterLoader;
 import com.all580.voucherplatform.adapter.supply.SupplyAdapterService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,7 +17,7 @@ import org.springframework.test.context.transaction.TransactionConfiguration;
 @TransactionConfiguration(defaultRollback = false)
 public class AdapterTest {
     @Autowired
-    private AdapterLoadder loadder;
+    private AdapterLoader loadder;
 
     @Test
     public void TestQueryProductTicket() {
