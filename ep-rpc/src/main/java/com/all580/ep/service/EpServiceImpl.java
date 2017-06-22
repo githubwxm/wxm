@@ -31,7 +31,7 @@ import javax.lang.exception.ApiException;
 import javax.lang.exception.ParamsMapValidationException;
 import java.util.*;
 
-import static com.alibaba.ons.open.trace.core.common.OnsTraceConstants.groupName;
+import static com.all580.ep.api.conf.EpConstant.EpType.SUPPLIER;
 
 @Service
 @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
@@ -171,7 +171,7 @@ public class EpServiceImpl implements EpService {
     public Result<List<Map<String, Object>>> selectDownSupplier(Map<String, Object> map) {
         Result<List<Map<String, Object>>> result = new Result<>();
         try {
-            map.put("ep_type",EpConstant.EpType.SUPPLIER);
+            map.put("ep_type", SUPPLIER);
             result.put(epMapper.select(map));
             result.setSuccess();
             result.setCode(200);
@@ -326,16 +326,17 @@ public class EpServiceImpl implements EpService {
             Integer epType=CommonUtil.objectParseInteger(ep_type);
 
             if (null == groupName) {//供应商无需加入分组
-                if(EpConstant.EpType.SUPPLIER-epType!=0){
+                if(SUPPLIER-epType!=0){
                     throw new ParamsMapValidationException("企业分组错误");
-                }else{
-
                 }
             }
             if (EpConstant.EpType.SELLER.equals(epType) || EpConstant.EpType.OTA.equals(epType) ||
                     EpConstant.EpType.DEALER.equals(epType)) {
                 //todo 企业余额提醒值
                 flag = true;
+            }if(EpConstant.EpType.SUPPLIER.equals(epType)){
+                groupName=null;
+                group_id=null;
             }
 
         } catch (ParamsMapValidationException e) {
