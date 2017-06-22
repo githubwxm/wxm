@@ -46,7 +46,7 @@ public class EpBalanceThresholdServiceImpl implements EpBalanceThresholdService 
             String threshold = CommonUtil.objectParseString(map.get("threshold"));
             if(threshold!=null){
                 if(threshold.length()>7){
-                    throw new ApiException("余额阀值太大超出范围");
+                    throw new ApiException("余额阀值太大:"+threshold);
                 }else{
                    // Integer num = CommonUtil.objectParseInteger(threshold);
                     try{
