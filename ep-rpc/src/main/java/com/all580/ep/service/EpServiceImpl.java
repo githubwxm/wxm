@@ -337,7 +337,8 @@ public class EpServiceImpl implements EpService {
                 flag = true;
             }if(EpConstant.EpType.SUPPLIER.equals(epType)){
                 groupName=null;
-                group_id=null;
+                map.put("group_id",null);
+                map.put("group_name",null);
             }
 
         } catch (ParamsMapValidationException e) {
