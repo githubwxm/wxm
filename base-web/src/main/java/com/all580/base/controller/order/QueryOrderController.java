@@ -78,14 +78,6 @@ public class QueryOrderController extends BaseController {
         return queryOrderService.getOrderItemList(orderInfo, record_start, record_count);
     }
 
-    @RequestMapping(value = "item/get_refund_item")
-    @ResponseBody
-    public Result<RefundOrderItemDto> getRefundOrderItem(@RequestParam("refundSn") Long refundSn,
-                                                         @RequestParam("epId")Integer epId,
-                                                         @RequestParam("coreEpId")Integer coreEpId) {
-        return queryOrderService.getRefundOrderItem(refundSn, epId, coreEpId);
-    }
-
     @RequestMapping(value = "item/get_item_detail")
     @ResponseBody
     public Result<OrderDto> getOrderDetailByNumber(@RequestParam("orderSn") Long orderSn,
