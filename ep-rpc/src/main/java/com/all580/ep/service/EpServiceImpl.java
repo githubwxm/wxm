@@ -31,6 +31,8 @@ import javax.lang.exception.ApiException;
 import javax.lang.exception.ParamsMapValidationException;
 import java.util.*;
 
+import static com.alibaba.ons.open.trace.core.common.OnsTraceConstants.groupName;
+
 @Service
 @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
 @Slf4j
@@ -302,12 +304,11 @@ public class EpServiceImpl implements EpService {
         }
         Integer group_id = CommonUtil.objectParseInteger(map.get("group_id"));
         String ep_class = (String) map.get("ep_class");//企业分类
+        Object groupName;
         try {
-            Object groupName = planGroupService.searchPlanGroupById(group_id).get().get("name");
+             groupName = planGroupService.searchPlanGroupById(group_id).get().get("name");
             // String groupName="固定分组";
-            if (null == groupName) {
-                throw new ParamsMapValidationException("企业分组错误");
-            }
+
             map.put("group_name", groupName);
             if (!Common.isTrue(creator_ep_id, "\\d+")) {
                 throw new ParamsMapValidationException("上级企业类型错误");
@@ -323,6 +324,14 @@ public class EpServiceImpl implements EpService {
                 ep_type = CommonUtil.objectParseString(epMapper.select(tempMap).get(0).get("ep_type"));// 没有传企业类型获取创建企业类型
             }
             Integer epType=CommonUtil.objectParseInteger(ep_type);
+
+            if (null == groupName) {//供应商无需加入分组
+                if(EpConstant.EpType.SUPPLIER-epType!=0){
+                    throw new ParamsMapValidationException("企业分组错误");
+                }else{
+
+                }
+            }
             if (EpConstant.EpType.SELLER.equals(epType) || EpConstant.EpType.OTA.equals(epType) ||
                     EpConstant.EpType.DEALER.equals(epType)) {
                 //todo 企业余额提醒值
@@ -349,21 +358,24 @@ public class EpServiceImpl implements EpService {
           //r=  planGroupService.addEpToGroup(CommonUtil.objectParseInteger(map.get("operator_id")),
             //        epId,CommonUtil.objectParseString(map.get("name")),core_ep_id,group_id );
            //start
-            Job job = new Job();
-            job.setTaskId("EP-JOB-" + UUIDGenerator.getUUID());
-            //job.setExtParams(map);
-            job.setParam("operator_id",CommonUtil.objectParseString(map.get("operator_id")) );
-            job.setParam("epId",epId+"");
-            job.setParam("name",CommonUtil.objectParseString(map.get("name")));
-            job.setParam("group_id",group_id+"");
-            job.setParam("core_ep_id",core_ep_id+"");
-            job.setParam("$ACTION$", "EP_TO_ADD_GROUP");
-            job.setTaskTrackerNodeGroup(taskTracker);
-            if (maxRetryTimes != null) {
-                job.setMaxRetryTimes(maxRetryTimes);
+            if (null != groupName){
+                Job job = new Job();
+                job.setTaskId("EP-JOB-" + UUIDGenerator.getUUID());
+                //job.setExtParams(map);
+                job.setParam("operator_id",CommonUtil.objectParseString(map.get("operator_id")) );
+                job.setParam("epId",epId+"");
+                job.setParam("name",CommonUtil.objectParseString(map.get("name")));
+                job.setParam("group_id",group_id+"");
+                job.setParam("core_ep_id",core_ep_id+"");
+                job.setParam("$ACTION$", "EP_TO_ADD_GROUP");
+                job.setTaskTrackerNodeGroup(taskTracker);
+                if (maxRetryTimes != null) {
+                    job.setMaxRetryTimes(maxRetryTimes);
+                }
+                job.setNeedFeedback(false);
+                jobClient.submitJob(job);
             }
-            job.setNeedFeedback(false);
-            jobClient.submitJob(job);
+
            //end
             if (flag) {//如果是分销商默认加载余额阀值为1000元
                 Map<String, Object> epBalanceThresholdMap = new HashMap<>();
