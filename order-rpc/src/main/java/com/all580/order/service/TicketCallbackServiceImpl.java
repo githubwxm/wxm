@@ -91,7 +91,7 @@ public class TicketCallbackServiceImpl extends BasicSyncDataEvent implements Tic
         log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(null, orderItem.getId(),
                 0,  "VOUCHER",
                 OrderConstant.LogOperateCode.RECEIVE_TICKETING,
-                orderItem.getQuantity(), String.format("散客出票接收:接收信息:%s", JsonUtils.toJson(infoList)), null));
+                orderItem.getQuantity() * orderItem.getDays(), String.format("散客出票接收:接收信息:%s", JsonUtils.toJson(infoList)), null));
 
         if (orderItem.getStatus() != OrderConstant.OrderItemStatus.TICKETING) {
             return new Result(false, "订单状态不在出票中");
@@ -136,7 +136,7 @@ public class TicketCallbackServiceImpl extends BasicSyncDataEvent implements Tic
         log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(null, orderItem.getId(),
                 0,  "VOUCHER",
                 OrderConstant.LogOperateCode.RECEIVE_TICKETING,
-                orderItem.getQuantity(), String.format("团队出票接收:接收信息:%s", JsonUtils.toJson(info)), null));
+                orderItem.getQuantity() * orderItem.getDays(), String.format("团队出票接收:接收信息:%s", JsonUtils.toJson(info)), null));
 
         if (orderItem.getStatus() != OrderConstant.OrderItemStatus.TICKETING) {
             return new Result(false, "订单状态不在出票中");

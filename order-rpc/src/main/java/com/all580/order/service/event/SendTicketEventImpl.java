@@ -46,7 +46,7 @@ public class SendTicketEventImpl implements SendTicketEvent {
         }
         log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(null, item.getId(),
                 0, "ORDER_EVENT", OrderConstant.LogOperateCode.SENDED,
-                item.getQuantity(), "已出票", null));
+                item.getQuantity() * item.getDays(), "已出票", null));
         return new Result(true);
     }
 }

@@ -69,6 +69,8 @@ public class OrderValidateManager {
                 "items.start" // 计划开始时间
         }, new ValidRule[]{new ValidRule.Date()});
 
+        rules.put(new String[]{"items.send_msg"}, new ValidRule[]{new ValidRule.Boolean()});
+
         return rules;
     }
 
