@@ -165,6 +165,17 @@ public class EpFinanceServiceImpl implements EpFinanceService {
         if(null == balance_type){
             balance_type=PaymentConstant.BalanceChangeType.MANUAL_CHANGE_BALANCE_ADD;
         }
+        if(PaymentConstant.BalanceChangeType.MANUAL_CHANGE_BALANCE_ADD-balance_type==0){//充值
+            if(balance<=0){
+                return    new Result(false,"充值金额不能为"+balance);
+            }
+        }else if(PaymentConstant.BalanceChangeType.MANUAL_CHANGE_BALANCE_EXIT-balance_type==0){
+            if(balance<=0){
+                return    new Result(false,"提现金额不能为"+balance);
+            }else{
+                balance=0-balance;//提现变为负数
+            }
+        }
         List<BalanceChangeInfo> balanceList=new ArrayList<>();
         BalanceChangeInfo b= new BalanceChangeInfo();
         b.setBalance(balance);
