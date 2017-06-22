@@ -165,6 +165,12 @@ public class EpFinanceServiceImpl implements EpFinanceService {
         if(null == balance_type){
             balance_type=PaymentConstant.BalanceChangeType.MANUAL_CHANGE_BALANCE_ADD;
         }
+        if(null==balance){
+            return    new Result(false,"金额过大或过小");
+        }
+        if(balance>50000000){
+            return new Result(false,"金额不能超过50W");
+        }
         if(PaymentConstant.BalanceChangeType.MANUAL_CHANGE_BALANCE_ADD-balance_type==0){//充值
             if(balance<=0){
                 return    new Result(false,"充值金额不能为"+balance);
@@ -180,12 +186,7 @@ public class EpFinanceServiceImpl implements EpFinanceService {
         BalanceChangeInfo b= new BalanceChangeInfo();
         b.setBalance(balance);
         b.setCan_cash(balance);
-        if(null==balance){
-            return    new Result(false,"充值金额过大或过小");
-        }
-        if(balance>50000000){
-            return new Result(false,"充值金额不能超过50W");
-        }
+
         b.setEp_id(epId);
         b.setCore_ep_id(coreEpId);
         b.setBalance_type(balance_type);
