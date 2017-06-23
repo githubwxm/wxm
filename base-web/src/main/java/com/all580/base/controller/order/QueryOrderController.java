@@ -5,6 +5,7 @@ import com.all580.ep.api.conf.EpConstant;
 import com.all580.product.api.consts.ProductConstants;
 import com.all580.report.api.dto.OrderDto;
 import com.all580.report.api.dto.OrderInfo;
+import com.all580.report.api.dto.OrderItemDetailDto;
 import com.all580.report.api.dto.RefundOrderItemDto;
 import com.all580.report.api.service.QueryOrderService;
 import com.framework.common.BaseController;
@@ -80,10 +81,9 @@ public class QueryOrderController extends BaseController {
 
     @RequestMapping(value = "item/get_item_detail")
     @ResponseBody
-    public Result<OrderDto> getOrderDetailByNumber(@RequestParam("orderSn") Long orderSn,
-                                                   @RequestParam("itemSn") Long itemSn,
-                                                   @RequestParam("epId")Integer epId,
-                                                   @RequestParam("coreEpId")Integer coreEpId) {
-        return queryOrderService.getOrderDetailByNumber(orderSn, itemSn, epId, coreEpId);
+    public Result<OrderItemDetailDto> getOrderDetailByNumber(@RequestParam("orderSn") Long orderSn,
+                                                             @RequestParam("itemSn") Long itemSn,
+                                                             @RequestParam("epType") Integer epType) {
+        return queryOrderService.getOrderDetailByNumber(orderSn, itemSn, epType);
     }
 }
