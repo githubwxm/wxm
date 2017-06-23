@@ -23,7 +23,7 @@
     </bean>
 
     <!-- 同步数据提交客户端 -->
-    <bean id="syncJobClient" class="com.github.ltsopensource.spring.JobClientFactoryBean" init-method="start">
+    <bean id="syncJobClient" class="com.framework.common.task.NetJobClientFactoryBean" init-method="start">
         <property name="clusterName" value="${task.cluster}"/>
         <property name="registryAddress" value="${task.registry}"/>
         <property name="nodeGroup" value="sync_jobClient"/>
@@ -36,7 +36,7 @@
     </bean>
 
     <!-- 同步数据任务执行器 -->
-    <bean id="syncTaskTracker" class="com.github.ltsopensource.spring.TaskTrackerAnnotationFactoryBean" init-method="start">
+    <bean id="syncTaskTracker" class="com.framework.common.task.NetTaskTrackerAnnotationFactoryBean" init-method="start">
         <property name="jobRunnerClass" value="com.framework.common.synchronize.SynchronizeDataTaskTracker"/>
         <property name="bizLoggerLevel" value="INFO"/>
         <property name="clusterName" value="${task.cluster}"/>
