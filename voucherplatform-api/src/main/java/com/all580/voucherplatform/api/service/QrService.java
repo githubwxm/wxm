@@ -13,16 +13,16 @@ public interface QrService {
     /**
      * 创建一个二维码模版
      *
-     * @param map {name:xx,len:xx,prefix:xxx,postfix:xxx,errorRate:xxx,size:xxx,foreColor:xxx,supplier_id:xxx,supplierproduct_id:xxx}
+     * @param map {name:xx,len:xx,prefix:xxx,postfix:xxx,errorRate:xxx,size:xxx,foreColor:xxx,supplyId_id:xxx,supplyIdProd_id:xxx}
      *            name    -   String  -   名称
-     *            len -   String    -  凭证的生成长度
+     *            len -   int    -  凭证的生成长度
      *            prefix  -   String  -   前缀
      *            postfix -   String  -   后缀
      *            errorRate   -   String  -   容错率
      *            size    -   int -   二维码图片大小
      *            foreColor    -   String  -   前景色
-     *            supplier_id  -   int -   供应商Id
-     *            supplierproduct_id   -   int -   供应商产品Id
+     *            supplyId_id  -   int -   供应商Id
+     *            supplyIdProd_id   -   int -   供应商产品Id
      * @return
      */
     Result create(Map map);
@@ -63,11 +63,11 @@ public interface QrService {
     /**
      * 根据供应商的id或产品获取一个模版
      *
-     * @param supplierId
+     * @param supplyId
      * @param prodId
      * @return
      */
-    Result get(Integer supplierId, Integer prodId);
+    Result get(Integer supplyId, Integer prodId);
 
     /**
      * 获取模版的总数量
@@ -76,12 +76,12 @@ public interface QrService {
      * @param len
      * @param prefix
      * @param postfix
-     * @param supplierId
+     * @param supplyId
      * @param prodId
      * @param defaultOption
      * @return
      */
-    int getCount(String name, Integer len, String prefix, String postfix, Integer supplierId, Integer prodId, Boolean defaultOption);
+    int getCount(String name, Integer len, String prefix, String postfix, Integer supplyId, Integer prodId, Boolean defaultOption);
 
 
     /**
@@ -91,18 +91,18 @@ public interface QrService {
      * @param len
      * @param prefix
      * @param postfix
-     * @param supplierId
+     * @param supplyId
      * @param prodId
      * @param defaultOption
      * @param recordStart
-     * @param recordSCount
+     * @param recordCount
      * @return
      */
     List<Map> getList(String name,
                       Integer len,
                       String prefix,
                       String postfix,
-                      Integer supplierId,
+                      Integer supplyId,
                       Integer prodId,
                       Boolean defaultOption,
                       Integer recordStart,

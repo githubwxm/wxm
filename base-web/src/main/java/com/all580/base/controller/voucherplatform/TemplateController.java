@@ -1,7 +1,7 @@
 package com.all580.base.controller.voucherplatform;
 
-import com.all580.base.manager.voucherplatform.QrRuleValidateManager;
-import com.all580.voucherplatform.api.service.QrService;
+import com.all580.base.manager.voucherplatform.TemplateValidateManager;
+import com.all580.voucherplatform.api.service.TemplateService;
 import com.framework.common.Result;
 import com.framework.common.validate.ParamsMapValidate;
 import lombok.extern.slf4j.Slf4j;
@@ -9,60 +9,63 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
 import java.util.Map;
 
 /**
- * Created by Linv2 on 2017/5/18.
+ * Created by Linv2 on 2017-06-26.
  */
 
 @Controller
-@RequestMapping("voucherplatform/qr")
+@RequestMapping("voucherplatform/template")
 @Slf4j
-public class QrConroller {
+public class TemplateController {
     @Autowired
-    private QrRuleValidateManager qrRuleManage;
+    private TemplateService templateService;
     @Autowired
-    private QrService qrService;
+    private TemplateValidateManager templateValidateManager;
 
     @RequestMapping(value = "create", method = RequestMethod.POST)
     @ResponseBody
     public Result create(Map map) {
-        ParamsMapValidate.validate(map, qrRuleManage.createValidate());
-        return qrService.create(map);
+        ParamsMapValidate.validate(map, templateValidateManager.createValidate());
+        return templateService.create(map);
     }
 
     @RequestMapping(value = "update", method = RequestMethod.POST)
     @ResponseBody
     public Result update(Map map) {
-        ParamsMapValidate.validate(map, qrRuleManage.updateValidate());
-        return qrService.update(map);
+        ParamsMapValidate.validate(map, templateValidateManager.updateValidate());
+        return templateService.update(map);
     }
+
 
     @RequestMapping(value = "delete", method = RequestMethod.GET)
     @ResponseBody
     public Result delete(int id) {
-        return qrService.delete(id);
+        return templateService.delete(id);
     }
 
     @RequestMapping(value = "get", method = RequestMethod.GET)
     @ResponseBody
     public Result get(int id) {
-        return qrService.get(id);
+        return templateService.get(id);
     }
 
     @RequestMapping(value = "getSupply", method = RequestMethod.GET)
     @ResponseBody
     public Result getSupply(Integer supplierId, Integer prodId) {
-        return qrService.get(supplierId, prodId);
+        return templateService.get(supplierId, prodId);
     }
+
 
     @RequestMapping(value = "getCount", method = RequestMethod.GET)
     @ResponseBody
-    public Result getCount(String name, Integer len, String prefix, String postfix, Integer supplyId, Integer prodId, Boolean defaultOption) {
-        int count = qrService.getCount(name, len, prefix, postfix, supplyId, prodId, defaultOption);
+    public Result getCount(String name, Integer supplyId, Integer prodId, Boolean defaultOption) {
+        int count = templateService.getCount(name, supplyId, prodId, defaultOption);
         Result result = new Result(true);
         result.putExt("data", count);
         return result;
@@ -70,12 +73,15 @@ public class QrConroller {
 
     @RequestMapping(value = "getList", method = RequestMethod.GET)
     @ResponseBody
-    public Result getList(String name, Integer len, String prefix, String postfix, Integer supplyId, Integer prodId, Boolean defaultOption, Integer recordStart,
-                          Integer recordCount) {
-        List<Map> mapList = qrService.getList(name, len, prefix, postfix, supplyId, prodId, defaultOption, recordStart, recordCount);
+    public Result getList(String name,
+                          Integer supplyId,
+                          Integer prodId,
+                          Boolean defaultOption,
+                          Integer recordStart,
+                          Integer recordSCount) {
+        List<Map> mapList = templateService.getList(name, supplyId, prodId, defaultOption, recordStart, recordSCount);
         Result result = new Result(true);
         result.putExt("data", mapList);
         return result;
     }
-
 }

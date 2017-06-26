@@ -42,16 +42,14 @@ public class PlatformTest extends AbstractTransactionalJUnit4SpringContextTests 
     @Test
     public void testUpdate() {
 
-        Result resultSrc = platformService.getPlatform(1);
-        Map src = (Map) resultSrc.getResult();
+        Map src = platformService.getPlatform(1);
         Map map = new HashMap();
         map.put("id", 1);
         map.put("name", "湖南畅旅2");
         map.put("description", "专业智慧旅游三十年2");
         map.put("signType", 2);
         Result result = platformService.update(map);
-        Result resultDist = platformService.getPlatform(1);
-        Map dist = (Map) resultDist.getResult();
+        Map dist = platformService.getPlatform(1);
         Assert.assertTrue(dist.get("name").equals(src.get("name")));
     }
 
@@ -74,8 +72,7 @@ public class PlatformTest extends AbstractTransactionalJUnit4SpringContextTests 
 
     @Test
     public void getPlatform() {
-        Result result = platformService.getPlatform(1);
-        Map map = (Map) result.getResult();
+        Map map = platformService.getPlatform(1);
         Assert.assertTrue(map.get("id").equals(1));
     }
 
@@ -106,20 +103,19 @@ public class PlatformTest extends AbstractTransactionalJUnit4SpringContextTests 
 
     @Test
     public void testGetProById() {
-        Result result = platformService.getProd(1);
-        Map map = (Map) result.getResult();
+        Map map = platformService.getProd(1);
         Assert.assertTrue(!StringUtils.isEmpty(String.valueOf(map.get("name"))));
     }
 
     @Test
     public void testGetProdCount() {
-        int count = platformService.getProdCount("成人", null, null, null, null);
+        int count = platformService.getProdCount("成人", null, null, null, null, null);
         Assert.assertTrue(count > 0);
     }
 
     @Test
     public void testGetProdList() {
-        List<Map> list = platformService.getProdList("成人", null, null, null, null, 0, 1);
+        List<Map> list = platformService.getProdList("成人", null, null, null, null, null, 0, 1);
         Assert.assertTrue(list.size() > 0);
     }
 }

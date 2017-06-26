@@ -62,9 +62,7 @@ public interface SupplyService {
 
     int getCount(String name);
 
-    Result getList(String name, Integer recordStart, Integer recordCount);
-
-
+    List<Map> getList(String name, Integer recordStart, Integer recordCount);
 
 
     /**
@@ -73,7 +71,8 @@ public interface SupplyService {
      * @param supplyId
      * @return
      */
-    Result getProdList(int supplyId);
+    List<Map> getProdList(Integer supplyId);
+
     /**
      * 根据供应商的身份id和产品id，获取产品信息
      *
@@ -81,7 +80,7 @@ public interface SupplyService {
      * @param prodId
      * @return
      */
-    Result getProd(int supplyId, String prodId);
+    Map getProd(int supplyId, String prodId);
 
 
     /**
@@ -95,7 +94,6 @@ public interface SupplyService {
      *                 data- object- 对象数据
      * @return
      */
-    Result setProd(int supplyId, Map map);
 
     /**
      * 根据供应商的身份id和产品id，删除产品
@@ -106,6 +104,21 @@ public interface SupplyService {
      */
 
     Result delProd(int supplyId, String prodId);
+
+
+
+    /**
+     * 根据供应商的身份id，批量更新产品信息
+     *
+     * @param supplyId
+     * @param map      {code:xx,name:xx:descripton:xx:data:object}
+     *                 code-   string- code
+     *                 name- string- 名字
+     *                 description-  string- 描述
+     *                 data- object- 对象数据
+     * @return
+     */
+    Result setProd(int supplyId, Map map);
 
     /**
      * 根据供应商的身份id，批量更新产品信息

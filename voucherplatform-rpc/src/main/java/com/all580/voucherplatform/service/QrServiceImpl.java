@@ -78,8 +78,8 @@ public class QrServiceImpl implements QrService {
     }
 
     @Override
-    public Result get(Integer supplierId, Integer prodId) {
-        QrRule qrRule = qrRuleMapper.getQrRule(supplierId, prodId);
+    public Result get(Integer supplyId, Integer prodId) {
+        QrRule qrRule = qrRuleMapper.getQrRule(supplyId, prodId);
         Result result = new Result(true);
         if (qrRule != null) {
             result.put(JsonUtils.obj2map(qrRule));
@@ -89,13 +89,13 @@ public class QrServiceImpl implements QrService {
 
 
     @Override
-    public int getCount(String name, Integer len, String prefix, String postfix, Integer supplierId, Integer prodId, Boolean defaultOption) {
-        return qrRuleMapper.getCount(name, len, prefix, postfix, supplierId, prodId, defaultOption);
+    public int getCount(String name, Integer len, String prefix, String postfix, Integer supplyId, Integer prodId, Boolean defaultOption) {
+        return qrRuleMapper.getCount(name, len, prefix, postfix, supplyId, prodId, defaultOption);
     }
 
     @Override
-    public List<Map> getList(String name, Integer len, String prefix, String postfix, Integer supplierId, Integer prodId, Boolean defaultOption, Integer recordStart, Integer recordCount) {
-        return qrRuleMapper.getList(name, len, prefix, postfix, supplierId, prodId, defaultOption, recordStart, recordCount);
+    public List<Map> getList(String name, Integer len, String prefix, String postfix, Integer supplyId, Integer prodId, Boolean defaultOption, Integer recordStart, Integer recordCount) {
+        return qrRuleMapper.getList(name, len, prefix, postfix, supplyId, prodId, defaultOption, recordStart, recordCount);
 
     }
 }
