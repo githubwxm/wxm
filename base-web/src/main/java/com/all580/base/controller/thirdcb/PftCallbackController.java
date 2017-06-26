@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
 import javax.lang.exception.ApiException;
+import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
 @Slf4j
@@ -23,24 +24,54 @@ public class PftCallbackController {
     @Resource
     PftRPCService pftService;
 
+//    @RequestMapping(value = "notify", method = RequestMethod.POST)
+//    @ResponseBody
+//    public String notify(@RequestBody Map<String, Object> params) {
+//        Result<String> result = pftService.pftOrderStateCallback(
+//                VoucherConstant.Provider.PFT,
+//                params.get("VerifyCode") == null? null : params.get("VerifyCode").toString(),
+//                params.get("Order16U") == null? null : params.get("Order16U").toString(),
+//                params.get("ActionTime") == null? null : params.get("ActionTime").toString(),
+//                params.get("OrderCall") == null? null : params.get("OrderCall").toString(),
+//                params.get("Tnumber") == null? null : params.get("Tnumber").toString(),
+//                params.get("OrderState") == null? null : params.get("OrderState").toString(),
+//                params.get("Refundtype") == null? null : params.get("Refundtype").toString(),
+//                params.get("Explain") == null? null : params.get("Explain").toString(),
+//                params.get("Source") == null? null : params.get("Source").toString(),
+//                params.get("Action") == null? null : params.get("Action").toString(),
+//                params.get("AllCheckNum") == null? null : params.get("AllCheckNum").toString(),
+//                params.get("RefundAmount") == null? null : params.get("RefundAmount").toString(),
+//                params.get("RefundFee") == null? null : params.get("RefundFee").toString());
+//        if (result == null) throw new ApiException("票付通服务回调接口调用失败");
+//        return result.get();
+//    }
+
     @RequestMapping(value = "notify", method = RequestMethod.POST)
     @ResponseBody
-    public String notify(@RequestBody Map<String, Object> params) {
+    public String notify(HttpServletRequest request) {
+        log.error("pft:{}", request.getContentType());
+        log.error("pft:{}", request.getQueryString());
+        log.error("pft:{}", request.getParameterMap().size());
+        log.error("pft:{}", request.getHeaderNames());
+        if (!request.getContentType().startsWith("application/x-www-form-urlencoded") || request.getParameterMap().isEmpty()) {
+            return "";
+        }
+        Map<String, String[]> params = request.getParameterMap();
         Result<String> result = pftService.pftOrderStateCallback(
                 VoucherConstant.Provider.PFT,
-                params.get("VerifyCode") == null? null : params.get("VerifyCode").toString(),
-                params.get("Order16U") == null? null : params.get("Order16U").toString(),
-                params.get("ActionTime") == null? null : params.get("ActionTime").toString(),
-                params.get("OrderCall") == null? null : params.get("OrderCall").toString(),
-                params.get("Tnumber") == null? null : params.get("Tnumber").toString(),
-                params.get("OrderState") == null? null : params.get("OrderState").toString(),
-                params.get("Refundtype") == null? null : params.get("Refundtype").toString(),
-                params.get("Explain") == null? null : params.get("Explain").toString(),
-                params.get("Source") == null? null : params.get("Source").toString(),
-                params.get("Action") == null? null : params.get("Action").toString(),
-                params.get("AllCheckNum") == null? null : params.get("AllCheckNum").toString(),
-                params.get("RefundAmount") == null? null : params.get("RefundAmount").toString(),
-                params.get("RefundFee") == null? null : params.get("RefundFee").toString());
+                params.get("VerifyCode") == null? null : params.get("VerifyCode")[0],
+                params.get("Order16U") == null? null : params.get("Order16U")[0],
+                params.get("ActionTime") == null? null : params.get("ActionTime")[0],
+                params.get("OrderCall") == null? null : params.get("OrderCall")[0],
+                params.get("Tnumber") == null? null : params.get("Tnumber")[0],
+                params.get("OrderState") == null? null : params.get("OrderState")[0],
+                params.get("Refundtype") == null? null : params.get("Refundtype")[0],
+                params.get("Explain") == null? null : params.get("Explain")[0],
+                params.get("Source") == null? null : params.get("Source")[0],
+                params.get("Action") == null? null : params.get("Action")[0],
+                params.get("AllCheckNum") == null? null : params.get("AllCheckNum")[0],
+                params.get("RefundAmount") == null? null : params.get("RefundAmount")[0],
+                params.get("RefundFee") == null? null : params.get("RefundFee")[0]);
         if (result == null) throw new ApiException("票付通服务回调接口调用失败");
         return result.get();
     }
