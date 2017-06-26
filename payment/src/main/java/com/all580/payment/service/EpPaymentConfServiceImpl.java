@@ -124,6 +124,11 @@ public class EpPaymentConfServiceImpl implements EpPaymentConfService {
         return result;
     }
 
+    @Override
+    public Result<?> heartbeat() {
+        return new Result<>(true);
+    }
+
     private Map<String[], ValidRule[]> genValidateOfCreate() {
         Map<String[], ValidRule[]> rules = new HashMap<>();
         // 校验不为空的参数
