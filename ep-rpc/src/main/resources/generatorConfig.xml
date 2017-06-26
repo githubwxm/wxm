@@ -25,18 +25,18 @@
                         password="abcd1234"/>
 
         <javaModelGenerator targetPackage="com.all580.ep.entity"
-                            targetProject="/home/alone/IdeaProjects/base/ep-rpc/src/main/java">
+                            targetProject="/data/IdeaProjects/base/ep-rpc/src/main/java">
             <property name="enableSubPackages" value="true"/>
             <property name="trimStrings" value="true"/>
         </javaModelGenerator>
 
         <sqlMapGenerator targetPackage="sqlmap"
-                         targetProject="/home/alone/IdeaProjects/base/ep-rpc/src/main/resources">
+                         targetProject="/data/IdeaProjects/base/ep-rpc/src/main/resources">
             <property name="enableSubPackages" value="true"/>
         </sqlMapGenerator>
 
         <javaClientGenerator targetPackage="com.all580.ep.dao"
-                             targetProject="/home/alone/IdeaProjects/base/ep-rpc/src/main/java" type="XMLMAPPER">
+                             targetProject="/data/IdeaProjects/base/ep-rpc/src/main/java" type="XMLMAPPER">
             <property name="enableSubPackages" value="true"/>
         </javaClientGenerator>
 
@@ -54,6 +54,17 @@
                selectByExampleQueryId="false"
                delimitAllColumns="true"
                domainObjectName="EpPush">
+            <property name="useActualColumnNames" value="true"/>
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+        </table>
+        <table tableName="t_ep_send_voucher"
+               enableCountByExample="false"
+               enableUpdateByExample="false"
+               enableDeleteByExample="false"
+               enableSelectByExample="false"
+               selectByExampleQueryId="false"
+               delimitAllColumns="true"
+               domainObjectName="EpSendVoucher">
             <property name="useActualColumnNames" value="true"/>
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
         </table>

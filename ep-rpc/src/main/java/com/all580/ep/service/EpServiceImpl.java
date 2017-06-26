@@ -8,6 +8,8 @@ import com.all580.ep.com.Common;
 import com.all580.ep.dao.CoreEpAccessMapper;
 import com.all580.ep.dao.EpMapper;
 import com.all580.ep.dao.EpParamMapper;
+import com.all580.ep.dao.EpSendVoucherMapper;
+import com.all580.ep.entity.EpSendVoucher;
 import com.all580.manager.SyncEpData;
 import com.all580.notice.api.conf.SmsType;
 import com.all580.notice.api.service.SmsService;
@@ -42,6 +44,8 @@ public class EpServiceImpl implements EpService {
     @Autowired
     private EpMapper epMapper;
 
+    @Autowired
+    private EpSendVoucherMapper epSendVoucherMapper;
     @Autowired
     private EpParamMapper epParamMapper;
 
@@ -1117,7 +1121,16 @@ public class EpServiceImpl implements EpService {
         result.put(epMapper.selectTypeName(map));
         return result;
     }
-//
+
+    @Override
+    public Result<Boolean> isSendVoucher(int epId, int coreEpId) {
+        Result<Boolean> result = new Result<>(true);
+        EpSendVoucher sendVoucher = epSendVoucherMapper.selectByEp(epId, coreEpId);
+        result.put(sendVoucher == null || sendVoucher.getSend_voucher() == null ? true : sendVoucher.getSend_voucher());
+        return result;
+    }
+
+    //
 //
 //    /**
 //     * 同步数据
