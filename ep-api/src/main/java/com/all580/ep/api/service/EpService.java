@@ -240,4 +240,10 @@ public interface EpService {
      * @return
      */
     Result<Boolean> isSendVoucher(int epId, int coreEpId);
+
+    /**
+     * 心跳接口
+     * @return
+     */
+    Result<?> heartbeat();
 }
