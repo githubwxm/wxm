@@ -311,7 +311,12 @@ public class EpServiceImpl implements EpService {
         String ep_class = (String) map.get("ep_class");//企业分类
         Object groupName;
         try {
-             groupName = planGroupService.searchPlanGroupById(group_id).get().get("name");
+            if(group_id==null){
+                groupName=null;
+            }else{
+                groupName = planGroupService.searchPlanGroupById(group_id).get().get("name");
+            }
+
             // String groupName="固定分组";
 
             map.put("group_name", groupName);
