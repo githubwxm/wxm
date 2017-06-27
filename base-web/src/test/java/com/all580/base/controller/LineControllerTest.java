@@ -1,5 +1,7 @@
 package com.all580.base.controller;
 
+import com.all580.report.api.ReportConstant;
+import com.all580.report.api.dto.OrderInfo;
 import com.framework.common.lang.JsonUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,6 +14,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -126,4 +129,42 @@ public class LineControllerTest {
                 jsonPath("$.code", is("200"))
         ).andDo(print());
     }
+
+    @Test
+    public void testListOrderItems() throws Exception{
+        OrderInfo orderInfo = new OrderInfo();
+        orderInfo.setProductType(ReportConstant.ProductType.SCENERY);
+        orderInfo.setOrderSn(1498029473012180L);
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(2016,4,12);
+        //orderInfo.setStart(calendar.getTime());
+        //orderInfo.setEnd(new Date());
+        orderInfo.setEpId(24);
+        orderInfo.setEpType(10003);
+        orderInfo.setCoreEpId(1);
+//        orderInfo.setStatus(new Integer[]{110});
+//        orderInfo.setSid("1");
+//        orderInfo.setName("测试");
+//        orderInfo.setPhone("1");
+//        orderInfo.setProductName("票");
+//        orderInfo.setProductSubName("票");
+//        orderInfo.setVoucherNumber("1");
+        mockMvc.perform(
+                get("/api/order/query/item/list")
+                        .param("productType","5101")
+                        .param("start","2017-06-27")
+                        .param("end","2017-06-28")
+                        .param("epType","10003")
+                        .param("epId","24")
+                        .param("coreEpId","1")
+                        .param("record_start","0")
+                        .param("record_count","20")
+        ).andExpect(
+                status().isOk()
+        ).andExpect(
+                jsonPath("$.code", is("200"))
+        ).andDo(print());
+    }
+
+
 }
