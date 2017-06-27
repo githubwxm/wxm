@@ -75,6 +75,13 @@ public class EpPaymentConfServiceImpl implements EpPaymentConfService {
         try {
             Integer id = objectParseInteger( map.get("id"));
             epPaymentConfMapper.delete(id);
+            Integer  payment_type =objectParseInteger(map.get("payment_type"));
+            Integer  coreEpId = objectParseInteger(map.get("ep_id"));
+            if(PaymentConstant.PaymentType.ALI_PAY-payment_type==0){
+                aliPayService.clear(coreEpId);
+            }else if(PaymentConstant.PaymentType.WX_PAY-payment_type==0){
+                wxPayService.clear(coreEpId);
+            }
             result.setSuccess();
             logger.info("完成 -> 删除企业收款方式配置");
         } catch (Exception e) {
