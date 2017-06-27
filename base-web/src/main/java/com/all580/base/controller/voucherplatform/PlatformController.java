@@ -16,7 +16,7 @@ import java.util.Map;
 /**
  * Created by Linv2 on 2017-06-26.
  */
-@Controller
+@Controller(value = "voucherplatform/platform")
 public class PlatformController {
     @Autowired
     private PlatformService platformService;

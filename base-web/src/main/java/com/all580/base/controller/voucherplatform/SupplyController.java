@@ -16,7 +16,7 @@ import java.util.Map;
 /**
  * Created by Linv2 on 2017-06-26.
  */
-@Controller
+@Controller(value = "voucherplatform/supply")
 public class SupplyController {
     @Autowired
     private SupplyService supplyService;
