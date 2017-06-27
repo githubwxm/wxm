@@ -259,6 +259,9 @@ public class WxPayService {
         return wxPropertiesMap.containsKey(coreEpId);
     }
 
+    public void clear(int coreEpId) {
+         wxPropertiesMap.remove(coreEpId);
+    }
     public synchronized void initProperties(int coreEpId, String confData, String certP12) {
         WxProperties wxProperties = JsonUtils.fromJson(confData, WxProperties.class);
         wxProperties.setCore_ep_id(coreEpId);
