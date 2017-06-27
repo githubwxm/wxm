@@ -6,6 +6,7 @@ import com.framework.common.Result;
 import com.framework.common.validate.ParamsMapValidate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -16,8 +17,9 @@ import java.util.Map;
 /**
  * Created by Linv2 on 2017-06-26.
  */
-@Controller(value = "voucherplatform/platform")
-public class PlatformController {
+@Controller
+@RequestMapping(value = "voucherplatform/action")
+public class VoucherPlatformController {
     @Autowired
     private PlatformService platformService;
     @Autowired
@@ -25,14 +27,14 @@ public class PlatformController {
 
     @RequestMapping(value = "create", method = RequestMethod.POST)
     @ResponseBody
-    public Result create(Map map) {
+    public Result create(@RequestBody Map map) {
         ParamsMapValidate.validate(map, platformValidateManager.createValidate());
         return platformService.create(map);
     }
 
     @RequestMapping(value = "update", method = RequestMethod.POST)
     @ResponseBody
-    public Result update(Map map) {
+    public Result update(@RequestBody Map map) {
         ParamsMapValidate.validate(map, platformValidateManager.updateValidate());
         return platformService.create(map);
     }
@@ -80,7 +82,7 @@ public class PlatformController {
     }
 
 
-    @RequestMapping(value = "getProdCount", method = RequestMethod.GET)
+    @RequestMapping(value = "getPlatformCount", method = RequestMethod.GET)
     @ResponseBody
     public Result getPlatformCount(String name) {
         Integer count = platformService.getPlatformCount(name);
@@ -89,7 +91,7 @@ public class PlatformController {
         return result;
     }
 
-    @RequestMapping(value = "getProdList", method = RequestMethod.GET)
+    @RequestMapping(value = "getPlatformtList", method = RequestMethod.GET)
     @ResponseBody
     public Result getPlatformtList(String name, Integer recordStart, Integer recordCount) {
         List<Map> mapList = platformService.getPlatformtList(name, recordStart, recordCount);

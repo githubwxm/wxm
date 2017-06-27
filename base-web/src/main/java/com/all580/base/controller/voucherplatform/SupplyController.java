@@ -6,6 +6,7 @@ import com.framework.common.Result;
 import com.framework.common.validate.ParamsMapValidate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -16,7 +17,8 @@ import java.util.Map;
 /**
  * Created by Linv2 on 2017-06-26.
  */
-@Controller(value = "voucherplatform/supply")
+@Controller
+@RequestMapping(value = "voucherplatform/supply")
 public class SupplyController {
     @Autowired
     private SupplyService supplyService;
@@ -25,14 +27,14 @@ public class SupplyController {
 
     @RequestMapping(value = "create", method = RequestMethod.POST)
     @ResponseBody
-    public Result create(Map map) {
+    public Result create(@RequestBody Map map) {
         ParamsMapValidate.validate(map, supplyValidateManager.createValidate());
         return supplyService.create(map);
     }
 
     @RequestMapping(value = "update", method = RequestMethod.POST)
     @ResponseBody
-    public Result update(Map map) {
+    public Result update(@RequestBody Map map) {
         ParamsMapValidate.validate(map, supplyValidateManager.updateValidate());
         return supplyService.update(map);
     }
@@ -45,7 +47,7 @@ public class SupplyController {
 
     @RequestMapping(value = "updateConf", method = RequestMethod.POST)
     @ResponseBody
-    public Result updateConf(Map map) {
+    public Result updateConf(@RequestBody Map map) {
 
         ParamsMapValidate.validate(map, supplyValidateManager.updateConfValidate());
         return supplyService.updateConf(map);
@@ -53,7 +55,7 @@ public class SupplyController {
 
     @RequestMapping(value = "updateTicketSys", method = RequestMethod.POST)
     @ResponseBody
-    public Result updateTicketSys(Map map) {
+    public Result updateTicketSys(@RequestBody Map map) {
 
         ParamsMapValidate.validate(map, supplyValidateManager.updateTicketSysValidate());
         return supplyService.updateTicketSys(map);
@@ -96,11 +98,11 @@ public class SupplyController {
         result.putExt("data", map);
         return result;
     }
-
-    @RequestMapping(value = "setProd", method = RequestMethod.POST)
-    @ResponseBody
-    public Result setProd(int supplyId, Map map) {
-        ParamsMapValidate.validate(map, supplyValidateManager.setProdValidate());
-        return supplyService.setProd(supplyId, map);
-    }
+//
+//    @RequestMapping(value = "setProd", method = RequestMethod.POST)
+//    @ResponseBody
+//    public Result setProd(int supplyId, Map map) {
+//        ParamsMapValidate.validate(map, supplyValidateManager.setProdValidate());
+//        return supplyService.setProd(supplyId, map);
+//    }
 }

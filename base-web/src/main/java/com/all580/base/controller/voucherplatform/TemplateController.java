@@ -7,10 +7,7 @@ import com.framework.common.validate.ParamsMapValidate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
@@ -30,14 +27,14 @@ public class TemplateController {
 
     @RequestMapping(value = "create", method = RequestMethod.POST)
     @ResponseBody
-    public Result create(Map map) {
+    public Result create(@RequestBody Map map) {
         ParamsMapValidate.validate(map, templateValidateManager.createValidate());
         return templateService.create(map);
     }
 
     @RequestMapping(value = "update", method = RequestMethod.POST)
     @ResponseBody
-    public Result update(Map map) {
+    public Result update(@RequestBody Map map) {
         ParamsMapValidate.validate(map, templateValidateManager.updateValidate());
         return templateService.update(map);
     }

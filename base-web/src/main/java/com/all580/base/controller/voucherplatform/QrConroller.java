@@ -7,6 +7,7 @@ import com.framework.common.validate.ParamsMapValidate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -29,14 +30,14 @@ public class QrConroller {
 
     @RequestMapping(value = "create", method = RequestMethod.POST)
     @ResponseBody
-    public Result create(Map map) {
+    public Result create(@RequestBody Map map) {
         ParamsMapValidate.validate(map, qrRuleManage.createValidate());
         return qrService.create(map);
     }
 
     @RequestMapping(value = "update", method = RequestMethod.POST)
     @ResponseBody
-    public Result update(Map map) {
+    public Result update(@RequestBody Map map) {
         ParamsMapValidate.validate(map, qrRuleManage.updateValidate());
         return qrService.update(map);
     }
@@ -55,8 +56,8 @@ public class QrConroller {
 
     @RequestMapping(value = "getSupply", method = RequestMethod.GET)
     @ResponseBody
-    public Result getSupply(Integer supplierId, Integer prodId) {
-        return qrService.get(supplierId, prodId);
+    public Result getSupply(Integer supplyId, Integer prodId) {
+        return qrService.get(supplyId, prodId);
     }
 
     @RequestMapping(value = "getCount", method = RequestMethod.GET)
