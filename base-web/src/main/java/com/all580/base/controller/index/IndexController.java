@@ -2,8 +2,14 @@ package com.all580.base.controller.index;
 
 import com.all580.base.manager.MnsEventCache;
 import com.all580.ep.api.conf.EpConstant;
+import com.all580.ep.api.service.EpService;
 import com.all580.notice.api.service.SmsService;
+import com.all580.order.api.service.OrderService;
+import com.all580.payment.api.service.EpPaymentConfService;
 import com.all580.payment.api.service.ThirdPayService;
+import com.all580.product.api.service.ProductRPCService;
+import com.all580.report.api.service.QueryOrderService;
+import com.all580.voucher.api.service.VoucherRPCService;
 import com.framework.common.BaseController;
 import com.framework.common.Result;
 import com.framework.common.util.CommonUtil;
@@ -19,6 +25,8 @@ import javax.lang.exception.ApiException;
 import javax.lang.exception.ParamsMapValidationException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.Map;
 
 @Controller
@@ -31,6 +39,18 @@ public class IndexController extends BaseController {
 	private MnsEventCache mnsEventCache;
 	@Autowired
 	private ThirdPayService thirdPayService;
+	@Autowired
+	private EpService epService;
+	@Autowired
+	private EpPaymentConfService epPaymentConfService;
+	@Autowired
+	private OrderService orderService;
+	@Autowired
+	private VoucherRPCService voucherRPCService;
+	@Autowired
+	private ProductRPCService productRPCService;
+	@Autowired
+	private QueryOrderService queryOrderService;
 
 	@RequestMapping(value = "sms/set", method = RequestMethod.GET)
 	@ResponseBody
@@ -90,9 +110,37 @@ public class IndexController extends BaseController {
 
 	@RequestMapping(value = "heartbeat", method = RequestMethod.POST)
 	@ResponseBody
-	public Result heartbeat() {
+	public Result heartbeat(HttpServletResponse response) {
 		Result result = new Result(true);
-		result.put(System.currentTimeMillis());
+		Map<String, Long> map = new HashMap<>();
+		map.put("ep", heartbeat(epService, response));
+		map.put("payment", heartbeat(epPaymentConfService, response));
+		map.put("voucher", heartbeat(voucherRPCService, response));
+		map.put("product", heartbeat(productRPCService, response));
+		map.put("order", heartbeat(orderService, response));
+		map.put("report", heartbeat(queryOrderService, response));
+		result.put(map);
 		return result;
+	}
+
+	private long heartbeat(Object service, HttpServletResponse response) {
+		long start = System.currentTimeMillis();
+		try {
+			Method method = null;
+			for (Class<?> aClass : service.getClass().getInterfaces()) {
+				if (aClass.getName().startsWith("com.all580.")) {
+					try {
+						method = aClass.getMethod("heartbeat");
+					} catch (NoSuchMethodException ignored) {}
+				}
+			}
+			if (method == null) {throw new NoSuchMethodException();}
+			method.invoke(service);
+		} catch (Exception e) {
+			log.warn("heartbeat error", e);
+			response.setStatus(504);
+			return -1;
+		}
+		return System.currentTimeMillis() - start;
 	}
 }
