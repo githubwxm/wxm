@@ -158,11 +158,11 @@
             LAST_INSERT_ID()
         </selectKey>
         insert into t_capital_serial (id, ref_id, ref_type,capital_id, old_balance, old_can_cash,
-        new_balance, new_can_cash,balance_type,can_cash_type)
+        new_balance, new_can_cash,balance_type,can_cash_type,summary)
         values
         <foreach collection="records" index="index" item="item" separator=",">
             (#{item.id}, #{item.ref_id}, #{item.ref_type},#{item.capital_id}, #{item.old_balance}, #{item.old_can_cash},
-            #{item.new_balance}, #{item.new_can_cash}, #{item.balance_type}, #{item.can_cash_type})
+            #{item.new_balance}, #{item.new_can_cash}, #{item.balance_type}, #{item.can_cash_type},#{item.summary})
         </foreach>
     </insert>
 

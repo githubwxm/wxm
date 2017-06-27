@@ -15,6 +15,16 @@ public class BalanceChangeInfo implements Serializable {
     private Integer balance_type; // 余额
     private Integer can_cash_type; // 可提现金额
 
+    public String getSummary() {
+        return summary;
+    }
+
+    public void setSummary(String summary) {
+        this.summary = summary;
+    }
+
+    private String summary;
+
     public BalanceChangeInfo() {
     }
 

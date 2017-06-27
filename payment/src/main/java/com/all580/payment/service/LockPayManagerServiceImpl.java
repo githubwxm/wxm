@@ -4,7 +4,6 @@ import com.all580.order.api.service.PaymentCallbackService;
 import com.all580.payment.api.conf.PaymentConstant;
 import com.all580.payment.api.model.BalanceChangeInfo;
 import com.all580.payment.api.model.BalanceChangeRsp;
-import com.all580.payment.api.service.BalancePayService;
 import com.all580.payment.api.service.LockPayManagerService;
 import com.all580.payment.dao.CapitalMapper;
 import com.all580.payment.dao.CapitalSerialMapper;
@@ -12,8 +11,6 @@ import com.all580.payment.entity.Capital;
 import com.all580.payment.entity.CapitalSerial;
 import com.all580.payment.exception.BusinessException;
 import com.framework.common.Result;
-import com.framework.common.distributed.lock.DistributedLockTemplate;
-import com.framework.common.distributed.lock.DistributedReentrantLock;
 import com.framework.common.event.MnsEvent;
 import com.framework.common.event.MnsEventAspect;
 import com.framework.common.mns.TopicPushManager;
@@ -26,7 +23,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by wxming on 2017/1/10 0010.
@@ -140,6 +140,7 @@ public class LockPayManagerServiceImpl implements LockPayManagerService {
                 capitalSerial.setOld_can_cash(capital.getCan_cash());
                 capitalSerial.setNew_balance(newBalance);
                 capitalSerial.setNew_can_cash(newCanCash);
+                capitalSerial.setSummary(balanceChangeInfo.getSummary());
                 capitalSerials.add(capitalSerial);
                 capital.setHistory_balance(capital.getBalance());
                 capital.setBalance(newBalance);
