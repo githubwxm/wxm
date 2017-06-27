@@ -1,11 +1,11 @@
 package com.all580.voucherplatform.manager.order;
 
-import com.all580.voucherplatform.adapter.AdapterLoadder;
+import com.all580.voucherplatform.adapter.AdapterLoader;
 import com.all580.voucherplatform.adapter.platform.PlatformAdapterService;
 import com.all580.voucherplatform.dao.OrderMapper;
 import com.all580.voucherplatform.entity.Order;
-import com.all580.voucherplatform.manager.MessageManager;
-import com.all580.voucherplatform.utils.sign.async.AsyncService;
+import com.all580.voucherplatform.manager.OrderMessageManager;
+import com.all580.voucherplatform.utils.async.AsyncService;
 import com.framework.common.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,11 +24,11 @@ public class OrderSupplyReceiveManager {
     @Autowired
     private OrderMapper orderMapper;
     @Autowired
-    private AdapterLoadder adapterLoadder;
+    private AdapterLoader adapterLoader;
     @Autowired
     private AsyncService asyncService;
     @Autowired
-    private MessageManager messageManager;
+    private OrderMessageManager orderMessageManager;
 
     /**
      * @param mapList {orderId:xx,orderCode:xx,supplyOrderId:xx}
@@ -79,14 +79,14 @@ public class OrderSupplyReceiveManager {
         updateOrder.setId(order.getId());
         updateOrder.setSupplyOrderId(supplyOrderId);
         orderMapper.updateByPrimaryKeySelective(updateOrder);
-        messageManager.sendOrderMessage(order);
+        orderMessageManager.sendOrderMessage(order);
     }
 
     public void notifyPlatform(final Integer platformId, final Integer... orderId) {
         asyncService.run(new Runnable() {
             @Override
             public void run() {
-                PlatformAdapterService platformAdapterService = adapterLoadder.getPlatformAdapterService(platformId);
+                PlatformAdapterService platformAdapterService = adapterLoader.getPlatformAdapterService(platformId);
                 if (platformAdapterService != null) {
                     platformAdapterService.sendOrder(orderId);
                 }

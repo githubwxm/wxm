@@ -1,9 +1,7 @@
 package com.all580.voucherplatform.adapter.platform.all580V3.processor;
 
-import com.all580.voucherplatform.adapter.AdapterLoadder;
+import com.all580.voucherplatform.adapter.AdapterLoader;
 import com.all580.voucherplatform.adapter.ProcessorService;
-import com.all580.voucherplatform.api.VoucherConstant;
-import com.all580.voucherplatform.entity.Order;
 import com.all580.voucherplatform.entity.Platform;
 import com.all580.voucherplatform.manager.order.RefundApplyManager;
 import com.framework.common.lang.DateFormatUtils;
@@ -26,7 +24,7 @@ public class RefundProcessorImpl implements ProcessorService<Platform> {
     private static final String ACTION = "cancelTicket";
 
     @Autowired
-    private AdapterLoadder adapterLoadder;
+    private AdapterLoader adapterLoader;
 
     @Override
     public Object processor(Platform platform, Map map) {
@@ -36,7 +34,7 @@ public class RefundProcessorImpl implements ProcessorService<Platform> {
         Integer refNumber = CommonUtil.objectParseInteger(map.get("refNumber"));
         String refTime = CommonUtil.objectParseString(map.get("refTime"));
         String refReason = CommonUtil.objectParseString(map.get("refReason"));
-        RefundApplyManager refundApplyManager = adapterLoadder.getBean(RefundApplyManager.class);
+        RefundApplyManager refundApplyManager = adapterLoader.getBean(RefundApplyManager.class);
         try {
             refundApplyManager.setOrder(platform.getId(), orderId, visitorSeqId);
             refundApplyManager.apply(refId, refNumber, DateFormatUtils.converToDateTime(refTime), refReason);
@@ -49,6 +47,6 @@ public class RefundProcessorImpl implements ProcessorService<Platform> {
 
     @Override
     public String getAction() {
-        return null;
+        return ACTION;
     }
 }

@@ -1,12 +1,11 @@
-package com.all580.voucherplatform.manager.order;
+package com.all580.voucherplatform.manager.order.grouporder;
 
 import com.all580.voucherplatform.adapter.AdapterLoader;
 import com.all580.voucherplatform.adapter.platform.PlatformAdapterService;
 import com.all580.voucherplatform.api.VoucherConstant;
 import com.all580.voucherplatform.dao.GroupOrderMapper;
-import com.all580.voucherplatform.dao.OrderMapper;
 import com.all580.voucherplatform.dao.RefundMapper;
-import com.all580.voucherplatform.entity.Order;
+import com.all580.voucherplatform.entity.GroupOrder;
 import com.all580.voucherplatform.entity.Refund;
 import com.all580.voucherplatform.utils.async.AsyncService;
 import com.framework.common.lang.UUIDGenerator;
@@ -18,16 +17,15 @@ import org.springframework.stereotype.Component;
 import java.util.Date;
 
 /**
- * Created by Linv2 on 2017-06-05.
+ * Created by Linv2 on 2017-06-21.
  */
+
 @Component
 @Scope(value = "prototype")
 @Slf4j
-public class RefundResultManager {
+public class GroupRefundResultManager {
     @Autowired
     private RefundMapper refundMapper;
-    @Autowired
-    private OrderMapper orderMapper;
     @Autowired
     private GroupOrderMapper groupOrderMapper;
 
@@ -36,23 +34,21 @@ public class RefundResultManager {
     @Autowired
     private AsyncService asyncService;
 
-    private Order order;
+    private GroupOrder groupOrder;
     private Refund refund;
-
 
     public void setRefund(String voucherRefCode) throws Exception {
         refund = refundMapper.selectByRefCode(voucherRefCode);
-        if (refund != null) {
-            checkRefund();
-        }
+
+        checkRefund();
+
 
     }
 
     public void setRefund(Integer refundId) throws Exception {
         refund = refundMapper.selectByPrimaryKey(refundId);
-        if (refund != null) {
-            checkRefund();
-        }
+        checkRefund();
+
 
     }
 
@@ -68,8 +64,8 @@ public class RefundResultManager {
         if (refund.getRefStatus() != VoucherConstant.RefundStatus.WAIT_CONFIRM) {
             throw new Exception("当前退票请求已处理");
         }
+        groupOrder = groupOrderMapper.selectByPrimaryKey(refund.getOrder_id());
 
-        order = orderMapper.selectByPrimaryKey(refund.getOrder_id());
     }
 
     /**
@@ -79,36 +75,25 @@ public class RefundResultManager {
      * @throws Exception
      */
     public void automatic() throws Exception {
-        Integer number = order.getNumber();
-        Integer consume = order.getConsume() == null ? 0 : order.getConsume();
-        Integer refunded = order.getRefund() == null ? 0 : order.getRefund();
-        Integer reverse = order.getReverse() == null ? order.getReverse() : order.getReverse();
-        Integer validNum = number - consume - refunded + reverse;
+        Integer number = groupOrder.getNumber();
+        Integer consume = groupOrder.getActivateNum() == null ? 0 : groupOrder.getActivateNum();
+        Integer validNum = number - consume;
         if (validNum >= refund.getRefNumber()) {
             refundSuccess(String.valueOf(UUIDGenerator.generateUUID()), new Date());
         } else {
             refundFail();
         }
+
     }
 
     public void refundSuccess(String supplyRefId, Date procTime) throws Exception {
-
         Refund refundUpdate = new Refund();
         refundUpdate.setId(refund.getId());
         refundUpdate.setRefStatus(VoucherConstant.RefundStatus.SUCCESS);
         refundUpdate.setSupplyRefSeqId(supplyRefId);
         refundUpdate.setSuccessTime(procTime);
         refundMapper.updateByPrimaryKeySelective(refundUpdate);
-
-        if (refund.getProdType() == VoucherConstant.ProdType.GENERAL) {
-            Order updateOrder = new Order();
-            updateOrder.setId(order.getId());
-            updateOrder.setRefunding((order.getRefunding() == null ? 0 : order.getRefunding()) - refund.getRefNumber());
-            updateOrder.setRefund((order.getRefund() == null ? 0 : order.getRefund()) + refund.getRefNumber());
-            orderMapper.updateByPrimaryKeySelective(updateOrder);
-        }
-
-        notifyPlatform(order.getPlatform_id(), refund.getId());
+        notifyPlatform(groupOrder.getPlatform_id(), refund.getId());
     }
 
     public void refundFail() {
@@ -117,13 +102,8 @@ public class RefundResultManager {
         refundUpdate.setRefStatus(VoucherConstant.RefundStatus.FAIL);
         refundUpdate.setSuccessTime(new Date());
         refundMapper.updateByPrimaryKeySelective(refundUpdate);
-        if (refund.getProdType() == VoucherConstant.ProdType.GENERAL) {
-            Order updateOrder = new Order();
-            updateOrder.setId(order.getId());
-            updateOrder.setRefunding((updateOrder.getRefunding() == null ? 0 : updateOrder.getRefunding()) - refund.getRefNumber());
-            orderMapper.updateByPrimaryKeySelective(updateOrder);
-        }
-        notifyPlatform(order.getPlatform_id(), refund.getId());
+
+        notifyPlatform(groupOrder.getPlatform_id(), refund.getId());
     }
 
     public void notifyPlatform(final Integer platformId, final Integer refundId) {
@@ -132,16 +112,15 @@ public class RefundResultManager {
             public void run() {
                 PlatformAdapterService platformAdapterService = adapterLoader.getPlatformAdapterService(platformId);
                 if (platformAdapterService != null) {
-                    platformAdapterService.refundOrder(refundId);
+                    platformAdapterService.refundGroup(refundId);
                 }
             }
         });
     }
 
-    public Order getOrder() {
-        return order;
+    public GroupOrder getGroupOrder() {
+        return groupOrder;
     }
-
 
     public Refund getRefund() {
         return refund;

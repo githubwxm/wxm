@@ -1,13 +1,13 @@
 package com.all580.voucherplatform.manager.order;
 
-import com.all580.voucherplatform.adapter.AdapterLoadder;
+import com.all580.voucherplatform.adapter.AdapterLoader;
 import com.all580.voucherplatform.adapter.supply.SupplyAdapterService;
 import com.all580.voucherplatform.api.VoucherConstant;
 import com.all580.voucherplatform.dao.*;
 import com.all580.voucherplatform.entity.*;
-import com.all580.voucherplatform.utils.sign.async.AsyncService;
-import com.all580.voucherplatform.utils.sign.voucher.VoucherGenerate;
-import com.all580.voucherplatform.utils.sign.voucher.VoucherUrlGenerate;
+import com.all580.voucherplatform.utils.async.AsyncService;
+import com.all580.voucherplatform.utils.voucher.VoucherGenerate;
+import com.all580.voucherplatform.utils.voucher.VoucherUrlGenerate;
 import com.framework.common.io.cache.redis.RedisUtils;
 import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.UUIDGenerator;
@@ -18,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -49,7 +48,7 @@ public class CreateOrderManager {
     @Autowired
     private VoucherUrlGenerate voucherUrlGenerate;
     @Autowired
-    private AdapterLoadder adapterLoadder;
+    private AdapterLoader adapterLoader;
     @Autowired
     private AsyncService asyncService;
 
@@ -147,6 +146,7 @@ public class CreateOrderManager {
             order.setMobile(mobile);
             order.setIdNumber(idNumber);
             order.setNumber(number);
+            order.setStatus(VoucherConstant.OrderSyncStatus.WAIT_SYNC);
             orderList.add(order);
         }
     }
@@ -165,7 +165,7 @@ public class CreateOrderManager {
         asyncService.run(new Runnable() {
             @Override
             public void run() {
-                SupplyAdapterService supplyAdapterService = adapterLoadder.getSupplyAdapterService(supply);
+                SupplyAdapterService supplyAdapterService = adapterLoader.getSupplyAdapterService(supply);
                 if (supplyAdapterService != null) {
                     supplyAdapterService.sendOrder(orderIdList);
                 }

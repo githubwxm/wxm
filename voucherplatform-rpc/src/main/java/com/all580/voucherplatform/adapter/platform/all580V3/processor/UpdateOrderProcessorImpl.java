@@ -1,6 +1,6 @@
 package com.all580.voucherplatform.adapter.platform.all580V3.processor;
 
-import com.all580.voucherplatform.adapter.AdapterLoadder;
+import com.all580.voucherplatform.adapter.AdapterLoader;
 import com.all580.voucherplatform.adapter.ProcessorService;
 import com.all580.voucherplatform.entity.Platform;
 import com.all580.voucherplatform.manager.order.UpdateOrderManager;
@@ -24,7 +24,7 @@ public class UpdateOrderProcessorImpl implements ProcessorService<Platform> {
 
     private static final String ACTION = "updateTicket";
     @Autowired
-    private AdapterLoadder adapterLoadder;
+    private AdapterLoader adapterLoader;
 
     @Override
     public Object processor(Platform platform, Map map) {
@@ -34,7 +34,7 @@ public class UpdateOrderProcessorImpl implements ProcessorService<Platform> {
         String idNumber = CommonUtil.objectParseString(map.get("idNumber"));
         String validTime = CommonUtil.objectParseString(map.get("validTime"));
         String invalidTime = CommonUtil.objectParseString(map.get("invalidTime"));
-        UpdateOrderManager updateOrderManager = adapterLoadder.getBean(UpdateOrderManager.class);
+        UpdateOrderManager updateOrderManager = adapterLoader.getBean(UpdateOrderManager.class);
         try {
             updateOrderManager.setOrder(platform.getId(), orderId, visitorSeqId);
             updateOrderManager.setMobile(mobile);

@@ -62,4 +62,9 @@ public interface EpPaymentConfService {
      */
     Result selectByPrimaryKey(Integer id);
 
+    /**
+     * 心跳接口
+     * @return
+     */
+    Result<?> heartbeat();
 }

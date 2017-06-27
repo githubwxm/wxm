@@ -202,4 +202,9 @@ public class OrderServiceImpl extends BasicSyncDataEvent implements OrderService
         result.put(map);
         return result;
     }
+
+    @Override
+    public Result<?> heartbeat() {
+        return new Result<>(true);
+    }
 }

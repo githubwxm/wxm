@@ -82,12 +82,12 @@ public class TemplateServiceImpl implements TemplateService {
 
 
     @Override
-    public int getCount(String name, Integer supplierId, Integer prodId, Boolean defaultOption) {
-        return templateMapper.getCount(name, supplierId, prodId, defaultOption);
+    public int getCount(String name, Integer supplyId, Integer prodId, Boolean defaultOption) {
+        return templateMapper.getCount(name, supplyId, prodId, defaultOption);
     }
 
     @Override
-    public List<Map> getList(String name, Integer len, String prefix, String postfix, Integer supplierId, Integer prodId, Boolean defaultOption, Integer recordStart, Integer recordCount) {
-        return templateMapper.getList(name, supplierId, prodId, defaultOption, recordStart, recordCount);
+    public List<Map> getList(String name, Integer supplyId, Integer prodId, Boolean defaultOption, Integer recordStart, Integer recordCount) {
+        return templateMapper.getList(name, supplyId, prodId, defaultOption, recordStart, recordCount);
     }
 }

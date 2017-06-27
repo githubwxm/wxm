@@ -20,7 +20,7 @@ import java.util.Map;
  */
 @Service
 @Slf4j
-public class AdapterLoadder {
+public class AdapterLoader {
 
     @Autowired
     private ApplicationContext applicationContext;
@@ -28,6 +28,7 @@ public class AdapterLoadder {
     private TicketSysMapper ticketSysMapper;
     @Autowired
     private PlatformMapper platformMapper;
+
     private Map<Integer, SupplyAdapterService> supplyServiceMap = new HashMap<>();
     private Map<Integer, PlatformAdapterService> platformSerivceMap = new HashMap<>();
 

@@ -1,7 +1,7 @@
 package com.all580.voucherplatform.test.utils;
 
-import com.all580.voucherplatform.utils.sign.voucher.VoucherGenerate;
-import com.all580.voucherplatform.utils.sign.voucher.VoucherUrlGenerate;
+import com.all580.voucherplatform.utils.voucher.VoucherGenerate;
+import com.all580.voucherplatform.utils.voucher.VoucherUrlGenerate;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,4 +1,4 @@
-package com.all580.voucherplatform.utils.sign.voucher;
+package com.all580.voucherplatform.utils.voucher;
 
 import com.framework.common.io.cache.redis.RedisUtils;
 import org.apache.commons.lang3.RandomStringUtils;
