@@ -67,12 +67,20 @@ public abstract class AbstractCreateOrderImpl implements CreateOrderInterface {
         return createOrder;
     }
 
-    public ValidateProductSub parseItemParams(Map item) {
+    public ValidateProductSub parseItemParams(CreateOrder createOrder, Map item) {
         ValidateProductSub sub = new ValidateProductSub();
         sub.setCode(Long.parseLong(item.get("product_sub_code").toString()));
         sub.setDays(CommonUtil.objectParseInteger(item.get("days")));
         sub.setQuantity(CommonUtil.objectParseInteger(item.get("quantity")));
         sub.setGroupId(CommonUtil.objectParseInteger(item.get("group_id")));
+        String sendMsg = CommonUtil.objectParseString(item.get("send_msg"));
+        if (StringUtils.isEmpty(sendMsg) || BooleanUtils.toBooleanObject(sendMsg) == null) {
+            Result<Boolean> result = epService.isSendVoucher(createOrder.getEpId(), createOrder.getCoreEpId());
+            sub.setSend(result.get());
+        } else {
+            sub.setSend(BooleanUtils.toBooleanObject(sendMsg));
+        }
+        sub.setMemo(CommonUtil.objectParseString(item.get("memo")));
         try {
             sub.setBooking(DateFormatUtils.parseString(DateFormatUtils.DATE_TIME_FORMAT, CommonUtil.objectParseString(item.get("start"))));
         } catch (ParseException e) {
@@ -152,7 +160,8 @@ public abstract class AbstractCreateOrderImpl implements CreateOrderInterface {
 
     public OrderItem insertItem(Order order, ValidateProductSub sub, ProductSalesInfo salesInfo, PriceDto price, Map item) {
         Date endTime = salesInfo.getDay_info_list().get(salesInfo.getDay_info_list().size() - 1).getEnd_time();
-        return bookingOrderManager.generateItem(salesInfo, endTime, price.getSale(), sub.getBooking(), sub.getDays(), order.getId(), sub.getQuantity(), sub.getGroupId(), CommonUtil.objectParseString(item.get("memo")));
+        return bookingOrderManager.generateItem(salesInfo, endTime, price.getSale(), sub.getBooking(), sub.getDays(),
+                order.getId(), sub.getQuantity(), sub.getGroupId(), sub.getMemo(), sub.isSend());
     }
 
     @Override

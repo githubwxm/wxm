@@ -6,6 +6,7 @@ import com.all580.payment.dao.EpPaymentConfMapper;
 import com.all580.payment.entity.EpPaymentConf;
 import com.framework.common.Result;
 import com.framework.common.lang.JsonUtils;
+import com.framework.common.util.CommonUtil;
 import com.framework.common.validate.ParamsMapValidate;
 import com.framework.common.validate.ValidRule;
 import org.apache.commons.beanutils.BeanUtils;
@@ -45,6 +46,23 @@ public class EpPaymentConfServiceImpl implements EpPaymentConfService {
             logger.error("失败 -> 创建企业收款方式配置：" + e.getMessage(), e);
             result.setFail();
             result.setError(Result.DB_FAIL, "新增失败" + e.getMessage());
+        }
+        return result;
+    }
+    @Override
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public Result delete(Map<String, Object> map) {
+        logger.info("开始 -> 删除企业收款方式配置");
+        Result result = new Result();
+        try {
+            Integer id = CommonUtil.objectParseInteger( map.get("id"));
+            epPaymentConfMapper.delete(id);
+            result.setSuccess();
+            logger.info("完成 -> 删除企业收款方式配置");
+        } catch (Exception e) {
+            logger.error("失败 -> 删除企业收款方式配置：" + e.getMessage(), e);
+            result.setFail();
+            result.setError(Result.DB_FAIL, "删除失败" + e.getMessage());
         }
         return result;
     }
@@ -104,6 +122,11 @@ public class EpPaymentConfServiceImpl implements EpPaymentConfService {
             e.printStackTrace();
         }
         return result;
+    }
+
+    @Override
+    public Result<?> heartbeat() {
+        return new Result<>(true);
     }
 
     private Map<String[], ValidRule[]> genValidateOfCreate() {

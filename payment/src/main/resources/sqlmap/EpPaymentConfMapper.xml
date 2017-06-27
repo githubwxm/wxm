@@ -103,6 +103,9 @@
         cert_p12 = #{status,jdbcType=VARCHAR}
         where id = #{id,jdbcType=INTEGER}
     </update>
+    <delete id="delete">
+        delete from t_core_ep_payment_conf where id =#{id}
+    </delete>
 
     <select id="listByEpId" resultType="java.util.Map">
         select

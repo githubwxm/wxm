@@ -128,4 +128,10 @@ public interface OrderService {
      * @return
      */
     Result<?> selectOrderItemInfoByOta(long number);
+
+    /**
+     * 心跳接口
+     * @return
+     */
+    Result<?> heartbeat();
 }

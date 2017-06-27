@@ -18,7 +18,7 @@ public interface EpPaymentConfMapper {
     int updateByPrimaryKeySelective(EpPaymentConf record);
 
     int updateByPrimaryKey(EpPaymentConf record);
-
+    int delete(int id);
     /**
      * 通过企业ID获取配置信息
      *

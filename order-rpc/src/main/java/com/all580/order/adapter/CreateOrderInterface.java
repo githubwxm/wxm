@@ -23,7 +23,7 @@ public interface CreateOrderInterface {
 
     CreateOrder parseParams(Map params);
 
-    ValidateProductSub parseItemParams(Map item);
+    ValidateProductSub parseItemParams(CreateOrder createOrder, Map item);
 
     Result validate(CreateOrder createOrder, Map params);
 

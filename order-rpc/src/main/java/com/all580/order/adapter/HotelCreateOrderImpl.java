@@ -41,7 +41,7 @@ public class HotelCreateOrderImpl extends AbstractCreateOrderImpl {
     @Override
     public OrderItem insertItem(Order order, ValidateProductSub sub, ProductSalesInfo salesInfo, PriceDto price, Map item) {
         Date endTime = DateUtils.addDays(sub.getBooking(), sub.getDays());
-        return bookingOrderManager.generateItem(salesInfo, endTime, price.getSale(), sub.getBooking(), sub.getDays(), order.getId(), sub.getQuantity(), sub.getGroupId(), CommonUtil.objectParseString(item.get("memo")));
+        return bookingOrderManager.generateItem(salesInfo, endTime, price.getSale(), sub.getBooking(), sub.getDays(), order.getId(), sub.getQuantity(), sub.getGroupId(), CommonUtil.objectParseString(item.get("memo")), sub.isSend());
     }
 
     @Override

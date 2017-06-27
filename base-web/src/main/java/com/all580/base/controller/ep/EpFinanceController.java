@@ -252,12 +252,14 @@ public class EpFinanceController extends BaseController {
     @RequestMapping(value = "balance/add", method = RequestMethod.POST)
     @ResponseBody
     public Result<Integer> balanceAdd(@RequestBody Map<String,Object> params) {
+        params.put("balance",CommonUtil.matcher(CommonUtil.objectParseString(params.get("balance")),"(\\d+)"));
         ParamsMapValidate.validate(params, generateBalanceSelectValidate());//
         Integer coreEpId=CommonUtil.objectParseInteger(params.get(EpConstant.EpKey.CORE_EP_ID) ) ;
         Integer balance=CommonUtil.objectParseInteger(params.get("balance")) ;
 
         Integer balanceEpId=CommonUtil.objectParseInteger(params.get("balance_ep_id")) ;
-        return epFinanceService.addBalance(balanceEpId,coreEpId,balance,params.get("operator_name"));
+        Integer balance_type =CommonUtil.objectParseInteger(params.get("balance_type"));
+        return epFinanceService.addBalance(balanceEpId,coreEpId,balance,params.get("operator_name"),balance_type);
     }
 
 

@@ -19,6 +19,7 @@ public class ValidateProductSub {
     /** 团队ID */
     private Integer groupId;
     private String memo;
+    private boolean send;
 
     public int getAllQuantity() {
         return quantity * days;

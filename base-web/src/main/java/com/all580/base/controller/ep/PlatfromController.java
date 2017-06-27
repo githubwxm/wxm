@@ -144,6 +144,14 @@ public class PlatfromController extends BaseController {
         //map.put("coreEpId",getAttribute(EpConstant.EpKey.CORE_EP_ID));
         return     epPaymentConfService.create(map);
     }//payment
+    @RequestMapping(value = "payment/delete", method = RequestMethod.POST)
+    @ResponseBody
+    public Result<Integer> paymentADelete(@RequestBody Map map) {
+        map.put("status",0);//如果做假删除就用
+        ParamsMapValidate.validate(map, platfromValidateManager.generateCreatePaymentStatusValidate());
+        //map.put("coreEpId",getAttribute(EpConstant.EpKey.CORE_EP_ID));
+        return     epPaymentConfService.delete(map);
+    }
 
     //平台商收款方式停用
     @RequestMapping(value = "payment/stop", method = RequestMethod.POST)

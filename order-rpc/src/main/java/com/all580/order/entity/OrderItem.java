@@ -211,6 +211,11 @@ public class OrderItem implements Serializable {
     private String ticket_msg;
 
     /**
+     *  是否发送短信,所属表字段为t_order_item.send
+     */
+    private Boolean send;
+
+    /**
      * 序列化ID,t_order_item
      */
     private static final long serialVersionUID = 1L;

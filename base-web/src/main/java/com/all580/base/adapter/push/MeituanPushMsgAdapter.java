@@ -6,7 +6,6 @@ import com.all580.ep.api.conf.EpConstant;
 import com.all580.product.api.consts.ProductConstants;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.util.CommonUtil;
-import com.github.ltsopensource.core.domain.Job;
 import com.github.ltsopensource.jobclient.JobClient;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.json.JSONObject;
@@ -24,7 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.lang.exception.ApiException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -160,20 +158,6 @@ public class MeituanPushMsgAdapter extends GeneralPushMsgAdapter implements Init
             }
             throw new ApiException(res == null ? "null" : res.toString());
         }
-
-        if (opCode.equals("SENT")) {
-            // 推送发码信息
-            Map<String, Object> params = new HashMap<>();
-            params.put("op_code", "VOUCHER");
-            params.put("code", 200);
-            params.put("describe", "出票成功");
-            params.put("body", msg.get("body"));
-            List<Job> jobs = new ArrayList<>();
-            pushMsgManager.pushForAddJob("MEITUAN_VOUCHER_SEND", epId, url, "MEITUAN", JsonUtils.toJson(params), params, config, jobs);
-            if (!jobs.isEmpty() && jobs.size() > 0) {
-                jobClient.submitJob(jobs);
-            }
-        }
     }
 
     private boolean validate(String opCode, Map msg, Map originMsg, Map config) {
@@ -206,6 +190,5 @@ public class MeituanPushMsgAdapter extends GeneralPushMsgAdapter implements Init
         opCodeUrl.put("REFUND_FAIL", "/rhone/mtp/api/order/refund/notice");
         opCodeUrl.put("REFUND", "/rhone/mtp/api/order/refund/notice");
         opCodeUrl.put("SENT", "/rhone/mtp/api/order/pay/notice");
-        opCodeUrl.put("VOUCHER", "/rhone/mtp/api/order/vouchers/notice");
     }
 }
