@@ -33,7 +33,7 @@ public class PftCallbackController {
             return "";
         }
         String json = request.getParameterMap().keySet().toArray()[0].toString();
-        Map<String, String> params = JsonUtils.json2Map(json);
+        Map<String, Object> params = JsonUtils.json2Map(json);
         Result<String> result = pftService.pftOrderStateCallback(
                 VoucherConstant.Provider.PFT,
                 params.get("VerifyCode") == null? null : params.get("VerifyCode").toString(),
