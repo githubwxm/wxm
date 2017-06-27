@@ -4,6 +4,7 @@ package com.all580.base.controller.thirdcb;
 import com.all580.voucher.api.conf.VoucherConstant;
 import com.all580.voucher.api.service.third.PftRPCService;
 import com.framework.common.Result;
+import com.framework.common.lang.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -49,28 +50,29 @@ public class PftCallbackController {
     @RequestMapping(value = "notify", method = RequestMethod.POST)
     @ResponseBody
     public String notify(HttpServletRequest request) {
-        log.error("pft:{}", request.getContentType());
-        log.error("pft:{}", request.getParameterMap().size());
-        log.error("pft:{}", request.getParameterMap().keySet().toArray()[0]);
+        log.error("pft_key:{}", request.getParameterMap().keySet().toArray()[0]);
+        log.error("pft_value:{}", request.getParameterMap().get(request.getParameterMap().keySet().toArray()[0])[0]);
         if (!request.getContentType().startsWith("application/x-www-form-urlencoded") || request.getParameterMap().isEmpty()) {
             return "";
         }
-        Map<String, String[]> params = request.getParameterMap();
+//        Map<String, String[]> params = request.getParameterMap();
+        String json = request.getParameterMap().keySet().toArray()[0].toString();
+        Map<String, String> params = JsonUtils.json2Map(json);
         Result<String> result = pftService.pftOrderStateCallback(
                 VoucherConstant.Provider.PFT,
-                params.get("VerifyCode") == null? null : params.get("VerifyCode")[0],
-                params.get("Order16U") == null? null : params.get("Order16U")[0],
-                params.get("ActionTime") == null? null : params.get("ActionTime")[0],
-                params.get("OrderCall") == null? null : params.get("OrderCall")[0],
-                params.get("Tnumber") == null? null : params.get("Tnumber")[0],
-                params.get("OrderState") == null? null : params.get("OrderState")[0],
-                params.get("Refundtype") == null? null : params.get("Refundtype")[0],
-                params.get("Explain") == null? null : params.get("Explain")[0],
-                params.get("Source") == null? null : params.get("Source")[0],
-                params.get("Action") == null? null : params.get("Action")[0],
-                params.get("AllCheckNum") == null? null : params.get("AllCheckNum")[0],
-                params.get("RefundAmount") == null? null : params.get("RefundAmount")[0],
-                params.get("RefundFee") == null? null : params.get("RefundFee")[0]);
+                params.get("VerifyCode") == null? null : params.get("VerifyCode"),
+                params.get("Order16U") == null? null : params.get("Order16U"),
+                params.get("ActionTime") == null? null : params.get("ActionTime"),
+                params.get("OrderCall") == null? null : params.get("OrderCall"),
+                params.get("Tnumber") == null? null : params.get("Tnumber"),
+                params.get("OrderState") == null? null : params.get("OrderState"),
+                params.get("Refundtype") == null? null : params.get("Refundtype"),
+                params.get("Explain") == null? null : params.get("Explain"),
+                params.get("Source") == null? null : params.get("Source"),
+                params.get("Action") == null? null : params.get("Action"),
+                params.get("AllCheckNum") == null? null : params.get("AllCheckNum"),
+                params.get("RefundAmount") == null? null : params.get("RefundAmount"),
+                params.get("RefundFee") == null? null : params.get("RefundFee"));
         if (result == null) throw new ApiException("票付通服务回调接口调用失败");
         return result.get();
     }
