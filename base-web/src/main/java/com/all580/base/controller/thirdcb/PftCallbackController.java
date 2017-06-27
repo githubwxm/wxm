@@ -50,9 +50,8 @@ public class PftCallbackController {
     @ResponseBody
     public String notify(HttpServletRequest request) {
         log.error("pft:{}", request.getContentType());
-        log.error("pft:{}", request.getQueryString());
         log.error("pft:{}", request.getParameterMap().size());
-        log.error("pft:{}", request.getHeaderNames());
+        log.error("pft:{}", request.getParameterMap().keySet().toArray()[0]);
         if (!request.getContentType().startsWith("application/x-www-form-urlencoded") || request.getParameterMap().isEmpty()) {
             return "";
         }
