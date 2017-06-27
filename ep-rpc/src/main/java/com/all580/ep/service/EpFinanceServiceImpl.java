@@ -161,7 +161,7 @@ public class EpFinanceServiceImpl implements EpFinanceService {
 
     @Override
     @MnsEvent
-    public Result addBalance(Integer epId,Integer coreEpId,Integer balance,Object operator_name,Integer balance_type){
+    public Result addBalance(Integer epId,Integer coreEpId,Integer balance,Object operator_name,Integer balance_type,String summary){
         if(null == balance_type){
             balance_type=PaymentConstant.BalanceChangeType.MANUAL_CHANGE_BALANCE_ADD;
         }
@@ -191,6 +191,7 @@ public class EpFinanceServiceImpl implements EpFinanceService {
         b.setCore_ep_id(coreEpId);
         b.setBalance_type(balance_type);
         b.setCan_cash_type(balance_type);
+        b.setSummary(summary);
         balanceList.add(b);
         String  serialNum=System.currentTimeMillis()+"";
         Map<String,Object> map = new HashMap<>();
