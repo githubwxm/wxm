@@ -2,13 +2,8 @@ package com.all580.order.manager;
 
 import com.all580.notice.api.conf.SmsType;
 import com.all580.notice.api.service.SmsService;
-import com.all580.order.dao.OrderItemMapper;
-import com.all580.order.dao.OrderMapper;
-import com.all580.order.dao.ShippingMapper;
-import com.all580.order.entity.Order;
-import com.all580.order.entity.OrderItem;
-import com.all580.order.entity.RefundOrder;
-import com.all580.order.entity.Shipping;
+import com.all580.order.dao.*;
+import com.all580.order.entity.*;
 import com.all580.payment.api.conf.PaymentConstant;
 import com.framework.common.Result;
 import com.framework.common.lang.DateFormatUtils;
@@ -21,6 +16,7 @@ import org.springframework.stereotype.Component;
 import javax.lang.exception.ApiException;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -41,6 +37,12 @@ public class SmsManager {
     private OrderMapper orderMapper;
     @Autowired
     private OrderItemMapper orderItemMapper;
+    @Autowired
+    private MaSendResponseMapper maSendResponseMapper;
+    @Autowired
+    private VisitorMapper visitorMapper;
+    @Autowired
+    private OrderItemDetailMapper orderItemDetailMapper;
 
     @Value("${order.pay.timeout}")
     private Integer payTimeOut;
@@ -359,5 +361,46 @@ public class SmsManager {
         if (!result.isSuccess()) {
             throw new ApiException("发送线路出票短信失败:" + result.getError());
         }
+    }
+
+    /**
+     * 发送凭证短信
+     * @param orderItem
+     */
+    public void sendVoucher(OrderItem orderItem) {
+        Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
+        if (order == null) {
+            throw new ApiException("订单不存在");
+        }
+        Date expiryDate = orderItemDetailMapper.selectByItemId(orderItem.getId()).get(0).getExpiry_date();
+        List<MaSendResponse> maSendResponses = maSendResponseMapper.selectByOrderItemId(orderItem.getId());
+        List<Visitor> visitors = visitorMapper.selectByOrderItem(orderItem.getId());
+
+        for (MaSendResponse maSendResponse : maSendResponses) {
+            Visitor visitor = getVisitor(maSendResponse.getVisitor_id(), visitors);
+            if (visitor == null) {
+                log.warn("发送凭证短信:游客:{},手机号码:{}失败,游客不存在", maSendResponse.getVisitor_id(), maSendResponse.getPhone());
+                continue;
+            }
+            Map<String, String> sendSmsParams = new HashMap<>();
+            sendSmsParams.put("productname", orderItem.getPro_name() + "-" + orderItem.getPro_sub_name());
+            sendSmsParams.put("count", String.valueOf(visitor.getQuantity()));
+            sendSmsParams.put("voucher", maSendResponse.getVoucher_value());
+            sendSmsParams.put("ma", maSendResponse.getImage_url().replace("http://m8e.cn/", ""));
+            sendSmsParams.put("data", DateFormatUtils.converToStringDate(expiryDate));
+            Result result = smsService.send(visitor.getPhone(), SmsType.Prod.VOUCHER_SEND_MA, order.getPayee_ep_id(), sendSmsParams);//发送短信
+            if (!result.isSuccess()) {
+                log.warn("发送凭证短信:游客:{},手机号码:{}失败:{}", new Object[]{maSendResponse.getVisitor_id(), maSendResponse.getPhone(), result.getError()});
+            }
+        }
+    }
+
+    private Visitor getVisitor(int id, List<Visitor> visitors) {
+        for (Visitor visitor : visitors) {
+            if (visitor.getId() == id) {
+                return visitor;
+            }
+        }
+        return null;
     }
 }
