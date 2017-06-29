@@ -3,6 +3,10 @@ package com.all580.base.controller.order;
 import com.all580.base.util.Utils;
 import com.all580.ep.api.conf.EpConstant;
 import com.all580.product.api.consts.ProductConstants;
+import com.all580.report.api.dto.OrderDto;
+import com.all580.report.api.dto.OrderInfo;
+import com.all580.report.api.dto.OrderItemDetailDto;
+import com.all580.report.api.dto.RefundOrderItemDto;
 import com.all580.report.api.service.QueryOrderService;
 import com.framework.common.BaseController;
 import com.framework.common.Result;
@@ -62,5 +66,24 @@ public class QueryOrderController extends BaseController {
     public Result<?> preRefund(@RequestParam Integer ep_type, @RequestParam Integer ep_id, @RequestParam Long item_number) {
         Integer coreEpId = CommonUtil.objectParseInteger(getAttribute(EpConstant.EpKey.CORE_EP_ID));
         return queryOrderService.preRefundLineInfo(item_number, ep_type, coreEpId, ep_id, ProductConstants.RefundEqType.SELLER);
+    }
+
+    @RequestMapping(value = "item/list")
+    @ResponseBody
+    public Result<?> listOrderItems(@RequestParam OrderInfo orderInfo,
+                                    @RequestParam(defaultValue = "0") Integer record_start,
+                                    @RequestParam(defaultValue = "20") Integer record_count) {
+        Integer coreEpId = CommonUtil.objectParseInteger(getAttribute(EpConstant.EpKey.CORE_EP_ID));
+        orderInfo.setCoreEpId(coreEpId);
+
+        return queryOrderService.getOrderItemList(orderInfo, record_start, record_count);
+    }
+
+    @RequestMapping(value = "item/get_item_detail")
+    @ResponseBody
+    public Result<OrderItemDetailDto> getOrderDetailByNumber(@RequestParam("orderSn") Long orderSn,
+                                                             @RequestParam("itemSn") Long itemSn,
+                                                             @RequestParam("epType") Integer epType) {
+        return queryOrderService.getOrderDetailByNumber(orderSn, itemSn, epType);
     }
 }

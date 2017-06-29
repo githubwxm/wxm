@@ -161,32 +161,48 @@ public class EpFinanceServiceImpl implements EpFinanceService {
 
     @Override
     @MnsEvent
-    public Result addBalance(Integer epId,Integer coreEpId,Integer balance,Object operator_name){
+    public Result addBalance(Integer epId,Integer coreEpId,Integer balance,Object operator_name,Integer balance_type,String summary){
+        if(null == balance_type){
+            balance_type=PaymentConstant.BalanceChangeType.MANUAL_CHANGE_BALANCE_ADD;
+        }
+        if(null==balance){
+            return    new Result(false,"金额过大或过小");
+        }
+        if(balance>50000000){
+            return new Result(false,"金额不能超过50W");
+        }
+        if(PaymentConstant.BalanceChangeType.MANUAL_CHANGE_BALANCE_ADD-balance_type==0){//充值
+            if(balance<=0){
+                return    new Result(false,"充值金额不能为"+balance);
+            }
+        }else if(PaymentConstant.BalanceChangeType.MANUAL_CHANGE_BALANCE_EXIT-balance_type==0){
+            if(balance<=0){
+                return    new Result(false,"提现金额不能为"+balance);
+            }else{
+                balance=0-balance;//提现变为负数
+            }
+        }
         List<BalanceChangeInfo> balanceList=new ArrayList<>();
         BalanceChangeInfo b= new BalanceChangeInfo();
         b.setBalance(balance);
         b.setCan_cash(balance);
-        if(null==balance){
-            return    new Result(false,"充值金额过大或过小");
-        }
-        if(balance>50000000){
-            return new Result(false,"充值金额不能超过50W");
-        }
+
         b.setEp_id(epId);
         b.setCore_ep_id(coreEpId);
-        b.setBalance_type(PaymentConstant.BalanceChangeType.MANUAL_CHANGE_BALANCE_ADD);
-        b.setCan_cash_type(PaymentConstant.BalanceChangeType.MANUAL_CHANGE_BALANCE_ADD);
+        b.setBalance_type(balance_type);
+        b.setCan_cash_type(balance_type);
+        b.setSummary(summary);
         balanceList.add(b);
         String  serialNum=System.currentTimeMillis()+"";
         Map<String,Object> map = new HashMap<>();
         map.put("ref_id",serialNum);
         map.put(EpConstant.EpKey.CORE_EP_ID,coreEpId);
         map.put("money",balance);
-        map.put("ref_type",PaymentConstant.BalanceChangeType.MANUAL_CHANGE_BALANCE_ADD);
+        map.put("ref_type",balance_type);
         map.put("operator_name",operator_name);
         //fireBalanceChangedEvent(map);
         eventAspect.addEvent("FUND_CHANGE", map);
-        return balancePayService.changeBalances(balanceList, PaymentConstant.BalanceChangeType.MANUAL_CHANGE_BALANCE_ADD,serialNum);
+        return balancePayService.changeBalances(balanceList, balance_type,serialNum);
     }
     /**
      * 发布余额变更事件

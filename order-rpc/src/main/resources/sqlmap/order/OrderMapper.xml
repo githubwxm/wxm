@@ -384,9 +384,9 @@
     SELECT
         o.number order_number,
         toi.number item_number,
-        toi.used_quantity,
-        toi.refund_quantity,
-        toi.quantity,
+        sum(toi.used_quantity) used_quantity,
+        sum(toi.refund_quantity) refund_quantity,
+        sum(toi.quantity * toi.days) quantity,
         IFNULL(SUM(tro.quantity),0) refunding
     FROM
         t_order_item toi

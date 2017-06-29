@@ -252,12 +252,15 @@ public class EpFinanceController extends BaseController {
     @RequestMapping(value = "balance/add", method = RequestMethod.POST)
     @ResponseBody
     public Result<Integer> balanceAdd(@RequestBody Map<String,Object> params) {
+        //params.put("balance",CommonUtil.matcher(CommonUtil.objectParseString(params.get("balance")),"(\\d+)"));
         ParamsMapValidate.validate(params, generateBalanceSelectValidate());//
         Integer coreEpId=CommonUtil.objectParseInteger(params.get(EpConstant.EpKey.CORE_EP_ID) ) ;
         Integer balance=CommonUtil.objectParseInteger(params.get("balance")) ;
 
         Integer balanceEpId=CommonUtil.objectParseInteger(params.get("balance_ep_id")) ;
-        return epFinanceService.addBalance(balanceEpId,coreEpId,balance,params.get("operator_name"));
+        Integer balance_type =CommonUtil.objectParseInteger(params.get("balance_type"));
+        String  summary = CommonUtil.objectParseString(params.get("demo"));
+        return epFinanceService.addBalance(balanceEpId,coreEpId,balance,params.get("operator_name"),balance_type,summary);
     }
 
 
@@ -304,7 +307,7 @@ public class EpFinanceController extends BaseController {
         // 校验整数
         rules.put(new String[]{
                 "balance_ep_id", //
-                "balance",
+               // "balance",
         }, new ValidRule[]{new ValidRule.Digits()});
         return rules;
     }

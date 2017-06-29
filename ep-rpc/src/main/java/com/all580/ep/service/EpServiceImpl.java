@@ -8,6 +8,8 @@ import com.all580.ep.com.Common;
 import com.all580.ep.dao.CoreEpAccessMapper;
 import com.all580.ep.dao.EpMapper;
 import com.all580.ep.dao.EpParamMapper;
+import com.all580.ep.dao.EpSendVoucherMapper;
+import com.all580.ep.entity.EpSendVoucher;
 import com.all580.manager.SyncEpData;
 import com.all580.notice.api.conf.SmsType;
 import com.all580.notice.api.service.SmsService;
@@ -31,6 +33,8 @@ import javax.lang.exception.ApiException;
 import javax.lang.exception.ParamsMapValidationException;
 import java.util.*;
 
+import static com.all580.ep.api.conf.EpConstant.EpType.SUPPLIER;
+
 @Service
 @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
 @Slf4j
@@ -40,6 +44,8 @@ public class EpServiceImpl implements EpService {
     @Autowired
     private EpMapper epMapper;
 
+    @Autowired
+    private EpSendVoucherMapper epSendVoucherMapper;
     @Autowired
     private EpParamMapper epParamMapper;
 
@@ -121,6 +127,7 @@ public class EpServiceImpl implements EpService {
         map.put("status_bak", EpConstant.EpStatus.ACTIVE);// 状态默认未初始化
         map.put("ep_type", EpConstant.EpType.PLATFORM);
         map.put("access_id", Common.getAccessId());
+        map.put("access_key", Common.getAccessKey());
         // CommonUtil.formtAddress(map);
         int epId = 0;
         try {
@@ -129,7 +136,7 @@ public class EpServiceImpl implements EpService {
             log.error("添加平台商异常", e);
             throw new ApiException("添加平台商异常", e);
         }
-        map.put("access_key", Common.getAccessKey());
+
 
         Integer coreEpId = null;//企业id 平台商id
         Result<Map<String, Object>> result = new Result<>();
@@ -169,7 +176,7 @@ public class EpServiceImpl implements EpService {
     public Result<List<Map<String, Object>>> selectDownSupplier(Map<String, Object> map) {
         Result<List<Map<String, Object>>> result = new Result<>();
         try {
-            map.put("ep_type",EpConstant.EpType.SUPPLIER);
+            map.put("ep_type", SUPPLIER);
             result.put(epMapper.select(map));
             result.setSuccess();
             result.setCode(200);
@@ -302,12 +309,16 @@ public class EpServiceImpl implements EpService {
         }
         Integer group_id = CommonUtil.objectParseInteger(map.get("group_id"));
         String ep_class = (String) map.get("ep_class");//企业分类
+        Object groupName;
         try {
-            Object groupName = planGroupService.searchPlanGroupById(group_id).get().get("name");
-            // String groupName="固定分组";
-            if (null == groupName) {
-                throw new ParamsMapValidationException("企业分组错误");
+            if(group_id==null){
+                groupName=null;
+            }else{
+                groupName = planGroupService.searchPlanGroupById(group_id).get().get("name");
             }
+
+            // String groupName="固定分组";
+
             map.put("group_name", groupName);
             if (!Common.isTrue(creator_ep_id, "\\d+")) {
                 throw new ParamsMapValidationException("上级企业类型错误");
@@ -323,10 +334,20 @@ public class EpServiceImpl implements EpService {
                 ep_type = CommonUtil.objectParseString(epMapper.select(tempMap).get(0).get("ep_type"));// 没有传企业类型获取创建企业类型
             }
             Integer epType=CommonUtil.objectParseInteger(ep_type);
+
+            if (null == groupName) {//供应商无需加入分组
+                if(SUPPLIER-epType!=0){
+                    throw new ParamsMapValidationException("企业分组错误");
+                }
+            }
             if (EpConstant.EpType.SELLER.equals(epType) || EpConstant.EpType.OTA.equals(epType) ||
                     EpConstant.EpType.DEALER.equals(epType)) {
                 //todo 企业余额提醒值
                 flag = true;
+            }if(EpConstant.EpType.SUPPLIER.equals(epType)){
+                groupName=null;
+                map.put("group_id",null);
+                map.put("group_name",null);
             }
 
         } catch (ParamsMapValidationException e) {
@@ -349,21 +370,24 @@ public class EpServiceImpl implements EpService {
           //r=  planGroupService.addEpToGroup(CommonUtil.objectParseInteger(map.get("operator_id")),
             //        epId,CommonUtil.objectParseString(map.get("name")),core_ep_id,group_id );
            //start
-            Job job = new Job();
-            job.setTaskId("EP-JOB-" + UUIDGenerator.getUUID());
-            //job.setExtParams(map);
-            job.setParam("operator_id",CommonUtil.objectParseString(map.get("operator_id")) );
-            job.setParam("epId",epId+"");
-            job.setParam("name",CommonUtil.objectParseString(map.get("name")));
-            job.setParam("group_id",group_id+"");
-            job.setParam("core_ep_id",core_ep_id+"");
-            job.setParam("$ACTION$", "EP_TO_ADD_GROUP");
-            job.setTaskTrackerNodeGroup(taskTracker);
-            if (maxRetryTimes != null) {
-                job.setMaxRetryTimes(maxRetryTimes);
+            if (null != groupName){
+                Job job = new Job();
+                job.setTaskId("EP-JOB-" + UUIDGenerator.getUUID());
+                //job.setExtParams(map);
+                job.setParam("operator_id",CommonUtil.objectParseString(map.get("operator_id")) );
+                job.setParam("epId",epId+"");
+                job.setParam("name",CommonUtil.objectParseString(map.get("name")));
+                job.setParam("group_id",group_id+"");
+                job.setParam("core_ep_id",core_ep_id+"");
+                job.setParam("$ACTION$", "EP_TO_ADD_GROUP");
+                job.setTaskTrackerNodeGroup(taskTracker);
+                if (maxRetryTimes != null) {
+                    job.setMaxRetryTimes(maxRetryTimes);
+                }
+                job.setNeedFeedback(false);
+                jobClient.submitJob(job);
             }
-            job.setNeedFeedback(false);
-            jobClient.submitJob(job);
+
            //end
             if (flag) {//如果是分销商默认加载余额阀值为1000元
                 Map<String, Object> epBalanceThresholdMap = new HashMap<>();
@@ -865,7 +889,7 @@ public class EpServiceImpl implements EpService {
             if (ref > 0) {
                 Integer core_ep_id = selectPlatformId(epIds.get(0)).get();
                 List<Map<String, String>> listMap = epMapper.selectEpGroupList(epIds);
-               Map<String,Object> syncData= syncEpData.syncEpData(core_ep_id, EpConstant.Table.T_EP, listMap);
+               Map<String,Object> syncData= syncEpData.syncEpDataNew(core_ep_id, EpConstant.Table.T_EP, listMap);
                 return new Result(true).putExt(Result.SYNC_DATA, syncData);
             }
         } catch (ApiException e) {
@@ -1102,7 +1126,16 @@ public class EpServiceImpl implements EpService {
         result.put(epMapper.selectTypeName(map));
         return result;
     }
-//
+
+    @Override
+    public Result<Boolean> isSendVoucher(int epId, int coreEpId) {
+        Result<Boolean> result = new Result<>(true);
+        EpSendVoucher sendVoucher = epSendVoucherMapper.selectByEp(epId, coreEpId);
+        result.put(sendVoucher == null || sendVoucher.getSend_voucher() == null ? true : sendVoucher.getSend_voucher());
+        return result;
+    }
+
+    //
 //
 //    /**
 //     * 同步数据

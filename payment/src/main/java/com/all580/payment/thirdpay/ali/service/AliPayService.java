@@ -55,7 +55,9 @@ public class AliPayService {
     public boolean isPropertiesInit(int coreEpId) {
         return alipayPropertiesMap.containsKey(coreEpId);
     }
-
+     public void  clear(int coreEpId){
+         alipayPropertiesMap.remove(coreEpId);
+     }
     public synchronized void initProperties(int coreEpId, String confData) {
         AliPayProperties aliPayProperties = JsonUtils.fromJson(confData, AliPayProperties.class);
         alipayPropertiesMap.put(coreEpId, aliPayProperties);

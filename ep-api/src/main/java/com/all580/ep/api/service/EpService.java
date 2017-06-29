@@ -232,4 +232,12 @@ public interface EpService {
      * @return
      */
     Result selectTypeName(Map<String,Object> map);
+
+    /**
+     * 判断是否发送凭证短信
+     * @param epId 企业ID
+     * @param coreEpId 平台商ID
+     * @return
+     */
+    Result<Boolean> isSendVoucher(int epId, int coreEpId);
 }

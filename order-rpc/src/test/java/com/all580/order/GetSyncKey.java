@@ -21,5 +21,6 @@ public class GetSyncKey {
         System.out.println("鸭脚板生产环境:" + Md5Utils.getMD5For16("P_14925706122478VU6TBCXF7CH4L").toUpperCase()); // 鸭脚板
         System.out.println("东江湖生产环境:" + Md5Utils.getMD5For16("P_1492657718586UV4JFZTDVDZQXE").toUpperCase()); // 东江湖
         System.out.println("韶山生产环境:" + Md5Utils.getMD5For16("P_1495591604801U9C9K9GZF2C68J").toUpperCase()); // 韶山
+        System.out.println("美帝生产环境:" + Md5Utils.getMD5For16("P_1497411230270FYJ89MB6UNQZJF").toUpperCase()); // 美帝
     }
 }

@@ -252,7 +252,8 @@ public class BookingOrderManager extends BaseOrderManager {
      * @return
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public OrderItem generateItem(ProductSalesInfo info, Date endTime, int saleAmount, Date bookingDate, int days, int orderId, int quantity, Integer groupId, String memo) {
+    public OrderItem generateItem(ProductSalesInfo info, Date endTime, int saleAmount, Date bookingDate, int days,
+                                  int orderId, int quantity, Integer groupId, String memo, boolean isSend) {
         OrderItem orderItem = new OrderItem();
         orderItem.setNumber(UUIDGenerator.generateUUID());
         orderItem.setStart(bookingDate);
@@ -282,6 +283,7 @@ public class BookingOrderManager extends BaseOrderManager {
         orderItem.setLast_resend_time(new Date());
         orderItem.setVoucher_msg(info.getVoucher_msg());
         orderItem.setTicket_msg(info.getTicket_msg());
+        orderItem.setSend(isSend);
         orderItemMapper.insertSelective(orderItem);
         return orderItem;
     }
