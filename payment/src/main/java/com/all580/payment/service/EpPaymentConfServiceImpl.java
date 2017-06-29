@@ -1,9 +1,12 @@
 package com.all580.payment.service;
 
 
+import com.all580.payment.api.conf.PaymentConstant;
 import com.all580.payment.api.service.EpPaymentConfService;
 import com.all580.payment.dao.EpPaymentConfMapper;
 import com.all580.payment.entity.EpPaymentConf;
+import com.all580.payment.thirdpay.ali.service.AliPayService;
+import com.all580.payment.thirdpay.wx.service.WxPayService;
 import com.framework.common.Result;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.util.CommonUtil;
@@ -20,10 +23,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.framework.common.util.CommonUtil.objectParseInteger;
+
 @Service("epPaymentConfService")
 public class EpPaymentConfServiceImpl implements EpPaymentConfService {
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    @Autowired
+    private WxPayService wxPayService; // 本类中不要直接使用，应该用getWxPayService()
+    @Autowired
+    private AliPayService aliPayService; // 本类中不要直接使用，应该用getAliPayService()
     @Autowired
     private EpPaymentConfMapper epPaymentConfMapper;
 
@@ -39,7 +48,16 @@ public class EpPaymentConfServiceImpl implements EpPaymentConfService {
             BeanUtils.populate(conf, map);
             // 检查同一企业下是否已经存在相同支付类型的配置
             checkExistSameTypeRecord( conf.getCore_ep_id(), conf.getPayment_type());
+
             epPaymentConfMapper.insertSelective(conf);
+            Integer payment_type =  CommonUtil.objectParseInteger(map.get("payment_type"));
+            int coreEpId = CommonUtil.objectParseInteger(map.get("core_ep_id"));
+            String confData = CommonUtil.objectParseString(map.get("conf_data"));
+            if(PaymentConstant.PaymentType.ALI_PAY-payment_type==0){
+                aliPayService.initProperties(coreEpId,confData);
+            }else if(PaymentConstant.PaymentType.WX_PAY-payment_type==0){
+                wxPayService.initProperties(coreEpId,confData,CommonUtil.objectParseString(map.get("cert_p12")));
+            }
             result.setSuccess();
             logger.info("完成 -> 创建企业收款方式配置");
         } catch (Exception e) {
@@ -55,8 +73,15 @@ public class EpPaymentConfServiceImpl implements EpPaymentConfService {
         logger.info("开始 -> 删除企业收款方式配置");
         Result result = new Result();
         try {
-            Integer id = CommonUtil.objectParseInteger( map.get("id"));
+            Integer id = objectParseInteger( map.get("id"));
             epPaymentConfMapper.delete(id);
+            Integer  payment_type =objectParseInteger(map.get("payment_type"));
+            Integer  coreEpId = objectParseInteger(map.get("ep_id"));
+            if(PaymentConstant.PaymentType.ALI_PAY-payment_type==0){
+                aliPayService.clear(coreEpId);
+            }else if(PaymentConstant.PaymentType.WX_PAY-payment_type==0){
+                wxPayService.clear(coreEpId);
+            }
             result.setSuccess();
             logger.info("完成 -> 删除企业收款方式配置");
         } catch (Exception e) {

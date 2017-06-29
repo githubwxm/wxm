@@ -29,7 +29,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author zhouxianjun(Alone)
@@ -90,7 +93,7 @@ public class SendTicketAction extends BasicSyncDataEvent implements JobRunner {
         sendTicketParams.setDisableDate(detail.getDisable_day());
         sendTicketParams.setMaProductId(orderItem.getMa_product_id());
         // TODO: 2016/11/3 出票发送短信
-        sendTicketParams.setSendSms(orderItem.getSend() == null || orderItem.getSend());
+        sendTicketParams.setSendSms(false);
         sendTicketParams.setSms(orderItem.getVoucher_msg());
         sendTicketParams.setTicketMsg(orderItem.getTicket_msg());
 
