@@ -1,6 +1,6 @@
 package com.all580.voucherplatform.adapter.platform.all580V3.processor;
 
-import com.all580.voucherplatform.adapter.AdapterLoadder;
+import com.all580.voucherplatform.adapter.AdapterLoader;
 import com.all580.voucherplatform.adapter.ProcessorService;
 import com.all580.voucherplatform.entity.Platform;
 import com.all580.voucherplatform.manager.order.CreateOrderManager;
@@ -21,11 +21,11 @@ public class SendOrderProcessorImpl implements ProcessorService<Platform> {
 
     private static final String ACTION = "sendTicket";
     @Autowired
-    private AdapterLoadder adapterLoadder;
+    private AdapterLoader adapterLoader;
 
     @Override
     public Object processor(Platform platform, Map map) {
-        CreateOrderManager createOrderManager = adapterLoadder.getBean(CreateOrderManager.class);
+        CreateOrderManager createOrderManager = adapterLoader.getBean(CreateOrderManager.class);
         try {
             map.put("prodId", map.get("productId"));
             createOrderManager.setProd(platform.getId(), map);

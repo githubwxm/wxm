@@ -1,6 +1,6 @@
 package com.all580.voucherplatform.adapter.platform.all580V3.processor;
 
-import com.all580.voucherplatform.adapter.AdapterLoadder;
+import com.all580.voucherplatform.adapter.AdapterLoader;
 import com.all580.voucherplatform.adapter.ProcessorService;
 import com.all580.voucherplatform.entity.Platform;
 import com.all580.voucherplatform.manager.order.ResendManager;
@@ -22,14 +22,14 @@ public class ReSendProcessorImpl implements ProcessorService<Platform> {
     private static final String ACTION = "resendTicket";
 
     @Autowired
-    private AdapterLoadder adapterLoadder;
+    private AdapterLoader adapterLoader;
 
     @Override
     public Object processor(Platform platform, Map map) {
         String orderId = CommonUtil.objectParseString(map.get("orderId"));
         String visitorSeqId = CommonUtil.objectParseString(map.get("visitorSeqId"));
         String mobile = CommonUtil.objectParseString(map.get("mobile"));
-        ResendManager resendManager = adapterLoadder.getBean(ResendManager.class);
+        ResendManager resendManager = adapterLoader.getBean(ResendManager.class);
         resendManager.setOrder(platform.getId(), orderId, visitorSeqId);
         try {
             resendManager.send(mobile);

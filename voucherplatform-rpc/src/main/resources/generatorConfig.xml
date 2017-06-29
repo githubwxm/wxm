@@ -40,14 +40,14 @@
             <property name="enableSubPackages" value="true"/>
         </javaClientGenerator>
 
-        <table tableName="t_refund"
+        <table tableName="t_group_order"
                enableCountByExample="false"
                enableUpdateByExample="false"
                enableDeleteByExample="false"
                enableSelectByExample="false"
                selectByExampleQueryId="false"
                delimitAllColumns="true"
-               domainObjectName="Refund">
+               domainObjectName="GroupOrder">
             <property name="useActualColumnNames" value="true"/>
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
             <!--<columnOverride column="update_time" javaType="java.lang.String"/>-->

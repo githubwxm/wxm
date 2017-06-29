@@ -1,6 +1,6 @@
 package com.all580.voucherplatform.adapter.supply.ticketV3.processor;
 
-import com.all580.voucherplatform.adapter.AdapterLoadder;
+import com.all580.voucherplatform.adapter.AdapterLoader;
 import com.all580.voucherplatform.adapter.ProcessorService;
 import com.all580.voucherplatform.entity.Supply;
 import com.all580.voucherplatform.manager.order.RefundResultManager;
@@ -24,13 +24,13 @@ public class RefundProcessorImpl implements ProcessorService<Supply> {
 
     private static final String ACTION = "cancelOrderRsp";
     @Autowired
-    private AdapterLoadder adapterLoadder;
+    private AdapterLoader adapterLoader;
 
     @Override
     public Object processor(Supply supply, Map map) {
         String refId = CommonUtil.objectParseString(map.get("refId"));
         Boolean success = Boolean.valueOf(CommonUtil.objectParseString(map.get("success")));
-        RefundResultManager refundResultManager = adapterLoadder.getBean(RefundResultManager.class);
+        RefundResultManager refundResultManager = adapterLoader.getBean(RefundResultManager.class);
         try {
             refundResultManager.setRefund(refId);
             if (success) {

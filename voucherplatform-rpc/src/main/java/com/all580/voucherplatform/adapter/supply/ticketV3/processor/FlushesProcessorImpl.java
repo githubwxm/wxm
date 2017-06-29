@@ -1,6 +1,6 @@
 package com.all580.voucherplatform.adapter.supply.ticketV3.processor;
 
-import com.all580.voucherplatform.adapter.AdapterLoadder;
+import com.all580.voucherplatform.adapter.AdapterLoader;
 import com.all580.voucherplatform.adapter.ProcessorService;
 import com.all580.voucherplatform.entity.Supply;
 import com.all580.voucherplatform.manager.order.OrderReverseManager;
@@ -24,7 +24,7 @@ public class FlushesProcessorImpl implements ProcessorService<Supply> {
     private static final String ACTION = "flushesOrder";
 
     @Autowired
-    AdapterLoadder adapterLoadder;
+    AdapterLoader adapterLoader;
 
     @Override
     public Object processor(Supply supply, Map map) {
@@ -33,7 +33,7 @@ public class FlushesProcessorImpl implements ProcessorService<Supply> {
         String flushesSeqId = CommonUtil.objectParseString(map.get("flushesSeqId"));
         Date flushesTime = DateFormatUtils.converToDateTime(CommonUtil.objectParseString(map.get("flushesTime")));
         //Date procTime = DateFormatUtils.converToDateTime(CommonUtil.objectParseString(map.get("procTime")));
-        OrderReverseManager orderReverseManager = adapterLoadder.getBean(OrderReverseManager.class);
+        OrderReverseManager orderReverseManager = adapterLoader.getBean(OrderReverseManager.class);
         orderReverseManager.setConsume(voucherId, consumeSeqId);
         orderReverseManager.reverse(flushesSeqId, flushesTime);
         return null;

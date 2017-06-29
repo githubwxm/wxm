@@ -6,157 +6,152 @@ import java.util.Date;
 
 public class GroupOrder implements Serializable {
     /**
-     * ,所属表字段为t_group_order.id
+     *  ,所属表字段为t_group_order.id
      */
     private Integer id;
 
     /**
-     * ,所属表字段为t_group_order.orderCode
+     *  ,所属表字段为t_group_order.orderCode
      */
     private String orderCode;
 
     /**
-     * ,所属表字段为t_group_order.platform_id
+     *  ,所属表字段为t_group_order.platform_id
      */
     private Integer platform_id;
 
     /**
-     * ,所属表字段为t_group_order.platformprod_id
-     */
-    private Integer platformprod_id;
-
-    /**
-     * ,所属表字段为t_group_order.supply_id
+     *  ,所属表字段为t_group_order.supply_id
      */
     private Integer supply_id;
 
     /**
-     * ,所属表字段为t_group_order.ticketsys_id
+     *  ,所属表字段为t_group_order.ticketsys_id
      */
     private Integer ticketsys_id;
 
     /**
-     * ,所属表字段为t_group_order.platformOrderId
+     *  ,所属表字段为t_group_order.platformOrderId
      */
     private String platformOrderId;
 
     /**
-     * ,所属表字段为t_group_order.platformProdId
+     *  ,所属表字段为t_group_order.platformProdId
      */
     private Integer platformProdId;
 
     /**
-     * ,所属表字段为t_group_order.supplyOrderId
+     *  ,所属表字段为t_group_order.supplyOrderId
      */
     private String supplyOrderId;
 
     /**
-     * ,所属表字段为t_group_order.supplyProdId
+     *  ,所属表字段为t_group_order.supplyProdId
      */
     private Integer supplyProdId;
 
     /**
-     * ,所属表字段为t_group_order.formAreaCode
+     *  ,所属表字段为t_group_order.formAreaCode
      */
     private String formAreaCode;
 
     /**
-     * ,所属表字段为t_group_order.formAddr
+     *  ,所属表字段为t_group_order.formAddr
      */
     private String formAddr;
 
     /**
-     * ,所属表字段为t_group_order.travelName
+     *  ,所属表字段为t_group_order.travelName
      */
     private String travelName;
 
     /**
-     * ,所属表字段为t_group_order.manager
+     *  ,所属表字段为t_group_order.manager
      */
     private String manager;
 
     /**
-     * ,所属表字段为t_group_order.groupNumber
+     *  ,所属表字段为t_group_order.groupNumber
      */
     private String groupNumber;
 
     /**
-     * ,所属表字段为t_group_order.guideName
+     *  ,所属表字段为t_group_order.guideName
      */
     private String guideName;
 
     /**
-     * ,所属表字段为t_group_order.guideIdNumber
+     *  ,所属表字段为t_group_order.guideIdNumber
      */
     private String guideIdNumber;
 
     /**
-     * ,所属表字段为t_group_order.guideMobile
+     *  ,所属表字段为t_group_order.guideMobile
      */
     private String guideMobile;
 
     /**
-     * ,所属表字段为t_group_order.payment
+     *  ,所属表字段为t_group_order.payment
      */
     private Integer payment;
 
     /**
-     * ,所属表字段为t_group_order.payTime
+     *  ,所属表字段为t_group_order.payTime
      */
     private Date payTime;
 
     /**
-     * ,所属表字段为t_group_order.sendType
+     *  ,所属表字段为t_group_order.sendType
      */
     private Integer sendType;
 
     /**
-     * ,所属表字段为t_group_order.validTime
+     *  ,所属表字段为t_group_order.validTime
      */
     private Date validTime;
 
     /**
-     * ,所属表字段为t_group_order.invalidTime
+     *  ,所属表字段为t_group_order.invalidTime
      */
     private Date invalidTime;
 
     /**
-     * ,所属表字段为t_group_order.activateNum
+     *  ,所属表字段为t_group_order.activateNum
      */
     private Integer activateNum;
 
     /**
-     * ,所属表字段为t_group_order.activateStatus
+     *  ,所属表字段为t_group_order.activateStatus
      */
     private Boolean activateStatus;
 
     /**
-     * ,所属表字段为t_group_order.price
+     *  ,所属表字段为t_group_order.price
      */
     private BigDecimal price;
 
     /**
-     * ,所属表字段为t_group_order.number
+     *  ,所属表字段为t_group_order.number
      */
     private Integer number;
 
     /**
-     * ,所属表字段为t_group_order.createTime
+     *  ,所属表字段为t_group_order.createTime
      */
     private Date createTime;
 
     /**
-     * ,所属表字段为t_group_order.voucherNumber
+     *  ,所属表字段为t_group_order.voucherNumber
      */
     private String voucherNumber;
 
     /**
-     * ,所属表字段为t_group_order.imgUrl
+     *  ,所属表字段为t_group_order.imgUrl
      */
     private String imgUrl;
 
     /**
-     * ,所属表字段为t_group_order.status
+     *  ,所属表字段为t_group_order.status
      */
     private Integer status;
 
@@ -168,7 +163,7 @@ public class GroupOrder implements Serializable {
     /**
      * 获取  字段:t_group_order.id
      *
-     * @return t_group_order.id,
+     * @return t_group_order.id, 
      */
     public Integer getId() {
         return id;
@@ -177,7 +172,7 @@ public class GroupOrder implements Serializable {
     /**
      * 设置  字段:t_group_order.id
      *
-     * @param id t_group_order.id,
+     * @param id t_group_order.id, 
      */
     public void setId(Integer id) {
         this.id = id;
@@ -186,7 +181,7 @@ public class GroupOrder implements Serializable {
     /**
      * 获取  字段:t_group_order.orderCode
      *
-     * @return t_group_order.orderCode,
+     * @return t_group_order.orderCode, 
      */
     public String getOrderCode() {
         return orderCode;
@@ -195,7 +190,7 @@ public class GroupOrder implements Serializable {
     /**
      * 设置  字段:t_group_order.orderCode
      *
-     * @param orderCode t_group_order.orderCode,
+     * @param orderCode t_group_order.orderCode, 
      */
     public void setOrderCode(String orderCode) {
         this.orderCode = orderCode == null ? null : orderCode.trim();
@@ -204,7 +199,7 @@ public class GroupOrder implements Serializable {
     /**
      * 获取  字段:t_group_order.platform_id
      *
-     * @return t_group_order.platform_id,
+     * @return t_group_order.platform_id, 
      */
     public Integer getPlatform_id() {
         return platform_id;
@@ -213,34 +208,16 @@ public class GroupOrder implements Serializable {
     /**
      * 设置  字段:t_group_order.platform_id
      *
-     * @param platform_id t_group_order.platform_id,
+     * @param platform_id t_group_order.platform_id, 
      */
     public void setPlatform_id(Integer platform_id) {
         this.platform_id = platform_id;
     }
 
     /**
-     * 获取  字段:t_group_order.platformprod_id
-     *
-     * @return t_group_order.platformprod_id,
-     */
-    public Integer getPlatformprod_id() {
-        return platformprod_id;
-    }
-
-    /**
-     * 设置  字段:t_group_order.platformprod_id
-     *
-     * @param platformprod_id t_group_order.platformprod_id,
-     */
-    public void setPlatformprod_id(Integer platformprod_id) {
-        this.platformprod_id = platformprod_id;
-    }
-
-    /**
      * 获取  字段:t_group_order.supply_id
      *
-     * @return t_group_order.supply_id,
+     * @return t_group_order.supply_id, 
      */
     public Integer getSupply_id() {
         return supply_id;
@@ -249,7 +226,7 @@ public class GroupOrder implements Serializable {
     /**
      * 设置  字段:t_group_order.supply_id
      *
-     * @param supply_id t_group_order.supply_id,
+     * @param supply_id t_group_order.supply_id, 
      */
     public void setSupply_id(Integer supply_id) {
         this.supply_id = supply_id;
@@ -258,7 +235,7 @@ public class GroupOrder implements Serializable {
     /**
      * 获取  字段:t_group_order.ticketsys_id
      *
-     * @return t_group_order.ticketsys_id,
+     * @return t_group_order.ticketsys_id, 
      */
     public Integer getTicketsys_id() {
         return ticketsys_id;
@@ -267,7 +244,7 @@ public class GroupOrder implements Serializable {
     /**
      * 设置  字段:t_group_order.ticketsys_id
      *
-     * @param ticketsys_id t_group_order.ticketsys_id,
+     * @param ticketsys_id t_group_order.ticketsys_id, 
      */
     public void setTicketsys_id(Integer ticketsys_id) {
         this.ticketsys_id = ticketsys_id;
@@ -276,7 +253,7 @@ public class GroupOrder implements Serializable {
     /**
      * 获取  字段:t_group_order.platformOrderId
      *
-     * @return t_group_order.platformOrderId,
+     * @return t_group_order.platformOrderId, 
      */
     public String getPlatformOrderId() {
         return platformOrderId;
@@ -285,7 +262,7 @@ public class GroupOrder implements Serializable {
     /**
      * 设置  字段:t_group_order.platformOrderId
      *
-     * @param platformOrderId t_group_order.platformOrderId,
+     * @param platformOrderId t_group_order.platformOrderId, 
      */
     public void setPlatformOrderId(String platformOrderId) {
         this.platformOrderId = platformOrderId == null ? null : platformOrderId.trim();
@@ -294,7 +271,7 @@ public class GroupOrder implements Serializable {
     /**
      * 获取  字段:t_group_order.platformProdId
      *
-     * @return t_group_order.platformProdId,
+     * @return t_group_order.platformProdId, 
      */
     public Integer getPlatformProdId() {
         return platformProdId;
@@ -303,7 +280,7 @@ public class GroupOrder implements Serializable {
     /**
      * 设置  字段:t_group_order.platformProdId
      *
-     * @param platformProdId t_group_order.platformProdId,
+     * @param platformProdId t_group_order.platformProdId, 
      */
     public void setPlatformProdId(Integer platformProdId) {
         this.platformProdId = platformProdId;
@@ -312,7 +289,7 @@ public class GroupOrder implements Serializable {
     /**
      * 获取  字段:t_group_order.supplyOrderId
      *
-     * @return t_group_order.supplyOrderId,
+     * @return t_group_order.supplyOrderId, 
      */
     public String getSupplyOrderId() {
         return supplyOrderId;
@@ -321,7 +298,7 @@ public class GroupOrder implements Serializable {
     /**
      * 设置  字段:t_group_order.supplyOrderId
      *
-     * @param supplyOrderId t_group_order.supplyOrderId,
+     * @param supplyOrderId t_group_order.supplyOrderId, 
      */
     public void setSupplyOrderId(String supplyOrderId) {
         this.supplyOrderId = supplyOrderId == null ? null : supplyOrderId.trim();
@@ -330,7 +307,7 @@ public class GroupOrder implements Serializable {
     /**
      * 获取  字段:t_group_order.supplyProdId
      *
-     * @return t_group_order.supplyProdId,
+     * @return t_group_order.supplyProdId, 
      */
     public Integer getSupplyProdId() {
         return supplyProdId;
@@ -339,7 +316,7 @@ public class GroupOrder implements Serializable {
     /**
      * 设置  字段:t_group_order.supplyProdId
      *
-     * @param supplyProdId t_group_order.supplyProdId,
+     * @param supplyProdId t_group_order.supplyProdId, 
      */
     public void setSupplyProdId(Integer supplyProdId) {
         this.supplyProdId = supplyProdId;
@@ -348,7 +325,7 @@ public class GroupOrder implements Serializable {
     /**
      * 获取  字段:t_group_order.formAreaCode
      *
-     * @return t_group_order.formAreaCode,
+     * @return t_group_order.formAreaCode, 
      */
     public String getFormAreaCode() {
         return formAreaCode;
@@ -357,7 +334,7 @@ public class GroupOrder implements Serializable {
     /**
      * 设置  字段:t_group_order.formAreaCode
      *
-     * @param formAreaCode t_group_order.formAreaCode,
+     * @param formAreaCode t_group_order.formAreaCode, 
      */
     public void setFormAreaCode(String formAreaCode) {
         this.formAreaCode = formAreaCode == null ? null : formAreaCode.trim();
@@ -366,7 +343,7 @@ public class GroupOrder implements Serializable {
     /**
      * 获取  字段:t_group_order.formAddr
      *
-     * @return t_group_order.formAddr,
+     * @return t_group_order.formAddr, 
      */
     public String getFormAddr() {
         return formAddr;
@@ -375,7 +352,7 @@ public class GroupOrder implements Serializable {
     /**
      * 设置  字段:t_group_order.formAddr
      *
-     * @param formAddr t_group_order.formAddr,
+     * @param formAddr t_group_order.formAddr, 
      */
     public void setFormAddr(String formAddr) {
         this.formAddr = formAddr == null ? null : formAddr.trim();
@@ -384,7 +361,7 @@ public class GroupOrder implements Serializable {
     /**
      * 获取  字段:t_group_order.travelName
      *
-     * @return t_group_order.travelName,
+     * @return t_group_order.travelName, 
      */
     public String getTravelName() {
         return travelName;
@@ -393,7 +370,7 @@ public class GroupOrder implements Serializable {
     /**
      * 设置  字段:t_group_order.travelName
      *
-     * @param travelName t_group_order.travelName,
+     * @param travelName t_group_order.travelName, 
      */
     public void setTravelName(String travelName) {
         this.travelName = travelName == null ? null : travelName.trim();
@@ -402,7 +379,7 @@ public class GroupOrder implements Serializable {
     /**
      * 获取  字段:t_group_order.manager
      *
-     * @return t_group_order.manager,
+     * @return t_group_order.manager, 
      */
     public String getManager() {
         return manager;
@@ -411,7 +388,7 @@ public class GroupOrder implements Serializable {
     /**
      * 设置  字段:t_group_order.manager
      *
-     * @param manager t_group_order.manager,
+     * @param manager t_group_order.manager, 
      */
     public void setManager(String manager) {
         this.manager = manager == null ? null : manager.trim();
@@ -420,7 +397,7 @@ public class GroupOrder implements Serializable {
     /**
      * 获取  字段:t_group_order.groupNumber
      *
-     * @return t_group_order.groupNumber,
+     * @return t_group_order.groupNumber, 
      */
     public String getGroupNumber() {
         return groupNumber;
@@ -429,7 +406,7 @@ public class GroupOrder implements Serializable {
     /**
      * 设置  字段:t_group_order.groupNumber
      *
-     * @param groupNumber t_group_order.groupNumber,
+     * @param groupNumber t_group_order.groupNumber, 
      */
     public void setGroupNumber(String groupNumber) {
         this.groupNumber = groupNumber == null ? null : groupNumber.trim();
@@ -438,7 +415,7 @@ public class GroupOrder implements Serializable {
     /**
      * 获取  字段:t_group_order.guideName
      *
-     * @return t_group_order.guideName,
+     * @return t_group_order.guideName, 
      */
     public String getGuideName() {
         return guideName;
@@ -447,7 +424,7 @@ public class GroupOrder implements Serializable {
     /**
      * 设置  字段:t_group_order.guideName
      *
-     * @param guideName t_group_order.guideName,
+     * @param guideName t_group_order.guideName, 
      */
     public void setGuideName(String guideName) {
         this.guideName = guideName == null ? null : guideName.trim();
@@ -456,7 +433,7 @@ public class GroupOrder implements Serializable {
     /**
      * 获取  字段:t_group_order.guideIdNumber
      *
-     * @return t_group_order.guideIdNumber,
+     * @return t_group_order.guideIdNumber, 
      */
     public String getGuideIdNumber() {
         return guideIdNumber;
@@ -465,7 +442,7 @@ public class GroupOrder implements Serializable {
     /**
      * 设置  字段:t_group_order.guideIdNumber
      *
-     * @param guideIdNumber t_group_order.guideIdNumber,
+     * @param guideIdNumber t_group_order.guideIdNumber, 
      */
     public void setGuideIdNumber(String guideIdNumber) {
         this.guideIdNumber = guideIdNumber == null ? null : guideIdNumber.trim();
@@ -474,7 +451,7 @@ public class GroupOrder implements Serializable {
     /**
      * 获取  字段:t_group_order.guideMobile
      *
-     * @return t_group_order.guideMobile,
+     * @return t_group_order.guideMobile, 
      */
     public String getGuideMobile() {
         return guideMobile;
@@ -483,7 +460,7 @@ public class GroupOrder implements Serializable {
     /**
      * 设置  字段:t_group_order.guideMobile
      *
-     * @param guideMobile t_group_order.guideMobile,
+     * @param guideMobile t_group_order.guideMobile, 
      */
     public void setGuideMobile(String guideMobile) {
         this.guideMobile = guideMobile == null ? null : guideMobile.trim();
@@ -492,7 +469,7 @@ public class GroupOrder implements Serializable {
     /**
      * 获取  字段:t_group_order.payment
      *
-     * @return t_group_order.payment,
+     * @return t_group_order.payment, 
      */
     public Integer getPayment() {
         return payment;
@@ -501,7 +478,7 @@ public class GroupOrder implements Serializable {
     /**
      * 设置  字段:t_group_order.payment
      *
-     * @param payment t_group_order.payment,
+     * @param payment t_group_order.payment, 
      */
     public void setPayment(Integer payment) {
         this.payment = payment;
@@ -510,7 +487,7 @@ public class GroupOrder implements Serializable {
     /**
      * 获取  字段:t_group_order.payTime
      *
-     * @return t_group_order.payTime,
+     * @return t_group_order.payTime, 
      */
     public Date getPayTime() {
         return payTime;
@@ -519,7 +496,7 @@ public class GroupOrder implements Serializable {
     /**
      * 设置  字段:t_group_order.payTime
      *
-     * @param payTime t_group_order.payTime,
+     * @param payTime t_group_order.payTime, 
      */
     public void setPayTime(Date payTime) {
         this.payTime = payTime;
@@ -528,7 +505,7 @@ public class GroupOrder implements Serializable {
     /**
      * 获取  字段:t_group_order.sendType
      *
-     * @return t_group_order.sendType,
+     * @return t_group_order.sendType, 
      */
     public Integer getSendType() {
         return sendType;
@@ -537,7 +514,7 @@ public class GroupOrder implements Serializable {
     /**
      * 设置  字段:t_group_order.sendType
      *
-     * @param sendType t_group_order.sendType,
+     * @param sendType t_group_order.sendType, 
      */
     public void setSendType(Integer sendType) {
         this.sendType = sendType;
@@ -546,7 +523,7 @@ public class GroupOrder implements Serializable {
     /**
      * 获取  字段:t_group_order.validTime
      *
-     * @return t_group_order.validTime,
+     * @return t_group_order.validTime, 
      */
     public Date getValidTime() {
         return validTime;
@@ -555,7 +532,7 @@ public class GroupOrder implements Serializable {
     /**
      * 设置  字段:t_group_order.validTime
      *
-     * @param validTime t_group_order.validTime,
+     * @param validTime t_group_order.validTime, 
      */
     public void setValidTime(Date validTime) {
         this.validTime = validTime;
@@ -564,7 +541,7 @@ public class GroupOrder implements Serializable {
     /**
      * 获取  字段:t_group_order.invalidTime
      *
-     * @return t_group_order.invalidTime,
+     * @return t_group_order.invalidTime, 
      */
     public Date getInvalidTime() {
         return invalidTime;
@@ -573,7 +550,7 @@ public class GroupOrder implements Serializable {
     /**
      * 设置  字段:t_group_order.invalidTime
      *
-     * @param invalidTime t_group_order.invalidTime,
+     * @param invalidTime t_group_order.invalidTime, 
      */
     public void setInvalidTime(Date invalidTime) {
         this.invalidTime = invalidTime;
@@ -582,7 +559,7 @@ public class GroupOrder implements Serializable {
     /**
      * 获取  字段:t_group_order.activateNum
      *
-     * @return t_group_order.activateNum,
+     * @return t_group_order.activateNum, 
      */
     public Integer getActivateNum() {
         return activateNum;
@@ -591,7 +568,7 @@ public class GroupOrder implements Serializable {
     /**
      * 设置  字段:t_group_order.activateNum
      *
-     * @param activateNum t_group_order.activateNum,
+     * @param activateNum t_group_order.activateNum, 
      */
     public void setActivateNum(Integer activateNum) {
         this.activateNum = activateNum;
@@ -600,7 +577,7 @@ public class GroupOrder implements Serializable {
     /**
      * 获取  字段:t_group_order.activateStatus
      *
-     * @return t_group_order.activateStatus,
+     * @return t_group_order.activateStatus, 
      */
     public Boolean getActivateStatus() {
         return activateStatus;
@@ -609,7 +586,7 @@ public class GroupOrder implements Serializable {
     /**
      * 设置  字段:t_group_order.activateStatus
      *
-     * @param activateStatus t_group_order.activateStatus,
+     * @param activateStatus t_group_order.activateStatus, 
      */
     public void setActivateStatus(Boolean activateStatus) {
         this.activateStatus = activateStatus;
@@ -618,7 +595,7 @@ public class GroupOrder implements Serializable {
     /**
      * 获取  字段:t_group_order.price
      *
-     * @return t_group_order.price,
+     * @return t_group_order.price, 
      */
     public BigDecimal getPrice() {
         return price;
@@ -627,7 +604,7 @@ public class GroupOrder implements Serializable {
     /**
      * 设置  字段:t_group_order.price
      *
-     * @param price t_group_order.price,
+     * @param price t_group_order.price, 
      */
     public void setPrice(BigDecimal price) {
         this.price = price;
@@ -636,7 +613,7 @@ public class GroupOrder implements Serializable {
     /**
      * 获取  字段:t_group_order.number
      *
-     * @return t_group_order.number,
+     * @return t_group_order.number, 
      */
     public Integer getNumber() {
         return number;
@@ -645,7 +622,7 @@ public class GroupOrder implements Serializable {
     /**
      * 设置  字段:t_group_order.number
      *
-     * @param number t_group_order.number,
+     * @param number t_group_order.number, 
      */
     public void setNumber(Integer number) {
         this.number = number;
@@ -654,7 +631,7 @@ public class GroupOrder implements Serializable {
     /**
      * 获取  字段:t_group_order.createTime
      *
-     * @return t_group_order.createTime,
+     * @return t_group_order.createTime, 
      */
     public Date getCreateTime() {
         return createTime;
@@ -663,7 +640,7 @@ public class GroupOrder implements Serializable {
     /**
      * 设置  字段:t_group_order.createTime
      *
-     * @param createTime t_group_order.createTime,
+     * @param createTime t_group_order.createTime, 
      */
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
@@ -672,7 +649,7 @@ public class GroupOrder implements Serializable {
     /**
      * 获取  字段:t_group_order.voucherNumber
      *
-     * @return t_group_order.voucherNumber,
+     * @return t_group_order.voucherNumber, 
      */
     public String getVoucherNumber() {
         return voucherNumber;
@@ -681,7 +658,7 @@ public class GroupOrder implements Serializable {
     /**
      * 设置  字段:t_group_order.voucherNumber
      *
-     * @param voucherNumber t_group_order.voucherNumber,
+     * @param voucherNumber t_group_order.voucherNumber, 
      */
     public void setVoucherNumber(String voucherNumber) {
         this.voucherNumber = voucherNumber == null ? null : voucherNumber.trim();
@@ -690,7 +667,7 @@ public class GroupOrder implements Serializable {
     /**
      * 获取  字段:t_group_order.imgUrl
      *
-     * @return t_group_order.imgUrl,
+     * @return t_group_order.imgUrl, 
      */
     public String getImgUrl() {
         return imgUrl;
@@ -699,7 +676,7 @@ public class GroupOrder implements Serializable {
     /**
      * 设置  字段:t_group_order.imgUrl
      *
-     * @param imgUrl t_group_order.imgUrl,
+     * @param imgUrl t_group_order.imgUrl, 
      */
     public void setImgUrl(String imgUrl) {
         this.imgUrl = imgUrl == null ? null : imgUrl.trim();
@@ -708,7 +685,7 @@ public class GroupOrder implements Serializable {
     /**
      * 获取  字段:t_group_order.status
      *
-     * @return t_group_order.status,
+     * @return t_group_order.status, 
      */
     public Integer getStatus() {
         return status;
@@ -717,7 +694,7 @@ public class GroupOrder implements Serializable {
     /**
      * 设置  字段:t_group_order.status
      *
-     * @param status t_group_order.status,
+     * @param status t_group_order.status, 
      */
     public void setStatus(Integer status) {
         this.status = status;
