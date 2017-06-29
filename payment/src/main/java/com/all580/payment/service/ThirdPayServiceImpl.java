@@ -239,7 +239,8 @@ public class ThirdPayServiceImpl implements ThirdPayService {
                 result.setSuccess();
                 result.put(codeUrl);
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.warn("微信调用失败", e);
+                result.setError(e.getMessage());
             }
         } else if (PaymentConstant.PaymentType.ALI_PAY == payType) {
             String html = getAliPayService(coreEpId, payType).reqPay(ordCode, coreEpId, params);
