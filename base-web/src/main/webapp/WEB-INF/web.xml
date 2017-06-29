@@ -34,6 +34,14 @@
 		<filter-name>sessionFilter</filter-name>
 		<url-pattern>/api/*</url-pattern>
 	</filter-mapping>
+	<filter>
+		<filter-name>voucherFilter</filter-name>
+		<filter-class>com.all580.base.sign.VoucherFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>voucherFilter</filter-name>
+		<url-pattern>/voucherplatform/*</url-pattern>
+	</filter-mapping>
 	<servlet>
 		<servlet-name>mvc</servlet-name>
 		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>

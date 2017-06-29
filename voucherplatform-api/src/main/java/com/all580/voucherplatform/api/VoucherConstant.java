@@ -4,6 +4,10 @@ package com.all580.voucherplatform.api;
  * Created by Linv2 on 2017-06-06.
  */
 public class VoucherConstant {
+
+    public static final String REDISVOUCHERLOGINKEY = "VoucherLogin";
+    public static final String COOKIENAME = "vouchercookie";
+
     /**
      * 退票状态
      */
