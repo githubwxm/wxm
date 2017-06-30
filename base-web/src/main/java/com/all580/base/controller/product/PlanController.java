@@ -410,8 +410,8 @@ public class PlanController extends BaseController {
      */
     @RequestMapping(value = "sale/calendar/list")
     @ResponseBody
-    public Result<Paginator<ProductPlanInfo>> searchPlanCalendar (@RequestParam("product_sub_id") Integer productSubId, @RequestParam("start_date") String startDate, @RequestParam("end_date") String endDate, @RequestParam("record_start") Integer recordStart, @RequestParam("record_count") Integer recordCount ) {
-        return productSalesPlanService.searchPlanCalendar(DateFormatUtils.converToDateTime(startDate), DateFormatUtils.converToDateTime(endDate), productSubId, recordStart, recordCount);
+    public Result<Paginator<ProductPlanInfo>> searchPlanCalendar (Integer ep_id,@RequestParam("product_sub_id") Integer productSubId, @RequestParam("start_date") String startDate, @RequestParam("end_date") String endDate, @RequestParam("record_start") Integer recordStart, @RequestParam("record_count") Integer recordCount ) {
+        return productSalesPlanService.searchPlanCalendar(ep_id,DateFormatUtils.converToDateTime(startDate), DateFormatUtils.converToDateTime(endDate), productSubId, recordStart, recordCount);
     }
 
     /**
