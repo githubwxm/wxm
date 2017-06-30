@@ -30,7 +30,7 @@ public class UseServiceImpl implements UserService {
     public Result login(Map map) {
         String userName = CommonUtil.emptyStringParseNull(map.get("userName"));
         String passWord = CommonUtil.emptyStringParseNull(map.get("passWord"));
-        passWord = new String(DigestUtils.md5(passWord));
+        passWord = DigestUtils.md5Hex(passWord);
         //password加密
         Result result = new Result(false);
         // 先根据用户名查出用户再比对是否正确，如果直接使用用户名和密码sql查询则会导致sql注入问题。

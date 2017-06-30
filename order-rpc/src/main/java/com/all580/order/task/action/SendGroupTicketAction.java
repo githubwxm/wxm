@@ -116,7 +116,7 @@ public class SendGroupTicketAction extends BasicSyncDataEvent implements JobRunn
             sendGroupTicketParams.setPayTime(order.getPay_time());
         }
         sendGroupTicketParams.setMaProductId(orderItem.getMa_product_id());
-        sendGroupTicketParams.setSendSms(orderItem.getSend() == null || orderItem.getSend());
+        sendGroupTicketParams.setSendSms(false);
         sendGroupTicketParams.setSms(orderItem.getVoucher_msg());
         sendGroupTicketParams.setTicketMsg(orderItem.getTicket_msg());
 
