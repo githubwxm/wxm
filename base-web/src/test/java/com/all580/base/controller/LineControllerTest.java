@@ -166,5 +166,33 @@ public class LineControllerTest {
         ).andDo(print());
     }
 
+    @Test
+    public void testGetOrderDetailByNumber() throws Exception{
+        mockMvc.perform(
+                get("/api/order/query/item/get_item_detail")
+                        .param("orderSn","1498029473012180")
+                        .param("ep_type","10003")
+                        .param("ep_id","24")
+        ).andExpect(
+                status().isOk()
+        ).andExpect(
+                jsonPath("$.code", is("200"))
+        ).andDo(print());
+    }
+
+    @Test
+    public void  testPreRefundOrder() throws Exception{
+        mockMvc.perform(
+                get("/api/order/query/item/pre_refund")
+                        .param("itemSn","1498029473012180")
+                        .param("ep_type","10003")
+                        .param("ep_id","24")
+                        //.param("core_ep_id","1")
+        ).andExpect(
+                status().isOk()
+        ).andExpect(
+                jsonPath("$.code", is("200"))
+        ).andDo(print());
+    }
 
 }

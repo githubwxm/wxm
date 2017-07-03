@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.Date;
+import java.util.Map;
 
 /**
  * @author zhouxianjun(Gary)
@@ -77,18 +78,31 @@ public class QueryOrderController extends BaseController {
     public Result<PageRecord<OrderItemDto>> listOrderItems(OrderInfo orderInfo,
                                                            @RequestParam(defaultValue = "0") Integer record_start,
                                                            @RequestParam(defaultValue = "20") Integer record_count) {
+        Integer coreEpId = CommonUtil.objectParseInteger(getAttribute(EpConstant.EpKey.CORE_EP_ID));
+        orderInfo.setCore_ep_id(coreEpId);
         GernerateValidate validate = new GernerateValidate();
-        validate.addRules(new String[]{"productType","epType","epId","coreEpId"},new ValidRule[]{new ValidRule.NotNull()})
+        validate.addRules(new String[]{"productType","ep_type","ep_id","core_ep_id"},new ValidRule[]{new ValidRule.NotNull()})
                 .validate(orderInfo);
        return queryOrderService.getOrderItemList(orderInfo, record_start, record_count);
     }
 
     @RequestMapping(value = "item/get_item_detail", method = RequestMethod.GET)
     @ResponseBody
-    public Result<OrderItemDetailDto> getOrderDetailByNumber(@RequestParam("orderSn") Long orderSn,
-                                                             @RequestParam("itemSn") Long itemSn,
-                                                             @RequestParam("epType") Integer epType) {
-        return queryOrderService.getOrderDetailByNumber(orderSn, itemSn, epType);
+    public Result<OrderItemDetailDto> getOrderDetailByNumber(@RequestParam("itemSn") Long itemSn,
+                                                             @RequestParam("show_accout") Integer showAccount,
+                                                             @RequestParam("ep_type") Integer epType,
+                                                             @RequestParam("ep_id") Integer epId) {
+        Integer coreEpId = CommonUtil.objectParseInteger(getAttribute(EpConstant.EpKey.CORE_EP_ID));
+        return queryOrderService.getOrderDetailByNumber(itemSn, epType, coreEpId, epId, showAccount);
+    }
+
+    @RequestMapping(value = "item/pre_refund", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<Map> preRefundOrder(@RequestParam("itemSn") Long itemSn,
+                                      @RequestParam("ep_type") Integer epType,
+                                      @RequestParam("ep_id") Integer epId) {
+        Integer coreEpId = CommonUtil.objectParseInteger(getAttribute(EpConstant.EpKey.CORE_EP_ID));
+        return queryOrderService.preRefundOrderInfo(itemSn, epType, coreEpId, epId, ProductConstants.RefundEqType.SELLER);
     }
 
 }
