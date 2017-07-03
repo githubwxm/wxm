@@ -139,9 +139,9 @@ public class LineControllerTest {
         calendar.set(2016,4,12);
         //orderInfo.setStart(calendar.getTime());
         //orderInfo.setEnd(new Date());
-        orderInfo.setEpId(24);
-        orderInfo.setEpType(10003);
-        orderInfo.setCoreEpId(1);
+//        orderInfo.setEpId(24);
+//        orderInfo.setEpType(10003);
+//        orderInfo.setCoreEpId(1);
 //        orderInfo.setStatus(new Integer[]{110});
 //        orderInfo.setSid("1");
 //        orderInfo.setName("测试");
