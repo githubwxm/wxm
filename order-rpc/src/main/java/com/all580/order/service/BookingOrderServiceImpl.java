@@ -110,7 +110,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         List<ProductSearchParams> lockParams = new ArrayList<>();
         ValidateProductSub first = null;
         for (Map item : items) {
-            ValidateProductSub sub = orderInterface.parseItemParams(item);
+            ValidateProductSub sub = orderInterface.parseItemParams(createOrder, item);
             if (first == null) first = sub;
             ProductSalesInfo salesInfo = orderInterface.validateProductAndGetSales(sub, createOrder, item);
 

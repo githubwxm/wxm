@@ -168,5 +168,10 @@
 
     <dubbo:reference id="userService" interface="com.all580.voucherplatform.api.service.UserService"/>
     <dubbo:reference id="qrService" interface="com.all580.voucherplatform.api.service.QrService"/>
+    <dubbo:reference id="templateService" interface="com.all580.voucherplatform.api.service.TemplateService"/>
+    <dubbo:reference id="supplyService" interface="com.all580.voucherplatform.api.service.SupplyService"/>
+    <dubbo:reference id="platformService" interface="com.all580.voucherplatform.api.service.PlatformService"/>
+    <dubbo:reference id="voucherOrderService" interface="com.all580.voucherplatform.api.service.OrderService"/>
+
     <dubbo:reference id="all580Service" interface="com.all580.voucherplatform.api.service.All580Service"/>
 </beans>

@@ -4,15 +4,14 @@ package com.all580.voucherplatform.manager.order;
  * Created by Linv2 on 2017-06-05.
  */
 
-import com.all580.voucherplatform.adapter.AdapterLoadder;
+import com.all580.voucherplatform.adapter.AdapterLoader;
 import com.all580.voucherplatform.adapter.supply.SupplyAdapterService;
 import com.all580.voucherplatform.api.VoucherConstant;
-import com.all580.voucherplatform.dao.*;
-import com.all580.voucherplatform.entity.GroupOrder;
+import com.all580.voucherplatform.dao.OrderMapper;
+import com.all580.voucherplatform.dao.RefundMapper;
 import com.all580.voucherplatform.entity.Order;
 import com.all580.voucherplatform.entity.Refund;
-import com.all580.voucherplatform.entity.Supply;
-import com.all580.voucherplatform.utils.sign.async.AsyncService;
+import com.all580.voucherplatform.utils.async.AsyncService;
 import com.framework.common.lang.UUIDGenerator;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -32,18 +31,13 @@ public class RefundApplyManager {
     @Autowired
     private OrderMapper orderMapper;
     @Autowired
-    private GroupOrderMapper groupOrderMapper;
-    @Autowired
     private RefundMapper refundMapper;
     @Autowired
-    private AdapterLoadder adapterLoadder;
-
+    private AdapterLoader adapterLoader;
     @Autowired
     private AsyncService asyncService;
 
     private Order order;
-    private GroupOrder groupOrder;
-    private Integer prodType = VoucherConstant.ProdType.GENERAL;
 
     public RefundApplyManager() {}
 
@@ -67,32 +61,10 @@ public class RefundApplyManager {
         this.order = orderMapper.selectByPlatform(platformId, platformOrderCode, seqId);
     }
 
-    public void setGroupOrder(Integer platformId, String platformOrderCode) {
-        prodType = VoucherConstant.ProdType.GROUP;
-        this.groupOrder = groupOrderMapper.selectByPlatform(platformId, platformOrderCode);
-    }
 
     public void apply(String refId, Integer refNumber, Date refTime, String refReason) throws Exception {
-        if (prodType == VoucherConstant.ProdType.GENERAL) {
-            if (order == null) {
-                throw new Exception("订单不存在");
-            }
-        } else {
-            if (groupOrder == null) {
-                throw new Exception("订单不存在");
-            }
-        }
-        if (StringUtils.isEmpty(refId)) {
-            throw new IllegalArgumentException("无效的退票流水号");
-        }
-        if (refNumber == null || refNumber < 1) {
-            throw new IllegalArgumentException("无效的退票数量");
-        }
-        Refund refund = refundMapper.selectBySeqId(null, null, order.getPlatform_id(), refId, prodType);
-        if (refund != null) {
-            throw new Exception("重复的退票操作请求");
-        }
-        refund = new Refund();
+        checkRef(refId, refNumber);
+        Refund refund = new Refund();
         refund.setRefundCode(String.valueOf(UUIDGenerator.generateUUID()));
         refund.setOrder_id(order.getId());
         refund.setOrder_code(order.getOrderCode());
@@ -106,29 +78,50 @@ public class RefundApplyManager {
         refund.setSupply_id(order.getSupply_id());
         refund.setSupplyprod_id(order.getSupplyProdId());
         refund.setCreateTime(new Date());
-        refund.setProdType(prodType);
+        refund.setProdType(VoucherConstant.ProdType.GENERAL);
         refundMapper.insertSelective(refund);
-        if (prodType == VoucherConstant.ProdType.GENERAL) {
-            Order updateOrder = new Order();
-            updateOrder.setId(order.getId());
-            updateOrder.setRefunding(order.getRefunding() + refund.getRefNumber());
-            orderMapper.updateByPrimaryKeySelective(updateOrder);
-        }
-        notifySupply(order.getSupply_id(), refund.getId(), prodType);
+        Order updateOrder = new Order();
+        updateOrder.setId(order.getId());
+        updateOrder.setRefunding(order.getRefunding() + refund.getRefNumber());
+        orderMapper.updateByPrimaryKeySelective(updateOrder);
+
+        notifySupply(order.getTicketsys_id(), refund.getId());
 
     }
 
-    private void notifySupply(final Integer supplyId, final Integer refundId, final Integer prodType) {
+
+    private void checkRef(String refId, Integer refNumber) throws Exception {
+        if (order == null) {
+            throw new Exception("订单不存在");
+        }
+        if (StringUtils.isEmpty(refId)) {
+            throw new IllegalArgumentException("无效的退票流水号");
+        }
+        if (refNumber == null || refNumber < 1) {
+            throw new IllegalArgumentException("无效的退票数量");
+        }
+        Refund refund = refundMapper.selectBySeqId(null, null, order.getPlatform_id(), refId, VoucherConstant.ProdType.GENERAL);
+        if (refund != null) {
+            throw new Exception("重复的退票操作请求");
+        }
+        refund = new Refund();
+        refund.setOrder_id(order.getId());
+        refund.setPlatformprod_id(order.getPlatform_id());
+        refund.setOrder_code(order.getOrderCode());
+        refund.setProdType(VoucherConstant.ProdType.GENERAL);
+        refund.setRefStatus(VoucherConstant.RefundStatus.WAIT_CONFIRM);
+        if (refundMapper.selectCount(refund) > 0) {
+            throw new Exception("当前存在未处理的退票");
+        }
+    }
+
+    private void notifySupply(final Integer ticketSysId, final Integer refundId) {
         asyncService.run(new Runnable() {
             @Override
             public void run() {
-                SupplyAdapterService supplyAdapterService = adapterLoadder.getSupplyAdapterService(supplyId);
+                SupplyAdapterService supplyAdapterService = adapterLoader.getSupplyAdapterService(ticketSysId);
                 if (supplyAdapterService != null) {
-                    if (prodType == VoucherConstant.ProdType.GENERAL) {
-                        supplyAdapterService.refund(refundId);
-                    } else {
-                        supplyAdapterService.refundGroup(refundId);
-                    }
+                    supplyAdapterService.refund(refundId);
                 }
             }
         });

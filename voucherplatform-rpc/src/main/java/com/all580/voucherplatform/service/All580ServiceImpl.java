@@ -1,6 +1,6 @@
 package com.all580.voucherplatform.service;
 
-import com.all580.voucherplatform.adapter.AdapterLoadder;
+import com.all580.voucherplatform.adapter.AdapterLoader;
 import com.all580.voucherplatform.adapter.platform.PlatformAdapterService;
 import com.all580.voucherplatform.adapter.supply.SupplyAdapterService;
 import com.all580.voucherplatform.api.service.All580Service;
@@ -14,7 +14,6 @@ import com.all580.voucherplatform.utils.sign.SignService;
 import com.framework.common.Result;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.util.CommonUtil;
-import com.sun.jdi.request.StepRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,7 +32,7 @@ import java.util.Map;
 public class All580ServiceImpl implements All580Service {
 
     @Autowired
-    private AdapterLoadder adapterLoadder;
+    private AdapterLoader adapterLoader;
     @Autowired
     private PlatformMapper platformMapper;
     @Autowired
@@ -48,13 +47,14 @@ public class All580ServiceImpl implements All580Service {
         String signed = CommonUtil.objectParseString(map.get("signed"));
         String content = CommonUtil.objectParseString(map.get("content"));
         Map mapContent = getMapFormContent(content);
+        log.debug("identity={},action={},content={},signed={}", new Object[]{identity, action, content, signed});
         Platform platform = platformMapper.selectByPrimaryKey(identity);
         if (platform == null) {
             return new Result(false, "身份数据校检失败");
         } else if (!checkSign(platform.getSignType(), platform.getPublicKey(), platform.getPrivateKey(), content, signed)) {
             return new Result(false, "签名数据校检失败");
         }
-        PlatformAdapterService platformAdapterService = adapterLoadder.getPlatformAdapterService(platform);
+        PlatformAdapterService platformAdapterService = adapterLoader.getPlatformAdapterService(platform);
         return platformAdapterService.process(action, platform, mapContent);
     }
 
@@ -65,6 +65,7 @@ public class All580ServiceImpl implements All580Service {
         String signed = CommonUtil.objectParseString(map.get("signed"));
         String content = CommonUtil.objectParseString(map.get("content"));
         Map mapContent = getMapFormContent(content);
+        log.debug("identity={},action={},content={},signed={}", new Object[]{identity, action, content, signed});
         if (identity == 139) {
             identity = 2;
         }
@@ -72,9 +73,9 @@ public class All580ServiceImpl implements All580Service {
         if (supply == null) {
             return new Result(false, "身份数据校检失败");
         } else if (!checkSign(supply.getSignType(), supply.getPublicKey(), supply.getPrivateKey(), content, signed)) {
-           // return new Result(false, "签名数据校检失败");
+            // return new Result(false, "签名数据校检失败");
         }
-        SupplyAdapterService supplyAdapterService = adapterLoadder.getSupplyAdapterService(supply);
+        SupplyAdapterService supplyAdapterService = adapterLoader.getSupplyAdapterService(supply);
         return supplyAdapterService.process(action, supply, mapContent);
     }
 

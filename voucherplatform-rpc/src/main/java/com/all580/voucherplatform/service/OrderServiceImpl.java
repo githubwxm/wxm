@@ -31,21 +31,8 @@ public class OrderServiceImpl implements OrderService {
     ApplicationContext applicationContext;
 
     @Override
-    public Result createOrder(Integer platformId, Map map) {
-        CreateOrderManager createOrderManager = applicationContext.getBean(CreateOrderManager.class);
-        try {
-            createOrderManager.setProd(platformId, map);
-            createOrderManager.setVisitor((List<Map>) map.get("visitor"));
-            createOrderManager.saveOrder();
-        } catch (Exception ex) {
-            throw new ApiException(ex.getMessage(), ex);
-        }
-        return new Result(true);
-    }
-
-    @Override
     public Result getOrder(int id) {
-        Result result = new Result();
+        Result result = new Result(true);
         Order order = orderMapper.selectByPrimaryKey(id);
         if (order != null) {
             result.put(order);
@@ -55,8 +42,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Result getOrder(String orderCode) {
-
-        Result result = new Result();
+        Result result = new Result(true);
         Order order = orderMapper.selectByOrderCode(orderCode);
         if (order != null) {
             result.put(order);
@@ -64,23 +50,14 @@ public class OrderServiceImpl implements OrderService {
         return result;
     }
 
+
     @Override
-    public Result getOrder(int platformId, String platformOrderId) {
-        return null;
+    public int getOrderCount(Integer platformId, Integer supplyId, String orderCode, String platformOrderId, String mobile, String idNumber, String voucherNumber, Integer status, Date startTime, Date endTime) {
+        return orderMapper.getOrderCount(platformId, supplyId, orderCode, platformOrderId, mobile, idNumber, voucherNumber, status, startTime, endTime);
     }
 
     @Override
-    public Result updateOrder(Map map) {
-        return null;
-    }
-
-    @Override
-    public int getOrderCount(Integer platformId, Integer supplierId, String orderCode, String platformOrderId, String mobile, String idNumber, String voucherNumber, Integer status, Date startTime, Date endTime) {
-        return orderMapper.getOrderCount(platformId, supplierId, orderCode, platformOrderId, mobile, idNumber, voucherNumber, status, startTime, endTime);
-    }
-
-    @Override
-    public List<Map> getOrderList(Integer platformId, Integer supplierId, String orderCode, String platformOrderId, String mobile, String idNumber, String voucherNumber, Integer status, Date startTime, Date endTime, Integer recordStart, Integer recordCount) {
-        return orderMapper.getOrderList(platformId, supplierId, orderCode, platformOrderId, mobile, idNumber, voucherNumber, status, startTime, endTime, recordStart, recordCount);
+    public List<Map> getOrderList(Integer platformId, Integer supplyId, String orderCode, String platformOrderId, String mobile, String idNumber, String voucherNumber, Integer status, Date startTime, Date endTime, Integer recordStart, Integer recordCount) {
+        return orderMapper.getOrderList(platformId, supplyId, orderCode, platformOrderId, mobile, idNumber, voucherNumber, status, startTime, endTime, recordStart, recordCount);
     }
 }

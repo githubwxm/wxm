@@ -7,7 +7,6 @@ import com.framework.common.BaseController;
 import com.framework.common.Result;
 import com.framework.common.util.CommonUtil;
 import com.framework.common.validate.ParamsMapValidate;
-import com.framework.common.validate.ValidRule;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -63,7 +62,7 @@ public class EpController extends BaseController {
     @ResponseBody
     public Result<Map<String,Object>> update(@RequestBody Map<String,Object> map) {
         // 验证参数
-        ParamsMapValidate.validate(map, generateCreateEpValidate());
+        ParamsMapValidate.validate(map, platfromValidateManager.generateCreateEpValidate());
         Integer ep_type=CommonUtil.objectParseInteger(map.get("ep_type"));
         if(!EpConstant.EpType.PLATFORM.equals(ep_type)){
             //  "creator_ep_id", ep_type
@@ -193,32 +192,6 @@ public class EpController extends BaseController {
    }
 
 
-    public Map<String[], ValidRule[]> generateCreateEpValidate() {
-        Map<String[], ValidRule[]> rules = new HashMap<>();
-        // 校验不为空的参数
-        rules.put(new String[]{
-                "name", // 企业中文名
-                "code", // '企业组织机构代码',
-                // "logo_pic", // '企业组织机构代码',
-                "license", // 营业证编号
-                "linkman", // 企业联系人姓名
-                "link_phone", // 企业联系人电话
-                "province", // 企业省
-                "city", // 市
-                "area", // 区
-                "address", // 详细地址
-        }, new ValidRule[]{new ValidRule.NotNull()});
 
-//        // 校验整数
-        rules.put(new String[]{
-                "province", // 企业省
-                "city", // 市
-                "area", // 区
-        }, new ValidRule[]{new ValidRule.Digits()});
-        rules.put(new String[]{
-                "link_phone", // 订单联系人手机号码
-        }, new ValidRule[]{new ValidRule.Pattern(ValidRule.MOBILE_PHONE)});
-        return rules;
-    }
 
 }

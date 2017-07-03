@@ -1,13 +1,12 @@
 package com.all580.voucherplatform.manager.order.grouporder;
 
-import com.all580.voucherplatform.adapter.AdapterLoadder;
+import com.all580.voucherplatform.adapter.AdapterLoader;
 import com.all580.voucherplatform.adapter.supply.SupplyAdapterService;
 import com.all580.voucherplatform.dao.GroupOrderMapper;
 import com.all580.voucherplatform.dao.GroupVisitorMapper;
 import com.all580.voucherplatform.entity.GroupOrder;
 import com.all580.voucherplatform.entity.GroupVisitor;
-import com.all580.voucherplatform.entity.Supply;
-import com.all580.voucherplatform.utils.sign.async.AsyncService;
+import com.all580.voucherplatform.utils.async.AsyncService;
 import com.framework.common.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +29,7 @@ public class UpdateGroupOrderManager {
     @Autowired
     public GroupVisitorMapper groupVisitorMapper;
     @Autowired
-    private AdapterLoadder adapterLoadder;
+    private AdapterLoader adapterLoader;
     @Autowired
     private AsyncService asyncService;
 
@@ -75,14 +74,14 @@ public class UpdateGroupOrderManager {
             groupVisitorMapper.updateByVisitorSeqId(visitor);
             seqIdList[i] = visitor.getSeqId();
         }
-        notifySupply(order.getSupply_id(), order.getId(), seqIdList);
+        notifySupply(order.getTicketsys_id(), order.getId(), seqIdList);
     }
 
-    private void notifySupply(final Integer supplyId, final Integer groupId, final String... seqId) {
+    private void notifySupply(final Integer ticketSysId, final Integer groupId, final String... seqId) {
         asyncService.run(new Runnable() {
             @Override
             public void run() {
-                SupplyAdapterService supplyAdapterService = adapterLoadder.getSupplyAdapterService(supplyId);
+                SupplyAdapterService supplyAdapterService = adapterLoader.getSupplyAdapterService(ticketSysId);
                 if (supplyAdapterService != null) {
                     supplyAdapterService.updateGroup(groupId, seqId);
                 }

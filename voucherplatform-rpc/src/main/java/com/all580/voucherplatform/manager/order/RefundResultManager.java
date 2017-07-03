@@ -1,15 +1,15 @@
 package com.all580.voucherplatform.manager.order;
 
-import com.all580.voucherplatform.adapter.AdapterLoadder;
+import com.all580.voucherplatform.adapter.AdapterLoader;
 import com.all580.voucherplatform.adapter.platform.PlatformAdapterService;
 import com.all580.voucherplatform.api.VoucherConstant;
 import com.all580.voucherplatform.dao.GroupOrderMapper;
 import com.all580.voucherplatform.dao.OrderMapper;
 import com.all580.voucherplatform.dao.RefundMapper;
-import com.all580.voucherplatform.entity.GroupOrder;
 import com.all580.voucherplatform.entity.Order;
 import com.all580.voucherplatform.entity.Refund;
-import com.all580.voucherplatform.utils.sign.async.AsyncService;
+import com.all580.voucherplatform.utils.async.AsyncService;
+import com.framework.common.lang.UUIDGenerator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -32,13 +32,13 @@ public class RefundResultManager {
     private GroupOrderMapper groupOrderMapper;
 
     @Autowired
-    private AdapterLoadder adapterLoadder;
+    private AdapterLoader adapterLoader;
     @Autowired
     private AsyncService asyncService;
 
     private Order order;
-    private GroupOrder groupOrder;
     private Refund refund;
+
 
     public void setRefund(String voucherRefCode) throws Exception {
         refund = refundMapper.selectByRefCode(voucherRefCode);
@@ -48,8 +48,16 @@ public class RefundResultManager {
 
     }
 
-    public void setRefund(Integer platformId, String platformRefId, int prodType) throws Exception {
-        refund = refundMapper.selectBySeqId(null, null, platformId, platformRefId, prodType);
+    public void setRefund(Integer refundId) throws Exception {
+        refund = refundMapper.selectByPrimaryKey(refundId);
+        if (refund != null) {
+            checkRefund();
+        }
+
+    }
+
+    public void setRefund(Integer platformId, String platformRefId) throws Exception {
+        refund = refundMapper.selectBySeqId(null, null, platformId, platformRefId, VoucherConstant.ProdType.GENERAL);
         checkRefund();
     }
 
@@ -60,10 +68,26 @@ public class RefundResultManager {
         if (refund.getRefStatus() != VoucherConstant.RefundStatus.WAIT_CONFIRM) {
             throw new Exception("当前退票请求已处理");
         }
-        if (refund.getProdType() == VoucherConstant.ProdType.GENERAL) {
-            order = orderMapper.selectByPrimaryKey(refund.getOrder_id());
-        } else if (refund.getProdType() == VoucherConstant.ProdType.GROUP) {
-            groupOrder = groupOrderMapper.selectByPrimaryKey(refund.getOrder_id());
+
+        order = orderMapper.selectByPrimaryKey(refund.getOrder_id());
+    }
+
+    /**
+     * 根据订单状态剩余数量自动处理退票
+     * 基本上是POS专用的接口
+     *
+     * @throws Exception
+     */
+    public void automatic() throws Exception {
+        Integer number = order.getNumber();
+        Integer consume = order.getConsume() == null ? 0 : order.getConsume();
+        Integer refunded = order.getRefund() == null ? 0 : order.getRefund();
+        Integer reverse = order.getReverse() == null ? order.getReverse() : order.getReverse();
+        Integer validNum = number - consume - refunded + reverse;
+        if (validNum >= refund.getRefNumber()) {
+            refundSuccess(String.valueOf(UUIDGenerator.generateUUID()), new Date());
+        } else {
+            refundFail();
         }
     }
 
@@ -75,15 +99,16 @@ public class RefundResultManager {
         refundUpdate.setSupplyRefSeqId(supplyRefId);
         refundUpdate.setSuccessTime(procTime);
         refundMapper.updateByPrimaryKeySelective(refundUpdate);
+
         if (refund.getProdType() == VoucherConstant.ProdType.GENERAL) {
             Order updateOrder = new Order();
             updateOrder.setId(order.getId());
-            updateOrder.setRefunding((updateOrder.getRefunding() == null ? 0 : updateOrder.getRefunding()) - refund.getRefNumber());
-            updateOrder.setRefund((updateOrder.getRefund() == null ? 0 : updateOrder.getRefund()) + refund.getRefNumber());
+            updateOrder.setRefunding((order.getRefunding() == null ? 0 : order.getRefunding()) - refund.getRefNumber());
+            updateOrder.setRefund((order.getRefund() == null ? 0 : order.getRefund()) + refund.getRefNumber());
             orderMapper.updateByPrimaryKeySelective(updateOrder);
         }
 
-        notifyPlatform(order.getPlatform_id(), refund.getId(), refund.getProdType());
+        notifyPlatform(order.getPlatform_id(), refund.getId());
     }
 
     public void refundFail() {
@@ -98,20 +123,16 @@ public class RefundResultManager {
             updateOrder.setRefunding((updateOrder.getRefunding() == null ? 0 : updateOrder.getRefunding()) - refund.getRefNumber());
             orderMapper.updateByPrimaryKeySelective(updateOrder);
         }
-        notifyPlatform(order.getPlatform_id(), refund.getId(), refund.getProdType());
+        notifyPlatform(order.getPlatform_id(), refund.getId());
     }
 
-    public void notifyPlatform(final Integer platformId, final Integer refundId, final Integer prodType) {
+    public void notifyPlatform(final Integer platformId, final Integer refundId) {
         asyncService.run(new Runnable() {
             @Override
             public void run() {
-                PlatformAdapterService platformAdapterService = adapterLoadder.getPlatformAdapterService(platformId);
+                PlatformAdapterService platformAdapterService = adapterLoader.getPlatformAdapterService(platformId);
                 if (platformAdapterService != null) {
-                    if (prodType == VoucherConstant.ProdType.GENERAL) {
-                        platformAdapterService.refundOrder(refundId);
-                    } else {
-                        platformAdapterService.refundGroup(refundId);
-                    }
+                    platformAdapterService.refundOrder(refundId);
                 }
             }
         });
@@ -120,6 +141,7 @@ public class RefundResultManager {
     public Order getOrder() {
         return order;
     }
+
 
     public Refund getRefund() {
         return refund;

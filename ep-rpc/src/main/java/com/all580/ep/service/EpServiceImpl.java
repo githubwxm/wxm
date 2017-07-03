@@ -8,6 +8,8 @@ import com.all580.ep.com.Common;
 import com.all580.ep.dao.CoreEpAccessMapper;
 import com.all580.ep.dao.EpMapper;
 import com.all580.ep.dao.EpParamMapper;
+import com.all580.ep.dao.EpSendVoucherMapper;
+import com.all580.ep.entity.EpSendVoucher;
 import com.all580.manager.SyncEpData;
 import com.all580.notice.api.conf.SmsType;
 import com.all580.notice.api.service.SmsService;
@@ -42,6 +44,8 @@ public class EpServiceImpl implements EpService {
     @Autowired
     private EpMapper epMapper;
 
+    @Autowired
+    private EpSendVoucherMapper epSendVoucherMapper;
     @Autowired
     private EpParamMapper epParamMapper;
 
@@ -307,7 +311,12 @@ public class EpServiceImpl implements EpService {
         String ep_class = (String) map.get("ep_class");//企业分类
         Object groupName;
         try {
-             groupName = planGroupService.searchPlanGroupById(group_id).get().get("name");
+            if(group_id==null){
+                groupName=null;
+            }else{
+                groupName = planGroupService.searchPlanGroupById(group_id).get().get("name");
+            }
+
             // String groupName="固定分组";
 
             map.put("group_name", groupName);
@@ -1117,7 +1126,21 @@ public class EpServiceImpl implements EpService {
         result.put(epMapper.selectTypeName(map));
         return result;
     }
-//
+
+    @Override
+    public Result<Boolean> isSendVoucher(int epId, int coreEpId) {
+        Result<Boolean> result = new Result<>(true);
+        EpSendVoucher sendVoucher = epSendVoucherMapper.selectByEp(epId, coreEpId);
+        result.put(sendVoucher == null || sendVoucher.getSend_voucher() == null ? true : sendVoucher.getSend_voucher());
+        return result;
+    }
+
+    @Override
+    public Result<?> heartbeat() {
+        return new Result<>(true);
+    }
+
+    //
 //
 //    /**
 //     * 同步数据
