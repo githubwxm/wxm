@@ -131,13 +131,9 @@ public class PlatformServiceImpl implements PlatformService {
     }
 
     @Override
-    public Result getPlatform(Integer id) {
-        Result result = new Result(false);
+    public Map getPlatform(Integer id) {
         Platform platform = platformMapper.selectByPrimaryKey(id);
-        if (platform != null) {
-            result.put(JsonUtils.obj2map(platform));
-        }
-        return result;
+        return JsonUtils.obj2map(platform);
     }
 
     @Override
@@ -173,13 +169,9 @@ public class PlatformServiceImpl implements PlatformService {
 
 
     @Override
-    public Result getProd(int prodId) {
-        Result result = new Result(true);
+    public Map getProd(int prodId) {
         PlatformProduct platformProduct = prodMapper.selectByPrimaryKey(prodId);
-        if (platformProduct != null) {
-            result.put(JsonUtils.obj2map(platformProduct));
-        }
-        return result;
+        return JsonUtils.obj2map(platformProduct);
     }
 
     @Override
@@ -193,13 +185,13 @@ public class PlatformServiceImpl implements PlatformService {
     }
 
     @Override
-    public int getProdCount(String name, Integer platformId, Integer supplyId, Integer supplyprodId, Integer productTypeId) {
-        return prodMapper.getProdCount(name, platformId, supplyId, supplyprodId, productTypeId);
+    public int getProdCount(String name, Integer platformId, Integer supplyId, Integer supplyprodId, String platformProdCode, Integer productTypeId) {
+        return prodMapper.getProdCount(name, platformId, supplyId, supplyprodId, platformProdCode, productTypeId);
     }
 
     @Override
-    public List<Map> getProdList(String name, Integer platformId, Integer supplyId, Integer supplyprodId, Integer productTypeId, Integer recordStart, Integer recordCount) {
-        return prodMapper.getProdList(name, platformId, supplyId, supplyprodId, productTypeId, recordStart, recordCount);
+    public List<Map> getProdList(String name, Integer platformId, Integer supplyId, Integer supplyprodId, String platformProdCode, Integer productTypeId, Integer recordStart, Integer recordCount) {
+        return prodMapper.getProdList(name, platformId, supplyId, supplyprodId, platformProdCode, productTypeId, recordStart, recordCount);
     }
 
     @Override

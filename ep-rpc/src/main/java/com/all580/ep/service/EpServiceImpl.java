@@ -1135,6 +1135,11 @@ public class EpServiceImpl implements EpService {
         return result;
     }
 
+    @Override
+    public Result<?> heartbeat() {
+        return new Result<>(true);
+    }
+
     //
 //
 //    /**

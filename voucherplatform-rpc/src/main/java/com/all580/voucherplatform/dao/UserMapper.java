@@ -46,5 +46,5 @@ public interface UserMapper {
      */
     int updateByPrimaryKey(User record);
 
-    User selectByName(@Param("selectByName") String userName);
+    User selectByName(@Param("userName") String userName);
 }

@@ -31,6 +31,7 @@ public abstract class AbstractProcessorAdapter<Identity> {
         Result result = new Result(false);
         ProcessorService processorService = processMapper.get(action);
         if (processorService == null) {
+            log.debug("未实现的ACTION=" + action);
             result.setError("未实现的ACTION=" + action);
         } else {
             result.setSuccess(true);

@@ -47,6 +47,7 @@ public class All580ServiceImpl implements All580Service {
         String signed = CommonUtil.objectParseString(map.get("signed"));
         String content = CommonUtil.objectParseString(map.get("content"));
         Map mapContent = getMapFormContent(content);
+        log.debug("identity={},action={},content={},signed={}", new Object[]{identity, action, content, signed});
         Platform platform = platformMapper.selectByPrimaryKey(identity);
         if (platform == null) {
             return new Result(false, "身份数据校检失败");
@@ -64,6 +65,7 @@ public class All580ServiceImpl implements All580Service {
         String signed = CommonUtil.objectParseString(map.get("signed"));
         String content = CommonUtil.objectParseString(map.get("content"));
         Map mapContent = getMapFormContent(content);
+        log.debug("identity={},action={},content={},signed={}", new Object[]{identity, action, content, signed});
         if (identity == 139) {
             identity = 2;
         }
@@ -71,7 +73,7 @@ public class All580ServiceImpl implements All580Service {
         if (supply == null) {
             return new Result(false, "身份数据校检失败");
         } else if (!checkSign(supply.getSignType(), supply.getPublicKey(), supply.getPrivateKey(), content, signed)) {
-           // return new Result(false, "签名数据校检失败");
+            // return new Result(false, "签名数据校检失败");
         }
         SupplyAdapterService supplyAdapterService = adapterLoader.getSupplyAdapterService(supply);
         return supplyAdapterService.process(action, supply, mapContent);

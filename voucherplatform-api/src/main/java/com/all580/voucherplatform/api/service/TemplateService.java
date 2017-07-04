@@ -15,12 +15,12 @@ public interface TemplateService {
     /**
      * 创建一个短信/打印模版
      *
-     * @param map {name:xx,sms:xx,printText:222,supplier_id:xxx,supplierproduct_id:xxx}
+     * @param map {name:xx,sms:xx,printText:222,supply_id:xxx,supplyProd_id:xxx}
      *            name    -   String  -   名称
      *            sms -   String    -  短信内容
      *            printText  -   String  -   小票打印内容
-     *            supplier_id  -   int -   供应商Id
-     *            supplierproduct_id   -   int -   供应商产品Id
+     *            supply_id  -   int -   供应商Id
+     *            supplyProd_id   -   int -   供应商产品Id
      * @return
      */
     Result create(Map map);
@@ -57,33 +57,30 @@ public interface TemplateService {
     /**
      * 根据供应商的id或产品获取一个模版
      *
-     * @param supplierId
+     * @param supplyId
      * @param prodId
      * @return
      */
-    Result get(Integer supplierId, Integer prodId);
+    Result get(Integer supplyId, Integer prodId);
 
 
     /**
      * 获取模版的总数量
      *
      * @param name
-     * @param supplierId
+     * @param supplyId
      * @param prodId
      * @param defaultOption
      * @return
      */
-    int getCount(String name, Integer supplierId, Integer prodId, Boolean defaultOption);
+    int getCount(String name, Integer supplyId, Integer prodId, Boolean defaultOption);
 
 
     /**
      * 获取模版集合
      *
      * @param name
-     * @param len
-     * @param prefix
-     * @param postfix
-     * @param supplierId
+     * @param supplyId
      * @param prodId
      * @param defaultOption
      * @param recordStart
@@ -91,10 +88,7 @@ public interface TemplateService {
      * @return
      */
     List<Map> getList(String name,
-                      Integer len,
-                      String prefix,
-                      String postfix,
-                      Integer supplierId,
+                      Integer supplyId,
                       Integer prodId,
                       Boolean defaultOption,
                       Integer recordStart,

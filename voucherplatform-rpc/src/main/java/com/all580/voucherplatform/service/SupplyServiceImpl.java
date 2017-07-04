@@ -123,7 +123,7 @@ public class SupplyServiceImpl implements SupplyService {
     }
 
     @Override
-    public Result getList(String name, Integer recordStart, Integer recordCount) {
+    public List<Map> getList(String name, Integer recordStart, Integer recordCount) {
         return null;
     }
 
@@ -135,20 +135,14 @@ public class SupplyServiceImpl implements SupplyService {
      * @return
      */
     @Override
-    public Result getProdList(int supplyId) {
-        Result result = new Result(true);
-        result.put(supplyProductMapper.getSupplyProdBySupplyId(supplyId));
-        return result;
+    public List<Map> getProdList(Integer supplyId) {
+        return supplyProductMapper.getSupplyProdBySupplyId(supplyId);
     }
 
     @Override
-    public Result getProd(int supplyId, String prodId) {
-        Result result = new Result(true);
+    public Map getProd(int supplyId, String prodId) {
         SupplyProduct supplyProduct = getProdMap(supplyId, prodId);
-        if (supplyProduct != null) {
-            result.put(JsonUtils.obj2map(supplyProduct));
-        }
-        return result;
+        return JsonUtils.obj2map(supplyProduct);
     }
 
     /**
