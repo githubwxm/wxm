@@ -7,6 +7,7 @@ import com.all580.product.api.consts.ProductConstants;
 import com.all580.report.api.dto.OrderInfo;
 import com.all580.report.api.dto.OrderItemDetailDto;
 import com.all580.report.api.dto.OrderItemDto;
+import com.all580.report.api.dto.RefundAuditInfo;
 import com.all580.report.api.service.QueryOrderService;
 import com.framework.common.BaseController;
 import com.framework.common.Result;
@@ -103,6 +104,14 @@ public class QueryOrderController extends BaseController {
                                       @RequestParam("ep_id") Integer epId) {
         Integer coreEpId = CommonUtil.objectParseInteger(getAttribute(EpConstant.EpKey.CORE_EP_ID));
         return queryOrderService.preRefundOrderInfo(itemSn, epType, coreEpId, epId, ProductConstants.RefundEqType.SELLER);
+    }
+    @RequestMapping(value = "item/refund_audit", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<RefundAuditInfo> getRefundOrderAuditInfo(@RequestParam("itemSn") Long itemSn,
+                                                  @RequestParam("ep_type") Integer epType,
+                                                  @RequestParam("ep_id") Integer epId) {
+        Integer coreEpId = CommonUtil.objectParseInteger(getAttribute(EpConstant.EpKey.CORE_EP_ID));
+        return queryOrderService.getRefundOrderAuditInfo(itemSn, epType, coreEpId, epId);
     }
 
 }
