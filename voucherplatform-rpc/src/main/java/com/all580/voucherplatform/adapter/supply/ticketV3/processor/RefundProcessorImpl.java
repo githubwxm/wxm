@@ -37,9 +37,9 @@ public class RefundProcessorImpl implements ProcessorService<Supply> {
                 String ticketRefId = CommonUtil.objectParseString(map.get("ticketRefId"));
                 // Integer refNumber = CommonUtil.objectParseInteger(map.get("refNumber"));
                 Date procTime = DateFormatUtils.converToDateTime(CommonUtil.objectParseString(map.get("procTime")));
-                refundResultManager.refundSuccess(ticketRefId, procTime);
+                refundResultManager.submitSuccess(ticketRefId, procTime);
             } else {
-                refundResultManager.refundFail();
+                refundResultManager.submitFaild();
             }
         } catch (Exception ex) {
             throw new ApiException(ex);

@@ -10,6 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Created by Linv2 on 2017-06-14.
@@ -32,7 +34,14 @@ public class ConsumeGroupOrderManager {
         this.groupOrder = groupOrderMapper.selectByOrderCode(orderCode);
     }
 
-    public void Consume(Integer number, String... IdNumbers) throws Exception {
+
+    public void submiConsume(Integer number, String... IdNumbers) throws Exception {
+        Consume(number, IdNumbers);
+        notifyPlatform(groupOrder.getPlatform_id(), groupOrder.getId());
+    }
+
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class}, propagation = Propagation.REQUIRES_NEW)
+    private void Consume(Integer number, String... IdNumbers) throws Exception {
         if (groupOrder.getActivateStatus()) {
             throw new Exception("订单状态已激活");
         }
@@ -42,7 +51,6 @@ public class ConsumeGroupOrderManager {
         updateGroupOrder.setActivateNum(number);
         groupOrderMapper.updateByPrimaryKeySelective(updateGroupOrder);
         groupVisitorMapper.updateActivateByIdNumber(groupOrder.getId(), IdNumbers);
-        notifyPlatform(groupOrder.getPlatform_id(), groupOrder.getId());
 
     }
 

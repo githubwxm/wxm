@@ -38,9 +38,9 @@ public class RefundGroupOrderProcessorImpl implements ProcessorService<Supply> {
                 String ticketRefId = CommonUtil.objectParseString(map.get("ticketRefId"));
                 // Integer refNumber = CommonUtil.objectParseInteger(map.get("refNumber"));
                 Date procTime = DateFormatUtils.converToDateTime(CommonUtil.objectParseString(map.get("procTime")));
-                groupRefundResultManager.refundSuccess(ticketRefId, procTime);
+                groupRefundResultManager.submitSuccess(ticketRefId, procTime);
             } else {
-                groupRefundResultManager.refundFail();
+                groupRefundResultManager.submitFaild();
             }
         } catch (Exception ex) {
             throw new ApiException(ex);

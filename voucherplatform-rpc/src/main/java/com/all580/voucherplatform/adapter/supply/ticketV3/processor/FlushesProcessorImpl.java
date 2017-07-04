@@ -35,7 +35,7 @@ public class FlushesProcessorImpl implements ProcessorService<Supply> {
         //Date procTime = DateFormatUtils.converToDateTime(CommonUtil.objectParseString(map.get("procTime")));
         OrderReverseManager orderReverseManager = adapterLoader.getBean(OrderReverseManager.class);
         orderReverseManager.setConsume(voucherId, consumeSeqId);
-        orderReverseManager.reverse(flushesSeqId, flushesTime);
+        orderReverseManager.submit(flushesSeqId, flushesTime);
         return null;
     }
 

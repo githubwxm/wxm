@@ -38,7 +38,7 @@ public class RefundGroupOrderProcessorImpl implements ProcessorService<Platform>
         GroupRefundApplyManager refundApplyManager = adapterLoader.getBean(GroupRefundApplyManager.class);
         try {
             refundApplyManager.setGroupOrder(platform.getId(), orderId);
-            refundApplyManager.apply(refId, refNumber, refTime, refReason);
+            refundApplyManager.submitApply(refId, refNumber, refTime, refReason);
         } catch (Exception ex) {
             throw new ApiException(ex);
         }

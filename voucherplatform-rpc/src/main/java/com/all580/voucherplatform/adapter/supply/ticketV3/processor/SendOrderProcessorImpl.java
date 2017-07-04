@@ -33,7 +33,7 @@ public class SendOrderProcessorImpl implements ProcessorService<Supply> {
 
         }
         try {
-            orderSupplyReceiveManager.Receive(mapList);
+            orderSupplyReceiveManager.submit(mapList);
         } catch (Exception ex) {}
 
         return null;

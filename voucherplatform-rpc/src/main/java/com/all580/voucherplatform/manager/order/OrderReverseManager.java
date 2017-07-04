@@ -10,8 +10,11 @@ import com.all580.voucherplatform.entity.Consume;
 import com.all580.voucherplatform.entity.Order;
 import com.all580.voucherplatform.entity.Reverse;
 import com.all580.voucherplatform.utils.async.AsyncService;
+import com.framework.common.distributed.lock.DistributedLockTemplate;
+import com.framework.common.distributed.lock.DistributedReentrantLock;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -36,6 +39,12 @@ public class OrderReverseManager {
     @Autowired
     private AsyncService asyncService;
 
+    @Autowired
+    private DistributedLockTemplate distributedLockTemplate;
+
+    @Value("${lock.timeout}")
+    private int lockTimeOut = 3;
+
 
     private Order order;
     private Consume consume;
@@ -45,10 +54,23 @@ public class OrderReverseManager {
         consume = consumeMapper.selectBySeqId(order.getId(), order.getOrderCode(), order.getSupply_id(), consumeSeqId);
     }
 
-    public void reverse(String reverseSqlId, Date reverseTime) {
+    public void submit(String reverseSqlId, Date reverseTime) {
+        DistributedReentrantLock distributedReentrantLock = distributedLockTemplate.execute(VoucherConstant.DISTRIBUTEDLOCKORDER + order.getOrderCode(), lockTimeOut);
+        try {
+            Integer reverseId = reverse(reverseSqlId, reverseTime);
+            notifyPlatform(order.getPlatform_id(), reverseId);
+        } catch (Exception ex) {
+            log.error(ex.getMessage(), ex);
+        } finally {
+            distributedReentrantLock.unlock();
+        }
+
+    }
+
+    private Integer reverse(String reverseSqlId, Date reverseTime) throws Exception {
         if (reverseMapper.selectBySeqId(order.getId(), order.getOrderCode(), order.getSupply_id(), reverseSqlId) != null) {
             log.debug("重复的冲正请求");
-            return;
+            throw new Exception("重复的冲正请求");
         }
         Reverse reverse = new Reverse();
         reverse.setOrder_id(order.getId());
@@ -72,7 +94,7 @@ public class OrderReverseManager {
         reverseNum += consume.getConsumeNumber();
         updateOrder.setReverse(reverseNum);
         updateOrder.setStatus(VoucherConstant.OrderSyncStatus.SYNCED);
-        notifyPlatform(order.getPlatform_id(), reverse.getId());
+        return reverse.getId();
     }
 
     private void notifyPlatform(final Integer platformId, final Integer reverseId) {
