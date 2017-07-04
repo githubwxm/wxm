@@ -2,6 +2,7 @@ package com.all580.base.manager;
 
 import com.framework.common.validate.ParamsMapValidate;
 import com.framework.common.validate.ValidRule;
+import org.apache.commons.beanutils.BeanUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,5 +21,14 @@ public class GernerateValidate {
 
     public void validate(Map<String, Object> parasms){
         ParamsMapValidate.validate(parasms, rules);
+    }
+
+    public void validate(Object simpleObject){
+        try {
+            Map<String, Object> params = BeanUtils.describe(simpleObject);
+            ParamsMapValidate.validate(params, rules);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 }
