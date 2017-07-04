@@ -29,7 +29,7 @@ public class UpdateGroupOrderProcessorImpl implements ProcessorService<Platform>
         String orderId = CommonUtil.objectParseString(map.get("orderId"));
         updateGroupOrderManager.setOrder(platform.getId(), orderId);
         updateGroupOrderManager.setData(map);
-        updateGroupOrderManager.saveOrder();
+        updateGroupOrderManager.submit();
         return null;
     }
 

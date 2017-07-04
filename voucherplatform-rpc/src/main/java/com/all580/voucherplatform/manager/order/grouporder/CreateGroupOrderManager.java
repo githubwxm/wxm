@@ -18,6 +18,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -186,14 +188,20 @@ public class CreateGroupOrderManager {
         }
     }
 
-    public void saveOrder() {
+    public void submit() {
+        Integer groupOrderId = saveOrder();
+        notifySupply(groupOrder.getTicketsys_id(), groupOrder.getId());
+    }
+
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class}, propagation = Propagation.REQUIRES_NEW)
+    private Integer saveOrder() {
         orderMapper.insertSelective(groupOrder);
 
         for (GroupVisitor groupVisitor : visitorList) {
             groupVisitor.setGroup_order_id(groupOrder.getId());
             groupVisitorMapper.insertSelective(groupVisitor);
         }
-        notifySupply(groupOrder.getTicketsys_id(), groupOrder.getId());
+        return groupOrder.getId();
     }
 
     private void notifySupply(final Integer ticketSysId, final Integer groupOrderId) {

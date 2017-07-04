@@ -10,6 +10,8 @@ import com.framework.common.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -36,7 +38,7 @@ public class OrderSupplyReceiveManager {
      *                orderCode  string 订单号
      *                supplyOrderId    string  票务订单id
      */
-    public void Receive(List<Map> mapList) throws Exception {
+    public void submit(List<Map> mapList) throws Exception {
         Integer[] orderIds = new Integer[mapList.size()];
         Integer platformId = null;
         for (int i = 0; i < mapList.size(); i++) {
@@ -62,18 +64,7 @@ public class OrderSupplyReceiveManager {
         notifyPlatform(platformId, orderIds);
     }
 
-    private Order Receive(Integer orderId, String supplyOrderId) {
-        Order order = orderMapper.selectByPrimaryKey(orderId);
-        Receive(order, supplyOrderId);
-        return order;
-    }
-
-    private Order Receive(String orderCode, String supplyOrderId) {
-        Order order = orderMapper.selectByOrderCode(orderCode);
-        Receive(order, supplyOrderId);
-        return order;
-    }
-
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class}, propagation = Propagation.REQUIRES_NEW)
     private void Receive(Order order, String supplyOrderId) {
         Order updateOrder = new Order();
         updateOrder.setId(order.getId());

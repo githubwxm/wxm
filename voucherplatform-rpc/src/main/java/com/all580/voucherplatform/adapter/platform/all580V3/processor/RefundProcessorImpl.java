@@ -37,7 +37,7 @@ public class RefundProcessorImpl implements ProcessorService<Platform> {
         RefundApplyManager refundApplyManager = adapterLoader.getBean(RefundApplyManager.class);
         try {
             refundApplyManager.setOrder(platform.getId(), orderId, visitorSeqId);
-            refundApplyManager.apply(refId, refNumber, DateFormatUtils.converToDateTime(refTime), refReason);
+            refundApplyManager.submitApply(refId, refNumber, DateFormatUtils.converToDateTime(refTime), refReason);
         } catch (Exception ex) {
             throw new ApiException(ex);
         }

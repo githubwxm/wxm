@@ -42,4 +42,7 @@ public class VoucherConstant {
         public static final int SYNCED = 1;//已同步
 
     }
+
+    public static final String DISTRIBUTEDLOCKORDER = "VOUCHERORDER:";
+    public static final String DISTRIBUTEDLOCKGROUPORDER = "VOUCHERGROUPORDER:";
 }

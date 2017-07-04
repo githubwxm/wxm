@@ -28,7 +28,7 @@ public class SendGroupOrderProcessorImpl implements ProcessorService<Platform> {
         CreateGroupOrderManager createOrderManager = adapterLoader.getBean(CreateGroupOrderManager.class);
         try {
             createOrderManager.setProd(platform.getId(), map);
-            createOrderManager.saveOrder();
+            createOrderManager.submit();
         } catch (Exception ex) {
             throw new ApiException(ex);
         }

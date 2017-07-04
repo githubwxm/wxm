@@ -27,7 +27,6 @@ import java.util.Map;
  * Created by Linv2 on 2017-06-08.
  */
 @Service
-@Transactional(rollbackFor = {Exception.class, RuntimeException.class})
 @Slf4j
 public class All580ServiceImpl implements All580Service {
 

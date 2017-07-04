@@ -14,6 +14,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 
@@ -41,8 +43,13 @@ public class GroupRefundApplyManager {
         this.groupOrder = groupOrderMapper.selectByPlatform(platformId, platformOrderCode);
     }
 
+    public void submitApply(String refId, Integer refNumber, Date refTime, String refReason) throws Exception {
+        Integer refundId = apply(refId, refNumber, refTime, refReason);
+        notifySupply(groupOrder.getTicketsys_id(), refundId);
+    }
 
-    public void apply(String refId, Integer refNumber, Date refTime, String refReason) throws Exception {
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class}, propagation = Propagation.REQUIRES_NEW)
+    private Integer apply(String refId, Integer refNumber, Date refTime, String refReason) throws Exception {
         checkRef(refId, refNumber);
         Refund refund = new Refund();
         refund.setRefundCode(String.valueOf(UUIDGenerator.generateUUID()));
@@ -60,7 +67,7 @@ public class GroupRefundApplyManager {
         refund.setCreateTime(new Date());
         refund.setProdType(VoucherConstant.ProdType.GROUP);
         refundMapper.insertSelective(refund);
-        notifySupply(groupOrder.getTicketsys_id(), refund.getId());
+        return refund.getId();
 
     }
 

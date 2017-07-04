@@ -70,6 +70,7 @@ public class ResendManager {
         if (!pattern.valid(mobile, null)) {
             throw new Exception("手机号码格式错误");
         }
+        log.debug("订单：{} 重发短信,手机号码：{}", new Object[]{order.getOrderCode(), mobile});
         orderMessageManager.sendOrderMessage(mobile, order);
 
     }

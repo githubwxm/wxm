@@ -11,7 +11,7 @@ import java.util.Map;
  * Created by Linv2 on 2017-06-07.
  */
 @Service
-public class QueryOrderProcessor implements ProcessorService<Supply> {
+public class QueryOrderProcessorImpl implements ProcessorService<Supply> {
 
     private static final String ACTION = "query";
 
