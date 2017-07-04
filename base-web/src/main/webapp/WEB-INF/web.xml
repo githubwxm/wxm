@@ -27,7 +27,7 @@
 		<init-param>
 			<param-name>authUrls</param-name>
 			<param-value>/api/balance/info,/api/ep/platform/validate,/api/sms/send,/api/order/cancel/times,
-				/api/ep/platform/payment/list_by_core_ep_id</param-value>
+				/api/ep/platform/payment/list_by_core_ep_id,/api/sync/subscribe</param-value>
 		</init-param>
 	</filter>
 	<filter-mapping>
