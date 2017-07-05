@@ -44,8 +44,7 @@ public class QueryOrderController extends BaseController {
     public Result<?> listLine(@RequestParam Integer ep_type,
                                           String start_date,
                                           String end_date,
-                                          Integer status,
-                                          Integer item_status,
+                                          Integer[] status,
                                           String product_name,
                                           String group_number,
                                           String name,
@@ -56,7 +55,7 @@ public class QueryOrderController extends BaseController {
                                           @RequestParam(defaultValue = "20") Integer record_count) {
         Integer coreEpId = CommonUtil.objectParseInteger(getAttribute(EpConstant.EpKey.CORE_EP_ID));
         Date[] dates = Utils.checkDateTime(start_date, end_date);
-        return queryOrderService.queryLineOrderItemList(number, product_name, group_number, status, item_status, name,
+        return queryOrderService.queryLineOrderItemList(number, product_name, group_number, status, name,
                 phone, ep_type, coreEpId, ep_id, dates[0], dates[1], record_start, record_count);
     }
 
