@@ -9,11 +9,16 @@ import com.all580.voucherplatform.dao.RefundMapper;
 import com.all580.voucherplatform.entity.Order;
 import com.all580.voucherplatform.entity.Refund;
 import com.all580.voucherplatform.utils.async.AsyncService;
+import com.framework.common.distributed.lock.DistributedLockTemplate;
+import com.framework.common.distributed.lock.DistributedReentrantLock;
 import com.framework.common.lang.UUIDGenerator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 
@@ -35,6 +40,12 @@ public class RefundResultManager {
     private AdapterLoader adapterLoader;
     @Autowired
     private AsyncService asyncService;
+
+    @Autowired
+    private DistributedLockTemplate distributedLockTemplate;
+
+    @Value("${lock.timeout}")
+    private int lockTimeOut = 3;
 
     private Order order;
     private Refund refund;
@@ -85,13 +96,37 @@ public class RefundResultManager {
         Integer reverse = order.getReverse() == null ? order.getReverse() : order.getReverse();
         Integer validNum = number - consume - refunded + reverse;
         if (validNum >= refund.getRefNumber()) {
-            refundSuccess(String.valueOf(UUIDGenerator.generateUUID()), new Date());
+            submitSuccess(String.valueOf(UUIDGenerator.generateUUID()), new Date());
         } else {
-            refundFail();
+            submitFaild();
         }
     }
 
-    public void refundSuccess(String supplyRefId, Date procTime) throws Exception {
+    public void submitSuccess(String supplyRefId, Date procTime) {
+        DistributedReentrantLock distributedReentrantLock = distributedLockTemplate.execute(VoucherConstant.DISTRIBUTEDLOCKORDER + order.getOrderCode(), lockTimeOut);
+        try {
+            refundSuccess(supplyRefId, procTime);
+            notifyPlatform(order.getPlatform_id(), refund.getId());
+        } catch (Exception ex) {
+            log.error(ex.getMessage(), ex);
+        } finally {
+            distributedReentrantLock.unlock();
+        }
+    }
+
+    public void submitFaild() {
+        DistributedReentrantLock distributedReentrantLock = distributedLockTemplate.execute(VoucherConstant.DISTRIBUTEDLOCKORDER + order.getOrderCode(), lockTimeOut);
+        try {
+            refundFaild();
+            notifyPlatform(order.getPlatform_id(), refund.getId());
+        } finally {
+            distributedReentrantLock.unlock();
+        }
+    }
+
+
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class}, propagation = Propagation.REQUIRES_NEW)
+    private void refundSuccess(String supplyRefId, Date procTime) throws Exception {
 
         Refund refundUpdate = new Refund();
         refundUpdate.setId(refund.getId());
@@ -108,10 +143,10 @@ public class RefundResultManager {
             orderMapper.updateByPrimaryKeySelective(updateOrder);
         }
 
-        notifyPlatform(order.getPlatform_id(), refund.getId());
     }
 
-    public void refundFail() {
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class}, propagation = Propagation.REQUIRES_NEW)
+    private void refundFaild() {
         Refund refundUpdate = new Refund();
         refundUpdate.setId(refund.getId());
         refundUpdate.setRefStatus(VoucherConstant.RefundStatus.FAIL);
@@ -123,7 +158,6 @@ public class RefundResultManager {
             updateOrder.setRefunding((updateOrder.getRefunding() == null ? 0 : updateOrder.getRefunding()) - refund.getRefNumber());
             orderMapper.updateByPrimaryKeySelective(updateOrder);
         }
-        notifyPlatform(order.getPlatform_id(), refund.getId());
     }
 
     public void notifyPlatform(final Integer platformId, final Integer refundId) {

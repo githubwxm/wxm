@@ -5,6 +5,7 @@ import com.all580.voucherplatform.adapter.supply.SupplyAdapterService;
 import com.all580.voucherplatform.manager.order.OrderSupplyReceiveManager;
 import com.all580.voucherplatform.manager.order.RefundResultManager;
 import com.all580.voucherplatform.manager.order.grouporder.GroupOrderSupplyReceiveManager;
+import com.all580.voucherplatform.manager.order.grouporder.GroupRefundResultManager;
 import com.framework.common.lang.UUIDGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -40,7 +41,7 @@ public class PosAdapterImpl extends SupplyAdapterService {
             mapList.add(map);
         }
         try {
-            orderSupplyReceiveManager.Receive(mapList);
+            orderSupplyReceiveManager.submit(mapList);
         } catch (Exception ex) {
 
         }
@@ -80,7 +81,7 @@ public class PosAdapterImpl extends SupplyAdapterService {
     @Override
     public void refundGroup(Integer groupRefId) {
         try {
-            RefundResultManager refundResultManager = adapterLoader.getBean(RefundResultManager.class);
+            GroupRefundResultManager refundResultManager = adapterLoader.getBean(GroupRefundResultManager.class);
             refundResultManager.setRefund(groupRefId);
             refundResultManager.automatic();
         } catch (Exception ex) {

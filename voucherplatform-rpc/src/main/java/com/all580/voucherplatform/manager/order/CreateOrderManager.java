@@ -8,6 +8,7 @@ import com.all580.voucherplatform.entity.*;
 import com.all580.voucherplatform.utils.async.AsyncService;
 import com.all580.voucherplatform.utils.voucher.VoucherGenerate;
 import com.all580.voucherplatform.utils.voucher.VoucherUrlGenerate;
+import com.framework.common.distributed.lock.DistributedLockTemplate;
 import com.framework.common.io.cache.redis.RedisUtils;
 import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.UUIDGenerator;
@@ -15,8 +16,11 @@ import com.framework.common.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -53,7 +57,11 @@ public class CreateOrderManager {
     private AsyncService asyncService;
 
     @Autowired
-    private RedisUtils redisUtils;
+    private DistributedLockTemplate distributedLockTemplate;
+
+    @Value("${lock.timeout}")
+    private int lockTimeOut = 3;
+
 
 
     private Integer platformId;
@@ -151,14 +159,19 @@ public class CreateOrderManager {
         }
     }
 
+    public void submit() {
+        Integer[] orderIdList = saveOrder();
+        notifySupply(supply, orderIdList);
+    }
 
-    public void saveOrder() {
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class}, propagation = Propagation.REQUIRES_NEW)
+    private Integer[] saveOrder() {
         Integer[] orderIdList = new Integer[orderList.size()];
         for (int i = 0; i < orderList.size(); i++) {
             orderMapper.insertSelective(orderList.get(i));
             orderIdList[i] = orderList.get(i).getId();
         }
-        notifySupply(supply, orderIdList);
+        return orderIdList;
     }
 
     private void notifySupply(final Supply supply, final Integer[] orderIdList) {

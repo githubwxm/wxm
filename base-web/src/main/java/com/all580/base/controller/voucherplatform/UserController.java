@@ -64,6 +64,15 @@ public class UserController extends BaseController {
 
     }
 
+    @RequestMapping(value = "getLoginUser", method = RequestMethod.GET)
+    @ResponseBody
+    public Result getLoginUser() {
+        Map map = (Map) getAttribute("user");
+        Result result = new Result(true);
+        result.putAll(map);
+        return result;
+    }
+
     @RequestMapping(value = "getById", method = RequestMethod.GET)
     @ResponseBody
     public Result getById(@RequestParam("id") int id) {

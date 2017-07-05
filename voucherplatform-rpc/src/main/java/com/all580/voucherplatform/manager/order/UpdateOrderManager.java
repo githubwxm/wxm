@@ -9,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 
@@ -54,9 +56,14 @@ public class UpdateOrderManager {
         updateOrder.setInvalidTime(invalidTime);
     }
 
-    public void saveOrder() {
-        orderMapper.updateByPrimaryKeySelective(updateOrder);
+    public void submit() {
+        saveOrder();
         notifyPlatform(order.getPlatform_id(), order.getId());
+    }
+
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class}, propagation = Propagation.REQUIRES_NEW)
+    private void saveOrder() {
+        orderMapper.updateByPrimaryKeySelective(updateOrder);
     }
 
     private void notifyPlatform(final Integer platformId, final Integer orderId) {

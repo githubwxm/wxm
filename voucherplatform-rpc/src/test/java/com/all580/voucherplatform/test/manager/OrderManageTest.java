@@ -45,7 +45,7 @@ public class OrderManageTest extends AbstractTransactionalJUnit4SpringContextTes
         visitorMap.put("number", "1");
         manager.setProd(1, map);
         manager.setVisitor(visitorMap);
-        manager.saveOrder();
+        manager.submit();
 
     }
 
@@ -53,21 +53,21 @@ public class OrderManageTest extends AbstractTransactionalJUnit4SpringContextTes
     public void testConsume() throws Exception {
         ConsumeOrderManager consumeOrderManager = applicationContext.getBean(ConsumeOrderManager.class);
         consumeOrderManager.setOrder(1);
-        consumeOrderManager.Comsume("12", 1, "aaa", new Date(), "11");
+        consumeOrderManager.submiConsume("12", 1, "aaa", new Date(), "11");
     }
 
     @Test
     public void testRefundApply() throws Exception {
         RefundApplyManager refundApplyManager = applicationContext.getBean(RefundApplyManager.class);
         refundApplyManager.setOrder(1);
-        refundApplyManager.apply("123", 1, new Date(), "退票");
+        refundApplyManager.submitApply("123", 1, new Date(), "退票");
     }
 
     @Test
     public void testRefundResult() throws Exception {
         RefundResultManager refundResultManager=applicationContext.getBean(RefundResultManager.class);
         refundResultManager.setRefund("1496727926831750");
-        refundResultManager.refundFail();
+        refundResultManager.submitFaild();
     }
 }
 

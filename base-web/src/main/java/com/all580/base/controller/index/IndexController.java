@@ -121,7 +121,7 @@ public class IndexController extends BaseController {
 		return tokenResult;
 	}
 
-	@RequestMapping(value = "sync/subscribe", method = RequestMethod.POST)
+	@RequestMapping(value = "api/sync/subscribe", method = RequestMethod.POST)
 	@ResponseBody
 	public Result subscribeSync(@RequestBody Map params) {
 		validateSubscribe(params);

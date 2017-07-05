@@ -13,6 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 
@@ -79,24 +81,42 @@ public class GroupRefundResultManager {
         Integer consume = groupOrder.getActivateNum() == null ? 0 : groupOrder.getActivateNum();
         Integer validNum = number - consume;
         if (validNum >= refund.getRefNumber()) {
-            refundSuccess(String.valueOf(UUIDGenerator.generateUUID()), new Date());
+            submitSuccess(String.valueOf(UUIDGenerator.generateUUID()), new Date());
         } else {
-            refundFail();
+            submitFaild();
         }
 
     }
 
-    public void refundSuccess(String supplyRefId, Date procTime) throws Exception {
+    public void submitSuccess(String supplyRefId, Date procTime) {
+        try {
+            refundSuccess(supplyRefId, procTime);
+            notifyPlatform(groupOrder.getPlatform_id(), refund.getId());
+        } catch (Exception ex) {
+            log.error(ex.getMessage(), ex);
+        }
+    }
+    public void submitFaild() {
+        try {
+            refundFaild();
+            notifyPlatform(groupOrder.getPlatform_id(), refund.getId());
+        } catch (Exception ex) {
+            log.error(ex.getMessage(), ex);
+        }
+    }
+
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class}, propagation = Propagation.REQUIRES_NEW)
+    private void refundSuccess(String supplyRefId, Date procTime) throws Exception {
         Refund refundUpdate = new Refund();
         refundUpdate.setId(refund.getId());
         refundUpdate.setRefStatus(VoucherConstant.RefundStatus.SUCCESS);
         refundUpdate.setSupplyRefSeqId(supplyRefId);
         refundUpdate.setSuccessTime(procTime);
         refundMapper.updateByPrimaryKeySelective(refundUpdate);
-        notifyPlatform(groupOrder.getPlatform_id(), refund.getId());
     }
 
-    public void refundFail() {
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class}, propagation = Propagation.REQUIRES_NEW)
+    private void refundFaild() {
         Refund refundUpdate = new Refund();
         refundUpdate.setId(refund.getId());
         refundUpdate.setRefStatus(VoucherConstant.RefundStatus.FAIL);

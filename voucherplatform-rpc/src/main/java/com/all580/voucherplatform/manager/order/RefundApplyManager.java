@@ -12,12 +12,17 @@ import com.all580.voucherplatform.dao.RefundMapper;
 import com.all580.voucherplatform.entity.Order;
 import com.all580.voucherplatform.entity.Refund;
 import com.all580.voucherplatform.utils.async.AsyncService;
+import com.framework.common.distributed.lock.DistributedLockTemplate;
+import com.framework.common.distributed.lock.DistributedReentrantLock;
 import com.framework.common.lang.UUIDGenerator;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 
@@ -37,6 +42,12 @@ public class RefundApplyManager {
     @Autowired
     private AsyncService asyncService;
 
+    @Autowired
+    private DistributedLockTemplate distributedLockTemplate;
+
+    @Value("${lock.timeout}")
+    private int lockTimeOut = 3;
+
     private Order order;
 
     public RefundApplyManager() {}
@@ -53,16 +64,29 @@ public class RefundApplyManager {
         this.order = orderMapper.selectByPrimaryKey(orderId);
     }
 
-    public void setOrder(Integer supplyId, String supplyOrderId) {
+    public void setOrder(Integer supplyId, String supplyOrderId) throws Exception {
         this.order = orderMapper.selectBySupply(supplyId, supplyOrderId);
+        checkData();
     }
 
-    public void setOrder(Integer platformId, String platformOrderCode, String seqId) {
+    public void setOrder(Integer platformId, String platformOrderCode, String seqId) throws Exception {
+
         this.order = orderMapper.selectByPlatform(platformId, platformOrderCode, seqId);
+        checkData();
     }
 
+    public void submitApply(String refId, Integer refNumber, Date refTime, String refReason) throws Exception {
+        DistributedReentrantLock distributedReentrantLock = distributedLockTemplate.execute(VoucherConstant.DISTRIBUTEDLOCKORDER + order.getOrderCode(), lockTimeOut);
+        try {
+            Integer refundId = apply(refId, refNumber, refTime, refReason);
+            notifySupply(order.getTicketsys_id(), refundId);
+        } finally {
+            distributedReentrantLock.unlock();
+        }
+    }
 
-    public void apply(String refId, Integer refNumber, Date refTime, String refReason) throws Exception {
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class}, propagation = Propagation.REQUIRES_NEW)
+    private Integer apply(String refId, Integer refNumber, Date refTime, String refReason) throws Exception {
         checkRef(refId, refNumber);
         Refund refund = new Refund();
         refund.setRefundCode(String.valueOf(UUIDGenerator.generateUUID()));
@@ -84,16 +108,19 @@ public class RefundApplyManager {
         updateOrder.setId(order.getId());
         updateOrder.setRefunding(order.getRefunding() + refund.getRefNumber());
         orderMapper.updateByPrimaryKeySelective(updateOrder);
+        return refund.getId();
 
-        notifySupply(order.getTicketsys_id(), refund.getId());
+    }
+
+    private void checkData() throws Exception {
+        if (order == null) {
+            throw new Exception("订单不存在");
+        }
 
     }
 
 
     private void checkRef(String refId, Integer refNumber) throws Exception {
-        if (order == null) {
-            throw new Exception("订单不存在");
-        }
         if (StringUtils.isEmpty(refId)) {
             throw new IllegalArgumentException("无效的退票流水号");
         }

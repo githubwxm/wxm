@@ -12,6 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,7 +68,13 @@ public class UpdateGroupOrderManager {
         }
     }
 
-    public void saveOrder() {
+    public void submit() {
+        String[] seqIdList = saveOrder();
+        notifySupply(order.getTicketsys_id(), order.getId(), seqIdList);
+    }
+
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class}, propagation = Propagation.REQUIRES_NEW)
+    private String[] saveOrder() {
         groupOrderMapper.updateByPrimaryKeySelective(updateOrder);
         String[] seqIdList = new String[visitorList.size()];
         for (int i = 0; i < visitorList.size(); i++) {
@@ -74,7 +82,7 @@ public class UpdateGroupOrderManager {
             groupVisitorMapper.updateByVisitorSeqId(visitor);
             seqIdList[i] = visitor.getSeqId();
         }
-        notifySupply(order.getTicketsys_id(), order.getId(), seqIdList);
+        return seqIdList;
     }
 
     private void notifySupply(final Integer ticketSysId, final Integer groupId, final String... seqId) {
