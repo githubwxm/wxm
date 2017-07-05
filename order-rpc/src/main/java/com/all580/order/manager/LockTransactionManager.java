@@ -366,10 +366,11 @@ public class LockTransactionManager {
             throw new ApiException("该订单已审核");
         }
 
+        boolean status = Boolean.parseBoolean(params.get("status").toString());
         orderItem.setAudit_user_id(CommonUtil.objectParseInteger(params.get("operator_id")));
         orderItem.setAudit_user_name(CommonUtil.objectParseString(params.get("operator_name")));
         orderItem.setAudit_time(new Date());
-        boolean status = Boolean.parseBoolean(params.get("status").toString());
+        orderItem.setAudit(status);
         if (status) {
             orderItem.setStatus(OrderConstant.OrderItemStatus.AUDIT_SUCCESS);
             boolean allAudit = bookingOrderManager.isOrderAllAudit(orderItem.getOrder_id(), orderItem.getId());
