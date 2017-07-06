@@ -46,7 +46,7 @@ public class SendTicketEventImpl implements SendTicketEvent {
         }
         // 景点发送短信
         if (item.getPro_type() == ProductConstants.ProductType.SCENERY && (item.getSend() == null || item.getSend())) {
-            smsManager.sendVoucher(item);
+            //smsManager.sendVoucher(item);
         }
         log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(null, item.getId(),
                 0, "ORDER_EVENT", OrderConstant.LogOperateCode.SENDED,
