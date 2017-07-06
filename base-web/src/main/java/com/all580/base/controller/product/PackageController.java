@@ -56,7 +56,7 @@ public class PackageController extends BaseController {
     @RequestMapping(value = "sub/add", method = RequestMethod.POST)
     @ResponseBody
     public Result<?> addSub(@RequestBody Map params) {
-        ParamsMapValidate.validate(params, packageValidateManager.addValidate());
+        ParamsMapValidate.validate(params, packageValidateManager.addSubValidate());
         return packageSubService.add(params);
     }
 
