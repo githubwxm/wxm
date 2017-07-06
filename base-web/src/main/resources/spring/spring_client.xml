@@ -93,6 +93,8 @@
     <dubbo:reference id="productSalesPlanService"
                      interface="com.all580.product.api.service.ProductSalesPlanRPCService"/>
     <dubbo:reference id="productService" interface="com.all580.product.api.service.ProductRPCService"/>
+    <dubbo:reference id="packageService" interface="com.all580.product.api.service.PackageService"/>
+    <dubbo:reference id="packageSubService" interface="com.all580.product.api.service.PackageSubService"/>
 
     <dubbo:reference id="thirdPayService" interface="com.all580.payment.api.service.ThirdPayService"/>
     <dubbo:reference id="balancePayService" interface="com.all580.payment.api.service.BalancePayService"/>
