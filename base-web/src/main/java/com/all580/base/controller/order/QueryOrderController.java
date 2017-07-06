@@ -104,6 +104,7 @@ public class QueryOrderController extends BaseController {
         Integer coreEpId = CommonUtil.objectParseInteger(getAttribute(EpConstant.EpKey.CORE_EP_ID));
         return queryOrderService.preRefundOrderInfo(itemSn, epType, coreEpId, epId, ProductConstants.RefundEqType.SELLER);
     }
+
     @RequestMapping(value = "item/refund_audit", method = RequestMethod.GET)
     @ResponseBody
     public Result<RefundAuditInfo> getRefundOrderAuditInfo(@RequestParam("itemSn") Long itemSn,
@@ -111,6 +112,19 @@ public class QueryOrderController extends BaseController {
                                                   @RequestParam("ep_id") Integer epId) {
         Integer coreEpId = CommonUtil.objectParseInteger(getAttribute(EpConstant.EpKey.CORE_EP_ID));
         return queryOrderService.getRefundOrderAuditInfo(itemSn, epType, coreEpId, epId);
+    }
+
+    @RequestMapping(value = "hotel/pre_clearance", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<Map> preClearanceHotelInfo(@RequestParam("itemSn") Long itemSn) {
+        return queryOrderService.preClearanceHotelInfo(itemSn);
+    }
+
+    @RequestMapping(value = "package/list", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<PageRecord<OrderItemDto>> listPackageOrderItem() {
+
+        return null;
     }
 
 }

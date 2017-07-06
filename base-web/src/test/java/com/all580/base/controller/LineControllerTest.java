@@ -195,4 +195,15 @@ public class LineControllerTest {
         ).andDo(print());
     }
 
+    @Test
+    public void  testPreClearanceHotelInfo() throws Exception{
+        mockMvc.perform(
+                get("/api/order/query/hotel/pre_clearance")
+                        .param("itemSn","1494323810924730")
+        ).andExpect(
+                status().isOk()
+        ).andExpect(
+                jsonPath("$.code", is("200"))
+        ).andDo(print());
+    }
 }
