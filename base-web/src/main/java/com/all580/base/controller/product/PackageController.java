@@ -1,6 +1,7 @@
 package com.all580.base.controller.product;
 
 import com.all580.base.manager.PackageValidateManager;
+import com.all580.base.util.Utils;
 import com.all580.product.api.service.PackageService;
 import com.all580.product.api.service.PackageSubService;
 import com.framework.common.BaseController;
@@ -8,11 +9,9 @@ import com.framework.common.Result;
 import com.framework.common.validate.ParamsMapValidate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -72,5 +71,16 @@ public class PackageController extends BaseController {
     public Result<?> deleteSub(@RequestBody Map params) {
         ParamsMapValidate.validate(params, packageValidateManager.deleteValidate());
         return packageSubService.delete(params);
+    }
+
+    @RequestMapping("own")
+    @ResponseBody
+    public Result<?> selectOwn(@RequestParam Integer ep_id,
+                               String name, String sub_name,
+                               Integer up_down, String start, String end,
+                               @RequestParam(defaultValue = "0") Integer record_start,
+                               @RequestParam(defaultValue = "20") Integer record_count) {
+        Date[] dates = Utils.checkDateTime(start, end);
+        return packageService.selectOwnPage(ep_id, name, sub_name, up_down, dates[0], dates[1], record_start, record_count);
     }
 }
