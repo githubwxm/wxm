@@ -4,10 +4,7 @@ import com.all580.base.manager.GernerateValidate;
 import com.all580.base.util.Utils;
 import com.all580.ep.api.conf.EpConstant;
 import com.all580.product.api.consts.ProductConstants;
-import com.all580.report.api.dto.OrderInfo;
-import com.all580.report.api.dto.OrderItemDetailDto;
-import com.all580.report.api.dto.OrderItemDto;
-import com.all580.report.api.dto.RefundAuditInfo;
+import com.all580.report.api.dto.*;
 import com.all580.report.api.service.QueryOrderService;
 import com.framework.common.BaseController;
 import com.framework.common.Result;
@@ -94,6 +91,52 @@ public class QueryOrderController extends BaseController {
                                                              @RequestParam("ep_id") Integer epId) {
         Integer coreEpId = CommonUtil.objectParseInteger(getAttribute(EpConstant.EpKey.CORE_EP_ID));
         return queryOrderService.getOrderDetailByNumber(itemSn, epType, coreEpId, epId, showAccount);
+    }
+
+    @RequestMapping(value = "scenery/list", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<PageRecord<SceneryOrder>> listSceneryOrderItems(OrderInfo orderInfo,
+                                                                  @RequestParam(defaultValue = "0") Integer record_start,
+                                                                  @RequestParam(defaultValue = "20") Integer record_count) {
+        Integer coreEpId = CommonUtil.objectParseInteger(getAttribute(EpConstant.EpKey.CORE_EP_ID));
+        orderInfo.setCore_ep_id(coreEpId);
+        GernerateValidate validate = new GernerateValidate();
+        validate.addRules(new String[]{"ep_type","ep_id","core_ep_id"},new ValidRule[]{new ValidRule.NotNull()})
+                .validate(orderInfo);
+        return queryOrderService.getSceneryOrderItemList(orderInfo, record_start, record_count);
+    }
+
+    @RequestMapping(value = "scenery/get_item_detail", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<SceneryOrderDetail> getSceneryOrderDetailByNumber(@RequestParam("itemSn") Long itemSn,
+                                                             @RequestParam("show_accout") Integer showAccount,
+                                                             @RequestParam("ep_type") Integer epType,
+                                                             @RequestParam("ep_id") Integer epId) {
+        Integer coreEpId = CommonUtil.objectParseInteger(getAttribute(EpConstant.EpKey.CORE_EP_ID));
+        return queryOrderService.getSceneryOrderDetailByNumber(itemSn, epType, coreEpId, epId, showAccount);
+    }
+
+    @RequestMapping(value = "hotel/list", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<PageRecord<HotelOrder>> listHotelOrderItems(OrderInfo orderInfo,
+                                                                  @RequestParam(defaultValue = "0") Integer record_start,
+                                                                  @RequestParam(defaultValue = "20") Integer record_count) {
+        Integer coreEpId = CommonUtil.objectParseInteger(getAttribute(EpConstant.EpKey.CORE_EP_ID));
+        orderInfo.setCore_ep_id(coreEpId);
+        GernerateValidate validate = new GernerateValidate();
+        validate.addRules(new String[]{"ep_type","ep_id","core_ep_id"},new ValidRule[]{new ValidRule.NotNull()})
+                .validate(orderInfo);
+        return queryOrderService.getHotelOrderItemList(orderInfo, record_start, record_count);
+    }
+
+    @RequestMapping(value = "hotel/get_item_detail", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<HotelOrderDetail> getHotelOrderDetailByNumber(@RequestParam("itemSn") Long itemSn,
+                                                                    @RequestParam("show_accout") Integer showAccount,
+                                                                    @RequestParam("ep_type") Integer epType,
+                                                                    @RequestParam("ep_id") Integer epId) {
+        Integer coreEpId = CommonUtil.objectParseInteger(getAttribute(EpConstant.EpKey.CORE_EP_ID));
+        return queryOrderService.getHotelOrderDetailByNumber(itemSn, epType, coreEpId, epId, showAccount);
     }
 
     @RequestMapping(value = "item/pre_refund", method = RequestMethod.GET)
