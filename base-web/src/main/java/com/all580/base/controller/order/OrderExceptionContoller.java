@@ -40,7 +40,7 @@ public class OrderExceptionContoller {
         map.put("end",end);
         map.put("record_start",record_start);
         map.put("record_count",record_count);
-        if(core_ep_id-ep_id==0){
+        if(core_ep_id-ep_id==0){//平台商
            map.put("core_ep_id",core_ep_id);
         }else{
            map.put("buy_ep_id",ep_id);
