@@ -2,7 +2,6 @@ package com.all580.base.controller.order;
 
 import com.all580.ep.api.conf.EpConstant;
 import com.all580.order.api.service.SyncExceptionOrder;
-import com.framework.common.BaseController;
 import com.framework.common.Result;
 import com.framework.common.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +20,7 @@ import java.util.Map;
 @Controller
 @RequestMapping("api/exception/order")
 @Slf4j
-public class OrderExceptionContoller extends BaseController {
+public class OrderExceptionContoller {
     @Autowired
     private SyncExceptionOrder syncExceptionOrder;
 
