@@ -83,4 +83,22 @@ public class PackageController extends BaseController {
         Date[] dates = Utils.checkDateTime(start, end);
         return packageService.selectOwnPage(ep_id, name, sub_name, up_down, dates[0], dates[1], record_start, record_count);
     }
+
+    @RequestMapping("pending/scenery")
+    @ResponseBody
+    public Result<?> selectPendingPackageForScenery(@RequestParam Integer ep_id,
+                                                    String name, Integer province, Integer city,
+                                                    @RequestParam(defaultValue = "0") Integer record_start,
+                                                    @RequestParam(defaultValue = "20") Integer record_count) {
+        return packageService.selectByPackageScenery(ep_id, name, province, city, record_start, record_count);
+    }
+
+    @RequestMapping("pending/hotel")
+    @ResponseBody
+    public Result<?> selectPendingPackageForHotel(@RequestParam Integer ep_id,
+                                                    String name, Integer province, Integer city,
+                                                    @RequestParam(defaultValue = "0") Integer record_start,
+                                                    @RequestParam(defaultValue = "20") Integer record_count) {
+        return packageService.selectByPackageHotel(ep_id, name, province, city, record_start, record_count);
+    }
 }
