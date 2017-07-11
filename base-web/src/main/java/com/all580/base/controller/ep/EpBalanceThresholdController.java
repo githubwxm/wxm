@@ -60,7 +60,7 @@ public class EpBalanceThresholdController extends BaseController {
         map.put("send_phone1",CommonUtil.emptyStringParseNull( map.get("send_phone1")));
         map.put("send_phone2",CommonUtil.emptyStringParseNull( map.get("send_phone2")));
         ParamsMapValidate.validate(map, generateEpBalanceThresholdMobileWarnValidate());
-        return epBalanceThresholdService.CreateOnUpdateThreshold(map);
+        return epBalanceThresholdService.createOnUpdateThreshold(map);
 
     }
 

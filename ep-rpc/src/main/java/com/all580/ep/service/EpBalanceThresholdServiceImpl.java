@@ -120,7 +120,7 @@ public class EpBalanceThresholdServiceImpl implements EpBalanceThresholdService 
     }
 
     @Override
-    public Result CreateOnUpdateThreshold(Map<String,Object> map){
+    public Result createOnUpdateThreshold(Map<String,Object> map){
         Result result = new Result(true);
         Integer id = CommonUtil.objectParseInteger(map.get("id"));//send_ep_id
         if("1".equals(map.get("threshold_status"))){

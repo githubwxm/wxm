@@ -34,5 +34,5 @@ public interface EpBalanceThresholdService {
 
 
     Result selectThresholdList(Map<String,Object> map);
-    Result CreateOnUpdateThreshold(Map<String,Object> map);
+    Result createOnUpdateThreshold(Map<String,Object> map);
 }
