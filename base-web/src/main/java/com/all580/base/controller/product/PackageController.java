@@ -101,4 +101,16 @@ public class PackageController extends BaseController {
                                                     @RequestParam(defaultValue = "20") Integer record_count) {
         return packageService.selectByPackageHotel(ep_id, name, province, city, record_start, record_count);
     }
+
+    @RequestMapping("view/main")
+    @ResponseBody
+    public Result<?> viewMain(@RequestParam Integer id) {
+        return packageService.selectPackageInfo(id);
+    }
+
+    @RequestMapping("view/sub")
+    @ResponseBody
+    public Result<?> viewSub(@RequestParam Integer id) {
+        return packageSubService.view(id);
+    }
 }

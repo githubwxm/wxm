@@ -122,7 +122,8 @@ public class PackageValidateManager {
                 "refund",
                 "items",
                 "items.quantity",
-                "items.sub_id"
+                "items.sub_id",
+                "items.days"
         }, new ValidRule[]{new ValidRule.NotNull()});
 
         // 校验整数
@@ -132,12 +133,10 @@ public class PackageValidateManager {
                 "min_sell_price",
                 "max_buy_quantity",
                 "items.quantity",
-                "items.sub_id"
+                "items.sub_id",
+                "items.seq",
+                "items.days"
         }, new ValidRule[]{new ValidRule.Digits()});
-
-        rules.put(new String[]{
-                "refund"
-        }, new ValidRule[]{new ValidRule.Boolean()});
 
         return rules;
     }
@@ -153,7 +152,8 @@ public class PackageValidateManager {
                 "refund",
                 "items",
                 "items.quantity",
-                "items.sub_id"
+                "items.sub_id",
+                "items.days"
         }, new ValidRule[]{new ValidRule.NotNull()});
 
         // 校验整数
@@ -164,12 +164,10 @@ public class PackageValidateManager {
                 "min_sell_price",
                 "max_buy_quantity",
                 "items.quantity",
-                "items.sub_id"
+                "items.sub_id",
+                "items.seq",
+                "items.days"
         }, new ValidRule[]{new ValidRule.Digits()});
-
-        rules.put(new String[]{
-                "refund"
-        }, new ValidRule[]{new ValidRule.Boolean()});
 
         return rules;
     }
