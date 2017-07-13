@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -161,6 +162,12 @@ public class QueryOrderController extends BaseController {
     @ResponseBody
     public Result<Map> preClearanceHotelInfo(@RequestParam("itemSn") Long itemSn) {
         return queryOrderService.preClearanceHotelInfo(itemSn);
+    }
+
+    @RequestMapping(value = "visitor/get_list", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<List<VisitorDto>> getVisitorsByOrderItemNumber(@RequestParam("itemSn") Long itemSn) {
+        return queryOrderService.getVisitorsByOrderItemNumber(itemSn);
     }
 
     @RequestMapping(value = "package/list", method = RequestMethod.GET)
