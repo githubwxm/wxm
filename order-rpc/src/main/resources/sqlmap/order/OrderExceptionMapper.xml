@@ -90,7 +90,7 @@
             and exception_time BETWEEN #{start} AND #{end}
         </if>
         <if test="buy_ep_id != null">
-            buy_ep_id =#{buy_ep_id}
+          and   buy_ep_id =#{buy_ep_id}
         </if>
         <if test="core_ep_id != null">
             and ( order_id in(select id from t_order where payee_ep_id=#{core_ep_id})
