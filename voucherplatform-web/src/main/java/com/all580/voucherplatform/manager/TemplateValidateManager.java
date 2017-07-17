@@ -1,4 +1,4 @@
-package com.all580.base.manager.voucherplatform;
+package com.all580.voucherplatform.manager;
 
 import com.framework.common.validate.ValidRule;
 import org.springframework.stereotype.Component;
@@ -7,18 +7,21 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by Linv2 on 2017/5/12.
+ * Created by Linv2 on 2017-06-26.
  */
 
 @Component
-public class UserValidateManager {
-    public Map<String[], ValidRule[]> loginValidate() {
+public class TemplateValidateManager {
+    public Map<String[], ValidRule[]> createValidate() {
         Map<String[], ValidRule[]> rules = new HashMap<>();
         // 校验不为空的参数
         rules.put(new String[]{
-                "userName", // 用户名
-                "passWord" // 密码
+                "name",
+                "sms",
+                "printText",
+                "supply_id",
         }, new ValidRule[]{new ValidRule.NotNull()});
+        rules.put(new String[]{"supply_id", "supplyProd_id"}, new ValidRule[]{new ValidRule.Digits()});
         return rules;
     }
 
@@ -26,16 +29,12 @@ public class UserValidateManager {
         Map<String[], ValidRule[]> rules = new HashMap<>();
         // 校验不为空的参数
         rules.put(new String[]{
-                "id", // 用户Id
-        }, new ValidRule[]{new ValidRule.NotNull(), new ValidRule.Digits()});
-
-        rules.put(new String[]{
-                "passWord", // 密码
+                "id",
+                "name",
+                "sms",
+                "printText",
         }, new ValidRule[]{new ValidRule.NotNull()});
-
-        rules.put(new String[]{
-                "status", // 用户Id
-        }, new ValidRule[]{new ValidRule.Boolean()});
+        rules.put(new String[]{"id"}, new ValidRule[]{new ValidRule.Digits()});
         return rules;
     }
 }

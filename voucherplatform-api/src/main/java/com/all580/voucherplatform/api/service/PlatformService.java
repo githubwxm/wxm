@@ -1,6 +1,8 @@
 package com.all580.voucherplatform.api.service;
 
 import com.framework.common.Result;
+import com.framework.common.vo.PageRecord;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 import java.util.Map;
@@ -91,11 +93,19 @@ public interface PlatformService {
      */
     Result getProdByPlatform(int platformId, String prodCode);
 
-    int getProdCount(String name, Integer platformId, Integer supplyId, Integer supplyprodId, String platformProdCode, Integer productTypeId);
 
-    List<Map> getProdList(String name, Integer platformId, Integer supplyId, Integer supplyprodId, String platformProdCode, Integer productTypeId, Integer recordStart, Integer recordCount);
+    Result<PageRecord<Map>> selectPlatformProdList(String name, Integer platformId, Integer supplyId, Integer supplyprodId, String platformProdCode, Integer productTypeId, Integer recordStart, Integer recordCount);
 
-    int getPlatformCount(String name);
 
-    List<Map> getPlatformtList(String name, Integer recordStart, Integer recordCount);
+    Result<PageRecord<Map>> selectPlatformList(String name, Integer recordStart, Integer recordCount);
+
+    Result<PageRecord<Map>> selectRoleList(Integer platformId, Integer supplyId, String authId, String authKey, String code, String name, Integer recordStart, Integer recordCount);
+
+    //Result<PageRecord<Map>>
+
+
+    Result<PageRecord<Map>> selectProdTyeList(String name, Integer recordStart, Integer recordCount);
+    Result selectProdType(Integer prodTypeId);
+    Result setProdType(Map map);
+    Result delProdType(Integer prodTypeId);
 }

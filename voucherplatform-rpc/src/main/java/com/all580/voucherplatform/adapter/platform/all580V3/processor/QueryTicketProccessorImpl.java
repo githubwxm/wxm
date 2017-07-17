@@ -44,7 +44,7 @@ public class QueryTicketProccessorImpl implements ProcessorService<Platform> {
         if (StringUtils.isEmpty(platformRole.getCode())) {
             throw new ApiException("企业信息未绑定");
         }
-        List<Map> list = supplyProductMapper.getSupplyProdBySupplyId(platformRole.getSupply_id());
+        List<Map> list = supplyProductMapper.selectSupplyProdList(platformRole.getSupply_id(), null, 0, 100);
         List<Map> mapList = new ArrayList<>();
         for (Map itemMap : list) {
             Map mapRet = new HashMap();

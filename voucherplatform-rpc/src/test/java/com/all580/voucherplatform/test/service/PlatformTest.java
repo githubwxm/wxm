@@ -107,15 +107,15 @@ public class PlatformTest extends AbstractTransactionalJUnit4SpringContextTests 
         Assert.assertTrue(!StringUtils.isEmpty(String.valueOf(map.get("name"))));
     }
 
-    @Test
-    public void testGetProdCount() {
-        int count = platformService.getProdCount("成人", null, null, null, null, null);
-        Assert.assertTrue(count > 0);
-    }
-
-    @Test
-    public void testGetProdList() {
-        List<Map> list = platformService.getProdList("成人", null, null, null, null, null, 0, 1);
-        Assert.assertTrue(list.size() > 0);
-    }
+//    @Test
+//    public void testGetProdCount() {
+//        int count = platformService.getProdCount("成人", null, null, null, null, null);
+//        Assert.assertTrue(count > 0);
+//    }
+//
+//    @Test
+//    public void testGetProdList() {
+//        List<Map> list = platformService.getProdList("成人", null, null, null, null, null, 0, 1);
+//        Assert.assertTrue(list.size() > 0);
+//    }
 }

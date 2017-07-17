@@ -9,18 +9,17 @@ import com.all580.voucherplatform.utils.sign.SignService;
 import com.framework.common.Result;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.util.CommonUtil;
+import com.framework.common.vo.PageRecord;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.lang.exception.ApiException;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Created by Linv2 on 2017-05-23.
@@ -39,6 +38,8 @@ public class PlatformServiceImpl implements PlatformService {
     private PlatformProductMapper prodMapper;
     @Autowired
     private SupplyMapper supplyMapper;
+    @Autowired
+    private ProductTypeMapper productTypeMapper;
 
 
     private Integer defaultPordType = 1;
@@ -185,23 +186,109 @@ public class PlatformServiceImpl implements PlatformService {
         return result;
     }
 
+
     @Override
-    public int getProdCount(String name, Integer platformId, Integer supplyId, Integer supplyprodId, String platformProdCode, Integer productTypeId) {
-        return prodMapper.getProdCount(name, platformId, supplyId, supplyprodId, platformProdCode, productTypeId);
+    public Result<PageRecord<Map>> selectPlatformProdList(String name, Integer platformId, Integer supplyId, Integer supplyprodId, String platformProdCode, Integer productTypeId, Integer recordStart, Integer recordCount) {
+        PageRecord<Map> pageRecord = new PageRecord<>();
+        int count = prodMapper.selectPlatformProdCount(name, platformId, supplyId, supplyprodId, platformProdCode, productTypeId);
+        pageRecord.setTotalCount(count);
+        if (count > 0) {
+            pageRecord.setList(prodMapper.selectPlatformProdList(name, platformId, supplyId, supplyprodId, platformProdCode, productTypeId, recordStart, recordCount));
+        } else {
+            pageRecord.setList(new ArrayList<Map>());
+        }
+        Result result = new Result(true);
+        result.put(pageRecord);
+        return result;
+    }
+
+
+    @Override
+    public Result<PageRecord<Map>> selectPlatformList(String name, Integer recordStart, Integer recordCount) {
+        PageRecord<Map> pageRecord = new PageRecord<>();
+        int count = platformMapper.selectPlatformCount(name);
+        pageRecord.setTotalCount(count);
+        if (count > 0) {
+            pageRecord.setList(platformMapper.selectPlatformList(name, recordStart, recordCount));
+        } else {
+            pageRecord.setList(new ArrayList<Map>());
+        }
+        Result<PageRecord<Map>> result = new Result<>(true);
+        result.put(pageRecord);
+        return result;
+    }
+
+
+    @Override
+    public Result<PageRecord<Map>> selectRoleList(Integer platformId, Integer supplyId, String authId, String authKey, String code, String name, Integer recordStart, Integer recordCount) {
+        PageRecord<Map> pageRecord = new PageRecord<>();
+        int count = platformRoleMapper.selectRoleCount(platformId, supplyId, authId, authKey, code, name);
+        pageRecord.setTotalCount(count);
+        if (count > 0) {
+            pageRecord.setList(platformRoleMapper.selectRoleList(platformId, supplyId, authId, authKey, code, name, recordStart, recordCount));
+        } else {
+            pageRecord.setList(new ArrayList<Map>());
+        }
+        Result<PageRecord<Map>> result = new Result<>(true);
+        result.put(pageRecord);
+        return result;
     }
 
     @Override
-    public List<Map> getProdList(String name, Integer platformId, Integer supplyId, Integer supplyprodId, String platformProdCode, Integer productTypeId, Integer recordStart, Integer recordCount) {
-        return prodMapper.getProdList(name, platformId, supplyId, supplyprodId, platformProdCode, productTypeId, recordStart, recordCount);
+    public Result<PageRecord<Map>> selectProdTyeList(String name, Integer recordStart, Integer recordCount) {
+        PageRecord<Map> pageRecord = new PageRecord<>();
+        int count = productTypeMapper.selectProdTyeCount(name);
+        pageRecord.setTotalCount(count);
+        if (count > 0) {
+            pageRecord.setList(productTypeMapper.selectProdTyeList(name, recordStart, recordCount));
+        } else {
+            pageRecord.setList(new ArrayList<Map>());
+        }
+        Result<PageRecord<Map>> result = new Result<>(true);
+        result.put(pageRecord);
+        return result;
     }
 
     @Override
-    public int getPlatformCount(String name) {
-        return platformMapper.getPlatformCount(name);
+    public Result selectProdType(Integer prodTypeId) {
+        Result result = new Result(true);
+        ProductType productType = productTypeMapper.selectByPrimaryKey(prodTypeId);
+        if (productType != null) {
+            result.put(JsonUtils.obj2map(productType));
+        }
+        return result;
     }
 
     @Override
-    public List<Map> getPlatformtList(String name, Integer recordStart, Integer recordCount) {
-        return platformMapper.getPlatformtList(name, recordStart, recordCount);
+    public Result setProdType(Map map) {
+        if (map.containsKey("id")) {
+            ProductType productType = new ProductType();
+            productType.setId(CommonUtil.objectParseInteger(map.get("id")));
+            productType.setName(CommonUtil.emptyStringParseNull(map.get("name")));
+            productType.setDescription(CommonUtil.emptyStringParseNull(map.get("description")));
+            productTypeMapper.updateByPrimaryKeySelective(productType);
+        } else {
+            ProductType productType = new ProductType();
+            productType.setName(CommonUtil.emptyStringParseNull(map.get("name")));
+            productType.setDescription(CommonUtil.emptyStringParseNull(map.get("description")));
+            productType.setCreateTime(new Date());
+            productType.setDefaultOption(false);
+            productType.setStatus(true);
+            productTypeMapper.insertSelective(productType);
+        }
+        return new Result(true);
+
     }
+
+    @Override
+    public Result delProdType(Integer prodTypeId) {
+        ProductType productType = new ProductType();
+        productType.setId(prodTypeId);
+        productType.setStatus(false);
+        productTypeMapper.updateByPrimaryKeySelective(productType);
+        return new Result(true);
+
+    }
+
+
 }

@@ -4,6 +4,8 @@ package com.all580.voucherplatform.utils.sign;
  * Created by Linv2 on 2017-05-19.
  */
 public interface SignService {
+    SignType getSignType();
+
     SignKey generate();
 
     String signature(SignKey signKey, String source);

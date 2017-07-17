@@ -1,15 +1,15 @@
-package com.all580.base.controller.voucherplatform;
+package com.all580.voucherplatform.controller;
 
-import com.all580.base.manager.voucherplatform.TemplateValidateManager;
 import com.all580.voucherplatform.api.service.TemplateService;
+import com.all580.voucherplatform.manager.TemplateValidateManager;
 import com.framework.common.Result;
 import com.framework.common.validate.ParamsMapValidate;
+import com.framework.common.vo.PageRecord;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -17,7 +17,7 @@ import java.util.Map;
  */
 
 @Controller
-@RequestMapping("voucherplatform/template")
+@RequestMapping("api/template")
 @Slf4j
 public class TemplateController {
     @Autowired
@@ -59,26 +59,15 @@ public class TemplateController {
     }
 
 
-    @RequestMapping(value = "getCount", method = RequestMethod.GET)
+    @RequestMapping(value = "selectTemplateList", method = RequestMethod.GET)
     @ResponseBody
-    public Result getCount(String name, Integer supplyId, Integer prodId, Boolean defaultOption) {
-        int count = templateService.getCount(name, supplyId, prodId, defaultOption);
-        Result result = new Result(true);
-        result.putExt("data", count);
-        return result;
-    }
+    public Result<PageRecord<Map>> selectTemplateList(String name,
+                                                      Integer supplyId,
+                                                      Integer prodId,
+                                                      Boolean defaultOption,
+                                                      @RequestParam(value = "record_Start", defaultValue = "0") Integer recordStart,
+                                                      @RequestParam(value = "record_Count", defaultValue = "15") Integer recordCount) {
+        return templateService.selectTemplateList(name, supplyId, prodId, defaultOption, recordStart, recordCount);
 
-    @RequestMapping(value = "getList", method = RequestMethod.GET)
-    @ResponseBody
-    public Result getList(String name,
-                          Integer supplyId,
-                          Integer prodId,
-                          Boolean defaultOption,
-                          Integer recordStart,
-                          Integer recordSCount) {
-        List<Map> mapList = templateService.getList(name, supplyId, prodId, defaultOption, recordStart, recordSCount);
-        Result result = new Result(true);
-        result.putExt("data", mapList);
-        return result;
     }
 }

@@ -21,5 +21,6 @@
 	<dubbo:service interface="com.all580.voucherplatform.api.service.PlatformService" ref="platformServiceImpl" />
 	<dubbo:service interface="com.all580.voucherplatform.api.service.SupplyService" ref="supplyServiceImpl" />
 	<dubbo:service interface="com.all580.voucherplatform.api.service.TemplateService" ref="templateServiceImpl" />
+	<dubbo:service interface="com.all580.voucherplatform.api.service.TicketSysService" ref="ticketSysServiceImpl" />
 
 </beans>

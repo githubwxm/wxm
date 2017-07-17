@@ -172,6 +172,6 @@
     <dubbo:reference id="supplyService" interface="com.all580.voucherplatform.api.service.SupplyService"/>
     <dubbo:reference id="platformService" interface="com.all580.voucherplatform.api.service.PlatformService"/>
     <dubbo:reference id="voucherOrderService" interface="com.all580.voucherplatform.api.service.OrderService"/>
-
     <dubbo:reference id="all580Service" interface="com.all580.voucherplatform.api.service.All580Service"/>
+    <dubbo:reference id="ticketSysService" interface="com.all580.voucherplatform.api.service.TicketSysService"/>
 </beans>

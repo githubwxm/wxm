@@ -6,11 +6,14 @@ import com.all580.voucherplatform.entity.QrRule;
 import com.framework.common.Result;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.util.CommonUtil;
+import com.framework.common.vo.PageRecord;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -33,6 +36,7 @@ public class QrServiceImpl implements QrService {
         if (qrRuleMapper.getQrRule(qrRole.getSupply_id(), qrRole.getSupplyprod_id()) != null) {
             result.setError("对同一商户和产品不能重复添加模版");
         } else {
+            qrRole.setCreateTime(new Date());
             qrRole.setStatus(true);
             qrRole.setDefaultOption(false);
             qrRuleMapper.insertSelective(qrRole);
@@ -89,13 +93,18 @@ public class QrServiceImpl implements QrService {
 
 
     @Override
-    public int getCount(String name, Integer len, String prefix, String postfix, Integer supplyId, Integer prodId, Boolean defaultOption) {
-        return qrRuleMapper.getCount(name, len, prefix, postfix, supplyId, prodId, defaultOption);
-    }
-
-    @Override
-    public List<Map> getList(String name, Integer len, String prefix, String postfix, Integer supplyId, Integer prodId, Boolean defaultOption, Integer recordStart, Integer recordCount) {
-        return qrRuleMapper.getList(name, len, prefix, postfix, supplyId, prodId, defaultOption, recordStart, recordCount);
+    public Result<PageRecord<Map>> selectQrList(String name, Integer len, String prefix, String postfix, Integer supplyId, Integer prodId, Boolean defaultOption, Integer recordStart, Integer recordCount) {
+        PageRecord<Map> pageRecord = new PageRecord<>();
+        int count = qrRuleMapper.selectQrCount(name, len, prefix, postfix, supplyId, prodId, defaultOption);
+        pageRecord.setTotalCount(count);
+        if (count > 0) {
+            pageRecord.setList(qrRuleMapper.selectQrList(name, len, prefix, postfix, supplyId, prodId, defaultOption, recordStart, recordCount));
+        } else {
+            pageRecord.setList(new ArrayList<Map>());
+        }
+        Result<PageRecord<Map>> result = new Result<>(true);
+        result.put(pageRecord);
+        return result;
 
     }
 }

@@ -50,7 +50,7 @@ public interface TicketSysMapper {
     int updateByPrimaryKey(TicketSys record);
 
 
-    int getCount();
+    int selectTicketSysCount();
 
-    List<Map> getList(@Param("record_start") int recordStart, @Param("record_count")  int recordCount);
+    List<Map> selectTicketSysList(@Param("record_start") int recordStart, @Param("record_count")  int recordCount);
 }

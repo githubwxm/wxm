@@ -1,4 +1,4 @@
-package com.all580.base.manager.voucherplatform;
+package com.all580.voucherplatform.manager;
 
 import com.framework.common.validate.ValidRule;
 import org.springframework.stereotype.Component;
@@ -22,9 +22,8 @@ public class QrRuleValidateManager {
                 "size",
                 "foreColor",
                 "supply_id"
-                , "supplyProd_id"
         }, new ValidRule[]{new ValidRule.NotNull()});
-        rules.put(new String[]{"len", "size"}, new ValidRule[]{new ValidRule.Digits()});
+        rules.put(new String[]{"len", "size", "supplyProd_id"}, new ValidRule[]{new ValidRule.Digits()});
         return rules;
     }
 

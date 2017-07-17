@@ -1,4 +1,4 @@
-package com.all580.base.controller.voucherplatform;
+package com.all580.voucherplatform.controller;
 
 import com.all580.voucherplatform.api.service.All580Service;
 import com.framework.common.BaseController;
@@ -20,7 +20,7 @@ import java.util.Map;
  * Created by Linv2 on 2017-06-20.
  */
 @Controller
-@RequestMapping("voucher/mns")
+@RequestMapping("api/mns")
 @Slf4j
 public class MnsController extends BaseController {
 

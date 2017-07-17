@@ -1,4 +1,4 @@
-package com.all580.base.manager.voucherplatform;
+package com.all580.voucherplatform.manager;
 
 import com.framework.common.validate.ValidRule;
 import org.springframework.stereotype.Component;
@@ -7,34 +7,29 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by Linv2 on 2017-06-26.
+ * Created by Linv2 on 2017/5/12.
  */
 
 @Component
-public class TemplateValidateManager {
-    public Map<String[], ValidRule[]> createValidate() {
+public class UserValidateManager {
+    public Map<String[], ValidRule[]> loginValidate() {
         Map<String[], ValidRule[]> rules = new HashMap<>();
         // 校验不为空的参数
         rules.put(new String[]{
-                "name",
-                "sms",
-                "printText",
-                "supplier_id",
+                "userName", // 用户名
+                "passWord" // 密码
         }, new ValidRule[]{new ValidRule.NotNull()});
-        rules.put(new String[]{"supply_id", "supplyProd_id"}, new ValidRule[]{new ValidRule.Digits()});
         return rules;
     }
 
     public Map<String[], ValidRule[]> updateValidate() {
         Map<String[], ValidRule[]> rules = new HashMap<>();
-        // 校验不为空的参数
+
         rules.put(new String[]{
-                "id",
-                "name",
-                "sms",
-                "printText",
+                "oldPassword", // 密码
+                "passWord", // 密码
         }, new ValidRule[]{new ValidRule.NotNull()});
-        rules.put(new String[]{"id"}, new ValidRule[]{new ValidRule.Digits()});
+
         return rules;
     }
 }

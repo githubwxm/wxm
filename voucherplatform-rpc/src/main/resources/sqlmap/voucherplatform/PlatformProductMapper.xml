@@ -217,12 +217,12 @@
             and `code`=#{code}
         </if>
     </select>
-    <select id="getProdCount" resultType="java.lang.Integer">
+    <select id="selectPlatformProdCount" resultType="java.lang.Integer">
         select
         count(0)
         from t_platformproduct
         where `status`=1
-        <if test="name!=null">
+        <if test="name!=null  and name!=''">
             and `name` LIKE CONCAT('%',#{name},'%')
         </if>
         <if test="platform_Id!=null">
@@ -234,36 +234,50 @@
         <if test="supplyprod_Id!=null">
             and `supplyprod_id`=#{supplyprod_Id}
         </if>
-        <if test="platform_ProdCode!=null">
+        <if test="platform_ProdCode!=null and platform_ProdCode!=''">
             and `code`=#{platform_ProdCode}
         </if>
         <if test="productType_id!=null">
             and `producttype_id`=#{productType_id}
         </if>
     </select>
-    <select id="getProdList" resultType="java.util.Map">
+    <select id="selectPlatformProdList" resultType="java.util.Map">
         select
-        <include refid="Base_Column_List"/>
+        `t_platformproduct`.`id`,
+        `t_platformproduct`.`code`,
+        `t_platformproduct`.`name`,
+        `t_producttype`.`name` as prodType_name,
+        `t_platform`.`name` as platform_name,
+        `t_supply`.`name` as supply_name,
+        `t_supplyproduct`.`code` as supplyPord_code,
+        `t_supplyproduct`.`name` as supplyPord_name,
+        `t_platformproduct`.`createTime`,
+        `t_platformproduct`.`modifyTime`
         from t_platformproduct
-        where `status`=1
-        <if test="name!=null">
-            and `name` LIKE CONCAT('%',#{name},'%')
+        JOIN `t_producttype` on `t_producttype`.`id`=`t_platformproduct`.`producttype_id`
+        join `t_platform` on `t_platform`.`id`=`t_platformproduct`.`platform_id`
+        JOIN `t_supply` on `t_supply`.`id`=`t_platformproduct`.`supply_id`
+        LEFT JOIN  `t_supplyproduct` on `t_supplyproduct`.`id`=`t_platformproduct`.`supplyprod_Id`
+        where `t_platformproduct`.`status`=1
+        <if test="name!=null and name!=''">
+            and `t_platformproduct`.`name` LIKE CONCAT('%',#{name},'%')
         </if>
         <if test="platform_Id!=null">
-            and `platform_id`=#{platform_Id}
+            and `t_platformproduct`.`platform_id`=#{platform_Id}
         </if>
         <if test="supply_Id!=null">
-            and `supply_id`=#{supply_Id}
+            and `t_platformproduct`.`supply_id`=#{supply_Id}
         </if>
         <if test="supplyprod_Id!=null">
-            and `supplyprod_id`=#{supplyprod_Id}
+            and `t_platformproduct`.`supplyprod_id`=#{supplyprod_Id}
         </if>
-        <if test="platform_ProdCode!=null">
-            and `code`=#{platform_ProdCode}
+        <if test="platform_ProdCode!=null and platform_ProdCode!=''">
+            and `t_platformproduct`.`code`=#{platform_ProdCode}
         </if>
         <if test="productType_id!=null">
-            and `producttype_id`=#{productType_id}
+            and `t_platformproduct`.`producttype_id`=#{productType_id}
         </if>
+        order by `t_platformproduct`.`id` desc
         limit #{record_start},#{record_count}
     </select>
 </mapper>

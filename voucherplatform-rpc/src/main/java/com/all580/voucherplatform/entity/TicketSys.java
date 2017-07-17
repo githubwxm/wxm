@@ -34,6 +34,8 @@ public class TicketSys implements Serializable {
      */
     private Date createTime;
 
+    private Boolean prodAddType;
+
     /**
      * 序列化ID,t_ticketsys
      */
@@ -145,5 +147,13 @@ public class TicketSys implements Serializable {
      */
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
+    }
+
+    public Boolean getProdAddType() {
+        return prodAddType;
+    }
+
+    public void setProdAddType(Boolean prodAddType) {
+        this.prodAddType = prodAddType;
     }
 }

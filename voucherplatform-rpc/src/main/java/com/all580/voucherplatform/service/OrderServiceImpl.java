@@ -5,13 +5,16 @@ import com.all580.voucherplatform.dao.OrderMapper;
 import com.all580.voucherplatform.entity.Order;
 import com.all580.voucherplatform.manager.order.CreateOrderManager;
 import com.framework.common.Result;
+import com.framework.common.vo.PageRecord;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.lang.exception.ApiException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -52,12 +55,32 @@ public class OrderServiceImpl implements OrderService {
 
 
     @Override
-    public int getOrderCount(Integer platformId, Integer supplyId, String orderCode, String platformOrderId, String mobile, String idNumber, String voucherNumber, Integer status, Date startTime, Date endTime) {
-        return orderMapper.getOrderCount(platformId, supplyId, orderCode, platformOrderId, mobile, idNumber, voucherNumber, status, startTime, endTime);
+    public Result<PageRecord<Map>> selectOrderList(Integer platformId, Integer supplyId, String orderCode, String platformOrderId, String mobile, String idNumber, String voucherNumber, Integer status, Date startTime, Date endTime, Integer recordStart, Integer recordCount) {
+        PageRecord<Map> pageRecord = new PageRecord<>();
+        int count = orderMapper.selectOrderCount(platformId, supplyId, orderCode, platformOrderId, mobile, idNumber, voucherNumber, status, startTime, endTime);
+        pageRecord.setTotalCount(count);
+        if (count > 0) {
+            pageRecord.setList(orderMapper.selectOrderList(platformId, supplyId, orderCode, platformOrderId, mobile, idNumber, voucherNumber, status, startTime, endTime, recordStart, recordCount));
+        } else {
+            pageRecord.setList(new ArrayList<Map>());
+        }
+        Result<PageRecord<Map>> result = new Result<>(true);
+        result.put(pageRecord);
+        return result;
     }
 
     @Override
-    public List<Map> getOrderList(Integer platformId, Integer supplyId, String orderCode, String platformOrderId, String mobile, String idNumber, String voucherNumber, Integer status, Date startTime, Date endTime, Integer recordStart, Integer recordCount) {
-        return orderMapper.getOrderList(platformId, supplyId, orderCode, platformOrderId, mobile, idNumber, voucherNumber, status, startTime, endTime, recordStart, recordCount);
+    public Result<PageRecord<Map>> selectOrderConsumeList(Integer platformId, Integer supplyId, String orderCode, String platformOrderId, String mobile, String idNumber, String voucherNumber, Integer status, Date startTime, Date endTime, String consumeCode, String supplyConsumeCode, String deviceId, Integer orderId, Integer recordStart, Integer recordCount) {
+        PageRecord<Map> pageRecord = new PageRecord<>();
+        int count = orderMapper.selectOrderConsumeCount(platformId, supplyId, orderCode, platformOrderId, mobile, idNumber, voucherNumber, status, startTime, endTime, consumeCode, supplyConsumeCode, deviceId, orderId);
+        pageRecord.setTotalCount(count);
+        if (count > 0) {
+            pageRecord.setList(orderMapper.selectOrderConsumeList(platformId, supplyId, orderCode, platformOrderId, mobile, idNumber, voucherNumber, status, startTime, endTime, consumeCode, supplyConsumeCode, deviceId, orderId, recordStart, recordCount));
+        } else {
+            pageRecord.setList(new ArrayList<Map>());
+        }
+        Result<PageRecord<Map>> result = new Result<>(true);
+        result.put(pageRecord);
+        return result;
     }
 }

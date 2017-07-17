@@ -192,42 +192,45 @@
             and `supplyprod_id` is null
         </if>
     </select>
-
-    <select id="getCount" resultType="java.lang.Integer">
+    <select id="selectTemplateCount" resultType="java.lang.Integer">
         select count(0)
         from `t_template`
         where `status`=1
-        <if test="name != null">
-            and `name` = #{name},
+        <if test="name != null and name!=''">
+            and `name` = #{name}
         </if>
         <if test="supppy_Id != null">
-            and `supply_id` = #{supppy_Id},
+            and `supply_id` = #{supppy_Id}
         </if>
         <if test="prod_Id != null">
-            and `supplyprod_id` = #{prod_Id},
+            and `supplyprod_id` = #{prod_Id}
         </if>
         <if test="defaultOption != null">
-            and `defaultOption` = #{defaultOption,jdbcType=BIT},
+            and `defaultOption` = #{defaultOption,jdbcType=BIT}
         </if>
     </select>
-    <select id="getList" resultType="java.util.Map">
+    <select id="selectTemplateList" resultType="java.util.Map">
         select
-        <include refid="Base_Column_List"/>
-        from `t_qrrule`
-        where `status`=1
-        <if test="name != null">
-            and `name` = #{name},
+        `t_template`.*,
+        `t_supply`.`name` as supply_name,
+        `t_supplyproduct`.`name` as supplyprod_name
+        from `t_template`
+        left join `t_supply` on `t_supply`.`id`=`t_template`.`supply_id`
+        LEFT join `t_supplyproduct` on `t_supplyproduct`.`id`=`t_template`.`supplyprod_id`
+        where `t_template`.`status`=1
+        <if test="name != null and name!=''">
+            and `t_template`.`name` = #{name}
         </if>
         <if test="supppy_Id != null">
-            and `supply_id` = #{supppy_Id},
+            and `t_template`.`supply_id` = #{supppy_Id}
         </if>
         <if test="prod_Id != null">
-            and `supplyprod_id` = #{prod_Id},
+            and `t_template`.`supplyprod_id` = #{prod_Id}
         </if>
         <if test="defaultOption != null">
-            and `defaultOption` = #{defaultOption},
+            and `t_template`.`defaultOption` = #{defaultOption}
         </if>
-        order by id desc
+        order by `t_template`.`id` desc
         limit #{record_start},#{record_count}
 
     </select>
