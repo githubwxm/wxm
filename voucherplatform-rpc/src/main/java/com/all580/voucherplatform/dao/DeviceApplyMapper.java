@@ -44,4 +44,11 @@ public interface DeviceApplyMapper {
      * @param record
      */
     int updateByPrimaryKey(DeviceApply record);
+
+    /**
+     *  根据指定主键获取一条数据库记录,t_device_apply
+     *
+     * @param code
+     */
+    DeviceApply selectByCode(String code);
 }

@@ -27,7 +27,7 @@ public class DeviceGroup implements Serializable {
     /**
      *  状态,所属表字段为t_device_group.status
      */
-    private String status;
+    private Boolean status;
 
     /**
      *  创建时间,所属表字段为t_device_group.createTime
@@ -42,7 +42,7 @@ public class DeviceGroup implements Serializable {
     /**
      *  签名类型,所属表字段为t_device_group.signType
      */
-    private String signType;
+    private Integer signType;
 
     /**
      *  私钥,所属表字段为t_device_group.privateKey
@@ -136,7 +136,7 @@ public class DeviceGroup implements Serializable {
      *
      * @return t_device_group.status, 状态
      */
-    public String getStatus() {
+    public Boolean getStatus() {
         return status;
     }
 
@@ -145,8 +145,8 @@ public class DeviceGroup implements Serializable {
      *
      * @param status t_device_group.status, 状态
      */
-    public void setStatus(String status) {
-        this.status = status == null ? null : status.trim();
+    public void setStatus(Boolean status) {
+        this.status = status;
     }
 
     /**
@@ -190,7 +190,7 @@ public class DeviceGroup implements Serializable {
      *
      * @return t_device_group.signType, 签名类型
      */
-    public String getSignType() {
+    public Integer getSignType() {
         return signType;
     }
 
@@ -199,8 +199,8 @@ public class DeviceGroup implements Serializable {
      *
      * @param signType t_device_group.signType, 签名类型
      */
-    public void setSignType(String signType) {
-        this.signType = signType == null ? null : signType.trim();
+    public void setSignType(Integer signType) {
+        this.signType = signType;
     }
 
     /**

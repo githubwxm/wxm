@@ -1,6 +1,11 @@
 package com.all580.voucherplatform.dao;
 
+import com.all580.voucherplatform.entity.Device;
 import com.all580.voucherplatform.entity.DeviceProduct;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
+import java.util.Map;
 
 public interface DeviceProductMapper {
     /**
@@ -44,4 +49,9 @@ public interface DeviceProductMapper {
      * @param record
      */
     int updateByPrimaryKey(DeviceProduct record);
+
+
+    DeviceProduct selectByProdId(@Param("groupId") Integer groupId, @Param("supplyProdId") Integer supplyProdId);
+
+    List<Map> selectProdList(@Param("groupId") Integer groupId);
 }

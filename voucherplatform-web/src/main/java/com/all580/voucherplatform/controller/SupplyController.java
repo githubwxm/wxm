@@ -79,7 +79,7 @@ public class SupplyController {
 
     @RequestMapping(value = "selectSupplyList", method = RequestMethod.GET)
     @ResponseBody
-    public Result<?> selectSupplyList(String name, @RequestParam(value = "record_Start", defaultValue = "0") Integer recordStart, @RequestParam(value = "record_Count", defaultValue = "15") Integer recordCount) {
+    public Result<?> selectSupplyList(String name, @RequestParam(value = "record_start", defaultValue = "0") Integer recordStart, @RequestParam(value = "record_count", defaultValue = "15") Integer recordCount) {
         Result<PageRecord<Map>> result = supplyService.selectSupplyList(name, recordStart, recordCount);
         return result;
     }
