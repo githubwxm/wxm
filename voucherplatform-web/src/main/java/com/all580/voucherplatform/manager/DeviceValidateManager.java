@@ -1,6 +1,7 @@
 package com.all580.voucherplatform.manager;
 
 import com.framework.common.validate.ValidRule;
+import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -8,6 +9,7 @@ import java.util.Map;
 /**
  * Created by Linv2 on 2017-07-18.
  */
+@Component
 public class DeviceValidateManager {
     public Map<String[], ValidRule[]> createValidate() {
         Map<String[], ValidRule[]> rules = new HashMap<>();
