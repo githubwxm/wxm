@@ -4,9 +4,7 @@ import com.all580.base.manager.GernerateValidate;
 import com.all580.base.util.Utils;
 import com.all580.ep.api.conf.EpConstant;
 import com.all580.product.api.consts.ProductConstants;
-import com.all580.report.api.dto.OrderInfo;
-import com.all580.report.api.dto.OrderItemDetailDto;
-import com.all580.report.api.dto.OrderItemDto;
+import com.all580.report.api.dto.*;
 import com.all580.report.api.service.QueryOrderService;
 import com.framework.common.BaseController;
 import com.framework.common.Result;
@@ -23,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -43,8 +42,7 @@ public class QueryOrderController extends BaseController {
     public Result<?> listLine(@RequestParam Integer ep_type,
                                           String start_date,
                                           String end_date,
-                                          Integer status,
-                                          Integer item_status,
+                                          Integer[] status,
                                           String product_name,
                                           String group_number,
                                           String name,
@@ -55,7 +53,7 @@ public class QueryOrderController extends BaseController {
                                           @RequestParam(defaultValue = "20") Integer record_count) {
         Integer coreEpId = CommonUtil.objectParseInteger(getAttribute(EpConstant.EpKey.CORE_EP_ID));
         Date[] dates = Utils.checkDateTime(start_date, end_date);
-        return queryOrderService.queryLineOrderItemList(number, product_name, group_number, status, item_status, name,
+        return queryOrderService.queryLineOrderItemList(number, product_name, group_number, status, name,
                 phone, ep_type, coreEpId, ep_id, dates[0], dates[1], record_start, record_count);
     }
 
@@ -96,6 +94,52 @@ public class QueryOrderController extends BaseController {
         return queryOrderService.getOrderDetailByNumber(itemSn, epType, coreEpId, epId, showAccount);
     }
 
+    @RequestMapping(value = "scenery/list", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<PageRecord<SceneryOrder>> listSceneryOrderItems(OrderInfo orderInfo,
+                                                                  @RequestParam(defaultValue = "0") Integer record_start,
+                                                                  @RequestParam(defaultValue = "20") Integer record_count) {
+        Integer coreEpId = CommonUtil.objectParseInteger(getAttribute(EpConstant.EpKey.CORE_EP_ID));
+        orderInfo.setCore_ep_id(coreEpId);
+        GernerateValidate validate = new GernerateValidate();
+        validate.addRules(new String[]{"ep_type","ep_id","core_ep_id"},new ValidRule[]{new ValidRule.NotNull()})
+                .validate(orderInfo);
+        return queryOrderService.getSceneryOrderItemList(orderInfo, record_start, record_count);
+    }
+
+    @RequestMapping(value = "scenery/get_item_detail", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<SceneryOrderDetail> getSceneryOrderDetailByNumber(@RequestParam("itemSn") Long itemSn,
+                                                             @RequestParam("show_accout") Integer showAccount,
+                                                             @RequestParam("ep_type") Integer epType,
+                                                             @RequestParam("ep_id") Integer epId) {
+        Integer coreEpId = CommonUtil.objectParseInteger(getAttribute(EpConstant.EpKey.CORE_EP_ID));
+        return queryOrderService.getSceneryOrderDetailByNumber(itemSn, epType, coreEpId, epId, showAccount);
+    }
+
+    @RequestMapping(value = "hotel/list", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<PageRecord<HotelOrder>> listHotelOrderItems(OrderInfo orderInfo,
+                                                                  @RequestParam(defaultValue = "0") Integer record_start,
+                                                                  @RequestParam(defaultValue = "20") Integer record_count) {
+        Integer coreEpId = CommonUtil.objectParseInteger(getAttribute(EpConstant.EpKey.CORE_EP_ID));
+        orderInfo.setCore_ep_id(coreEpId);
+        GernerateValidate validate = new GernerateValidate();
+        validate.addRules(new String[]{"ep_type","ep_id","core_ep_id"},new ValidRule[]{new ValidRule.NotNull()})
+                .validate(orderInfo);
+        return queryOrderService.getHotelOrderItemList(orderInfo, record_start, record_count);
+    }
+
+    @RequestMapping(value = "hotel/get_item_detail", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<HotelOrderDetail> getHotelOrderDetailByNumber(@RequestParam("itemSn") Long itemSn,
+                                                                    @RequestParam("show_accout") Integer showAccount,
+                                                                    @RequestParam("ep_type") Integer epType,
+                                                                    @RequestParam("ep_id") Integer epId) {
+        Integer coreEpId = CommonUtil.objectParseInteger(getAttribute(EpConstant.EpKey.CORE_EP_ID));
+        return queryOrderService.getHotelOrderDetailByNumber(itemSn, epType, coreEpId, epId, showAccount);
+    }
+
     @RequestMapping(value = "item/pre_refund", method = RequestMethod.GET)
     @ResponseBody
     public Result<Map> preRefundOrder(@RequestParam("itemSn") Long itemSn,
@@ -103,6 +147,34 @@ public class QueryOrderController extends BaseController {
                                       @RequestParam("ep_id") Integer epId) {
         Integer coreEpId = CommonUtil.objectParseInteger(getAttribute(EpConstant.EpKey.CORE_EP_ID));
         return queryOrderService.preRefundOrderInfo(itemSn, epType, coreEpId, epId, ProductConstants.RefundEqType.SELLER);
+    }
+
+    @RequestMapping(value = "item/refund_audit", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<RefundAuditInfo> getRefundOrderAuditInfo(@RequestParam("itemSn") Long itemSn,
+                                                  @RequestParam("ep_type") Integer epType,
+                                                  @RequestParam("ep_id") Integer epId) {
+        Integer coreEpId = CommonUtil.objectParseInteger(getAttribute(EpConstant.EpKey.CORE_EP_ID));
+        return queryOrderService.getRefundOrderAuditInfo(itemSn, epType, coreEpId, epId);
+    }
+
+    @RequestMapping(value = "hotel/pre_clearance", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<Map> preClearanceHotelInfo(@RequestParam("itemSn") Long itemSn) {
+        return queryOrderService.preClearanceHotelInfo(itemSn);
+    }
+
+    @RequestMapping(value = "visitor/get_list", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<List<VisitorDto>> getVisitorsByOrderItemNumber(@RequestParam("itemSn") Long itemSn) {
+        return queryOrderService.getVisitorsByOrderItemNumber(itemSn);
+    }
+
+    @RequestMapping(value = "package/list", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<PageRecord<OrderItemDto>> listPackageOrderItem() {
+
+        return null;
     }
 
 }

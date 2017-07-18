@@ -94,7 +94,7 @@ public class TicketCallbackServiceImpl extends BasicSyncDataEvent implements Tic
                 orderItem.getQuantity() * orderItem.getDays(), String.format("散客出票接收:接收信息:%s", JsonUtils.toJson(infoList)), null));
 
         if (orderItem.getStatus() != OrderConstant.OrderItemStatus.TICKETING) {
-            return new Result(false, "订单状态不在出票中");
+            return new Result(false, "订单状态不在出票中,当前状态为:" + OrderConstant.OrderItemStatus.getName(orderItem.getStatus()));
         }
         orderItem.setStatus(OrderConstant.OrderItemStatus.SEND);
         orderItem.setSend_ma_time(procTime);
@@ -139,7 +139,7 @@ public class TicketCallbackServiceImpl extends BasicSyncDataEvent implements Tic
                 orderItem.getQuantity() * orderItem.getDays(), String.format("团队出票接收:接收信息:%s", JsonUtils.toJson(info)), null));
 
         if (orderItem.getStatus() != OrderConstant.OrderItemStatus.TICKETING) {
-            return new Result(false, "订单状态不在出票中");
+            return new Result(false, "订单状态不在出票中,当前状态为:" + OrderConstant.OrderItemStatus.getName(orderItem.getStatus()));
         }
         if (orderItem.getGroup_id() == null || orderItem.getGroup_id() == 0) {
             return new Result(false, "该订单不是团队订单");
@@ -575,7 +575,7 @@ public class TicketCallbackServiceImpl extends BasicSyncDataEvent implements Tic
             return new Result(false, "该订单不是团队订单");
         }
         if (orderItem.getStatus() != OrderConstant.OrderItemStatus.MODIFYING) {
-            return new Result(false, "该订单不在修改中状态");
+            return new Result(false, "该订单不在修改中状态,当前状态为:" + OrderConstant.OrderItemStatus.getName(orderItem.getStatus()));
         }
 
         orderItem.setStatus(success ? OrderConstant.OrderItemStatus.MODIFY : OrderConstant.OrderItemStatus.MODIFY_FAIL);

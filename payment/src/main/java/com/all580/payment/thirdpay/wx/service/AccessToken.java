@@ -138,6 +138,6 @@ public class AccessToken {
     private String postAll580Wx(String method, Map params, String accessKey) {
         String json = JsonUtils.toJson(params);
         String sign = DigestUtils.md5Hex(json + accessKey);
-        return HttpUtils.postJson(String.format("%s/%s?wxhost=%s&sign=%s", webWxUrl, method, webWxHost, sign), json, "UTF-8");
+        return HttpUtils.postJson(String.format("%s/%s?wxhost=%s&sign=%s", webWxUrl, method, webWxHost, sign), json, "UTF-8", true);
     }
 }

@@ -4,6 +4,7 @@ package com.all580.base.controller.thirdcb;
 import com.all580.voucher.api.conf.VoucherConstant;
 import com.all580.voucher.api.service.third.PftRPCService;
 import com.framework.common.Result;
+import com.framework.common.lang.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
 import javax.lang.exception.ApiException;
+import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
 @Slf4j
@@ -25,7 +27,13 @@ public class PftCallbackController {
 
     @RequestMapping(value = "notify", method = RequestMethod.POST)
     @ResponseBody
-    public String notify(@RequestBody Map<String, Object> params) {
+    public String notify(HttpServletRequest request) {
+        log.error("pft:{}", request.getParameterMap().keySet().toArray()[0]);
+        if (!request.getContentType().startsWith("application/x-www-form-urlencoded") || request.getParameterMap().isEmpty()) {
+            return "";
+        }
+        String json = request.getParameterMap().keySet().toArray()[0].toString();
+        Map<String, Object> params = JsonUtils.json2Map(json);
         Result<String> result = pftService.pftOrderStateCallback(
                 VoucherConstant.Provider.PFT,
                 params.get("VerifyCode") == null? null : params.get("VerifyCode").toString(),

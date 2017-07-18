@@ -259,7 +259,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
                 OrderConstant.OrderItemStatus.SEND,
                 OrderConstant.OrderItemStatus.NON_SEND
         }, orderItem.getStatus()) < 0) {
-            throw new ApiException("子订单不在可重新发票状态");
+            throw new ApiException("子订单不在可重新发票状态,当前状态为:" + OrderConstant.OrderItemStatus.getName(orderItem.getStatus()));
         }
 
         String phone = CommonUtil.objectParseString(params.get("phone"));
@@ -301,7 +301,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
                 OrderConstant.OrderItemStatus.SEND,
                 OrderConstant.OrderItemStatus.NON_SEND
         }, orderItem.getStatus()) < 0) {
-            throw new ApiException("子订单不在可重新发票状态");
+            throw new ApiException("子订单不在可重新发票状态,当前状态为:" + OrderConstant.OrderItemStatus.getName(orderItem.getStatus()));
         }
 
         if (!(orderItem.getGroup_id() != null && orderItem.getGroup_id() != 0 &&

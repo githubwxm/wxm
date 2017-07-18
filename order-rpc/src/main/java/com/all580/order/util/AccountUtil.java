@@ -1,5 +1,6 @@
 package com.all580.order.util;
 
+import com.alibaba.fastjson.JSONObject;
 import com.all580.order.api.OrderConstant;
 import com.all580.order.dto.AccountDataDto;
 import com.all580.order.dto.ConsumeDay;
@@ -552,6 +553,15 @@ public class AccountUtil {
             }
         }
         return totalVisitors;
+    }
+
+    public static boolean canRefund(String rule) {
+        try {
+            return JSONObject.parseObject(rule).getBooleanValue("refund");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     /**

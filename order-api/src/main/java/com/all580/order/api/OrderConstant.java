@@ -21,6 +21,26 @@ public class OrderConstant {
         public static final int PAID_HANDLING = 314; // 已支付,处理中
         public static final int PAID = 315; // 已支付,交易成功
         public static final int CANCEL = 316; // 已取消
+
+        public static String getName(int status) {
+            switch (status) {
+                case AUDIT_WAIT:
+                    return "待审核";
+                case PAY_WAIT:
+                    return "待支付";
+                case PAYING:
+                    return "支付中";
+                case PAY_FAIL:
+                    return "支付失败";
+                case PAID_HANDLING:
+                    return "已支付,处理中";
+                case PAID:
+                    return "已支付,交易成功";
+                case CANCEL:
+                    return "已取消";
+            }
+            return "未知";
+        }
     }
 
     /**
@@ -37,6 +57,32 @@ public class OrderConstant {
         public static final int MODIFYING = 327; // 修改中
         public static final int MODIFY = 328; // 已修改
         public static final int MODIFY_FAIL = 329; // 修改失败
+
+        public static String getName(int status) {
+            switch (status) {
+                case AUDIT_WAIT:
+                    return "待审核";
+                case AUDIT_SUCCESS:
+                    return "审核通过";
+                case NON_SEND:
+                    return "未出票";
+                case TICKET_FAIL:
+                    return "出票失败";
+                case TICKETING:
+                    return "出票中";
+                case SEND:
+                    return "已出票";
+                case CANCEL:
+                    return "已取消";
+                case MODIFYING:
+                    return "修改中";
+                case MODIFY:
+                    return "已修改";
+                case MODIFY_FAIL:
+                    return "修改失败";
+            }
+            return "未知";
+        }
     }
 
     /**
@@ -58,6 +104,26 @@ public class OrderConstant {
         public static final int REFUND_MONEY_FAIL = 344; // 退款失败
         public static final int REFUND_SUCCESS = 345; // 退订成功
         public static final int REFUND_MONEY_AUDITING = 346; // 退款审核中
+
+        public static String getName(int status) {
+            switch (status) {
+                case AUDIT_WAIT:
+                    return "待审核";
+                case FAIL:
+                    return "退订失败";
+                case REFUNDING:
+                    return "退票中";
+                case REFUND_MONEY:
+                    return "退款中";
+                case REFUND_MONEY_FAIL:
+                    return "已支付,退款失败";
+                case REFUND_SUCCESS:
+                    return "退订成功";
+                case REFUND_MONEY_AUDITING:
+                    return "退款审核中";
+            }
+            return "未知";
+        }
     }
 
     /**
