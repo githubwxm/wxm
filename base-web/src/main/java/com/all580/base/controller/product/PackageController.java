@@ -113,4 +113,13 @@ public class PackageController extends BaseController {
     public Result<?> viewSub(@RequestParam Integer id) {
         return packageSubService.view(id);
     }
+
+    @RequestMapping("can_sale/list")
+    @ResponseBody
+    public Result<?> canSale(@RequestParam Integer ep_id,
+                             String name, String sub_name, Integer type, Integer province, Integer city,
+                             @RequestParam(defaultValue = "0") Integer record_start,
+                             @RequestParam(defaultValue = "20") Integer record_count) {
+        return packageService.selectCanSale(ep_id, name, sub_name, type, province, city, record_start, record_count);
+    }
 }
