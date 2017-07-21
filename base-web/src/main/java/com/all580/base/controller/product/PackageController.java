@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.lang.exception.ParamsMapValidationException;
 import java.util.Date;
 import java.util.Map;
 
@@ -126,8 +127,10 @@ public class PackageController extends BaseController {
 
     @RequestMapping("calendar")
     @ResponseBody
-    public Result<?> calendar(@RequestParam Integer ep_id, @RequestParam Integer id, @RequestParam String start, @RequestParam Integer days) {
-        Date date = DateFormatUtils.converToDateTime(start);
-        return packageSubService.calendar(id, date, days, ep_id);
+    public Result<?> calendar(@RequestParam Integer ep_id, @RequestParam Integer id, @RequestParam String start, @RequestParam String end) {
+        Date[] dates = Utils.checkDateTime(start, end);
+        int days = (int) DateFormatUtils.getDayBySubDate(dates[0], dates[1]);
+        if (days > 31) throw new ParamsMapValidationException("不能超出一个月时间");
+        return packageSubService.calendar(id, dates[0], days, ep_id);
     }
 }
