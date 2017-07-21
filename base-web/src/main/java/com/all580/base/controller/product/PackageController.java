@@ -6,6 +6,7 @@ import com.all580.product.api.service.PackageService;
 import com.all580.product.api.service.PackageSubService;
 import com.framework.common.BaseController;
 import com.framework.common.Result;
+import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.validate.ParamsMapValidate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -121,5 +122,12 @@ public class PackageController extends BaseController {
                              @RequestParam(defaultValue = "0") Integer record_start,
                              @RequestParam(defaultValue = "20") Integer record_count) {
         return packageService.selectCanSale(ep_id, name, sub_name, type, province, city, record_start, record_count);
+    }
+
+    @RequestMapping("calendar")
+    @ResponseBody
+    public Result<?> calendar(@RequestParam Integer ep_id, @RequestParam Integer id, @RequestParam String start, @RequestParam Integer days) {
+        Date date = DateFormatUtils.converToDateTime(start);
+        return packageSubService.calendar(id, date, days, ep_id);
     }
 }
