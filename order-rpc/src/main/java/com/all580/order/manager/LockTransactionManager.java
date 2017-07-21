@@ -2,6 +2,7 @@ package com.all580.order.manager;
 
 import com.all580.ep.api.conf.EpConstant;
 import com.all580.order.adapter.RefundOrderInterface;
+import com.all580.order.adapter.RefundPackageOrderService;
 import com.all580.order.api.OrderConstant;
 import com.all580.order.api.model.*;
 import com.all580.order.dao.*;
@@ -91,6 +92,8 @@ public class LockTransactionManager {
     private MnsEventAspect eventManager;
     @Autowired
     private JobAspect jobManager;
+    @Autowired
+    private RefundPackageOrderService packageOrderService;
 
     /**
      * 支付回调
@@ -272,6 +275,12 @@ public class LockTransactionManager {
         Result<RefundOrder> result = new Result<>(true);
         result.put(refundOrder);
         return result;
+    }
+
+    public void applyRefundForPackage(Map params, long itemNo) throws Exception {
+        RefundOrderApply apply = packageOrderService.validateAndParseParams(itemNo, params);
+
+        packageOrderService.checkAuth(apply, params);
     }
 
     /**

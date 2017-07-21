@@ -19,11 +19,19 @@ public interface RefundOrderService {
     Result<?> cancel(Map params);
 
     /**
-     * 退订申请
+     * 退订申请（酒店、景点、线路）
      * @param params
      * @return
      */
     Result<?> apply(Map params, String type) throws Exception;
+
+    /**
+     * 套票退订申请
+     * @param params
+     * @return
+     * @throws Exception
+     */
+    Result<?> refundApplyForPackage(Map params) throws Exception;
 
     /**
      * 取消已支付未分账的订单

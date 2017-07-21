@@ -1,6 +1,7 @@
 package com.all580.order.service;
 
 import com.all580.order.adapter.CreateOrderInterface;
+import com.all580.order.adapter.CreatePackageOrderService;
 import com.all580.order.api.OrderConstant;
 import com.all580.order.api.service.BookingOrderService;
 import com.all580.order.dao.*;
@@ -31,6 +32,7 @@ import com.framework.common.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.time.DateFormatUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
@@ -66,6 +68,8 @@ public class BookingOrderServiceImpl implements BookingOrderService {
     private RefundOrderMapper refundOrderMapper;
     @Autowired
     private VisitorMapper visitorMapper;
+    @Autowired
+    private PackageOrderItemMapper PackageOrderItemMapper;
 
     @Autowired
     private ProductSalesPlanRPCService productSalesPlanRPCService;
@@ -84,6 +88,8 @@ public class BookingOrderServiceImpl implements BookingOrderService {
     private MnsEventAspect eventManager;
     @Autowired
     private JobAspect jobManager;
+    @Autowired
+    private CreatePackageOrderService createPackageOrderService;
 
     @Override
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
@@ -212,6 +218,91 @@ public class BookingOrderServiceImpl implements BookingOrderService {
                 order.getBuy_ep_id(), order.getBuy_ep_name(), OrderConstant.LogOperateCode.CREATE_SUCCESS,
                 null, String.format("订单创建成功:%s", JsonUtils.toJson(params)), null));
         return result;
+    }
+
+    @Override
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public Result<?> createPackageOrder(Map params) throws Exception {
+        //解析参数
+        CreateOrder createOrder = createPackageOrderService.parseParams(params);
+        //校验是否可购买
+        Result validateResult = createPackageOrderService.validate(createOrder, params);
+        if (!validateResult.isSuccess()) {
+            return validateResult;
+        }
+
+        // 创建订单
+        Order order = createPackageOrderService.insertOrder(createOrder, params);
+
+        ValidateProductSub packageSub = createPackageOrderService.parseItemParams(createOrder, params);
+
+        ProductSalesInfo salesInfo = createPackageOrderService.validateProductAndGetSales(packageSub, createOrder, params);
+
+        createPackageOrderService.validateBookingDate(packageSub, salesInfo.getDay_info_list());
+
+        // 每天的价格
+        List<List<EpSalesInfo>> allDaysSales = salesInfo.getSales();
+        Assert.notEmpty(allDaysSales, "该产品未被分销");
+
+        // 套票订单总进货价
+        PriceDto price = bookingOrderManager.calcSalesPrice(allDaysSales, salesInfo, createOrder.getEpId(), packageSub.getQuantity(), createOrder.getFrom());
+
+        PackageOrderItem packageOrderItem = createPackageOrderService.insertPackageOrderInfo(salesInfo, order, params);
+
+        packageOrderItem.setStart(packageSub.getBooking());
+        packageOrderItem.setEp_id(salesInfo.getEp_id());
+        packageOrderItem.setCore_ep_id(bookingOrderManager.getCoreEpId(salesInfo.getEp_id()).get());
+        ProductSalesDayInfo productSalesDayInfo = null;
+        int index = 0;
+        List<ProductSalesDayInfo> productSalesDayInfoList = salesInfo.getDay_info_list();
+        for (ProductSalesDayInfo info : productSalesDayInfoList){
+            if (StringUtils.equals(DateFormatUtils.format(info.getStart_time(),"yyyy-mm-dd"),
+                    DateFormatUtils.format(packageSub.getBooking(),"yyyy-mm-dd"))){
+                productSalesDayInfo = info;
+                break;
+            }
+            index++;
+        }
+        if (productSalesDayInfo != null){
+            packageOrderItem.setCust_refund_rule(productSalesDayInfo.getCust_refund_rule());
+            packageOrderItem.setSaler_refund_rule(productSalesDayInfo.getSaler_refund_rule());
+            packageOrderItem.setSettle_price(productSalesDayInfo.getSettle_price());
+            EpSalesInfo saleInfo = bookingOrderManager.getSalePrice(allDaysSales.get(index), salesInfo.getEp_id());
+            EpSalesInfo buyInfo = bookingOrderManager.getBuyingPrice(allDaysSales.get(index), order.getBuy_ep_id());
+            Assert.notNull(saleInfo, "该产品未正确配置");
+            Assert.notNull(buyInfo, "该产品未正确配置");
+            packageOrderItem.setSale_price(order.getFrom_type() == OrderConstant.FromType.TRUST ? buyInfo.getShop_price() : buyInfo.getPrice());
+            packageOrderItem.setSupply_price(saleInfo.getPrice());
+        }
+        packageOrderItem.setUpdate_time(new Date());
+
+        /**套票订单销售链暂时用packageOrderItem.id关联*/
+
+        // 析构销售链
+        createPackageOrderService.insertSalesChain(packageOrderItem, packageSub, allDaysSales);
+        // 预分账记录
+        createPackageOrderService.prePaySplitAccount(allDaysSales, packageOrderItem, createOrder.getEpId());
+
+        //创建元素订单
+        params.put("order_number", order.getNumber());
+        Result<?> result = this.create(params, "PACKAGE");
+        Result<Map> res = new Result<>(Boolean.TRUE);
+        if (result.isSuccess()){
+            Map resultMap = (Map) result.get();
+            Order itemOrder = JsonUtils.map2obj((Map) resultMap.get("order") ,Order.class) ;
+
+            packageOrderItem.setPay_amount(itemOrder.getPay_amount());
+            packageOrderItem.setSale_amount(itemOrder.getSale_amount());
+            //设置订单金额
+            itemOrder.setPay_amount(salesInfo.getPay_type() == ProductConstants.PayType.PREPAY  ? price.getSale() : 0);
+            itemOrder.setSale_amount(price.getSale());
+
+            orderMapper.updateByPrimaryKeySelective(itemOrder);
+            res.put(JsonUtils.obj2map(itemOrder));
+        }
+
+        PackageOrderItemMapper.updateByPrimaryKeySelective(packageOrderItem);
+        return res;
     }
 
     @Override

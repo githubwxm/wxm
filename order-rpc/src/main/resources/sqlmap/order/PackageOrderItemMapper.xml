@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.all580.order.dao.PackageOrderItemMapper">
+  <resultMap id="BaseResultMap" type="com.all580.order.entity.PackageOrderItem" autoMapping="true">
+  </resultMap>
+
+  <insert id="insertSelective" parameterType="com.all580.order.entity.PackageOrderItem">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into t_package_order_item
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="order_number != null">
+        `order_number`,
+      </if>
+      <if test="product_sub_id != null">
+        `product_sub_id`,
+      </if>
+      <if test="product_sub_code != null">
+        `product_sub_code`,
+      </if>
+      <if test="product_sub_name != null">
+        `product_sub_name`,
+      </if>
+      <if test="product_name != null">
+        `product_name`,
+      </if>
+      <if test="cust_refund_rule != null">
+        `cust_refund_rule`,
+      </if>
+      <if test="saler_refund_rule != null">
+        `saler_refund_rule`,
+      </if>
+      <if test="start != null">
+        `start`,
+      </if>
+      <if test="quantity != null">
+        `quantity`,
+      </if>
+      <if test="used_quantity != null">
+        `used_quantity`,
+      </if>
+      <if test="refund_quantity != null">
+        `refund_quantity`,
+      </if>
+      <if test="sale_amount != null">
+        `sale_amount`,
+      </if>
+      <if test="pay_amount != null">
+        `pay_amount`,
+      </if>
+      <if test="supply_price != null">
+        `supply_price`,
+      </if>
+      <if test="sale_price != null">
+        `sale_price`,
+      </if>
+      <if test="settle_price != null">
+        `settle_price`,
+      </if>
+      <if test="core_ep_id != null">
+        `core_ep_id`,
+      </if>
+      <if test="ep_id != null">
+        `ep_id`,
+      </if>
+      <if test="update_time != null">
+        `update_time`,
+      </if>
+      <if test="audit_time != null">
+        `audit_time`,
+      </if>
+      <if test="audit != null">
+        `audit`,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="order_number != null">
+        #{order_number},
+      </if>
+      <if test="product_sub_id != null">
+        #{product_sub_id},
+      </if>
+      <if test="product_sub_code != null">
+        #{product_sub_code},
+      </if>
+      <if test="product_sub_name != null">
+        #{product_sub_name},
+      </if>
+      <if test="product_name != null">
+        #{product_name},
+      </if>
+      <if test="cust_refund_rule != null">
+        #{cust_refund_rule},
+      </if>
+      <if test="saler_refund_rule != null">
+        #{saler_refund_rule},
+      </if>
+      <if test="start != null">
+        #{start},
+      </if>
+      <if test="quantity != null">
+        #{quantity},
+      </if>
+      <if test="used_quantity != null">
+        #{used_quantity},
+      </if>
+      <if test="refund_quantity != null">
+        #{refund_quantity},
+      </if>
+      <if test="sale_amount != null">
+        #{sale_amount},
+      </if>
+      <if test="pay_amount != null">
+        #{pay_amount},
+      </if>
+      <if test="supply_price != null">
+        #{supply_price},
+      </if>
+      <if test="sale_price != null">
+        #{sale_price},
+      </if>
+      <if test="settle_price != null">
+        #{settle_price},
+      </if>
+      <if test="core_ep_id != null">
+        #{core_ep_id},
+      </if>
+      <if test="ep_id != null">
+        #{ep_id},
+      </if>
+      <if test="update_time != null">
+        #{update_time},
+      </if>
+      <if test="audit_time != null">
+        #{audit_time},
+      </if>
+      <if test="audit != null">
+        #{audit},
+      </if>
+    </trim>
+  </insert>
+
+  <update id="updateByPrimaryKeySelective" parameterType="com.all580.order.entity.PackageOrderItem">
+    UPDATE t_package_order_item
+    <set>
+      <if test="order_number != null">
+        order_number = #{order_number},
+      </if>
+      <if test="product_sub_id != null">
+        product_sub_id = #{product_sub_id},
+      </if>
+      <if test="product_sub_code != null">
+        product_sub_code = #{product_sub_code},
+      </if>
+      <if test="product_sub_name != null">
+        product_sub_name = #{product_sub_name},
+      </if>
+      <if test="product_name != null">
+        product_name = #{product_name},
+      </if>
+      <if test="cust_refund_rule != null">
+        cust_refund_rule = #{cust_refund_rule},
+      </if>
+      <if test="saler_refund_rule != null">
+        saler_refund_rule = #{saler_refund_rule},
+      </if>
+      <if test="start != null">
+        start = #{start},
+      </if>
+      <if test="quantity != null">
+        quantity = #{quantity},
+      </if>
+      <if test="used_quantity != null">
+        used_quantity = #{used_quantity},
+      </if>
+      <if test="refund_quantity != null">
+        refund_quantity = #{refund_quantity},
+      </if>
+      <if test="pay_amount != null">
+        pay_amount = #{pay_amount},
+      </if>
+      <if test="sale_amount != null">
+        sale_amount = #{sale_amount},
+      </if>
+      <if test="supply_price != null">
+        supply_price = #{supply_price},
+      </if>
+      <if test="sale_price != null">
+        sale_price = #{sale_price},
+      </if>
+      <if test="settle_price != null">
+        settle_price = #{settle_price},
+      </if>
+      <if test="core_ep_id != null">
+        core_ep_id = #{core_ep_id},
+      </if>
+      <if test="ep_id != null">
+        ep_id = #{ep_id},
+      </if>
+      <if test="update_time != null">
+        update_time = #{update_time},
+      </if>
+      <if test="audit_time != null">
+        audit_time = #{audit_time},
+      </if>
+      <if test="audit != null">
+        audit = #{audit},
+      </if>
+    </set>
+    WHERE id = #{id}
+  </update>
+
+  <select id="selectByNumber" resultMap="BaseResultMap">
+    SELECT * FROM t_package_order_item WHERE order_number = #{number}
+  </select>
+</mapper>
