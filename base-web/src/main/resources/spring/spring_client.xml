@@ -16,6 +16,15 @@
 
     <dubbo:consumer check="false" retries="0" timeout="60000"/>
 
+    <dubbo:reference id="platFuncService"
+                     interface="com.all580.role.api.service.PlatFuncService"/>
+    <dubbo:reference id="userRoleService"
+                     interface="com.all580.role.api.service.UserRoleService"/>
+    <dubbo:reference id="funcGroupLinkService"
+                     interface="com.all580.role.api.service.FuncGroupLinkService"/>
+    <dubbo:reference id="funcGroupService"
+                     interface="com.all580.role.api.service.FuncGroupService"/>
+
 
     <dubbo:reference id="itineraryPlanSaleService"
                      interface="com.all580.product.api.hotel.service.ItineraryPlanSaleService"/>

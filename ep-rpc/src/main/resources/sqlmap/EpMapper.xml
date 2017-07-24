@@ -254,15 +254,19 @@
             <if test="group_id != null and group_id!=''">
                 group_id = #{group_id},
             </if>
+            <if test="ep_role != null and ep_role!=''">
+                ep_role = #{ep_role},
+            </if>
         </set>
         where id =#{id}
     </update>
     <insert id="create">
         INSERT INTO `t_ep`(name,en_name,ep_type,linkman,link_phone,address,code,license,logo_pic,status,access_id,
-       access_key,creator_ep_id,core_ep_id,status_bak,province,city,area,group_id,group_name,ep_class,pic_address)
+       access_key,creator_ep_id,core_ep_id,status_bak,province,city,area,group_id,group_name,ep_class,pic_address,ep_role)
        VALUES (#{name}, #{en_name}, #{ep_type}, #{linkman}, #{link_phone}, #{address}, #{code}, #{license},
       #{logo_pic}, #{status}, #{access_id}, #{access_key}, #{creator_ep_id}, #{core_ep_id}, #{status_bak},
-      #{province}, #{city}, #{area}, #{group_id}, #{group_name}, #{ep_class},#{pic_address});
+      #{province}, #{city}, #{area}, #{group_id}, #{group_name}, #{ep_class},#{pic_address},
+        (select id from t_ep_role where ep_type=#{ep_type} limit 1));
         <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
             SELECT LAST_INSERT_ID();
         </selectKey>   <!-- 添加到map里面key id  -->

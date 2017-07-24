@@ -14,13 +14,13 @@ public interface CoreEpChannelService {
      * @param params
      * @return
      */
-    Result<Integer> create(Map<String,Object> params);
+    Result<Integer> create(Map<String, Object> params);
     /**
      * 只能修改汇率
      * @param params  ｛id:int 必填，rate:int  必填 费率｝
      * @return
      */
-    Result<Integer> update(Map<String,Object> params);
+    Result<Integer> update(Map<String, Object> params);
 
     /**
      * supplier_core_ep_id  supplier_name
@@ -37,9 +37,9 @@ public interface CoreEpChannelService {
      * seller_core_ep_id 销售商id,seller_name 名称,seller_phone 电话,rate  汇率  0.12
      *
      */
-    Result<Map<String,Object>> select(Map<String,Object> params);
+    Result<Map<String,Object>> select(Map<String, Object> params);
 
-    Result<Integer> selectPlatfromRate(int supplier_core_ep_id,int seller_core_ep_id);
+    Result<Integer> selectPlatfromRate(int supplier_core_ep_id, int seller_core_ep_id);
     /**
      * 取消平台供应关系
      * @param id

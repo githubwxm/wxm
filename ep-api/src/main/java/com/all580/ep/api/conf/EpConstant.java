@@ -15,6 +15,11 @@ public class EpConstant {
         public static final String T_FUNC="t_func";
         public static final String T_INTF="t_intf";
         //public static final String T_CORE_EP_ACCESS="t_core_ep_access";//企业信息表
+        public static final String T_USER_ROLE="t_user_role";
+        public static final String T_FUNC_GROUP_LINK="t_func_group_link";
+        public static final String T_FUNC_GROUP="T_FUNC_GROUP";
+        public static final String T_PLAT_FUNC="t_plat_func";
+        public static final String T_USER_ROLE_FUNC="t_user_role_func";
     }
     public static class EpKey{
         public static final String  EP_ID ="ep_id";//企业类型//
