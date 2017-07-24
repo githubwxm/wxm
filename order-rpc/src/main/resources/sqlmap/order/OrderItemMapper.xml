@@ -637,6 +637,7 @@
             toi.number,
             toi.pro_name,
             toi.pro_sub_name,
+            toi.pro_type,
             o.buy_ep_name,
             o.create_time,
             CASE IFNULL(toi.payment_flag,'')
