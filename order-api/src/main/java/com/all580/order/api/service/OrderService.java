@@ -130,6 +130,13 @@ public interface OrderService {
     Result<?> selectOrderItemInfoByOta(long number);
 
     /**
+     * 查询子订单信息
+     * @param number
+     * @return
+     */
+    Result<Map> selectOrderItemByNumber(long number);
+
+    /**
      * 心跳接口
      * @return
      */

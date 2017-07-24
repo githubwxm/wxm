@@ -167,6 +167,39 @@ public class LineControllerTest {
     }
 
     @Test
+    public void testGetSceneryOrderItemList() throws Exception{
+        mockMvc.perform(
+                get("/api/order/query/scenery/list")
+                        //.param("productType","5101")
+                        .param("start","2017-06-27")
+                        .param("end","2017-06-28")
+                        .param("ep_type","10003")
+                        .param("ep_id","24")
+                        .param("core_ep_id","1")
+                        .param("record_start","0")
+                        .param("record_count","20")
+        ).andExpect(
+                status().isOk()
+        ).andExpect(
+                jsonPath("$.code", is("200"))
+        ).andDo(print());
+    }
+
+    @Test
+    public void testGetSceneryOrderDetailByNumber() throws Exception{
+        mockMvc.perform(
+                get("/api/order/query/scenery/get_item_detail")
+                        .param("orderSn","1498029473012180")
+                        .param("ep_type","10003")
+                        .param("ep_id","24")
+        ).andExpect(
+                status().isOk()
+        ).andExpect(
+                jsonPath("$.code", is("200"))
+        ).andDo(print());
+    }
+
+    @Test
     public void testGetOrderDetailByNumber() throws Exception{
         mockMvc.perform(
                 get("/api/order/query/item/get_item_detail")
@@ -195,4 +228,15 @@ public class LineControllerTest {
         ).andDo(print());
     }
 
+    @Test
+    public void  testPreClearanceHotelInfo() throws Exception{
+        mockMvc.perform(
+                get("/api/order/query/hotel/pre_clearance")
+                        .param("itemSn","1494323810924730")
+        ).andExpect(
+                status().isOk()
+        ).andExpect(
+                jsonPath("$.code", is("200"))
+        ).andDo(print());
+    }
 }

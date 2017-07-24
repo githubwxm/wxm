@@ -2,17 +2,16 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.all580.order.dao.OrderExceptionMapper">
     <select id="selectOrderSendException" resultType="java.util.Map">
-      select  toi.order_id,toi.id as order_item_id,t.number,toi.number as pro_sub_number,pro_name,pro_sub_name,
+      select  buy_ep_id,toi.order_id,toi.id as order_item_id,t.number,toi.number as pro_sub_number,pro_name,pro_sub_name,
        toi.update_time as exception_time,supplier_ep_id, -- supplier_ep_name,
         buy_ep_name,toi.status as exception_status,'出票中' as exception_name
       from t_order t join t_order_item toi on t.id=toi.order_id
-      where toi.status=324 and  TIMESTAMPDIFF(MINUTE,toi.update_time,NOW())>20 and t.id not in(
-      select toe.order_id from t_order_exception  toe
-      )
+      where toi.status=324  and  TIMESTAMPDIFF(MINUTE,toi.update_time,NOW())>20 and t.id not in(
+      select toe.order_id from t_order_exception  toe)
     </select>
 
   <select id="selectOrderFefundException" resultType="java.util.Map">
-    select toi.order_id,toi.id as order_item_id,t.number,toi.number as pro_sub_number,pro_name,pro_sub_name,
+    select buy_ep_id,toi.order_id,toi.id as order_item_id,t.number,toi.number as pro_sub_number,pro_name,pro_sub_name,
      toi.update_time as exception_time,supplier_ep_id, -- supplier_ep_name,
         buy_ep_name,342 as exception_status,'退票中' as exception_name
      from t_order t join t_order_item toi on t.id=toi.order_id
@@ -22,7 +21,7 @@
       ));
   </select>
     <select id="selectOrderNumException" resultType="java.util.Map">
-        select toi.order_id,toi.id as order_item_id,t.number,toi.number as pro_sub_number,pro_name,pro_sub_name,
+        select buy_ep_id,toi.order_id,toi.id as order_item_id,t.number,toi.number as pro_sub_number,pro_name,pro_sub_name,
         toi.update_time as exception_time,supplier_ep_id, -- supplier_ep_name,
         buy_ep_name,347 as exception_status,'数量错误' as exception_name
         from t_order t join t_order_item toi on t.id=toi.order_id
@@ -42,12 +41,12 @@
         supplier_ep_name,
         buy_ep_name,
         exception_status,
-        exception_name
+        exception_name,buy_ep_id
         ) VALUES
         <foreach collection="list" item="item" index="index" separator="," >
             (#{item.order_id}, #{item.order_item_id}, #{item.number}, #{item.pro_sub_number}, #{item.pro_name},
             #{item.pro_sub_name}, #{item.exception_time}, #{item.supplier_ep_id}, #{item.supplier_ep_name}, #{item.buy_ep_name},
-            #{item.exception_status}, #{item.exception_name})
+            #{item.exception_status}, #{item.exception_name}, #{item.buy_ep_id})
         </foreach>
         on DUPLICATE   key update order_id=order_id ;
     </insert>
@@ -66,6 +65,13 @@
         <if test="start != null and end != null">
             and exception_time BETWEEN #{start} AND #{end}
         </if>
+        <if test="buy_ep_id != null">
+          and  buy_ep_id =#{buy_ep_id}
+        </if>
+        <if test="core_ep_id != null">
+            and ( order_id in(select id from t_order where payee_ep_id=#{core_ep_id})
+            or order_item_id in(select id from t_order_item where supplier_core_ep_id=#{core_ep_id}) )
+        </if>
         <include refid="limit"/>
     </select>
     <select id="selectOrderExceptionCount" resultType="java.lang.Integer">
@@ -82,6 +88,13 @@
         </if>
         <if test="start != null and end != null">
             and exception_time BETWEEN #{start} AND #{end}
+        </if>
+        <if test="buy_ep_id != null">
+          and   buy_ep_id =#{buy_ep_id}
+        </if>
+        <if test="core_ep_id != null">
+            and ( order_id in(select id from t_order where payee_ep_id=#{core_ep_id})
+            or order_item_id in(select id from t_order_item where supplier_core_ep_id=#{core_ep_id}) )
         </if>
     </select>
 

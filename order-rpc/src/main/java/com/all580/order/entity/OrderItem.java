@@ -176,6 +176,11 @@ public class OrderItem implements Serializable {
     private Date audit_time;
 
     /**
+     *  审核结果,所属表字段为t_order_item.audit
+     */
+    private Boolean audit;
+
+    /**
      *  ,所属表字段为t_order_item.memo
      */
     private String memo;

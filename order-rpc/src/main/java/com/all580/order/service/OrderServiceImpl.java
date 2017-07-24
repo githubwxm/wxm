@@ -6,6 +6,7 @@ import com.all580.order.dao.OrderClearanceSerialMapper;
 import com.all580.order.dao.OrderItemMapper;
 import com.all580.order.dao.OrderMapper;
 import com.all580.order.entity.Order;
+import com.all580.order.entity.OrderItem;
 import com.all580.order.manager.BookingOrderManager;
 import com.all580.order.service.event.BasicSyncDataEvent;
 import com.framework.common.Result;
@@ -200,6 +201,14 @@ public class OrderServiceImpl extends BasicSyncDataEvent implements OrderService
         Result<Map> result = new Result<>(true);
         Map map = orderItemMapper.selectInfoForOtaBySn(number);
         result.put(map);
+        return result;
+    }
+
+    @Override
+    public Result<Map> selectOrderItemByNumber(long number) {
+        Result<Map> result = new Result<>(true);
+        OrderItem orderItem = orderItemMapper.selectBySN(number);
+        result.put(JsonUtils.obj2map(orderItem));
         return result;
     }
 
