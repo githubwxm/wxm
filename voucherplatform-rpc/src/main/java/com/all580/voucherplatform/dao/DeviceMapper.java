@@ -52,7 +52,17 @@ public interface DeviceMapper {
     Device selectByCode(String code);
 
 
-    int selectDeviceCount(@Param("groupId") Integer groupId, @Param("supplyId") Integer supplyId, @Param("code") String code, @Param("name") String name);
+    int selectDeviceCount(@Param("groupId") Integer groupId,
+                          @Param("supplyId") Integer supplyId,
+                          @Param("code") String code,
+                          @Param("name") String name);
 
-    List<Map> selectDeviceList(@Param("groupId") Integer groupId, @Param("supplyId") Integer supplyId, @Param("code") String code, @Param("name") String name, @Param("record_start") Integer recordStart, @Param("record_count") Integer recordCount);
+    List<Map> selectDeviceList(@Param("groupId") Integer groupId,
+                               @Param("supplyId") Integer supplyId,
+                               @Param("code") String code,
+                               @Param("name") String name,
+                               @Param("record_start") Integer recordStart,
+                               @Param("record_count") Integer recordCount);
+
+
 }

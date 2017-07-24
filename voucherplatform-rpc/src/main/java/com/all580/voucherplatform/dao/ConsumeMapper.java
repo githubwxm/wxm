@@ -3,6 +3,8 @@ package com.all580.voucherplatform.dao;
 import com.all580.voucherplatform.entity.Consume;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 public interface ConsumeMapper {
     /**
      * 根据主键删除数据库的记录,t_consume
@@ -58,4 +60,7 @@ public interface ConsumeMapper {
                           @Param("order_Code") String orderCode,
                           @Param("supply_Id") Integer supplyId,
                           @Param("seqId") String seqId);
+
+    List<Consume> selectConsumeByOrder(@Param("orderId") Integer orderId,
+                                       @Param("orderCode") String orderCode);
 }

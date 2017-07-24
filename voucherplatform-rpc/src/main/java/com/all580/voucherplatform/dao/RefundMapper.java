@@ -4,6 +4,8 @@ import com.all580.voucherplatform.entity.Consume;
 import com.all580.voucherplatform.entity.Refund;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 public interface RefundMapper {
     /**
      * 根据主键删除数据库的记录,t_refund
@@ -72,4 +74,9 @@ public interface RefundMapper {
      * @return
      */
     Integer selectCount(Refund record);
+
+
+
+    List<Refund> selectRefundByOrder(@Param("orderId") Integer orderId,
+                                       @Param("orderCode") String orderCode);
 }

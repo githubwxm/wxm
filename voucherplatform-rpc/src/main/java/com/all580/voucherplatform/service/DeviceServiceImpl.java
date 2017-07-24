@@ -1,10 +1,7 @@
 package com.all580.voucherplatform.service;
 
 import com.all580.voucherplatform.api.service.DeviceService;
-import com.all580.voucherplatform.dao.DeviceApplyMapper;
-import com.all580.voucherplatform.dao.DeviceGroupMapper;
-import com.all580.voucherplatform.dao.DeviceMapper;
-import com.all580.voucherplatform.dao.DeviceProductMapper;
+import com.all580.voucherplatform.dao.*;
 import com.all580.voucherplatform.entity.Device;
 import com.all580.voucherplatform.entity.DeviceApply;
 import com.all580.voucherplatform.entity.DeviceGroup;
@@ -12,6 +9,7 @@ import com.all580.voucherplatform.entity.DeviceProduct;
 import com.all580.voucherplatform.utils.sign.SignInstance;
 import com.all580.voucherplatform.utils.sign.SignKey;
 import com.all580.voucherplatform.utils.sign.SignService;
+import com.all580.voucherplatform.utils.sign.SignType;
 import com.framework.common.Result;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.lang.UUIDGenerator;
@@ -40,6 +38,8 @@ public class DeviceServiceImpl implements DeviceService {
     @Autowired
     private DeviceProductMapper deviceProductMapper;
     @Autowired
+    private SupplyProductMapper supplyProductMapper;
+    @Autowired
     private SignInstance signInstance;
 
     @Override
@@ -52,12 +52,17 @@ public class DeviceServiceImpl implements DeviceService {
         deviceGroup.setPublicKey(signKey.getPublicKey());
         deviceGroup.setCreateTime(new Date());
         deviceGroup.setStatus(true);
+        deviceGroup.setCode(UUIDGenerator.getUUID());
         deviceGroupMapper.insert(deviceGroup);
         return new Result(true, "操作成功");
     }
 
     @Override
-    public Result<PageRecord<Map>> selectGroupList(Integer supplyId, String code, String name, Integer recordStart, Integer recordCount) {
+    public Result<PageRecord<Map>> selectGroupList(Integer supplyId,
+                                                   String code,
+                                                   String name,
+                                                   Integer recordStart,
+                                                   Integer recordCount) {
         PageRecord<Map> record = new PageRecord<>();
         int count = deviceGroupMapper.selectGroupCount(supplyId, code, name);
         record.setTotalCount(count);
@@ -80,16 +85,16 @@ public class DeviceServiceImpl implements DeviceService {
             return new Result(true, "该设备已在设备组存在，请解除关系后重新添加");
         }
         Device device = JsonUtils.map2obj(map, Device.class);
-        SignService signService = signInstance.getSignService(device.getSignType());
+        SignService signService = signInstance.getSignService(SignType.rsa.getValue());
         SignKey signKey = signService.generate();
-        device.setCode(UUIDGenerator.getUUID());
+        // device.setCode(UUIDGenerator.getUUID());
         device.setSignType(signService.getSignType().getValue());
         device.setPrivateKey(signKey.getPrivateKey());
         device.setPublicKey(signKey.getPublicKey());
         device.setCreateTime(new Date());
         device.setStatus(true);
         deviceMapper.insertSelective(device);
-        return new Result(true, "操作成功");
+        return new Result(true);
     }
 
     @Override
@@ -97,15 +102,31 @@ public class DeviceServiceImpl implements DeviceService {
         Device device = deviceMapper.selectByCode(code);
         if (device != null) {
             Device del = new Device();
-            del.setId(del.getId());
+            del.setId(device.getId());
             del.setStatus(false);
             deviceMapper.updateByPrimaryKeySelective(del);
         }
-        return new Result(true, "操作成功");
+        return new Result(true);
     }
 
     @Override
-    public Result<PageRecord<Map>> selectDeviceList(Integer groupId, Integer supplyId, String code, String name, Integer recordStart, Integer recordCount) {
+    public Result renameDevice(Map map) {
+        String name = CommonUtil.objectParseString(map.get("name"));
+        Integer id = CommonUtil.objectParseInteger(map.get("id"));
+        Device device = new Device();
+        device.setId(id);
+        device.setName(name);
+        deviceMapper.updateByPrimaryKeySelective(device);
+        return new Result(true);
+    }
+
+    @Override
+    public Result<PageRecord<Map>> selectDeviceList(Integer groupId,
+                                                    Integer supplyId,
+                                                    String code,
+                                                    String name,
+                                                    Integer recordStart,
+                                                    Integer recordCount) {
         PageRecord<Map> record = new PageRecord<>();
         int count = deviceMapper.selectDeviceCount(groupId, supplyId, code, name);
         record.setTotalCount(count);
@@ -122,17 +143,17 @@ public class DeviceServiceImpl implements DeviceService {
     }
 
     @Override
-    public Result setProd(Integer groupId, List<Map> list) {
+    public Result setProd(Integer groupId,
+                          List<Map> list) {
         DeviceGroup deviceGroup = deviceGroupMapper.selectByPrimaryKey(groupId);
         if (deviceGroup == null || !deviceGroup.getStatus()) {
             return new Result(false, "设备组错误");
         }
         for (Map map : list) {
-            Boolean status = CommonUtil.objectParseInteger(map.get("status")) == 1;
+            String status = CommonUtil.objectParseString(map.get("status"));
             Integer prodId = CommonUtil.objectParseInteger(map.get("prodId"));
             DeviceProduct deviceProduct = deviceProductMapper.selectByProdId(groupId, prodId);
-            if (status) {
-
+            if (status == "true" || status == "1") {
                 if (deviceProduct == null) {
                     deviceProduct = new DeviceProduct();
                     deviceProduct.setDevice_group_id(groupId);
@@ -143,32 +164,83 @@ public class DeviceServiceImpl implements DeviceService {
                 }
             } else {
                 DeviceProduct delProd = new DeviceProduct();
-                delProd.setId(delProd.getId());
+                delProd.setId(deviceProduct.getId());
                 delProd.setStatus(false);
                 deviceProductMapper.updateByPrimaryKeySelective(delProd);
             }
         }
-        return null;
+        return new Result(true);
     }
 
     @Override
-    public Result getProd(Integer groupId) {
-        List<Map> list = deviceProductMapper.selectProdList(groupId);
-        Result result = new Result(true);
-        result.put(list);
+    public Result<PageRecord<Map>> getProd(Integer groupId,
+                                           Integer recordStart,
+                                           Integer recordCount) {
+        DeviceGroup deviceGroup = deviceGroupMapper.selectByPrimaryKey(groupId);
+        if (deviceGroup == null) {
+            return new Result<>(false);
+        }
+        PageRecord<Map> pageRecord = new PageRecord<>();
+        int count = supplyProductMapper.selectSupplyProdCount(deviceGroup.getSupply_id(), null);
+        pageRecord.setTotalCount(count);
+        if (count > 0) {
+            pageRecord.setList(
+                    deviceProductMapper.selectProdList(deviceGroup.getSupply_id(), deviceGroup.getId(), recordStart,
+                            recordCount));
+        } else {
+            pageRecord.setList(new ArrayList<Map>());
+        }
+        Result<PageRecord<Map>> result = new Result<>(true);
+        result.put(pageRecord);
         return result;
     }
 
+
     @Override
-    public Result apply(Map map) {
-        String code = CommonUtil.emptyStringParseNull(map.get("code"));
-        if (deviceApplyMapper.selectByCode(code) != null) {
-            return new Result(true, "申请资料已提交，请勿重复申请");
+    public Result deviceAudit(Map map) {
+        Integer applyId = CommonUtil.objectParseInteger(map.get("applyId"));
+        Integer groupId = CommonUtil.objectParseInteger(map.get("groupId"), 0);
+        DeviceApply deviceApply = deviceApplyMapper.selectByPrimaryKey(applyId);
+        if (deviceApply == null || deviceApply.getStatus() != 0) {
+            return new Result(false, "要审核的数据状态不正确，请刷新页面重试");
         }
-        DeviceApply deviceApply = JsonUtils.map2obj(map, DeviceApply.class);
-        deviceApply.setStatus(0);
-        deviceApply.setCreateTime(new Date());
-        deviceApplyMapper.insertSelective(deviceApply);
-        return new Result(true, "申请资料已提交");
+        if (groupId < 1) {
+            updateApplyStatus(applyId, 2);
+            return new Result(true);
+        } else {
+            updateApplyStatus(applyId, 1);
+            Map addMap = new HashMap();
+            addMap.put("name", deviceApply.getCode());
+            addMap.put("code", deviceApply.getCode());
+            addMap.put("device_group_id", groupId);
+            return addDevice(addMap);
+        }
+    }
+
+
+
+    private void updateApplyStatus(Integer applyId,
+                                   Integer status) {
+        DeviceApply deviceApply = new DeviceApply();
+        deviceApply.setId(applyId);
+        deviceApply.setStatus(status);
+        deviceApplyMapper.updateByPrimaryKeySelective(deviceApply);
+    }
+
+    public Result<PageRecord<Map>> selectApplyList(String code,
+                                                   Integer status,
+                                                   Integer recordStart,
+                                                   Integer recordCount) {
+        PageRecord<Map> pageRecord = new PageRecord<>();
+        int count = deviceApplyMapper.selectApplyCount(code, status);
+        pageRecord.setTotalCount(count);
+        if (count > 0) {
+            pageRecord.setList(deviceApplyMapper.selectApplyList(code, status, recordStart, recordCount));
+        } else {
+            pageRecord.setList(new ArrayList<Map>());
+        }
+        Result<PageRecord<Map>> result = new Result<>(true);
+        result.put(pageRecord);
+        return result;
     }
 }

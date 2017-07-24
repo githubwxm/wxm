@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.all580.voucherplatform.dao.PosMapper">
+
+    <select id="selectOrderCount" resultType="java.lang.Integer">
+        SELECT count(0) FROM t_order
+        <where>
+            <if test="voucherNumber!=null and voucherNumber!=''">
+                and `t_order`.`voucherNumber`=#{voucherNumber}
+            </if>
+            <if test="idNumber!=null and idNumber!=''">
+                and `t_order`.`idNumber`=#{idNumber}
+            </if>
+            <if test="mobile!=null and mobile!=''">
+                and `t_order`.`mobile`=#{mobile}
+            </if>
+            and `t_order`.`invalidTime`>now()
+            and (`t_order`.`number`-`t_order`.`consume`+`t_order`.`reverse`-`t_order`.`refunding`-`t_order`.`refund`)>0
+            and exists(
+            select * from `t_device_product`
+            where `t_device_product`.`supplyprod_id`=`t_order`.`supplyProdId`
+            and `t_device_product`.`status`=1
+            and `t_device_product`.`device_group_id`=#{deviceGroupId}
+            )
+        </where>
+    </select>
+    <select id="selectOrderList" resultType="java.util.Map">
+        SELECT
+        `t_order`.`orderCode` as `voucherId`,
+        `t_order`.`platformOrderId` as `otaOrderId`,
+        `t_order`.`voucherNumber` as `voucherNumber`,
+        `t_order`.`customName` as `customName`,
+        `t_order`.`mobile` as `mobile`,
+        `t_order`.`idNumber` as `idNumber`,
+        `t_supplyproduct`.`name` as `productName`,
+        `t_order`.`number` as `number`,
+        `t_order`.`consume` as `consumeNumber`,
+        `t_order`.`refund` as `refundNumber`,
+        `t_order`.`consumeType` as `consumeType`,
+        `t_order`.`validTime` as `validTime`,
+        `t_order`.`invalidTime` as `invalidTime`,
+        `t_order`.`validWeek` as `validWeek`,
+        `t_order`.`invalidDate` as `invalidDate`,
+        `t_order`.`createTime` as `createTime`
+        FROM t_order
+        JOIN `t_supplyproduct` on `t_supplyproduct`.`id`=`t_order`.`supplyProdId`
+        <where>
+            <if test="voucherNumber!=null and voucherNumber!=''">
+                and `t_order`.`voucherNumber`=#{voucherNumber}
+            </if>
+            <if test="idNumber!=null and idNumber!=''">
+                and `t_order`.`idNumber`=#{idNumber}
+            </if>
+            <if test="mobile!=null and mobile!=''">
+                and `t_order`.`mobile`=#{mobile}
+            </if>
+            and `t_order`.`invalidTime`>now()
+            and (`t_order`.`number`-`t_order`.`consume`+`t_order`.`reverse`-`t_order`.`refunding`-`t_order`.`refund`)>0
+            and exists(
+            select * from `t_device_product`
+            where `t_device_product`.`supplyprod_id`=`t_order`.`supplyProdId`
+            and `t_device_product`.`status`=1
+            and `t_device_product`.`device_group_id`=#{deviceGroupId}
+            )
+        </where>
+        limit #{recordStart},#{recordCount}
+    </select>
+    <select id="selectOrderConsumeCount" resultType="java.lang.Integer">
+        select
+        COUNT(0)
+        from t_consume
+        JOIN t_order on `t_consume`.`order_id`=`t_order`.`id`
+        <where>
+            <if test="voucherNumber!=null and voucherNumber!=''">
+                and `t_order`.`voucherNumber`=#{voucherNumber}
+            </if>
+            <if test="idNumber!=null and idNumber!=''">
+                and `t_order`.`idNumber`=#{idNumber}
+            </if>
+            <if test="mobile!=null and mobile!=''">
+                and `t_order`.`mobile`=#{mobile}
+            </if>
+            <if test="startTime!=null">
+                and `t_consume`.`createTime`>=#{startTime}
+            </if>
+            <if test="endTime!=null">
+                and `t_consume`.`createTime`>=#{endTime}
+            </if>
+            and exists(
+            select * from `t_device_product`
+            where `t_device_product`.`supplyprod_id`=`t_order`.`supplyProdId`
+            and `t_device_product`.`status`=1
+            and `t_device_product`.`device_group_id`=#{deviceGroupId}
+            )
+
+        </where>
+
+    </select>
+    <select id="selectOrderConsumeList" resultType="java.util.Map">
+        select
+        `t_consume`.`consumeCode` as `consumeId`,
+        `t_consume`.`supplyConsumeSeqId` as `clientSeqId`,
+        `t_consume`.`consumeNumber` as `consumeNumber`,
+        `t_consume`.`consumeTime` as `consumeTime`,
+        `t_consume`.`prevNumber` as `beforeNumber`,
+        `t_consume`.`afterNumber` as `afterNumber`,
+        `t_consume`.`deviceId` as `deviceId`,
+        `t_order`.`orderCode` as `voucherId`,
+        '' as `channel`,
+        `t_order`.`platformOrderId` as `otaOrderId`,
+        `t_order`.`voucherNumber` as `voucherNumber`,
+        `t_order`.`mobile` as `mobile`,
+        `t_order`.`idNumber` as `idNumber`,
+        `t_supplyproduct`.`name` as `productName`,
+        `t_order`.`consumeType` as `consumeType`,
+        `t_order`.`validTime` as `validTime`,
+        `t_order`.`invalidTime` as `invalidTime`,
+        `t_order`.`validWeek` as `validWeek`,
+        `t_order`.`invalidDate` as `invalidDate`,
+        `t_order`.`createTime` as `createTime`,
+        from t_consume
+        JOIN t_order on `t_consume`.`order_id`=`t_order`.`id`
+        JOIN `t_supplyproduct` on `t_supplyproduct`.`id`=`t_order`.`supplyProdId`
+        <where>
+            <if test="voucherNumber!=null and voucherNumber!=''">
+                and `t_order`.`voucherNumber`=#{voucherNumber}
+            </if>
+            <if test="idNumber!=null and idNumber!=''">
+                and `t_order`.`idNumber`=#{idNumber}
+            </if>
+            <if test="mobile!=null and mobile!=''">
+                and `t_order`.`mobile`=#{mobile}
+            </if>
+            <if test="startTime!=null">
+                and `t_consume`.`createTime`>=#{startTime}
+            </if>
+            <if test="endTime!=null">
+                and `t_consume`.`createTime`>=#{endTime}
+            </if>
+            and exists(
+            select * from `t_device_product`
+            where `t_device_product`.`supplyprod_id`=`t_order`.`supplyProdId`
+            and `t_device_product`.`status`=1
+            and `t_device_product`.`device_group_id`=#{deviceGroupId}
+            )
+
+        </where>
+        limit #{recordStart},#{recordCount}
+    </select>
+    <select id="selectDeviceReportByDate" resultType="java.util.Map">
+        SELECT
+        date_format(consumeTime, '%Y-%m-%d') as `date`,
+        sum(consumeNumber) as `number`,
+        `t_supplyproduct`.`name` as `name`
+        FROM
+        t_consume
+        JOIN t_supplyproduct ON t_supplyproduct.id = t_consume.supplyprod_id
+        <where>
+            and `t_consume`.`deviceId`=#{deviceId}
+            <if test="startTime!=null">
+                and `t_consume`.`consumeTime`>=#{startTime}
+            </if>
+            <if test="endTime!=null">
+                and `t_consume`.`consumeTime`&gt;#{endTime}
+            </if>
+        </where>
+        GROUP BY
+        date_format(consumeTime, '%Y-%m-%d');
+    </select>
+    <select id="selectDeviceReportByProduct" resultType="java.util.Map">
+        SELECT
+        sum(consumeNumber) as `number`,
+        `t_supplyproduct`.`name` as `name`
+        FROM
+        t_consume
+        JOIN t_supplyproduct ON t_supplyproduct.id = t_consume.supplyprod_id
+        <where>
+            and `t_consume`.`deviceId`=#{deviceId}
+            <if test="startTime!=null">
+                and `t_consume`.`consumeTime`>=#{startTime}
+            </if>
+            <if test="endTime!=null">
+                and `t_consume`.`consumeTime`&gt;#{endTime}
+            </if>
+        </where>
+    </select>
+</mapper>

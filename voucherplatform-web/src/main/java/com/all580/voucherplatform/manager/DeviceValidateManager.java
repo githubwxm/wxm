@@ -42,4 +42,30 @@ public class DeviceValidateManager {
         }, new ValidRule[]{new ValidRule.NotNull()});
         return rules;
     }
+
+    public Map<String[], ValidRule[]> deviceAuditValidate() {
+        Map<String[], ValidRule[]> rules = new HashMap<>();
+        // 校验不为空的参数
+        rules.put(new String[]{
+                "applyId"
+        }, new ValidRule[]{new ValidRule.NotNull()});
+        rules.put(new String[]{
+                "applyId",
+                "groupId"
+        }, new ValidRule[]{new ValidRule.Digits()});
+        return rules;
+
+    }
+
+    public Map<String[], ValidRule[]> renameDeviceValidate() {
+        Map<String[], ValidRule[]> rules = new HashMap<>();
+        // 校验不为空的参数
+        rules.put(new String[]{
+                "id",
+                "name"
+        }, new ValidRule[]{new ValidRule.NotNull()});
+
+        rules.put(new String[]{"id"}, new ValidRule[]{new ValidRule.Digits()});
+        return rules;
+    }
 }

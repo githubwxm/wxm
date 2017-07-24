@@ -27,7 +27,9 @@ public abstract class AbstractProcessorAdapter<Identity> {
      * @param map
      * @return
      */
-    public Result process(String action, Identity identity, Map map) {
+    public Result process(String action,
+                          Identity identity,
+                          Map map) {
         Result result = new Result(false);
         ProcessorService processorService = processMapper.get(action);
         if (processorService == null) {
@@ -38,11 +40,8 @@ public abstract class AbstractProcessorAdapter<Identity> {
             try {
                 Object ret = processorService.processor(identity, map);
                 if (ret != null) {
-                    if (ret instanceof Map) {
-                        result.putExtAll((Map) ret);
-                    } else {
-                        result.put(ret);
-                    }
+                    result.setSuccess(true);
+                    result.put(ret);
                 }
             } catch (Exception ex) {
                 throw new ApiException(ex);

@@ -62,14 +62,17 @@ public interface OrderMapper {
      * @param seqId
      * @return
      */
-    Order selectByPlatform(@Param("platform_Id") Integer platformId, @Param("platform_OrderCode") String platformOrderCode, @Param("seqId") String seqId);
+    Order selectByPlatform(@Param("platform_Id") Integer platformId,
+                           @Param("platform_OrderCode") String platformOrderCode,
+                           @Param("seqId") String seqId);
 
     /**
      * @param supplyId
      * @param supplyOrderId
      * @return
      */
-    Order selectBySupply(@Param("supply_Id") int supplyId, @Param("supply_OrderId") String supplyOrderId);
+    Order selectBySupply(@Param("supply_Id") int supplyId,
+                         @Param("supply_OrderId") String supplyOrderId);
 
     /**
      * @param platformId
@@ -157,4 +160,40 @@ public interface OrderMapper {
                                      @Param("order_id") Integer orderId,
                                      @Param("record_start") Integer recordStart,
                                      @Param("record_count") Integer recordCount);
+
+
+    int selectOrderRefCount(@Param("platformId") Integer platformId,
+                            @Param("supplyId") Integer supplyId,
+                            @Param("orderCode") String orderCode,
+                            @Param("platformOrderId") String platformOrderId,
+                            @Param("mobile") String mobile,
+                            @Param("idNumber") String idNumber,
+                            @Param("voucherNumber") String voucherNumber,
+                            @Param("status") Integer status,
+                            @Param("startTime") Date startTime,
+                            @Param("endTime") Date endTime,
+                            @Param("platformRefId") String platformRefId,
+                            @Param("voucherRefId") String voucherRefId,
+                            @Param("supplyRefId") String supplyRefId,
+                            @Param("orderId") Integer orderId,
+                            @Param("prodType") Integer prodType);
+
+
+    List<Map> selectOrderRefList(@Param("platformId") Integer platformId,
+                                 @Param("supplyId") Integer supplyId,
+                                 @Param("orderCode") String orderCode,
+                                 @Param("platformOrderId") String platformOrderId,
+                                 @Param("mobile") String mobile,
+                                 @Param("idNumber") String idNumber,
+                                 @Param("voucherNumber") String voucherNumber,
+                                 @Param("status") Integer status,
+                                 @Param("startTime") Date startTime,
+                                 @Param("endTime") Date endTime,
+                                 @Param("platformRefId") String platformRefId,
+                                 @Param("voucherRefId") String voucherRefId,
+                                 @Param("supplyRefId") String supplyRefId,
+                                 @Param("orderId") Integer orderId,
+                                 @Param("prodType") Integer prodType,
+                                 @Param("record_start") Integer recordStart,
+                                 @Param("record_count") Integer recordCount);
 }

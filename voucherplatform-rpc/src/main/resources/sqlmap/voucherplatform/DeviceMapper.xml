@@ -187,7 +187,7 @@
     <select id="selectDeviceCount" resultType="java.lang.Integer">
         select count(0) from t_device
         JOIN `t_device_group` on `t_device_group`.`id`=`t_device`.`device_group_id`
-        where `t_device`.`status`=1
+        where `t_device`.`status`=1 and `t_device_group`.`status`=1
         <if test="groupId!=null">
             and `t_device`.`device_group_id`=#{groupId}
         </if>
@@ -203,7 +203,7 @@
     </select>
     <select id="selectDeviceList" resultType="java.util.Map">
         select
-        `t_device`.*
+        `t_device`.*,
         `t_device_group`.`code` as groupCode,
         `t_device_group`.`name` as groupName,
         `t_supply`.`name` as `supply_name`

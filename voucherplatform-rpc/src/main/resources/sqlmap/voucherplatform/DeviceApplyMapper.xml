@@ -137,6 +137,31 @@
         FROM t_device_apply
         where 1=1
         and `t_device_apply`.`code`=#{code}
-        and `t_device_apply`.`statys`=1
+        and (`t_device_apply`.`status`=0 or `t_device_apply`.`status`=2)
+    </select>
+    <select id="selectApplyCount" resultType="java.lang.Integer">
+        SELECT count(0)
+        FROM t_device_apply
+        where 1=1
+        <if test="code!=null and code !=''">
+            and `t_device_apply`.`code`=#{code}
+        </if>
+        <if test="status!=null">
+            and `t_device_apply`.`status`=#{status}
+        </if>
+    </select>
+    <select id="selectApplyList" resultType="java.util.Map">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_device_apply
+        where 1=1
+        <if test="code!=null and code !=''">
+            and `t_device_apply`.`code`=#{code}
+        </if>
+        <if test="status!=null">
+            and `t_device_apply`.`status`=#{status}
+        </if>
+        order by `t_device_apply`.`id` desc
+        limit #{record_start},#{record_count}
     </select>
 </mapper>
