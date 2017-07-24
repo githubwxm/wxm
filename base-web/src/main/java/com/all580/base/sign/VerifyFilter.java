@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSON;
 import com.all580.base.manager.BeanUtil;
 import com.all580.ep.api.conf.EpConstant;
 import com.all580.ep.api.service.CoreEpAccessService;
-import com.all580.ep.api.service.EpService;
 import com.all580.role.api.service.IntfService;
 import com.framework.common.Result;
 import com.framework.common.io.cache.redis.RedisUtils;
@@ -97,15 +96,15 @@ public class VerifyFilter implements  Filter {
                 log.info("Params:",postParams +", key:"+key);
                 boolean ref = SignVerify.verifyPost(postParams, currenttSing, key);
 //                // 去掉的代码
-                if(null == requestWrapper) {
-                    chain.doFilter(request, response);
-                    return ;
-                } else if(1==1){
-                    chain.doFilter(requestWrapper, response);
-                    return ;
-                }else{
-
-                }
+//                if(null == requestWrapper) {
+//                    chain.doFilter(request, response);
+//                    return ;
+//                } else if(1==1){
+//                    chain.doFilter(requestWrapper, response);
+//                    return ;
+//                }else{
+//
+//                }
 
                 //end
                 if (!ref) {
@@ -114,7 +113,7 @@ public class VerifyFilter implements  Filter {
                     return;
                 }else{
                     Integer ep_id=CommonUtil.objectParseInteger(map.get("ep_id"));
-                    if(auth(httpResponse,url,ep_id)){
+                    if(auth(httpResponse,request,url,ep_id)){
                         if(null == requestWrapper) {
                             chain.doFilter(request, response);
                         } else {
@@ -167,29 +166,32 @@ public class VerifyFilter implements  Filter {
             }
         }
     }
-    public boolean auth( HttpServletResponse httpResponse,String url,Integer ep_id){
+    public boolean auth( HttpServletResponse httpResponse,ServletRequest request,String url,Integer ep_id){
      try {
          url = url.toLowerCase();
         if(Auth.isNotAuth(url)){// 如果是不需要鉴权的地址直接返回真
               return true;
         }
-         EpService epService= BeanUtil.getBean("epService", EpService.class);
-         Map<String,Object> map = epService.selectId(ep_id).get();
-         if(null!=map&&!map.isEmpty()){
-             Integer epRole=CommonUtil.objectParseInteger( map.get("ep_role")) ;
+        // EpService epService= BeanUtil.getBean("epService", EpService.class);
+         //Map<String,Object> map = epService.selectId(ep_id).get();
+         //if(null!=map&&!map.isEmpty()){
+             Integer core_ep_id=CommonUtil.objectParseInteger(request.getAttribute(EpConstant.EpKey.CORE_EP_ID)) ;
+             if(1-core_ep_id==0){//畅旅不鉴权
+                 return  true;
+             }
              RedisUtils redisUtils= BeanUtil.getBean("redisUtils", RedisUtils.class);
-             List<String> auth=Auth.getAuthMap(redisUtils,epRole);
+             List<String> auth=Auth.getAuthMap(redisUtils,core_ep_id);
              boolean ref = false;
              if(auth!=null&&auth.size()==1){
                  ref=null== auth.get(0);
                  if(!ref){
                      ref="".equals(auth.get(0));
                  }
-             }
+            // }
              if(null==auth||ref){
                  IntfService intfService= BeanUtil.getBean("intfService", IntfService.class);
-                 auth= intfService.authIntf(epRole).get();
-                 Auth.setAuthMap(redisUtils,auth,epRole);
+                 auth= intfService.authCoreIntf(core_ep_id).get();
+                 Auth.setAuthMap(redisUtils,auth,core_ep_id);
                  return auth.contains(url);
              }else{
                  return  CommonUtil.find(url+"[,\\]]",auth.get(0));
