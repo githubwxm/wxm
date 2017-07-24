@@ -49,7 +49,7 @@ public interface PlatformMapper {
      */
     int updateByPrimaryKey(Platform record);
 
-    int getPlatformCount(@Param("name") String name);
+    int selectPlatformCount(@Param("name") String name);
 
-    List<Map> getPlatformtList(@Param("name") String name, @Param("record_start") Integer recordStart, @Param("record_count") Integer recordCount);
+    List<Map> selectPlatformList(@Param("name") String name, @Param("record_start") Integer recordStart, @Param("record_count") Integer recordCount);
 }

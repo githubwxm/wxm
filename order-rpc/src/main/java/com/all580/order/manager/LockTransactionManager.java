@@ -113,7 +113,7 @@ public class LockTransactionManager {
 
         if (order.getStatus() != OrderConstant.OrderStatus.PAYING) {
             log.warn("支付成功任务,订单:{}状态:{}不是支付中", order.getNumber(), order.getStatus());
-            throw new ApiException("订单不在支付中状态");
+            throw new ApiException("订单不在待支付状态,当前状态为:" + OrderConstant.OrderStatus.getName(order.getStatus()));
         }
         order.setThird_serial_no(outTransId);
         order.setStatus(OrderConstant.OrderStatus.PAID_HANDLING); // 已支付,处理中
@@ -285,7 +285,7 @@ public class LockTransactionManager {
             throw new ApiException("订单不存在");
         }
         if (order.getStatus() != OrderConstant.OrderStatus.PAID_HANDLING) {
-            throw new ApiException("订单不在已支付处理中状态");
+            throw new ApiException("订单不在已支付处理中状态,当前状态为:" + OrderConstant.OrderStatus.getName(order.getStatus()));
         }
         // 退款,取消在退款回调中执行
         refundOrderManager.refundMoney(order, order.getPay_amount(), null, -1);
@@ -306,7 +306,7 @@ public class LockTransactionManager {
             throw new ApiException("退订订单不存在");
         }
         if (refundOrder.getStatus() != OrderConstant.RefundOrderStatus.AUDIT_WAIT) {
-            throw new ApiException("退订订单不在待审核状态");
+            throw new ApiException("退订订单不在待审核状态,当前状态为:" + OrderConstant.RefundOrderStatus.getName(refundOrder.getStatus()));
         }
         if (refundOrder.getAudit_time() != null) {
             throw new ApiException("该退订订单已审核");
@@ -346,7 +346,7 @@ public class LockTransactionManager {
             throw new ApiException("订单不存在");
         }
         if (orderItem.getStatus() != OrderConstant.OrderItemStatus.AUDIT_WAIT) {
-            throw new ApiException("订单不在待审状态");
+            throw new ApiException("订单不在待审状态,当前状态为:" + OrderConstant.OrderItemStatus.getName(orderItem.getStatus()));
         }
 
         Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
@@ -354,7 +354,7 @@ public class LockTransactionManager {
             throw new ApiException("订单不存在");
         }
         if (order.getStatus() != OrderConstant.OrderStatus.AUDIT_WAIT) {
-            throw new ApiException("订单不在待审状态");
+            throw new ApiException("订单不在待审状态,当前状态为:" + OrderConstant.OrderStatus.getName(order.getStatus()));
         }
         if (!params.containsKey(EpConstant.EpKey.EP_ID)) {
             throw new ApiException("非法请求:企业ID为空");
@@ -432,7 +432,7 @@ public class LockTransactionManager {
                         throw new ApiException("订单正在支付中");
                 }
             } else {
-                throw new ApiException("订单不在待支付状态");
+                throw new ApiException("订单不在待支付状态,当前状态为:" + OrderConstant.OrderStatus.getName(order.getStatus()));
             }
         }
 
@@ -613,7 +613,7 @@ public class LockTransactionManager {
             throw new ApiException("订单不存在");
         }
         if (orderItem.getStatus() != OrderConstant.OrderItemStatus.SEND) {
-            throw new ApiException("订单不在可核销状态");
+            throw new ApiException("订单不在可核销状态,当前状态为:" + OrderConstant.OrderItemStatus.getName(orderItem.getStatus()));
         }
         if (!params.containsKey(EpConstant.EpKey.EP_ID)) {
             throw new ApiException("非法请求:企业ID为空");
@@ -645,6 +645,19 @@ public class LockTransactionManager {
         List<OrderItemDetail> details = orderItemDetailMapper.selectByItemId(orderItem.getId());
         if (details.get(0).getDay().after(clearanceTime)) {
             throw new ApiException("请入住后核销");
+        }
+
+        for (OrderItemDetail detail : details) {
+            boolean consume = false;
+            for (ConsumeDay consumeDay : consumeDays) {
+                if (consumeDay.getDay().equals(detail.getDay())) {
+                    consume = true;
+                    break;
+                }
+            }
+            if (!consume && !AccountUtil.canRefund(detail.getCust_refund_rule())) {
+                throw new ApiException("该订单需要全部核销");
+            }
         }
         int total = 0;
         for (ConsumeDay consumeDay : consumeDays) {
@@ -722,7 +735,7 @@ public class LockTransactionManager {
             throw new ApiException("订单不存在");
         }
         if (orderItem.getStatus() != OrderConstant.OrderItemStatus.SEND) {
-            throw new ApiException("订单不在可核销状态");
+            throw new ApiException("订单不在可核销状态,当前状态为:" + OrderConstant.OrderItemStatus.getName(orderItem.getStatus()));
         }
         if (!params.containsKey(EpConstant.EpKey.EP_ID)) {
             throw new ApiException("非法请求:企业ID为空");
@@ -780,7 +793,7 @@ public class LockTransactionManager {
                 orderItem.getStatus() != OrderConstant.OrderItemStatus.MODIFY &&
                 orderItem.getStatus() != OrderConstant.OrderItemStatus.MODIFY_FAIL) ||
                 (orderItem.getUsed_quantity() != null && orderItem.getUsed_quantity() > 0)) {
-            return new Result(false, "该订单不在可修改状态");
+            return new Result(false, "该订单不在可修改状态,当前状态为:" + OrderConstant.OrderItemStatus.getName(orderItem.getStatus()));
         }
 
         orderItem.setStatus(OrderConstant.OrderItemStatus.MODIFYING);

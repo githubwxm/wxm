@@ -1,22 +1,20 @@
-package com.all580.base.controller.voucherplatform;
+package com.all580.voucherplatform.controller;
 
-import com.all580.base.manager.voucherplatform.UserValidateManager;
 import com.all580.voucherplatform.api.VoucherConstant;
 import com.all580.voucherplatform.api.service.UserService;
+import com.all580.voucherplatform.manager.UserValidateManager;
 import com.framework.common.BaseController;
 import com.framework.common.Result;
 import com.framework.common.io.cache.redis.RedisUtils;
-import com.framework.common.lang.UUIDGenerator;
 import com.framework.common.util.CommonUtil;
 import com.framework.common.validate.ParamsMapValidate;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
 /**
@@ -24,7 +22,7 @@ import java.util.Map;
  */
 
 @Controller
-@RequestMapping("voucherplatform/user")
+@RequestMapping("api/user")
 @Slf4j
 public class UserController extends BaseController {
 
@@ -38,29 +36,34 @@ public class UserController extends BaseController {
 
     @RequestMapping(value = "login", method = RequestMethod.POST)
     @ResponseBody
-    public Result login(@RequestBody Map map, HttpServletResponse response) {
+    public Result login(@RequestBody Map map, HttpServletRequest request) {
         // 验证参数
         ParamsMapValidate.validate(map, userValidateManager.loginValidate());
         Result result = userService.login(map);
         if (result.isSuccess()) {
             String userName = CommonUtil.emptyStringParseNull(map.get("userName"));
             Result userResult = userService.getUser(userName);
-            String token = UUIDGenerator.getUUID();
-            Cookie cookie = new Cookie(VoucherConstant.COOKIENAME, token);
             Object o = userResult.get();
-            redisUtils.set(VoucherConstant.REDISVOUCHERLOGINKEY + ":" + token, o);
-            response.addCookie(cookie);
+            redisUtils.set(VoucherConstant.REDISVOUCHERLOGINKEY + ":" + request.getSession().getId(), o);
         }
         return userService.login(map);
     }
 
 
-    @RequestMapping(value = "update", method = RequestMethod.POST)
+    @RequestMapping(value = "updatePassword", method = RequestMethod.POST)
     @ResponseBody
-    public Result update(@RequestBody Map map) {        // 验证参数
+    public Result updatePassword(@RequestBody Map map, HttpServletRequest request) {        // 验证参数
+        Map mapUser = (Map) getAttribute("user");
+        String oldPassword = CommonUtil.emptyStringParseNull(map.get("oldPassword"));
+        oldPassword = DigestUtils.md5Hex(oldPassword);
+        if (!oldPassword.equals(CommonUtil.emptyStringParseNull(mapUser.get("password")))) {
+            return new Result(false, "原密码输入错误！");
+        }
 
-        ParamsMapValidate.validate(map, userValidateManager.updateValidate());
-        return userService.update(map);
+        redisUtils.del(VoucherConstant.REDISVOUCHERLOGINKEY + ":" + request.getSession().getId());
+
+        mapUser.put("password", CommonUtil.emptyStringParseNull(map.get("passWord")));
+        return userService.update(mapUser);
 
     }
 
@@ -69,6 +72,7 @@ public class UserController extends BaseController {
     public Result getLoginUser() {
         Map map = (Map) getAttribute("user");
         Result result = new Result(true);
+        map.remove("password");
         result.putAll(map);
         return result;
     }

@@ -173,6 +173,8 @@ public class RefundOrderManager extends BaseOrderManager {
         int totalRefundQuantity = 0;
         List<Visitor> visitorList = visitorMapper.selectByOrderItem(itemId);
         List<RefundVisitor> refundVisitorList = refundVisitorMapper.selectByItemIdExcludeFailed(itemId);
+        List<RefundOrder> refundOrders = refundOrderMapper.selectByItemId(itemId);
+        Map<String, Integer> refundingMap = parseDayRefunding(refundOrders);
         List<Visitor> totalVisitorList = new ArrayList<>();
         for (RefundDay refundDay : refundDays) {
             OrderItemDetail detail = AccountUtil.getDetailByDay(details, refundDay.getDay());
@@ -180,9 +182,12 @@ public class RefundOrderManager extends BaseOrderManager {
                 throw new ApiException(String.format("日期:%s没有订单数据", refundDay.getDay()));
             }
             if (detail.getQuantity() - detail.getUsed_quantity() - detail.getRefund_quantity() < refundDay.getQuantity()) {
+                Integer refunding = refundingMap.get(JsonUtils.toJson(refundDay.getDay()));
                 throw new ApiException(
-                        String.format("日期:%s余票不足,已用:%s,已退(含预退):%s",
-                                new Object[]{JsonUtils.toJson(refundDay.getDay()), detail.getUsed_quantity(), detail.getRefund_quantity()}));
+                        String.format("余票不足,已用:%d,已退:%d,退订中:%d",
+                                detail.getUsed_quantity(),
+                                refunding == null ? detail.getRefund_quantity() : detail.getRefund_quantity() - refunding,
+                                refunding == null ? 0 : refunding));
             }
             // 修改退票数
             detail.setRefund_quantity(detail.getRefund_quantity() + refundDay.getQuantity());
@@ -199,7 +204,7 @@ public class RefundOrderManager extends BaseOrderManager {
                 throw new ApiException(String.format("游客:%d 不存在", visitor.getId()));
             }
             if (v.getQuantity() < visitor.getQuantity()) {
-                throw new ApiException(String.format("游客:%s 票不足", new Object[]{v.getName()}));
+                throw new ApiException(String.format("游客:%s 票不足", v.getName()));
             }
             if (visitor.getQuantity() <= 0) {
                 throw new ApiException(String.format("游客:%s 退票数量必须大于0", v.getName()));
@@ -210,8 +215,7 @@ public class RefundOrderManager extends BaseOrderManager {
             if (upRefundVisitor != null &&
                     upRefundVisitor.getPre_quantity() + upRefundVisitor.getReturn_quantity() + visitor.getQuantity() > v.getQuantity() ) {
                 throw new ApiException(String.format("游客:%s 余票不足.总票数:%d 已退票:%d 退票中:%d 本次预退票:%d",
-                        new Object[]{v.getName(),
-                                v.getQuantity(), upRefundVisitor.getReturn_quantity(), upRefundVisitor.getPre_quantity(), visitor.getQuantity()}))
+                        v.getName(), v.getQuantity(), upRefundVisitor.getReturn_quantity(), upRefundVisitor.getPre_quantity(), visitor.getQuantity()))
                         .dataMap().putData("total", v.getQuantity()).putData("refund", upRefundVisitor.getReturn_quantity()).putData("preRefund", upRefundVisitor.getPre_quantity()).putData("current", visitor.getQuantity());
             }
             RefundVisitor refundVisitor = new RefundVisitor();
@@ -752,5 +756,25 @@ public class RefundOrderManager extends BaseOrderManager {
             }
         }
         return null;
+    }
+
+    private Map<String, Integer> parseDayRefunding(List<RefundOrder> refundOrders) {
+        Map<String, Integer> map = new HashMap<>();
+        for (RefundOrder refundOrder : refundOrders) {
+            if (refundOrder.getStatus() == OrderConstant.RefundOrderStatus.AUDIT_WAIT ||
+                    refundOrder.getStatus() == OrderConstant.RefundOrderStatus.REFUND_MONEY ||
+                    refundOrder.getStatus() == OrderConstant.RefundOrderStatus.REFUND_MONEY_AUDITING ||
+                    refundOrder.getStatus() == OrderConstant.RefundOrderStatus.REFUNDING) {
+                Collection<RefundDay> refundDays = AccountUtil.decompileRefundDay(refundOrder.getData());
+                for (RefundDay refundDay : refundDays) {
+                    String day = JsonUtils.toJson(refundDay.getDay());
+                    if (!map.containsKey(day)) {
+                        map.put(day, 0);
+                    }
+                    map.put(day, map.get(day) + refundDay.getQuantity());
+                }
+            }
+        }
+        return map;
     }
 }

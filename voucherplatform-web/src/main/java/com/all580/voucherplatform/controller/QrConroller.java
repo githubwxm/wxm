@@ -1,18 +1,15 @@
-package com.all580.base.controller.voucherplatform;
+package com.all580.voucherplatform.controller;
 
-import com.all580.base.manager.voucherplatform.QrRuleValidateManager;
 import com.all580.voucherplatform.api.service.QrService;
+import com.all580.voucherplatform.manager.QrRuleValidateManager;
 import com.framework.common.Result;
 import com.framework.common.validate.ParamsMapValidate;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -20,7 +17,7 @@ import java.util.Map;
  */
 
 @Controller
-@RequestMapping("voucherplatform/qr")
+@RequestMapping("api/qr")
 @Slf4j
 public class QrConroller {
     @Autowired
@@ -60,23 +57,12 @@ public class QrConroller {
         return qrService.get(supplyId, prodId);
     }
 
-    @RequestMapping(value = "getCount", method = RequestMethod.GET)
-    @ResponseBody
-    public Result getCount(String name, Integer len, String prefix, String postfix, Integer supplyId, Integer prodId, Boolean defaultOption) {
-        int count = qrService.getCount(name, len, prefix, postfix, supplyId, prodId, defaultOption);
-        Result result = new Result(true);
-        result.putExt("data", count);
-        return result;
-    }
 
-    @RequestMapping(value = "getList", method = RequestMethod.GET)
+    @RequestMapping(value = "selectQrList", method = RequestMethod.GET)
     @ResponseBody
-    public Result getList(String name, Integer len, String prefix, String postfix, Integer supplyId, Integer prodId, Boolean defaultOption, Integer recordStart,
-                          Integer recordCount) {
-        List<Map> mapList = qrService.getList(name, len, prefix, postfix, supplyId, prodId, defaultOption, recordStart, recordCount);
-        Result result = new Result(true);
-        result.putExt("data", mapList);
-        return result;
+    public Result<?> selectQrList(String name, Integer len, String prefix, String postfix, Integer supplyId, Integer prodId, Boolean defaultOption, @RequestParam(value = "record_Start", defaultValue = "0") Integer recordStart,
+                                  @RequestParam(value = "record_Count", defaultValue = "15")  Integer recordCount) {
+        return qrService.selectQrList(name, len, prefix, postfix, supplyId, prodId, defaultOption, recordStart, recordCount);
     }
 
 }

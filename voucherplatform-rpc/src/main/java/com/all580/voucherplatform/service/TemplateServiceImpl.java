@@ -6,11 +6,14 @@ import com.all580.voucherplatform.entity.Template;
 import com.framework.common.Result;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.util.CommonUtil;
+import com.framework.common.vo.PageRecord;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -33,6 +36,7 @@ public class TemplateServiceImpl implements TemplateService {
         if (templateMapper.getTemplate(template.getSupply_id(), template.getSupplyprod_id()) != null) {
             result.setError("对同一商户和产品不能重复添加模版");
         } else {
+            template.setCreateTime(new Date());
             template.setStatus(true);
             template.setDefaultOption(false);
             templateMapper.insertSelective(template);
@@ -82,12 +86,17 @@ public class TemplateServiceImpl implements TemplateService {
 
 
     @Override
-    public int getCount(String name, Integer supplyId, Integer prodId, Boolean defaultOption) {
-        return templateMapper.getCount(name, supplyId, prodId, defaultOption);
-    }
-
-    @Override
-    public List<Map> getList(String name, Integer supplyId, Integer prodId, Boolean defaultOption, Integer recordStart, Integer recordCount) {
-        return templateMapper.getList(name, supplyId, prodId, defaultOption, recordStart, recordCount);
+    public Result<PageRecord<Map>> selectTemplateList(String name, Integer supplyId, Integer prodId, Boolean defaultOption, Integer recordStart, Integer recordCount) {
+        PageRecord<Map> pageRecord = new PageRecord<>();
+        int count = templateMapper.selectTemplateCount(name,  supplyId, prodId, defaultOption);
+        pageRecord.setTotalCount(count);
+        if (count > 0) {
+            pageRecord.setList(templateMapper.selectTemplateList(name,  supplyId, prodId, defaultOption, recordStart, recordCount));
+        } else {
+            pageRecord.setList(new ArrayList<Map>());
+        }
+        Result<PageRecord<Map>> result = new Result<>(true);
+        result.put(pageRecord);
+        return result;
     }
 }

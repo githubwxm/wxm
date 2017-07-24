@@ -32,7 +32,6 @@ public class UseServiceImpl implements UserService {
         String passWord = CommonUtil.emptyStringParseNull(map.get("passWord"));
         passWord = DigestUtils.md5Hex(passWord);
         //password加密
-        Result result = new Result(false);
         // 先根据用户名查出用户再比对是否正确，如果直接使用用户名和密码sql查询则会导致sql注入问题。
         User user = userMapper.selectByName(userName);
         if (user == null) {
@@ -50,8 +49,8 @@ public class UseServiceImpl implements UserService {
     @Override
     public Result update(Map map) {
         Integer id = CommonUtil.objectParseInteger(map.get("id"));
-        String passWord = CommonUtil.objectParseString(map.get("passWord"));
-        passWord = new String(DigestUtils.md5(passWord));
+        String passWord = CommonUtil.objectParseString(map.get("password"));
+        passWord = DigestUtils.md5Hex(passWord);
         User user = new User();
         user.setId(id);
         user.setPassword(passWord);
@@ -68,7 +67,6 @@ public class UseServiceImpl implements UserService {
         Result result = new Result(true);
         if (user != null) {
             Map map = JsonUtils.obj2map(user);
-            map.remove("password");
             result.put(map);
         }
         return result;
@@ -80,7 +78,6 @@ public class UseServiceImpl implements UserService {
         Result result = new Result(true);
         if (user != null) {
             Map map = JsonUtils.obj2map(user);
-            map.remove("password");
             result.put(map);
         }
         return result;

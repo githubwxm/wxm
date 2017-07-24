@@ -2,6 +2,7 @@ package com.all580.voucherplatform.adapter.supply.ticketV3;
 
 import com.aliyun.mns.model.Message;
 import com.all580.voucherplatform.adapter.supply.SupplyAdapterService;
+import com.all580.voucherplatform.adapter.supply.ticketV3.manager.ConfManager;
 import com.all580.voucherplatform.adapter.supply.ticketV3.manager.GroupOrderManager;
 import com.all580.voucherplatform.adapter.supply.ticketV3.manager.OrderManager;
 import com.all580.voucherplatform.adapter.supply.ticketV3.manager.UpdateGroupManager;
@@ -48,6 +49,8 @@ public class TicketV3AdapterIImpl extends SupplyAdapterService {
     private UpdateGroupManager updateGroupManager;
     @Autowired
     private QueuePushManager queuePushManager;
+    @Autowired
+    private ConfManager confManager;
 
     private void sendMnsMessage(Integer supplyId, String action, Object value) {
         Supply supply = supplyMapper.selectByPrimaryKey(supplyId);
@@ -73,6 +76,11 @@ public class TicketV3AdapterIImpl extends SupplyAdapterService {
                 log.debug(message.getMessageId());
             }
         }
+    }
+
+    @Override
+    public Map getConf(Integer supplyId) {
+        return confManager.getConfMap(supplyId);
     }
 
     @Override

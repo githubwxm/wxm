@@ -30,9 +30,9 @@ public class ProductType implements Serializable {
     private Boolean defaultOption;
 
     /**
-     *  启用状态,所属表字段为t_producttype.satus
+     *  启用状态,所属表字段为t_producttype.status
      */
-    private Boolean satus;
+    private Boolean status;
 
     /**
      * 序列化ID,t_producttype
@@ -130,20 +130,20 @@ public class ProductType implements Serializable {
     }
 
     /**
-     * 获取 启用状态 字段:t_producttype.satus
+     * 获取 启用状态 字段:t_producttype.status
      *
-     * @return t_producttype.satus, 启用状态
+     * @return t_producttype.status, 启用状态
      */
-    public Boolean getSatus() {
-        return satus;
+    public Boolean getStatus() {
+        return status;
     }
 
     /**
-     * 设置 启用状态 字段:t_producttype.satus
+     * 设置 启用状态 字段:t_producttype.status
      *
-     * @param satus t_producttype.satus, 启用状态
+     * @param status t_producttype.status, 启用状态
      */
-    public void setSatus(Boolean satus) {
-        this.satus = satus;
+    public void setStatus(Boolean status) {
+        this.status = status;
     }
 }

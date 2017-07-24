@@ -451,80 +451,89 @@
     </update>
 
 
-    <select id="getOrderCount" resultType="java.lang.Integer">
+    <select id="selectOrderCount" resultType="java.lang.Integer">
         SELECT COUNT(0)
         from t_order
         where 1=1
         <if test="platform_Id!=null">
-            and `platform_id`=#{platform_Id}
+            and `t_order`.`platform_id`=#{platform_Id}
         </if>
         <if test="supply_Id!=null">
-            and `supply_id`=#{supply_Id}
+            and `t_order`.`supply_id`=#{supply_Id}
         </if>
-        <if test="order_Code!=null">
-            and `orderCode`=#{order_Code}
+        <if test="order_Code!=null and order_Code!=''">
+            and `t_order`.`orderCode`=#{order_Code}
         </if>
-        <if test="platform_OrderId!=null">
-            and `platformOrderId`=#{platform_OrderId}
+        <if test="platform_OrderId!=null and platform_OrderId!=''">
+            and `t_order`.`platformOrderId`=#{platform_OrderId}
         </if>
-        <if test="mobile!=null">
-            and `mobile`=#{mobile}
+        <if test="mobile!=null and mobile!=''">
+            and `t_order`.`mobile`=#{mobile}
         </if>
-        <if test="idNumber!=null">
-            and `idNumber`=#{idNumber}
+        <if test="idNumber!=null and idNumber!=''">
+            and `t_order`.`idNumber`=#{idNumber}
         </if>
-        <if test="voucherNumber!=null">
-            and `voucherNumber`=#{voucherNumber}
+        <if test="voucherNumber!=null and voucherNumber!=''">
+            and `t_order`.`voucherNumber`=#{voucherNumber}
         </if>
         <if test="status!=null">
-            and `status`=#{status}
+            and `t_order`.`status`=#{status}
         </if>
         <if test="start_Time!=null">
-            and `createTime`&gt;=#{start_Time}
+            and `t_order`.`createTime`&gt;=#{start_Time}
         </if>
         <if test="end_Time!=null">
             <![CDATA[
-       and  createTime<=#{end_Time}
+          and  `t_order`.`t_order`.`createTime`<=#{end_Time}
         ]]>
-
         </if>
     </select>
-    <select id="getOrderList" resultType="java.util.Map">
-        SELECT *
+    <select id="selectOrderList" resultType="java.util.Map">
+        SELECT
+        `t_order`.*,
+        `t_platform`.`name` as `platform_name`,
+        `t_platformproduct`.`name` as `platformprod_name`,
+        `t_supply`.`name` as `supply_name`,
+        `t_supplyproduct`.`name` as `supplyprod_name`
         from t_order
+        JOIN `t_platform` on `t_platform`.`id`=`t_order`.`platform_id`
+        JOIN `t_platformproduct` on `t_platformproduct`.`id`=`t_order`.`platformprod_id`
+        JOIN `t_supply` on `t_supply`.`id`=`t_order`.`supply_id`
+        JOIN `t_supplyproduct` on `t_supplyproduct`.`id`=`t_order`.`supplyProdId`
         where 1=1
         <if test="platform_Id!=null">
-            and `platform_id`=#{platform_Id}
+            and `t_order`.`platform_id`=#{platform_Id}
         </if>
         <if test="supply_Id!=null">
-            and `supply_id`=#{supply_Id}
+            and `t_order`.`supply_id`=#{supply_Id}
         </if>
-        <if test="order_Code!=null">
-            and `orderCode`=#{order_Code}
+        <if test="order_Code!=null and order_Code!=''">
+            and `t_order`.`orderCode`=#{order_Code}
         </if>
-        <if test="platform_OrderId!=null">
-            and `platformOrderId`=#{platform_OrderId}
+        <if test="platform_OrderId!=null and platform_OrderId!=''">
+            and `t_order`.`platformOrderId`=#{platform_OrderId}
         </if>
-        <if test="mobile!=null">
-            and `mobile`=#{mobile}
+        <if test="mobile!=null and mobile!=''">
+            and `t_order`.`mobile`=#{mobile}
         </if>
-        <if test="idNumber!=null">
-            and `idNumber`=#{idNumber}
+        <if test="idNumber!=null and idNumber!=''">
+            and `t_order`.`idNumber`=#{idNumber}
         </if>
-        <if test="voucherNumber!=null">
-            and `voucherNumber`=#{voucherNumber}
+        <if test="voucherNumber!=null and voucherNumber!=''">
+            and `t_order`.`voucherNumber`=#{voucherNumber}
         </if>
         <if test="status!=null">
-            and `status`=#{status}
+            and `t_order`.`status`=#{status}
         </if>
         <if test="start_Time!=null">
-            and `createTime`&gt;=#{start_Time}
+            and `t_order`.`createTime`&gt;=#{start_Time}
         </if>
         <if test="end_Time!=null">
             <![CDATA[
-       and  createTime<=#{end_Time}
+       and  `t_order`.`createTime`<=#{end_Time}
         ]]>
         </if>
+        order by `t_order`.`id` desc
         limit #{record_start},#{record_count}
     </select>
     <select id="selectByOrderCode" resultMap="BaseResultMap">
@@ -563,6 +572,257 @@
         </if>
         <if test="list ==null">
             and `id`=0
+        </if>
+    </select>
+    <select id="selectOrderConsumeCount" resultType="java.lang.Integer">
+        select
+        count(0)
+        from t_consume
+        JOIN `t_order` ON `t_consume`.`order_id`=`t_order`.`id`
+        where 1=1
+        <if test="platform_Id!=null">
+            and `t_order`.`platform_id`=#{platform_Id}
+        </if>
+        <if test="supply_Id!=null">
+            and `t_order`.`supply_id`=#{supply_Id}
+        </if>
+        <if test="order_Code!=null and order_Code!=''">
+            and `t_order`.`orderCode`=#{order_Code}
+        </if>
+        <if test="platform_OrderId!=null and platform_OrderId!=''">
+            and `t_order`.`platformOrderId`=#{platform_OrderId}
+        </if>
+        <if test="mobile!=null and mobile!=''">
+            and `t_order`.`mobile`=#{mobile}
+        </if>
+        <if test="idNumber!=null and idNumber!=''">
+            and `t_order`.`idNumber`=#{idNumber}
+        </if>
+        <if test="voucherNumber!=null and voucherNumber!=''">
+            and `t_order`.`voucherNumber`=#{voucherNumber}
+        </if>
+        <if test="status!=null">
+            and `t_order`.`status`=#{status}
+        </if>
+        <if test="start_Time!=null">
+            and `t_consume`.`consumeTime`&gt;=#{start_Time}
+        </if>
+        <if test="end_Time!=null">
+            <![CDATA[
+       and  `t_consume`.`consumeTime`<=#{end_Time}
+        ]]>
+        </if>
+        <if test="consume_Code!=null and consume_Code!=''">
+            and `t_consume`.`consumeCode`=#{consume_Code}
+        </if>
+        <if test="supply_consume_Code!=null and supply_consume_Code!=''">
+            and `t_consume`.`supplyConsumeCode`=#{supply_consume_Code}
+        </if>
+        <if test="deviceId!=null and deviceId!=''">
+            and `t_consume`.`deviceId`=#{deviceId}
+        </if>
+        <if test="order_id!=null">
+            and `t_consume`.`order_id`=#{order_id}
+        </if>
+    </select>
+    <select id="selectOrderConsumeList" resultType="java.util.Map">
+        select
+        `t_order`.*,
+        `t_platform`.`name` as `platform_name`,
+        `t_platformproduct`.`name` as `platformprod_name`,
+        `t_supply`.`name` as `supply_name`,
+        `t_supplyproduct`.`name` as `supplyprod_name`,
+        `t_consume`.`id` as `consumeId`,
+        `t_consume`.`consumeCode`,
+        `t_consume`.`supplyConsumeSeqId`,
+        `t_consume`.`consumeNumber`,
+        `t_consume`.`prevNumber`,
+        `t_consume`.`afterNumber`,
+        `t_consume`.`consumeTime`,
+        `t_consume`.`address`,
+        `t_consume`.`deviceId`,
+        `t_consume`.`reverseStatus`,
+        `t_consume`.`createTime`
+        from `t_consume`
+        JOIN `t_order` ON `t_consume`.`order_id`=`t_order`.`id`
+        JOIN `t_platform` on `t_platform`.`id`=`t_order`.`platform_id`
+        JOIN `t_platformproduct` on `t_platformproduct`.`id`=`t_order`.`platformprod_id`
+        JOIN `t_supply` on `t_supply`.`id`=`t_order`.`supply_id`
+        JOIN `t_supplyproduct` on `t_supplyproduct`.`id`=`t_order`.`supplyProdId`
+        where 1=1
+        <if test="platform_Id!=null">
+            and `t_order`.`platform_id`=#{platform_Id}
+        </if>
+        <if test="supply_Id!=null">
+            and `t_order`.`supply_id`=#{supply_Id}
+        </if>
+        <if test="order_Code!=null and order_Code!=''">
+            and `t_order`.`orderCode`=#{order_Code}
+        </if>
+        <if test="platform_OrderId!=null and platform_OrderId!=''">
+            and `t_order`.`platformOrderId`=#{platform_OrderId}
+        </if>
+        <if test="mobile!=null and mobile!=''">
+            and `t_order`.`mobile`=#{mobile}
+        </if>
+        <if test="idNumber!=null and idNumber!=''">
+            and `t_order`.`idNumber`=#{idNumber}
+        </if>
+        <if test="voucherNumber!=null and voucherNumber!=''">
+            and `t_order`.`voucherNumber`=#{voucherNumber}
+        </if>
+        <if test="status!=null">
+            and `t_order`.`status`=#{status}
+        </if>
+        <if test="start_Time!=null">
+            and `t_consume`.`consumeTime`&gt;=#{start_Time}
+        </if>
+        <if test="end_Time!=null">
+            <![CDATA[
+       and  `t_consume`.`consumeTime`<=#{end_Time}
+        ]]>
+        </if>
+        <if test="consume_Code!=null and consume_Code!=''">
+            and `t_consume`.`consumeCode`=#{consume_Code}
+        </if>
+        <if test="supply_consume_Code!=null and supply_consume_Code!=''">
+            and `t_consume`.`supplyConsumeCode`=#{supply_consume_Code}
+        </if>
+        <if test="deviceId!=null and deviceId!=''">
+            and `t_consume`.`deviceId`=#{deviceId}
+        </if>
+        <if test="order_id!=null">
+            and `t_consume`.`order_id`=#{order_id}
+        </if>
+        order by `t_consume`.`id` desc
+        limit #{record_start},#{record_count}
+    </select>
+    <select id="selectOrderRefCount" resultType="java.lang.Integer">
+        select
+        count(0)
+        from t_refund
+        JOIN `t_order` ON `t_refund`.`order_id`=`t_order`.`id`
+        where 1=1
+        <if test="platformId!=null">
+            and `t_order`.`platform_id`=#{platformId}
+        </if>
+        <if test="supplyId!=null">
+            and `t_order`.`supply_id`=#{supplyId}
+        </if>
+        <if test="orderCode!=null and orderCode!=''">
+            and `t_order`.`orderCode`=#{orderCode}
+        </if>
+        <if test="platformOrderId!=null and platformOrderId!=''">
+            and `t_order`.`platformOrderId`=#{platformOrderId}
+        </if>
+        <if test="mobile!=null and mobile!=''">
+            and `t_order`.`mobile`=#{mobile}
+        </if>
+        <if test="idNumber!=null and idNumber!=''">
+            and `t_order`.`idNumber`=#{idNumber}
+        </if>
+        <if test="voucherNumber!=null and voucherNumber!=''">
+            and `t_order`.`voucherNumber`=#{voucherNumber}
+        </if>
+        <if test="status!=null">
+            and `t_order`.`status`=#{status}
+        </if>
+        <if test="startTime!=null">
+            and `t_refund`.`refTime`&gt;=#{startTime}
+        </if>
+        <if test="endTime!=null">
+            <![CDATA[
+        and  `t_refund`.`refTime`<=#{endTime}
+        ]]>
+        </if>
+        <if test="platformRefId!=null and platformRefId!=''">
+            and `t_refund`.`platformRefId`=#{consume_Code}
+        </if>
+        <if test="voucherRefId!=null and voucherRefId!=''">
+            and `t_refund`.`refundCode`=#{voucherRefId}
+        </if>
+        <if test="supplyRefId!=null and supplyRefId!=''">
+            and `t_refund`.`supplyRefSeqId`=#{supplyRefId}
+        </if>
+        <if test="orderId!=null">
+            and `t_refund`.`orderId`=#{order_id}
+        </if>
+        <if test="prodType!=null">
+            and `t_refund`.`prodType`=#{prodType}
+        </if>
+
+    </select>
+    <select id="selectOrderRefList" resultType="java.util.Map">
+        select
+        `t_order`.*,
+        `t_platform`.`name` as `platform_name`,
+        `t_platformproduct`.`name` as `platformprod_name`,
+        `t_supply`.`name` as `supply_name`,
+        `t_supplyproduct`.`name` as `supplyprod_name`,
+        `t_refund`.`id` as `consumeId`,
+        `t_refund`.`refundCode`,
+        `t_refund`.`platformRefId`,
+        `t_refund`.`refNumber`,
+        `t_refund`.`refTime`,
+        `t_refund`.`refCause`,
+        `t_refund`.`refStatus`,
+        `t_refund`.`successTime`,
+        `t_refund`.`supplyRefSeqId`,
+        `t_refund`.`createTime`,
+        `t_refund`.`prodType`
+        from t_refund
+        JOIN `t_order` ON `t_refund`.`order_id`=`t_order`.`id`
+        JOIN `t_platform` on `t_platform`.`id`=`t_order`.`platform_id`
+        JOIN `t_platformproduct` on `t_platformproduct`.`id`=`t_order`.`platformprod_id`
+        JOIN `t_supply` on `t_supply`.`id`=`t_order`.`supply_id`
+        JOIN `t_supplyproduct` on `t_supplyproduct`.`id`=`t_order`.`supplyProdId`
+        where 1=1
+        <if test="platformId!=null">
+            and `t_order`.`platform_id`=#{platformId}
+        </if>
+        <if test="supplyId!=null">
+            and `t_order`.`supply_id`=#{supplyId}
+        </if>
+        <if test="orderCode!=null and orderCode!=''">
+            and `t_order`.`orderCode`=#{orderCode}
+        </if>
+        <if test="platformOrderId!=null and platformOrderId!=''">
+            and `t_order`.`platformOrderId`=#{platformOrderId}
+        </if>
+        <if test="mobile!=null and mobile!=''">
+            and `t_order`.`mobile`=#{mobile}
+        </if>
+        <if test="idNumber!=null and idNumber!=''">
+            and `t_order`.`idNumber`=#{idNumber}
+        </if>
+        <if test="voucherNumber!=null and voucherNumber!=''">
+            and `t_order`.`voucherNumber`=#{voucherNumber}
+        </if>
+        <if test="status!=null">
+            and `t_order`.`status`=#{status}
+        </if>
+        <if test="startTime!=null">
+            and `t_refund`.`refTime`&gt;=#{startTime}
+        </if>
+        <if test="endTime!=null">
+            <![CDATA[
+        and  `t_refund`.`refTime`<=#{endTime}
+        ]]>
+        </if>
+        <if test="platformRefId!=null and platformRefId!=''">
+            and `t_refund`.`platformRefId`=#{consume_Code}
+        </if>
+        <if test="voucherRefId!=null and voucherRefId!=''">
+            and `t_refund`.`refundCode`=#{voucherRefId}
+        </if>
+        <if test="supplyRefId!=null and supplyRefId!=''">
+            and `t_refund`.`supplyRefSeqId`=#{supplyRefId}
+        </if>
+        <if test="orderId!=null">
+            and `t_refund`.`orderId`=#{order_id}
+        </if>
+        <if test="prodType!=null">
+            and `t_refund`.`prodType`=#{prodType}
         </if>
     </select>
 </mapper>

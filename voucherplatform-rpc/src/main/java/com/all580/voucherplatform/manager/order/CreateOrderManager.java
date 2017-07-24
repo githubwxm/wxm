@@ -63,7 +63,6 @@ public class CreateOrderManager {
     private int lockTimeOut = 3;
 
 
-
     private Integer platformId;
     private PlatformProduct platformProduct;
     private Supply supply;
@@ -94,7 +93,8 @@ public class CreateOrderManager {
         this.platformId = platformId;
         orderList = new ArrayList<>();
         orderId = CommonUtil.objectParseString(map.get("orderId"));
-        if (orderMapper.getOrderCount(platformId, null, null, orderId, null, null, null, null, null, null) > 0) {
+
+        if (orderMapper.selectOrderCount(platformId, null, null, orderId, null, null, null, null, null, null) > 0) {
 
             log.warn("订单号为{}的订单已存在", orderId);
             throw new Exception("订单已处理！");

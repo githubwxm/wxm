@@ -2,6 +2,7 @@ package com.all580.voucherplatform.adapter.supply.ticketV3.processor;
 
 import com.all580.voucherplatform.adapter.AdapterLoader;
 import com.all580.voucherplatform.adapter.ProcessorService;
+import com.all580.voucherplatform.dao.ConsumeMapper;
 import com.all580.voucherplatform.entity.Supply;
 import com.all580.voucherplatform.manager.order.ConsumeOrderManager;
 import com.framework.common.lang.DateFormatUtils;
@@ -23,10 +24,13 @@ public class ConsumeProcessorImpl implements ProcessorService<Supply> {
 
     private static final String ACTION = "consumeOrder";
     @Autowired
-    AdapterLoader adapterLoader;
+    private AdapterLoader adapterLoader;
+    @Autowired
+    private ConsumeMapper consumeMapper;
 
     @Override
-    public Object processor(Supply supply, Map map) {
+    public Object processor(Supply supply,
+                            Map map) {
         String voucherId = CommonUtil.objectParseString(map.get("voucherId"));
         String orderId = CommonUtil.objectParseString(map.get("orderId"));
         String consumeSeqId = CommonUtil.objectParseString(map.get("consumeSeqId"));
@@ -38,7 +42,8 @@ public class ConsumeProcessorImpl implements ProcessorService<Supply> {
         ConsumeOrderManager consumeOrderManager = adapterLoader.getBean(ConsumeOrderManager.class);
         try {
             consumeOrderManager.setOrder(voucherId);
-            consumeOrderManager.submiConsume(consumeSeqId, consumeNumber, consumeAddress, consumeTime, deviceId);
+            consumeOrderManager.submitConsume(consumeSeqId, consumeNumber, consumeAddress,
+                    consumeTime, deviceId);
         } catch (Exception ex) {
             throw new ApiException(ex);
         }

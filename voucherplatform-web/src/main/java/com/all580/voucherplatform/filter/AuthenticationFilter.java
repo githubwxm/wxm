@@ -1,8 +1,8 @@
-package com.all580.base.sign;
+package com.all580.voucherplatform.filter;
 
 import com.alibaba.fastjson.JSON;
-import com.all580.base.manager.BeanUtil;
 import com.all580.voucherplatform.api.VoucherConstant;
+import com.all580.voucherplatform.manager.BeanUtil;
 import com.framework.common.Result;
 import com.framework.common.io.cache.redis.RedisUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -10,7 +10,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -19,33 +18,44 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by Linv2 on 2017-06-29.
+ * Created by Linv2 on 2017-07-11.
  */
-public class VoucherFilter extends OncePerRequestFilter {
-    private RedisUtils redisUtils;
+public class AuthenticationFilter extends OncePerRequestFilter {
 
-    public VoucherFilter() {
+    private RedisUtils redisUtils;
+    private static final String LOGINURL = "/api/user/login";
+    private static final String POSURL = "/api/pos";
+    private static final String MNSURL = "/api/mns";
+
+    public AuthenticationFilter() {
         this.redisUtils = BeanUtil.getApplicationContext().getBean(RedisUtils.class);
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain) throws ServletException, IOException {
         String url = request.getRequestURI();
-        if (!url.equals("/voucherplatform/user/login")) {
-            String token = getCookie(request, VoucherConstant.COOKIENAME);
-            if (StringUtils.isEmpty(token)) {
-                renderingByJsonPData(response, JSON.toJSONString(getOutPutMap(false, "对不起，你还没有登录", Result.NO_PERMISSION, null)));
+        if (url.equals(LOGINURL) || url.startsWith(MNSURL) || url.startsWith(POSURL)) {
+            filterChain.doFilter(request, response);
+
+        } else {
+            String sessionId = request.getSession().getId();
+            if (StringUtils.isEmpty(sessionId)) {
+                renderingByJsonPData(response,
+                        JSON.toJSONString(getOutPutMap(false, "对不起，你还没有登录", Result.NO_PERMISSION, null)));
                 return;
             }
-            Map mapUser = redisUtils.get(VoucherConstant.REDISVOUCHERLOGINKEY + ":" + token, Map.class);
+            Map mapUser = redisUtils.get(VoucherConstant.REDISVOUCHERLOGINKEY + ":" + sessionId, Map.class);
             if (mapUser != null) {
                 request.setAttribute("user", mapUser);
                 filterChain.doFilter(request, response);
+            } else {
+                renderingByJsonPData(response,
+                        JSON.toJSONString(getOutPutMap(false, "对不起，登录超时", Result.NO_PERMISSION, null)));
                 return;
             }
-            renderingByJsonPData(response, JSON.toJSONString(getOutPutMap(false, "对不起，登录超时", Result.NO_PERMISSION, null)));
         }
-        filterChain.doFilter(request, response);
     }
 
     /**
@@ -54,7 +64,8 @@ public class VoucherFilter extends OncePerRequestFilter {
      * @param response
      * @param str
      */
-    private void renderingByJsonPData(HttpServletResponse response, String str) {
+    private void renderingByJsonPData(HttpServletResponse response,
+                                      String str) {
         if (response.getContentType() == null)
             response.setContentType("text/html; charset=UTF-8");
         PrintWriter writer = null;
@@ -71,24 +82,15 @@ public class VoucherFilter extends OncePerRequestFilter {
         }
     }
 
-    public Map getOutPutMap(boolean success, String message, Integer code, String result) {
+    public Map getOutPutMap(boolean success,
+                            String message,
+                            Integer code,
+                            String result) {
         Map<String, Object> map = new HashMap<>();
         map.put("success", success);
         map.put("message", message);
         map.put("code", code);
         map.put("result", result);
         return map;
-    }
-
-    private String getCookie(HttpServletRequest request, String name) {
-        Cookie[] cookies = request.getCookies();
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if (cookie.getName().equals(name)) {
-                    return cookie.getValue();
-                }
-            }
-        }
-        return null;
     }
 }

@@ -66,7 +66,8 @@ public class ConsumeOrderManager {
         checkData();
     }
 
-    public void setOrder(Integer supplyId, String supplyOrderId) throws Exception {
+    public void setOrder(Integer supplyId,
+                         String supplyOrderId) throws Exception {
         this.order = orderMapper.selectBySupply(supplyId, supplyOrderId);
         checkData();
     }
@@ -78,20 +79,31 @@ public class ConsumeOrderManager {
         }
     }
 
-    public void submiConsume(String seqId, Integer number, String address, Date consumeTime, String deviceId) {
-        DistributedReentrantLock distributedReentrantLock = distributedLockTemplate.execute(VoucherConstant.DISTRIBUTEDLOCKORDER + order.getOrderCode(), lockTimeOut);
+    public Integer submitConsume(String seqId,
+                                 Integer number,
+                                 String address,
+                                 Date consumeTime,
+                                 String deviceId) {
+        DistributedReentrantLock distributedReentrantLock = distributedLockTemplate.execute(
+                VoucherConstant.DISTRIBUTEDLOCKORDER + order.getOrderCode(), lockTimeOut);
         try {
             Integer consumeId = Consume(seqId, number, address, consumeTime, deviceId);
             notifyPlatform(order.getPlatform_id(), consumeId);
+            return consumeId;
         } catch (Exception ex) {
             log.error(ex.getMessage(), ex);
+            return number;
         } finally {
             distributedReentrantLock.unlock();
         }
     }
 
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class}, propagation = Propagation.REQUIRES_NEW)
-    private Integer Consume(String seqId, Integer number, String address, Date consumeTime, String deviceId) throws Exception {
+    private Integer Consume(String seqId,
+                            Integer number,
+                            String address,
+                            Date consumeTime,
+                            String deviceId) throws Exception {
 
 
         if (StringUtils.isEmpty(seqId)) {
@@ -137,7 +149,8 @@ public class ConsumeOrderManager {
         return consume.getId();
     }
 
-    public void notifyPlatform(final Integer platformId, final Integer consumeId) {
+    public void notifyPlatform(final Integer platformId,
+                               final Integer consumeId) {
         asyncService.run(new Runnable() {
             @Override
             public void run() {
@@ -149,5 +162,7 @@ public class ConsumeOrderManager {
         });
     }
 
-
+    public Order getOrder() {
+        return order;
+    }
 }

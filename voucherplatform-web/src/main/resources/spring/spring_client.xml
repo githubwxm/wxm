@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+	http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+    <!-- 远程rpc类声明 -->
+    <!-- 提供方应用信息，用于计算依赖关系-->
+    <dubbo:application name="voucherplatform-web"/>
+
+    <!---->
+    <!-- 使用zookeeper广播注册中心暴露服务地址 -->
+    <dubbo:registry address="${dubbo.registry.zk}" file="${gateway.dubbo.cache}"/>
+    <dubbo:protocol name="dubbo" port="${dubbo.port}"/>
+
+    <dubbo:consumer check="false" retries="0" timeout="60000"/>
+
+    <dubbo:reference id="userService" interface="com.all580.voucherplatform.api.service.UserService"/>
+    <dubbo:reference id="qrService" interface="com.all580.voucherplatform.api.service.QrService"/>
+    <dubbo:reference id="templateService" interface="com.all580.voucherplatform.api.service.TemplateService"/>
+    <dubbo:reference id="supplyService" interface="com.all580.voucherplatform.api.service.SupplyService"/>
+    <dubbo:reference id="platformService" interface="com.all580.voucherplatform.api.service.PlatformService"/>
+    <dubbo:reference id="orderService" interface="com.all580.voucherplatform.api.service.OrderService"/>
+    <dubbo:reference id="all580Service" interface="com.all580.voucherplatform.api.service.All580Service"/>
+    <dubbo:reference id="ticketSysService" interface="com.all580.voucherplatform.api.service.TicketSysService"/>
+    <dubbo:reference id="deviceService" interface="com.all580.voucherplatform.api.service.DeviceService"/>
+    <dubbo:reference id="posService" interface="com.all580.voucherplatform.api.service.PosService"/>
+</beans>

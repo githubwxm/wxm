@@ -1,4 +1,4 @@
-package com.all580.base.manager.voucherplatform;
+package com.all580.voucherplatform.manager;
 
 import com.framework.common.validate.ValidRule;
 import org.springframework.stereotype.Component;
@@ -33,6 +33,30 @@ public class PlatformValidateManager {
                 "signType"
         }, new ValidRule[]{new ValidRule.NotNull()});
         rules.put(new String[]{"id", "signType"}, new ValidRule[]{new ValidRule.Digits()});
+        return rules;
+    }
+
+    public Map<String[], ValidRule[]> createRoleValidate() {
+        Map<String[], ValidRule[]> rules = new HashMap<>();
+        // 校验不为空的参数
+        rules.put(new String[]{
+                "supplyId",
+                "platformId",
+        }, new ValidRule[]{new ValidRule.NotNull(), new ValidRule.Digits()});
+        return rules;
+    }
+
+    public Map<String[], ValidRule[]> createProdTypeValidate() {
+        Map<String[], ValidRule[]> rules = new HashMap<>();
+        // 校验不为空的参数
+        rules.put(new String[]{
+                "name"
+        }, new ValidRule[]{new ValidRule.NotNull()});
+
+        rules.put(new String[]{
+                "id"
+        }, new ValidRule[]{new ValidRule.Digits()});
+
         return rules;
     }
 }

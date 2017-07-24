@@ -54,7 +54,7 @@ public interface QrRuleMapper {
 
     QrRule getDefaultQrRule();
 
-    int getCount(@Param("name") String name,
+    int selectQrCount(@Param("name") String name,
                  @Param("len") Integer len,
                  @Param("prefix") String prefix,
                  @Param("postfix") String postfix,
@@ -62,7 +62,7 @@ public interface QrRuleMapper {
                  @Param("prod_Id") Integer prodId,
                  @Param("defaultOption") Boolean defaultOption);
 
-    List<Map> getList(@Param("name") String name,
+    List<Map> selectQrList(@Param("name") String name,
                       @Param("len") Integer len,
                       @Param("prefix") String prefix,
                       @Param("postfix") String postfix,
