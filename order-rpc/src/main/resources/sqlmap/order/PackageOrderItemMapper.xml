@@ -49,6 +49,9 @@
       <if test="pay_amount != null">
         `pay_amount`,
       </if>
+      <if test="payment_flag != null">
+        `payment_flag`,
+      </if>
       <if test="supply_price != null">
         `supply_price`,
       </if>
@@ -113,6 +116,9 @@
       </if>
       <if test="pay_amount != null">
         #{pay_amount},
+      </if>
+      <if test="payment_flag != null">
+        #{payment_flag},
       </if>
       <if test="supply_price != null">
         #{supply_price},
@@ -182,6 +188,9 @@
       </if>
       <if test="sale_amount != null">
         sale_amount = #{sale_amount},
+      </if>
+      <if test="payment_flag != null">
+        payment_flag = #{payment_flag},
       </if>
       <if test="supply_price != null">
         supply_price = #{supply_price},

@@ -24,6 +24,7 @@ public class PackageOrderItem implements Serializable{
     private Integer refund_quantity;
     private Integer pay_amount;
     private Integer sale_amount;
+    private Integer payment_flag;
     private Integer supply_price;
     private Integer sale_price;
     private Integer settle_price;

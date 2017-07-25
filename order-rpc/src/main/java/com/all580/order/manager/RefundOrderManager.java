@@ -1,5 +1,6 @@
 package com.all580.order.manager;
 
+import com.alibaba.fastjson.JSONObject;
 import com.all580.order.api.OrderConstant;
 import com.all580.order.api.model.RefundTicketEventParam;
 import com.all580.order.dao.*;
@@ -24,6 +25,7 @@ import com.framework.common.lang.JsonUtils;
 import com.framework.common.lang.UUIDGenerator;
 import com.framework.common.synchronize.SyncAccess;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
@@ -746,6 +748,23 @@ public class RefundOrderManager extends BaseOrderManager {
             if (epId != orderItem.getSupplier_ep_id() && epId != order.getPayee_ep_id()) {
                 throw new ApiException("非法请求:当前企业不能退订该订单");
             }
+        }
+    }
+
+    /**
+     * 将检查退货规则提取为公共方法
+     * @param rule
+     */
+    public void checkRefundRule(String rule){
+        JSONObject jsonObject = JSONObject.parseObject(rule);
+        Object tmp = jsonObject.get("refund");
+        boolean refund = true;
+        if (tmp != null) {
+            String cs = tmp.toString();
+            refund = StringUtils.isNumeric(cs) ? BooleanUtils.toBoolean(Integer.parseInt(cs)) : BooleanUtils.toBoolean(cs);
+        }
+        if (!refund) {
+            throw new ApiException("该订单为不可退退货规则");
         }
     }
 

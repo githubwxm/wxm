@@ -3,21 +3,25 @@ package com.all580.order.adapter;
 import com.all580.ep.api.conf.EpConstant;
 import com.all580.ep.api.service.EpService;
 import com.all580.order.api.OrderConstant;
-import com.all580.order.dao.OrderItemMapper;
-import com.all580.order.dao.OrderMapper;
-import com.all580.order.dao.PackageOrderItemMapper;
+import com.all580.order.dao.*;
+import com.all580.order.dto.RefundDay;
 import com.all580.order.dto.RefundOrderApply;
-import com.all580.order.entity.Order;
-import com.all580.order.entity.OrderItem;
-import com.all580.order.entity.PackageOrderItem;
-import com.all580.order.entity.RefundOrder;
+import com.all580.order.entity.*;
+import com.all580.order.manager.RefundOrderManager;
+import com.all580.order.util.AccountUtil;
+import com.all580.product.api.consts.ProductConstants;
+import com.framework.common.Result;
+import com.framework.common.lang.UUIDGenerator;
 import com.framework.common.util.CommonUtil;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 import javax.lang.exception.ApiException;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +39,12 @@ public class PackageRefundOrderImpl implements RefundPackageOrderService{
     private OrderMapper orderMapper;
     @Autowired
     private OrderItemMapper orderItemMapper;
+    @Autowired
+    private RefundOrderManager refundOrderManager;
+    @Autowired
+    private RefundPackageOrderMapper refundPackageOrderMapper;
+    @Autowired
+    private PackageOrderItemAccountMapper packageOrderItemAccountMapper;
 
     @Override
     public RefundOrderApply validateAndParseParams(long itemNo, Map params) {
@@ -70,7 +80,8 @@ public class PackageRefundOrderImpl implements RefundPackageOrderService{
         apply.setFrom(applyFrom);
         apply.setEpId(CommonUtil.objectParseInteger(params.get(EpConstant.EpKey.EP_ID)));
         apply.setCause(CommonUtil.objectParseString(params.get("cause")));
-        apply.setQuantity(CommonUtil.objectParseInteger(params.get("quantity")));
+        //apply.setQuantity(CommonUtil.objectParseInteger(params.get("quantity")));
+        apply.setQuantity(packageOrderItem.getQuantity());
         apply.setDate(new Date());
         apply.setUserId(CommonUtil.objectParseInteger(params.get("operator_id")));
         apply.setUserName(CommonUtil.objectParseString(params.get("operator_name")));
@@ -80,36 +91,111 @@ public class PackageRefundOrderImpl implements RefundPackageOrderService{
 
     @Override
     public void checkAuth(RefundOrderApply apply, Map params) {
-
+        Integer epId = apply.getEpId();
+        Order order = apply.getOrder();
+        Integer applyFrom = apply.getFrom();
+        OrderItem orderItem = new OrderItem();
+        orderItem.setSupplier_ep_id(apply.getPackageOrderItem().getEp_id());
+        refundOrderManager.checkApplyRefund(orderItem, order, applyFrom, epId);
     }
 
     @Override
     public void canBeRefund(RefundOrderApply apply, PackageOrderItem item, Map params) {
-
+        String rule = apply.getFrom() == ProductConstants.RefundEqType.SELLER ? item.getCust_refund_rule() : item.getSaler_refund_rule();
+        refundOrderManager.checkRefundRule(rule);
     }
 
     @Override
     public int getRefundQuantity(RefundOrderApply apply, Map params) {
-        return 0;
+        return apply.getQuantity();
     }
 
     @Override
     public int[] calcRefundMoneyAndFee(RefundOrderApply apply, PackageOrderItem item, Map params) {
-        return new int[0];
+        int [] calcResult = new int[]{0, 0};
+        if (item.getPayment_flag() != ProductConstants.PayType.PAYS) {
+            PackageOrderItemAccount itemAccount = packageOrderItemAccountMapper.selectByOrderItemAndEp(item.getId(),
+                    apply.getOrder().getBuy_ep_id(), apply.getOrder().getPayee_ep_id());
+            if (itemAccount == null) {
+                throw new ApiException("数据异常,分账记录不存在");
+            }
+            //todo 组装参数
+            OrderItemAccount account = new OrderItemAccount();
+            account.setData(itemAccount.getData());
+
+            OrderItemDetail detail = new OrderItemDetail();
+            detail.setCust_refund_rule(item.getCust_refund_rule());
+            detail.setSaler_refund_rule(item.getSaler_refund_rule());
+            detail.setDay(item.getStart());
+
+            RefundDay refundDay = new RefundDay();
+            refundDay.setDay(apply.getDate());
+            refundDay.setQuantity(apply.getQuantity());
+
+            calcResult = AccountUtil.calcRefundMoneyAndFee(account, apply.getFrom(), Arrays.asList(refundDay), Arrays.asList(detail), apply.getDate());
+
+            if (calcResult[0] < 0) {
+                throw new ApiException("销售价小于退货手续费");
+            }
+        }
+        return calcResult;
     }
 
     @Override
     public int[] getRefundAudit(RefundOrderApply apply, Map params) {
-        return new int[0];
+        PackageOrderItem item = apply.getPackageOrderItem();
+        Order order = apply.getOrder();
+        // 获取退订审核
+        int[] auditSupplierConfig = refundOrderManager.getAuditConfig(item.getProduct_sub_id(), item.getCore_ep_id());
+        int auditTicket = auditSupplierConfig[0];
+        // 获取退款审核
+        int auditMoney = 0;
+        if (item.getCore_ep_id() == order.getPayee_ep_id().intValue()) {
+            auditMoney = auditSupplierConfig[1];
+        } else {
+            auditMoney = refundOrderManager.getAuditConfig(item.getProduct_sub_id(), order.getPayee_ep_id())[1];
+        }
+        return new int[]{auditTicket, auditMoney};
     }
 
     @Override
-    public RefundOrder insertRefundOrder(RefundOrderApply apply, int quantity, int money, int fee, int ticketAudit, int moneyAudit, Map params) {
-        return null;
+    public RefundPackageOrder insertRefundOrder(RefundOrderApply apply, int quantity, int money, int fee, int ticketAudit, int moneyAudit, Map params) {
+        RefundPackageOrder refundPackageOrder = new RefundPackageOrder();
+        refundPackageOrder.setChannel_fee(refundOrderManager.getChannelRate(
+                apply.getPackageOrderItem().getCore_ep_id(), apply.getOrder().getPayee_ep_id()));
+        refundPackageOrder.setPackage_order_item_id(apply.getPackageOrderItem().getId());
+        refundPackageOrder.setNumber(UUIDGenerator.generateUUID());
+        refundPackageOrder.setQuantity(quantity);
+        refundPackageOrder.setCreate_time(new Date());
+        refundPackageOrder.setMoney(money);
+        refundPackageOrder.setFee(fee);
+        refundPackageOrder.setCause(apply.getCause());
+        refundPackageOrder.setApply_user_id(apply.getUserId());
+        refundPackageOrder.setApply_user_name(apply.getUserName());
+        refundPackageOrder.setOuter_id(StringUtils.isEmpty(apply.getOuter()) ? "_" + refundPackageOrder.getNumber() : apply.getOuter());
+        try {
+            refundPackageOrderMapper.insertSelective(refundPackageOrder);
+        } catch (DuplicateKeyException e) {
+            if (e.getMessage().contains("'package_order_item_id'") && StringUtils.isNotEmpty(apply.getOuter())) {
+                throw new ApiException(Result.UNIQUE_KEY_ERROR, "重复操作", refundPackageOrderMapper.selectByItemIdAndOuter(apply.getPackageOrderItem().getId(), apply.getOuter()));
+            }
+            throw e;
+        }
+
+        return refundPackageOrder;
     }
 
     @Override
-    public void hasRemainAndInsertRefundVisitor(RefundOrderApply apply, RefundOrder refundOrder, PackageOrderItem item, Map params) {
+    public void hasRemainAndInsertRefundVisitor(RefundOrderApply apply, RefundPackageOrder refundOrder, PackageOrderItem item, Map params) {
+        //todo: 修改退订数
+        PackageOrderItem packageOrderItem = apply.getPackageOrderItem();
+        packageOrderItem.setRefund_quantity(refundOrder.getQuantity());
+        packageOrderItem.setUpdate_time(new Date());
+        packageOrderItemMapper.updateByPrimaryKeySelective(packageOrderItem);
+    }
+
+    @Override
+    public void preRefundSplitAccount(RefundOrderApply apply, Order order, PackageOrderItem item, RefundPackageOrder refundPackageOrder) {
 
     }
 }

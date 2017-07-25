@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.all580.order.dao.RefundPackageOrderMapper">
+    <resultMap id="RefundPackageOrder" type="com.all580.order.entity.RefundPackageOrder" autoMapping="true">
+
+    </resultMap>
+    <insert id="insertSelective">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        INSERT INTO t_refund_package_order
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="number != null">
+                `number`,
+            </if>
+            <if test="package_order_item_id != null">
+                `package_order_item_id`,
+            </if>
+            <if test="quantity != null">
+                `quantity`,
+            </if>
+            <if test="money != null">
+                `money`,
+            </if>
+            <if test="fee != null">
+                `fee`,
+            </if>
+            <if test="channel_fee != null">
+                `channel_fee`,
+            </if>
+            <if test="create_time != null">
+                `create_time`,
+            </if>
+            <if test="cause != null">
+                `cause`,
+            </if>
+            <if test="apply_user_id != null">
+                `apply_user_id`,
+            </if>
+            <if test="apply_user_name != null">
+                `apply_user_name`,
+            </if>
+            <if test="outer_id != null">
+                `outer_id`,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="number != null">
+                #{number},
+            </if>
+            <if test="package_order_item_id != null">
+                #{package_order_item_id},
+            </if>
+            <if test="quantity != null">
+                #{quantity},
+            </if>
+            <if test="money != null">
+                #{money},
+            </if>
+            <if test="fee != null">
+                #{fee},
+            </if>
+            <if test="channel_fee != null">
+                #{channel_fee},
+            </if>
+            <if test="create_time != null">
+                #{create_time},
+            </if>
+            <if test="cause != null">
+                #{cause},
+            </if>
+            <if test="apply_user_id != null">
+                #{apply_user_id},
+            </if>
+            <if test="apply_user_name != null">
+                #{apply_user_name},
+            </if>
+            <if test="outer_id != null">
+                #{outer_id},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateByPrimaryKeySelective">
+        UPDATE t_refund_package_order
+        <set>
+            <if test="number != null">
+                number = #{number},
+            </if>
+            <if test="package_order_item_id != null">
+                package_order_item_id = #{package_order_item_id},
+            </if>
+            <if test="quantity != null">
+                quantity = #{quantity},
+            </if>
+            <if test="money != null">
+                money = #{money},
+            </if>
+            <if test="fee != null">
+                fee = #{fee},
+            </if>
+            <if test="channel_fee != null">
+                channel_fee = #{channel_fee},
+            </if>
+            <if test="create_time != null">
+                create_time = #{create_time},
+            </if>
+            <if test="cause != null">
+                cause = #{cause},
+            </if>
+            <if test="apply_user_id != null">
+                apply_user_id = #{apply_user_id},
+            </if>
+            <if test="apply_user_name != null">
+                apply_user_name = #{apply_user_name},
+            </if>
+            <if test="outer_id != null">
+                outer_id = #{outer_id},
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <select id="selectByItemIdAndOuter" resultMap="RefundPackageOrder">
+      SELECT * FROM t_refund_package_order WHERE package_order_item_id = #{itemId} AND outer_id = #{outer}
+    </select>
+</mapper>

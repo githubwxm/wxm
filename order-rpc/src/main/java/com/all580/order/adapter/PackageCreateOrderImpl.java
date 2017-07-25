@@ -81,13 +81,15 @@ public class PackageCreateOrderImpl  implements CreatePackageOrderService {
 
     @Override
     public List<OrderItemSalesChain> insertSalesChain(PackageOrderItem item, ValidateProductSub sub, List<List<EpSalesInfo>> allDaysSales) {
-        OrderItem orderItem = new OrderItem();
-        orderItem.setId(item.getId());
-        return packageCreateOrderItemService.insertSalesChain(orderItem, sub, allDaysSales);
+//        OrderItem orderItem = new OrderItem();
+//        orderItem.setId(item.getId());
+//        return packageCreateOrderItemService.insertSalesChain(orderItem, sub, allDaysSales);
+        return null;
     }
 
     @Override
     public void prePaySplitAccount(List<List<EpSalesInfo>> allDaysSales, PackageOrderItem item, Integer epId) {
+        OrderItem orderItem = new OrderItem();
 
     }
 }

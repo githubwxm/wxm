@@ -66,7 +66,7 @@ public class BookingOrderServiceTest extends AbstractTransactionalJUnit4SpringCo
         visitors.add(visitor);
         item1.put("visitor", visitors);
         item1.put("days", 1);
-        item1.put("start", "2017-07-22 00:00:00");
+        item1.put("start", "2017-07-27 00:00:00");
         items.add(item1);
 
         Map item2 = new HashMap();
@@ -75,7 +75,7 @@ public class BookingOrderServiceTest extends AbstractTransactionalJUnit4SpringCo
         item2.put("quantity", 2);
         item2.put("visitor", visitors);
         item2.put("days", 1);
-        item2.put("start", "2017-07-22 00:00:00");
+        item2.put("start", "2017-07-27 00:00:00");
         items.add(item2);
 
 //        Map item3 = new HashMap();
@@ -97,7 +97,7 @@ public class BookingOrderServiceTest extends AbstractTransactionalJUnit4SpringCo
         params.put("product_sub_code", 1499744068564331L);
         params.put("quantity", 2);
         params.put("days", 1);
-        params.put("start", "2017-07-22 00:00:00");
+        params.put("start", "2017-07-27 00:00:00");
 
         Result rseult = bookingOrderService.createPackageOrder(params);
         System.out.println("---->" + JsonUtils.toJson(rseult.get()));

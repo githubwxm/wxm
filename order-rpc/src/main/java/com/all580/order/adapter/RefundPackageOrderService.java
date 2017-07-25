@@ -1,8 +1,9 @@
 package com.all580.order.adapter;
 
 import com.all580.order.dto.RefundOrderApply;
+import com.all580.order.entity.Order;
 import com.all580.order.entity.PackageOrderItem;
-import com.all580.order.entity.RefundOrder;
+import com.all580.order.entity.RefundPackageOrder;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
@@ -25,8 +26,10 @@ public interface RefundPackageOrderService {
     int[] getRefundAudit(RefundOrderApply apply, Map params);
 
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    RefundOrder insertRefundOrder(RefundOrderApply apply, int quantity, int money, int fee, int ticketAudit, int moneyAudit, Map params);
+    RefundPackageOrder insertRefundOrder(RefundOrderApply apply, int quantity, int money, int fee, int ticketAudit, int moneyAudit, Map params);
 
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    void hasRemainAndInsertRefundVisitor(RefundOrderApply apply, RefundOrder refundOrder, PackageOrderItem item, Map params);
+    void hasRemainAndInsertRefundVisitor(RefundOrderApply apply, RefundPackageOrder refundOrder, PackageOrderItem item, Map params);
+
+    void preRefundSplitAccount(RefundOrderApply apply, Order order, PackageOrderItem item, RefundPackageOrder refundPackageOrder);
 }

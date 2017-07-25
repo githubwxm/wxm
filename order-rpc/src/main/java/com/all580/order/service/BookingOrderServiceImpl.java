@@ -200,8 +200,8 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         boolean ok = orderInterface.after(params, order);
 
         Map<String, Object> resultMap = new HashMap<>();
-        resultMap.put("order", JsonUtils.obj2map(order));
-        resultMap.put("items", JsonUtils.json2List(JsonUtils.toJson(orderItems)));
+        resultMap.put("order", order);
+        resultMap.put("items", orderItems);
         Result<Object> result = new Result<>(true);
         result.put(resultMap);
 
@@ -252,6 +252,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         packageOrderItem.setStart(packageSub.getBooking());
         packageOrderItem.setEp_id(salesInfo.getEp_id());
         packageOrderItem.setCore_ep_id(bookingOrderManager.getCoreEpId(salesInfo.getEp_id()).get());
+        packageOrderItem.setPayment_flag(salesInfo.getPay_type());
         ProductSalesDayInfo productSalesDayInfo = null;
         int index = 0;
         List<ProductSalesDayInfo> productSalesDayInfoList = salesInfo.getDay_info_list();
@@ -276,32 +277,30 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         }
         packageOrderItem.setUpdate_time(new Date());
 
-        /**套票订单销售链暂时用packageOrderItem.id关联*/
-
-        // 析构销售链
-        createPackageOrderService.insertSalesChain(packageOrderItem, packageSub, allDaysSales);
-        // 预分账记录
-        createPackageOrderService.prePaySplitAccount(allDaysSales, packageOrderItem, createOrder.getEpId());
-
         //创建元素订单
         params.put("order_number", order.getNumber());
         Result<?> result = this.create(params, "PACKAGE");
-        Result<Map> res = new Result<>(Boolean.TRUE);
+        Result<Object> res = new Result<>(Boolean.TRUE);
+        System.out.println("----->" + JsonUtils.toJson(result.get()));
         if (result.isSuccess()){
             Map resultMap = (Map) result.get();
-            Order itemOrder = JsonUtils.map2obj((Map) resultMap.get("order") ,Order.class) ;
+            order = (Order) resultMap.get("order") ;
 
-            packageOrderItem.setPay_amount(itemOrder.getPay_amount());
-            packageOrderItem.setSale_amount(itemOrder.getSale_amount());
+            packageOrderItem.setPay_amount(order.getPay_amount());
+            packageOrderItem.setSale_amount(order.getSale_amount());
             //设置订单金额
-            itemOrder.setPay_amount(salesInfo.getPay_type() == ProductConstants.PayType.PREPAY  ? price.getSale() : 0);
-            itemOrder.setSale_amount(price.getSale());
+            order.setPay_amount(salesInfo.getPay_type() == ProductConstants.PayType.PREPAY  ? price.getSale() : 0);
+            order.setSale_amount(price.getSale());
 
-            orderMapper.updateByPrimaryKeySelective(itemOrder);
-            res.put(JsonUtils.obj2map(itemOrder));
+            orderMapper.updateByPrimaryKeySelective(order);
+            res.put(order);
         }
 
         PackageOrderItemMapper.updateByPrimaryKeySelective(packageOrderItem);
+
+        //createPackageOrderService.insertSalesChain(packageOrderItem, packageSub, allDaysSales);
+        // 预分账记录
+        createPackageOrderService.prePaySplitAccount(allDaysSales, packageOrderItem, createOrder.getEpId());
         return res;
     }
 
