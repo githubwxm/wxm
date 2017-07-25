@@ -46,7 +46,7 @@ public class SendThresholdTimer {
     private RedisUtils redisUtils;
     @Scheduled(cron = "0 59 09 * * ?")
    //@Scheduled(fixedDelay = 60000*10)
-    public void SendThresholdTimerJob() {
+    public void sendThresholdTimerJob() {
         //ep_id,core_ep_id,balance
        List<DistributedReentrantLock> listLock= new ArrayList<>();
        try{

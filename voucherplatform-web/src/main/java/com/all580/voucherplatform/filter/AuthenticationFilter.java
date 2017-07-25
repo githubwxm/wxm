@@ -24,29 +24,38 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 
     private RedisUtils redisUtils;
     private static final String LOGINURL = "/api/user/login";
+    private static final String POSURL = "/api/pos";
+    private static final String MNSURL = "/api/mns";
 
     public AuthenticationFilter() {
         this.redisUtils = BeanUtil.getApplicationContext().getBean(RedisUtils.class);
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain) throws ServletException, IOException {
         String url = request.getRequestURI();
-        if (!url.equals(LOGINURL)) {
+        if (url.equals(LOGINURL) || url.startsWith(MNSURL) || url.startsWith(POSURL)) {
+            filterChain.doFilter(request, response);
+
+        } else {
             String sessionId = request.getSession().getId();
             if (StringUtils.isEmpty(sessionId)) {
-                renderingByJsonPData(response, JSON.toJSONString(getOutPutMap(false, "对不起，你还没有登录", Result.NO_PERMISSION, null)));
+                renderingByJsonPData(response,
+                        JSON.toJSONString(getOutPutMap(false, "对不起，你还没有登录", Result.NO_PERMISSION, null)));
                 return;
             }
             Map mapUser = redisUtils.get(VoucherConstant.REDISVOUCHERLOGINKEY + ":" + sessionId, Map.class);
             if (mapUser != null) {
                 request.setAttribute("user", mapUser);
+                filterChain.doFilter(request, response);
             } else {
-                renderingByJsonPData(response, JSON.toJSONString(getOutPutMap(false, "对不起，登录超时", Result.NO_PERMISSION, null)));
+                renderingByJsonPData(response,
+                        JSON.toJSONString(getOutPutMap(false, "对不起，登录超时", Result.NO_PERMISSION, null)));
                 return;
             }
         }
-        filterChain.doFilter(request, response);
     }
 
     /**
@@ -55,7 +64,8 @@ public class AuthenticationFilter extends OncePerRequestFilter {
      * @param response
      * @param str
      */
-    private void renderingByJsonPData(HttpServletResponse response, String str) {
+    private void renderingByJsonPData(HttpServletResponse response,
+                                      String str) {
         if (response.getContentType() == null)
             response.setContentType("text/html; charset=UTF-8");
         PrintWriter writer = null;
@@ -72,7 +82,10 @@ public class AuthenticationFilter extends OncePerRequestFilter {
         }
     }
 
-    public Map getOutPutMap(boolean success, String message, Integer code, String result) {
+    public Map getOutPutMap(boolean success,
+                            String message,
+                            Integer code,
+                            String result) {
         Map<String, Object> map = new HashMap<>();
         map.put("success", success);
         map.put("message", message);

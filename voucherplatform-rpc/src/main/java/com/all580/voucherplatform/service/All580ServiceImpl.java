@@ -50,7 +50,8 @@ public class All580ServiceImpl implements All580Service {
         Platform platform = platformMapper.selectByPrimaryKey(identity);
         if (platform == null) {
             return new Result(false, "身份数据校检失败");
-        } else if (!checkSign(platform.getSignType(), platform.getPublicKey(), platform.getPrivateKey(), content, signed)) {
+        } else if (!signInstance.checkSign(platform.getSignType(), platform.getPublicKey(), platform.getPrivateKey(),
+                content, signed)) {
             return new Result(false, "签名数据校检失败");
         }
         PlatformAdapterService platformAdapterService = adapterLoader.getPlatformAdapterService(platform);
@@ -71,7 +72,8 @@ public class All580ServiceImpl implements All580Service {
         Supply supply = supplyMapper.selectByPrimaryKey(identity);
         if (supply == null) {
             return new Result(false, "身份数据校检失败");
-        } else if (!checkSign(supply.getSignType(), supply.getPublicKey(), supply.getPrivateKey(), content, signed)) {
+        } else if (!signInstance.checkSign(supply.getSignType(), supply.getPublicKey(), supply.getPrivateKey(), content,
+                signed)) {
             // return new Result(false, "签名数据校检失败");
         }
         SupplyAdapterService supplyAdapterService = adapterLoader.getSupplyAdapterService(supply);
@@ -88,16 +90,5 @@ public class All580ServiceImpl implements All580Service {
             mapContent = JsonUtils.json2Map(content);
         }
         return mapContent;
-    }
-
-    private boolean checkSign(Integer signType, String publicKey, String privateKey, String source, String signed) {
-        SignService signService = signInstance.getSignService(signType);
-        if (signService == null) {
-            return true;
-        }
-        SignKey signKey = new SignKey();
-        signKey.setPublicKey(publicKey);
-        signKey.setPrivateKey(privateKey);
-        return signService.verifySign(signKey, source, signed);
     }
 }

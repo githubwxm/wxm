@@ -143,9 +143,26 @@
     </select>
     <select id="selectProdList" resultType="java.util.Map">
         select
-        <include refid="Base_Column_List"/>
-        from `t_device_product`
-        where `t_device_product`.`status`=1
-        and `t_device_product`.`device_group_id`=#{groupId}
+        `t_supplyproduct`.`id`,
+        `t_supplyproduct`.`code`,
+        `t_supplyproduct`.`name`,
+        `t_supplyproduct`.`description`,
+        `t_supplyproduct`.`createTime`,
+        `t_supplyproduct`.`status`,
+        `t_supplyproduct`.`syncTime`,
+        `t_supply`.`id` as supply_id,
+        `t_ticketsys`.`prodAddType` as prodAddType,
+        `t_supply`.`name` as supply_name,
+        `t_device_product`.`id` as `device_prodId`
+        from t_supplyproduct
+        join `t_supply` on `t_supply`.`id`=`t_supplyproduct`.`supply_id`
+        LEFT JOIN `t_ticketsys` on `t_ticketsys`.`id`=`t_supply`.`ticketsys_id`
+        LEFT JOIN `t_device_product` on `t_device_product`.`supplyprod_id`=`t_supplyproduct`.`id` and `t_device_product`.status=1 and  `t_device_product`.`device_group_id`=#{groupId}
+        where `t_supplyproduct`.`status`=1
+        and `t_supplyproduct`.`supply_id`=#{supplyId}
+
+        order by `t_supplyproduct`.`syncTime` desc,
+        `t_supplyproduct`.`id` desc
+        limit #{record_start},#{record_count}
     </select>
 </mapper>

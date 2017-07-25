@@ -41,6 +41,19 @@ public class IntfServiceImpl implements IntfService {
     @Autowired
     private RedisUtils redisUtils;
 
+
+
+    public Result<List<String>> authCoreIntf(int CoreEpId){
+        Result<List<String>> result=  new Result(true);
+        try {
+            result.put(intfMapper.authCoreIntf(CoreEpId));
+        } catch (Exception e) {
+            log.error("添加接口异常", e);
+            throw  new ApiException("添加接口异常");
+        }
+        return result;
+    }
+
     public Result<List<String>> authIntf(int epRole){
         Result<List<String>> result=  new Result(true);
         try {
@@ -61,8 +74,8 @@ public class IntfServiceImpl implements IntfService {
             syncEpData.syncEpAllData(EpConstant.Table.T_INTF,intfMapper.selectByPrimaryKey(id));
             //  更新鉴权数据
             Integer func_id = CommonUtil.objectParseInteger(params.get("func_id"));
-            List<Integer> list= epRoleFuncMapper.selectFuncIdAllEpRole(func_id);
-            Auth.updateAuthMap(list,redisUtils);
+           // List<Integer> list= epRoleFuncMapper.selectFuncIdAllEpRole(func_id);
+            Auth.updateAuthMap(epRoleFuncMapper.selectFuncIdAllEpRoleCoreEpId(func_id),redisUtils);
         } catch (Exception e) {
             log.error("添加接口异常", e);
             throw  new ApiException("添加接口异常");
@@ -118,8 +131,8 @@ public class IntfServiceImpl implements IntfService {
         try {
             // funcIntfMapper.deleteFuncIntf(id);
             Integer func_id =CommonUtil.objectParseInteger(intfMapper.selectByPrimaryKey(id).get("func_id")) ;
-            List<Integer> list= epRoleFuncMapper.selectFuncIdAllEpRole(func_id);
-            Auth.updateAuthMap(list,redisUtils);
+           // List<Integer> list= epRoleFuncMapper.selectFuncIdAllEpRole(func_id);
+            Auth.updateAuthMap( epRoleFuncMapper.selectFuncIdAllEpRoleCoreEpId(func_id),redisUtils);
             intfMapper.deleteByPrimaryKey(id);
             syncEpData.syncDeleteAllData(EpConstant.Table.T_INTF,id);
         } catch (Exception e) {

@@ -58,7 +58,8 @@ public class SignInstance {
         return mapList;
     }
 
-    private Map getMap(String name, SignType signType) {
+    private Map getMap(String name,
+                       SignType signType) {
         Map map = new HashMap();
         map.put("name", name);
         map.put("value", signType.getValue());
@@ -93,5 +94,21 @@ public class SignInstance {
         } catch (NullPointerException e) {
             throw new Exception("私钥数据为空");
         }
+    }
+
+
+    public boolean checkSign(Integer signType,
+                             String publicKey,
+                             String privateKey,
+                             String source,
+                             String signed) {
+        SignService signService = this.getSignService(signType);
+        if (signService == null) {
+            return true;
+        }
+        SignKey signKey = new SignKey();
+        signKey.setPublicKey(publicKey);
+        signKey.setPrivateKey(privateKey);
+        return signService.verifySign(signKey, source, signed);
     }
 }

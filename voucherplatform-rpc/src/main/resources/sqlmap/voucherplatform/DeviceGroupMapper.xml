@@ -197,8 +197,8 @@
         <if test="supplyId!=null">
             and `t_device_group`.`supply_id`=#{supplyId}
         </if>
-        <if test="code!=null and code !=''">
-            and `t_device_group`.`code`=#{code}
+        <if test="name!=null and name !=''">
+            and `t_device_group`.`name`=#{name}
         </if>
         <if test="code!=null and code !=''">
             and `t_device_group`.`code`=#{code}
@@ -214,8 +214,8 @@
         <if test="supplyId!=null">
             and `t_device_group`.`supply_id`=#{supplyId}
         </if>
-        <if test="code!=null and code !=''">
-            and `t_device_group`.`code`=#{code}
+        <if test="name!=null and name !=''">
+            and `t_device_group`.`name`=#{name}
         </if>
         <if test="code!=null and code !=''">
             and `t_device_group`.`code`=#{code}

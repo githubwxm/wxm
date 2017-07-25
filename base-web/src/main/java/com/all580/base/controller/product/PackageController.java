@@ -6,11 +6,13 @@ import com.all580.product.api.service.PackageService;
 import com.all580.product.api.service.PackageSubService;
 import com.framework.common.BaseController;
 import com.framework.common.Result;
+import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.validate.ParamsMapValidate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.lang.exception.ParamsMapValidationException;
 import java.util.Date;
 import java.util.Map;
 
@@ -121,5 +123,14 @@ public class PackageController extends BaseController {
                              @RequestParam(defaultValue = "0") Integer record_start,
                              @RequestParam(defaultValue = "20") Integer record_count) {
         return packageService.selectCanSale(ep_id, name, sub_name, type, province, city, record_start, record_count);
+    }
+
+    @RequestMapping("calendar")
+    @ResponseBody
+    public Result<?> calendar(@RequestParam Integer ep_id, @RequestParam Integer id, @RequestParam String start, @RequestParam String end) {
+        Date[] dates = Utils.checkDateTime(start, end);
+        int days = (int) DateFormatUtils.getDayBySubDate(dates[0], dates[1]);
+        if (days > 31) throw new ParamsMapValidationException("不能超出一个月时间");
+        return packageSubService.calendar(id, dates[0], days, ep_id);
     }
 }

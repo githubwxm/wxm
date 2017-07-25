@@ -67,12 +67,13 @@ public class CreateGroupOrderManager {
     private Template template;
     private Supply supply;
 
-    public void setProd(Integer platformId, Map map) throws Exception {
+    public void setProd(Integer platformId,
+                        Map map) throws Exception {
 
         String orderId = CommonUtil.objectParseString(map.get("orderId"));
         groupOrder = new GroupOrder();
         groupOrder.setPlatformOrderId(orderId);
-        if (orderMapper.getOrderCount(platformId, null, null, orderId, null, null, null, null, null, null) > 0) {
+        if (orderMapper.selectByPlatform(platformId, orderId) != null) {
             log.warn("订单号为{}的订单已存在", orderId);
             throw new Exception("订单已处理！");
         }
@@ -91,7 +92,8 @@ public class CreateGroupOrderManager {
         groupOrder.setSendType(CommonUtil.objectParseInteger(map.get("sendType"), 0));
 
         groupOrder.setValidTime(DateFormatUtils.converToDateTime(CommonUtil.objectParseString(map.get("validTime"))));
-        groupOrder.setInvalidTime(DateFormatUtils.converToDateTime(CommonUtil.objectParseString(map.get("invalidTime"))));
+        groupOrder.setInvalidTime(
+                DateFormatUtils.converToDateTime(CommonUtil.objectParseString(map.get("invalidTime"))));
 
         Map mapProd = (Map) map.get("products");
         String prodId = CommonUtil.objectParseString(mapProd.get("productId"));
@@ -125,14 +127,16 @@ public class CreateGroupOrderManager {
         groupOrder.setCreateTime(new Date());
         String voucherNumber = voucherGenerate.getVoucher(qrRule.getSize(), qrRule.getPrefix(), qrRule.getPostfix());
         groupOrder.setVoucherNumber(voucherNumber);
-        String voucherImgUrl = voucherUrlGenerate.getVoucherUrl(voucherNumber, qrRule.getErrorRate(), qrRule.getSize(), qrRule.getForeColor());
+        String voucherImgUrl = voucherUrlGenerate.getVoucherUrl(voucherNumber, qrRule.getErrorRate(), qrRule.getSize(),
+                qrRule.getForeColor());
         groupOrder.setImgUrl(voucherImgUrl);
         groupOrder.setActivateStatus(false);
         groupOrder.setStatus(VoucherConstant.OrderSyncStatus.WAIT_SYNC);
         setVisitor(map);
     }
 
-    private void loadTemplate(Integer supplyId, Integer supplyProdId) {
+    private void loadTemplate(Integer supplyId,
+                              Integer supplyProdId) {
         if (supplyProdId != null) {
             template = templateMapper.getTemplate(null, supplyProdId);//根据产品读取当前配置
         }
@@ -147,7 +151,8 @@ public class CreateGroupOrderManager {
         }
     }
 
-    private void loadQrRule(Integer supplyId, Integer supplyProdId) {
+    private void loadQrRule(Integer supplyId,
+                            Integer supplyProdId) {
         if (supplyProdId != null) {
             qrRule = qrRuleMapper.getQrRule(null, supplyProdId);//根据产品读取当前配置
         }
@@ -204,7 +209,8 @@ public class CreateGroupOrderManager {
         return groupOrder.getId();
     }
 
-    private void notifySupply(final Integer ticketSysId, final Integer groupOrderId) {
+    private void notifySupply(final Integer ticketSysId,
+                              final Integer groupOrderId) {
         asyncService.run(new Runnable() {
             @Override
             public void run() {

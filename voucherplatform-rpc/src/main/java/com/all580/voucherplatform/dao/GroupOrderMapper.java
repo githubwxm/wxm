@@ -65,7 +65,7 @@ public interface GroupOrderMapper {
      * @param endTime
      * @return
      */
-    int getOrderCount(@Param("platform_Id") Integer platformId,
+    int selectOrderCount(@Param("platform_Id") Integer platformId,
                       @Param("supply_Id") Integer supplyId,
                       @Param("order_Code") String orderCode,
                       @Param("platform_OrderId") String platformOrderId,
@@ -91,7 +91,7 @@ public interface GroupOrderMapper {
      * @param recordCount
      * @return
      */
-    List<Map> getOrderList(@Param("platform_Id") Integer platformId,
+    List<Map> selectOrderList(@Param("platform_Id") Integer platformId,
                            @Param("supply_Id") Integer supplyId,
                            @Param("order_Code") String orderCode,
                            @Param("platform_OrderId") String platformOrderId,

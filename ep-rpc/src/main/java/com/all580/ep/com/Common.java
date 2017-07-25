@@ -1,6 +1,7 @@
 package com.all580.ep.com;
 
 import com.framework.common.Result;
+import com.framework.common.util.CommonUtil;
 
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
@@ -8,6 +9,7 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -188,4 +190,64 @@ public class Common {
             result.setSuccess();
         //}
     }
+
+    /**
+     * removeAll 前端传的类型实际上不一致removeAll不掉   过滤掉已经存在的无需添加
+     * func_ids 中过滤掉initFunc中已经存在的 而无需添加
+     *
+     * @param func_ids
+     * @param initFunc
+     */
+    public static void removeAllList(List<Integer> func_ids, List<Integer> initFunc) {
+        if(func_ids==null || initFunc==null){
+            return;
+        }
+        for (int i = func_ids.size() - 1; i > -1; i--) {
+            Integer id = CommonUtil.objectParseInteger(func_ids.get(i));//
+            if(id==null){
+                func_ids.remove(i);
+                continue;
+            }
+
+            for (Integer temp : initFunc) {
+                if (temp.equals(id)) {
+                    func_ids.remove(i);
+                    break;
+                }
+            }
+        }
+    }
+
+    /**
+     * 获取把已经存在而用不到的数据删除掉
+     * initFunc   中有 而  func_ids 中没有
+     *
+     * @param func_ids
+     * @param initFunc
+     */
+    public static List<Integer> deleteAllList(List<Integer> func_ids, List<Integer> initFunc) {
+        List<Integer> list = new ArrayList<>();
+        if (func_ids == null || initFunc == null) {
+            return list;
+        }
+        for (int i = initFunc.size() - 1; i > -1; i--) {
+            Integer id = initFunc.get(i);
+            boolean ref = true;
+            for (int j = func_ids.size() - 1; j > -1; j--) {
+                Integer temp = CommonUtil.objectParseInteger(func_ids.get(j));
+
+                if (id.equals(temp)) {
+                    ref = false;
+                    break;
+                }else if(temp==null){
+                    func_ids.remove(j);
+                }
+            }
+            if (ref) {
+                list.add(id);
+            }
+        }
+        return list;
+    }
+
 }
