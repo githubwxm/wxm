@@ -29,7 +29,7 @@ public class PlatfromValidateManager {
                 "area", // 区
                 "pic_address", // 湖南省长沙市岳麓区
                 "address", // 详细地址
-                //"group_list",
+                // "group_list",
         }, new ValidRule[]{new ValidRule.NotNull()});
 
 //        // 校验整数
