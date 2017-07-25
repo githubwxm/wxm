@@ -8,6 +8,8 @@ import com.all580.notice.entity.SmsTmpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.framework.common.Result;
 import com.framework.common.lang.JsonUtils;
+import com.framework.common.mns.MessageManager;
+import com.framework.common.util.CommonUtil;
 import com.framework.common.validate.ParamsMapValidate;
 import com.framework.common.validate.ValidRule;
 import com.taobao.api.ApiException;
@@ -31,10 +33,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import javax.lang.exception.ParamsMapValidationException;
 import java.net.URLEncoder;
 import java.text.MessageFormat;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * 短信服务
@@ -65,19 +71,41 @@ public class SmsServiceImpl implements SmsService {
     @Value("${cty.url}")
     private String ctyUrl;
 
+    private Map<String, MessageManager> mnsMessageMap = new HashMap<>();
+    private ExecutorService executorService = Executors.newFixedThreadPool(15);
+
     @Override
     public Result send(String destPhoneNum, Integer smsType, Integer epId, Map<String, String> params) {
-        Assert.notNull(destPhoneNum, "参数【destPhoneNum】不能为空");
-        Assert.notNull(smsType, "参数【smsType】不能为空");
-        Assert.notNull(epId, "参数【epId】不能为空");
-        if(smsSend.equals("0")){// TODO: 2017/1/12 0012
-            return   new Result(true);
+        return send(epId, smsType, params, destPhoneNum);
+    }
+
+    /**
+     * 发送短信
+     *
+     * @param epId   企业ID
+     * @param type   短信类型 @see SmsType
+     * @param params 短信参数
+     * @param phones 手机号码
+     * @return
+     */
+    @Override
+    public Result<?> send(int epId, int type, Map<String, String> params, String... phones) {
+        if(smsSend.equals("0")) {
+            return new Result(true);
         }
-        SmsTmpl smsTmpl = smsTmplMapper.selectByEpIdAndType(epId, smsType);
-        Assert.notNull(smsTmpl, MessageFormat.format("找不到短信模板:epId={0}|smsType={1}", epId, smsType));
+        Assert.notEmpty(phones, "接收号码至少需要一个");
+        SmsTmpl smsTmpl = smsTmplMapper.selectByEpIdAndType(epId, type);
+        Assert.notNull(smsTmpl, MessageFormat.format("找不到短信模板:epId={0}|smsType={1}", epId, type));
         SmsAccountConf smsAccountConf = smsAccountConfMapper.selectByEpId(epId);
         Assert.notNull(smsAccountConf, MessageFormat.format("找不到短信账号配置:epId={0}", epId));
-        return doSend(destPhoneNum, params, smsTmpl.getOut_sms_tpl_id(), smsAccountConf);
+
+        if (!mnsMessageMap.containsKey(smsAccountConf.getApp_id())) {
+            MessageManager manager = new MessageManager(smsAccountConf.getApp_id(), smsAccountConf.getApp_pwd(), smsAccountConf.getUrl());
+            manager.setExecutor(executorService);
+            mnsMessageMap.put(smsAccountConf.getApp_id(), manager);
+        }
+        mnsMessageMap.get(smsAccountConf.getApp_id()).sendAsync(smsAccountConf.getEp_sign(), smsTmpl.getOut_sms_tpl_id(), params, phones);
+        return new Result<>(true);
     }
 
     /**
@@ -119,16 +147,68 @@ public class SmsServiceImpl implements SmsService {
         }
     }
 
+    /**
+     * 创建企业短信通道配置
+     *
+     * @param params
+     * @return 成功
+     */
     @Override
-    public Result createConf(Integer epId, Map<String, String> conf) {
-        Assert.notNull(epId, "参数【epId】不能为空");
-        ParamsMapValidate.validate(conf, genRulesOfCreateConf());
+    public Result<?> addConfig(Map params) {
+        SmsAccountConf conf = JsonUtils.map2obj(params, SmsAccountConf.class);
+        if (conf.getId() != null) throw new ParamsMapValidationException("参数错误");
+        smsAccountConfMapper.insertSelective(conf);
+        Result<Integer> result = new Result<>(true);
+        result.put(conf.getId());
+        return result;
+    }
 
-        Result result = new Result();
-        SmsAccountConf smsAccountConf = JsonUtils.map2obj(conf, SmsAccountConf.class);
-        smsAccountConf.setEp_id(epId);
-        smsAccountConfMapper.insertSelective(smsAccountConf);
-        result.setSuccess();
+    @Override
+    public Result<?> updateConfig(Map params) {
+        SmsAccountConf conf = JsonUtils.map2obj(params, SmsAccountConf.class);
+        boolean success = smsAccountConfMapper.updateByPrimaryKeySelective(conf) > 0;
+        if (success && mnsMessageMap.containsKey(conf.getApp_id())) {
+            mnsMessageMap.remove(conf.getApp_id());
+        }
+        return new Result<>(success);
+    }
+
+    @Override
+    public Result<?> updateTemplate(Map params) {
+        SmsTmpl tmpl = JsonUtils.map2obj(params, SmsTmpl.class);
+        return new Result<>(smsTmplMapper.updateByPrimaryKeySelective(tmpl) > 0);
+    }
+
+    @Override
+    public Result<?> addTemplate(Map params) {
+        SmsTmpl tmpl = JsonUtils.map2obj(params, SmsTmpl.class);
+        if (tmpl.getId() != null) throw new ParamsMapValidationException("参数错误");
+        smsTmplMapper.insertSelective(tmpl);
+        Result<Integer> result = new Result<>(true);
+        result.put(tmpl.getId());
+        return result;
+    }
+
+    @Override
+    public Result<?> removeTemplate(Map params) {
+        int id = CommonUtil.objectParseInteger(params.get("id"));
+        return new Result<>(smsTmplMapper.deleteByPrimaryKey(id) > 0);
+    }
+
+    @Override
+    public Result<?> getConfig(int epId) {
+        SmsAccountConf conf = smsAccountConfMapper.selectByEpId(epId);
+        Assert.notNull(conf, "配置不存在");
+        Result<Map> result = new Result<>(true);
+        result.put(JsonUtils.obj2map(conf));
+        return result;
+    }
+
+    @Override
+    public Result<?> listTemplate(int epId, Integer type) {
+        Result<List> result = new Result<>(true);
+        List list = smsTmplMapper.selectByEp(epId, type);
+        result.put(list);
         return result;
     }
 
@@ -145,9 +225,9 @@ public class SmsServiceImpl implements SmsService {
                           SmsAccountConf smsAccountConf) {
         Result result = new Result();
         String url = smsAccountConf.getUrl();
-        String appKey = smsAccountConf.getAppid();
-        String secret = smsAccountConf.getApppwd();
-        String epSignName = smsAccountConf.getSign(); // 企业签名
+        String appKey = smsAccountConf.getApp_id();
+        String secret = smsAccountConf.getApp_pwd();
+        String epSignName = smsAccountConf.getEp_sign(); // 企业签名
 
         TaobaoClient client = new DefaultTaobaoClient(url, appKey, secret, FORMAT);
 

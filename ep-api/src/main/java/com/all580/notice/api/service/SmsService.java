@@ -24,6 +24,16 @@ public interface SmsService {
     Result send(String destPhoneNum, Integer smsType, Integer epId, Map<String, String> params);
 
     /**
+     * 发送短信
+     * @param epId 企业ID
+     * @param type 短信类型 @see SmsType
+     * @param params 短信参数
+     * @param phones 手机号码
+     * @return
+     */
+    Result<?> send(int epId, int type, Map<String, String> params, String... phones);
+
+    /**
      * 发送短信（畅天游）
      * @param phone 接收号码
      * @param content 发送内容
@@ -33,16 +43,21 @@ public interface SmsService {
 
     /**
      * 创建企业短信通道配置
-     *
-     * @param epId 企业ID
-     * @param conf 配置信息:{url:xx,appId:xx,appPwd:xx,sign:xx}
-     *             url - String - 短信通道url
-     *             appId - String - 在短信通道中配置的应用ID
-     *             appPwd - String - 短信通道提供的密码
-     *             sign - String - 短信签名
      * @return 成功
      */
-    Result createConf(Integer epId, Map<String, String> conf);
+    Result<?> addConfig(Map params);
+
+    Result<?> updateConfig(Map params);
+
+    Result<?> updateTemplate(Map params);
+
+    Result<?> addTemplate(Map params);
+
+    Result<?> removeTemplate(Map params);
+
+    Result<?> getConfig(int epId);
+
+    Result<?> listTemplate(int epId, Integer type);
 
     Result setIsSend(boolean isSend);
 }

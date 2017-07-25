@@ -1,77 +1,49 @@
 package com.all580.notice.entity;
 
+import lombok.Data;
+
 import java.io.Serializable;
 
+@Data
 public class SmsAccountConf implements Serializable {
+    /**
+     *  ,所属表字段为t_sms_account_conf.id
+     */
     private Integer id;
 
+    /**
+     *  企业ID,所属表字段为t_sms_account_conf.ep_id
+     */
     private Integer ep_id;
 
+    /**
+     *  短信通道的URL,所属表字段为t_sms_account_conf.url
+     */
     private String url;
 
-    private String appid;
+    /**
+     *  应用ID,所属表字段为t_sms_account_conf.app_id
+     */
+    private String app_id;
 
-    private String apppwd;
+    /**
+     *  秘钥,所属表字段为t_sms_account_conf.app_pwd
+     */
+    private String app_pwd;
 
-    private String sign;
+    /**
+     *  短信签名,所属表字段为t_sms_account_conf.ep_sign
+     */
+    private String ep_sign;
 
-    private Byte status;
+    /**
+     *  状态,所属表字段为t_sms_account_conf.status
+     */
+    private Boolean status;
 
+    /**
+     * 序列化ID,t_sms_account_conf
+     */
     private static final long serialVersionUID = 1L;
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public Integer getEp_id() {
-        return ep_id;
-    }
-
-    public void setEp_id(Integer ep_id) {
-        this.ep_id = ep_id;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url == null ? null : url.trim();
-    }
-
-    public String getAppid() {
-        return appid;
-    }
-
-    public void setAppid(String appid) {
-        this.appid = appid == null ? null : appid.trim();
-    }
-
-    public String getApppwd() {
-        return apppwd;
-    }
-
-    public void setApppwd(String apppwd) {
-        this.apppwd = apppwd == null ? null : apppwd.trim();
-    }
-
-    public String getSign() {
-        return sign;
-    }
-
-    public void setSign(String sign) {
-        this.sign = sign == null ? null : sign.trim();
-    }
-
-    public Byte getStatus() {
-        return status;
-    }
-
-    public void setStatus(Byte status) {
-        this.status = status;
-    }
 }

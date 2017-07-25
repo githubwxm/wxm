@@ -1,118 +1,70 @@
 package com.all580.notice.entity;
 
+import lombok.Data;
+
 import java.io.Serializable;
 import java.util.Date;
 
+@Data
 public class SmsTmpl implements Serializable {
+    /**
+     *  模版ID,所属表字段为t_sms_tmpl.id
+     */
     private Integer id;
 
+    /**
+     *  标题,所属表字段为t_sms_tmpl.name
+     */
     private String name;
 
+    /**
+     *  内容（支持标签：{prodName}{num}{custName}等等）,所属表字段为t_sms_tmpl.content
+     */
     private String content;
 
-    private Integer status;
+    /**
+     *  状态（有效：1，无效：0）,所属表字段为t_sms_tmpl.status
+     */
+    private Boolean status;
 
+    /**
+     *  归属企业，为0时为通用模版，为1时为验证码发送模板，不允许进行关联操作,所属表字段为t_sms_tmpl.ep_id
+     */
     private Integer ep_id;
 
+    /**
+     *  创建时间,所属表字段为t_sms_tmpl.create_time
+     */
     private Date create_time;
 
+    /**
+     *  模版类别（宣传广告，产品订购，售后服务等）,所属表字段为t_sms_tmpl.sms_type
+     */
     private Integer sms_type;
 
+    /**
+     *  更新执行时间,所属表字段为t_sms_tmpl.update_time
+     */
     private Date update_time;
 
+    /**
+     *  是否允许关联企业，验证码发送模板不允许进行关联操作,所属表字段为t_sms_tmpl.allow_associate_ep
+     */
     private Boolean allow_associate_ep;
 
+    /**
+     *  12000: 普通短信; 12001: 凭证短信,所属表字段为t_sms_tmpl.channel_type
+     */
     private Integer channel_type;
 
+    /**
+     *  在第三方短信端口中配置的模板id,所属表字段为t_sms_tmpl.out_sms_tpl_id
+     */
     private String out_sms_tpl_id;
 
+    /**
+     * 序列化ID,t_sms_tmpl
+     */
     private static final long serialVersionUID = 1L;
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name == null ? null : name.trim();
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content == null ? null : content.trim();
-    }
-
-    public Integer getStatus() {
-        return status;
-    }
-
-    public void setStatus(Integer status) {
-        this.status = status;
-    }
-
-    public Integer getEp_id() {
-        return ep_id;
-    }
-
-    public void setEp_id(Integer ep_id) {
-        this.ep_id = ep_id;
-    }
-
-    public Date getCreate_time() {
-        return create_time;
-    }
-
-    public void setCreate_time(Date create_time) {
-        this.create_time = create_time;
-    }
-
-    public Integer getSms_type() {
-        return sms_type;
-    }
-
-    public void setSms_type(Integer sms_type) {
-        this.sms_type = sms_type;
-    }
-
-    public Date getUpdate_time() {
-        return update_time;
-    }
-
-    public void setUpdate_time(Date update_time) {
-        this.update_time = update_time;
-    }
-
-    public Boolean getAllow_associate_ep() {
-        return allow_associate_ep;
-    }
-
-    public void setAllow_associate_ep(Boolean allow_associate_ep) {
-        this.allow_associate_ep = allow_associate_ep;
-    }
-
-    public Integer getChannel_type() {
-        return channel_type;
-    }
-
-    public void setChannel_type(Integer channel_type) {
-        this.channel_type = channel_type;
-    }
-
-    public String getOut_sms_tpl_id() {
-        return out_sms_tpl_id;
-    }
-
-    public void setOut_sms_tpl_id(String out_sms_tpl_id) {
-        this.out_sms_tpl_id = out_sms_tpl_id;
-    }
 }
