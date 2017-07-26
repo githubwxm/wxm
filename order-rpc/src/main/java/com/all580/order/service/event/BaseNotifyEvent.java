@@ -2,7 +2,6 @@ package com.all580.order.service.event;
 
 import com.all580.order.api.OrderConstant;
 import com.all580.order.dao.*;
-import com.all580.order.entity.MaSendResponse;
 import com.all580.order.entity.Order;
 import com.all580.order.entity.OrderItem;
 import com.framework.common.lang.DateFormatUtils;
@@ -17,7 +16,6 @@ import org.springframework.util.Assert;
 
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -93,10 +91,11 @@ public class BaseNotifyEvent {
         Integer rfd_qty= refundOrderMapper.selectItemQuantity(itemId);
         Order order = orderMapper.selectByPrimaryKey(item.getOrder_id());
         Assert.notNull(order);
-        if(order.getBuy_operator_id()!=0){
-            log.info("通知事物数据: 操作人id:{} orderid:{} " , order.getBuy_operator_id(),order.getId());
-            return;
-        }
+//        if(order.getBuy_operator_id()!=0){
+//            log.info("通知事物数据: 操作人id:{} orderid:{} " , order.getBuy_operator_id(),order.getId());
+//            return;
+//        }
+        log.info("通知事物数据:测试放开");
         Integer usd_qty = item.getUsed_quantity();//使用数
         //Integer rfd_qty = item.getRefund_quantity();// 退票数
         Integer quantity = item.getQuantity();//订票总数
