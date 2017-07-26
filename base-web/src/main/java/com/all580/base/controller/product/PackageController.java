@@ -137,6 +137,12 @@ public class PackageController extends BaseController {
         return packageSubService.calendar(id, dates[0], days, ep_id);
     }
 
+    @RequestMapping("calc/price")
+    @ResponseBody
+    public Result<?> calcBuyingPrice(@RequestBody Map params) {
+        return packageSubService.caleBuyingPrice(params);
+    }
+
     @RequestMapping("sale/shop_price/update")
     @ResponseBody
     public Result<?> updateShopPrice(@RequestBody Map params) {
