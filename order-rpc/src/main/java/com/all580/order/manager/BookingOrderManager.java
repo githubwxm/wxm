@@ -65,6 +65,8 @@ public class BookingOrderManager extends BaseOrderManager {
     private Integer resendTicketMax;
     @Value("${resend_ticket_interval}")
     private Integer resendTicketInterval;
+    @Autowired
+    private PackageOrderItemSalesChainMapper packageOrderItemSalesChainMapper;
 
     /**
      * 验证游客信息
@@ -339,6 +341,22 @@ public class BookingOrderManager extends BaseOrderManager {
         orderItemDetail.setUsed_quantity(0);
         orderItemDetailMapper.insertSelective(orderItemDetail);
         return orderItemDetail;
+    }
+
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public PackageOrderItemSalesChain generatePackagerChain(PackageOrderItem item, Integer epId, Date day, List<EpSalesInfo> daySales) {
+        AccountDataDto dataDto = AccountUtil.generateAccountData(daySales, epId, day);
+        PackageOrderItemSalesChain chain = new PackageOrderItemSalesChain();
+        chain.setPackage_order_item_id(item.getId());
+        chain.setDay(day);
+        chain.setEp_id(epId);
+        chain.setCore_ep_id(getCoreEpId(getCoreEpId(epId)));
+        chain.setSale_ep_id(dataDto.getSaleEpId());
+        chain.setSale_core_ep_id(getCoreEpId(getCoreEpId(dataDto.getSaleEpId())));
+        chain.setIn_price(dataDto.getInPrice());
+        chain.setOut_price(dataDto.getOutPrice());
+        packageOrderItemSalesChainMapper.insertSelective(chain);
+        return chain;
     }
 
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})

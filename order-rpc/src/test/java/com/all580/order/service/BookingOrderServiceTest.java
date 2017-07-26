@@ -1,6 +1,7 @@
 package com.all580.order.service;
 
 import com.all580.order.api.service.BookingOrderService;
+import com.all580.order.api.service.RefundOrderService;
 import com.all580.order.dao.OrderMapper;
 import com.all580.order.entity.Order;
 import com.all580.order.manager.BookingOrderManager;
@@ -29,18 +30,34 @@ import java.util.Map;
  * @date 2016/9/28 10:21
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@TransactionConfiguration(transactionManager = "transactionManager", defaultRollback=false)
+@TransactionConfiguration(transactionManager = "transactionManager", defaultRollback=true)
 @ContextConfiguration(locations = { "classpath:META-INF/spring/*.xml"})
 public class BookingOrderServiceTest extends AbstractTransactionalJUnit4SpringContextTests {
     @Resource
     private BookingOrderService bookingOrderService;
     @Resource
     private ProductSalesPlanRPCService productSalesPlanRPCService;
+    @Resource
+    private RefundOrderService refundOrderService;
 
     @Resource
     private OrderMapper orderMapper;
     @Resource
     private BookingOrderManager bookingOrderManager;
+
+    @Test
+    @Transactional(rollbackFor = Exception.class)
+    public void testRefundPackageOrder() throws Exception{
+        Map params = new HashMap();
+        params.put("order_item_sn","1500965139090360");
+        params.put("apply_from", 351);
+        params.put("ep_id", "24");
+        params.put("core_ep_id", "1");
+        params.put("operator_id", "71");
+
+        Result rseult = refundOrderService.refundApplyForPackage(params);
+        System.out.println("---->" + JsonUtils.toJson(rseult.get()));
+    }
 
     @Test
     @Transactional(rollbackFor = Exception.class)

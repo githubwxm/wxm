@@ -202,7 +202,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("order", order);
         resultMap.put("items", orderItems);
-        Result<Object> result = new Result<>(true);
+        Result<Map> result = new Result<>(true);
         result.put(resultMap);
 
         // 触发事件
@@ -231,7 +231,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             return validateResult;
         }
 
-        // 创建订单
+        //todo 创建订单
         Order order = createPackageOrderService.insertOrder(createOrder, params);
 
         ValidateProductSub packageSub = createPackageOrderService.parseItemParams(createOrder, params);
@@ -244,7 +244,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         List<List<EpSalesInfo>> allDaysSales = salesInfo.getSales();
         Assert.notEmpty(allDaysSales, "该产品未被分销");
 
-        // 套票订单总进货价
+        //套票订单总进货价
         PriceDto price = bookingOrderManager.calcSalesPrice(allDaysSales, salesInfo, createOrder.getEpId(), packageSub.getQuantity(), createOrder.getFrom());
 
         PackageOrderItem packageOrderItem = createPackageOrderService.insertPackageOrderInfo(salesInfo, order, params);
@@ -277,31 +277,62 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         }
         packageOrderItem.setUpdate_time(new Date());
 
-        //创建元素订单
+        //todo 锁定库存集合(统一锁定)
+        Map<Integer, LockStockDto> lockStockDtoMap = new HashMap<>();
+        List<ProductSearchParams> lockParams = new ArrayList<>();
+
+        //todo 组装参数
+        ProductSearchParams productSearchParams = new ProductSearchParams();
+        productSearchParams.setSubProductCode(packageOrderItem.getProduct_sub_code());
+        productSearchParams.setStartDate(packageOrderItem.getStart());
+        productSearchParams.setDays(packageSub.getDays());
+        productSearchParams.setQuantity(packageOrderItem.getQuantity());
+        productSearchParams.setSubOrderId(packageOrderItem.getId());
+
+        OrderItem orderItem = new OrderItem();
+        orderItem.setId(packageOrderItem.getId());
+
+        lockStockDtoMap.put(packageOrderItem.getId(),new LockStockDto(orderItem, null, salesInfo.getDay_info_list()));
+        lockParams.add(productSearchParams);
+        //todo 锁定库存
+        Result<Map<Integer, List<Boolean>>> lockResult = productSalesPlanRPCService.lockProductStocks(lockParams);
+        if (!lockResult.isSuccess()) {
+            throw new ApiException(lockResult.getError());
+        }
+
+        Map<Integer, List<Boolean>> listMap = lockResult.get();
+        if (listMap.size() != lockStockDtoMap.size()) {
+            throw new ApiException("锁定套票库存异常");
+        }
+        Result addSoldProductStocks = productSalesPlanRPCService.addSoldProductStocks(lockParams);
+        if (!addSoldProductStocks.isSuccess()) {
+            throw new ApiException(addSoldProductStocks.getError());
+        }
+
+        //todo 创建元素订单
         params.put("order_number", order.getNumber());
         Result<?> result = this.create(params, "PACKAGE");
-        Result<Object> res = new Result<>(Boolean.TRUE);
-        System.out.println("----->" + JsonUtils.toJson(result.get()));
-        if (result.isSuccess()){
-            Map resultMap = (Map) result.get();
-            order = (Order) resultMap.get("order") ;
-
-            packageOrderItem.setPay_amount(order.getPay_amount());
-            packageOrderItem.setSale_amount(order.getSale_amount());
-            //设置订单金额
-            order.setPay_amount(salesInfo.getPay_type() == ProductConstants.PayType.PREPAY  ? price.getSale() : 0);
-            order.setSale_amount(price.getSale());
-
-            orderMapper.updateByPrimaryKeySelective(order);
-            res.put(order);
+        if (!result.isSuccess()){
+            throw new ApiException("创建元素产品订单失败");
         }
+        Map resultMap = (Map) result.get();
+        order = (Order) resultMap.get("order");
+
+        packageOrderItem.setPay_amount(order.getPay_amount());
+        packageOrderItem.setSale_amount(order.getSale_amount());
+        //todo 设置订单金额
+        order.setPay_amount(salesInfo.getPay_type() == ProductConstants.PayType.PREPAY  ? price.getSale() : 0);
+        order.setSale_amount(price.getSale());
+
+        orderMapper.updateByPrimaryKeySelective(order);
+        resultMap.put("order",order);
 
         PackageOrderItemMapper.updateByPrimaryKeySelective(packageOrderItem);
 
-        //createPackageOrderService.insertSalesChain(packageOrderItem, packageSub, allDaysSales);
-        // 预分账记录
+        createPackageOrderService.insertSalesChain(packageOrderItem, packageSub, allDaysSales);
+        //todo 预分账记录
         createPackageOrderService.prePaySplitAccount(allDaysSales, packageOrderItem, createOrder.getEpId());
-        return res;
+        return result;
     }
 
     @Override
