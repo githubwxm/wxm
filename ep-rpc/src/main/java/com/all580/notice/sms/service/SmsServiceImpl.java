@@ -10,7 +10,6 @@ import com.framework.common.Result;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.mns.MessageManager;
 import com.framework.common.util.CommonUtil;
-import com.framework.common.validate.ParamsMapValidate;
 import com.framework.common.validate.ValidRule;
 import com.taobao.api.ApiException;
 import com.taobao.api.DefaultTaobaoClient;
@@ -90,21 +89,26 @@ public class SmsServiceImpl implements SmsService {
      */
     @Override
     public Result<?> send(int epId, int type, Map<String, String> params, String... phones) {
-        if(smsSend.equals("0")) {
-            return new Result(true);
-        }
-        Assert.notEmpty(phones, "接收号码至少需要一个");
         SmsTmpl smsTmpl = smsTmplMapper.selectByEpIdAndType(epId, type);
         Assert.notNull(smsTmpl, MessageFormat.format("找不到短信模板:epId={0}|smsType={1}", epId, type));
-        SmsAccountConf smsAccountConf = smsAccountConfMapper.selectByEpId(epId);
-        Assert.notNull(smsAccountConf, MessageFormat.format("找不到短信账号配置:epId={0}", epId));
+        send(epId, smsTmpl, params, phones);
+        return new Result<>(true);
+    }
 
-        if (!mnsMessageMap.containsKey(smsAccountConf.getApp_id())) {
-            MessageManager manager = new MessageManager(smsAccountConf.getApp_id(), smsAccountConf.getApp_pwd(), smsAccountConf.getUrl());
-            manager.setExecutor(executorService);
-            mnsMessageMap.put(smsAccountConf.getApp_id(), manager);
-        }
-        mnsMessageMap.get(smsAccountConf.getApp_id()).sendAsync(smsAccountConf.getEp_sign(), smsTmpl.getOut_sms_tpl_id(), params, phones);
+    /**
+     * 发送短信
+     *
+     * @param epId     企业ID
+     * @param template 模板ID
+     * @param params   参数
+     * @param phones   手机号码
+     * @return
+     */
+    @Override
+    public Result<?> sendByTemplate(int epId, int template, Map<String, String> params, String... phones) {
+        SmsTmpl smsTmpl = smsTmplMapper.selectByPrimaryKey(template);
+        Assert.notNull(smsTmpl, "找不到模板");
+        send(epId, smsTmpl, params, phones);
         return new Result<>(true);
     }
 
@@ -342,5 +346,21 @@ public class SmsServiceImpl implements SmsService {
                 break;
         }
         return result;
+    }
+
+    private void send(int epId, SmsTmpl tmpl, Map<String, String> params, String... phones) {
+        if(smsSend.equals("0")) {
+            return;
+        }
+        Assert.notEmpty(phones, "接收号码至少需要一个");
+        SmsAccountConf smsAccountConf = smsAccountConfMapper.selectByEpId(epId);
+        Assert.notNull(smsAccountConf, MessageFormat.format("找不到短信账号配置:epId={0}", epId));
+
+        if (!mnsMessageMap.containsKey(smsAccountConf.getApp_id())) {
+            MessageManager manager = new MessageManager(smsAccountConf.getApp_id(), smsAccountConf.getApp_pwd(), smsAccountConf.getUrl());
+            manager.setExecutor(executorService);
+            mnsMessageMap.put(smsAccountConf.getApp_id(), manager);
+        }
+        mnsMessageMap.get(smsAccountConf.getApp_id()).sendAsync(smsAccountConf.getEp_sign(), tmpl.getOut_sms_tpl_id(), params, phones);
     }
 }

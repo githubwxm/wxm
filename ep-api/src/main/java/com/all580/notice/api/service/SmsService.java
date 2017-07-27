@@ -34,6 +34,16 @@ public interface SmsService {
     Result<?> send(int epId, int type, Map<String, String> params, String... phones);
 
     /**
+     * 发送短信
+     * @param epId 企业ID
+     * @param template 模板ID
+     * @param params 参数
+     * @param phones 手机号码
+     * @return
+     */
+    Result<?> sendByTemplate(int epId, int template, Map<String, String> params, String... phones);
+
+    /**
      * 发送短信（畅天游）
      * @param phone 接收号码
      * @param content 发送内容
