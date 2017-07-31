@@ -283,6 +283,7 @@ public class BookingOrderManager extends BaseOrderManager {
         orderItem.setResend_interval(resendTicketInterval);
         orderItem.setLast_resend_time(new Date());
         orderItem.setVoucher_msg(info.getVoucher_msg());
+        orderItem.setVoucher_template(info.getVoucher_template());
         orderItem.setTicket_msg(info.getTicket_msg());
         orderItem.setSend(isSend);
         orderItemMapper.insertSelective(orderItem);

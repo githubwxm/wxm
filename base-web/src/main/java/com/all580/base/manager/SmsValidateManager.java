@@ -81,13 +81,13 @@ public class SmsValidateManager {
         Map<String[], ValidRule[]> rules = new HashMap<>();
         // 校验不为空的参数
         rules.put(new String[]{
-                "id",
-                "out_sms_tpl_id"
+                "items.id",
+                "items.out_sms_tpl_id"
         }, new ValidRule[]{new ValidRule.NotNull()});
 
         // 校验整数
         rules.put(new String[]{
-                "id"
+                "items.id"
         }, new ValidRule[]{new ValidRule.Digits()});
 
         return rules;

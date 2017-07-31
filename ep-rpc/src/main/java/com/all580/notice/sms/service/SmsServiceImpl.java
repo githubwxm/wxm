@@ -11,7 +11,6 @@ import com.framework.common.lang.JsonUtils;
 import com.framework.common.mns.MessageManager;
 import com.framework.common.util.CommonUtil;
 import com.framework.common.validate.ValidRule;
-import com.taobao.api.ApiException;
 import com.taobao.api.DefaultTaobaoClient;
 import com.taobao.api.TaobaoClient;
 import com.taobao.api.request.AlibabaAliqinFcSmsNumSendRequest;
@@ -32,6 +31,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import javax.lang.exception.ApiException;
 import javax.lang.exception.ParamsMapValidationException;
 import java.net.URLEncoder;
 import java.text.MessageFormat;
@@ -179,8 +179,16 @@ public class SmsServiceImpl implements SmsService {
 
     @Override
     public Result<?> updateTemplate(Map params) {
-        SmsTmpl tmpl = JsonUtils.map2obj(params, SmsTmpl.class);
-        return new Result<>(smsTmplMapper.updateByPrimaryKeySelective(tmpl) > 0);
+        List<Map> items = (List<Map>) params.get("items");
+        int ret = 0;
+        for (Map item : items) {
+            SmsTmpl tmpl = JsonUtils.map2obj(item, SmsTmpl.class);
+            ret += smsTmplMapper.updateByPrimaryKeySelective(tmpl);
+        }
+        if (ret != items.size()) {
+            throw new ApiException("修改模板失败");
+        }
+        return new Result<>(true);
     }
 
     @Override
