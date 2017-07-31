@@ -210,9 +210,11 @@ public class SmsServiceImpl implements SmsService {
     @Override
     public Result<?> getConfig(int epId) {
         SmsAccountConf conf = smsAccountConfMapper.selectByEpId(epId);
-        Assert.notNull(conf, "配置不存在");
         Result<Map> result = new Result<>(true);
-        result.put(JsonUtils.obj2map(conf));
+        if (conf != null) {
+            Assert.notNull(conf, "配置不存在");
+            result.put(JsonUtils.obj2map(conf));
+        }
         return result;
     }
 
