@@ -318,6 +318,8 @@ public class SmsManager {
      * @param orderItem
      */
     public void sendHotelSendTicket(OrderItem orderItem) {
+        Assert.notNull(orderItem.getVoucher_template(), "订单没有凭证短信模板,短信发送失败");
+
         Shipping shipping = shippingMapper.selectByOrder(orderItem.getOrder_id());
         if (shipping == null) {
             throw new ApiException("订单联系人不存在");
@@ -340,6 +342,8 @@ public class SmsManager {
      * @param orderItem
      */
     public void sendLineSendTicket(OrderItem orderItem) {
+        Assert.notNull(orderItem.getVoucher_template(), "订单没有凭证短信模板,短信发送失败");
+
         Shipping shipping = shippingMapper.selectByOrder(orderItem.getOrder_id());
         if (shipping == null) {
             throw new ApiException("订单联系人不存在");
@@ -362,6 +366,8 @@ public class SmsManager {
      * @param orderItem
      */
     public void sendVoucher(OrderItem orderItem) {
+        Assert.notNull(orderItem.getVoucher_template(), "订单没有凭证短信模板,短信发送失败");
+
         Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
         if (order == null) {
             throw new ApiException("订单不存在");
