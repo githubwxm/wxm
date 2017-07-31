@@ -133,7 +133,13 @@ public class IndexController extends BaseController {
 		if (!result.isSuccess())
 			return result;
 		String accessKey = result.get().get("access_key").toString();
-		topicPushManager.subscribeSync(topicName, params.get("name").toString(), params.get("url").toString(), accessKey,
+		String url = params.get("url").toString();
+		if (url.endsWith("/")) {
+			url = url + "service/mns/client/home/index";
+		} else {
+			url = url + "/service/mns/client/home/index";
+		}
+		topicPushManager.subscribeSync(topicName, params.get("name").toString(), url, accessKey,
 				test ? SubscriptionMeta.NotifyStrategy.BACKOFF_RETRY : SubscriptionMeta.NotifyStrategy.EXPONENTIAL_DECAY_RETRY);
 		return new Result(true);
 	}

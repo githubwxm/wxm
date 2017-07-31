@@ -447,7 +447,7 @@
   </select>
 
   <select id="selectItemQuantity" resultType="java.lang.Integer">
-     select IFNULL(SUM(quantity),0) from  t_refund_order where order_item_id=#{order_item_id} and status=345;
+     select IFNULL(SUM(quantity),0) from  t_refund_order where order_item_id=#{order_item_id} and status in(343,344,345,346);
   </select>
 
   <select id="selectRefundMoneyOrder" resultMap="BaseResultMap">
