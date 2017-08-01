@@ -1,14 +1,8 @@
 package com.all580.order.task.action;
 
 import com.all580.order.api.OrderConstant;
-import com.all580.order.dao.OrderItemDetailMapper;
-import com.all580.order.dao.OrderItemMapper;
-import com.all580.order.dao.OrderMapper;
-import com.all580.order.dao.VisitorMapper;
-import com.all580.order.entity.Order;
-import com.all580.order.entity.OrderItem;
-import com.all580.order.entity.OrderItemDetail;
-import com.all580.order.entity.Visitor;
+import com.all580.order.dao.*;
+import com.all580.order.entity.*;
 import com.all580.order.manager.BookingOrderManager;
 import com.all580.order.service.event.BasicSyncDataEvent;
 import com.all580.product.api.consts.ProductConstants;
@@ -51,6 +45,8 @@ public class SendTicketAction extends BasicSyncDataEvent implements JobRunner {
     private VisitorMapper visitorMapper;
     @Autowired
     private OrderMapper orderMapper;
+    @Autowired
+    private MaSendResponseMapper maSendResponseMapper;
 
     @Autowired
     private VoucherRPCService voucherRPCService;
@@ -73,6 +69,17 @@ public class SendTicketAction extends BasicSyncDataEvent implements JobRunner {
         if (orderItem.getPro_sub_ticket_type() != null && orderItem.getPro_sub_ticket_type() != ProductConstants.TeamTicketType.INDIVIDUAL) {
             log.warn("出票任务,该订单不是散客订单");
             throw new Exception("该订单不是散客订单");
+        }
+        if (orderItem.getStatus() == OrderConstant.OrderItemStatus.SEND) {
+            List<MaSendResponse> maSendResponses = maSendResponseMapper.selectByOrderItemId(orderItem.getId());
+            if (maSendResponses != null) {
+                throw new Exception("该订单状态不在可出票状态,目前状态为已出票并且有出票信息");
+            }
+        } else {
+            if (orderItem.getStatus() != OrderConstant.OrderItemStatus.NON_SEND &&
+                    orderItem.getStatus() != OrderConstant.OrderItemStatus.TICKET_FAIL) {
+                throw new Exception("该订单状态不在可出票状态,目前状态为:" + orderItem.getStatus());
+            }
         }
         orderItem.setStatus(OrderConstant.OrderItemStatus.TICKETING);
         orderItemMapper.updateByPrimaryKeySelective(orderItem);
