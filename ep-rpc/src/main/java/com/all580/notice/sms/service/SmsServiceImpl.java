@@ -170,9 +170,12 @@ public class SmsServiceImpl implements SmsService {
     @Override
     public Result<?> updateConfig(Map params) {
         SmsAccountConf conf = JsonUtils.map2obj(params, SmsAccountConf.class);
+        SmsAccountConf old = smsAccountConfMapper.selectByPrimaryKey(conf.getId());
+        if (old == null) throw new ApiException("配置不存在");
+        if (old.getEp_id() != conf.getEp_id().intValue()) throw new ApiException("您没有该配置的权限");
         boolean success = smsAccountConfMapper.updateByPrimaryKeySelective(conf) > 0;
-        if (success && mnsMessageMap.containsKey(conf.getApp_id())) {
-            mnsMessageMap.remove(conf.getApp_id());
+        if (success && mnsMessageMap.containsKey(old.getApp_id())) {
+            mnsMessageMap.remove(old.getApp_id());
         }
         return new Result<>(success);
     }
