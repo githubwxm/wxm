@@ -43,7 +43,7 @@ public class SyncEpData  extends BasicSyncDataEvent{
             if (!CommonUtil.objectIsNumber(coreEpId)) {
                 log.error("同步数据平台商错误 {} {}", table, data);
             }
-            if (data.isEmpty()) {
+            if (data==null||data.isEmpty()) {
                 log.warn("没有要同步的数据");
                 return null;
             }
@@ -222,6 +222,23 @@ public class SyncEpData  extends BasicSyncDataEvent{
                 return null;
             }
             List<String> list = coreEpAccessMapper.selectAll();
+            Map<String, Object> map = synchronizeDataManager.generate((String[]) list.toArray(new String[list.size()]))
+                    .delete(table, ids)
+                    .sync().getDataMapForJsonMap();
+            return map;
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new ApiException("同步数据异常");
+        }
+    }
+
+    public Map<String, Object> syncDeleteData(Integer core_ep_id,String table, Integer... ids) {
+        try {
+            if (null == ids) {
+                log.warn("没有要同步的数据");
+                return null;
+            }
+            List<String> list = coreEpAccessMapper.selectAccessList(Lists.newArrayList(core_ep_id));
             Map<String, Object> map = synchronizeDataManager.generate((String[]) list.toArray(new String[list.size()]))
                     .delete(table, ids)
                     .sync().getDataMapForJsonMap();

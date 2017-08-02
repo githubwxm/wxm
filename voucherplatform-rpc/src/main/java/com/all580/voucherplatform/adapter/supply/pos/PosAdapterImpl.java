@@ -27,6 +27,12 @@ public class PosAdapterImpl extends SupplyAdapterService {
     private AdapterLoader adapterLoader;
 
     @Override
+    public Map getConf(Integer supplyId) {
+        Map map = new HashMap();
+        return map;
+    }
+
+    @Override
     public void queryProd(Integer supplyId) {
 
     }

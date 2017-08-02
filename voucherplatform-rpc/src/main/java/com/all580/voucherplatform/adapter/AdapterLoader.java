@@ -30,14 +30,14 @@ public class AdapterLoader {
     private PlatformMapper platformMapper;
 
     private Map<Integer, SupplyAdapterService> supplyServiceMap = new HashMap<>();
-    private Map<Integer, PlatformAdapterService> platformSerivceMap = new HashMap<>();
+    private Map<Integer, PlatformAdapterService> platformServiceMap = new HashMap<>();
 
 
     private synchronized SupplyAdapterService loadTicketSystem(Integer ticketSysId) {
         if (!supplyServiceMap.containsKey(ticketSysId)) {
             TicketSys ticketSys = ticketSysMapper.selectByPrimaryKey(ticketSysId);
             if (ticketSys != null) {
-                Class cls = null;
+                Class cls;
                 try {
                     cls = Class.forName(ticketSys.getImplPacket());
                 } catch (Exception ex) {
@@ -57,10 +57,10 @@ public class AdapterLoader {
     }
 
     private synchronized PlatformAdapterService loadPlatform(Integer platformId) {
-        if (!platformSerivceMap.containsKey(platformId)) {
+        if (!platformServiceMap.containsKey(platformId)) {
             Platform platform = platformMapper.selectByPrimaryKey(platformId);
             if (platform != null) {
-                Class cls = null;
+                Class cls;
                 try {
                     cls = Class.forName(platform.getImplPackage());
                 } catch (Exception ex) {
@@ -69,29 +69,29 @@ public class AdapterLoader {
                 }
                 PlatformAdapterService platformAdapterService = (PlatformAdapterService) applicationContext.getBean(cls);
                 if (platformAdapterService != null) {
-                    platformSerivceMap.put(platformId, platformAdapterService);
+                    platformServiceMap.put(platformId, platformAdapterService);
                 }
                 return platformAdapterService;
             }
             return null;
         } else {
-            return platformSerivceMap.get(platformId);
+            return platformServiceMap.get(platformId);
         }
     }
 
     public PlatformAdapterService getPlatformAdapterService(Platform platform) {
-        if (!platformSerivceMap.containsKey(platform.getId())) {
+        if (!platformServiceMap.containsKey(platform.getId())) {
             return loadPlatform(platform.getId());
         } else {
-            return platformSerivceMap.get(platform.getId());
+            return platformServiceMap.get(platform.getId());
         }
     }
 
     public PlatformAdapterService getPlatformAdapterService(Integer platformId) {
-        if (!platformSerivceMap.containsKey(platformId)) {
+        if (!platformServiceMap.containsKey(platformId)) {
             return loadPlatform(platformId);
         } else {
-            return platformSerivceMap.get(platformId);
+            return platformServiceMap.get(platformId);
         }
     }
 

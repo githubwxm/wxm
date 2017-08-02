@@ -14,7 +14,7 @@ public enum SignType {
 
     private final int value;
 
-    int getValue() {
+    public int getValue() {
         return value;
     }
 

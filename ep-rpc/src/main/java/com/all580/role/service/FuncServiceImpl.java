@@ -3,11 +3,11 @@ package com.all580.role.service;
 import com.all580.ep.api.conf.EpConstant;
 import com.all580.manager.SyncEpData;
 import com.all580.role.api.service.EpRoleService;
+import com.all580.role.api.service.FuncGroupLinkService;
 import com.all580.role.api.service.FuncService;
-import com.all580.role.dao.EpRoleFuncMapper;
+import com.all580.role.api.service.UserRoleService;
 import com.all580.role.dao.FuncMapper;
 import com.framework.common.Result;
-import com.framework.common.util.Auth;
 import com.framework.common.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,11 +29,18 @@ public class FuncServiceImpl implements FuncService{
     @Autowired
     private FuncMapper funcMapper;
 
+
     @Autowired
     private SyncEpData syncEpData;
 
     @Autowired
     private EpRoleService epRoleService;
+    @Autowired
+    private FuncGroupLinkService funcGroupLinkService;
+
+    @Autowired
+    UserRoleService UserRoleService;
+
 
     @Override
     public Result<List<Map<String, Object>>> getAll() {
@@ -54,6 +61,7 @@ public class FuncServiceImpl implements FuncService{
             funcMapper.insertSelective(params);
             Integer id = CommonUtil.objectParseInteger(params.get("id"));
             result.put(id);
+            funcGroupLinkService.addDefaultGroupLink(id);//添加默认组关联关系
             syncEpData.syncEpAllData(EpConstant.Table.T_FUNC,funcMapper.selectByPrimaryKey(id));
         }catch (Exception e){
             log.error("添加菜单功能异常",e);
@@ -87,9 +95,9 @@ public class FuncServiceImpl implements FuncService{
             syncEpData.syncDeleteAllData(EpConstant.Table.T_FUNC,(Integer [])list.toArray(new Integer[list.size()]) );
             // 查找  菜单对应的角色  同步到鉴权
             // 同步删除角色对应菜单数据
+            funcGroupLinkService.deleteFuncId(id);
             epRoleService.deleteFuncIdsEpRole(list);
-
-
+            UserRoleService.deleteFuncId(id);
         }catch (Exception e){
             log.error("删除菜单功能异常",e);
             throw  new ApiException("删除菜单功能异常");

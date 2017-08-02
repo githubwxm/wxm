@@ -349,5 +349,19 @@
             and `prodType` = #{prodType,jdbcType=INTEGER}
         </if>
     </select>
+    <select id="selectRefundByOrder" resultType="com.all580.voucherplatform.entity.Refund">
+        SELECT
+        <include refid="Base_Column_List"/>
+        from
+        FROM `t_refund`
+        <where>
+            <if test="order_Id!=null">
+                and `t_refund`.`order_id`=#{order_Id}
+            </if>
+            <if test="order_Code!=null and order_Code!=''">
+                and `t_refund`.`order_code`=#{order_code}
+            </if>
+        </where>
+    </select>
 
 </mapper>

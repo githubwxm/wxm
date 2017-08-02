@@ -24,4 +24,10 @@ public interface FuncMapper {
 
     int deletePidAll(@Param("ids")List<Integer> ids);
 
+    /**
+     *
+     * @return
+     */
+    List<Integer> selectTopPidFunc();
+
 }

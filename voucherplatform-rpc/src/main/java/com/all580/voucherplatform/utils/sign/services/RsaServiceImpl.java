@@ -2,6 +2,7 @@ package com.all580.voucherplatform.utils.sign.services;
 
 import com.all580.voucherplatform.utils.sign.SignKey;
 import com.all580.voucherplatform.utils.sign.SignService;
+import com.all580.voucherplatform.utils.sign.SignType;
 import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +32,11 @@ public class RsaServiceImpl implements SignService {
      */
     public static final String SIGN_ENCODING = "utf-8";
 
+
+    @Override
+    public SignType getSignType() {
+        return SignType.rsa;
+    }
 
     @Override
     public SignKey generate() {

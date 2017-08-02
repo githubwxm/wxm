@@ -1,6 +1,7 @@
 package com.all580.voucherplatform.api.service;
 
 import com.framework.common.Result;
+import com.framework.common.vo.PageRecord;
 
 import java.util.List;
 import java.util.Map;
@@ -60,18 +61,22 @@ public interface SupplyService {
      */
     Result updateTicketSys(Map map);
 
-    int getCount(String name);
-
-    List<Map> getList(String name, Integer recordStart, Integer recordCount);
-
-
     /**
-     * 根据供应商的id，获取产品信息
+     * 修改供应商的签名方式，调用该函数将回重置私钥和公钥
      *
-     * @param supplyId
+     * @param map {id:xx,signType:xx}
+     *            id  -int    -要修改的供应商id
+     *            signType  -int -签名方式
      * @return
      */
-    List<Map> getProdList(Integer supplyId);
+    Result updateSignType(Map map);
+
+    Result selectSupply(Integer supplyId);
+
+    Result<PageRecord<Map>> selectSupplyList(String name, Integer recordStart, Integer recordCount);
+
+
+    Result<PageRecord<Map>> selectSupplyProdList(Integer supplyId, String prodCode, Integer recordStart, Integer recordCount);
 
     /**
      * 根据供应商的身份id和产品id，获取产品信息
@@ -106,6 +111,13 @@ public interface SupplyService {
     Result delProd(int supplyId, String prodId);
 
 
+    /**
+     * 检测是否可以通过界面维护产品
+     *
+     * @param supply
+     * @return
+     */
+    Boolean checkProdPower(int supply);
 
     /**
      * 根据供应商的身份id，批量更新产品信息
@@ -132,6 +144,24 @@ public interface SupplyService {
      * @return
      */
     Result setProd(int supplyId, List<Map> map);
+
+    /**
+     * 申请同步产品操作
+     *
+     * @param supplyId
+     * @return
+     */
+    Result syncProd(int supplyId);
+
+    /**
+     * 申请下载配置
+     *
+     * @param supplyId
+     * @return
+     */
+    Map getConfFile(int supplyId);
+
+    List<Map> getSignType();
 
 
 }

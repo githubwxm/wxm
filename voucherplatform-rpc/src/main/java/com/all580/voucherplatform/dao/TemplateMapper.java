@@ -54,12 +54,12 @@ public interface TemplateMapper {
     Template getDefaultTemplate();
 
 
-    int getCount(@Param("name") String name,
+    int selectTemplateCount(@Param("name") String name,
                  @Param("supppy_Id") Integer supppyId,
                  @Param("prod_Id") Integer prodId,
                  @Param("defaultOption") Boolean defaultOption);
 
-    List<Map> getList(@Param("name") String name,
+    List<Map> selectTemplateList(@Param("name") String name,
                       @Param("supppy_Id") Integer supppyId,
                       @Param("prod_Id") Integer prodId,
                       @Param("defaultOption") Boolean defaultOption,

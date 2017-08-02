@@ -31,7 +31,7 @@ public class ConsumeManagerTest {
         ConsumeOrderManager consumeOrderManager = adapterLoader.getBean(ConsumeOrderManager.class);
         try {
             consumeOrderManager.setOrder("1499133036679250");
-            consumeOrderManager.submiConsume(UUID.randomUUID().toString(), 1, "Address", new Date(), "0123");
+            consumeOrderManager.submitConsume(UUID.randomUUID().toString(), 1, "Address", new Date(), "0123");
             Thread.sleep(20000);
         } catch (Exception ex) {
             throw new ApiException(ex);

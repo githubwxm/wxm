@@ -33,7 +33,7 @@
 	<appender name="logstash" class="org.apache.log4j.net.SocketAppender">
 		<param name="remoteHost" value="${logstash.host}" />
 		<param name="port" value="${logstash.port}" />
-		<param name="Threshold" value="DEBUG" />
+		<param name="Threshold" value="info" />
 		<param name="ReconnectionDelay" value="1000" />
 		<param name="LocationInfo" value="true" />
 		<layout class="org.apache.log4j.PatternLayout">
@@ -64,7 +64,7 @@
 		<level value="WARN" />
 	</logger>
 	<root>
-		<level value="debug"/>
+		<level value="info"/>
 		<appender-ref ref="CONSOLE"/>
 		<appender-ref ref="logstash" />
 		<appender-ref ref="file-log"/>

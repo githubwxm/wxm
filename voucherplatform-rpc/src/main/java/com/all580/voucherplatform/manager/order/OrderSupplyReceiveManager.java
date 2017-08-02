@@ -2,6 +2,7 @@ package com.all580.voucherplatform.manager.order;
 
 import com.all580.voucherplatform.adapter.AdapterLoader;
 import com.all580.voucherplatform.adapter.platform.PlatformAdapterService;
+import com.all580.voucherplatform.api.VoucherConstant;
 import com.all580.voucherplatform.dao.OrderMapper;
 import com.all580.voucherplatform.entity.Order;
 import com.all580.voucherplatform.manager.OrderMessageManager;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -39,6 +41,16 @@ public class OrderSupplyReceiveManager {
      *                supplyOrderId    string  票务订单id
      */
     public void submit(List<Map> mapList) throws Exception {
+
+        Map map = Receive(mapList);
+        Integer platformId = CommonUtil.objectParseInteger(map.get("platformId"));
+        Integer[] orderIds = (Integer[]) map.get("platformId");
+        notifyPlatform(platformId, orderIds);
+    }
+
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class}, propagation = Propagation.REQUIRES_NEW)
+    private Map Receive(List<Map> mapList) throws Exception {
+        Map mapRet = new HashMap();
         Integer[] orderIds = new Integer[mapList.size()];
         Integer platformId = null;
         for (int i = 0; i < mapList.size(); i++) {
@@ -61,14 +73,16 @@ public class OrderSupplyReceiveManager {
             String supplyOrderId = CommonUtil.objectParseString(map.get("supplyOrderId"));
             Receive(order, supplyOrderId);
         }
-        notifyPlatform(platformId, orderIds);
+        mapRet.put("platformId", platformId);
+        mapRet.put("orderIds", orderIds);
+        return mapRet;
     }
 
-    @Transactional(rollbackFor = {Exception.class, RuntimeException.class}, propagation = Propagation.REQUIRES_NEW)
     private void Receive(Order order, String supplyOrderId) {
         Order updateOrder = new Order();
         updateOrder.setId(order.getId());
         updateOrder.setSupplyOrderId(supplyOrderId);
+        updateOrder.setStatus(VoucherConstant.OrderSyncStatus.SYNCED);
         orderMapper.updateByPrimaryKeySelective(updateOrder);
         orderMessageManager.sendOrderMessage(order);
     }

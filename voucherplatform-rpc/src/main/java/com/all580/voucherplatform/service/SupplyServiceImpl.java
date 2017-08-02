@@ -1,25 +1,29 @@
 package com.all580.voucherplatform.service;
 
+import com.all580.voucherplatform.adapter.AdapterLoader;
+import com.all580.voucherplatform.adapter.supply.SupplyAdapterService;
 import com.all580.voucherplatform.api.service.SupplyService;
 import com.all580.voucherplatform.dao.SupplyMapper;
 import com.all580.voucherplatform.dao.SupplyProductMapper;
+import com.all580.voucherplatform.dao.TicketSysMapper;
 import com.all580.voucherplatform.entity.Supply;
 import com.all580.voucherplatform.entity.SupplyProduct;
+import com.all580.voucherplatform.entity.TicketSys;
 import com.all580.voucherplatform.utils.sign.SignInstance;
 import com.all580.voucherplatform.utils.sign.SignKey;
 import com.all580.voucherplatform.utils.sign.SignService;
+import com.all580.voucherplatform.utils.sign.SignType;
 import com.framework.common.Result;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.util.CommonUtil;
+import com.framework.common.vo.PageRecord;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.lang.exception.ApiException;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by Linv2 on 2017-05-19.
@@ -33,13 +37,18 @@ public class SupplyServiceImpl implements SupplyService {
     @Autowired
     private SupplyMapper supplyMapper;
     @Autowired
+    private TicketSysMapper ticketSysMapper;
+    @Autowired
     private SupplyProductMapper supplyProductMapper;
+    @Autowired
+    private AdapterLoader adapterLoader;
 
     @Override
     public Result create(Map map) {
         Supply supply = JsonUtils.map2obj(map, Supply.class);
         SignService signService = signInstance.getSignService(supply.getSignType());
         SignKey signKey = signService.generate();
+        supply.setSignType(signService.getSignType().getValue());
         supply.setPrivateKey(signKey.getPrivateKey());
         supply.setPublicKey(signKey.getPublicKey());
         supply.setCreateTime(new Date());
@@ -117,16 +126,48 @@ public class SupplyServiceImpl implements SupplyService {
         return result;
     }
 
+
     @Override
-    public int getCount(String name) {
-        return 0;
+    public Result<PageRecord<Map>> selectSupplyList(String name, Integer recordStart, Integer recordCount) {
+
+        PageRecord<Map> record = new PageRecord<>();
+        int count = supplyMapper.selectSupplyCount(name);
+        record.setTotalCount(count);
+        if (count > 0) {
+            List<Map> list = supplyMapper.selectSupplyList(name, recordStart, recordCount);
+            record.setList(list);
+        } else {
+
+            record.setList(new ArrayList<Map>());
+        }
+        Result<PageRecord<Map>> result = new Result<>(true);
+        result.put(record);
+        return result;
     }
 
     @Override
-    public List<Map> getList(String name, Integer recordStart, Integer recordCount) {
-        return null;
+    public Result selectSupply(Integer supplyId) {
+        Map map = supplyMapper.selectSupplyMapByPrimaryKeySelective(supplyId);
+        Result result = new Result(true);
+        result.put(map);
+        return result;
     }
 
+    @Override
+    public Result updateSignType(Map map) {
+        Integer supplyId = CommonUtil.objectParseInteger(map.get("id"));
+        Integer signType = CommonUtil.objectParseInteger(map.get("signType"));
+        SignService signService = signInstance.getSignService(signType);
+        SignKey signKey = signService.generate();
+
+        Supply supply = new Supply();
+        supply.setId(supplyId);
+        supply.setSignType(signService.getSignType().getValue());
+        supply.setPrivateKey(signKey.getPrivateKey());
+        supply.setPublicKey(signKey.getPublicKey());
+        supplyMapper.updateByPrimaryKeySelective(supply);
+        return new Result(true);
+    }
 
     /**
      * 根据供应商的id，获取产品信息
@@ -135,8 +176,18 @@ public class SupplyServiceImpl implements SupplyService {
      * @return
      */
     @Override
-    public List<Map> getProdList(Integer supplyId) {
-        return supplyProductMapper.getSupplyProdBySupplyId(supplyId);
+    public Result<PageRecord<Map>> selectSupplyProdList(Integer supplyId, String prodCode, Integer recordStart, Integer recordCount) {
+        PageRecord<Map> pageRecord = new PageRecord<>();
+        int count = supplyProductMapper.selectSupplyProdCount(supplyId, prodCode);
+        pageRecord.setTotalCount(count);
+        if (count > 0) {
+            pageRecord.setList(supplyProductMapper.selectSupplyProdList(supplyId, prodCode, recordStart, recordCount));
+        } else {
+            pageRecord.setList(new ArrayList<Map>());
+        }
+        Result<PageRecord<Map>> result = new Result<>(true);
+        result.put(pageRecord);
+        return result;
     }
 
     @Override
@@ -157,7 +208,27 @@ public class SupplyServiceImpl implements SupplyService {
     }
 
     @Override
+    public Boolean checkProdPower(int supplyId) {
+        Supply supply = supplyMapper.selectByPrimaryKey(supplyId);
+        if (supply == null) {
+            log.info("检测供应商产品维护权限，{}，供应商不存在", new Object[]{supply.getTicketsys_id()});
+            return false;
+        }
+        if (supply.getTicketsys_id() == null || supply.getTicketsys_id() < 1) {
+            log.info("检测供应商产品维护权限，{}，供应商未绑定票务系统", new Object[]{supply.getTicketsys_id()});
+        }
+        TicketSys ticketSys = ticketSysMapper.selectByPrimaryKey(supply.getTicketsys_id());
+        if (ticketSys == null) {
+            log.error("检测供应商产品维护权限，{}，票务验证系统不存在", new Object[]{supply.getTicketsys_id()});
+            return false;
+        }
+        return ticketSys.getProdAddType();
+    }
+
+    @Override
     public Result setProd(int supplyId, Map map) {
+
+
         String prodId = CommonUtil.objectParseString(map.get("code"));
         SupplyProduct supplyProduct = getProdMap(supplyId, prodId);
         if (supplyProduct == null) {//先判断数据库是否存在改数据
@@ -173,8 +244,8 @@ public class SupplyServiceImpl implements SupplyService {
         } else {
             //如果存在就修改
             SupplyProduct updateProd = new SupplyProduct();
-            updateProd.setName(CommonUtil.objectParseString("name"));
-            updateProd.setDescription(CommonUtil.objectParseString("description"));
+            updateProd.setName(CommonUtil.objectParseString(map.get("name")));
+            updateProd.setDescription(CommonUtil.objectParseString(map.get("description")));
             updateProd.setSyncTime(new Date());
             updateProd.setId(supplyProduct.getId());
             supplyProductMapper.updateByPrimaryKeySelective(updateProd);
@@ -200,5 +271,38 @@ public class SupplyServiceImpl implements SupplyService {
             setProd(supplyId, map);
         }
         return new Result(true);
+    }
+
+    @Override
+    public Result syncProd(int supplyId) {
+        Supply supply = supplyMapper.selectByPrimaryKey(supplyId);
+        if (supply == null) {
+            return new Result(false, "供应商不存在");
+        }
+        SupplyAdapterService supplyAdapterService = adapterLoader.getSupplyAdapterService(supply);
+        supplyAdapterService.queryProd(supplyId);
+        return new Result(true);
+    }
+
+    @Override
+    public Map getConfFile(int supplyId) {
+        Supply supply = supplyMapper.selectByPrimaryKey(supplyId);
+        if (supply == null) {
+            throw new ApiException("参数错误");
+        }
+        SupplyAdapterService supplyAdapterService = adapterLoader.getSupplyAdapterService(supply);
+        return supplyAdapterService.getConf(supplyId);
+    }
+
+    @Override
+    public List<Map> getSignType() {
+        List<Map> mapList = new ArrayList<>();
+        for (SignType signType : SignType.values()) {
+            Map map = new HashMap();
+            map.put("name", signType.toString());
+            map.put("value", signType.getValue());
+            mapList.add(map);
+        }
+        return mapList;
     }
 }

@@ -125,7 +125,7 @@ public class RefundOrderServiceImpl implements RefundOrderService {
             throw new ApiException("退订订单不存在");
         }
         if (refundOrder.getStatus() != OrderConstant.RefundOrderStatus.REFUND_MONEY) {
-            throw new ApiException("退订订单不在退款中状态");
+            throw new ApiException("退订订单不在退款中状态,当前状态为:" + OrderConstant.RefundOrderStatus.getName(refundOrder.getStatus()));
         }
         OrderItem orderItem = orderItemMapper.selectByPrimaryKey(refundOrder.getOrder_item_id());
         if (orderItem == null) {
@@ -153,7 +153,7 @@ public class RefundOrderServiceImpl implements RefundOrderService {
             throw new ApiException("退订订单不存在");
         }
         if (refundOrder.getStatus() != OrderConstant.RefundOrderStatus.REFUND_MONEY_AUDITING) {
-            throw new ApiException("退订订单不在退款待审核状态");
+            throw new ApiException("退订订单不在退款待审核状态,当前状态为:" + OrderConstant.RefundOrderStatus.getName(refundOrder.getStatus()));
         }
         OrderItem orderItem = orderItemMapper.selectByPrimaryKey(refundOrder.getOrder_item_id());
         if (orderItem == null) {

@@ -13,6 +13,16 @@
 	<dubbo:registry address="${dubbo.registry.zk}" file="${ep.dubbo.cache}" />
 	<dubbo:protocol name="dubbo" port="${dubbo.port}" />
 
+	<bean id="platFuncService" class="com.all580.role.service.PlatFuncServiceImpl" />
+	<dubbo:service interface="com.all580.role.api.service.PlatFuncService" ref="platFuncService" />
+	<bean id="funcGroupService" class="com.all580.role.service.FuncGroupServiceImpl" />
+	<dubbo:service interface="com.all580.role.api.service.FuncGroupService" ref="funcGroupService" />
+	<bean id="userRoleService" class="com.all580.role.service.UserRoleServiceImpl" />
+	<dubbo:service interface="com.all580.role.api.service.UserRoleService" ref="userRoleService" />
+	<bean id="funcGroupLinkService" class="com.all580.role.service.FuncGroupLinkServiceImpl" />
+	<dubbo:service interface="com.all580.role.api.service.FuncGroupLinkService" ref="funcGroupLinkService" />
+
+
 	<bean id="epService" class="com.all580.ep.service.EpServiceImpl" />
 
 	<dubbo:service interface="com.all580.ep.api.service.EpService" ref="epService" />

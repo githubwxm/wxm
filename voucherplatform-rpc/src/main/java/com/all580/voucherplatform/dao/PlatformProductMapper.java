@@ -51,14 +51,14 @@ public interface PlatformProductMapper {
 
     PlatformProduct getProdByPlatform(@Param("platform_Id") Integer platformId, @Param("supply_Id") Integer supplyId, @Param("code") String code);
 
-    int getProdCount(@Param("name") String name,
+    int selectPlatformProdCount(@Param("name") String name,
                      @Param("platform_Id") Integer platformId,
                      @Param("supply_Id") Integer supplyId,
                      @Param("supplyprod_Id") Integer supplyprodId,
                      @Param("platform_ProdCode") String platformProdCode,
                      @Param("productType_id") Integer productTypeId);
 
-    List<Map> getProdList(@Param("name") String name,
+    List<Map> selectPlatformProdList(@Param("name") String name,
                           @Param("platform_Id") Integer platformId,
                           @Param("supply_Id") Integer supplyId,
                           @Param("supplyprod_Id") Integer supplyprodId,

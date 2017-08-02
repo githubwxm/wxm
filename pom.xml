@@ -18,6 +18,7 @@
 		<module>ep-rpc</module>-->
 		<module>payment</module>
 		<module>payment-api</module>
+		<module>voucherplatform-web</module>
 
 	</modules>
 	<properties>

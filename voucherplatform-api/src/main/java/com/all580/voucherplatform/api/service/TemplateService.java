@@ -1,6 +1,7 @@
 package com.all580.voucherplatform.api.service;
 
 import com.framework.common.Result;
+import com.framework.common.vo.PageRecord;
 
 import java.util.List;
 import java.util.Map;
@@ -64,17 +65,6 @@ public interface TemplateService {
     Result get(Integer supplyId, Integer prodId);
 
 
-    /**
-     * 获取模版的总数量
-     *
-     * @param name
-     * @param supplyId
-     * @param prodId
-     * @param defaultOption
-     * @return
-     */
-    int getCount(String name, Integer supplyId, Integer prodId, Boolean defaultOption);
-
 
     /**
      * 获取模版集合
@@ -87,11 +77,11 @@ public interface TemplateService {
      * @param recordSCount
      * @return
      */
-    List<Map> getList(String name,
-                      Integer supplyId,
-                      Integer prodId,
-                      Boolean defaultOption,
-                      Integer recordStart,
-                      Integer recordSCount);
+    Result<PageRecord<Map>> selectTemplateList(String name,
+                                          Integer supplyId,
+                                          Integer prodId,
+                                          Boolean defaultOption,
+                                          Integer recordStart,
+                                          Integer recordSCount);
 
 }

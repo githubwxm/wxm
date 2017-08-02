@@ -9,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
+
 /**
  * Created by Linv2 on 2017/5/15.
  */
@@ -16,9 +18,8 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public abstract class SupplyAdapterService extends AbstractProcessorAdapter<Supply> {
 
-    @Autowired
-    private SupplyMapper supplyMapper;
 
+    public abstract Map getConf(Integer supplyId);
 
 
     public abstract void queryProd(Integer supplyId);
@@ -37,6 +38,6 @@ public abstract class SupplyAdapterService extends AbstractProcessorAdapter<Supp
 
     public abstract void refundGroup(Integer groupRefId);
 
-    public abstract void updateGroup(Integer groupOrderId,String...seqId);
+    public abstract void updateGroup(Integer groupOrderId, String... seqId);
 
 }

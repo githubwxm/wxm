@@ -57,7 +57,7 @@ public abstract class AbstractRefundOrderImpl implements RefundOrderInterface {
                 OrderConstant.OrderItemStatus.TICKET_FAIL
         }, orderItem.getStatus()) < 0 ||
                 order.getStatus() != OrderConstant.OrderStatus.PAID) {
-            throw new ApiException("订单不在可退订状态");
+            throw new ApiException("订单不在可退订状态,当前状态为:" + OrderConstant.OrderStatus.getName(order.getStatus()));
         }
         if (!params.containsKey(EpConstant.EpKey.EP_ID)) {
             throw new ApiException("非法请求:企业ID为空");
