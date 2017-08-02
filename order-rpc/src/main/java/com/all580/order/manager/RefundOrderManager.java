@@ -137,7 +137,10 @@ public class RefundOrderManager extends BaseOrderManager {
             p.setDays(1);
             p.setQuantity(packageOrderItem.getQuantity());
 
-
+            com.framework.common.Result result = paid ? productSalesPlanRPCService.addReturnProductStock(Arrays.asList(p), null) : productSalesPlanRPCService.addProductStocks(Arrays.asList(p), null);
+            if (!result.isSuccess()) {
+                throw new ApiException(result.getError());
+            }
         }
 
         eventManager.addEvent(OrderConstant.EventType.ORDER_CANCEL, order.getId());

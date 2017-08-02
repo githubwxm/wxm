@@ -117,15 +117,17 @@ public class PackageCreateOrderImpl  implements CreatePackageOrderService {
     @Override
     public PackageOrderItem insertPackageOrderInfo(ProductSalesInfo salesInfo, Order order, Map params) {
         PackageOrderItem packageOrderItem = new PackageOrderItem();
-        packageOrderItem.setEp_id(CommonUtil.objectParseInteger(params.get(EpConstant.EpKey.EP_ID)));
-        packageOrderItem.setCore_ep_id(CommonUtil.objectParseInteger(params.get(EpConstant.EpKey.CORE_EP_ID)));
+//        packageOrderItem.setEp_id(CommonUtil.objectParseInteger(params.get(EpConstant.EpKey.EP_ID)));
+//        packageOrderItem.setCore_ep_id(CommonUtil.objectParseInteger(params.get(EpConstant.EpKey.CORE_EP_ID)));
         packageOrderItem.setOrder_number(order.getNumber());
         packageOrderItem.setProduct_sub_name(salesInfo.getProduct_sub_name());
         packageOrderItem.setProduct_sub_id(salesInfo.getProduct_sub_id());
         packageOrderItem.setProduct_sub_code(salesInfo.getProduct_sub_code());
         packageOrderItem.setProduct_name(salesInfo.getProduct_name());
         packageOrderItem.setQuantity(CommonUtil.objectParseInteger(params.get("quantity")));
-
+        packageOrderItem.setEp_id(salesInfo.getEp_id());
+        packageOrderItem.setCore_ep_id(bookingOrderManager.getCoreEpId(salesInfo.getEp_id()).get());
+        packageOrderItem.setPayment_flag(salesInfo.getPay_type());
         packageOrderItemMapper.insertSelective(packageOrderItem);
         return packageOrderItem;
     }
