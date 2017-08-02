@@ -165,14 +165,14 @@ public abstract class AbstractCreateOrderImpl implements CreateOrderInterface {
     }
 
     @Override
-    public List<OrderItemDetail> insertDetail(Order order, OrderItem item, ValidateProductSub sub, ProductSalesInfo salesInfo, List<List<EpSalesInfo>> allDaysSales) {
+    public List<OrderItemDetail> insertDetail(Order order, CreateOrder createOrder, OrderItem item, ValidateProductSub sub, ProductSalesInfo salesInfo, List<List<EpSalesInfo>> allDaysSales) {
         List<OrderItemDetail> details = new ArrayList<>();
         int i = 0;
         for (ProductSalesDayInfo dayInfo : salesInfo.getDay_info_list()) {
             List<EpSalesInfo> daySales = allDaysSales.get(i);
             Assert.notEmpty(daySales, "该产品销售计划不全");
             EpSalesInfo saleInfo = bookingOrderManager.getSalePrice(daySales, item.getSupplier_ep_id());
-            EpSalesInfo buyInfo = bookingOrderManager.getBuyingPrice(daySales, order.getBuy_ep_id());
+            EpSalesInfo buyInfo = bookingOrderManager.getBuyingPrice(daySales, createOrder.getEpId());
             Assert.notNull(saleInfo, "该产品未正确配置");
             Assert.notNull(buyInfo, "该产品未正确配置");
             OrderItemDetail orderItemDetail = bookingOrderManager.generateDetail(dayInfo, item.getId(),

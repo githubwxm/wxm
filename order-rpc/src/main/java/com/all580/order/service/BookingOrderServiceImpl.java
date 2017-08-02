@@ -32,7 +32,6 @@ import com.framework.common.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.time.DateFormatUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
@@ -206,7 +205,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         order.setSale_amount(price.getSale() + (order.getSale_amount() == null ? 0 : order.getSale_amount()));
 
         // 创建子订单详情
-        List<OrderItemDetail> details = orderInterface.insertDetail(order, orderItem, sub, salesInfo, allDaysSales);
+        List<OrderItemDetail> details = orderInterface.insertDetail(order, createOrder, orderItem, sub, salesInfo, allDaysSales);
 
         // 析构销售链
         orderInterface.insertSalesChain(orderItem, sub, allDaysSales);
