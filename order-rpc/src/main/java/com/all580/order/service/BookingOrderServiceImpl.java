@@ -69,7 +69,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
     @Autowired
     private VisitorMapper visitorMapper;
     @Autowired
-    private PackageOrderItemMapper PackageOrderItemMapper;
+    private PackageOrderItemMapper packageOrderItemMapper;
 
     @Autowired
     private ProductSalesPlanRPCService productSalesPlanRPCService;
@@ -98,8 +98,6 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         CreateOrderInterface orderInterface = applicationContext.getBean(OrderConstant.CREATE_ADAPTER + type, CreateOrderInterface.class);
         Assert.notNull(orderInterface, type + " 类型创建订单适配器没找到");
 
-//        int totalSalePrice = 0;
-//        int totalPayPrice = 0;
         CreateOrder createOrder = orderInterface.parseParams(params);
 
         Result validateResult = orderInterface.validate(createOrder, params);
@@ -118,51 +116,11 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         for (Map item : items) {
             ValidateProductSub sub = orderInterface.parseItemParams(createOrder, item);
             if (first == null) first = sub;
-//            ProductSalesInfo salesInfo = orderInterface.validateProductAndGetSales(sub, createOrder, item);
-//
-//            orderInterface.validateBookingDate(sub, salesInfo.getDay_info_list());
-//
-//            // 判断游客信息
-//            List<?> visitors = (List<?>) item.get("visitor");
-//            orderInterface.validateVisitor(salesInfo, sub, visitors, item);
-//
-//            // 每天的价格
-//            List<List<EpSalesInfo>> allDaysSales = salesInfo.getSales();
-//            Assert.notEmpty(allDaysSales, "该产品未被分销");
-//
-//            // 子订单总进货价
-//            PriceDto price = bookingOrderManager.calcSalesPrice(allDaysSales, salesInfo, createOrder.getEpId(), sub.getQuantity(), createOrder.getFrom());
-//            totalSalePrice += price.getSale();
-//            // 只计算预付的,到付不计算在内
-//            if (salesInfo.getPay_type() == ProductConstants.PayType.PREPAY) {
-//                totalPayPrice += price.getSale();
-//            }
-//
-//            // 创建子订单
-//            OrderItem orderItem = orderInterface.insertItem(order, sub, salesInfo, price, item);
-//
-//
-//            // 创建子订单详情
-//            List<OrderItemDetail> details = orderInterface.insertDetail(order, orderItem, sub, salesInfo, allDaysSales);
-//
-//            // 析构销售链
-//            orderInterface.insertSalesChain(orderItem, sub, allDaysSales);
-//
-//            orderInterface.insertVisitor(visitors, orderItem, salesInfo, sub, item);
-//
-//            lockStockDtoMap.put(orderItem.getId(), new LockStockDto(orderItem, details, salesInfo.getDay_info_list()));
-//            lockParams.add(bookingOrderManager.parseParams(orderItem));
-//
-//            // 预分账记录
-//            bookingOrderManager.prePaySplitAccount(allDaysSales, orderItem, createOrder.getEpId());
             this.createOrderItem(orderInterface, createOrder, order, sub, item, lockStockDtoMap, lockParams);
         }
         if (first == null) {
             throw new ApiException("请选择购买的产品");
         }
-        // 更新订单金额
-//        order.setPay_amount(totalPayPrice);
-//        order.setSale_amount(totalSalePrice);
 
         // 创建订单联系人
         orderInterface.insertShipping(params, order);
@@ -240,18 +198,12 @@ public class BookingOrderServiceImpl implements BookingOrderService {
 
         // 创建子订单
         OrderItem orderItem = orderInterface.insertItem(order, sub, salesInfo, price, item);
-//        totalSalePrice += price.getSale();
-//        // 只计算预付的,到付不计算在内
-//        if (salesInfo.getPay_type() == ProductConstants.PayType.PREPAY) {
-//            totalPayPrice += price.getSale();
-//        }
-//        // 更新订单金额
-//        order.setPay_amount(totalPayPrice);
-//        order.setSale_amount(totalSalePrice);
-        order.setPay_amount(price.getSale() + (order.getPay_amount() == null ? 0 : order.getPay_amount()));
+
+        // 只计算预付的,到付不计算在内
         if (salesInfo.getPay_type() == ProductConstants.PayType.PREPAY) {
-            order.setSale_amount(price.getSale() + (order.getSale_amount() == null ? 0 : order.getSale_amount()));
+            order.setPay_amount(price.getSale() + (order.getPay_amount() == null ? 0 : order.getPay_amount()));
         }
+        order.setSale_amount(price.getSale() + (order.getSale_amount() == null ? 0 : order.getSale_amount()));
 
         // 创建子订单详情
         List<OrderItemDetail> details = orderInterface.insertDetail(order, orderItem, sub, salesInfo, allDaysSales);
@@ -279,7 +231,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             return validateResult;
         }
 
-        //todo 创建订单
+        // 创建订单
         Order order = createPackageOrderService.insertOrder(createOrder, params);
 
         ValidateProductSub packageSub = createPackageOrderService.parseItemParams(createOrder, params);
@@ -296,45 +248,28 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         PriceDto price = bookingOrderManager.calcSalesPrice(allDaysSales, salesInfo, createOrder.getEpId(), packageSub.getQuantity(), createOrder.getFrom());
 
         PackageOrderItem packageOrderItem = createPackageOrderService.insertPackageOrderInfo(salesInfo, order, params);
-
         packageOrderItem.setStart(packageSub.getBooking());
-        ProductSalesDayInfo productSalesDayInfo = null;
-        int index = 0;
-        List<ProductSalesDayInfo> productSalesDayInfoList = salesInfo.getDay_info_list();
-        for (ProductSalesDayInfo info : productSalesDayInfoList){
-            if (StringUtils.equals(DateFormatUtils.format(info.getStart_time(),"yyyy-mm-dd"),
-                    DateFormatUtils.format(packageSub.getBooking(),"yyyy-mm-dd"))){
-                productSalesDayInfo = info;
-                break;
-            }
-            index++;
+
+        if (salesInfo.getDay_info_list().size() != 1) {
+            throw new ApiException("套票产品目前只能购买一天");
         }
-        if (productSalesDayInfo != null){
-            packageOrderItem.setCust_refund_rule(productSalesDayInfo.getCust_refund_rule());
-            packageOrderItem.setSaler_refund_rule(productSalesDayInfo.getSaler_refund_rule());
-            packageOrderItem.setSettle_price(productSalesDayInfo.getSettle_price());
-            EpSalesInfo saleInfo = bookingOrderManager.getSalePrice(allDaysSales.get(index), salesInfo.getEp_id());
-            EpSalesInfo buyInfo = bookingOrderManager.getBuyingPrice(allDaysSales.get(index), order.getBuy_ep_id());
-            Assert.notNull(saleInfo, "该产品未正确配置");
-            Assert.notNull(buyInfo, "该产品未正确配置");
-            packageOrderItem.setSale_price(order.getFrom_type() == OrderConstant.FromType.TRUST ? buyInfo.getShop_price() : buyInfo.getPrice());
-            packageOrderItem.setSupply_price(saleInfo.getPrice());
-        }
+        ProductSalesDayInfo productSalesDayInfo = salesInfo.getDay_info_list().get(0);
+        packageOrderItem.setCust_refund_rule(productSalesDayInfo.getCust_refund_rule());
+        packageOrderItem.setSaler_refund_rule(productSalesDayInfo.getSaler_refund_rule());
+        packageOrderItem.setSettle_price(productSalesDayInfo.getSettle_price());
+        EpSalesInfo saleInfo = bookingOrderManager.getSalePrice(allDaysSales.get(0), salesInfo.getEp_id());
+        EpSalesInfo buyInfo = bookingOrderManager.getBuyingPrice(allDaysSales.get(0), order.getBuy_ep_id());
+        Assert.notNull(saleInfo, "该产品未正确配置");
+        Assert.notNull(buyInfo, "该产品未正确配置");
+        packageOrderItem.setSale_price(order.getFrom_type() == OrderConstant.FromType.TRUST ? buyInfo.getShop_price() : buyInfo.getPrice());
+        packageOrderItem.setSupply_price(saleInfo.getPrice());
         packageOrderItem.setUpdate_time(new Date());
 
-
-
-        //todo 锁定库存集合(统一锁定)
+        // 锁定库存集合(统一锁定)
         Map<Integer, LockStockDto> lockStockDtoMap = new HashMap<>();
         List<ProductSearchParams> lockParams = new ArrayList<>();
 
-        //todo 组装参数
-//        ProductSearchParams productSearchParams = new ProductSearchParams();
-//        productSearchParams.setSubProductCode(packageOrderItem.getProduct_sub_code());
-//        productSearchParams.setStartDate(packageOrderItem.getStart());
-//        productSearchParams.setDays(packageSub.getDays());
-//        productSearchParams.setQuantity(packageOrderItem.getQuantity());
-//        productSearchParams.setSubOrderId(packageOrderItem.getId());
+        // 组装参数
         OrderItem orderItem = new OrderItem();
         orderItem.setId(packageOrderItem.getId());
         orderItem.setPro_sub_number(packageOrderItem.getProduct_sub_code());
@@ -342,24 +277,28 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         orderItem.setDays(packageSub.getDays());
         orderItem.setQuantity(packageOrderItem.getQuantity());
 
-        lockStockDtoMap.put(packageOrderItem.getId(),new LockStockDto(orderItem, null, salesInfo.getDay_info_list()));
+        lockStockDtoMap.put(packageOrderItem.getId(), new LockStockDto(orderItem, null, salesInfo.getDay_info_list()));
         lockParams.add(bookingOrderManager.parseParams(orderItem));
 
-        //todo 创建元素订单
+        // 创建元素订单
         params.put("order_number", order.getNumber());
         CreateOrderInterface orderInterface = applicationContext.getBean(OrderConstant.CREATE_ADAPTER + "PACKAGE", CreateOrderInterface.class);
 
         List<Map> items = (List<Map>) params.get("items");
 
+        int buyEpId = createOrder.getEpId();
         for (Map item : items){
             ValidateProductSub sub = orderInterface.parseItemParams(createOrder, item);
+            // 元素产品购买者为打包商
+            createOrder.setEpId(salesInfo.getEp_id());
             this.createOrderItem(orderInterface, createOrder, order, sub, item, lockStockDtoMap, lockParams);
         }
+        createOrder.setEpId(buyEpId);
 
         // 创建订单联系人
         orderInterface.insertShipping(params, order);
 
-        //todo 锁定库存
+        // 锁定库存
         Result<Map<Integer, List<Boolean>>> lockResult = productSalesPlanRPCService.lockProductStocks(lockParams);
         if (!lockResult.isSuccess()) {
             throw new ApiException(lockResult.getError());
@@ -395,19 +334,19 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         // 触发事件
         eventManager.addEvent(OrderConstant.EventType.ORDER_CREATE, order.getId());
 
+        // 存入元素产品支付金额与销售金额
         packageOrderItem.setPay_amount(order.getPay_amount());
         packageOrderItem.setSale_amount(order.getSale_amount());
-        //todo 设置订单金额
+        // 设置订单金额
         order.setPay_amount(salesInfo.getPay_type() == ProductConstants.PayType.PREPAY  ? price.getSale() : 0);
         order.setSale_amount(price.getSale());
 
         orderMapper.updateByPrimaryKeySelective(order);
-//        resultMap.put("order",order);
 
-        PackageOrderItemMapper.updateByPrimaryKeySelective(packageOrderItem);
+        packageOrderItemMapper.updateByPrimaryKeySelective(packageOrderItem);
 
         createPackageOrderService.insertSalesChain(packageOrderItem, packageSub, allDaysSales);
-        //todo 预分账记录
+        // 预分账记录
         createPackageOrderService.prePaySplitAccount(allDaysSales, packageOrderItem, createOrder.getEpId());
 
         Result<Object> result = new Result<>();

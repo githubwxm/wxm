@@ -57,6 +57,10 @@ public class BookingOrderManager extends BaseOrderManager {
     @Autowired
     private OrderItemSalesChainMapper orderItemSalesChainMapper;
     @Autowired
+    private PackageOrderItemMapper packageOrderItemMapper;
+    @Autowired
+    private PackageOrderItemAccountMapper packageOrderItemAccountMapper;
+    @Autowired
     @Getter
     private MnsEventAspect eventManager;
     @Autowired
@@ -490,18 +494,18 @@ public class BookingOrderManager extends BaseOrderManager {
             if (self.getPrice() == null) {
                 self.setPrice(0);
             }
-            // 判断最低零售价
-//            if (from == OrderConstant.FromType.TRUST && self.getPrice() < salesInfo.getMin_price()) {
-//                throw new ApiException(String.format("产品:%s不能低于最低零售价:%f,当前售卖价格:%f",
-//                        salesInfo.getProduct_sub_name(), Arith.round(salesInfo.getMin_price()/100f, 2), Arith.round(self.getPrice()/100f, 2)))
-//                        .dataMap().putData("min", salesInfo.getMin_price()).putData("current", self.getPrice());
-//            }
-//            // 判断最高市场价
-//            if (self.getPrice() > salesInfo.getMarket_price()) {
-//                throw new ApiException(String.format("产品:%s不能高于市场价:%f,当前售卖价格:%f",
-//                        salesInfo.getProduct_sub_name(), Arith.round(salesInfo.getMarket_price()/100f, 2), Arith.round(self.getPrice()/100f, 2)))
-//                        .dataMap().putData("market", salesInfo.getMarket_price()).putData("current", self.getPrice());
-//            }
+            /*// 判断最低零售价
+            if (from == OrderConstant.FromType.TRUST && self.getPrice() < salesInfo.getMin_price()) {
+                throw new ApiException(String.format("产品:%s不能低于最低零售价:%f,当前售卖价格:%f",
+                        salesInfo.getProduct_sub_name(), Arith.round(salesInfo.getMin_price()/100f, 2), Arith.round(self.getPrice()/100f, 2)))
+                        .dataMap().putData("min", salesInfo.getMin_price()).putData("current", self.getPrice());
+            }
+            // 判断最高市场价
+            if (self.getPrice() > salesInfo.getMarket_price()) {
+                throw new ApiException(String.format("产品:%s不能高于市场价:%f,当前售卖价格:%f",
+                        salesInfo.getProduct_sub_name(), Arith.round(salesInfo.getMarket_price()/100f, 2), Arith.round(self.getPrice()/100f, 2)))
+                        .dataMap().putData("market", salesInfo.getMarket_price()).putData("current", self.getPrice());
+            }*/
             daySales.add(self);
             salePrice += self.getPrice() * quantity;
         }
@@ -540,9 +544,16 @@ public class BookingOrderManager extends BaseOrderManager {
      */
     public List<BalanceChangeInfo> packagingPaySplitAccount(Order order, List<OrderItem> orderItems) {
         List<BalanceChangeInfo> balanceChangeInfoList = new ArrayList<>();
+        // 套票
+        PackageOrderItem packageOrderItem = packageOrderItemMapper.selectByNumber(order.getNumber());
+        if (packageOrderItem != null) {
+            List<PackageOrderItemAccount> accounts = packageOrderItemAccountMapper.selectByOrderItem(packageOrderItem.getId());
+            List<BalanceChangeInfo> itemInfoList = AccountUtil.makerPayBalanceChangeInfo(AccountUtil.packageAccount2Account(accounts), packageOrderItem.getPayment_flag(), packageOrderItem.getEp_id(), packageOrderItem.getCore_ep_id(), order.getBuy_ep_id());
+            balanceChangeInfoList.addAll(itemInfoList);
+        }
         for (OrderItem orderItem : orderItems) {
             List<OrderItemAccount> accountList = orderItemAccountMapper.selectByOrderItem(orderItem.getId());
-            List<BalanceChangeInfo> itemInfoList = AccountUtil.makerPayBalanceChangeInfo(accountList, orderItem.getPayment_flag(), orderItem.getSupplier_ep_id(), orderItem.getSupplier_core_ep_id(), order.getBuy_ep_id());
+            List<BalanceChangeInfo> itemInfoList = AccountUtil.makerPayBalanceChangeInfo(accountList, orderItem.getPayment_flag(), orderItem.getSupplier_ep_id(), orderItem.getSupplier_core_ep_id(), packageOrderItem == null ? order.getBuy_ep_id() : packageOrderItem.getEp_id());
             balanceChangeInfoList.addAll(itemInfoList);
         }
         return balanceChangeInfoList;

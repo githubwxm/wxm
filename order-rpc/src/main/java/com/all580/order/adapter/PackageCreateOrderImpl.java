@@ -3,14 +3,14 @@ package com.all580.order.adapter;
 import com.all580.ep.api.conf.EpConstant;
 import com.all580.ep.api.service.EpService;
 import com.all580.order.api.OrderConstant;
+import com.all580.order.dao.PackageOrderItemAccountMapper;
 import com.all580.order.dao.PackageOrderItemMapper;
+import com.all580.order.dto.AccountDataDto;
 import com.all580.order.dto.CreateOrder;
 import com.all580.order.dto.ValidateProductSub;
-import com.all580.order.entity.Order;
-import com.all580.order.entity.OrderItem;
-import com.all580.order.entity.PackageOrderItem;
-import com.all580.order.entity.PackageOrderItemSalesChain;
+import com.all580.order.entity.*;
 import com.all580.order.manager.BookingOrderManager;
+import com.all580.order.util.AccountUtil;
 import com.all580.product.api.model.EpSalesInfo;
 import com.all580.product.api.model.ProductSalesDayInfo;
 import com.all580.product.api.model.ProductSalesInfo;
@@ -19,6 +19,7 @@ import com.all580.product.api.service.ProductSalesPlanRPCService;
 import com.framework.common.Result;
 import com.framework.common.util.CommonUtil;
 import org.apache.commons.lang.time.DateUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -34,6 +35,8 @@ public class PackageCreateOrderImpl  implements CreatePackageOrderService {
 
     @Autowired
     private PackageOrderItemMapper packageOrderItemMapper;
+    @Autowired
+    private PackageOrderItemAccountMapper packageOrderItemAccountMapper;
     @Autowired
     private BookingOrderManager bookingOrderManager;
     @Autowired
@@ -79,9 +82,6 @@ public class PackageCreateOrderImpl  implements CreatePackageOrderService {
             ProductSearchParams productSearchParams = new ProductSearchParams();
             productSearchParams.setSubProductCode(productSub.getCode());
             productSearchParams.setStartDate(productSub.getBooking());
-            productSearchParams.setDays(productSub.getDays());
-            productSearchParams.setQuantity(productSub.getQuantity());
-            productSearchParams.setBuyEpId(createOrder.getEpId());
             searchParams.add(productSearchParams);
         }
 
@@ -117,8 +117,6 @@ public class PackageCreateOrderImpl  implements CreatePackageOrderService {
     @Override
     public PackageOrderItem insertPackageOrderInfo(ProductSalesInfo salesInfo, Order order, Map params) {
         PackageOrderItem packageOrderItem = new PackageOrderItem();
-//        packageOrderItem.setEp_id(CommonUtil.objectParseInteger(params.get(EpConstant.EpKey.EP_ID)));
-//        packageOrderItem.setCore_ep_id(CommonUtil.objectParseInteger(params.get(EpConstant.EpKey.CORE_EP_ID)));
         packageOrderItem.setOrder_number(order.getNumber());
         packageOrderItem.setProduct_sub_name(salesInfo.getProduct_sub_name());
         packageOrderItem.setProduct_sub_id(salesInfo.getProduct_sub_id());
@@ -156,6 +154,21 @@ public class PackageCreateOrderImpl  implements CreatePackageOrderService {
     @Override
     public void prePaySplitAccount(List<List<EpSalesInfo>> allDaysSales, PackageOrderItem item, Integer epId) {
         OrderItem orderItem = new OrderItem();
-
+        orderItem.setId(item.getId());
+        orderItem.setPro_sub_number(item.getProduct_sub_code());
+        orderItem.setStart(item.getStart());
+        orderItem.setDays(1);
+        orderItem.setQuantity(item.getQuantity());
+        orderItem.setSupplier_core_ep_id(item.getCore_ep_id());
+        orderItem.setSupplier_ep_id(item.getEp_id());
+        orderItem.setPayment_flag(item.getPayment_flag());
+        Map<Integer, Collection<AccountDataDto>> salesMap = AccountUtil.parseEpSales(allDaysSales, orderItem.getStart());
+        AccountUtil.setAccountDataCoreEpId(bookingOrderManager.getCoreEpIds(salesMap.keySet()), salesMap);
+        List<OrderItemAccount> accounts = AccountUtil.paySplitAccount(salesMap, orderItem, epId);
+        for (OrderItemAccount account : accounts) {
+            PackageOrderItemAccount itemAccount = new PackageOrderItemAccount();
+            BeanUtils.copyProperties(account, itemAccount);
+            packageOrderItemAccountMapper.insertSelective(itemAccount);
+        }
     }
 }
