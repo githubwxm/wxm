@@ -70,6 +70,10 @@ public class SendGroupTicketAction extends BasicSyncDataEvent implements JobRunn
             log.warn("出票任务,该订单不是团队订单");
             throw new Exception("该订单不是团队订单");
         }
+        if (orderItem.getStatus() != OrderConstant.OrderItemStatus.NON_SEND &&
+                orderItem.getStatus() != OrderConstant.OrderItemStatus.TICKET_FAIL) {
+            throw new Exception("该订单状态不在可出票状态,目前状态为:" + orderItem.getStatus());
+        }
         Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
         if (order == null) {
             log.warn("出票任务,订单不存在");
