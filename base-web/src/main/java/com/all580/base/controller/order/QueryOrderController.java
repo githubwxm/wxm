@@ -172,9 +172,22 @@ public class QueryOrderController extends BaseController {
 
     @RequestMapping(value = "package/list", method = RequestMethod.GET)
     @ResponseBody
-    public Result<PageRecord<OrderItemDto>> listPackageOrderItem() {
+    public Result<PageRecord<PackageOrder>> listPackageOrderItem(OrderInfo orderInfo,
+                                                                 @RequestParam(defaultValue = "0") Integer record_start,
+                                                                 @RequestParam(defaultValue = "20") Integer record_count) {
+        Integer coreEpId = CommonUtil.objectParseInteger(getAttribute(EpConstant.EpKey.CORE_EP_ID));
+        orderInfo.setCore_ep_id(coreEpId);
+        return queryOrderService.getPackageOrderItemList(orderInfo, record_start, record_count);
+    }
 
-        return null;
+    @RequestMapping(value = "package/get_item_detail", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<PackageOrderDetail> getPackageOrderDetailByNumber(@RequestParam("itemSn") Long itemSn,
+                                                                @RequestParam("show_accout") Integer showAccount,
+                                                                @RequestParam("ep_type") Integer epType,
+                                                                @RequestParam("ep_id") Integer epId) {
+        Integer coreEpId = CommonUtil.objectParseInteger(getAttribute(EpConstant.EpKey.CORE_EP_ID));
+        return queryOrderService.getPackageOrderDetailByNumber(itemSn, epType, coreEpId, epId, showAccount);
     }
 
 }

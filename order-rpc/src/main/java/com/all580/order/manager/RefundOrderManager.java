@@ -76,6 +76,8 @@ public class RefundOrderManager extends BaseOrderManager {
     private ThirdPayService thirdPayService;
     @Autowired
     private MnsEventAspect eventManager;
+    @Autowired
+    private PackageOrderItemMapper packageOrderItemMapper;
 
     /**
      * 取消订单
@@ -124,6 +126,19 @@ public class RefundOrderManager extends BaseOrderManager {
         orderMapper.updateByPrimaryKeySelective(order);
         // 还库存
         refundStock(orderItems, paid);
+
+        //todo 还套票库存
+        PackageOrderItem packageOrderItem = packageOrderItemMapper.selectByNumber(order.getNumber());
+        if (packageOrderItem != null){
+            ProductSearchParams p = new ProductSearchParams();
+            p.setSubOrderId(packageOrderItem.getId());
+            p.setSubProductCode(packageOrderItem.getProduct_sub_code());
+            p.setStartDate(packageOrderItem.getStart());
+            p.setDays(1);
+            p.setQuantity(packageOrderItem.getQuantity());
+
+
+        }
 
         eventManager.addEvent(OrderConstant.EventType.ORDER_CANCEL, order.getId());
         return new Result(true);

@@ -88,7 +88,7 @@ public class OrderController extends BaseController {
     @RequestMapping(value = "package/create", method = RequestMethod.POST)
     @ResponseBody
     public Result<?> createPackageOrder(@RequestBody Map params) throws Exception {
-
+        ParamsMapValidate.validate(params, orderValidateManager.createPackageValidate());
         return bookingOrderService.createPackageOrder(params);
     }
 
