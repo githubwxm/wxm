@@ -211,6 +211,11 @@ public class OrderItem implements Serializable {
     private String voucher_msg;
 
     /**
+     *  凭证短信模板,所属表字段为t_order_item.voucher_template
+     */
+    private Integer voucher_template;
+
+    /**
      *  小票内容,所属表字段为t_order_item.ticket_msg
      */
     private String ticket_msg;

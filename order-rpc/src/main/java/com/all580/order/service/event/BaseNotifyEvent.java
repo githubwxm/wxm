@@ -88,7 +88,7 @@ public class BaseNotifyEvent {
     protected void notifyEvent(Integer itemId, String opCode,Map<String,Object> tempMap) {
         OrderItem item = orderItemMapper.selectByPrimaryKey(itemId);
         Assert.notNull(item);
-        Integer rfd_qty= refundOrderMapper.selectItemQuantity(itemId);
+        Integer rfd_qty= item.getRefund_quantity();
         Order order = orderMapper.selectByPrimaryKey(item.getOrder_id());
         Assert.notNull(order);
         Integer sourceType=null;

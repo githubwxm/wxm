@@ -19,6 +19,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.time.DateUtils;
+import org.springframework.beans.BeanUtils;
 
 import javax.lang.exception.ApiException;
 import java.util.*;
@@ -562,6 +563,21 @@ public class AccountUtil {
             e.printStackTrace();
         }
         return false;
+    }
+
+    /**
+     * 转换套票分账数据
+     * @param accounts
+     * @return
+     */
+    public static List<OrderItemAccount> packageAccount2Account(Collection<PackageOrderItemAccount> accounts) {
+        List<OrderItemAccount> itemAccounts = new ArrayList<>();
+        for (PackageOrderItemAccount account : accounts) {
+            OrderItemAccount itemAccount = new OrderItemAccount();
+            BeanUtils.copyProperties(account, itemAccount);
+            itemAccounts.add(itemAccount);
+        }
+        return itemAccounts;
     }
 
     /**

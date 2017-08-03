@@ -3,8 +3,8 @@ package com.all580.order.adapter;
 import com.all580.order.dto.CreateOrder;
 import com.all580.order.dto.ValidateProductSub;
 import com.all580.order.entity.Order;
-import com.all580.order.entity.OrderItemSalesChain;
 import com.all580.order.entity.PackageOrderItem;
+import com.all580.order.entity.PackageOrderItemSalesChain;
 import com.all580.product.api.model.EpSalesInfo;
 import com.all580.product.api.model.ProductSalesDayInfo;
 import com.all580.product.api.model.ProductSalesInfo;
@@ -24,15 +24,15 @@ public interface CreatePackageOrderService {
 
     Order insertOrder(CreateOrder createOrder, Map params);
 
-    ValidateProductSub parseItemParams(CreateOrder createOrder, Map item);
+    ValidateProductSub parseItemParams(CreateOrder createOrder, Map params);
 
-    ProductSalesInfo validateProductAndGetSales(ValidateProductSub sub, CreateOrder createOrder, Map item);
+    ProductSalesInfo validateProductAndGetSales(ValidateProductSub sub, CreateOrder createOrder, Map params);
 
     void validateBookingDate(ValidateProductSub sub, List<ProductSalesDayInfo> dayInfoList);
 
     PackageOrderItem insertPackageOrderInfo(ProductSalesInfo salesInfo, Order order, Map params);
 
-    List<OrderItemSalesChain> insertSalesChain(PackageOrderItem item, ValidateProductSub sub, List<List<EpSalesInfo>> allDaysSales);
+    List<PackageOrderItemSalesChain> insertSalesChain(PackageOrderItem item, ValidateProductSub sub, List<List<EpSalesInfo>> allDaysSales);
 
     void prePaySplitAccount(List<List<EpSalesInfo>> allDaysSales, PackageOrderItem item, Integer epId);
 

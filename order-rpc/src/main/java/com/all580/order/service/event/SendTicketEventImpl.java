@@ -6,7 +6,6 @@ import com.all580.order.dao.OrderItemMapper;
 import com.all580.order.entity.OrderItem;
 import com.all580.order.manager.BookingOrderManager;
 import com.all580.order.manager.SmsManager;
-import com.all580.product.api.consts.ProductConstants;
 import com.framework.common.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,18 +35,6 @@ public class SendTicketEventImpl implements SendTicketEvent {
         OrderItem item = orderItemMapper.selectByPrimaryKey(content);
         Assert.notNull(item);
 
-        // 酒店发送短信
-        if (item.getPro_type() == ProductConstants.ProductType.HOTEL) {
-            smsManager.sendHotelSendTicket(item);
-        }
-        // 线路发送短信
-        if (item.getPro_type() == ProductConstants.ProductType.ITINERARY) {
-            smsManager.sendLineSendTicket(item);
-        }
-        // 景点发送短信
-        if (item.getPro_type() == ProductConstants.ProductType.SCENERY && (item.getSend() == null || item.getSend())) {
-            //smsManager.sendVoucher(item);
-        }
         log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(null, item.getId(),
                 0, "ORDER_EVENT", OrderConstant.LogOperateCode.SENDED,
                 item.getQuantity() * item.getDays(), "已出票", null));

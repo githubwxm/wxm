@@ -53,7 +53,7 @@ public class SmsTmpl implements Serializable {
     private Boolean allow_associate_ep;
 
     /**
-     *  12000: 普通短信; 12001: 凭证短信,所属表字段为t_sms_tmpl.channel_type
+     *  13000: 普通短信; 13001: 凭证短信,所属表字段为t_sms_tmpl.channel_type
      */
     private Integer channel_type;
 
@@ -61,6 +61,11 @@ public class SmsTmpl implements Serializable {
      *  在第三方短信端口中配置的模板id,所属表字段为t_sms_tmpl.out_sms_tpl_id
      */
     private String out_sms_tpl_id;
+
+    /**
+     *  描述,所属表字段为t_sms_tmpl.memo
+     */
+    private String memo;
 
     /**
      * 序列化ID,t_sms_tmpl
