@@ -26,4 +26,6 @@ public class CreateOrder {
     private String operatorName;
     /** 外部信息 */
     private String outer;
+    /** 下单来源 3010 B2C  3011  网站 */
+    private Integer source;
 }

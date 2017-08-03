@@ -27,6 +27,7 @@
     <result column="remark" jdbcType="VARCHAR" property="remark" />
     <result column="update_time" jdbcType="TIMESTAMP" property="update_time" />
     <result column="audit_time" jdbcType="TIMESTAMP" property="audit_time" />
+    <result column="source" jdbcType="INTEGER" property="source" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--
@@ -151,6 +152,10 @@
       <if test="audit_time != null">
         `audit_time`,
       </if>
+      <if test="source != null">
+        `source`,
+      </if>
+
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="number != null">
@@ -209,6 +214,9 @@
       </if>
       <if test="audit_time != null">
         #{audit_time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="source != null">
+        #{source,jdbcType=INTEGER},
       </if>
     </trim>
   </insert>

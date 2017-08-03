@@ -224,7 +224,7 @@ public class BookingOrderManager extends BaseOrderManager {
      * @return
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public Order generateOrder(Integer coreEpId, Integer buyEpId, String buyEpName, Integer userId, String userName, Integer from, String remark, String outerId) {
+    public Order generateOrder(Integer coreEpId, Integer buyEpId, String buyEpName, Integer userId, String userName, Integer from, String remark, String outerId,Integer source) {
         Order order = new Order();
         order.setNumber(UUIDGenerator.generateUUID());
         order.setStatus(OrderConstant.OrderStatus.PAY_WAIT);
@@ -237,6 +237,7 @@ public class BookingOrderManager extends BaseOrderManager {
         order.setRemark(remark);
         order.setPayee_ep_id(coreEpId);
         order.setOuter_id(StringUtils.isEmpty(outerId) ? "_" + order.getNumber() : outerId);
+        order.setSource(source);
         orderMapper.insertSelective(order);
         return order;
     }

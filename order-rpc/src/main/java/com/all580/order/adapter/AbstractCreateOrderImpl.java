@@ -57,6 +57,7 @@ public abstract class AbstractCreateOrderImpl implements CreateOrderInterface {
         createOrder.setOperatorId(CommonUtil.objectParseInteger(params.get("operator_id")));
         createOrder.setOperatorName(CommonUtil.objectParseString(params.get("operator_name")));
         createOrder.setOuter(CommonUtil.objectParseString(params.get("outer_id")));
+        createOrder.setSource(CommonUtil.objectParseInteger(params.get("source")));
         // 获取下单企业名称
         String buyEpName = null;
         Result<Map<String, Object>> epResult = epService.selectId(createOrder.getEpId());
@@ -119,7 +120,7 @@ public abstract class AbstractCreateOrderImpl implements CreateOrderInterface {
     public Order insertOrder(CreateOrder createOrder, Map params) {
         return bookingOrderManager.generateOrder(createOrder.getCoreEpId(), createOrder.getEpId(), createOrder.getEpName(),
                 createOrder.getOperatorId(), createOrder.getOperatorName(), createOrder.getFrom(), createOrder.getRemark(),
-                createOrder.getOuter());
+                createOrder.getOuter(),createOrder.getSource());
     }
 
     public ProductSalesInfo validateProductAndGetSales(ValidateProductSub sub, CreateOrder createOrder, Map item) {
