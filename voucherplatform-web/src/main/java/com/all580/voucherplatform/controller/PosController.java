@@ -27,7 +27,7 @@ public class PosController extends BaseController {
     @Autowired
     private DeviceValidateManager deviceValidateManager;
 
-    @RequestMapping(value = "register", method = RequestMethod.POST)
+    @RequestMapping(value = "apply", method = RequestMethod.POST)
     @ResponseBody
     public Result apply(@RequestBody Map map) {
         ParamsMapValidate.validate(map, deviceValidateManager.applyDeviceValidate());
@@ -44,7 +44,7 @@ public class PosController extends BaseController {
     @RequestMapping(value = "req", method = RequestMethod.POST)
     @ResponseBody
     public Result req(@RequestBody Map map) {
-        ParamsMapValidate.validate(map, deviceValidateManager.applyDeviceValidate());
+        ParamsMapValidate.validate(map, deviceValidateManager.reqDeviceValidate());
         return posService.request(map);
     }
 }

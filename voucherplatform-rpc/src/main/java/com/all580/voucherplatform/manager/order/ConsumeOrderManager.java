@@ -20,6 +20,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.lang.exception.ApiException;
 import java.util.Date;
 
 /**
@@ -51,17 +52,17 @@ public class ConsumeOrderManager {
 
     public ConsumeOrderManager() {}
 
-    public void setOrder(Order order) throws Exception {
+    public void setOrder(Order order) {
         this.order = order;
         checkData();
     }
 
-    public void setOrder(String orderCode) throws Exception {
+    public void setOrder(String orderCode) {
         this.order = orderMapper.selectByOrderCode(orderCode);
         checkData();
     }
 
-    public void setOrder(Integer orderId) throws Exception {
+    public void setOrder(Integer orderId) {
         this.order = orderMapper.selectByPrimaryKey(orderId);
         checkData();
     }
@@ -72,10 +73,10 @@ public class ConsumeOrderManager {
         checkData();
     }
 
-    private void checkData() throws Exception {
+    private void checkData() {
 
         if (this.order == null) {
-            throw new Exception("订单不存在");
+            throw new ApiException("订单不存在");
         }
     }
 
@@ -84,15 +85,18 @@ public class ConsumeOrderManager {
                                  String address,
                                  Date consumeTime,
                                  String deviceId) {
+
         DistributedReentrantLock distributedReentrantLock = distributedLockTemplate.execute(
                 VoucherConstant.DISTRIBUTEDLOCKORDER + order.getOrderCode(), lockTimeOut);
         try {
             Integer consumeId = Consume(seqId, number, address, consumeTime, deviceId);
             notifyPlatform(order.getPlatform_id(), consumeId);
             return consumeId;
+        } catch (ApiException ex) {
+            throw ex;
         } catch (Exception ex) {
             log.error(ex.getMessage(), ex);
-            return number;
+            throw new ApiException(ex);
         } finally {
             distributedReentrantLock.unlock();
         }
@@ -103,18 +107,18 @@ public class ConsumeOrderManager {
                             Integer number,
                             String address,
                             Date consumeTime,
-                            String deviceId) throws Exception {
+                            String deviceId) throws ApiException {
 
 
         if (StringUtils.isEmpty(seqId)) {
-            throw new IllegalArgumentException("无效的验证流水号");
+            throw new ApiException("无效的验证流水号");
         }
         if (number == null || number < 1) {
-            throw new IllegalArgumentException("无效的验证数量");
+            throw new ApiException("无效的验证数量");
         }
         Consume consume = consumeMapper.selectBySeqId(number, null, order.getSupply_id(), seqId);
         if (consume != null) {
-            throw new Exception("重复的验证操作请求");
+            throw new ApiException("重复的验证操作请求");
         }
         Integer availableNumber = order.getNumber() -
                 (order.getConsume() == null ? 0 : order.getConsume())
@@ -122,7 +126,7 @@ public class ConsumeOrderManager {
                 - (order.getRefunding() == null ? 0 : order.getRefunding())
                 - (order.getRefund() == null ? 0 : order.getRefund());
         if (number > availableNumber) {
-            throw new Exception("消费数量大于订单剩余数量");
+            throw new ApiException("消费数量大于订单剩余数量");
         }
         consume = new Consume();
         consume.setConsumeCode(String.valueOf(UUIDGenerator.generateUUID()));

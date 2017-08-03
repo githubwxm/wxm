@@ -41,14 +41,12 @@ public class ConsumeProcessorImpl implements ProcessorService<Supply> {
         Integer consumeNumber = CommonUtil.objectParseInteger(map.get("consumeNumber"));
         String consumeAddress = CommonUtil.objectParseString(map.get("deviceId"));
         ConsumeOrderManager consumeOrderManager = adapterLoader.getBean(ConsumeOrderManager.class);
-        try {
-            consumeOrderManager.setOrder(orderCode);
-            Integer consumeId = consumeOrderManager.submitConsume(seqId, consumeNumber, consumeAddress, new Date(),
-                    device.getCode());
-            return getResult(consumeOrderManager.getOrder(), consumeId);
-        } catch (Exception ex) {
-            throw new ApiException(ex);
-        }
+
+        consumeOrderManager.setOrder(orderCode);
+        Integer consumeId = consumeOrderManager.submitConsume(seqId, consumeNumber, consumeAddress, new Date(),
+                device.getCode());
+        return getResult(consumeOrderManager.getOrder(), consumeId);
+
     }
 
     private Map getResult(Order order,
