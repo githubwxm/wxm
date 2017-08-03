@@ -14,6 +14,7 @@
         <property name="mns" ref="topicPushManager"/>
         <property name="topicName" value="${mns.topic}"/>
         <property name="tag" value="core_events"/>
+        <property name="redisUtils" ref="redisUtils"/>
     </bean>
     <bean id="jobManager" class="com.framework.common.outside.JobAspect">
         <property name="jobClient" ref="jobClient"/>
