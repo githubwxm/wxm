@@ -21,18 +21,18 @@ import java.util.Map;
 @Service("pos.QueryOrderProcessorImpl")
 public class QueryOrderProcessorImpl implements ProcessorService<Supply> {
 
-    private static final String ACTION = "query";
+    private static final String ACTION = "list";
     @Autowired
     private PosMapper posMapper;
 
     @Override
     public Object processor(Supply supply,
                             Map map) {
-        DeviceGroup deviceGroup = (DeviceGroup) map.get("device");
+        DeviceGroup deviceGroup = (DeviceGroup) map.get("deviceGroup");
         String voucher = CommonUtil.emptyStringParseNull(map.get("voucher"));
-        Integer pageIndex = CommonUtil.objectParseInteger(map.get("pageIndex"), 0);
+        Integer pageIndex = CommonUtil.objectParseInteger(map.get("pageIndex"), 1);
         Integer pageSize = CommonUtil.objectParseInteger(map.get("pageSize"), 10);
-
+        pageIndex = (--pageIndex < 0) ? 0 : pageIndex;
 
         return getResult(voucher, deviceGroup.getId(), pageIndex, pageSize);
     }
@@ -53,9 +53,9 @@ public class QueryOrderProcessorImpl implements ProcessorService<Supply> {
             voucherNumber = voucher;
         }
 
-        int count = posMapper.selectOrderCount(voucherNumber, mobile, idNumber, deviceGroupId);
+        //int count = posMapper.selectOrderCount(voucherNumber, mobile, idNumber, deviceGroupId);
         List<Map> list = posMapper.selectOrderList(voucherNumber, mobile, idNumber, deviceGroupId,
-                (pageIndex - 1) * pageSize, pageSize);
+                pageIndex * pageSize, pageSize);
         return list;
     }
 
