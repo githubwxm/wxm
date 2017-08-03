@@ -142,12 +142,30 @@
       select ep_role_id from t_ep_role_func where func_id=#{func_id}
    </select>
 
+  <select id="selectFuncIdAllEpRoleCoreEpId" resultType="java.lang.Integer">
+    select DISTINCT core_ep_id from t_plat_func where func_group_id in(
+      select func_group_id from t_func_group_link where func_id=#{func_id})
+  </select>
+
   <select id="selectFuncIdsAllEpRole" resultType="java.lang.Integer">
     select DISTINCT(ep_role_id) from t_ep_role_func where func_id
      in
     <foreach item="item" index="index" collection="func_ids" open="(" separator="," close=")">
       #{item}
     </foreach>
+  </select>
+
+  <select id="selectFuncIdsAllEpRoleCoreEpId" resultType="java.lang.Integer">
+    select DISTINCT core_ep_id from t_plat_func where func_group_id in(
+      select func_group_id from t_func_group_link where func_id in (
+      select DISTINCT(func_id) from t_ep_role_func where func_id
+      in
+      <foreach item="item" index="index" collection="func_ids" open="(" separator="," close=")">
+        #{item}
+      </foreach>
+    )
+    )
+
   </select>
   <select id="selectFuncIdsAllEpRoleIds" resultType="java.lang.Integer">
     select id from t_ep_role_func where func_id

@@ -2,7 +2,6 @@ package com.all580.order.service.event;
 
 import com.all580.order.api.OrderConstant;
 import com.all580.order.dao.*;
-import com.all580.order.entity.MaSendResponse;
 import com.all580.order.entity.Order;
 import com.all580.order.entity.OrderItem;
 import com.framework.common.lang.DateFormatUtils;
@@ -17,7 +16,6 @@ import org.springframework.util.Assert;
 
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -90,10 +88,13 @@ public class BaseNotifyEvent {
     protected void notifyEvent(Integer itemId, String opCode,Map<String,Object> tempMap) {
         OrderItem item = orderItemMapper.selectByPrimaryKey(itemId);
         Assert.notNull(item);
-        Integer rfd_qty= refundOrderMapper.selectItemQuantity(itemId);
+        Integer rfd_qty= item.getRefund_quantity();
         Order order = orderMapper.selectByPrimaryKey(item.getOrder_id());
         Assert.notNull(order);
-        if(order.getBuy_operator_id()!=0){
+        Integer sourceType=null;
+        if(order.getSource()-OrderConstant.OrderSourceType.SOURCE_TYPE_B2C==0){
+            sourceType=OrderConstant.OrderSourceType.SOURCE_TYPE_B2C;
+        }else if(order.getBuy_operator_id()!=0){
             log.info("通知事物数据: 操作人id:{} orderid:{} " , order.getBuy_operator_id(),order.getId());
             return;
         }
@@ -158,6 +159,7 @@ public class BaseNotifyEvent {
         map.put("quantity", quantity);
         map.put("exp_qty", exp_qty);
         map.put("ma_send_response",aSendResponseMapper.selectByOrderItemId(itemId));
+        map.put("source_type",sourceType);
 //        List<MaSendResponse>list =aSendResponseMapper.selectByOrderItemId(itemId);
 //        if(null==list||list.isEmpty()){
 //            map.put("ma_send_response","");

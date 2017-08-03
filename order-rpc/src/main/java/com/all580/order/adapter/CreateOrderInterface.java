@@ -40,7 +40,7 @@ public interface CreateOrderInterface {
     OrderItem insertItem(Order order, ValidateProductSub sub, ProductSalesInfo salesInfo, PriceDto price, Map item);
 
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    List<OrderItemDetail> insertDetail(Order order, OrderItem item, ValidateProductSub sub, ProductSalesInfo salesInfo, List<List<EpSalesInfo>> allDaysSales);
+    List<OrderItemDetail> insertDetail(Order order, CreateOrder createOrder, OrderItem item, ValidateProductSub sub, ProductSalesInfo salesInfo, List<List<EpSalesInfo>> allDaysSales);
 
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     List<OrderItemSalesChain> insertSalesChain(OrderItem item, ValidateProductSub sub, List<List<EpSalesInfo>> allDaysSales);

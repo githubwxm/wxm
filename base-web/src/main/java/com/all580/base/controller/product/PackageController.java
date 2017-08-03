@@ -4,6 +4,7 @@ import com.all580.base.manager.PackageValidateManager;
 import com.all580.base.util.Utils;
 import com.all580.product.api.service.PackageService;
 import com.all580.product.api.service.PackageSubService;
+import com.all580.product.api.service.ProductSalesPlanRPCService;
 import com.framework.common.BaseController;
 import com.framework.common.Result;
 import com.framework.common.lang.DateFormatUtils;
@@ -29,6 +30,8 @@ public class PackageController extends BaseController {
     private PackageService packageService;
     @Autowired
     private PackageSubService packageSubService;
+    @Autowired
+    private ProductSalesPlanRPCService productSalesPlanRPCService;
 
     @Autowired
     private PackageValidateManager packageValidateManager;
@@ -132,5 +135,18 @@ public class PackageController extends BaseController {
         int days = (int) DateFormatUtils.getDayBySubDate(dates[0], dates[1]);
         if (days > 31) throw new ParamsMapValidationException("不能超出一个月时间");
         return packageSubService.calendar(id, dates[0], days, ep_id);
+    }
+
+    @RequestMapping("calc/price")
+    @ResponseBody
+    public Result<?> calcBuyingPrice(@RequestBody Map params) {
+        return packageSubService.caleBuyingPrice(params);
+    }
+
+    @RequestMapping("sale/shop_price/update")
+    @ResponseBody
+    public Result<?> updateShopPrice(@RequestBody Map params) {
+        ParamsMapValidate.validate(params, packageValidateManager.updateShopPriceValidate());
+        return productSalesPlanRPCService.updateSaleShopPrice(params);
     }
 }

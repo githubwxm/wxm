@@ -180,6 +180,9 @@
          #{item}
        </foreach>
   </select>
+  <select id="selectTopPidFunc" resultType="java.lang.Integer">
+        select id from t_func where pid=1;
+  </select>
   <update  id="deletePidAll">
     delete from  t_func  where id in
     <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">

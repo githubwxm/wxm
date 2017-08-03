@@ -16,6 +16,15 @@
 
     <dubbo:consumer check="false" retries="0" timeout="60000"/>
 
+    <dubbo:reference id="platFuncService"
+                     interface="com.all580.role.api.service.PlatFuncService"/>
+    <dubbo:reference id="userRoleService"
+                     interface="com.all580.role.api.service.UserRoleService"/>
+    <dubbo:reference id="funcGroupLinkService"
+                     interface="com.all580.role.api.service.FuncGroupLinkService"/>
+    <dubbo:reference id="funcGroupService"
+                     interface="com.all580.role.api.service.FuncGroupService"/>
+
 
     <dubbo:reference id="itineraryPlanSaleService"
                      interface="com.all580.product.api.hotel.service.ItineraryPlanSaleService"/>
@@ -167,6 +176,7 @@
                      interface="com.all580.order.api.service.event.RefundTicketNotifyEvent"/>
     <dubbo:reference id="refundAuditNotifyEvent" interface="com.all580.order.api.service.event.RefundAuditNotifyEvent"/>
     <dubbo:reference id="sendTicketEvent" interface="com.all580.order.api.service.event.SendTicketEvent"/>
+    <dubbo:reference id="sendTicketMsgEvent" interface="com.all580.order.api.service.event.SendTicketMsgEvent"/>
     <dubbo:reference id="refundMoneyApplyEvent" interface="com.all580.order.api.service.event.RefundMoneyApplyEvent"/>
     <dubbo:reference id="refundMoneyAuditEvent" interface="com.all580.order.api.service.event.RefundMoneyAuditEvent"/>
 

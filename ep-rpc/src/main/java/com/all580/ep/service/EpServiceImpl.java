@@ -17,6 +17,7 @@ import com.all580.payment.api.conf.PaymentConstant;
 import com.all580.payment.api.service.BalancePayService;
 import com.all580.payment.api.service.PlatfromFundService;
 import com.all580.product.api.service.PlanGroupRPCService;
+import com.all580.role.api.service.PlatFuncService;
 import com.framework.common.Result;
 import com.framework.common.lang.UUIDGenerator;
 import com.framework.common.synchronize.SynchronizeDataManager;
@@ -44,6 +45,8 @@ public class EpServiceImpl implements EpService {
     @Autowired
     private EpMapper epMapper;
 
+    @Autowired
+    private  PlatFuncService platFuncService;
     @Autowired
     private EpSendVoucherMapper epSendVoucherMapper;
     @Autowired
@@ -142,6 +145,8 @@ public class EpServiceImpl implements EpService {
         Result<Map<String, Object>> result = new Result<>();
         if (epId > 0) {
             coreEpId = Integer.parseInt(map.get("id").toString());
+            List<Integer> list = (List<Integer>)map.get("group_list");
+            platFuncService.addPlatFunc(coreEpId,list);
             Map<String, Object> accessMap = new HashMap();
             accessMap.put("id", coreEpId);
             accessMap.put("access_id", Common.getAccessId());// 添加平台商t_core_ep_access
@@ -400,6 +405,7 @@ public class EpServiceImpl implements EpService {
                 epBalanceThresholdMap.put("threshold", threshold);
                 epBalanceThresholdService.createOrUpdate(epBalanceThresholdMap);
             }
+            map=selectId(epId).get();
             resultMap.put("ep_info", map);
             Map<String, String> capital = balancePayService.getBalanceAccountInfo(epId, core_ep_id).get();
             if (null == capital || capital.isEmpty()) {

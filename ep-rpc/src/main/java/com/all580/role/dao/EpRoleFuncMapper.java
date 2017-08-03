@@ -52,7 +52,9 @@ public interface EpRoleFuncMapper {
      * @return
      */
     List<Integer> selectFuncIdAllEpRole(int func_id);
+    List<Integer> selectFuncIdAllEpRoleCoreEpId(int func_id);
     List<Integer> selectFuncIdsAllEpRole(@Param("func_ids")List<Integer> func_ids);
+    List<Integer> selectFuncIdsAllEpRoleCoreEpId(@Param("func_ids")List<Integer> func_ids);
     List<Integer> selectFuncIdsAllEpRoleIds(@Param("func_ids")List<Integer> func_ids);
     /**
      * 删除菜单已经删除对应的角色关联菜单数据

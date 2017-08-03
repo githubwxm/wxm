@@ -70,7 +70,7 @@ public class RefundTicketEventImpl implements RefundTicketEvent {
             jobManager.addJob(OrderConstant.Actions.REFUND_MONEY, Collections.singleton(jobRefundMoneyParams));
         } else {
             // 发送短信
-            smsManager.sendRefundFailSms(orderItem, refundOrder);
+            smsManager.sendRefundFailSms(orderItem, refundOrder, "可退余数不足，详情请咨询购买渠道。");
         }
         return new Result(true);
     }

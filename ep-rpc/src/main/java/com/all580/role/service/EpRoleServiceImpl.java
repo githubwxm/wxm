@@ -45,7 +45,8 @@ public class EpRoleServiceImpl implements EpRoleService {
     public Result deleteFuncIdsEpRole(List<Integer> list){
         Result result = new Result();
         if(list!=null&&!list.isEmpty()){
-          Auth.updateAuthMap(epRoleFuncMapper.selectFuncIdsAllEpRole(list),redisUtils);//更新鉴权数据
+            Auth.updateAuthMap(epRoleFuncMapper.selectFuncIdsAllEpRoleCoreEpId(list),redisUtils);//更新鉴权数据
+          //Auth.updateAuthMap(epRoleFuncMapper.selectFuncIdsAllEpRole(list),redisUtils);//更新鉴权数据
           List<Integer>  synDate = epRoleFuncMapper.selectFuncIdsAllEpRoleIds(list);//同步删除数据
             epRoleFuncMapper.deleteFuncIdsEpRole(list);//删除
             syncEpData.syncDeleteAllData(EpConstant.Table.T_EP_ROLE_FUNC,(Integer [])synDate.toArray(new Integer[synDate.size()]) );
@@ -126,7 +127,7 @@ public class EpRoleServiceImpl implements EpRoleService {
         try {
             result.put(epRoleFuncMapper.selectRoleFunc(ep_role_id));
         } catch (Exception e) {
-            log.error("修改角色出错 {}", e.getMessage());
+            log.error("查询角色出错 {}", e.getMessage());
             return new Result(false, e.getMessage());
         }
         return result;
@@ -186,7 +187,7 @@ public class EpRoleServiceImpl implements EpRoleService {
             List<Integer> initFunc=null;
              initFunc  = epRoleFuncMapper.selectEpRoleIdFuncId(ep_role_id, null);//已经存在的数据
             if (!(null == initFunc || initFunc.isEmpty())) {//删除已经存在而不需要的数据
-                List<Integer> deleteList =deleteAllList(func_ids, initFunc);
+                List<Integer> deleteList =Common.deleteAllList(func_ids, initFunc);
                 if(!deleteList.isEmpty()){
                     List<Integer> synDelete=  epRoleFuncMapper.selectEpRoleIdId(ep_role_id, deleteList);
                     epRoleFuncMapper.deleteEpFunc(ep_role_id,deleteList );
@@ -197,7 +198,7 @@ public class EpRoleServiceImpl implements EpRoleService {
                 initFunc  = epRoleFuncMapper.selectEpRoleIdFuncId(ep_role_id, func_ids);//已经存在的数据
             }
             if(!(null == initFunc || initFunc.isEmpty())){
-                removeAllList(func_ids, initFunc);//删除已经存在且需要添加的数据
+                Common.removeAllList(func_ids, initFunc);//删除已经存在且需要添加的数据
             }
             if (!(null == func_ids || func_ids.isEmpty())) {//需要添加的数据
                 if(!"".equals(func_ids.get(0))){
@@ -208,10 +209,10 @@ public class EpRoleServiceImpl implements EpRoleService {
                     }
                 }
             }
-            List<Integer> tempList = new ArrayList<Integer>();
-            tempList.add(ep_role_id);
+            //List<Integer> tempList = new ArrayList<Integer>();
+            //tempList.add(ep_role_id);
             //epRoleFuncMapper.selectFuncIdsAllEpRole(tempList)
-            Auth.updateAuthMap( tempList,redisUtils);//更新鉴权数据
+           // Auth.updateAuthMap( tempList,redisUtils);//更新鉴权数据
         } catch (Exception e) {
             log.error("修改菜单出错 {}", e.getMessage());
             return new Result(false, e.getMessage());
@@ -243,48 +244,6 @@ public class EpRoleServiceImpl implements EpRoleService {
         return new Result(true);
     }*/
 
-    /**
-     * removeAll 前端传的类型实际上不一致removeAll不掉   过滤掉已经存在的无需添加
-     *
-     * @param func_ids
-     * @param initFunc
-     */
-    private void removeAllList(List<Integer> func_ids, List<Integer> initFunc) {
-        for (int i = func_ids.size() - 1; i > -1; i--) {
-            Integer id = CommonUtil.objectParseInteger(func_ids.get(i));//
-            for (Integer temp : initFunc) {
-                if (temp.equals(id)) {
-                    func_ids.remove(i);
-                    break;
-                }
-            }
-        }
-    }
-
-    /**
-     * 把已经存在而用不到的数据删除掉
-     *
-     * @param func_ids
-     * @param initFunc
-     */
-    private List<Integer> deleteAllList(List<Integer> func_ids, List<Integer> initFunc) {
-        List<Integer> list = new ArrayList<>();
-        for (int i = initFunc.size() - 1; i > -1; i--) {
-            Integer id =initFunc.get(i) ;
-            boolean ref = true;
-            for (int j = func_ids.size() - 1; j > -1; j--) {
-               Integer temp= CommonUtil.objectParseInteger(func_ids.get(j));
-                if (id.equals(temp)) {
-                    ref = false;
-                    break;
-                }
-            }
-            if(ref){
-                list.add(id);
-            }
-        }
-        return list;
-    }
 
 
 }

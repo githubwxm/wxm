@@ -10,6 +10,12 @@ public class OrderConstant {
 
     public static final String CREATE_ADAPTER = "CREATE_ADAPTER";
     public static final String REFUND_ADAPTER = "REFUND_ADAPTER";
+
+
+    public static class OrderSourceType{
+        public static final int SOURCE_TYPE_B2C = 3010; // B2C下单
+        public static final int SOURCE_TYPE_WEB = 3011; // 网站下单
+    }
     /**
      * 订单状态（支付）
      */

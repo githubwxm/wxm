@@ -1,5 +1,6 @@
 package com.all580.order.manager;
 
+import com.alibaba.fastjson.JSONObject;
 import com.all580.order.api.OrderConstant;
 import com.all580.order.api.model.RefundTicketEventParam;
 import com.all580.order.dao.*;
@@ -24,6 +25,7 @@ import com.framework.common.lang.JsonUtils;
 import com.framework.common.lang.UUIDGenerator;
 import com.framework.common.synchronize.SyncAccess;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
@@ -74,6 +76,8 @@ public class RefundOrderManager extends BaseOrderManager {
     private ThirdPayService thirdPayService;
     @Autowired
     private MnsEventAspect eventManager;
+    @Autowired
+    private PackageOrderItemMapper packageOrderItemMapper;
 
     /**
      * 取消订单
@@ -122,6 +126,22 @@ public class RefundOrderManager extends BaseOrderManager {
         orderMapper.updateByPrimaryKeySelective(order);
         // 还库存
         refundStock(orderItems, paid);
+
+        //todo 还套票库存
+        PackageOrderItem packageOrderItem = packageOrderItemMapper.selectByNumber(order.getNumber());
+        if (packageOrderItem != null){
+            ProductSearchParams p = new ProductSearchParams();
+            p.setSubOrderId(packageOrderItem.getId());
+            p.setSubProductCode(packageOrderItem.getProduct_sub_code());
+            p.setStartDate(packageOrderItem.getStart());
+            p.setDays(1);
+            p.setQuantity(packageOrderItem.getQuantity());
+
+            com.framework.common.Result result = paid ? productSalesPlanRPCService.addReturnProductStock(Arrays.asList(p), null) : productSalesPlanRPCService.addProductStocks(Arrays.asList(p), null);
+            if (!result.isSuccess()) {
+                throw new ApiException(result.getError());
+            }
+        }
 
         eventManager.addEvent(OrderConstant.EventType.ORDER_CANCEL, order.getId());
         return new Result(true);
@@ -554,6 +574,13 @@ public class RefundOrderManager extends BaseOrderManager {
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     @MnsEvent
     public Result refundMoney(Order order, int money, String sn, RefundOrder refundOrder) {
+        if (refundOrder.getStatus() != OrderConstant.RefundOrderStatus.AUDIT_WAIT &&
+                refundOrder.getStatus() != OrderConstant.RefundOrderStatus.REFUND_MONEY_AUDITING &&
+                refundOrder.getStatus() != OrderConstant.RefundOrderStatus.REFUNDING &&
+                refundOrder.getStatus() != OrderConstant.RefundOrderStatus.REFUND_MONEY_FAIL) {
+            throw new ApiException("退订订单不在可退款申请状态,当前状态为:" + OrderConstant.RefundOrderStatus.getName(refundOrder.getStatus()));
+        }
+
         // 需要审核
         if (refundOrder.getAudit_money() == ProductConstants.RefundMoneyAudit.YES &&
                 refundOrder.getStatus() != OrderConstant.RefundOrderStatus.REFUND_MONEY_AUDITING) {
@@ -746,6 +773,23 @@ public class RefundOrderManager extends BaseOrderManager {
             if (epId != orderItem.getSupplier_ep_id() && epId != order.getPayee_ep_id()) {
                 throw new ApiException("非法请求:当前企业不能退订该订单");
             }
+        }
+    }
+
+    /**
+     * 将检查退货规则提取为公共方法
+     * @param rule
+     */
+    public void checkRefundRule(String rule){
+        JSONObject jsonObject = JSONObject.parseObject(rule);
+        Object tmp = jsonObject.get("refund");
+        boolean refund = true;
+        if (tmp != null) {
+            String cs = tmp.toString();
+            refund = StringUtils.isNumeric(cs) ? BooleanUtils.toBoolean(Integer.parseInt(cs)) : BooleanUtils.toBoolean(cs);
+        }
+        if (!refund) {
+            throw new ApiException("该订单为不可退退货规则");
         }
     }
 

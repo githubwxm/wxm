@@ -83,6 +83,7 @@ public class PushSubscribeController extends AbstractSubscribeController {
 
     private void push(HttpServletResponse response, String id, String msg, Map map) {
         String epId = CommonUtil.objectParseString(map.get("ep_id"));
+        log.info("推送 信息"+map.toString());
         try {
             responseWrite(response, "OK");
             Result<?> result = epPushService.selectByEpId(epId);

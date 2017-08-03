@@ -12,11 +12,19 @@ import java.util.Map;
  */
 public interface BookingOrderService {
     /**
-     * 创建订单
+     * 创建订单（景点、酒店、线路）
      * @param params
      * @return
      */
     Result<?> create(Map params, String type) throws Exception;
+
+    /**
+     * 创建套票订单
+     * @param params
+     * @return
+     * @throws Exception
+     */
+    Result<?> createPackageOrder(Map params) throws Exception;
 
     /**
      * 供应商审核订单
