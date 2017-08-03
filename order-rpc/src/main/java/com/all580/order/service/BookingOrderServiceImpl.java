@@ -310,7 +310,6 @@ public class BookingOrderServiceImpl implements BookingOrderService {
 
         List<OrderItem> orderItems = new ArrayList<>();
 
-        lockStockDtoMap.remove(packageOrderItem.getId());
         // 检查是否待审核
         checkCreateAudit(lockStockDtoMap, listMap, orderItems);
 
@@ -348,17 +347,17 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         // 预分账记录
         createPackageOrderService.prePaySplitAccount(allDaysSales, packageOrderItem, createOrder.getEpId());
 
-        Result<Object> result = new Result<>();
+        Result<Object> result = new Result<>(Boolean.TRUE);
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("order", order);
         resultMap.put("items", orderItems);
-        result.put(JsonUtils.toJson(resultMap));
+        result.put(resultMap);
 
         if (ok) {
             resultMap.clear();
             resultMap.put("t_order", CommonUtil.oneToList(order));
             resultMap.put("t_order_item", orderItems);
-            result.putExt(Result.SYNC_DATA, JsonUtils.toJson(resultMap));
+            result.putExt(Result.SYNC_DATA, resultMap);
         }
 
         log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(order.getId(), null,
@@ -537,6 +536,8 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             OrderItem item = lockStockDto.getOrderItem();
             List<Boolean> booleanList = listMap.get(itemId);
             List<OrderItemDetail> orderItemDetail = lockStockDto.getOrderItemDetail();
+            if (orderItemDetail == null)
+                continue;
             List<ProductSalesDayInfo> dayInfoList = lockStockDto.getDayInfoList();
             if (booleanList.size() != orderItemDetail.size() || booleanList.size() != dayInfoList.size()) {
                 throw new ApiException(String.format("锁库存天数:%d与购买天数:%d不匹配", booleanList.size(), orderItemDetail.size()))
