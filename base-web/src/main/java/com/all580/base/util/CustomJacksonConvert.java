@@ -20,8 +20,7 @@ import java.lang.reflect.Type;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.TreeMap;
 
 @Slf4j
 public class CustomJacksonConvert extends MappingJackson2HttpMessageConverter {
@@ -71,13 +70,15 @@ public class CustomJacksonConvert extends MappingJackson2HttpMessageConverter {
 		outputMessage.getHeaders().set("expires", "0");
 		if (object instanceof Result) {
 			Result r = (Result) object;
-			Map<String, Object> result = new HashMap<>();
+			TreeMap<String, Object> result = new TreeMap<>();
 			result.put("code", r.getCode() == null ? (r.isSuccess() ? Result.SUCCESS : Result.FAIL) : r.getCode());
 			result.put("message", r.getError()== null ? (r.isSuccess() ? "操作成功" : "操作失败") :r.getError());
 			result.put("data", r.get());
 			result.put("sync_data", r.getExt(Result.SYNC_DATA));
 			String key = CommonUtil.objectParseString(r.getExt("access_key"));
 		 	key = key == null ? "" : key;
+
+
 
 			//String data = JSONObject.toJSONString(result, config, SerializerFeature.SortField);
 			String data = JsonUtils.toJson(result);
