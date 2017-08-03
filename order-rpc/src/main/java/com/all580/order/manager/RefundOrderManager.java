@@ -574,6 +574,13 @@ public class RefundOrderManager extends BaseOrderManager {
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     @MnsEvent
     public Result refundMoney(Order order, int money, String sn, RefundOrder refundOrder) {
+        if (refundOrder.getStatus() != OrderConstant.RefundOrderStatus.AUDIT_WAIT &&
+                refundOrder.getStatus() != OrderConstant.RefundOrderStatus.REFUND_MONEY_AUDITING &&
+                refundOrder.getStatus() != OrderConstant.RefundOrderStatus.REFUNDING &&
+                refundOrder.getStatus() != OrderConstant.RefundOrderStatus.REFUND_MONEY_FAIL) {
+            throw new ApiException("退订订单不在可退款申请状态,当前状态为:" + OrderConstant.RefundOrderStatus.getName(refundOrder.getStatus()));
+        }
+
         // 需要审核
         if (refundOrder.getAudit_money() == ProductConstants.RefundMoneyAudit.YES &&
                 refundOrder.getStatus() != OrderConstant.RefundOrderStatus.REFUND_MONEY_AUDITING) {
