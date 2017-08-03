@@ -47,11 +47,12 @@ public class PosServiceImpl implements PosService {
 
     @Override public Result apply(Map map) {
 
-        String code = CommonUtil.emptyStringParseNull(map.get("code"));
+        String code = CommonUtil.emptyStringParseNull(map.get("deviceId"));
         if (deviceApplyMapper.selectByCode(code) != null) {
             return new Result(true, "申请资料已提交，请勿重复申请");
         }
         DeviceApply deviceApply = JsonUtils.map2obj(map, DeviceApply.class);
+        deviceApply.setCode(code);
         deviceApply.setStatus(0);
         deviceApply.setCreateTime(new Date());
         deviceApplyMapper.insertSelective(deviceApply);
@@ -60,9 +61,9 @@ public class PosServiceImpl implements PosService {
 
     @Override
     public Result query(Map map) {
-        Device device = deviceMapper.selectByCode(CommonUtil.emptyStringParseNull(map.get("code")));
+        Device device = deviceMapper.selectByCode(CommonUtil.emptyStringParseNull(map.get("deviceId")));
         if (device == null) {
-            return new Result(false, "传入参数异常");
+            return new Result(false, "设备未注册");
         }
         DeviceGroup deviceGroup = deviceGroupMapper.selectByPrimaryKey(device.getDevice_group_id());
         if (deviceGroup == null) {
@@ -118,6 +119,8 @@ public class PosServiceImpl implements PosService {
         try {
             SupplyAdapterService supplyAdapterService = adapterLoader.getSupplyAdapterService(supply);
             return supplyAdapterService.process(action, supply, mapParam);
+        } catch (ApiException ex) {
+            throw ex;
         } catch (Exception ex) {
             throw new ApiException(ex);
         }

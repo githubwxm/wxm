@@ -38,7 +38,7 @@
     `id`, `number`, `pay_amount`, `status`, `buy_ep_id`, `buy_ep_name`, `buy_operator_id`,
     `buy_operator_name`, `payee_ep_id`, `create_time`, `payment_type`, `local_payment_serial_no`,
     `third_serial_no`, `pay_time`, `sale_amount`, `from_type`, `outer_id`, `remark`,
-    `update_time`, `audit_time`
+    `update_time`, `audit_time`,source
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     <!--

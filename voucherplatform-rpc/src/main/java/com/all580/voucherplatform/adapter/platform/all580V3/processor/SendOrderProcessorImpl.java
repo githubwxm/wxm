@@ -24,7 +24,8 @@ public class SendOrderProcessorImpl implements ProcessorService<Platform> {
     private AdapterLoader adapterLoader;
 
     @Override
-    public Object processor(Platform platform, Map map) {
+    public Object processor(Platform platform,
+                            Map map) {
         CreateOrderManager createOrderManager = adapterLoader.getBean(CreateOrderManager.class);
         try {
             map.put("prodId", map.get("productId"));

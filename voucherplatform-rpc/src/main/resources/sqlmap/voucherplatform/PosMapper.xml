@@ -84,7 +84,7 @@
                 and `t_consume`.`createTime`>=#{startTime}
             </if>
             <if test="endTime!=null">
-                and `t_consume`.`createTime`>=#{endTime}
+                and `t_consume`.`createTime`&lt;=#{endTime}
             </if>
             and exists(
             select * from `t_device_product`
@@ -117,7 +117,7 @@
         `t_order`.`invalidTime` as `invalidTime`,
         `t_order`.`validWeek` as `validWeek`,
         `t_order`.`invalidDate` as `invalidDate`,
-        `t_order`.`createTime` as `createTime`,
+        `t_order`.`createTime` as `createTime`
         from t_consume
         JOIN t_order on `t_consume`.`order_id`=`t_order`.`id`
         JOIN `t_supplyproduct` on `t_supplyproduct`.`id`=`t_order`.`supplyProdId`
@@ -135,7 +135,7 @@
                 and `t_consume`.`createTime`>=#{startTime}
             </if>
             <if test="endTime!=null">
-                and `t_consume`.`createTime`>=#{endTime}
+                and `t_consume`.`createTime`&lt;=#{endTime}
             </if>
             and exists(
             select * from `t_device_product`
@@ -161,27 +161,28 @@
                 and `t_consume`.`consumeTime`>=#{startTime}
             </if>
             <if test="endTime!=null">
-                and `t_consume`.`consumeTime`&gt;#{endTime}
+                and `t_consume`.`consumeTime`&lt;#{endTime}
             </if>
         </where>
-        GROUP BY
-        date_format(consumeTime, '%Y-%m-%d');
+        GROUP BY date_format(consumeTime, '%Y-%m-%d');
     </select>
     <select id="selectDeviceReportByProduct" resultType="java.util.Map">
         SELECT
-        sum(consumeNumber) as `number`,
-        `t_supplyproduct`.`name` as `name`
+        sum(consumeNumber) as `total`,
+        `t_supplyproduct`.`name` as `productName`
         FROM
-        t_consume
-        JOIN t_supplyproduct ON t_supplyproduct.id = t_consume.supplyprod_id
+        t_supplyproduct
+        JOIN t_consume ON t_supplyproduct.id = t_consume.supplyprod_id
         <where>
             and `t_consume`.`deviceId`=#{deviceId}
             <if test="startTime!=null">
                 and `t_consume`.`consumeTime`>=#{startTime}
             </if>
             <if test="endTime!=null">
-                and `t_consume`.`consumeTime`&gt;#{endTime}
+                and `t_consume`.`consumeTime`&lt;#{endTime}
             </if>
         </where>
+        group by `t_consume`.`supplyprod_id`
+
     </select>
 </mapper>
