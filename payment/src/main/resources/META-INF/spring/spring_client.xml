@@ -14,5 +14,7 @@
 		interface="com.all580.order.api.service.PaymentCallbackService" />
 	<dubbo:reference id="orderService"
 		interface="com.all580.order.api.service.OrderService" />
+	<dubbo:reference interface="com.all580.ep.api.service.EpService" id="epService" />
+	
 
 </beans>

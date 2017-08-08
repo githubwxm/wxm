@@ -16,8 +16,13 @@ import java.util.Date;
 public class OrderAuditNotifyEventImpl  extends BaseNotifyEvent implements OrderAuditNotifyEvent {
     @Override
     public Result process(String s, OrderAuditEventParam orderAuditEventParam, Date date) {
-        log.error("查看审核状态"+orderAuditEventParam.toString());
-        notifyEvent(  orderAuditEventParam.getItemId(), "ORTHER",null);
+        String op_code="ORTHER";
+        if(orderAuditEventParam.isStatus()){
+            op_code="AUDIT_SUCCESS";
+        }else{
+            op_code="AUDIT_FAIL";
+        }
+        notifyEvent(  orderAuditEventParam.getItemId(), op_code,null);
         return new Result(true);
     }
 }

@@ -19,4 +19,5 @@ public interface FundSerialService {
                                                              String ref_id,
                                                              Integer start_record,
                                                              Integer max_records, Integer export);
+    Result<Map<String,Object>> selectFundSerialRefId(String ref_id);
 }

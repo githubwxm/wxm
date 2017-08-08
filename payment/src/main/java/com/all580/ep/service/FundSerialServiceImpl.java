@@ -1,5 +1,6 @@
 package com.all580.ep.service;
 
+import com.all580.ep.api.service.EpService;
 import com.all580.ep.dao.FundSerialMapper;
 import com.all580.payment.api.service.FundSerialService;
 import com.framework.common.Result;
@@ -11,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.lang.exception.ApiException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -25,6 +25,9 @@ public class FundSerialServiceImpl implements FundSerialService{
 
     @Autowired
     private FundSerialMapper fundSerialMapper;
+
+    @Autowired
+    private EpService epService;
 
 
     @Override
@@ -59,6 +62,19 @@ public class FundSerialServiceImpl implements FundSerialService{
             log.error("添加平台资金流水异常", e);
             throw new ApiException("添加平台资金流水异常", e);
         }
+    }
+
+    @Override
+    public Result<Map<String,Object>> selectFundSerialRefId(String ref_id){
+        Result<Map<String,Object>>  result = new  Result(true);
+        Map<String,Object>  map =fundSerialMapper.selectFundSerialRefId(ref_id);
+        Result<Map<String,Object>> r= epService.selectId(CommonUtil.objectParseInteger(map.get("ep_id")));
+        if(r == null || r.isFault()){
+            throw new ApiException("获取企业名称失败");
+        }
+        map.put("recharge_ep",r.get().get("name"));
+        result.put(map);
+        return result;
     }
     @Override
     public  Result<PageRecord<Map<String, Object>>> selectFundSerial( Integer core_ep_id,

@@ -46,6 +46,17 @@ public class EpFinanceController extends BaseController {
 
     @Autowired
     private FundSerialService fundSerialService;
+
+    /**
+     * 查询平台总资金流水
+     * @return
+     */
+    @RequestMapping(value = "select_fund_serial_ref_id", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<?> selectFundSerialRefId(String ref_id) {
+        Assert.notNull(ref_id, "参数【ref_id】不能为空");
+        return fundSerialService.selectFundSerialRefId( ref_id);
+    }
     /**
      * 查询平台总资金流水
      * @return
