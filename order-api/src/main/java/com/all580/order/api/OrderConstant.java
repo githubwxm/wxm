@@ -138,6 +138,7 @@ public class OrderConstant {
     public static class FromType {
         public static final int TRUST = 350; // 代收
         public static final int NON_TRUST = 351; // 不代收
+        public static final int MINIMUM_SALE = 352; // 最低销售
     }
 
     /**

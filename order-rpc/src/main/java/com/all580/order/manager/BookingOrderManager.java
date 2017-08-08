@@ -74,11 +74,12 @@ public class BookingOrderManager extends BaseOrderManager {
 
     /**
      * 验证游客信息
-     * @param visitors 游客信息
+     *
+     * @param visitors       游客信息
      * @param productSubCode 子产品CODE
-     * @param bookingDate 预定时间
-     * @param maxCount 最大次数
-     * @param maxQuantity 最大张数
+     * @param bookingDate    预定时间
+     * @param maxCount       最大次数
+     * @param maxQuantity    最大张数
      * @return
      */
     public int validateVisitor(List<Map> visitors, Long productSubCode, Date bookingDate, Integer maxCount, Integer maxQuantity) {
@@ -117,6 +118,7 @@ public class BookingOrderManager extends BaseOrderManager {
 
     /**
      * 团队游客实名制信息验证
+     *
      * @param visitors 游客
      * @param realName 实名制
      * @param quantity 票数
@@ -166,6 +168,7 @@ public class BookingOrderManager extends BaseOrderManager {
 
     /**
      * 预定时间现在
+     *
      * @param bookingDate 预定时间
      * @param dayInfoList
      */
@@ -195,9 +198,10 @@ public class BookingOrderManager extends BaseOrderManager {
 
     /**
      * 判断身份证订单次数是否超过最大次数
+     *
      * @param productSubCode 子产品ID
-     * @param sid 身份证
-     * @param date 预定日期
+     * @param sid            身份证
+     * @param date           预定日期
      * @return
      */
     private int getOrderByCount(Long productSubCode, String sid, Date date) {
@@ -208,9 +212,10 @@ public class BookingOrderManager extends BaseOrderManager {
 
     /**
      * 判断身份证订票张数是否超过最大张数
+     *
      * @param productSubCode 子产品CODE
-     * @param sid 身份证
-     * @param date 预定日期
+     * @param sid            身份证
+     * @param date           预定日期
      * @return
      */
     private int getOrderByQuantity(Long productSubCode, String sid, Date date) {
@@ -221,16 +226,17 @@ public class BookingOrderManager extends BaseOrderManager {
 
     /**
      * 创建订单生成订单数据
-     * @param coreEpId 操作平台商
-     * @param buyEpId 销售企业ID
+     *
+     * @param coreEpId  操作平台商
+     * @param buyEpId   销售企业ID
      * @param buyEpName 下单企业名称
-     * @param userId 销售用户ID
-     * @param userName 销售用户名称
-     * @param from 来源
+     * @param userId    销售用户ID
+     * @param userName  销售用户名称
+     * @param from      来源
      * @return
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public Order generateOrder(Integer coreEpId, Integer buyEpId, String buyEpName, Integer userId, String userName, Integer from, String remark, String outerId,Integer source) {
+    public Order generateOrder(Integer coreEpId, Integer buyEpId, String buyEpName, Integer userId, String userName, Integer from, String remark, String outerId, Integer source) {
         Order order = new Order();
         order.setNumber(UUIDGenerator.generateUUID());
         order.setStatus(OrderConstant.OrderStatus.PAY_WAIT);
@@ -250,11 +256,12 @@ public class BookingOrderManager extends BaseOrderManager {
 
     /**
      * 创建子订单生成子订单数据
-     * @param info 产品信息
+     *
+     * @param info       产品信息
      * @param saleAmount 进货价
-     * @param days 天数
-     * @param orderId 订单ID
-     * @param quantity 张数
+     * @param days       天数
+     * @param orderId    订单ID
+     * @param quantity   张数
      * @return
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
@@ -297,9 +304,10 @@ public class BookingOrderManager extends BaseOrderManager {
 
     /**
      * 创建子订单详情
-     * @param info 产品信息
-     * @param itemId 子订单ID
-     * @param day 当天
+     *
+     * @param info     产品信息
+     * @param itemId   子订单ID
+     * @param day      当天
      * @param quantity 张数
      * @return
      */
@@ -383,7 +391,8 @@ public class BookingOrderManager extends BaseOrderManager {
 
     /**
      * 创建子订单游客信息
-     * @param v 游客参数
+     *
+     * @param v            游客参数
      * @param itemDetailId 子订单详情ID
      * @return
      */
@@ -403,6 +412,7 @@ public class BookingOrderManager extends BaseOrderManager {
 
     /**
      * 创建子订单游客信息
+     *
      * @param member
      * @param itemDetailId
      * @param groupId
@@ -423,8 +433,9 @@ public class BookingOrderManager extends BaseOrderManager {
 
     /**
      * 创建订单联系人
+     *
      * @param shippingMap 联系人参数
-     * @param orderId 订单ID
+     * @param orderId     订单ID
      * @return
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
@@ -448,7 +459,8 @@ public class BookingOrderManager extends BaseOrderManager {
 
     /**
      * 判断所有子订单是否审核通过
-     * @param orderId 订单ID
+     *
+     * @param orderId  订单ID
      * @param excludes 例外不做处理的
      * @return
      */
@@ -467,6 +479,7 @@ public class BookingOrderManager extends BaseOrderManager {
 
     /**
      * 计算分销价格
+     *
      * @param allDaysSales
      * @param buyEpId
      * @param quantity
@@ -490,8 +503,19 @@ public class BookingOrderManager extends BaseOrderManager {
             EpSalesInfo self = new EpSalesInfo();
             self.setSale_ep_id(buyEpId);
             self.setEp_id(buyEpId);
-            // 代收:叶子销售商以门市价卖出
-            self.setPrice(from == OrderConstant.FromType.TRUST ? info.getShop_price() : info.getPrice());
+            switch (from) {
+                // 代收:叶子销售商以门市价卖出
+                case OrderConstant.FromType.TRUST:
+                    self.setPrice(info.getShop_price());
+                    break;
+                // 最低售价:叶子销售商以产品最低售价卖出
+                case OrderConstant.FromType.MINIMUM_SALE:
+                    if (info.getPrice() > salesInfo.getMin_price()) throw new ApiException("供应价不能大于最低售价");
+                    self.setPrice(salesInfo.getMin_price());
+                    break;
+                default:
+                    self.setPrice(info.getPrice());
+            }
             if (self.getPrice() == null) {
                 self.setPrice(0);
             }
@@ -515,9 +539,10 @@ public class BookingOrderManager extends BaseOrderManager {
 
     /**
      * 支付预分账
+     *
      * @param daySalesList 每天销售链
-     * @param orderItem 子订单
-     * @param finalEpId 最终售卖企业
+     * @param orderItem    子订单
+     * @param finalEpId    最终售卖企业
      * @return
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
@@ -533,6 +558,7 @@ public class BookingOrderManager extends BaseOrderManager {
 
     /**
      * 组装支付分账信息
+     *
      * @param order
      */
     public List<BalanceChangeInfo> packagingPaySplitAccount(Order order) {
@@ -541,6 +567,7 @@ public class BookingOrderManager extends BaseOrderManager {
 
     /**
      * 组装支付分账信息
+     *
      * @param order
      */
     public List<BalanceChangeInfo> packagingPaySplitAccount(Order order, List<OrderItem> orderItems) {
