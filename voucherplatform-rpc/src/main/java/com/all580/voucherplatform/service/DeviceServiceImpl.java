@@ -185,7 +185,7 @@ public class DeviceServiceImpl implements DeviceService {
         pageRecord.setTotalCount(count);
         if (count > 0) {
             pageRecord.setList(
-                    deviceProductMapper.selectProdList(deviceGroup.getSupply_id(), deviceGroup.getId(), recordStart,
+                    deviceProductMapper.selectProdList(deviceGroup.getId(), deviceGroup.getSupply_id(), recordStart,
                             recordCount));
         } else {
             pageRecord.setList(new ArrayList<Map>());
@@ -216,7 +216,6 @@ public class DeviceServiceImpl implements DeviceService {
             return addDevice(addMap);
         }
     }
-
 
 
     private void updateApplyStatus(Integer applyId,
