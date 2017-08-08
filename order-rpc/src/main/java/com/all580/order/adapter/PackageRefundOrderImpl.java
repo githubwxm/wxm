@@ -1,7 +1,6 @@
 package com.all580.order.adapter;
 
 import com.all580.ep.api.conf.EpConstant;
-import com.all580.ep.api.service.EpService;
 import com.all580.order.api.OrderConstant;
 import com.all580.order.dao.*;
 import com.all580.order.dto.RefundDay;
@@ -9,6 +8,7 @@ import com.all580.order.dto.RefundOrderApply;
 import com.all580.order.entity.*;
 import com.all580.order.manager.RefundOrderManager;
 import com.all580.order.util.AccountUtil;
+import com.all580.payment.api.conf.PaymentConstant;
 import com.all580.product.api.consts.ProductConstants;
 import com.framework.common.Result;
 import com.framework.common.lang.UUIDGenerator;
@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 
 import javax.lang.exception.ApiException;
 import java.util.Arrays;
@@ -32,8 +33,6 @@ import java.util.Map;
 @Component
 public class PackageRefundOrderImpl implements RefundPackageOrderService{
     @Autowired
-    private EpService epService;
-    @Autowired
     private PackageOrderItemMapper packageOrderItemMapper;
     @Autowired
     private OrderMapper orderMapper;
@@ -45,13 +44,17 @@ public class PackageRefundOrderImpl implements RefundPackageOrderService{
     private RefundPackageOrderMapper refundPackageOrderMapper;
     @Autowired
     private PackageOrderItemAccountMapper packageOrderItemAccountMapper;
+    @Autowired
+    private RefundOrderMapper refundOrderMapper;
+    @Autowired
+    private RefundPackageAccountMapper refundPackageAccountMapper;
 
     @Override
     public RefundOrderApply validateAndParseParams(long itemNo, Map params) {
         RefundOrderApply apply = new RefundOrderApply();
         apply.setItemNo(itemNo);
         PackageOrderItem packageOrderItem = packageOrderItemMapper.selectByNumber(itemNo);
-        Assert.notNull(packageOrderItem, "订单不存在");
+        Assert.notNull(packageOrderItem, "套票订单不存在");
         apply.setPackageOrderItem(packageOrderItem);
         Order order = orderMapper.selectBySN(packageOrderItem.getOrder_number());
         Assert.notNull(order, "订单不存在");
@@ -59,6 +62,12 @@ public class PackageRefundOrderImpl implements RefundPackageOrderService{
         List<OrderItem> orderItems = orderItemMapper.selectByOrderId(order.getId());
         Assert.notNull(orderItems, "元素子订单不存在");
         apply.setOrderItems(orderItems);
+
+        RefundPackageOrder refundPackageOrder = refundPackageOrderMapper.selectByItemIdAndOuter(
+                packageOrderItem.getId(), order.getOuter_id());
+        if (refundPackageOrder != null){
+            throw new ApiException("订单已发起退订");
+        }
 
         for (OrderItem item : orderItems){
             if (ArrayUtils.indexOf(new int[]{
@@ -68,6 +77,10 @@ public class PackageRefundOrderImpl implements RefundPackageOrderService{
             }, item.getStatus()) < 0 ||
                     order.getStatus() != OrderConstant.OrderStatus.PAID) {
                 throw new ApiException("订单不在可退订状态");
+            }
+            List<RefundOrder> refundOrders = refundOrderMapper.selectByItemId(item.getId());
+            if (!CollectionUtils.isEmpty(refundOrders)){
+                throw new ApiException("元素订单已发起退订");
             }
         }
 
@@ -196,6 +209,17 @@ public class PackageRefundOrderImpl implements RefundPackageOrderService{
 
     @Override
     public void preRefundSplitAccount(RefundOrderApply apply, Order order, PackageOrderItem item, RefundPackageOrder refundPackageOrder) {
-
+        List<PackageOrderItemAccount> accounts = packageOrderItemAccountMapper.selectByOrderItem(item.getId());
+        List<RefundPackageAccount> refundAccounts = AccountUtil.refundPackageSplitAccount(order, accounts, item, apply.getFrom(), refundPackageOrder.getId(), apply.getDate());
+        for (RefundPackageAccount refundAccount : refundAccounts) {
+            // 余额 则要把最终销售商的钱退还
+            if (order.getPayment_type() == PaymentConstant.PaymentType.BALANCE.intValue()) {
+                if (refundAccount.getEp_id().intValue() == order.getBuy_ep_id() && refundAccount.getCore_ep_id().intValue() == order.getPayee_ep_id()) {
+                    refundAccount.setMoney(refundAccount.getMoney() + refundPackageOrder.getMoney());
+                    refundAccount.setProfit(refundAccount.getProfit() + refundPackageOrder.getMoney());
+                }
+            }
+            refundPackageAccountMapper.insertSelective(refundAccount);
+        }
     }
 }

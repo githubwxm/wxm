@@ -289,9 +289,9 @@ public class LockTransactionManager {
      */
     public Result<?> applyRefundForPackage(Map params, long itemNo) throws Exception {
         RefundOrderApply apply = packageOrderService.validateAndParseParams(itemNo, params);
-
+        //验证用户是否可发起退订
         packageOrderService.checkAuth(apply, params);
-
+        //检查退货规则是否可退
         packageOrderService.canBeRefund(apply, apply.getPackageOrderItem(), params);
 
         // 总退票数量

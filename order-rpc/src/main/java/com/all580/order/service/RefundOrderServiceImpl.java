@@ -96,9 +96,7 @@ public class RefundOrderServiceImpl implements RefundOrderService {
         DistributedReentrantLock lock = distributedLockTemplate.execute(orderItemSn, lockTimeOut);
         // 锁成功
         try {
-            lockTransactionManager.applyRefundForPackage(params, Long.valueOf(orderItemSn));
-
-            return  this.apply(params, "PACKAGE");
+            return lockTransactionManager.applyRefundForPackage(params, Long.valueOf(orderItemSn));
         } finally {
             lock.unlock();
         }

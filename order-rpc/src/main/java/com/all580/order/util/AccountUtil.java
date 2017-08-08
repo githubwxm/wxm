@@ -172,6 +172,55 @@ public class AccountUtil {
     }
 
     /**
+     *
+     * @param order
+     * @param accounts
+     * @param from
+     * @param refundOrderId
+     * @param refundDate
+     * @return
+     */
+    public static List<RefundPackageAccount> refundPackageSplitAccount(Order order, Collection<PackageOrderItemAccount> accounts, PackageOrderItem item, int from, int refundOrderId, Date refundDate) {
+        List<RefundPackageAccount> accountList = new ArrayList<>();
+        Collection<AccountDataDto> finalAccountData = null;
+
+        for (PackageOrderItemAccount packageAccount : accounts) {
+            if (packageAccount.getEp_id().intValue() == order.getBuy_ep_id() && order.getPayee_ep_id().intValue() == packageAccount.getCore_ep_id()) {
+                finalAccountData = decompileAccountData(packageAccount.getData());
+            }
+        }
+
+        for (PackageOrderItemAccount account : accounts) {
+            Collection<AccountDataDto> dataList = decompileAccountData(account.getData());
+            AccountDataDto dataDto = getAccountDataByDay(dataList, item.getStart());
+            if (dataDto == null) {
+                throw new ApiException(String.format("日期:%s没有分账数据,数据异常", item.getStart()));
+            }
+
+            Map<String, Integer> rate = ProductRules.calcRefund(from == ProductConstants.RefundEqType.SELLER ? item.getCust_refund_rule() : item.getSaler_refund_rule(), item.getStart(), refundDate);
+            // 计算退款手续费百分比
+            double percent = getRefundFeePercent(finalAccountData, item.getStart(), rate);
+            // 退余额(当天利润*张数 * (1 - 手续费百分比)
+            Double money = Arith.round(Arith.mul(dataDto.getProfit() * item.getQuantity(), 1 - percent), 0);
+            // 进可提现(当天利润*张数 *手续费百分比)
+            Double cash = Arith.round(Arith.mul(dataDto.getProfit() * item.getQuantity(), percent), 0);
+
+            RefundPackageAccount refundAccount = new RefundPackageAccount();
+            refundAccount.setEp_id(account.getEp_id());
+            refundAccount.setCore_ep_id(account.getCore_ep_id());
+            refundAccount.setMoney(money.intValue() == 0 ? 0 : account.getMoney() > 0 ? -money.intValue() : money.intValue());
+            refundAccount.setProfit(cash.intValue());
+            refundAccount.setStatus(OrderConstant.AccountSplitStatus.NOT);
+            refundAccount.setRefund_package_order_id(refundOrderId);
+            refundAccount.setData(account.getData());
+            accountList.add(refundAccount);
+        }
+        return accountList;
+    }
+
+
+
+    /**
      * 计算退支付金额
      * @param from 供应侧/销售侧
      * @param refundDays 每日退票详情
