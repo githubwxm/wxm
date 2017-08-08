@@ -8,6 +8,7 @@ import com.all580.order.dto.RefundOrderApply;
 import com.all580.order.entity.OrderItemDetail;
 import com.all580.order.entity.RefundOrder;
 import com.all580.order.manager.RefundOrderManager;
+import com.all580.order.util.AccountUtil;
 import com.all580.product.api.consts.ProductConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -74,18 +75,19 @@ public class PackageRefundOrderItemServiceImpl extends AbstractRefundOrderImpl{
 
     @Override
     public void canBeRefund(RefundOrderApply apply, List<OrderItemDetail> detailList, Map params) {
-        try {
-            this.getCreateOrderInterface(apply.getItem().getPro_type()).canBeRefund(apply, detailList, params);
-        }catch (Exception e){
-            //不可退元素的处理
-
-        }
+        //元素订单退订不检查
+//        try {
+//            this.getCreateOrderInterface(apply.getItem().getPro_type()).canBeRefund(apply, detailList, params);
+//        }catch (Exception e){
+//            //不可退元素的处理
+//
+//        }
     }
 
     @Override
     public Collection<RefundDay> getRefundDays(RefundOrderApply apply, List<OrderItemDetail> detailList, Map params) {
 
-        return this.getCreateOrderInterface(apply.getItem().getPro_type()).getRefundDays(apply, detailList, params);
+        return AccountUtil.parseRefundDayForDetail(detailList);
     }
 
     @Override
