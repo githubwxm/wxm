@@ -32,12 +32,6 @@
             <groupId>com.framework</groupId>
             <artifactId>framework-common</artifactId>
             <version>${framework-common_version}</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>logback-classic</artifactId>
-                    <groupId>ch.qos.logback</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
