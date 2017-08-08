@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration>
+    <!-- 控制台输出日志 -->
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <Target>System.out</Target>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %thread %-5level%logger　%msg%n</pattern>
+        </encoder>
+    </appender>
+    <!--每天生成一个日志文件，保存30天的日志文件。-->
+    <appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>../../logs/ep-rpc.log</file>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %thread %-5level%logger　%msg%n</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>../../logs/ep-rpc%d{yyyy-MM-dd}.log</fileNamePattern>
+             <!-- 保留 30天数据，默认无限-->
+            <MaxHistory>30</MaxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <logger name="JobPullMachine" level="error" additivity="false">
+    </logger>
+    <logger name="HeartBeatMonitor" level="error" additivity="false">
+    </logger>
+    <logger name="com.github.ltsopensource.core.monitor.MStatReportWorker" level="error" additivity="false">
+    </logger>
+    <logger name="org.apache.zookeeper" level="error" additivity="false">
+    </logger>
+    <logger name="org.apache.http.impl.nio.conn.PoolingNHttpClientConnectionManager" level="error" additivity="false">
+    </logger>
+    <logger name="com.github.ltsopensource.core.cluster.SubscribedNodeManager" level="error" additivity="false">
+    </logger>
+    <logger name="com.alibaba.dubbo" level="error" additivity="false">
+    </logger>
+    <logger name="org.springframework" level="error" additivity="false">
+    </logger>
+    <logger name="zkclient.ZkClient" level="error" additivity="false">
+    </logger>
+    <logger name="zkclient.ZkEventThread" level="error" additivity="false">
+    </logger>
+    <logger name="pool.PreparedStatementPool" level="error" additivity="false">
+    </logger>
+    <logger name="util.CustomJacksonConvert" level="error" additivity="false">
+    </logger>
+
+    <!--根logger控制-->
+    <root level="INFO">
+        <appender-ref ref="console" />
+        <appender-ref ref="file"/>
+    </root>
+</configuration>
