@@ -38,14 +38,15 @@ public class BalancePayServiceTest extends BaseTest {
        // platfromFundService.exitFund(500,4);
        //platfromFundService.addFund(-600,4);
         //print(fundSerialService.selectFundSerial(1,null,null,null,null,null,null,null).get().toString());
-        Capital capital = null;
-        Map map = new HashMap();
-        map.put("id",6);
-        map.put("summary","adfasdfds");
-        fundSerialService.updateFundSerialSummary(map);
-        capital= capitalMapper.selectByEpIdAndCoreEpId(1,11);
-        System.out.println(null==capital );
-        print(balancePayService.getBalanceType().get().toString());
+//        Capital capital = null;
+//        Map map = new HashMap();
+//        map.put("id",6);
+//        map.put("summary","adfasdfds");
+//        fundSerialService.updateFundSerialSummary(map);
+//        capital= capitalMapper.selectByEpIdAndCoreEpId(1,11);
+//        System.out.println(null==capital );
+//        print(balancePayService.getBalanceType().get().toString());
+        print(fundSerialService.selectFundSerialRefId("1489399140469").get().toString());
 
     }
     private void print(String str){
