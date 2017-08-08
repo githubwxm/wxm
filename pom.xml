@@ -14,8 +14,8 @@
 		<!--<module>base-rpc</module>-->
 		<module>order-api</module>
 		<module>order-rpc</module>
-		<!--<module>ep-api</module>
-		<module>ep-rpc</module>-->
+		<module>ep-api</module>
+		<module>ep-rpc</module>
 		<module>payment</module>
 		<module>payment-api</module>
 		<module>voucherplatform-web</module>

@@ -11,6 +11,7 @@ public interface FundSerialMapper {
     int updateFundSerialSummary(Map<String,Object> params);
     int insertFundSerial(Map<String,Object> params);
     int selectExists(Map<String,Object> params);
+    Map<String,Object> selectFundSerialRefId(@Param("ref_id") String ref_id);
     List<Map<String,Object>> selectFundSerial(@Param("core_ep_id") Integer core_ep_id,
                                               @Param("status") String status,
                                               @Param("start_date") String start_date,

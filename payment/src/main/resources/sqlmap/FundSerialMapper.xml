@@ -26,6 +26,14 @@
     where core_ep_id=#{core_ep_id}
      <include refid="selectFundSerial" />
   </select>
+    <select id="selectFundSerialRefId" resultType="java.util.Map">
+      select  c.ep_id,fund.ref_id,fund.summary,tp.`name`,fund.operator_name,fund.change_money
+        from t_fund_serial fund
+        join t_capital_serial cs on fund.ref_id=cs.ref_id
+        join t_payment_param tp  on fund.ref_type=tp.id
+        join t_capital c on c.id=cs.capital_id
+        where fund.ref_id=#{ref_id}   limit 1
+    </select>
     <select id="selectFundSerial" resultType="java.util.Map" >
         select tf.id,ref_id,change_money,current_total_fund,tf.ref_type,tf.create_time,summary,
         CASE WHEN tf.status >0 THEN '收入' else '支出' end as status,
