@@ -2,6 +2,7 @@ package com.all580.base.task.action;
 
 import com.all580.base.manager.MnsEventCache;
 import com.framework.common.lang.DateFormatUtils;
+import com.framework.common.lang.JsonUtils;
 import com.framework.common.mns.MnsSubscribeAction;
 import com.framework.common.util.CommonUtil;
 import com.framework.common.validate.ParamsMapValidate;
@@ -39,8 +40,9 @@ public class EventRetryAction implements JobRunner {
 
         String action = params.get("action");
         Collection<MnsSubscribeAction> actions = mnsEventCache.getProcess(action);
+        String mnsId = params.get("msgId");
         if (actions == null || actions.size() == 0) {
-            log.warn("MNS:{}, Action:{} 事件,没有订阅器.", params.get("msgId"), action);
+            log.warn("MNS:{}, Action:{} 事件,没有订阅器.", mnsId, action);
             return new Result(Action.EXECUTE_SUCCESS, "没有订阅器");
         }
         Date createTime = DateFormatUtils.converToDateTime(params.get("time"));
@@ -49,10 +51,18 @@ public class EventRetryAction implements JobRunner {
         for (MnsSubscribeAction subscribeAction : actions) {
             String name = CommonUtil.getProxyClassForInterface(subscribeAction, MnsSubscribeAction.class).getName();
             if (name.equals(params.get("class"))) {
-                com.framework.common.Result result = subscribeAction.process(params.get("msgId"), object, createTime);
-                log.debug("事件重试Action:{}, Class:{}, Result:{}", new Object[]{action, name, result.toJsonString()});
-                if (!result.isSuccess()) {
-                    throw new Exception(result.getError());
+                String msgId = String.format("%s$RETRY%s%d", mnsId, jobContext.getJob().getTaskId(), jobContext.getJobExtInfo().getRetryTimes() + 1);
+                try {
+                    com.framework.common.Result result = subscribeAction.process(msgId, object, createTime);
+                    if (!result.isSuccess()) {
+                        throw new Exception(result.getError());
+                    }
+                    log.debug("MNS:{},事件重试Action:{} Content:{}, Task:{}, Class:{}, Result:{}",
+                            new Object[]{mnsId, action, JsonUtils.toJson(object), jobContext.getJob().getTaskId(), name, true});
+                } catch (Exception e) {
+                    log.warn("MNS:{},事件重试Action:{} Content:{}, Task:{}, Class:{}, Result:{}",
+                            new Object[]{mnsId, action, JsonUtils.toJson(object), jobContext.getJob().getTaskId(), name, false, e});
+                    throw e;
                 }
                 break;
             }
