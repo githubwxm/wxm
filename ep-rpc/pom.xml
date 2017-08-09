@@ -18,17 +18,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.all580</groupId>
-            <artifactId>base-api</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.framework</groupId>
-            <artifactId>framework-common</artifactId>
-            <version>${framework-common_version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>${lombok_version}</version>

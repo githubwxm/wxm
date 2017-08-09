@@ -16,12 +16,7 @@
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>com.all580</groupId>
-            <artifactId>base-api</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
-        <dependency>
+       <dependency>
             <groupId>com.all580</groupId>
             <artifactId>ep-api</artifactId>
             <version>0.0.1-SNAPSHOT</version>
@@ -79,11 +74,7 @@
             <artifactId>netty-all</artifactId>
             <version>4.0.20.Final</version>
         </dependency>
-        <dependency>
-            <groupId>com.framework</groupId>
-            <artifactId>framework-common</artifactId>
-        </dependency>
-        <dependency>
+       <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>dubbo</artifactId>
             <version>${dubbo_version}</version>

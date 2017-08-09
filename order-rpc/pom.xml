@@ -15,12 +15,7 @@
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>com.all580</groupId>
-            <artifactId>base-api</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
-        <dependency>
+       <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
         </dependency>
@@ -87,10 +82,6 @@
             <groupId>io.netty</groupId>
             <artifactId>netty-all</artifactId>
             <version>4.0.20.Final</version>
-        </dependency>
-        <dependency>
-            <groupId>com.framework</groupId>
-            <artifactId>framework-common</artifactId>
         </dependency>
         <dependency>
             <groupId>com.alibaba</groupId>

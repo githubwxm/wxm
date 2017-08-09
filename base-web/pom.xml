@@ -13,7 +13,6 @@
 	<name>base Webapp</name>
 	<url>http://maven.apache.org</url>
 	<dependencies>
-
 		<dependency>
 			<groupId>com.all580</groupId>
 			<artifactId>base-api</artifactId>
