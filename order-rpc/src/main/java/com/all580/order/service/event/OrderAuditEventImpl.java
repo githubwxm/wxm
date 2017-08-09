@@ -62,6 +62,7 @@ public class OrderAuditEventImpl implements OrderAuditEvent {
             return new Result(true);
         }
 
+        smsManager.sendAuditRefuseSms(item);
         // 不通过取消订单
         refundOrderManager.cancel(order);
         return new Result(true);
