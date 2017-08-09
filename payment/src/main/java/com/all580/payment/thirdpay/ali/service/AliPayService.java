@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -115,6 +116,14 @@ public class AliPayService {
         sParaTemp.put("subject", String.valueOf(params.get("prodName")));
         int totalFee = (Integer) params.get("totalFee");
         sParaTemp.put("total_fee", String.valueOf(totalFee / 100.0));
+        String dateFormat = "yyyy-MM-dd HH:mm:ss";
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(System.currentTimeMillis());
+        /**设置30分钟后超时*/
+        cal.set(Calendar.MINUTE, cal.get(Calendar.MINUTE) + 3);
+        Date dateinvalid = cal.getTime();
+        String time_expire = new SimpleDateFormat(dateFormat).format(dateinvalid);
+        sParaTemp.put("it_b_pay", time_expire);
         // sParaTemp.put("body", null);
         // sParaTemp.put("paymethod", "");
         // sParaTemp.put("defaultbank", "");
