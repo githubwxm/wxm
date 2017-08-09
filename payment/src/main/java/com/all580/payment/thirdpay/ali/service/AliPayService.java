@@ -123,7 +123,7 @@ public class AliPayService {
         cal.set(Calendar.MINUTE, cal.get(Calendar.MINUTE) + 3);
         Date dateinvalid = cal.getTime();
         String time_expire = new SimpleDateFormat(dateFormat).format(dateinvalid);
-        sParaTemp.put("it_b_pay", time_expire);
+        sParaTemp.put("it_b_pay", time_expire+"m");
         // sParaTemp.put("body", null);
         // sParaTemp.put("paymethod", "");
         // sParaTemp.put("defaultbank", "");
