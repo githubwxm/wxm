@@ -10,6 +10,7 @@ import com.all580.voucherplatform.entity.Order;
 import com.all580.voucherplatform.utils.async.AsyncService;
 import com.framework.common.distributed.lock.DistributedLockTemplate;
 import com.framework.common.distributed.lock.DistributedReentrantLock;
+import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.UUIDGenerator;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -21,6 +22,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.lang.exception.ApiException;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -127,6 +129,26 @@ public class ConsumeOrderManager {
                 - (order.getRefund() == null ? 0 : order.getRefund());
         if (number > availableNumber) {
             throw new ApiException("消费数量大于订单剩余数量");
+        }
+        String validWeek = order.getValidWeek();
+        if (!StringUtils.isEmpty(validWeek) && validWeek.length() == 7) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(consumeTime);
+            int week = calendar.get(Calendar.DAY_OF_WEEK) - 2;
+            week = week < 0 ? 6 : week;
+            if (validWeek.toCharArray()[week] == '0') {
+                throw new ApiException("该订单星期" + (week + 1) + "不可用");
+            }
+        }
+        String invalidDate = order.getInvalidDate();
+        if (!StringUtils.isEmpty(invalidDate)) {
+            String[] invalidArr = invalidDate.split(",");
+            String consumeDay = DateFormatUtils.parseDate(DateFormatUtils.DATE_FORMAT, consumeTime);
+            for (String invalidDay : invalidArr) {
+                if (invalidDay.equals(consumeDay)) {
+                    throw new ApiException("该订单在" + invalidDay + "不可用");
+                }
+            }
         }
         consume = new Consume();
         consume.setConsumeCode(String.valueOf(UUIDGenerator.generateUUID()));
