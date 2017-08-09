@@ -150,7 +150,6 @@ public class ConsumeOrderManager {
                 }
             }
         }
-
         consume = new Consume();
         consume.setConsumeCode(String.valueOf(UUIDGenerator.generateUUID()));
         consume.setOrder_id(order.getId());
