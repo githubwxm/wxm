@@ -7,7 +7,9 @@ import com.all580.order.entity.Order;
 import com.all580.order.entity.OrderItem;
 import com.all580.payment.api.conf.PaymentConstant;
 import com.framework.common.Result;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import java.util.Date;
@@ -16,6 +18,8 @@ import java.util.List;
 /**
  * Created by wxming on 2017/8/9 0009.
  */
+@Slf4j
+@Service
 public class PaidNotifyEventImpl extends  BaseNotifyEvent implements PaidNotifyEvent {
 
     @Autowired
