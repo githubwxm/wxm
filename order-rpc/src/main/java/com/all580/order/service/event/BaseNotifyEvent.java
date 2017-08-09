@@ -95,7 +95,7 @@ public class BaseNotifyEvent {
         if(order.getSource()-OrderConstant.OrderSourceType.SOURCE_TYPE_B2C==0){
             sourceType=OrderConstant.OrderSourceType.SOURCE_TYPE_B2C;
         }else if(order.getBuy_operator_id()!=0){
-            log.info("通知事物数据: 操作人id:{} orderid:{} " , order.getBuy_operator_id(),order.getId());
+            log.info("通知事物数据: 操作人id:{} orderid:{} " , order.getBuy_operator_id()+opCode,order.getId());
             return;
         }
         Integer usd_qty = item.getUsed_quantity();//使用数
