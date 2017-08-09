@@ -34,7 +34,8 @@ public interface PosMapper {
                                 @Param("idNumber") String idNumber,
                                 @Param("deviceId") String deviceId,
                                 @Param("startTime") Date startTime,
-                                @Param("endTime") Date endTime);
+                                @Param("endTime") Date endTime,
+                                @Param("deviceGroupId") Integer deviceGroupId);
 
     List<Map> selectOrderConsumeList(@Param("voucherNumber") String voucherNumber,
                                      @Param("mobile") String mobile,
@@ -42,6 +43,7 @@ public interface PosMapper {
                                      @Param("deviceId") String deviceId,
                                      @Param("startTime") Date startTime,
                                      @Param("endTime") Date endTime,
+                                     @Param("deviceGroupId") Integer deviceGroupId,
                                      @Param("recordStart") Integer recordStart,
                                      @Param("recordCount") Integer recordCount);
 

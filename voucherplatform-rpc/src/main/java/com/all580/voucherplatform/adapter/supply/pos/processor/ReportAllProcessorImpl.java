@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -27,10 +29,12 @@ public class ReportAllProcessorImpl implements ProcessorService<Supply> {
     @Override public Object processor(Supply supply,
                                       Map map) {
         Device device = (Device) map.get("device");
-        Date startTime = DateFormatUtils.converToDateTime(CommonUtil.emptyStringParseNull(map.get("startTime")));
-        Date endTime = DateFormatUtils.converToDateTime(CommonUtil.emptyStringParseNull(map.get("endTime")));
-        return posMapper.selectDeviceReportByProduct(device.getCode(), startTime, endTime);
+        Date startTime = DateFormatUtils.converToDateTime(CommonUtil.objectParseString(map.get("startTime")));
+        Date endTime = DateFormatUtils.converToDateTime(CommonUtil.objectParseString(map.get("endTime")));
+        List<Map> listMap = posMapper.selectDeviceReportByProduct(device.getCode(), startTime, endTime);
+        return listMap;
     }
+
 
     @Override public String getAction() {
         return ACTION;

@@ -38,7 +38,18 @@ public class DeviceValidateManager {
         Map<String[], ValidRule[]> rules = new HashMap<>();
         // 校验不为空的参数
         rules.put(new String[]{
-                "code"
+                "deviceId"
+        }, new ValidRule[]{new ValidRule.NotNull()});
+        return rules;
+    }
+
+    public Map<String[], ValidRule[]> reqDeviceValidate() {
+        Map<String[], ValidRule[]> rules = new HashMap<>();
+        // 校验不为空的参数
+        rules.put(new String[]{
+                "action",
+                "content",
+                "identity"
         }, new ValidRule[]{new ValidRule.NotNull()});
         return rules;
     }

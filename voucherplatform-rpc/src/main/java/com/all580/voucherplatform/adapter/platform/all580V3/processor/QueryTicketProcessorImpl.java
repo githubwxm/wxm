@@ -24,7 +24,7 @@ import java.util.Map;
 
 @Service
 @Slf4j
-public class QueryTicketProccessorImpl implements ProcessorService<Platform> {
+public class QueryTicketProcessorImpl implements ProcessorService<Platform> {
 
     private static final String ACTION = "queryTicketProduct";
 
@@ -53,9 +53,7 @@ public class QueryTicketProccessorImpl implements ProcessorService<Platform> {
             mapRet.put("attachs", itemMap.get("data"));
             mapList.add(mapRet);
         }
-        Map mapRet = new HashMap();
-        mapRet.put("data", mapList);
-        return mapRet;
+        return mapList;
     }
 
     @Override

@@ -41,8 +41,15 @@ public abstract class AbstractProcessorAdapter<Identity> {
                 Object ret = processorService.processor(identity, map);
                 if (ret != null) {
                     result.setSuccess(true);
-                    result.put(ret);
+                    if (ret instanceof Map)
+                        result.putAll((Map) ret);
+                    else {
+                        result.putExt("data", ret);
+                        result.put(ret);
+                    }
                 }
+            } catch (ApiException ex) {
+                throw ex;
             } catch (Exception ex) {
                 throw new ApiException(ex);
             }

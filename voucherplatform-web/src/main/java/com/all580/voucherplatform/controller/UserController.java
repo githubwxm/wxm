@@ -2,6 +2,7 @@ package com.all580.voucherplatform.controller;
 
 import com.all580.voucherplatform.api.VoucherConstant;
 import com.all580.voucherplatform.api.service.UserService;
+import com.all580.voucherplatform.filter.AuthenticationFilter;
 import com.all580.voucherplatform.manager.UserValidateManager;
 import com.framework.common.BaseController;
 import com.framework.common.Result;
@@ -36,7 +37,8 @@ public class UserController extends BaseController {
 
     @RequestMapping(value = "login", method = RequestMethod.POST)
     @ResponseBody
-    public Result login(@RequestBody Map map, HttpServletRequest request) {
+    public Result login(@RequestBody Map map,
+                        HttpServletRequest request) {
         // 验证参数
         ParamsMapValidate.validate(map, userValidateManager.loginValidate());
         Result result = userService.login(map);
@@ -44,7 +46,8 @@ public class UserController extends BaseController {
             String userName = CommonUtil.emptyStringParseNull(map.get("userName"));
             Result userResult = userService.getUser(userName);
             Object o = userResult.get();
-            redisUtils.set(VoucherConstant.REDISVOUCHERLOGINKEY + ":" + request.getSession().getId(), o);
+            redisUtils.setex(VoucherConstant.REDISVOUCHERLOGINKEY + ":" + request.getSession().getId(),
+                    AuthenticationFilter.LOGINTIMEOUT, o);
         }
         return userService.login(map);
     }
@@ -52,7 +55,8 @@ public class UserController extends BaseController {
 
     @RequestMapping(value = "updatePassword", method = RequestMethod.POST)
     @ResponseBody
-    public Result updatePassword(@RequestBody Map map, HttpServletRequest request) {        // 验证参数
+    public Result updatePassword(@RequestBody Map map,
+                                 HttpServletRequest request) {        // 验证参数
         Map mapUser = (Map) getAttribute("user");
         String oldPassword = CommonUtil.emptyStringParseNull(map.get("oldPassword"));
         oldPassword = DigestUtils.md5Hex(oldPassword);

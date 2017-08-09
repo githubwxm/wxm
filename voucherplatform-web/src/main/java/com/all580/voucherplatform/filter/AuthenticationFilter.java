@@ -23,9 +23,10 @@ import java.util.Map;
 public class AuthenticationFilter extends OncePerRequestFilter {
 
     private RedisUtils redisUtils;
-    private static final String LOGINURL = "/api/user/login";
-    private static final String POSURL = "/api/pos";
-    private static final String MNSURL = "/api/mns";
+    public static final int LOGINTIMEOUT = 60 * 30;
+    public static final String LOGINURL = "/api/user/login";
+    public static final String POSURL = "/api/pos";
+    public static final String MNSURL = "/api/mns";
 
     public AuthenticationFilter() {
         this.redisUtils = BeanUtil.getApplicationContext().getBean(RedisUtils.class);
@@ -48,6 +49,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
             }
             Map mapUser = redisUtils.get(VoucherConstant.REDISVOUCHERLOGINKEY + ":" + sessionId, Map.class);
             if (mapUser != null) {
+                redisUtils.expire(VoucherConstant.REDISVOUCHERLOGINKEY + ":" + sessionId, LOGINTIMEOUT);
                 request.setAttribute("user", mapUser);
                 filterChain.doFilter(request, response);
             } else {

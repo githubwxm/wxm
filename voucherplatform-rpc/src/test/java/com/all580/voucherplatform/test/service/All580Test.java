@@ -65,4 +65,5 @@ public class All580Test {
         Result result = all580Service.process(map);
         System.out.println(JsonUtils.toJson(result));
     }
+
 }

@@ -6,6 +6,7 @@ import com.framework.common.Result;
 import com.framework.common.util.CommonUtil;
 import com.framework.common.validate.ParamsMapValidate;
 import com.framework.common.vo.PageRecord;
+import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -79,7 +80,9 @@ public class SupplyController {
 
     @RequestMapping(value = "selectSupplyList", method = RequestMethod.GET)
     @ResponseBody
-    public Result<?> selectSupplyList(String name, @RequestParam(value = "record_start", defaultValue = "0") Integer recordStart, @RequestParam(value = "record_count", defaultValue = "15") Integer recordCount) {
+    public Result<?> selectSupplyList(String name,
+                                      @RequestParam(value = "record_start", defaultValue = "0") Integer recordStart,
+                                      @RequestParam(value = "record_count", defaultValue = "15") Integer recordCount) {
         Result<PageRecord<Map>> result = supplyService.selectSupplyList(name, recordStart, recordCount);
         return result;
     }
@@ -87,14 +90,18 @@ public class SupplyController {
 
     @RequestMapping(value = "selectSupplyProdList", method = RequestMethod.GET)
     @ResponseBody
-    public Result<PageRecord<Map>> selectSupplyProdList(Integer supplyId, String prodCode, @RequestParam(value = "record_Start", defaultValue = "0") Integer recordStart, @RequestParam(value = "record_Count", defaultValue = "15") Integer recordCount) {
+    public Result<PageRecord<Map>> selectSupplyProdList(Integer supplyId,
+                                                        String prodCode,
+                                                        @RequestParam(value = "record_Start", defaultValue = "0") Integer recordStart,
+                                                        @RequestParam(value = "record_Count", defaultValue = "15") Integer recordCount) {
         return supplyService.selectSupplyProdList(supplyId, prodCode, recordStart, recordCount);
     }
 
 
     @RequestMapping(value = "getProd", method = RequestMethod.GET)
     @ResponseBody
-    public Result getProd(Integer supplyId, String prodId) {
+    public Result getProd(@RequestParam(value = "supplyId") Integer supplyId,
+                          @RequestParam(value = "prodId") String prodId) {
         Map map = supplyService.getProd(supplyId, prodId);
         Result result = new Result(true);
         result.put(map);
@@ -120,7 +127,8 @@ public class SupplyController {
 
     @RequestMapping(value = "downConf", method = RequestMethod.GET)
     @ResponseBody
-    public void downConf(@RequestParam(value = "supplyId") int supplyId, HttpServletResponse response) throws IOException {
+    public void downConf(@RequestParam(value = "supplyId") int supplyId,
+                         HttpServletResponse response) throws IOException {
         Map map = supplyService.getConfFile(supplyId);
         response.setContentType("APPLICATION/OCTET-STREAM");
         Result result = supplyService.selectSupply(supplyId);
