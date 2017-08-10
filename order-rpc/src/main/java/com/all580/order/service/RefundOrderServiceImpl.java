@@ -91,7 +91,7 @@ public class RefundOrderServiceImpl implements RefundOrderService {
 
     @Override
     public Result<?> refundApplyForPackage(Map params) throws Exception {
-        String orderItemSn = params.get("order_item_sn").toString();
+        String orderItemSn = params.get("order_sn").toString();
         // 分布式锁
         DistributedReentrantLock lock = distributedLockTemplate.execute(orderItemSn, lockTimeOut);
         // 锁成功

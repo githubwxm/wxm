@@ -168,6 +168,7 @@ public class PackageCreateOrderImpl  implements CreatePackageOrderService {
         for (OrderItemAccount account : accounts) {
             PackageOrderItemAccount itemAccount = new PackageOrderItemAccount();
             BeanUtils.copyProperties(account, itemAccount);
+            itemAccount.setPackage_order_item_id(item.getId());
             packageOrderItemAccountMapper.insertSelective(itemAccount);
         }
     }

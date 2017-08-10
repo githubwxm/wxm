@@ -3,18 +3,20 @@ package com.all580.order.adapter;
 import com.all580.order.api.OrderConstant;
 import com.all580.order.dao.OrderItemMapper;
 import com.all580.order.dao.OrderMapper;
+import com.all580.order.dao.VisitorMapper;
 import com.all580.order.dto.RefundDay;
 import com.all580.order.dto.RefundOrderApply;
 import com.all580.order.entity.OrderItemDetail;
 import com.all580.order.entity.RefundOrder;
+import com.all580.order.entity.Visitor;
 import com.all580.order.manager.RefundOrderManager;
-import com.all580.order.util.AccountUtil;
 import com.all580.product.api.consts.ProductConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import javax.lang.exception.ApiException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +33,8 @@ public class PackageRefundOrderItemServiceImpl extends AbstractRefundOrderImpl{
     private RefundOrderInterface hotelRefundOrder;
     @Resource(name=OrderConstant.REFUND_ADAPTER + "LINE",type = RefundOrderInterface.class)
     private RefundOrderInterface lineRefundOrder;
+    @Autowired
+    private VisitorMapper visitorMapper;
 
     @Override
     @Autowired
@@ -86,8 +90,19 @@ public class PackageRefundOrderItemServiceImpl extends AbstractRefundOrderImpl{
 
     @Override
     public Collection<RefundDay> getRefundDays(RefundOrderApply apply, List<OrderItemDetail> detailList, Map params) {
-
-        return AccountUtil.parseRefundDayForDetail(detailList);
+        List<RefundDay> refundDays = new ArrayList<>();
+        for (OrderItemDetail detail : detailList) {
+            RefundDay refundDay = new RefundDay();
+            refundDay.setDay(detail.getDay());
+            refundDay.setQuantity(detail.getQuantity());
+            if (apply.getItem().getPro_type() == ProductConstants.ProductType.SCENERY ||
+                    apply.getItem().getPro_type() == ProductConstants.ProductType.ITINERARY ){
+                List<Visitor> visitors = visitorMapper.selectByOrderItem(apply.getItem().getId());
+                refundDay.setVisitors(visitors);
+            }
+            refundDays.add(refundDay);
+        }
+        return refundDays;
     }
 
     @Override

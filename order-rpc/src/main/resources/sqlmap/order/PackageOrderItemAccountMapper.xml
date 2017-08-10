@@ -207,7 +207,7 @@
       WHERE package_order_item_id = #{itemId}
       and ep_id = #{epId}
       and core_ep_id = #{coreEpId}
-      and data is not null linit 1
+      and data is not null limit 1
     </select>
     <select id="selectByOrderItem" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         SELECT * FROM t_package_order_item_account

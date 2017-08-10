@@ -190,4 +190,12 @@ public class QueryOrderController extends BaseController {
         return queryOrderService.getPackageOrderDetailByNumber(itemSn, epType, coreEpId, epId, showAccount);
     }
 
+    @RequestMapping(value = "package/pre_refund", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<Map> getRefundPackageAuditInfo(@RequestParam("itemSn") Long itemSn,
+                                                           @RequestParam(value = "ep_type", required = false) Integer epType,
+                                                           @RequestParam("ep_id") Integer epId) {
+        Integer coreEpId = CommonUtil.objectParseInteger(getAttribute(EpConstant.EpKey.CORE_EP_ID));
+        return queryOrderService.preRefundPackageInfo(itemSn, epType, coreEpId, epId, ProductConstants.RefundEqType.SELLER);
+    }
 }

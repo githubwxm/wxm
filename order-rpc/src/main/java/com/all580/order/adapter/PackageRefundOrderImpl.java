@@ -95,7 +95,7 @@ public class PackageRefundOrderImpl implements RefundPackageOrderService{
         apply.setCause(CommonUtil.objectParseString(params.get("cause")));
         //apply.setQuantity(CommonUtil.objectParseInteger(params.get("quantity")));
         apply.setQuantity(packageOrderItem.getQuantity());
-        apply.setDate(new Date());
+        apply.setDate(packageOrderItem.getStart());
         apply.setUserId(CommonUtil.objectParseInteger(params.get("operator_id")));
         apply.setUserName(CommonUtil.objectParseString(params.get("operator_name")));
         apply.setOuter(CommonUtil.objectParseString(params.get("outer_id")));
