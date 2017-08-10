@@ -8,6 +8,7 @@ import com.all580.payment.thirdpay.wx.model.*;
 import com.all580.payment.thirdpay.wx.util.ConstantUtil;
 import com.all580.payment.thirdpay.wx.util.WXUtil;
 import com.framework.common.Result;
+import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.net.IPUtils;
 import com.framework.common.util.CommonUtil;
@@ -18,10 +19,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.SortedMap;
+import java.util.*;
 
 /**
  * @author panyi on 2016/10/13.
@@ -61,6 +59,10 @@ public class WxPayService {
         req.setFee_type("CNY");
         req.setNotify_url(domain + payCallbackUrl);
         req.setBody(String.valueOf(params.get("prodName")));
+        Date now = new Date();
+        req.setTime_start(DateFormatUtils.parseDateToDatetimeWXString(now));
+        Date afterDate = new Date(now .getTime() + 1000*60*15);
+        req.setTime_expire(DateFormatUtils.parseDateToDatetimeWXString(afterDate));
         // req.setGoods_tag();
         req.setOut_trade_no(String.valueOf(ordCode));
         req.setOpenid(CommonUtil.objectParseString(params.get("openid")));
