@@ -122,10 +122,10 @@ public class PackageController extends BaseController {
     @RequestMapping("can_sale/list")
     @ResponseBody
     public Result<?> canSale(@RequestParam Integer ep_id,
-                             String name, String sub_name, Integer type, Integer province, Integer city,
+                             String name, String sub_name, Integer type, Integer province, Integer city, Integer from,
                              @RequestParam(defaultValue = "0") Integer record_start,
                              @RequestParam(defaultValue = "20") Integer record_count) {
-        return packageService.selectCanSale(ep_id, name, sub_name, type, province, city, record_start, record_count);
+        return packageService.selectCanSale(ep_id, name, sub_name, type, province, city, from, record_start, record_count);
     }
 
     @RequestMapping("calendar")
@@ -135,6 +135,13 @@ public class PackageController extends BaseController {
         int days = (int) DateFormatUtils.getDayBySubDate(dates[0], dates[1]);
         if (days > 31) throw new ParamsMapValidationException("不能超出一个月时间");
         return packageSubService.calendar(id, dates[0], days, ep_id);
+    }
+
+    @RequestMapping(value = "real/calendar")
+    @ResponseBody
+    public Result<?> searchPlanCalendar(@RequestParam Integer id, @RequestParam String start, @RequestParam String end) {
+        Date[] dates = Utils.checkDateTime(start, end);
+        return packageSubService.searchPlanCalendar(id, dates[0], dates[1]);
     }
 
     @RequestMapping("calc/price")
