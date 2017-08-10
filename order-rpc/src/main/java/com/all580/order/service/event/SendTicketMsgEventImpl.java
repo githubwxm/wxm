@@ -31,7 +31,7 @@ public class SendTicketMsgEventImpl implements SendTicketMsgEvent {
     public Result process(String s, Integer integer, Date date) {
         OrderItem item = orderItemMapper.selectByPrimaryKey(integer);
         Assert.notNull(item);
-        if (item.getVoucher_template() == null) {
+        if (item.getVoucher_template() == null || item.getVoucher_template() == 0) {
             log.warn("订单没有凭证短信模板,短信发送失败");
             return new Result(true);
         }
