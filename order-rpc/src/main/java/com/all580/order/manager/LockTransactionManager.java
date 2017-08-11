@@ -325,7 +325,6 @@ public class LockTransactionManager {
             apply.setQuantity(orderItem.getQuantity());
             apply.setDate(new Date());
             params.put("RefundOrderApply", apply);
-            System.out.println("退订子订单号--->" + orderItem.getNumber() );
             this.applyRefund(params, orderItem.getNumber(),packageRefundOrderItemService);
         }
 
