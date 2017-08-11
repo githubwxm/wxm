@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.all580.base.aop.MnsSubscribeAspect;
 import com.all580.base.manager.PushMsgManager;
 import com.all580.ep.api.service.EpPushService;
+import com.all580.ep.api.service.EpService;
+import com.all580.order.api.OrderConstant;
 import com.framework.common.Result;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.util.CommonUtil;
@@ -48,6 +50,9 @@ public class PushSubscribeController extends AbstractSubscribeController {
     private JobClient jobClient;
 
     @Autowired
+    private EpService epService;
+
+    @Autowired
     private PushMsgManager pushMsgManager;
 
     @RequestMapping(value = "push", method = RequestMethod.POST)
@@ -83,6 +88,13 @@ public class PushSubscribeController extends AbstractSubscribeController {
 
     private void push(HttpServletResponse response, String id, String msg, Map map) {
         String epId = CommonUtil.objectParseString(map.get("ep_id"));
+        Integer sourceType=CommonUtil.objectParseInteger(map.get("source_type"));
+        if(sourceType!=null&&sourceType- OrderConstant.OrderSourceType.SOURCE_TYPE_B2C==0){//b2c 来源
+            //     根据企业来推送给平台
+            Result result=epService.selectPlatformId(CommonUtil.objectParseInteger(epId));
+            if (result.isFault()) throw new ApiException("B2C查询平台商异常");
+            epId=result.get().toString();
+        }
         log.info("推送 信息"+map.toString());
         try {
             responseWrite(response, "OK");
