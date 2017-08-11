@@ -6,6 +6,7 @@ import com.all580.order.dao.OrderMapper;
 import com.all580.order.dao.VisitorMapper;
 import com.all580.order.dto.RefundDay;
 import com.all580.order.dto.RefundOrderApply;
+import com.all580.order.entity.Order;
 import com.all580.order.entity.OrderItemDetail;
 import com.all580.order.entity.RefundOrder;
 import com.all580.order.entity.Visitor;
@@ -109,6 +110,15 @@ public class PackageRefundOrderItemServiceImpl extends AbstractRefundOrderImpl{
     public int getRefundQuantity(RefundOrderApply apply, Collection<RefundDay> refundDays, Map params) {
 
         return this.getCreateOrderInterface(apply.getItem().getPro_type()).getRefundQuantity(apply, refundDays, params);
+    }
+
+    @Override
+    public int[] calcRefundMoneyAndFee(RefundOrderApply apply, List<OrderItemDetail> detailList, Collection<RefundDay> refundDays, Map params) {
+        Order order = apply.getOrder();
+        //元素订单的购买者为打包商
+        order.setBuy_ep_id(apply.getPackageOrderItem().getEp_id());
+        order.setPayee_ep_id(apply.getPackageOrderItem().getCore_ep_id());
+        return refundOrderManager.calcRefundMoneyAndFee(apply.getItem(), apply.getOrder(), apply.getFrom(), refundDays, detailList, apply.getDate());
     }
 
     @Override
