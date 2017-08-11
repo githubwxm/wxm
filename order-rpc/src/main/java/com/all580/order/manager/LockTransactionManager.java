@@ -287,6 +287,7 @@ public class LockTransactionManager {
      * @return
      * @throws Exception
      */
+    @MnsEvent
     public Result<?> applyRefundForPackage(Map params, long itemNo) throws Exception {
         RefundOrderApply apply = packageOrderService.validateAndParseParams(itemNo, params);
         //验证用户是否可发起退订
