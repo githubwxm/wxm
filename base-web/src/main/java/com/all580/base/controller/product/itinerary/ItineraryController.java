@@ -71,7 +71,7 @@ public class ItineraryController {
     public Result<?> canSaleList( String from,@RequestParam Integer ep_id,Integer city,Integer province,
                                   String label,String product_name,String start_date,String end_date,
                                   String product_sub_name ,Integer record_start,
-                                  Integer record_count
+                                  Integer record_count,Integer source_type,Integer product_id
                                  ) {
         Map map = new HashMap();
         map.put("ep_id",ep_id);
@@ -85,6 +85,8 @@ public class ItineraryController {
         map.put("from",from);
         map.put("record_start",record_start);
         map.put("record_count",record_count);
+        map.put("source_type",source_type);//  b2c 来源查询  修改查询返回  只查主产品 按product_id 查询
+        map.put("product_id",product_id);
         return itineraryService.selectCanSaleList(map);
     }
 
