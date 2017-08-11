@@ -311,7 +311,7 @@ public class LockTransactionManager {
 
         RefundPackageOrder refundOrder = packageOrderService.insertRefundOrder(apply, quantity, money, fee, auditTicket, auditMoney, params);
 
-        packageOrderService.hasRemainAndInsertRefundVisitor(apply, refundOrder, apply.getPackageOrderItem(), params);
+        //packageOrderService.hasRemainAndInsertRefundVisitor(apply, refundOrder, apply.getPackageOrderItem(), params);
 
         // 退订分账 到付和0元退订不分帐
         if (apply.getPackageOrderItem().getPayment_flag() != ProductConstants.PayType.PAYS && apply.getOrder().getPay_amount() > 0) {

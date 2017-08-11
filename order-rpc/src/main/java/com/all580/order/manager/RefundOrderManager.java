@@ -178,6 +178,19 @@ public class RefundOrderManager extends BaseOrderManager {
             orderItemMapper.refundQuantity(orderItem.getId(), refundOrder.getQuantity());
         }
         refundOrderMapper.updateByPrimaryKeySelective(refundOrder);
+
+        //判断是首位套票订单
+        PackageOrderItem item = packageOrderItemMapper.selectByNumber(order.getNumber());
+        if (item != null){
+            List<RefundOrder> refundOrders = refundOrderMapper.selectByOrder(order.getId());
+            //如果所有元素子订单都已退订审核通过，修改套票已退订数
+            for (RefundOrder r : refundOrders){
+                if (r.getStatus() != OrderConstant.OrderItemStatus.AUDIT_SUCCESS)
+                    return;
+            }
+            item.setRefund_quantity(refundOrder.getQuantity());
+            packageOrderItemMapper.updateByPrimaryKeySelective(item);
+        }
     }
 
     /**
