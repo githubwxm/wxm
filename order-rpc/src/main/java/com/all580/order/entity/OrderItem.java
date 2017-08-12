@@ -226,6 +226,21 @@ public class OrderItem implements Serializable {
     private Boolean send;
 
     /**
+     *  最小生效日期,所属表字段为t_order_item.min_effective_date
+     */
+    private Date min_effective_date;
+
+    /**
+     *  最大失效日期,所属表字段为t_order_item.max_expiry_date
+     */
+    private Date max_expiry_date;
+
+    /**
+     *  最后一个退订ID,所属表字段为t_order_item.last_refund_id
+     */
+    private Integer last_refund_id;
+
+    /**
      * 序列化ID,t_order_item
      */
     private static final long serialVersionUID = 1L;
