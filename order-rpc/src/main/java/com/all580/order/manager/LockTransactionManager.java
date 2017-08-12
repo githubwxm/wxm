@@ -97,6 +97,8 @@ public class LockTransactionManager {
     private RefundPackageOrderService packageOrderService;
     @Resource(name = OrderConstant.REFUND_ADAPTER + "PACKAGE",type = RefundOrderInterface.class)
     private RefundOrderInterface packageRefundOrderItemService;
+    @Autowired
+    private PackageOrderItemMapper packageOrderItemMapper;
 
     /**
      * 支付回调
@@ -326,6 +328,15 @@ public class LockTransactionManager {
             apply.setQuantity(orderItem.getQuantity());
             apply.setDate(new Date());
             params.put("RefundOrderApply", apply);
+
+            //这里先检查元素产品是否可退
+            List<OrderItemDetail> detailList = orderItemDetailMapper.selectByItemId(apply.getItem().getId());
+            try {
+                packageRefundOrderItemService.canBeRefund(apply, detailList, params);
+            }catch (Exception e){
+                //元素订单不可退
+                continue;
+            }
             this.applyRefund(params, orderItem.getNumber(),packageRefundOrderItemService);
         }
 
@@ -431,17 +442,32 @@ public class LockTransactionManager {
         orderItem.setAudit_user_name(CommonUtil.objectParseString(params.get("operator_name")));
         orderItem.setAudit_time(new Date());
         orderItem.setAudit(status);
+        //查询套票信息
+        PackageOrderItem item = packageOrderItemMapper.selectByNumber(order.getNumber());
         if (status) {
             orderItem.setStatus(OrderConstant.OrderItemStatus.AUDIT_SUCCESS);
             boolean allAudit = bookingOrderManager.isOrderAllAudit(orderItem.getOrder_id(), orderItem.getId());
             if (allAudit) {
                 order.setStatus(OrderConstant.OrderStatus.PAY_WAIT);
                 order.setAudit_time(new Date());
+                //处理套票
+                if (item != null){
+                    item.setAudit(1);
+                    item.setAudit_time(new Date());
+                    packageOrderItemMapper.updateByPrimaryKeySelective(item);
+                }
                 // 判断是否需要支付
                 if (order.getPay_amount() <= 0) { // 不需要支付
                     bookingOrderManager.addPaymentCallback(order);
                 }
                 orderMapper.updateByPrimaryKeySelective(order);
+            }
+        }else {
+            //处理套票
+            if (item != null){
+                item.setAudit(0);
+                item.setAudit_time(new Date());
+                packageOrderItemMapper.updateByPrimaryKeySelective(item);
             }
         }
         orderItemMapper.updateByPrimaryKeySelective(orderItem);

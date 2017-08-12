@@ -290,6 +290,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             ValidateProductSub sub = orderInterface.parseItemParams(createOrder, item);
             // 元素产品购买者为打包商
             createOrder.setEpId(salesInfo.getEp_id());
+
             this.createOrderItem(orderInterface, createOrder, order, sub, item, lockStockDtoMap, lockParams);
         }
         createOrder.setEpId(buyEpId);
@@ -324,6 +325,8 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         // 更新审核时间
         if (order.getStatus() != OrderConstant.OrderStatus.AUDIT_WAIT && order.getAudit_time() == null) {
             order.setAudit_time(new Date());
+            packageOrderItem.setAudit_time(new Date());
+            packageOrderItem.setAudit(1);
         }
 
         // 执行后事
