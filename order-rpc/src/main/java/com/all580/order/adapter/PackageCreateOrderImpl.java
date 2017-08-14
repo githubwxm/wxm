@@ -126,6 +126,11 @@ public class PackageCreateOrderImpl  implements CreatePackageOrderService {
         packageOrderItem.setEp_id(salesInfo.getEp_id());
         packageOrderItem.setCore_ep_id(bookingOrderManager.getCoreEpId(salesInfo.getEp_id()).get());
         packageOrderItem.setPayment_flag(salesInfo.getPay_type());
+        Result<Map<String, Object>> epResult = epService.selectId(salesInfo.getEp_id());
+        if (epResult != null && epResult.isSuccess() && epResult.get() != null) {
+            packageOrderItem.setEp_name(String.valueOf(epResult.get().get("name")));
+            packageOrderItem.setBuy_operator_name(OrderConstant.CREATE_ADAPTER);
+        }
         packageOrderItemMapper.insertSelective(packageOrderItem);
         return packageOrderItem;
     }

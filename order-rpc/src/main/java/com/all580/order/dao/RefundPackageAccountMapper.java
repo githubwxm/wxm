@@ -1,6 +1,7 @@
 package com.all580.order.dao;
 
 import com.all580.order.entity.RefundPackageAccount;
+import org.apache.ibatis.annotations.Param;
 
 public interface RefundPackageAccountMapper {
     /**
@@ -44,4 +45,6 @@ public interface RefundPackageAccountMapper {
      * @param record
      */
     int updateByPrimaryKey(RefundPackageAccount record);
+
+    RefundPackageAccount selectByOrderItemAndEp(@Param("itemId") Integer itemId, @Param("epId") Integer epId, @Param("coreEpId") Integer coreEpId);
 }

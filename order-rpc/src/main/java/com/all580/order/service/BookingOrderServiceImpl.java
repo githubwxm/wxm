@@ -290,7 +290,6 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             ValidateProductSub sub = orderInterface.parseItemParams(createOrder, item);
             // 元素产品购买者为打包商
             createOrder.setEpId(salesInfo.getEp_id());
-
             this.createOrderItem(orderInterface, createOrder, order, sub, item, lockStockDtoMap, lockParams);
         }
         createOrder.setEpId(buyEpId);

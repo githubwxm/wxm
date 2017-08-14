@@ -27,6 +27,9 @@
         <result column="settle_price" jdbcType="INTEGER" property="settle_price"/>
         <result column="ep_id" jdbcType="INTEGER" property="ep_id"/>
         <result column="core_ep_id" jdbcType="INTEGER" property="core_ep_id"/>
+        <result column="ep_name" jdbcType="VARCHAR" property="ep_name" />
+        <result column="buy_operator_id" jdbcType="INTEGER" property="buy_operator_id" />
+        <result column="buy_operator_name" jdbcType="VARCHAR" property="buy_operator_name" />
         <result column="update_time" jdbcType="TIMESTAMP" property="update_time"/>
         <result column="audit_time" jdbcType="TIMESTAMP" property="audit_time"/>
         <result column="audit" jdbcType="INTEGER" property="audit"/>
@@ -40,7 +43,7 @@
         `id`, `order_number`, `product_sub_id`, `product_sub_code`, `product_sub_name`, `product_name`,
         `cust_refund_rule`, `saler_refund_rule`, `start`, `quantity`, `used_quantity`, `refund_quantity`,
         `pay_amount`, `sale_amount`, `payment_flag`, `supply_price`, `sale_price`, `settle_price`,
-        `ep_id`, `core_ep_id`, `update_time`, `audit_time`, `audit`
+        `ep_id`, `core_ep_id`, `ep_name`, `buy_operator_id`, `buy_operator_name`, `update_time`, `audit_time`, `audit`
     </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         <!--
@@ -77,7 +80,8 @@
         `used_quantity`, `refund_quantity`, `pay_amount`,
         `sale_amount`, `payment_flag`, `supply_price`,
         `sale_price`, `settle_price`, `ep_id`,
-        `core_ep_id`, `update_time`, `audit_time`,
+        `core_ep_id`, `ep_name`,`buy_operator_id`,
+        `buy_operator_name`,`update_time`, `audit_time`,
         `audit`)
         values (#{order_number,jdbcType=BIGINT}, #{product_sub_id,jdbcType=INTEGER},
         #{product_sub_code,jdbcType=BIGINT},
@@ -87,7 +91,8 @@
         #{used_quantity,jdbcType=INTEGER}, #{refund_quantity,jdbcType=INTEGER}, #{pay_amount,jdbcType=INTEGER},
         #{sale_amount,jdbcType=INTEGER}, #{payment_flag,jdbcType=INTEGER}, #{supply_price,jdbcType=INTEGER},
         #{sale_price,jdbcType=INTEGER}, #{settle_price,jdbcType=INTEGER}, #{ep_id,jdbcType=INTEGER},
-        #{core_ep_id,jdbcType=INTEGER}, #{update_time,jdbcType=TIMESTAMP}, #{audit_time,jdbcType=TIMESTAMP},
+        #{core_ep_id,jdbcType=INTEGER},#{ep_name,jdbcType=VARCHAR},#{buy_operator_id,jdbcType=INTEGER},
+        #{buy_operator_name,jdbcType=VARCHAR}, #{update_time,jdbcType=TIMESTAMP}, #{audit_time,jdbcType=TIMESTAMP},
         #{audit,jdbcType=INTEGER})
     </insert>
     <insert id="insertSelective" parameterType="com.all580.order.entity.PackageOrderItem">
@@ -158,6 +163,15 @@
             <if test="core_ep_id != null">
                 `core_ep_id`,
             </if>
+            <if test="ep_name != null">
+                `ep_name`,
+            </if>
+            <if test="buy_operator_id != null">
+                `buy_operator_id`,
+            </if>
+            <if test="buy_operator_name != null">
+                `buy_operator_name`,
+            </if>
             <if test="update_time != null">
                 `update_time`,
             </if>
@@ -225,6 +239,15 @@
             </if>
             <if test="core_ep_id != null">
                 #{core_ep_id,jdbcType=INTEGER},
+            </if>
+            <if test="ep_name != null">
+                #{ep_name,jdbcType=VARCHAR},
+            </if>
+            <if test="buy_operator_id != null">
+                #{buy_operator_id,jdbcType=INTEGER},
+            </if>
+            <if test="buy_operator_name != null">
+                #{buy_operator_name,jdbcType=VARCHAR},
             </if>
             <if test="update_time != null">
                 #{update_time,jdbcType=TIMESTAMP},
@@ -302,6 +325,15 @@
             <if test="core_ep_id != null">
                 `core_ep_id` = #{core_ep_id,jdbcType=INTEGER},
             </if>
+            <if test="ep_name != null">
+                `ep_name` = #{ep_name,jdbcType=VARCHAR},
+            </if>
+            <if test="buy_operator_id != null">
+                `buy_operator_id` = #{buy_operator_id,jdbcType=INTEGER},
+            </if>
+            <if test="buy_operator_name != null">
+                `buy_operator_name` = #{buy_operator_name,jdbcType=VARCHAR},
+            </if>
             <if test="update_time != null">
                 `update_time` = #{update_time,jdbcType=TIMESTAMP},
             </if>
@@ -340,6 +372,9 @@
         `settle_price` = #{settle_price,jdbcType=INTEGER},
         `ep_id` = #{ep_id,jdbcType=INTEGER},
         `core_ep_id` = #{core_ep_id,jdbcType=INTEGER},
+        `ep_name` = #{ep_name,jdbcType=VARCHAR},
+        `buy_operator_id` = #{buy_operator_id,jdbcType=INTEGER},
+        `buy_operator_name` = #{buy_operator_name,jdbcType=VARCHAR},
         `update_time` = #{update_time,jdbcType=TIMESTAMP},
         `audit_time` = #{audit_time,jdbcType=TIMESTAMP},
         `audit` = #{audit,jdbcType=INTEGER}
@@ -349,4 +384,9 @@
     <select id="selectByNumber" resultMap="BaseResultMap">
       SELECT * FROM t_package_order_item WHERE order_number = #{number}
   </select>
+
+    <select id="selectByorderId" resultMap="BaseResultMap">
+        SELECT poi.* FROM t_package_order_item poi
+        INNER JOIN t_order o ON o.number = poi.order_number WHERE o.id = #{orderId}
+    </select>
 </mapper>
