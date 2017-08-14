@@ -1,5 +1,6 @@
 package com.all580.base.controller.report;
 
+import com.all580.ep.api.conf.EpConstant;
 import com.all580.product.api.consts.ProductConstants;
 import com.all580.report.api.service.EpOrderService;
 import com.framework.common.BaseController;
@@ -44,6 +45,7 @@ public class OrderSupplierController extends BaseController {
         map.put("pro_name",pro_name);
         map.put("record_start",record_start);
         map.put("record_count",record_count);
+        map.put( EpConstant.EpKey.CORE_EP_ID,getAttribute( EpConstant.EpKey.CORE_EP_ID));
         return  epOrderService.selectSupplierOrderReserve(map);
     }
 
@@ -68,6 +70,7 @@ public class OrderSupplierController extends BaseController {
         map.put("end",end);
         map.put("record_start",record_start);
         map.put("record_count",record_count);
+        map.put( EpConstant.EpKey.CORE_EP_ID,getAttribute( EpConstant.EpKey.CORE_EP_ID));
         return  epOrderService.selectSupplierOrderReserveDetail(map);
     }
 
@@ -91,6 +94,7 @@ public class OrderSupplierController extends BaseController {
         map.put("pro_name",pro_name);
         map.put("record_start",record_start);
         map.put("record_count",record_count);
+        map.put( EpConstant.EpKey.CORE_EP_ID,getAttribute( EpConstant.EpKey.CORE_EP_ID));
         return  epOrderService.selectSupplierOrderConsume(map);
     }
 
@@ -115,6 +119,7 @@ public class OrderSupplierController extends BaseController {
         map.put("end",end);
         map.put("record_start",record_start);
         map.put("record_count",record_count);
+        map.put( EpConstant.EpKey.CORE_EP_ID,getAttribute( EpConstant.EpKey.CORE_EP_ID));
         return  epOrderService.selectSupplierOrderConsumeDetail(map);
     }
 
@@ -138,6 +143,7 @@ public class OrderSupplierController extends BaseController {
         map.put("pro_name",pro_name);
         map.put("record_start",record_start);
         map.put("record_count",record_count);
+        map.put( EpConstant.EpKey.CORE_EP_ID,getAttribute( EpConstant.EpKey.CORE_EP_ID));
         return  epOrderService.selectSupplierOrderRefund(map);
     }
 
@@ -162,6 +168,7 @@ public class OrderSupplierController extends BaseController {
         map.put("end",end);
         map.put("record_start",record_start);
         map.put("record_count",record_count);
+        map.put( EpConstant.EpKey.CORE_EP_ID,getAttribute( EpConstant.EpKey.CORE_EP_ID));
         return  epOrderService.selectSupplierOrderRefundDetail(map);
     }
 }
