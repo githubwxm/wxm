@@ -247,6 +247,8 @@ public interface EpService {
      * @return    id ,name
      */
     Result<?> selectEpAndChannel(Map map);
+
+    Result<?> selectPlatfrom();
     /**
      * 心跳接口
      * @return

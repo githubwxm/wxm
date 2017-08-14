@@ -105,6 +105,7 @@ public class epServiceTest {
 //        map.put("bank_num","3333");
 //        epBankMapper.insert(map);
 //        print(epBankMapper.selectBank(1));
+        print(epService.selectPlatfrom().get());
         Collection<Integer> list = new ArrayList<>();
         list.add(1);
         list.add(1141);
