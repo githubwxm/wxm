@@ -400,6 +400,10 @@
           and  channel.seller_core_ep_id=#{coreEpId}
         </if>
 
-        ) as f where name like  CONCAT('%',#{name},'%') ORDER BY id
+        ) as f where  1=1
+        <if test=" name != null">
+           and name like  CONCAT('%',#{name},'%')
+        </if>
+         ORDER BY id
     </sql>
 </mapper>
