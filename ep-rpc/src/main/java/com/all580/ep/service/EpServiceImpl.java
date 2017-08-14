@@ -1138,6 +1138,7 @@ public class EpServiceImpl implements EpService {
         CommonUtil.checkPage(map);
         Map resultMap = new HashMap();
         resultMap.put("list",epMapper.selectEpAndChannel(map));
+        resultMap.put("totalCount",epMapper.selectEpAndChannelCount(map));
         result.put(resultMap);
         return result;
     }
