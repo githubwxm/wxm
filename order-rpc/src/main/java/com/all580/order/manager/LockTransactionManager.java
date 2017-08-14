@@ -278,6 +278,10 @@ public class LockTransactionManager {
             refundOrderManager.preRefundSplitAccount(apply.getFrom(), refundOrder.getId(), apply.getOrder(), apply.getDate(), refundOrder.getOrder_item_id(), detailList, refundDays);
         }
 
+        // 设置最后一个退订ID
+        apply.getItem().setLast_refund_id(refundOrder.getId());
+        orderItemMapper.updateByPrimaryKeySelective(apply.getItem());
+
         // 触发事件
         eventManager.addEvent(OrderConstant.EventType.ORDER_REFUND_APPLY, refundOrder.getId());
         Result<RefundOrder> result = new Result<>(true);

@@ -242,6 +242,12 @@ public interface EpService {
     Result<Boolean> isSendVoucher(int epId, int coreEpId);
 
     /**
+     *  查询企业类型    包括   平台通道
+
+     * @return    id ,name
+     */
+    Result<?> selectEpAndChannel(Map map);
+    /**
      * 心跳接口
      * @return
      */

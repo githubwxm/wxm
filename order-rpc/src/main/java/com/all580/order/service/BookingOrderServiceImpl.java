@@ -207,6 +207,11 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         // 创建子订单详情
         List<OrderItemDetail> details = orderInterface.insertDetail(order, createOrder, orderItem, sub, salesInfo, allDaysSales);
 
+        // 设置最小生效日期和最大失效日期
+        orderItem.setMin_effective_date(details.get(0).getEffective_date());
+        orderItem.setMax_expiry_date(details.get(details.size() - 1).getExpiry_date());
+        orderItemMapper.updateByPrimaryKeySelective(orderItem);
+
         // 析构销售链
         orderInterface.insertSalesChain(orderItem, sub, allDaysSales);
 

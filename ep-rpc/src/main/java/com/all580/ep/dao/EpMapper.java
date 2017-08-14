@@ -78,4 +78,6 @@ public interface EpMapper {
     List<Integer> getSeller(@Param("list") List<Integer> list);
 
     List<Map<String,String>> selectCoreEpId(Collection<Integer> list);
+    List<Map<String,String>> selectEpAndChannel(Map map);
+    List<Map<String,String>> selectEpAndChannelCount(Map map);
 }
