@@ -373,7 +373,7 @@
         <include refid="limit"/>
     </select>
 
-    <select id="selectEpAndChannelCount">
+    <select id="selectEpAndChannelCount" resultType="java.lang.Integer">
           select count(*) from (
              <include refid="selectEpAndChannelSql"/>
           )as a

@@ -79,5 +79,5 @@ public interface EpMapper {
 
     List<Map<String,String>> selectCoreEpId(Collection<Integer> list);
     List<Map<String,String>> selectEpAndChannel(Map map);
-    List<Map<String,String>> selectEpAndChannelCount(Map map);
+    int selectEpAndChannelCount(Map map);
 }
