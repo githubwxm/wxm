@@ -553,18 +553,10 @@ public class LockTransactionManager {
                 account.setMoney(account.getMoney() + (-totalOutPrice * packageOrderItem.getQuantity()));
                 account.setProfit(account.getMoney());
                 packageOrderItemAccountMapper.updateByPrimaryKeySelective(account);
+                // 扣除打包商元素产品的钱
+                updateBuyingAccount(order.getId(), packageOrderItem.getEp_id(), packageOrderItem.getCore_ep_id());
             } else {
-                List<OrderItemAccount> accounts = orderItemAccountMapper.selectByOrderAnEp(order.getId(), order.getBuy_ep_id(), order.getPayee_ep_id());
-                for (OrderItemAccount account : accounts) {
-                    // 把data JSON 反编译为JAVA类型
-                    Collection<AccountDataDto> dataDtoList = AccountUtil.decompileAccountData(account.getData());
-                    // 获取总出货价
-                    int totalOutPrice = AccountUtil.getTotalOutPrice(dataDtoList);
-                    OrderItem orderItem = orderItemMapper.selectByPrimaryKey(account.getOrder_item_id());
-                    account.setMoney(account.getMoney() + (-totalOutPrice * orderItem.getQuantity()));
-                    account.setProfit(account.getMoney());
-                    orderItemAccountMapper.updateByPrimaryKeySelective(account);
-                }
+                updateBuyingAccount(order.getId(), order.getBuy_ep_id(), order.getPayee_ep_id());
             }
 
             // 获取余额变动信息
@@ -1047,5 +1039,19 @@ public class LockTransactionManager {
             throw new ApiException("退票失败还原状态异常", e);
         }
         return new Result(true);
+    }
+
+    private void updateBuyingAccount(Integer orderId, Integer epId, Integer coreEpId) {
+        List<OrderItemAccount> accounts = orderItemAccountMapper.selectByOrderAnEp(orderId, epId, coreEpId);
+        for (OrderItemAccount account : accounts) {
+            // 把data JSON 反编译为JAVA类型
+            Collection<AccountDataDto> dataDtoList = AccountUtil.decompileAccountData(account.getData());
+            // 获取总出货价
+            int totalOutPrice = AccountUtil.getTotalOutPrice(dataDtoList);
+            OrderItem orderItem = orderItemMapper.selectByPrimaryKey(account.getOrder_item_id());
+            account.setMoney(account.getMoney() + (-totalOutPrice * orderItem.getQuantity()));
+            account.setProfit(account.getMoney());
+            orderItemAccountMapper.updateByPrimaryKeySelective(account);
+        }
     }
 }
