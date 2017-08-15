@@ -214,12 +214,15 @@
     </update>
 
     <select id="selectByEp" resultType="map">
-        SELECT * FROM t_sms_tmpl WHERE 1=1
-        <if test="epId != null">
-            AND ep_id = #{epId}
-        </if>
+        SELECT
+            tst.*
+        FROM
+            t_sms_tmpl tst
+        LEFT JOIN t_ep te ON te.core_ep_id = tst.ep_id
+        WHERE
+            te.id = #{epId}
         <if test="type != null">
-            AND channel_type = #{type}
+            AND tst.channel_type = #{type}
         </if>
     </select>
 
