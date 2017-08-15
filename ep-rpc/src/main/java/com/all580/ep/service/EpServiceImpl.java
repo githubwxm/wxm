@@ -1143,6 +1143,13 @@ public class EpServiceImpl implements EpService {
         return result;
     }
 
+    @Autowired
+    public Result<?> selectPlatfrom(){
+        Result result =new Result(true);
+        result.put(epMapper.selectPlatfrom());
+        return result;
+    }
+
     @Override
     public Result<Boolean> isSendVoucher(int epId, int coreEpId) {
         Result<Boolean> result = new Result<>(true);

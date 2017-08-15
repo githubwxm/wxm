@@ -373,7 +373,7 @@
         <include refid="limit"/>
     </select>
 
-    <select id="selectEpAndChannelCount">
+    <select id="selectEpAndChannelCount" resultType="java.lang.Integer">
           select count(*) from (
              <include refid="selectEpAndChannelSql"/>
           )as a
@@ -381,7 +381,10 @@
     <sql id="selectEpAndChannelSql">
         select * from (
         select id,name from t_ep
-        where (ep_type=#{epType}  or id = id )and core_ep_id=#{coreEpId}
+        where (ep_type=#{epType}
+        <if test="epType  == 10002">  <!--  销售平台才查出自己-->
+            or id = id
+         </if>  )and core_ep_id=#{coreEpId}
         union
         select ep.id,ep.name from t_ep ep join
         t_core_ep_channel  channel
@@ -406,4 +409,8 @@
         </if>
          ORDER BY id
     </sql>
+
+    <select id="selectPlatfrom" resultType="java.lang.Integer">
+        select id from t_ep where core_ep_id=id;
+    </select>
 </mapper>
