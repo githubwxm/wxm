@@ -3,6 +3,8 @@ package com.all580.order.dao;
 import com.all580.order.entity.RefundPackageAccount;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 public interface RefundPackageAccountMapper {
     /**
      *  根据主键删除数据库的记录,t_refund_package_account
@@ -46,5 +48,7 @@ public interface RefundPackageAccountMapper {
      */
     int updateByPrimaryKey(RefundPackageAccount record);
 
-    RefundPackageAccount selectByOrderItemAndEp(@Param("itemId") Integer itemId, @Param("epId") Integer epId, @Param("coreEpId") Integer coreEpId);
+    List<RefundPackageAccount> selectByOrderItem(@Param("itemId") Integer itemId);
+
+    RefundPackageAccount selectByPackageItemAndEp(@Param("itemId") Integer packageItemId, @Param("epId") Integer epId, @Param("coreEpId") Integer coreEpId);
 }

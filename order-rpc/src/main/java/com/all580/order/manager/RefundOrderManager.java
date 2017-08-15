@@ -625,13 +625,9 @@ public class RefundOrderManager extends BaseOrderManager {
         // 退款
         // 余额退款
         if (order.getPayment_type() == PaymentConstant.PaymentType.BALANCE.intValue()) {
-            PackageOrderItem packageOrderItem = packageOrderItemMapper.selectByNumber(order.getNumber());
-            if (packageOrderItem != null){
-                RefundPackageAccount account = refundPackageAccountMapper.
-            }
-            List<RefundAccount> accountList = refundAccountMapper.selectByRefundId(refundOrderId);
             // 获取余额变动信息
-            List<BalanceChangeInfo> balanceChangeInfoList = AccountUtil.makerRefundBalanceChangeInfo(accountList);
+            List<BalanceChangeInfo> balanceChangeInfoList = packagingRefundSplitAccount(order, refundOrderId);
+
             // 退款
             Result result = changeBalances(
                     PaymentConstant.BalanceChangeType.BALANCE_REFUND,
@@ -640,9 +636,7 @@ public class RefundOrderManager extends BaseOrderManager {
                 log.warn("余额退款失败:{}", result.get());
                 throw new ApiException("调用余额退款失败:" + result.getError());
             }
-            for (RefundAccount refundAccount : accountList) {
-                refundAccountMapper.updateByPrimaryKeySelective(refundAccount);
-            }
+
             return new Result(true);
         }
         // 第三方退款
@@ -657,6 +651,27 @@ public class RefundOrderManager extends BaseOrderManager {
             throw new ApiException("调用第三方退款失败:" + result.getError());
         }
         return result;
+    }
+
+    private List<BalanceChangeInfo> packagingRefundSplitAccount(Order order, int refundOrderId){
+        List<RefundAccount> accountList = refundAccountMapper.selectByRefundId(refundOrderId);
+
+        PackageOrderItem packageOrderItem = packageOrderItemMapper.selectByNumber(order.getNumber());
+        List<RefundPackageAccount> refundPackageAccounts = null;
+        if (packageOrderItem != null){
+            refundPackageAccounts = refundPackageAccountMapper.selectByOrderItem(packageOrderItem.getId());
+        }
+        List<BalanceChangeInfo> balanceChangeInfoList = AccountUtil.makerRefundBalanceChangeInfo(accountList);
+        balanceChangeInfoList.addAll(AccountUtil.makerRefundBalanceChangeInfo(AccountUtil.packageRefundAccount2Account(refundPackageAccounts)));
+        for (RefundAccount refundAccount : accountList) {
+            refundAccountMapper.updateByPrimaryKeySelective(refundAccount);
+        }
+        if (refundPackageAccounts != null){
+            for (RefundPackageAccount refundPackageAccount : refundPackageAccounts){
+                refundPackageAccountMapper.updateByPrimaryKeySelective(refundPackageAccount);
+            }
+        }
+        return balanceChangeInfoList;
     }
 
     /**
