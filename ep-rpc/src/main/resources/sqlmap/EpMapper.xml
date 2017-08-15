@@ -382,8 +382,8 @@
         select * from (
         select id,name from t_ep
         where (ep_type=#{epType}
-        <if test="epType  == 10002">  <!--  销售平台才查出自己-->
-            or id = id
+        <if test="epType  == 10002">  <!--  供应平台才查出自己-->
+            or id = core_ep_id
          </if>  )and core_ep_id=#{coreEpId}
         union
         select ep.id,ep.name from t_ep ep join
@@ -396,11 +396,11 @@
             channel.seller_core_ep_id=ep.id
         </if>
         where 1=1
-        <if test="epType  == 10002">
-          and supplier_core_ep_id=ep.id
-        </if>
         <if test="epType  == 10003">
-          and  channel.seller_core_ep_id=#{coreEpId}
+          and supplier_core_ep_id=#{coreEpId}
+        </if>
+        <if test="epType  == 10002">
+          and  channel.seller_core_ep_id=#{coreEpId}  and 1=2
         </if>
 
         ) as f where  1=1
