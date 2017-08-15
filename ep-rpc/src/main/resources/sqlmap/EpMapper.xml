@@ -380,13 +380,13 @@
     </select>
     <sql id="selectEpAndChannelSql">
         select * from (
-        select id, CONCAT('',ep.`name`,'(平台商)')  from t_ep
+        select id, name  from t_ep
         where (ep_type=#{epType}
         <if test="epType  == 10002">  <!--  供应平台才查出自己-->
             or id = core_ep_id
          </if>  )and core_ep_id=#{coreEpId}
         union
-        select ep.id,ep.name from t_ep ep join
+        select ep.id,CONCAT('', ep.name, '(平台商)') from t_ep ep join
         t_core_ep_channel  channel
         on
         <if test="epType  == 10002">
