@@ -329,6 +329,8 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         // 更新审核时间
         if (order.getStatus() != OrderConstant.OrderStatus.AUDIT_WAIT && order.getAudit_time() == null) {
             order.setAudit_time(new Date());
+            packageOrderItem.setAudit_time(new Date());
+            packageOrderItem.setAudit(1);
         }
 
         // 执行后事

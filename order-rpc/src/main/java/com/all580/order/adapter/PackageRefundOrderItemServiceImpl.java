@@ -80,13 +80,8 @@ public class PackageRefundOrderItemServiceImpl extends AbstractRefundOrderImpl{
 
     @Override
     public void canBeRefund(RefundOrderApply apply, List<OrderItemDetail> detailList, Map params) {
-        //元素订单退订不检查
-//        try {
-//            this.getCreateOrderInterface(apply.getItem().getPro_type()).canBeRefund(apply, detailList, params);
-//        }catch (Exception e){
-//            //不可退元素的处理
-//
-//        }
+        //元素订单退订检查
+        this.getCreateOrderInterface(apply.getItem().getPro_type()).canBeRefund(apply, detailList, params);
     }
 
     @Override

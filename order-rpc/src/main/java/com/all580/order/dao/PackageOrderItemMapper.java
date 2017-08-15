@@ -47,4 +47,6 @@ public interface PackageOrderItemMapper {
     int updateByPrimaryKey(PackageOrderItem record);
 
     PackageOrderItem selectByNumber(@Param("number") Long number);
+
+    PackageOrderItem selectByorderId(@Param("orderId") Integer orderId);
 }

@@ -177,4 +177,19 @@
       `update_time` = #{update_time,jdbcType=TIMESTAMP}
     where `id` = #{id,jdbcType=INTEGER}
   </update>
+
+  <select id="selectByOrderItem" resultMap="BaseResultMap">
+    SELECT * FROM t_refund_package_account rpa
+    INNER JOIN t_refund_package_order rpo ON rpa.refund_package_order_id = rpo.id
+      WHERE rpo.package_order_item_id = #{itemId}
+  </select>
+
+  <select id="selectByPackageItemAndEp" resultMap="BaseResultMap">
+    SELECT * FROM t_refund_package_account rpa
+    INNER JOIN t_refund_package_order rpo ON rpa.refund_package_order_id = rpo.id
+      WHERE rpo.package_order_item_id = #{itemId}
+      and rpa.ep_id = #{epId}
+      and rpa.core_ep_id = #{coreEpId}
+      and rpa.data is not null limit 1
+  </select>
 </mapper>

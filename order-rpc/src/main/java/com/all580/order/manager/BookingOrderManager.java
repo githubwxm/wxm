@@ -562,7 +562,7 @@ public class BookingOrderManager extends BaseOrderManager {
      * @param order
      */
     public List<BalanceChangeInfo> packagingPaySplitAccount(Order order) {
-        return packagingPaySplitAccount(order, orderItemMapper.selectByOrderId(order.getId()));
+        return packagingPaySplitAccount(order, orderItemMapper.selectByOrderId(order.getId()), null);
     }
 
     /**
@@ -570,10 +570,18 @@ public class BookingOrderManager extends BaseOrderManager {
      *
      * @param order
      */
-    public List<BalanceChangeInfo> packagingPaySplitAccount(Order order, List<OrderItem> orderItems) {
+    public List<BalanceChangeInfo> packagingPaySplitAccount(Order order, PackageOrderItem packageOrderItem) {
+        return packagingPaySplitAccount(order, orderItemMapper.selectByOrderId(order.getId()), packageOrderItem);
+    }
+
+    /**
+     * 组装支付分账信息
+     *
+     * @param order
+     */
+    public List<BalanceChangeInfo> packagingPaySplitAccount(Order order, List<OrderItem> orderItems, PackageOrderItem packageOrderItem) {
         List<BalanceChangeInfo> balanceChangeInfoList = new ArrayList<>();
         // 套票
-        PackageOrderItem packageOrderItem = packageOrderItemMapper.selectByNumber(order.getNumber());
         if (packageOrderItem != null) {
             List<PackageOrderItemAccount> accounts = packageOrderItemAccountMapper.selectByOrderItem(packageOrderItem.getId());
             List<BalanceChangeInfo> itemInfoList = AccountUtil.makerPayBalanceChangeInfo(AccountUtil.packageAccount2Account(accounts), packageOrderItem.getPayment_flag(), packageOrderItem.getEp_id(), packageOrderItem.getCore_ep_id(), order.getBuy_ep_id());

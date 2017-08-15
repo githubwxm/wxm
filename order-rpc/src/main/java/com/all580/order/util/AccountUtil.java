@@ -630,6 +630,23 @@ public class AccountUtil {
     }
 
     /**
+     * 转换套票分账数据
+     * @param accounts
+     * @return
+     */
+    public static List<RefundAccount> packageRefundAccount2Account(Collection<RefundPackageAccount> accounts) {
+        List<RefundAccount> refundAccounts = new ArrayList<>();
+        if (accounts != null){
+            for (RefundPackageAccount account : accounts) {
+                RefundAccount refundAccount = new RefundAccount();
+                BeanUtils.copyProperties(account, refundAccount);
+                refundAccounts.add(refundAccount);
+            }
+        }
+        return refundAccounts;
+    }
+
+    /**
      * 获取最终售价
      * @param salesInfo 最终售卖企业信息
      * @return
