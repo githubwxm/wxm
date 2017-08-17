@@ -5,10 +5,7 @@ import com.all580.order.adapter.CreatePackageOrderService;
 import com.all580.order.api.OrderConstant;
 import com.all580.order.api.service.BookingOrderService;
 import com.all580.order.dao.*;
-import com.all580.order.dto.CreateOrder;
-import com.all580.order.dto.LockStockDto;
-import com.all580.order.dto.PriceDto;
-import com.all580.order.dto.ValidateProductSub;
+import com.all580.order.dto.*;
 import com.all580.order.entity.*;
 import com.all580.order.manager.BookingOrderManager;
 import com.all580.order.manager.LockTransactionManager;
@@ -38,6 +35,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 
 import javax.lang.exception.ApiException;
 import javax.lang.exception.ParamsMapValidationException;
@@ -96,26 +94,181 @@ public class BookingOrderServiceImpl implements BookingOrderService {
     public Result<?> create(Map params, String type) throws Exception {
         CreateOrderInterface orderInterface = applicationContext.getBean(OrderConstant.CREATE_ADAPTER + type, CreateOrderInterface.class);
         Assert.notNull(orderInterface, type + " 类型创建订单适配器没找到");
+        // 锁定库存集合(统一锁定)
+        Map<Integer, LockStockDto> lockStockDtoMap = new HashMap<>();
+        List<ProductSearchParams> lockParams = new ArrayList<>();
+        //创建终端订单
+        CreateOrderResultDto createOrderResult = this.createOrder(orderInterface, params, lockStockDtoMap, lockParams);
+        //终端订单
+        Order mainOrder = createOrderResult.getOrder();
+        List<OrderItem> mainItems = createOrderResult.getOrderItems();
 
+        Map<Order, List<OrderItem>> orderListMap = new HashMap<>();
+        orderListMap.put(createOrderResult.getOrder(), createOrderResult.getOrderItems());
+        //如果是套票订单，循环创建层级订单
+        //递归调用
+        while(createOrderResult.isHasPackageOrderItem()){
+            List<OrderItem> packageOrderItem = createOrderResult.getPackageOrderItems();
+            createOrderResult = this.createPackageOrderItem(orderInterface, params, packageOrderItem, lockStockDtoMap, lockParams);
+            if (!CollectionUtils.isEmpty(createOrderResult.getPackageCreateOrders())){
+                for (CreateOrderResultDto resultDto : createOrderResult.getPackageCreateOrders()) {
+                    //收集所有订单及对应的子订单，以备处理订单审核等订单流程
+                    orderListMap.put(resultDto.getOrder(), resultDto.getOrderItems());
+                }
+            }
+        }
+        // 锁定库存
+        Result<Map<Integer, List<Boolean>>> lockResult = productSalesPlanRPCService.lockProductStocks(lockParams);
+        if (!lockResult.isSuccess()) {
+            throw new ApiException(lockResult.getError());
+        }
+        Map<Integer, List<Boolean>> listMap = lockResult.get();
+        if (listMap.size() != lockStockDtoMap.size()) {
+            throw new ApiException("锁定库存异常");
+        }
+        List<OrderItem> allItems = new ArrayList<>();
+        // 检查是否待审核
+        checkCreateAudit(lockStockDtoMap, listMap, allItems);
+        //处理所有订单是否待审核
+        for (Order order : orderListMap.keySet()){
+            List<OrderItem> orderItems = orderListMap.get(order);
+            // 更新订单状态
+            for (OrderItem orderItem : orderItems) {
+                if (orderItem.getStatus() == OrderConstant.OrderItemStatus.AUDIT_WAIT
+                        || orderItem.getPro_type() == ProductConstants.ProductType.PACKAGE) {
+                    order.setStatus(OrderConstant.OrderStatus.AUDIT_WAIT);
+                    break;
+                }
+            }
+            // 更新审核时间
+            if (order.getStatus() != OrderConstant.OrderStatus.AUDIT_WAIT && order.getAudit_time() == null) {
+                order.setAudit_time(new Date());
+            }
+            orderMapper.updateByPrimaryKeySelective(order);
+
+            // 执行后事
+            boolean ok = orderInterface.after(params, order);
+
+            // 触发事件
+            eventManager.addEvent(OrderConstant.EventType.ORDER_CREATE, order.getId());
+
+            log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(order.getId(), null,
+                    order.getBuy_ep_id(), order.getBuy_ep_name(), OrderConstant.LogOperateCode.CREATE_SUCCESS,
+                    null, String.format("订单创建成功:%s", JsonUtils.toJson(params)), null));
+        }
+        //逐级检查关联订单
+        List<CreateOrderResultDto> resultDtoList = createOrderResult.getPackageCreateOrders();
+        if (resultDtoList != null){
+            List<Order> orderList = new ArrayList<>();//最底层的所有元素订单
+            for (CreateOrderResultDto resultDto : resultDtoList) {
+                orderList.add(resultDto.getOrder());
+            }
+            //获取元素订单的上一层的订单
+            List<PackageOrderDto> packageOrderDtoList = bookingOrderManager.getOrderChainForPackage(orderList);
+            //递归调用
+            while (!CollectionUtils.isEmpty(packageOrderDtoList)){
+                for (PackageOrderDto packageOrderDto : packageOrderDtoList) {
+                    List<Order> itemOrders = packageOrderDto.getPackageItemOrders();
+                    for (Order itemOrder : itemOrders) {
+                        //如果套票有元素订单待审核
+                        if (itemOrder.getStatus() == OrderConstant.OrderStatus.AUDIT_WAIT){
+                            break;
+                        }
+                        if (packageOrderDto.getStatus() == OrderConstant.OrderStatus.AUDIT_WAIT){
+                            packageOrderDto.setStatus(OrderConstant.OrderStatus.PAY_WAIT);
+                        }
+                    }
+                    //修改审核状态
+                    orderMapper.updateByPrimaryKeySelective(packageOrderDto);
+                }
+                packageOrderDtoList = bookingOrderManager.getOrderChainForPackage(packageOrderDtoList);
+            }
+        }
+
+        Result<Object> result = new Result<>(Boolean.TRUE);
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("order", mainOrder);
+        resultMap.put("items", mainItems);
+        result.put(resultMap);
+        return result;
+    }
+
+    /**
+     * 创建套票元素订单
+     * @param orderInterface
+     * @param params
+     * @param packageOrderItem
+     * @param lockStockDtoMap
+     * @param lockParams
+     * @return
+     */
+    private CreateOrderResultDto createPackageOrderItem(CreateOrderInterface orderInterface, Map params, List<OrderItem> packageOrderItem,
+                                                       Map<Integer, LockStockDto> lockStockDtoMap, List<ProductSearchParams> lockParams){
+        //处理套票元素订单信息
+        Map<String, List<Map>> itemMap = new HashMap<>();//套票子产品与元素产品信息键值对
+        List<Map> mapList = orderInterface.getOrderItemParams(params);
+        for (Map item : mapList) {
+            String productSubCode = CommonUtil.objectParseString(item.get("product_sub_code"));
+            itemMap.put(productSubCode, orderInterface.getOrderItemParams(item));
+        }
+
+        CreateOrderResultDto createOrderResultDto = new CreateOrderResultDto();
+        List<CreateOrderResultDto> resultDtoList = new ArrayList<>();
+        for (OrderItem oi : packageOrderItem){
+            //组装元素订单创建参数
+            params = bookingOrderManager.gerneratePackageItemParams(params, oi, itemMap);
+
+            CreateOrderResultDto resultDto = this.createOrder(orderInterface, params, lockStockDtoMap, lockParams);
+            //保存套票与元素订单之间的关联
+            bookingOrderManager.insertPackageOrderChain(oi.getOrder_id(), resultDto.getOrder().getId());
+
+            if (createOrderResultDto.getPackageOrderItems() == null){
+                createOrderResultDto.setPackageOrderItems(resultDto.getPackageOrderItems());
+            }else {
+                createOrderResultDto.getPackageOrderItems().addAll(resultDto.getPackageOrderItems());
+            }
+            //收集元素订单，以备处理元素套票订单的创建
+            resultDtoList.add(resultDto);
+        }
+        createOrderResultDto.setPackageCreateOrders(resultDtoList);
+        createOrderResultDto.setHasPackageOrderItem(!CollectionUtils.isEmpty(createOrderResultDto.getPackageOrderItems()));
+
+        return createOrderResultDto;
+    }
+
+    /**
+     * 创建主订单
+     * @param orderInterface
+     * @param params
+     * @param lockStockDtoMap
+     * @param lockParams
+     * @return
+     */
+    private CreateOrderResultDto createOrder(CreateOrderInterface orderInterface, Map<String, Object> params,
+                                             Map<Integer, LockStockDto> lockStockDtoMap, List<ProductSearchParams> lockParams){
         CreateOrder createOrder = orderInterface.parseParams(params);
 
         Result validateResult = orderInterface.validate(createOrder, params);
         if (!validateResult.isSuccess()) {
-            return validateResult;
+            throw  new ApiException(validateResult.getError());
         }
 
         // 创建订单
         Order order = orderInterface.insertOrder(createOrder, params);
         // 获取子订单
-        List<Map> items = (List<Map>) params.get("items");
-        // 锁定库存集合(统一锁定)
-        Map<Integer, LockStockDto> lockStockDtoMap = new HashMap<>();
-        List<ProductSearchParams> lockParams = new ArrayList<>();
+        List<Map> items = orderInterface.getOrderItemParams(params);
+        List<OrderItem> orderItems = new ArrayList<>();
+        List<OrderItem> packageOrderItems = new ArrayList<>();
         ValidateProductSub first = null;
         for (Map item : items) {
             ValidateProductSub sub = orderInterface.parseItemParams(createOrder, item);
             if (first == null) first = sub;
-            this.createOrderItem(orderInterface, createOrder, order, sub, item, lockStockDtoMap, lockParams);
+            OrderItem orderItem = this.createOrderItem(orderInterface, createOrder, order, sub, item, lockStockDtoMap, lockParams);
+            orderItems.add(orderItem);
+            //套票需要创建元素订单的子订单
+            if (orderItem.getPro_type() == ProductConstants.ProductType.PACKAGE){
+                packageOrderItems.add(orderItem);
+            }
         }
         if (first == null) {
             throw new ApiException("请选择购买的产品");
@@ -124,61 +277,30 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         // 创建订单联系人
         orderInterface.insertShipping(params, order);
 
-        // 锁定库存
-        Result<Map<Integer, List<Boolean>>> lockResult = productSalesPlanRPCService.lockProductStocks(lockParams);
-        if (!lockResult.isSuccess()) {
-            throw new ApiException(lockResult.getError());
+        CreateOrderResultDto result = new CreateOrderResultDto();
+        result.setOrder(order);
+        result.setOrderItems(orderItems);
+        if (CollectionUtils.isEmpty(packageOrderItems)){
+            result.setHasPackageOrderItem(Boolean.FALSE);
+        }else {
+            result.setHasPackageOrderItem(Boolean.TRUE);
+            result.setPackageOrderItems(packageOrderItems);
         }
-
-        Map<Integer, List<Boolean>> listMap = lockResult.get();
-        if (listMap.size() != lockStockDtoMap.size()) {
-            throw new ApiException("锁定库存异常");
-        }
-
-        List<OrderItem> orderItems = new ArrayList<>();
-        // 检查是否待审核
-        checkCreateAudit(lockStockDtoMap, listMap, orderItems);
-
-        // 更新订单状态
-        for (OrderItem orderItem : orderItems) {
-            if (orderItem.getStatus() == OrderConstant.OrderItemStatus.AUDIT_WAIT) {
-                order.setStatus(OrderConstant.OrderStatus.AUDIT_WAIT);
-                break;
-            }
-        }
-
-        // 更新审核时间
-        if (order.getStatus() != OrderConstant.OrderStatus.AUDIT_WAIT && order.getAudit_time() == null) {
-            order.setAudit_time(new Date());
-        }
-
-        orderMapper.updateByPrimaryKeySelective(order);
-
-        // 执行后事
-        boolean ok = orderInterface.after(params, order);
-
-        Map<String, Object> resultMap = new HashMap<>();
-        resultMap.put("order", order);
-        resultMap.put("items", orderItems);
-        Result<Map> result = new Result<>(true);
-        result.put(resultMap);
-
-        // 触发事件
-        eventManager.addEvent(OrderConstant.EventType.ORDER_CREATE, order.getId());
-        if (ok) {
-            Map<String, Collection<?>> data = new HashMap<>();
-            data.put("t_order", CommonUtil.oneToList(order));
-            data.put("t_order_item", orderItems);
-            result.putExt(Result.SYNC_DATA, JsonUtils.obj2map(data));
-        }
-
-        log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(order.getId(), null,
-                order.getBuy_ep_id(), order.getBuy_ep_name(), OrderConstant.LogOperateCode.CREATE_SUCCESS,
-                null, String.format("订单创建成功:%s", JsonUtils.toJson(params)), null));
         return result;
     }
 
-    private void createOrderItem(CreateOrderInterface orderInterface, CreateOrder createOrder, Order order,ValidateProductSub sub,
+    /**
+     * 创建子订单
+     * @param orderInterface
+     * @param createOrder
+     * @param order
+     * @param sub
+     * @param item
+     * @param lockStockDtoMap
+     * @param lockParams
+     * @return
+     */
+    private OrderItem createOrderItem(CreateOrderInterface orderInterface, CreateOrder createOrder, Order order,ValidateProductSub sub,
                                      Map item, Map<Integer, LockStockDto> lockStockDtoMap, List<ProductSearchParams> lockParams){
         ProductSalesInfo salesInfo = orderInterface.validateProductAndGetSales(sub, createOrder, item);
 
@@ -222,6 +344,8 @@ public class BookingOrderServiceImpl implements BookingOrderService {
 
         // 预分账记录
         bookingOrderManager.prePaySplitAccount(allDaysSales, orderItem, createOrder.getEpId());
+
+        return orderItem;
     }
 
     @Override
@@ -361,10 +485,10 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         result.put(resultMap);
 
         if (ok) {
-            resultMap.clear();
-            resultMap.put("t_order", CommonUtil.oneToList(order));
-            resultMap.put("t_order_item", orderItems);
-            result.putExt(Result.SYNC_DATA, resultMap);
+            Map<String, Collection<?>> data = new HashMap<>();
+            data.put("t_order", CommonUtil.oneToList(order));
+            data.put("t_order_item", orderItems);
+            result.putExt(Result.SYNC_DATA, data);
         }
 
         log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(order.getId(), null,

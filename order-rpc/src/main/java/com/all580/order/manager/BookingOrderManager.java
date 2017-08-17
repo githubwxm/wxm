@@ -3,6 +3,7 @@ package com.all580.order.manager;
 import com.all580.order.api.OrderConstant;
 import com.all580.order.dao.*;
 import com.all580.order.dto.AccountDataDto;
+import com.all580.order.dto.PackageOrderDto;
 import com.all580.order.dto.PriceDto;
 import com.all580.order.entity.*;
 import com.all580.order.util.AccountUtil;
@@ -71,6 +72,45 @@ public class BookingOrderManager extends BaseOrderManager {
     private Integer resendTicketInterval;
     @Autowired
     private PackageOrderItemSalesChainMapper packageOrderItemSalesChainMapper;
+    @Autowired
+    private packageOrderChainMapper packageOrderChainMapper;
+
+    /**
+     * 获取套票元素订单的上一层订单
+     * @param orders
+     * @return
+     */
+    public List<PackageOrderDto> getOrderChainForPackage(List<? extends Order> orders){
+        return orderMapper.selectPackageOrder(orders);
+    }
+
+    /**
+     * 套票打包创建订单参数组装
+     * @param params
+     * @param orderItem
+     * @param itemMap
+     * @return
+     */
+    public Map gerneratePackageItemParams(Map<String, Object> params, OrderItem orderItem, Map<String, List<Map>> itemMap){
+        //由打包商去下单购买元素产品
+        params.put("ep_id", orderItem.getSupplier_ep_id());
+        params.put("core_ep_id", orderItem.getSupplier_core_ep_id());
+        params.put("remark", "套票元素自动下单");
+        params.put("operator_id", 0);
+        params.put("operator_name", OrderConstant.CREATE_ADAPTER);
+        params.put("source", OrderConstant.OrderSourceType.SOURCE_TYPE_WEB);
+
+        params.put("items", itemMap.get(String.valueOf(orderItem.getPro_sub_number())));
+
+        return params;
+    }
+
+    public int insertPackageOrderChain(int orderId, int refOrderId){
+        packageOrderChain orderChain = new packageOrderChain();
+        orderChain.setOrder_id(orderId);
+        orderChain.setRef_order_id(refOrderId);
+        return packageOrderChainMapper.insertSelective(orderChain);
+    }
 
     /**
      * 验证游客信息
@@ -330,27 +370,29 @@ public class BookingOrderManager extends BaseOrderManager {
         orderItemDetail.setUse_hours_limit(info.getUse_hours_limit());
         Date effectiveDate = orderItemDetail.getDay();
         Date expiryDate = null;
-        if (info.getEffective_type() == ProductConstants.EffectiveValidType.DAY) {
-            // 产品说就用预定的时间,即使下单时间比预定时间大也取预定时间
-            effectiveDate = orderItemDetail.getUse_hours_limit() != null ? DateUtils.addHours(effectiveDate, orderItemDetail.getUse_hours_limit()) : effectiveDate;
-            // 这里目前只做了门票的,默认结束日期就是当天的,酒店应该是第二天
-            expiryDate = DateUtils.addDays(orderItemDetail.getDay(), info.getEffective_day() - 1);
-            expiryDate = DateUtils.setHours(expiryDate, DateFormatUtils.get(info.getEnd_time(), Calendar.HOUR_OF_DAY));
-            expiryDate = DateUtils.setMinutes(expiryDate, DateFormatUtils.get(info.getEnd_time(), Calendar.MINUTE));
-            expiryDate = DateUtils.setSeconds(expiryDate, DateFormatUtils.get(info.getEnd_time(), Calendar.SECOND));
-        } else {
-            effectiveDate = date.after(info.getEffective_start_date()) ? (orderItemDetail.getUse_hours_limit() != null ? DateUtils.addHours(date, orderItemDetail.getUse_hours_limit()) : date) : info.getEffective_start_date();
-            expiryDate = info.getEffective_end_date();
+        if (info.getEffective_type() != null){
+            if (info.getEffective_type() == ProductConstants.EffectiveValidType.DAY) {
+                // 产品说就用预定的时间,即使下单时间比预定时间大也取预定时间
+                effectiveDate = orderItemDetail.getUse_hours_limit() != null ? DateUtils.addHours(effectiveDate, orderItemDetail.getUse_hours_limit()) : effectiveDate;
+                // 这里目前只做了门票的,默认结束日期就是当天的,酒店应该是第二天
+                expiryDate = DateUtils.addDays(orderItemDetail.getDay(), info.getEffective_day() - 1);
+                expiryDate = DateUtils.setHours(expiryDate, DateFormatUtils.get(info.getEnd_time(), Calendar.HOUR_OF_DAY));
+                expiryDate = DateUtils.setMinutes(expiryDate, DateFormatUtils.get(info.getEnd_time(), Calendar.MINUTE));
+                expiryDate = DateUtils.setSeconds(expiryDate, DateFormatUtils.get(info.getEnd_time(), Calendar.SECOND));
+            } else {
+                effectiveDate = date.after(info.getEffective_start_date()) ? (orderItemDetail.getUse_hours_limit() != null ? DateUtils.addHours(date, orderItemDetail.getUse_hours_limit()) : date) : info.getEffective_start_date();
+                expiryDate = info.getEffective_end_date();
+            }
+            if (effectiveDate.after(expiryDate)) {
+                throw new ApiException("该产品已过期");
+            }
+            // 不能购买已过销售计划的产品
+            if (date.after(info.getEnd_time())) {
+                throw new ApiException("预定时间已过期");
+            }
+            orderItemDetail.setEffective_date(effectiveDate);
+            orderItemDetail.setExpiry_date(expiryDate);
         }
-        if (effectiveDate.after(expiryDate)) {
-            throw new ApiException("该产品已过期");
-        }
-        // 不能购买已过销售计划的产品
-        if (date.after(info.getEnd_time())) {
-            throw new ApiException("预定时间已过期");
-        }
-        orderItemDetail.setEffective_date(effectiveDate);
-        orderItemDetail.setExpiry_date(expiryDate);
         orderItemDetail.setRefund_quantity(0);
         orderItemDetail.setUsed_quantity(0);
         orderItemDetailMapper.insertSelective(orderItemDetail);

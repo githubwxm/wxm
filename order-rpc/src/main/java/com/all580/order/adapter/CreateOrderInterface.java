@@ -23,6 +23,8 @@ public interface CreateOrderInterface {
 
     CreateOrder parseParams(Map params);
 
+    List<Map> getOrderItemParams(Map params);
+
     ValidateProductSub parseItemParams(CreateOrder createOrder, Map item);
 
     Result validate(CreateOrder createOrder, Map params);
@@ -50,6 +52,8 @@ public interface CreateOrderInterface {
 
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     Shipping insertShipping(Map params, Order order);
+
+
 
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     boolean after(Map params, Order order);

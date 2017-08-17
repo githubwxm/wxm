@@ -7,6 +7,7 @@ import com.all580.order.api.service.OrderService;
 import com.all580.order.api.service.RefundOrderService;
 import com.framework.common.BaseController;
 import com.framework.common.Result;
+import com.framework.common.lang.JsonUtils;
 import com.framework.common.validate.ParamsMapValidate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,6 +89,7 @@ public class OrderController extends BaseController {
     @RequestMapping(value = "package/create", method = RequestMethod.POST)
     @ResponseBody
     public Result<?> createPackageOrder(@RequestBody Map params) throws Exception {
+        System.out.println("params--->" + JsonUtils.toJson(params));
         ParamsMapValidate.validate(params, orderValidateManager.createPackageValidate());
         return bookingOrderService.createPackageOrder(params);
     }
