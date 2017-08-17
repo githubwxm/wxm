@@ -11,7 +11,7 @@ import java.util.List;
 @Data
 public class PackageOrderDto extends Order{
     //上层的套票订单
-    private Order packageOrder;
+    //private Order packageOrder;
     //下层的元素订单
     private List<Order> packageItemOrders;
 }

@@ -407,7 +407,7 @@
   </select>
 
   <resultMap id="PackageOrder" type="com.all580.order.dto.PackageOrderDto" extends="BaseResultMap">
-      <association property="packageOrder" select="selectPackageOrderById" column="id" javaType="com.all580.order.entity.Order"></association>
+      <!--<association property="packageOrder" select="selectPackageOrderById" column="id" javaType="com.all580.order.entity.Order"></association>-->
       <collection property="packageItemOrders" select="selectPackageItemOrderById" column="id" ofType="com.all580.order.entity.Order"></collection>
   </resultMap>
 
