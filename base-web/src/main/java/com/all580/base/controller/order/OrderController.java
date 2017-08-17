@@ -89,9 +89,8 @@ public class OrderController extends BaseController {
     @RequestMapping(value = "package/create", method = RequestMethod.POST)
     @ResponseBody
     public Result<?> createPackageOrder(@RequestBody Map params) throws Exception {
-        System.out.println("params--->" + JsonUtils.toJson(params));
         ParamsMapValidate.validate(params, orderValidateManager.createPackageValidate());
-        return bookingOrderService.createPackageOrder(params);
+        return bookingOrderService.create(params, "PACKAGE");
     }
 
     @RequestMapping(value = "audit", method = RequestMethod.POST)
@@ -155,7 +154,7 @@ public class OrderController extends BaseController {
     public Result<?> refundApplyForPackage(@RequestBody Map params) throws Exception {
         // 验证参数
 
-        return refundOrderService.refundApplyForPackage(params);
+        return refundOrderService.apply(params, "PACKAGE");
     }
 
 

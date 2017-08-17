@@ -58,10 +58,6 @@ public class BookingOrderManager extends BaseOrderManager {
     @Autowired
     private OrderItemSalesChainMapper orderItemSalesChainMapper;
     @Autowired
-    private PackageOrderItemMapper packageOrderItemMapper;
-    @Autowired
-    private PackageOrderItemAccountMapper packageOrderItemAccountMapper;
-    @Autowired
     @Getter
     private MnsEventAspect eventManager;
     @Autowired
@@ -70,8 +66,6 @@ public class BookingOrderManager extends BaseOrderManager {
     private Integer resendTicketMax;
     @Value("${resend_ticket_interval}")
     private Integer resendTicketInterval;
-    @Autowired
-    private PackageOrderItemSalesChainMapper packageOrderItemSalesChainMapper;
     @Autowired
     private packageOrderChainMapper packageOrderChainMapper;
 
@@ -400,22 +394,6 @@ public class BookingOrderManager extends BaseOrderManager {
     }
 
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public PackageOrderItemSalesChain generatePackagerChain(PackageOrderItem item, Integer epId, Date day, List<EpSalesInfo> daySales) {
-        AccountDataDto dataDto = AccountUtil.generateAccountData(daySales, epId, day);
-        PackageOrderItemSalesChain chain = new PackageOrderItemSalesChain();
-        chain.setPackage_order_item_id(item.getId());
-        chain.setDay(day);
-        chain.setEp_id(epId);
-        chain.setCore_ep_id(getCoreEpId(getCoreEpId(epId)));
-        chain.setSale_ep_id(dataDto.getSaleEpId());
-        chain.setSale_core_ep_id(getCoreEpId(getCoreEpId(dataDto.getSaleEpId())));
-        chain.setIn_price(dataDto.getInPrice());
-        chain.setOut_price(dataDto.getOutPrice());
-        packageOrderItemSalesChainMapper.insertSelective(chain);
-        return chain;
-    }
-
-    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public OrderItemSalesChain generateChain(OrderItem item, Integer epId, Date day, List<EpSalesInfo> daySales) {
         AccountDataDto dataDto = AccountUtil.generateAccountData(daySales, epId, day);
         OrderItemSalesChain chain = new OrderItemSalesChain();
@@ -581,10 +559,9 @@ public class BookingOrderManager extends BaseOrderManager {
 
     /**
      * 支付预分账
-     *
      * @param daySalesList 每天销售链
-     * @param orderItem    子订单
-     * @param finalEpId    最终售卖企业
+     * @param orderItem 子订单
+     * @param finalEpId 最终售卖企业
      * @return
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
@@ -600,38 +577,21 @@ public class BookingOrderManager extends BaseOrderManager {
 
     /**
      * 组装支付分账信息
-     *
      * @param order
      */
     public List<BalanceChangeInfo> packagingPaySplitAccount(Order order) {
-        return packagingPaySplitAccount(order, orderItemMapper.selectByOrderId(order.getId()), null);
+        return packagingPaySplitAccount(order, orderItemMapper.selectByOrderId(order.getId()));
     }
 
     /**
      * 组装支付分账信息
-     *
      * @param order
      */
-    public List<BalanceChangeInfo> packagingPaySplitAccount(Order order, PackageOrderItem packageOrderItem) {
-        return packagingPaySplitAccount(order, orderItemMapper.selectByOrderId(order.getId()), packageOrderItem);
-    }
-
-    /**
-     * 组装支付分账信息
-     *
-     * @param order
-     */
-    public List<BalanceChangeInfo> packagingPaySplitAccount(Order order, List<OrderItem> orderItems, PackageOrderItem packageOrderItem) {
+    public List<BalanceChangeInfo> packagingPaySplitAccount(Order order, List<OrderItem> orderItems) {
         List<BalanceChangeInfo> balanceChangeInfoList = new ArrayList<>();
-        // 套票
-        if (packageOrderItem != null) {
-            List<PackageOrderItemAccount> accounts = packageOrderItemAccountMapper.selectByOrderItem(packageOrderItem.getId());
-            List<BalanceChangeInfo> itemInfoList = AccountUtil.makerPayBalanceChangeInfo(AccountUtil.packageAccount2Account(accounts), packageOrderItem.getPayment_flag(), packageOrderItem.getEp_id(), packageOrderItem.getCore_ep_id(), order.getBuy_ep_id());
-            balanceChangeInfoList.addAll(itemInfoList);
-        }
         for (OrderItem orderItem : orderItems) {
             List<OrderItemAccount> accountList = orderItemAccountMapper.selectByOrderItem(orderItem.getId());
-            List<BalanceChangeInfo> itemInfoList = AccountUtil.makerPayBalanceChangeInfo(accountList, orderItem.getPayment_flag(), orderItem.getSupplier_ep_id(), orderItem.getSupplier_core_ep_id(), packageOrderItem == null ? order.getBuy_ep_id() : packageOrderItem.getEp_id());
+            List<BalanceChangeInfo> itemInfoList = AccountUtil.makerPayBalanceChangeInfo(accountList, orderItem.getPayment_flag(), orderItem.getSupplier_ep_id(), orderItem.getSupplier_core_ep_id(), order.getBuy_ep_id());
             balanceChangeInfoList.addAll(itemInfoList);
         }
         return balanceChangeInfoList;

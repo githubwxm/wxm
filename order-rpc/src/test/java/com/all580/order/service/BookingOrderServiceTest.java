@@ -44,20 +44,6 @@ public class BookingOrderServiceTest extends AbstractTransactionalJUnit4SpringCo
     private BookingOrderManager bookingOrderManager;
 
     @Test
-    @Transactional(rollbackFor = Exception.class)
-    public void testRefundPackageOrder() throws Exception{
-        Map params = new HashMap();
-        params.put("order_item_sn","1500965139090360");
-        params.put("apply_from", 351);
-        params.put("ep_id", "24");
-        params.put("core_ep_id", "1");
-        params.put("operator_id", "71");
-
-        Result rseult = refundOrderService.refundApplyForPackage(params);
-        System.out.println("---->" + JsonUtils.toJson(rseult.get()));
-    }
-
-    @Test
     //@Repeat(5)
     @Transactional(rollbackFor = Exception.class)
     public void testCreatePackageOrder() throws Exception{

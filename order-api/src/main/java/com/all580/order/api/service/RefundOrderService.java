@@ -26,14 +26,6 @@ public interface RefundOrderService {
     Result<?> apply(Map params, String type) throws Exception;
 
     /**
-     * 套票退订申请
-     * @param params
-     * @return
-     * @throws Exception
-     */
-    Result<?> refundApplyForPackage(Map params) throws Exception;
-
-    /**
      * 取消已支付未分账的订单
      * @param params
      * @return
