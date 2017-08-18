@@ -68,6 +68,11 @@ public abstract class AbstractCreateOrderImpl implements CreateOrderInterface {
         return createOrder;
     }
 
+    @Override
+    public List<Map> getOrderItemParams(Map params) {
+        return (List<Map>) params.get("items");
+    }
+
     public ValidateProductSub parseItemParams(CreateOrder createOrder, Map item) {
         ValidateProductSub sub = new ValidateProductSub();
         sub.setCode(Long.parseLong(item.get("product_sub_code").toString()));

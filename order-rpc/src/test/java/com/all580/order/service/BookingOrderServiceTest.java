@@ -1,5 +1,6 @@
 package com.all580.order.service;
 
+import com.all580.order.api.OrderConstant;
 import com.all580.order.api.service.BookingOrderService;
 import com.all580.order.api.service.RefundOrderService;
 import com.all580.order.dao.OrderMapper;
@@ -18,10 +19,7 @@ import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author zhouxianjun(Alone)
@@ -30,7 +28,7 @@ import java.util.Map;
  * @date 2016/9/28 10:21
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@TransactionConfiguration(transactionManager = "transactionManager", defaultRollback=true)
+@TransactionConfiguration(transactionManager = "transactionManager", defaultRollback=false)
 @ContextConfiguration(locations = { "classpath:META-INF/spring/*.xml"})
 public class BookingOrderServiceTest extends AbstractTransactionalJUnit4SpringContextTests {
     @Resource
@@ -46,77 +44,36 @@ public class BookingOrderServiceTest extends AbstractTransactionalJUnit4SpringCo
     private BookingOrderManager bookingOrderManager;
 
     @Test
-    @Transactional(rollbackFor = Exception.class)
-    public void testRefundPackageOrder() throws Exception{
-        Map params = new HashMap();
-        params.put("order_item_sn","1500965139090360");
-        params.put("apply_from", 351);
-        params.put("ep_id", "24");
-        params.put("core_ep_id", "1");
-        params.put("operator_id", "71");
-
-        Result rseult = refundOrderService.refundApplyForPackage(params);
-        System.out.println("---->" + JsonUtils.toJson(rseult.get()));
-    }
-
-    @Test
+    //@Repeat(5)
     @Transactional(rollbackFor = Exception.class)
     public void testCreatePackageOrder() throws Exception{
-        Map params = new HashMap();
-        Map ship = new HashMap();
-        ship.put("name","ceshi");
-        ship.put("sid","1231312312");
-        ship.put("phone","13636362563");
-        params.put("shipping",ship);
-        List<Map> items = new ArrayList<>();
+        String str = "{\"access_id\":\"1476277249859N2T3JBGA\",\"ep_id\":\"34\",\"items\":[{\"days\":\"1\"," +
+                "\"items\":[{\"amount\":\"1\",\"days\":\"1\",\"id\":\"98338\",\"message\":\"\"," +
+                "\"name\":\"订单改版测试产品-普通票-散客-在线支付\",\"product_name\":\"订单改版测试产品\"," +
+                "\"product_sub_code\":\"1499220704555281\",\"product_type\":\"5101\",\"quantity\":\"1\"," +
+                "\"require_sid\":\"5110\",\"send_msg\":\"\",\"sid_day_count\":\"0\",\"sid_day_quantity\":\"5\"," +
+                "\"start\":\"2017-08-17 00:00:00\",\"visitor\":[{\"name\":\"测试\",\"nameMessage\":\"\"," +
+                "\"phone\":\"13574177622\",\"phoneMessage\":\"\",\"quantity\":1,\"sid\":\"43072519900301806X\"," +
+                "\"sidMessage\":\"\",\"sidType\":true}]},{\"amount\":\"2\",\"days\":\"1\",\"id\":\"98399\"," +
+                "\"message\":\"\",\"name\":\"套票测试1-普通票-散客-在线支付\",\"product_name\":\"订单改版测试产品\"," +
+                "\"product_sub_code\":\"1502500633912601\",\"product_type\":\"5101\",\"quantity\":\"2\"," +
+                "\"require_sid\":\"5111\",\"send_msg\":\"\",\"sid_day_count\":\"0\",\"sid_day_quantity\":\"0\"," +
+                "\"start\":\"2017-08-18 00:00:00\",\"visitor\":[{\"name\":\"测试\",\"nameMessage\":\"\"," +
+                "\"phone\":\"13574177622\",\"phoneMessage\":\"\",\"quantity\":\"2\",\"sid\":\"430726199109273727\"," +
+                "\"sidMessage\":\"\",\"sidType\":true}]},{\"amount\":\"1\",\"days\":\"1\",\"id\":\"98400\"," +
+                "\"message\":\"\",\"name\":\"测试套票2-普通票-散客-在线支付\",\"product_name\":\"订单改版测试产品\"," +
+                "\"product_sub_code\":\"1502500722662601\",\"product_type\":\"5101\",\"quantity\":\"1\"," +
+                "\"require_sid\":\"5111\",\"send_msg\":\"\",\"sid_day_count\":\"0\",\"sid_day_quantity\":\"0\"," +
+                "\"start\":\"2017-08-19 00:00:00\",\"visitor\":[{\"name\":\"测试\",\"nameMessage\":\"\"," +
+                "\"phone\":\"13574177622\",\"phoneMessage\":\"\",\"quantity\":\"1\",\"sid\":\"43072319820310001X\"," +
+                "\"sidMessage\":\"\",\"sidType\":true}]}],\"product_sub_code\":\"1502501431451601\",\"product_type\":\"5104\",\"quantity\":1,\"remark\":\"\"," +
+                "\"start\":\"2017-08-17 00:00:00\"}],\"operator_id\":\"535731\",\"operator_name\":\"小布\",\"outer_id\":\"\"," +
+                "\"sale_amount\":\"\",\"shipping\":{\"name\":\"测试\",\"phone\":\"13574177622\",\"sid\":\"\"}," +
+                "\"sign\":\"e42ccc6a32a216775c1c3b952f3b2470\",\"core_ep_id\":1,\"product_type\":\"5104\"}";
+        Map params = JsonUtils.json2Map(str);
+        params.put("from", OrderConstant.FromType.NON_TRUST);
 
-        Map item1 = new HashMap();
-        item1.put("product_sub_code", 1499846578900701L);
-        item1.put("product_type", 5101);
-        item1.put("quantity", 2);
-        List<Map> visitors = new ArrayList<>();
-        Map visitor = new HashMap();
-        visitor.put("name","ceshi");
-        visitor.put("sid","1231312312");
-        visitor.put("phone","13636362563");
-        visitor.put("quantity","2");
-        visitors.add(visitor);
-        item1.put("visitor", visitors);
-        item1.put("days", 1);
-        item1.put("start", "2017-07-27 00:00:00");
-        items.add(item1);
-
-        Map item2 = new HashMap();
-        item2.put("product_sub_code", 1499841934558701L);
-        item2.put("product_type", 5101);
-        item2.put("quantity", 2);
-        item2.put("visitor", visitors);
-        item2.put("days", 1);
-        item2.put("start", "2017-07-27 00:00:00");
-        items.add(item2);
-
-//        Map item3 = new HashMap();
-//        item3.put("product_sub_code", 1492589311726231L);
-//        item3.put("product_type", 5101);
-//        item3.put("quantity", 2);
-//        item3.put("visitor", visitors);
-//        item3.put("days", 1);
-//        item3.put("start", "2017-07-19 00:00:00");
-//        items.add(item3);
-
-        params.put("items", items);
-        params.put("from", 351);
-        params.put("remark", "备注");
-        params.put("ep_id", "24");
-        params.put("core_ep_id", "1");
-        params.put("operator_id", "71");
-
-        params.put("product_sub_code", 1499744068564331L);
-        params.put("quantity", 2);
-        params.put("days", 1);
-        params.put("start", "2017-07-27 00:00:00");
-
-        Result rseult = bookingOrderService.createPackageOrder(params);
+        Result rseult = bookingOrderService.create(params, "PACKAGE");
         System.out.println("---->" + JsonUtils.toJson(rseult.get()));
     }
 

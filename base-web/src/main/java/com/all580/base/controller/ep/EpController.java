@@ -10,11 +10,9 @@ import com.framework.common.validate.ParamsMapValidate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
+import javax.lang.exception.ApiException;
 import javax.lang.exception.ParamsMapValidationException;
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
@@ -33,6 +31,23 @@ public class EpController extends BaseController {
 
     @Autowired
     private PlatfromValidateManager platfromValidateManager;//select
+
+    //  查询供应商平台商  包含供销平台商
+    @RequestMapping(value = "select/ep_and_channel", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<?> create(HttpServletRequest request, String name, @RequestParam("ep_type")
+            Integer ep_type,Integer record_start,Integer record_count) {
+        if(!(ep_type==EpConstant.EpType.SELLER||ep_type==EpConstant.EpType.SUPPLIER)){
+              new ApiException("企业类型不合法");
+        }
+        Map map = new HashMap();
+        map.put("name",name);
+        map.put("epType",ep_type);
+        map.put("coreEpId",request.getAttribute(EpConstant.EpKey.CORE_EP_ID));
+        map.put("record_start", record_start);
+        map.put("record_count", record_count);
+        return epService.selectEpAndChannel(map);
+    }
 
     /**
      * 创建企业

@@ -363,74 +363,78 @@ public class SmsServiceImpl implements SmsService {
         if(smsSend.equals("0")) {
             return new Result<>(true);
         }
-        Assert.notEmpty(phones, "接收号码至少需要一个");
-        SmsAccountConf smsAccountConf = smsAccountConfMapper.selectByEpId(epId);
-        Assert.notNull(smsAccountConf, MessageFormat.format("找不到短信账号配置:epId={0}", epId));
+        try {
+            Assert.notEmpty(phones, "接收号码至少需要一个");
+            SmsAccountConf smsAccountConf = smsAccountConfMapper.selectByEpId(epId);
+            Assert.notNull(smsAccountConf, MessageFormat.format("找不到短信账号配置:epId={0}", epId));
 
-        if (!mnsMessageMap.containsKey(smsAccountConf.getApp_id())) {
-            NewMessageManager manager = new NewMessageManager(smsAccountConf.getApp_id(), smsAccountConf.getApp_pwd(), smsAccountConf.getUrl());
-            mnsMessageMap.put(smsAccountConf.getApp_id(), manager);
+            if (!mnsMessageMap.containsKey(smsAccountConf.getApp_id())) {
+                NewMessageManager manager = new NewMessageManager(smsAccountConf.getApp_id(), smsAccountConf.getApp_pwd(), smsAccountConf.getUrl());
+                mnsMessageMap.put(smsAccountConf.getApp_id(), manager);
+            }
+            Result<String> result = mnsMessageMap.get(smsAccountConf.getApp_id()).send(smsAccountConf.getEp_sign(), tmpl.getOut_sms_tpl_id(), params, phones);
+            switch (result.get()) {
+                case "isp.RAM_PERMISSION_DENY":
+                    result.setError("RAM权限DENY");
+                    break;
+                case "isp.OUT_OF_SERVICE":
+                    result.setError("业务停机");
+                    break;
+                case "isp.PRODUCT_UN_SUBSCRIPT":
+                    result.setError("未开通云通信产品的阿里云客户");
+                    break;
+                case "isp.PRODUCT_UNSUBSCRIBE":
+                    result.setError("产品未开通");
+                    break;
+                case "isp.ACCOUNT_NOT_EXISTS":
+                    result.setError("账户不存在");
+                    break;
+                case "isp.ACCOUNT_ABNORMAL":
+                    result.setError("账户异常");
+                    break;
+                case "isp.SMS_TEMPLATE_ILLEGAL":
+                    result.setError("短信模板不合法");
+                    break;
+                case "isp.SMS_SIGNATURE_ILLEGAL":
+                    result.setError("短信签名不合法");
+                    break;
+                case "isp.INVALID_PARAMETERS":
+                    result.setError("参数异常");
+                    break;
+                case "isp.SYSTEM_ERROR":
+                    result.setError("系统错误");
+                    break;
+                case "isp.MOBILE_NUMBER_ILLEGAL":
+                    result.setError("非法手机号");
+                    break;
+                case "isp.MOBILE_COUNT_OVER_LIMIT":
+                    result.setError("手机号码数量超过限制");
+                    break;
+                case "isp.TEMPLATE_MISSING_PARAMETERS":
+                    result.setError("模板缺少变量");
+                    break;
+                case "isp.BUSINESS_LIMIT_CONTROL":
+                    result.setError("业务限流");
+                    break;
+                case "isp.INVALID_JSON_PARAM":
+                    result.setError("JSON参数不合法，只接受字符串值");
+                    break;
+                case "isp.BLACK_KEY_CONTROL_LIMIT":
+                    result.setError("黑名单管控");
+                    break;
+                case "isp.PARAM_LENGTH_LIMIT":
+                    result.setError("参数超出长度限制");
+                    break;
+                case "isp.PARAM_NOT_SUPPORT_URL":
+                    result.setError("不支持URL");
+                    break;
+                case "isp.AMOUNT_NOT_ENOUGH":
+                    result.setError("账户余额不足");
+                    break;
+            }
+            return result;
+        } catch (Exception e) {
+            return new Result<>(false, e.getMessage());
         }
-        Result<String> result = mnsMessageMap.get(smsAccountConf.getApp_id()).send(smsAccountConf.getEp_sign(), tmpl.getOut_sms_tpl_id(), params, phones);
-        switch (result.get()) {
-            case "isp.RAM_PERMISSION_DENY":
-                result.setError("RAM权限DENY");
-                break;
-            case "isp.OUT_OF_SERVICE":
-                result.setError("业务停机");
-                break;
-            case "isp.PRODUCT_UN_SUBSCRIPT":
-                result.setError("未开通云通信产品的阿里云客户");
-                break;
-            case "isp.PRODUCT_UNSUBSCRIBE":
-                result.setError("产品未开通");
-                break;
-            case "isp.ACCOUNT_NOT_EXISTS":
-                result.setError("账户不存在");
-                break;
-            case "isp.ACCOUNT_ABNORMAL":
-                result.setError("账户异常");
-                break;
-            case "isp.SMS_TEMPLATE_ILLEGAL":
-                result.setError("短信模板不合法");
-                break;
-            case "isp.SMS_SIGNATURE_ILLEGAL":
-                result.setError("短信签名不合法");
-                break;
-            case "isp.INVALID_PARAMETERS":
-                result.setError("参数异常");
-                break;
-            case "isp.SYSTEM_ERROR":
-                result.setError("系统错误");
-                break;
-            case "isp.MOBILE_NUMBER_ILLEGAL":
-                result.setError("非法手机号");
-                break;
-            case "isp.MOBILE_COUNT_OVER_LIMIT":
-                result.setError("手机号码数量超过限制");
-                break;
-            case "isp.TEMPLATE_MISSING_PARAMETERS":
-                result.setError("模板缺少变量");
-                break;
-            case "isp.BUSINESS_LIMIT_CONTROL":
-                result.setError("业务限流");
-                break;
-            case "isp.INVALID_JSON_PARAM":
-                result.setError("JSON参数不合法，只接受字符串值");
-                break;
-            case "isp.BLACK_KEY_CONTROL_LIMIT":
-                result.setError("黑名单管控");
-                break;
-            case "isp.PARAM_LENGTH_LIMIT":
-                result.setError("参数超出长度限制");
-                break;
-            case "isp.PARAM_NOT_SUPPORT_URL":
-                result.setError("不支持URL");
-                break;
-            case "isp.AMOUNT_NOT_ENOUGH":
-                result.setError("账户余额不足");
-                break;
-        }
-        return result;
     }
 }
