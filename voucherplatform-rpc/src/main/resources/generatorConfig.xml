@@ -40,14 +40,26 @@
             <property name="enableSubPackages" value="true"/>
         </javaClientGenerator>
 
-        <table tableName="t_group_order"
+        <table tableName="t_platform_report"
                enableCountByExample="false"
                enableUpdateByExample="false"
                enableDeleteByExample="false"
                enableSelectByExample="false"
                selectByExampleQueryId="false"
                delimitAllColumns="true"
-               domainObjectName="GroupOrder">
+               domainObjectName="PlatformReport">
+            <property name="useActualColumnNames" value="true"/>
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+            <!--<columnOverride column="update_time" javaType="java.lang.String"/>-->
+        </table>
+        <table tableName="t_supply_report"
+               enableCountByExample="false"
+               enableUpdateByExample="false"
+               enableDeleteByExample="false"
+               enableSelectByExample="false"
+               selectByExampleQueryId="false"
+               delimitAllColumns="true"
+               domainObjectName="SupplyReport">
             <property name="useActualColumnNames" value="true"/>
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
             <!--<columnOverride column="update_time" javaType="java.lang.String"/>-->

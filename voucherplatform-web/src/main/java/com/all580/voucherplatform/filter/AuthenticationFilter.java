@@ -37,7 +37,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
         String url = request.getRequestURI();
-        if (url.equals(LOGINURL) || url.startsWith(MNSURL) || url.startsWith(POSURL)) {
+        if (url.endsWith(LOGINURL) || url.endsWith(MNSURL) || url.endsWith(POSURL)) {
             filterChain.doFilter(request, response);
 
         } else {

@@ -1,10 +1,12 @@
 package com.all580.voucherplatform.service;
 
+import com.all580.voucherplatform.adapter.AdapterLoader;
 import com.all580.voucherplatform.api.service.OrderService;
 import com.all580.voucherplatform.dao.GroupOrderMapper;
 import com.all580.voucherplatform.dao.OrderMapper;
 import com.all580.voucherplatform.entity.Order;
 import com.all580.voucherplatform.manager.order.CreateOrderManager;
+import com.all580.voucherplatform.manager.order.OrderReverseManager;
 import com.framework.common.Result;
 import com.framework.common.vo.PageRecord;
 import lombok.extern.slf4j.Slf4j;
@@ -15,10 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.lang.exception.ApiException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by Linv2 on 2017/5/14.
@@ -33,6 +32,8 @@ public class OrderServiceImpl implements OrderService {
     private OrderMapper orderMapper;
     @Autowired
     private GroupOrderMapper groupOrderMapper;
+    @Autowired
+    private AdapterLoader adapterLoader;
 
     @Override
     public Result getOrder(int id) {
@@ -187,5 +188,13 @@ public class OrderServiceImpl implements OrderService {
         Result<PageRecord<Map>> result = new Result<>(true);
         result.put(pageRecord);
         return result;
+    }
+
+    @Override
+    public Result reConsume(Integer consumeId) {
+        OrderReverseManager orderReverseManager = adapterLoader.getBean(OrderReverseManager.class);
+        orderReverseManager.setConsume(consumeId);
+        orderReverseManager.submit(UUID.randomUUID().toString(), new Date());
+        return new Result(true);
     }
 }

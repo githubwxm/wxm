@@ -12,10 +12,12 @@ import com.all580.voucherplatform.utils.sign.SignInstance;
 import com.all580.voucherplatform.utils.sign.SignKey;
 import com.all580.voucherplatform.utils.sign.SignService;
 import com.framework.common.Result;
+import com.framework.common.distributed.lock.DistributedLockTemplate;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,6 +40,12 @@ public class All580ServiceImpl implements All580Service {
     private SupplyMapper supplyMapper;
     @Autowired
     private SignInstance signInstance;
+
+    @Autowired
+    private DistributedLockTemplate distributedLockTemplate;
+
+    @Value("${lock.timeout}")
+    private int lockTimeOut = 3;
 
     @Override
     public Result process(Map map) {
@@ -66,9 +74,7 @@ public class All580ServiceImpl implements All580Service {
         String content = CommonUtil.objectParseString(map.get("content"));
         Map mapContent = getMapFormContent(content);
         log.debug("identity={},action={},content={},signed={}", new Object[]{identity, action, content, signed});
-        if (identity == 139) {
-            identity = 2;
-        }
+
         Supply supply = supplyMapper.selectByPrimaryKey(identity);
         if (supply == null) {
             return new Result(false, "身份数据校检失败");
