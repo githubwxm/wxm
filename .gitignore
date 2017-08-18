@@ -5,3 +5,4 @@ target/
 .idea/
 .classpath
 logs/
+.DS_Store
