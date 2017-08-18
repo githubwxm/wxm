@@ -199,13 +199,13 @@ public class EpBalanceThresholdServiceImpl implements EpBalanceThresholdService 
                      if(null!=mapSend && "1".equals(CommonUtil.objectParseString( mapSend.get("threshold_status")))){
                          String send_phone2=CommonUtil.objectParseString(mapSend.get("send_phone2"));
                          if( null != send_phone2 && !"".equals(send_phone2.trim())){
-                             smsService.send(send_phone2, SmsType.Ep.BALANCE_SHORTAGE,core_ep_id,params);//发送短信
+                             smsService.send(send_phone2, SmsType.Ep.BALANCE_WARN,core_ep_id,params);//发送短信
                          }
                          String send_phone1=CommonUtil.objectParseString(mapSend.get("send_phone1"));
                          if(  null != send_phone1 && !"".equals(send_phone1.trim())){
-                             return smsService.send(send_phone1, SmsType.Ep.BALANCE_SHORTAGE,core_ep_id,params);//发送短信
+                             return smsService.send(send_phone1, SmsType.Ep.BALANCE_WARN,core_ep_id,params);//发送短信
                          }else{
-                             return  smsService.send(destPhoneNum, SmsType.Ep.BALANCE_SHORTAGE,core_ep_id,params);//发送没有在系统参数里面配置的短信
+                             return  smsService.send(destPhoneNum, SmsType.Ep.BALANCE_WARN,core_ep_id,params);//发送没有在系统参数里面配置的短信
                          }
                      }
                  }
