@@ -1,5 +1,6 @@
 package com.all580.order.dao;
 
+import com.all580.order.dto.PackageOrderItemDto;
 import com.all580.order.entity.OrderItem;
 import org.apache.ibatis.annotations.Param;
 
@@ -172,4 +173,18 @@ public interface OrderItemMapper {
      * @return
      */
     Map selectInfoForOtaBySn(@Param("sn") Long sn);
+
+    /**
+     * 获取套票元素子订单的上一层子订单
+     * @param orderItem
+     * @return
+     */
+    PackageOrderItemDto selectPackageOrderItem(OrderItem orderItem);
+
+    /**
+     * 获取套票子订单的下层所有元素订单的子订单
+     * @param itemId
+     * @return
+     */
+    List<OrderItem> selectOrderItemsForPackageOrder(@Param("itemId") Integer itemId);
 }

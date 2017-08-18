@@ -155,26 +155,8 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             for (CreateOrderResultDto resultDto : resultDtoList) {
                 orderList.add(resultDto.getOrder());
             }
-            //获取元素订单的上一层的订单
-            List<PackageOrderDto> packageOrderDtoList = bookingOrderManager.getOrderChainForPackage(orderList);
-            //递归调用
-            while (!CollectionUtils.isEmpty(packageOrderDtoList)){
-                for (PackageOrderDto packageOrderDto : packageOrderDtoList) {
-                    List<Order> itemOrders = packageOrderDto.getPackageItemOrders();
-                    for (Order itemOrder : itemOrders) {
-                        //如果套票有元素订单待审核
-                        if (itemOrder.getStatus() == OrderConstant.OrderStatus.AUDIT_WAIT){
-                            break;
-                        }
-                        if (packageOrderDto.getStatus() == OrderConstant.OrderStatus.AUDIT_WAIT){
-                            packageOrderDto.setStatus(OrderConstant.OrderStatus.PAY_WAIT);
-                        }
-                    }
-                    //修改审核状态
-                    orderMapper.updateByPrimaryKeySelective(packageOrderDto);
-                }
-                packageOrderDtoList = bookingOrderManager.getOrderChainForPackage(packageOrderDtoList);
-            }
+            //逐级处理套票关联订单的审核状态
+            bookingOrderManager.checkAuditOrderChainForPackage(orderList);
         }
 
         Result<Object> result = new Result<>(Boolean.TRUE);
@@ -221,6 +203,8 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             CreateOrderResultDto resultDto = this.createOrder(orderInterface, params, lockStockDtoMap, lockParams);
             //保存套票与元素订单之间的关联
             bookingOrderManager.insertPackageOrderChain(oi.getOrder_id(), resultDto.getOrder().getId());
+            //保存套票与元素子订单之间的关联
+            bookingOrderManager.insertPackageOrderItemChain(oi, resultDto.getOrderItems());
 
             if (createOrderResultDto.getPackageOrderItems() == null){
                 createOrderResultDto.setPackageOrderItems(resultDto.getPackageOrderItems());
@@ -369,6 +353,12 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         Long sn = Long.valueOf(orderSn);
         Integer payType = CommonUtil.objectParseInteger(params.get("pay_type"));
 
+        Order order = orderMapper.selectBySN(Long.parseLong(orderSn));
+        //套票元素订单不能单独支付
+        Order pOrder = orderMapper.selectPackageOrderById(order.getId());
+        if (pOrder != null){
+            throw new ApiException("非法请求:当前订单不能单独支付");
+        }
         // 分布式锁
         DistributedReentrantLock lock = distributedLockTemplate.execute(orderSn, lockTimeOut);
 

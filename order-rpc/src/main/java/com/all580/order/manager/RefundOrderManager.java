@@ -30,6 +30,7 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 
 import javax.lang.exception.ApiException;
 import java.util.*;
@@ -96,6 +97,13 @@ public class RefundOrderManager extends BaseOrderManager {
         if (order == null) {
             throw new ApiException("订单不存在");
         }
+        //如果是套票订单，查询所有的元素子订单，取消所有元素子订单
+        List<Order> pItemOrders = orderMapper.selectPackageItemOrderById(order.getId());
+        if (!CollectionUtils.isEmpty(pItemOrders)){
+            for (Order itemOrder : pItemOrders) {
+                cancel(itemOrder);
+            }
+        }
         boolean paid = order.getStatus() == OrderConstant.OrderStatus.PAID || order.getStatus() == OrderConstant.OrderStatus.PAID_HANDLING;
         // 检查订单状态
         switch (order.getStatus()) {
@@ -124,6 +132,7 @@ public class RefundOrderManager extends BaseOrderManager {
         refundStock(orderItems, paid);
 
         eventManager.addEvent(OrderConstant.EventType.ORDER_CANCEL, order.getId());
+
         return new Result(true);
     }
 

@@ -4,6 +4,7 @@ import com.all580.order.api.OrderConstant;
 import com.all580.order.dao.*;
 import com.all580.order.dto.AccountDataDto;
 import com.all580.order.dto.PackageOrderDto;
+import com.all580.order.dto.PackageOrderItemDto;
 import com.all580.order.dto.PriceDto;
 import com.all580.order.entity.*;
 import com.all580.order.util.AccountUtil;
@@ -28,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import javax.lang.exception.ApiException;
 import java.util.*;
@@ -67,10 +69,67 @@ public class BookingOrderManager extends BaseOrderManager {
     @Value("${resend_ticket_interval}")
     private Integer resendTicketInterval;
     @Autowired
-    private packageOrderChainMapper packageOrderChainMapper;
+    private PackageOrderChainMapper packageOrderChainMapper;
+    @Autowired
+    private PackageOrderItemChainMapper packageOrderItemChainMapper;
 
     /**
-     * 获取套票元素订单的上一层订单
+     * 逐级处理套票关联子订单的出票状态
+     * @param orderItem
+     */
+    public void checkTicketOrderItemChainForPackage(OrderItem orderItem){
+        //获取元素子订单的上一层子订单
+        PackageOrderItemDto packageOrderItemDto = this.getOrderItemChainForPackage(orderItem);
+        while (packageOrderItemDto != null){
+            List<OrderItem> orderItemList = packageOrderItemDto.getPackageOrderItems();
+            for (OrderItem item : orderItemList) {
+                //todo 子订单出票状态
+
+            }
+            packageOrderItemDto = this.getOrderItemChainForPackage(packageOrderItemDto);
+        }
+    }
+
+    /**
+     * 逐级处理套票关联订单的审核状态
+     * @param orderList
+     */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public void checkAuditOrderChainForPackage(List<Order> orderList){
+        //获取元素订单的上一层的订单
+        List<PackageOrderDto> packageOrderDtoList = this.getOrderChainForPackage(orderList);
+        //递归调用
+        while (!CollectionUtils.isEmpty(packageOrderDtoList)){
+            for (PackageOrderDto packageOrderDto : packageOrderDtoList) {
+                List<Order> itemOrders = packageOrderDto.getPackageItemOrders();
+                for (Order itemOrder : itemOrders) {
+                    //如果套票有元素订单待审核
+                    if (itemOrder.getStatus() == OrderConstant.OrderStatus.AUDIT_WAIT){
+                        break;
+                    }
+                    if (packageOrderDto.getStatus() == OrderConstant.OrderStatus.AUDIT_WAIT){
+                        packageOrderDto.setStatus(OrderConstant.OrderStatus.PAY_WAIT);
+                        packageOrderDto.setAudit_time(new Date());
+                    }
+                }
+                //修改审核状态
+                orderMapper.updateByPrimaryKeySelective(packageOrderDto);
+            }
+            packageOrderDtoList = this.getOrderChainForPackage(packageOrderDtoList);
+        }
+    }
+
+    /**
+     * 获取套票元素子订单的上一层子订单(每个订单包其所关联的所有元素订单)
+     * @param orderItem
+     * @return
+     */
+    public PackageOrderItemDto getOrderItemChainForPackage(OrderItem orderItem){
+        return orderItemMapper.selectPackageOrderItem(orderItem);
+    }
+
+    /**
+     * 获取套票元素订单的上一层订单（每个订单包其所关联的所有元素订单）
      * @param orders
      * @return
      */
@@ -93,17 +152,29 @@ public class BookingOrderManager extends BaseOrderManager {
         params.put("operator_id", 0);
         params.put("operator_name", OrderConstant.CREATE_ADAPTER);
         params.put("source", OrderConstant.OrderSourceType.SOURCE_TYPE_WEB);
+        params.put("product_type", ProductConstants.ProductType.PACKAGE);
 
         params.put("items", itemMap.get(String.valueOf(orderItem.getPro_sub_number())));
 
         return params;
     }
 
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public int insertPackageOrderChain(int orderId, int refOrderId){
-        packageOrderChain orderChain = new packageOrderChain();
+        PackageOrderChain orderChain = new PackageOrderChain();
         orderChain.setOrder_id(orderId);
         orderChain.setRef_order_id(refOrderId);
         return packageOrderChainMapper.insertSelective(orderChain);
+    }
+
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public void insertPackageOrderItemChain(OrderItem orderItem, List<OrderItem> orderItems){
+        for (OrderItem item : orderItems) {
+            PackageOrderItemChain packageOrderItemChain = new PackageOrderItemChain();
+            packageOrderItemChain.setOrder_item_id(orderItem.getId());
+            packageOrderItemChain.setRef_item_id(item.getId());
+            packageOrderItemChainMapper.insertSelective(packageOrderItemChain);
+        }
     }
 
     /**

@@ -44,7 +44,30 @@ public class BookingOrderServiceTest extends AbstractTransactionalJUnit4SpringCo
     private BookingOrderManager bookingOrderManager;
 
     @Test
-    //@Repeat(5)
+    //@Repeat(3)
+    @Transactional(rollbackFor = Exception.class)
+    public void testCreatePackageOrder1() throws Exception{
+        String str = "{\"access_id\":\"1476277249859N2T3JBGA\",\"ep_id\":\"24\",\"items\":[{\"days\":\"1\",\"items\":[{\"amount\":\"1\",\"days\":\"1\"," +
+                "\"id\":\"98358\",\"message\":\"\",\"name\":\"测试-普通票-散客-在线支付-全人工\",\"product_name\":\"订单改版测试\"," +
+                "\"product_sub_code\":\"1499841934558701\",\"product_type\":\"5101\",\"quantity\":\"1\",\"require_sid\":\"5111\",\"send_msg\":\"\"," +
+                "\"sid_day_count\":\"0\",\"sid_day_quantity\":\"0\",\"start\":\"2017-08-18 00:00:00\",\"visitor\":[{\"name\":\"测试\",\"nameMessage\":\"\"," +
+                "\"phone\":\"18711066023\",\"phoneMessage\":\"\",\"quantity\":\"1\",\"sid\":\"43072519900301806X\",\"sidMessage\":\"\",\"sidType\":true}]}," +
+                "{\"amount\":\"1\",\"days\":\"1\",\"id\":\"98402\",\"message\":\"\",\"name\":\"大发发-普通票-散客-在线支付\",\"product_name\":\"萍乡武功山\"," +
+                "\"product_sub_code\":\"1502847589476601\",\"product_type\":\"5101\",\"quantity\":\"1\",\"require_sid\":\"5111\",\"send_msg\":\"\"," +
+                "\"sid_day_count\":\"0\",\"sid_day_quantity\":\"0\",\"start\":\"2017-08-18 00:00:00\",\"visitor\":[{\"name\":\"测试\",\"nameMessage\":\"\"," +
+                "\"phone\":\"18711066023\",\"phoneMessage\":\"\",\"quantity\":\"1\",\"sid\":\"430726199109273727\",\"sidMessage\":\"\",\"sidType\":true}]}]," +
+                "\"product_sub_code\":\"1502939709682170\",\"product_type\":\"5104\",\"start\":\"2017-08-18 00:00:00\",\"quantity\":1}],\"operator_id\":\"71\",\"operator_name\":\"细明王\",\"outer_id\":\"\",\"remark\":\"\"," +
+                "\"sale_amount\":\"\",\"shipping\":{\"name\":\"测试\",\"phone\":\"18711066023\",\"sid\":\"\"},\"sign\":\"06a9965e781581bc05fda4e871d3e41f\"," +
+                "\"core_ep_id\":1}";
+        Map params = JsonUtils.json2Map(str);
+        params.put("from", OrderConstant.FromType.NON_TRUST);
+        System.out.println("params--->" + params);
+        Result result = bookingOrderService.create(params, "PACKAGE");
+        System.out.println("---->" + JsonUtils.toJson(result.get()));
+    }
+
+    @Test
+    @Repeat(3)
     @Transactional(rollbackFor = Exception.class)
     public void testCreatePackageOrder() throws Exception{
         String str = "{\"access_id\":\"1476277249859N2T3JBGA\",\"ep_id\":\"34\",\"items\":[{\"days\":\"1\"," +
@@ -52,22 +75,22 @@ public class BookingOrderServiceTest extends AbstractTransactionalJUnit4SpringCo
                 "\"name\":\"订单改版测试产品-普通票-散客-在线支付\",\"product_name\":\"订单改版测试产品\"," +
                 "\"product_sub_code\":\"1499220704555281\",\"product_type\":\"5101\",\"quantity\":\"1\"," +
                 "\"require_sid\":\"5110\",\"send_msg\":\"\",\"sid_day_count\":\"0\",\"sid_day_quantity\":\"5\"," +
-                "\"start\":\"2017-08-17 00:00:00\",\"visitor\":[{\"name\":\"测试\",\"nameMessage\":\"\"," +
+                "\"start\":\"2017-08-18 00:00:00\",\"visitor\":[{\"name\":\"测试\",\"nameMessage\":\"\"," +
                 "\"phone\":\"13574177622\",\"phoneMessage\":\"\",\"quantity\":1,\"sid\":\"43072519900301806X\"," +
                 "\"sidMessage\":\"\",\"sidType\":true}]},{\"amount\":\"2\",\"days\":\"1\",\"id\":\"98399\"," +
                 "\"message\":\"\",\"name\":\"套票测试1-普通票-散客-在线支付\",\"product_name\":\"订单改版测试产品\"," +
                 "\"product_sub_code\":\"1502500633912601\",\"product_type\":\"5101\",\"quantity\":\"2\"," +
                 "\"require_sid\":\"5111\",\"send_msg\":\"\",\"sid_day_count\":\"0\",\"sid_day_quantity\":\"0\"," +
-                "\"start\":\"2017-08-18 00:00:00\",\"visitor\":[{\"name\":\"测试\",\"nameMessage\":\"\"," +
+                "\"start\":\"2017-08-19 00:00:00\",\"visitor\":[{\"name\":\"测试\",\"nameMessage\":\"\"," +
                 "\"phone\":\"13574177622\",\"phoneMessage\":\"\",\"quantity\":\"2\",\"sid\":\"430726199109273727\"," +
                 "\"sidMessage\":\"\",\"sidType\":true}]},{\"amount\":\"1\",\"days\":\"1\",\"id\":\"98400\"," +
                 "\"message\":\"\",\"name\":\"测试套票2-普通票-散客-在线支付\",\"product_name\":\"订单改版测试产品\"," +
                 "\"product_sub_code\":\"1502500722662601\",\"product_type\":\"5101\",\"quantity\":\"1\"," +
                 "\"require_sid\":\"5111\",\"send_msg\":\"\",\"sid_day_count\":\"0\",\"sid_day_quantity\":\"0\"," +
-                "\"start\":\"2017-08-19 00:00:00\",\"visitor\":[{\"name\":\"测试\",\"nameMessage\":\"\"," +
+                "\"start\":\"2017-08-20 00:00:00\",\"visitor\":[{\"name\":\"测试\",\"nameMessage\":\"\"," +
                 "\"phone\":\"13574177622\",\"phoneMessage\":\"\",\"quantity\":\"1\",\"sid\":\"43072319820310001X\"," +
                 "\"sidMessage\":\"\",\"sidType\":true}]}],\"product_sub_code\":\"1502501431451601\",\"product_type\":\"5104\",\"quantity\":1,\"remark\":\"\"," +
-                "\"start\":\"2017-08-17 00:00:00\"}],\"operator_id\":\"535731\",\"operator_name\":\"小布\",\"outer_id\":\"\"," +
+                "\"start\":\"2017-08-18 00:00:00\"}],\"operator_id\":\"535731\",\"operator_name\":\"小布\",\"outer_id\":\"\"," +
                 "\"sale_amount\":\"\",\"shipping\":{\"name\":\"测试\",\"phone\":\"13574177622\",\"sid\":\"\"}," +
                 "\"sign\":\"e42ccc6a32a216775c1c3b952f3b2470\",\"core_ep_id\":1,\"product_type\":\"5104\"}";
         Map params = JsonUtils.json2Map(str);

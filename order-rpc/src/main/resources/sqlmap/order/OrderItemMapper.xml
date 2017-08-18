@@ -957,4 +957,28 @@
     ORDER BY tocs.clearance_time desc
     LIMIT 1
   </select>
+
+  <resultMap id="PackageOrderItem" type="com.all580.order.dto.PackageOrderItemDto" extends="BaseResultMap">
+    <collection property="packageOrderItems" column="id" select="selectOrderItemsForPackageOrder" ofType="com.all580.order.entity.OrderItem"></collection>
+  </resultMap>
+
+  <select id="selectPackageOrderItem" resultMap="PackageOrderItem">
+    SELECT
+      oi.*
+    FROM
+      t_order_item oi
+      LEFT JOIN t_package_order_item_chain poic
+        ON poic.`order_item_id` = oi.`id`
+    WHERE poc.`ref_item_id` = #{id}
+  </select>
+
+  <select id="selectOrderItemsForPackageOrder" resultMap="BaseResultMap">
+    SELECT
+      oi.*
+    FROM
+      t_order_item oi
+      LEFT JOIN t_package_order_item_chain poic
+        ON poic.`ref_item_id` = oi.`id`
+    WHERE poc.`order_item_id` = #{itemId}
+  </select>
 </mapper>

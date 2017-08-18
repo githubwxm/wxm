@@ -39,6 +39,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 
 import javax.lang.exception.ApiException;
 import java.util.*;
@@ -144,6 +145,20 @@ public class LockTransactionManager {
         eventManager.addEvent(OrderConstant.EventType.PAID, order.getId());
 
         if (order.getStatus() == OrderConstant.OrderStatus.PAID) {
+            //套票终端订单支付成功，用余额支付所有元素订单
+            List<Order> orderList = orderMapper.selectPackageItemOrderById(order.getId());
+            if (!CollectionUtils.isEmpty(orderList)){
+                for (Order o : orderList) {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put(EpConstant.EpKey.EP_ID, o.getBuy_ep_id());
+                    map.put(EpConstant.EpKey.CORE_EP_ID, o.getPayee_ep_id());
+                    map.put("operator_id", 0);
+                    map.put("operator_name", OrderConstant.CREATE_ADAPTER);
+                    map.put("order_sn", o.getNumber());
+                    map.put("pay_type", PaymentConstant.PaymentType.BALANCE);
+                    payment(map, o.getNumber(), PaymentConstant.PaymentType.BALANCE);
+                }
+            }
             // 出票
             eventManager.addEvent(OrderConstant.EventType.SPLIT_CREATE_ACCOUNT, order.getId());
         }
@@ -387,6 +402,8 @@ public class LockTransactionManager {
                 }
                 orderMapper.updateByPrimaryKeySelective(order);
             }
+            //逐级处理套票关联订单的审核状态
+            bookingOrderManager.checkAuditOrderChainForPackage(Arrays.asList(order));
         }
         orderItemMapper.updateByPrimaryKeySelective(orderItem);
         eventManager.addEvent(OrderConstant.EventType.ORDER_AUDIT, new OrderAuditEventParam(orderItem.getId(), status));

@@ -122,6 +122,10 @@ public class TicketCallbackServiceImpl extends BasicSyncDataEvent implements Tic
 
         // 触发事件
         eventManager.addEvent(OrderConstant.EventType.SEND_TICKET, orderItem.getId());
+
+        //处理套票
+        bookingOrderManager.checkTicketOrderItemChainForPackage(orderItem);
+
         return new Result(true);
     }
 
