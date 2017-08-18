@@ -95,11 +95,11 @@ public class SendThresholdTimer {
                     Integer core_ep_id=CommonUtil.objectParseInteger(mapSend.get("core_ep_id"));
                     String send_phone2=CommonUtil.objectParseString(mapSend.get("send_phone2"));
                     if( null != send_phone2 && !"".equals(send_phone2.trim())){
-                        smsService.send(send_phone2, SmsType.Ep.BALANCE_SHORTAGE,core_ep_id,params);//发送短信
+                        smsService.send(send_phone2, SmsType.Ep.BALANCE_WARN,core_ep_id,params);//发送短信
                     }
                     String send_phone1=CommonUtil.objectParseString(mapSend.get("send_phone1"));
                     if(  null != send_phone1 && !"".equals(send_phone1.trim())){
-                        smsService.send(send_phone1, SmsType.Ep.BALANCE_SHORTAGE,core_ep_id,params);//发送短信
+                        smsService.send(send_phone1, SmsType.Ep.BALANCE_WARN,core_ep_id,params);//发送短信
                     }
                     smsSendMapper.sendUpdateNumber(mapSend);
                 }

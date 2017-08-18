@@ -242,6 +242,9 @@ public class LockTransactionManager {
     public Result<?> applyRefund(Map params, long itemNo, RefundOrderInterface refundOrderInterface) throws Exception {
         RefundOrderApply apply = refundOrderInterface.validateAndParseParams(itemNo, params);
 
+        int count = refundOrderMapper.selectByItemIdAndStatus(apply.getItem().getId(), OrderConstant.RefundOrderStatus.REFUND_SUCCESS, 2);
+        Assert.isTrue(count <= 0, "您还有未处理完的退订订单");
+
         refundOrderInterface.checkAuth(apply, params);
 
         // 每日订单详情
