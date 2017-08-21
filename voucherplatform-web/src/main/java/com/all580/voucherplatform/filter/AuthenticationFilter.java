@@ -39,7 +39,6 @@ public class AuthenticationFilter extends OncePerRequestFilter {
         String url = request.getRequestURI();
         if (url.endsWith(LOGINURL) || url.endsWith(MNSURL) || url.endsWith(POSURL)) {
             filterChain.doFilter(request, response);
-
         } else {
             String sessionId = request.getSession().getId();
             if (StringUtils.isEmpty(sessionId)) {
