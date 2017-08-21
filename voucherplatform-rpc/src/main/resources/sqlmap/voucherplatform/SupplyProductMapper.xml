@@ -207,7 +207,7 @@
         `t_supplyproduct`.`createTime`,
         `t_supplyproduct`.`status`,
         `t_supplyproduct`.`syncTime`,
-        `t_supply`.`id` as supply_id,
+        `t_supply`.`id` as `supply_id`,
         `t_ticketsys`.`prodAddType` as prodAddType,
         `t_supply`.`name` as supply_name
         from t_supplyproduct

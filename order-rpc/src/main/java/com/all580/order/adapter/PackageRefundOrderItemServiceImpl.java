@@ -111,8 +111,7 @@ public class PackageRefundOrderItemServiceImpl extends AbstractRefundOrderImpl{
     public int[] calcRefundMoneyAndFee(RefundOrderApply apply, List<OrderItemDetail> detailList, Collection<RefundDay> refundDays, Map params) {
         Order order = apply.getOrder();
         //元素订单的购买者为打包商
-        order.setBuy_ep_id(apply.getPackageOrderItem().getEp_id());
-        order.setPayee_ep_id(apply.getPackageOrderItem().getCore_ep_id());
+        
         return refundOrderManager.calcRefundMoneyAndFee(apply.getItem(), apply.getOrder(), apply.getFrom(), refundDays, detailList, apply.getDate());
     }
 
