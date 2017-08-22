@@ -69,6 +69,7 @@ public class MeituanPushMsgAdapter extends GeneralPushMsgAdapter implements Init
                 break;
             case "SENT":
                 params.put("issueType", 1);
+                params.put("describe", "success");
                 body.put("orderId", map.get("outer_id"));
                 body.put("partnerOrderId", map.get("number"));
                 body.put("voucherType", 2);
