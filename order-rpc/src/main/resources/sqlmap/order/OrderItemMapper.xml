@@ -959,12 +959,12 @@
   </select>
 
   <resultMap id="PackageOrderItem" type="com.all580.order.dto.PackageOrderItemDto" extends="BaseResultMap">
-    <collection property="packageOrderItems" column="id" select="selectOrderItemsForPackageOrder" ofType="com.all580.order.entity.OrderItem"></collection>
+    <!--<collection property="packageOrderItems" column="id" select="selectOrderItemsForPackageOrder" ofType="com.all580.order.entity.OrderItem"></collection>-->
   </resultMap>
 
   <select id="selectPackageOrderItem" resultMap="PackageOrderItem">
     SELECT
-      oi.*
+      <include refid="Base_Column_List"></include>
     FROM
       t_order_item oi
       LEFT JOIN t_package_order_item_chain poic
@@ -974,11 +974,21 @@
 
   <select id="selectOrderItemsForPackageOrder" resultMap="BaseResultMap">
     SELECT
-      oi.*
+      <include refid="Base_Column_List"></include>
     FROM
       t_order_item oi
       LEFT JOIN t_package_order_item_chain poic
         ON poic.`ref_item_id` = oi.`id`
     WHERE poc.`order_item_id` = #{itemId}
+  </select>
+
+  <select id="selectOrderItemsForUpperPackageOrder" resultMap="BaseResultMap">
+    SELECT
+      <include refid="Base_Column_List"></include>
+    FROM
+      t_order_item oi
+      LEFT JOIN t_package_order_chain poc
+        ON poc.`ref_order_id` = oi.`order_id`
+    WHERE poc.`order_id` = #{id}
   </select>
 </mapper>

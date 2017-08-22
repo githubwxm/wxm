@@ -1,6 +1,7 @@
 package com.all580.order.dao;
 
 import com.all580.order.dto.PackageOrderItemDto;
+import com.all580.order.entity.Order;
 import com.all580.order.entity.OrderItem;
 import org.apache.ibatis.annotations.Param;
 
@@ -187,4 +188,11 @@ public interface OrderItemMapper {
      * @return
      */
     List<OrderItem> selectOrderItemsForPackageOrder(@Param("itemId") Integer itemId);
+
+    /**
+     * 查询套票订单的下层订单的所有子订单
+     * @param order
+     * @return
+     */
+    List<OrderItem> selectOrderItemsForUpperPackageOrder(Order order);
 }

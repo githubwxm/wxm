@@ -77,27 +77,58 @@ public class BookingOrderManager extends BaseOrderManager {
      * 逐级处理套票关联子订单的出票状态
      * @param orderItem
      */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public void checkTicketOrderItemChainForPackage(OrderItem orderItem){
         //获取元素子订单的上一层子订单
-        PackageOrderItemDto packageOrderItemDto = this.getOrderItemChainForPackage(orderItem);
+        PackageOrderItemDto packageOrderItemDto = this.getOrderItemChainForPackage(orderItem, Boolean.TRUE);
         while (packageOrderItemDto != null){
             List<OrderItem> orderItemList = packageOrderItemDto.getPackageOrderItems();
             for (OrderItem item : orderItemList) {
                 //todo 子订单出票状态
-
+                if (item.getStatus() == OrderConstant.OrderItemStatus.TICKET_FAIL){
+                    //元素订单出片失败
+                    packageOrderItemDto.setStatus(OrderConstant.OrderItemStatus.TICKET_FAIL);
+                    break;
+                }
+                if (item.getStatus() == OrderConstant.OrderItemStatus.TICKETING){
+                    //元素订单出票中
+                    packageOrderItemDto.setStatus(OrderConstant.OrderItemStatus.TICKETING);
+                    break;
+                }
+                if (item.getStatus() == OrderConstant.OrderItemStatus.SEND){
+                    //元素订单已出票
+                    packageOrderItemDto.setStatus(OrderConstant.OrderItemStatus.SEND);
+                }
             }
-            packageOrderItemDto = this.getOrderItemChainForPackage(packageOrderItemDto);
+            //更改套票子订单出票状态
+            orderItemMapper.updateByPrimaryKeySelective(packageOrderItemDto);
+            packageOrderItemDto = this.getOrderItemChainForPackage(packageOrderItemDto, Boolean.TRUE);
+        }
+    }
+
+    /**
+     * 对于套票订单审核不通过状态的处理，记录子订单审核结果
+     * @param item
+     */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public void dealAuditFailOrderItemChainForPackage(OrderItem item){
+        OrderItem orderItem = this.getOrderItemChainForPackage(item, Boolean.FALSE);
+        while (orderItem != null){
+            orderItem.setAudit_time(new Date());
+            orderItem.setAudit(Boolean.FALSE);
+            orderItemMapper.updateByPrimaryKeySelective(orderItem);
+            orderItem = this.getOrderItemChainForPackage(orderItem, Boolean.FALSE);
         }
     }
 
     /**
      * 逐级处理套票关联订单的审核状态
-     * @param orderList
+     * @param orders
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public void checkAuditOrderChainForPackage(List<Order> orderList){
+    public void checkAuditOrderChainForPackage(Order... orders){
         //获取元素订单的上一层的订单
-        List<PackageOrderDto> packageOrderDtoList = this.getOrderChainForPackage(orderList);
+        List<PackageOrderDto> packageOrderDtoList = this.getOrderChainForPackage(Arrays.asList(orders));
         //递归调用
         while (!CollectionUtils.isEmpty(packageOrderDtoList)){
             for (PackageOrderDto packageOrderDto : packageOrderDtoList) {
@@ -120,12 +151,17 @@ public class BookingOrderManager extends BaseOrderManager {
     }
 
     /**
-     * 获取套票元素子订单的上一层子订单(每个订单包其所关联的所有元素订单)
+     * 获取套票元素子订单的上一层子订单
      * @param orderItem
+     * @param fetchItem 是否子订单包其所关联的所有元素子订单
      * @return
      */
-    public PackageOrderItemDto getOrderItemChainForPackage(OrderItem orderItem){
-        return orderItemMapper.selectPackageOrderItem(orderItem);
+    public PackageOrderItemDto getOrderItemChainForPackage(OrderItem orderItem, boolean fetchItem){
+        PackageOrderItemDto packageOrderItemDto = orderItemMapper.selectPackageOrderItem(orderItem);
+        if (fetchItem){
+            packageOrderItemDto.setPackageOrderItems(orderItemMapper.selectOrderItemsForPackageOrder(packageOrderItemDto.getId()));
+        }
+        return packageOrderItemDto;
     }
 
     /**
@@ -153,6 +189,7 @@ public class BookingOrderManager extends BaseOrderManager {
         params.put("operator_name", OrderConstant.CREATE_ADAPTER);
         params.put("source", OrderConstant.OrderSourceType.SOURCE_TYPE_WEB);
         params.put("product_type", ProductConstants.ProductType.PACKAGE);
+        params.put("source", OrderConstant.OrderSourceType.SOURCE_TYPE_SYS);
 
         params.put("items", itemMap.get(String.valueOf(orderItem.getPro_sub_number())));
 

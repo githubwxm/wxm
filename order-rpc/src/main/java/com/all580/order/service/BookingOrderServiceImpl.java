@@ -148,15 +148,18 @@ public class BookingOrderServiceImpl implements BookingOrderService {
                     order.getBuy_ep_id(), order.getBuy_ep_name(), OrderConstant.LogOperateCode.CREATE_SUCCESS,
                     null, String.format("订单创建成功:%s", JsonUtils.toJson(params)), null));
         }
-        //逐级检查关联订单
-        List<CreateOrderResultDto> resultDtoList = createOrderResult.getPackageCreateOrders();
-        if (resultDtoList != null){
-            List<Order> orderList = new ArrayList<>();//最底层的所有元素订单
-            for (CreateOrderResultDto resultDto : resultDtoList) {
-                orderList.add(resultDto.getOrder());
+
+        if (createOrderResult.getOrder().getSource() == OrderConstant.OrderSourceType.SOURCE_TYPE_SYS){
+            //逐级检查关联订单
+            List<CreateOrderResultDto> resultDtoList = createOrderResult.getPackageCreateOrders();
+            if (resultDtoList != null){
+                List<Order> orderList = new ArrayList<>();//最底层的所有元素订单
+                for (CreateOrderResultDto resultDto : resultDtoList) {
+                    orderList.add(resultDto.getOrder());
+                }
+                //逐级处理套票关联订单的审核状态
+                bookingOrderManager.checkAuditOrderChainForPackage((Order[])orderList.toArray());
             }
-            //逐级处理套票关联订单的审核状态
-            bookingOrderManager.checkAuditOrderChainForPackage(orderList);
         }
 
         Result<Object> result = new Result<>(Boolean.TRUE);

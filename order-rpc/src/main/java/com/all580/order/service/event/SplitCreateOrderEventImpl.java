@@ -48,11 +48,7 @@ public class SplitCreateOrderEventImpl implements SplitCreateOrderEvent {
         List<Map<String, String>> jobParams = new ArrayList<>();
         List<Map<String, String>> jobGroupParams = new ArrayList<>();
         for (OrderItem orderItem : orderItems) {
-            if (orderItem.getPro_type() == ProductConstants.ProductType.PACKAGE){
-                //套票无需出票
-//                orderItem.setStatus(OrderConstant.OrderItemStatus.SEND);
-//                orderItemMapper.updateByPrimaryKeySelective(orderItem);
-            }else {
+            if (orderItem.getPro_type() != ProductConstants.ProductType.PACKAGE){
                 Map<String, String> jobParam = new HashMap<>();
                 jobParam.put("orderItemId", orderItem.getId().toString());
                 // 团队票
