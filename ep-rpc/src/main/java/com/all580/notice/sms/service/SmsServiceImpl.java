@@ -413,6 +413,9 @@ public class SmsServiceImpl implements SmsService {
                 case "isv.TEMPLATE_MISSING_PARAMETERS":
                     result.setError("模板缺少变量");
                     break;
+                case "isv.TEMPLATE_PARAMS_ILLEGAL":
+                    result.setError("模板参数非法");
+                    break;
                 case "isv.BUSINESS_LIMIT_CONTROL":
                     result.setError("业务限流");
                     break;
@@ -431,6 +434,9 @@ public class SmsServiceImpl implements SmsService {
                 case "isv.AMOUNT_NOT_ENOUGH":
                     result.setError("账户余额不足");
                     break;
+            }
+            if (!result.isSuccess() && result.getError() == null) {
+                result.setError(result.get());
             }
             if (result.getError() != null) {
                 result.setError("短信发送失败:" + result.getError());
