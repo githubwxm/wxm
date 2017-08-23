@@ -475,7 +475,7 @@
   </select>
 
   <select id="haveRefunding" resultType="int">
-    SELECT count(*) t_refund_order
+    SELECT count(*) from t_refund_order
     WHERE `order_item_id` = #{itemId}
     and `status` not in(341, 345)
   </select>
