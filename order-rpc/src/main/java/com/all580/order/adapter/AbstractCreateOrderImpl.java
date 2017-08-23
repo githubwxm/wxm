@@ -57,6 +57,7 @@ public abstract class AbstractCreateOrderImpl implements CreateOrderInterface {
         createOrder.setOperatorId(CommonUtil.objectParseInteger(params.get("operator_id")));
         createOrder.setOperatorName(CommonUtil.objectParseString(params.get("operator_name")));
         createOrder.setOuter(CommonUtil.objectParseString(params.get("outer_id")));
+        createOrder.setSource(CommonUtil.objectParseInteger(params.get("source")));
         // 获取下单企业名称
         String buyEpName = null;
         Result<Map<String, Object>> epResult = epService.selectId(createOrder.getEpId());
@@ -119,7 +120,7 @@ public abstract class AbstractCreateOrderImpl implements CreateOrderInterface {
     public Order insertOrder(CreateOrder createOrder, Map params) {
         return bookingOrderManager.generateOrder(createOrder.getCoreEpId(), createOrder.getEpId(), createOrder.getEpName(),
                 createOrder.getOperatorId(), createOrder.getOperatorName(), createOrder.getFrom(), createOrder.getRemark(),
-                createOrder.getOuter());
+                createOrder.getOuter(),createOrder.getSource());
     }
 
     public ProductSalesInfo validateProductAndGetSales(ValidateProductSub sub, CreateOrder createOrder, Map item) {
@@ -165,14 +166,14 @@ public abstract class AbstractCreateOrderImpl implements CreateOrderInterface {
     }
 
     @Override
-    public List<OrderItemDetail> insertDetail(Order order, OrderItem item, ValidateProductSub sub, ProductSalesInfo salesInfo, List<List<EpSalesInfo>> allDaysSales) {
+    public List<OrderItemDetail> insertDetail(Order order, CreateOrder createOrder, OrderItem item, ValidateProductSub sub, ProductSalesInfo salesInfo, List<List<EpSalesInfo>> allDaysSales) {
         List<OrderItemDetail> details = new ArrayList<>();
         int i = 0;
         for (ProductSalesDayInfo dayInfo : salesInfo.getDay_info_list()) {
             List<EpSalesInfo> daySales = allDaysSales.get(i);
             Assert.notEmpty(daySales, "该产品销售计划不全");
             EpSalesInfo saleInfo = bookingOrderManager.getSalePrice(daySales, item.getSupplier_ep_id());
-            EpSalesInfo buyInfo = bookingOrderManager.getBuyingPrice(daySales, order.getBuy_ep_id());
+            EpSalesInfo buyInfo = bookingOrderManager.getBuyingPrice(daySales, createOrder.getEpId());
             Assert.notNull(saleInfo, "该产品未正确配置");
             Assert.notNull(buyInfo, "该产品未正确配置");
             OrderItemDetail orderItemDetail = bookingOrderManager.generateDetail(dayInfo, item.getId(),

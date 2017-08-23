@@ -100,7 +100,7 @@ public class SendTicketAction extends BasicSyncDataEvent implements JobRunner {
         sendTicketParams.setDisableDate(detail.getDisable_day());
         sendTicketParams.setMaProductId(orderItem.getMa_product_id());
         // TODO: 2016/11/3 出票发送短信
-        sendTicketParams.setSendSms(true);
+        sendTicketParams.setSendSms(false);
         sendTicketParams.setSms(orderItem.getVoucher_msg());
         sendTicketParams.setTicketMsg(orderItem.getTicket_msg());
 

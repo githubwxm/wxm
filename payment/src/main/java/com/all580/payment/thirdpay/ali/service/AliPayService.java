@@ -115,6 +115,7 @@ public class AliPayService {
         sParaTemp.put("subject", String.valueOf(params.get("prodName")));
         int totalFee = (Integer) params.get("totalFee");
         sParaTemp.put("total_fee", String.valueOf(totalFee / 100.0));
+        sParaTemp.put("it_b_pay", "15m");//二维码超时时间
         // sParaTemp.put("body", null);
         // sParaTemp.put("paymethod", "");
         // sParaTemp.put("defaultbank", "");

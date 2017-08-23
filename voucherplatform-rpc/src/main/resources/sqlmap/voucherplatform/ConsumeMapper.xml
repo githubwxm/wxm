@@ -301,4 +301,36 @@
             </if>
         </where>
     </select>
+    <sql id="selectOrderConsumeReportSql">
+        <where>
+            <if test="startTime!=null">
+                and `t_consume`.`consumeTime`>=#{startTime}
+            </if>
+            <if test="endTime!=null">
+                and `t_consume`.`consumeTime`>=#{endTime}
+            </if>
+            <if test="platformProdId!=null">
+                and `t_consume`.`platformprod_id`=#{platformProdId}
+            </if>
+            <if test="supplyProdId!=null">
+                and `t_consume`.`supplyprod_id`=#{supplyProdId}
+            </if>
+        </where>
+    </sql>
+    <select id="selectOrderConsumeReportNumber" resultType="java.util.Map">
+        select
+        HOUR (`t_consume`.`consumeTime`) as `hour`,
+        COUNT(0) as `number`
+        from `t_consume`
+        <include refid="selectOrderConsumeReportSql"/>
+        GROUP BY HOUR (`t_consume`.`consumeTime`)
+    </select>
+    <select id="selectOrderConsumeReportCount" resultType="java.util.Map">
+        select
+        HOUR (`t_consume`.`consumeTime`) as `hour`,
+        sum(consumeNumber) as `number`
+        from `t_consume`
+        <include refid="selectOrderConsumeReportSql"/>
+        GROUP BY HOUR (`t_consume`.`consumeTime`)
+    </select>
 </mapper>

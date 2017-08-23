@@ -240,6 +240,7 @@ public class ProductController extends BaseController {
         subProductInfo.setUse_hours_limit(CommonUtil.objectParseInteger(params.get("use_hours_limit")));
         subProductInfo.setUse_notes(CommonUtil.objectParseString(params.get("use_notes")));
         subProductInfo.setVoucher_msg(CommonUtil.objectParseString(params.get("voucher_msg")));
+        subProductInfo.setVoucher_template(CommonUtil.objectParseInteger(params.get("voucher_template")));
         subProductInfo.setRefund_audit(CommonUtil.objectParseInteger(params.get("refund_audit")));
         subProductInfo.setRefund_money_audit(CommonUtil.objectParseInteger(params.get("refund_money_audit")));
         subProductInfo.setLow_use_quantity(CommonUtil.objectParseInteger(params.get("low_use_quantity")));
@@ -397,12 +398,12 @@ public class ProductController extends BaseController {
     public Result<List<Map<String, Object>>> searchSelfAndOtherProduct(
             @RequestParam("ep_id") Integer epId,
             @RequestParam("platform_ep_id") Integer platformEpId,
-            @RequestParam("status") Integer distributionStatus,Integer type,Integer is_platfrom) {
+            @RequestParam("status") Integer distributionStatus,Integer type,Integer is_platfrom,String product_name) {
         switch (CommonUtil.objectParseInteger(distributionStatus)) {
             case ProductConstants.ProductDistributionState.HAD_DISTRIBUTE:
                 return productDistributionService.searchAlreadyDistributionProduct(platformEpId, epId,type);
             case ProductConstants.ProductDistributionState.NOT_DISTRIBUTE:
-                return productDistributionService.searchNotDistributionProduct(is_platfrom,platformEpId, epId,type);
+                return productDistributionService.searchNotDistributionProduct(is_platfrom,platformEpId, epId,type,product_name);
         }
         return new Result<>(false, "状态参数错误");
     }
@@ -531,8 +532,8 @@ public class ProductController extends BaseController {
     @ResponseBody
     public Result<List<Map<String, Object>>> searchDistributeProduct(
             @RequestParam("ep_id") Integer epId,
-            @RequestParam("sub_ep_id") Integer subEpId,Integer is_platfrom) {
-        return productDistributionService.searchNotDistributionProductSubEp(is_platfrom,subEpId, epId);
+            @RequestParam("sub_ep_id") Integer subEpId,Integer is_platfrom,String product_name) {
+        return productDistributionService.searchNotDistributionProductSubEp(is_platfrom,subEpId, epId, product_name);
     }
 
     /**
@@ -545,8 +546,8 @@ public class ProductController extends BaseController {
     @ResponseBody
     public Result<List<Map<String, Object>>> searchDistributeProductTypeAll(
             @RequestParam("ep_id") Integer epId,
-            @RequestParam("sub_ep_id") Integer subEpId,Integer is_platfrom) {
-        return productDistributionService.searchNotDistributionProductSubEpAll(is_platfrom,subEpId, epId);
+            @RequestParam("sub_ep_id") Integer subEpId,Integer is_platfrom,String product_name) {
+        return productDistributionService.searchNotDistributionProductSubEpAll(is_platfrom,subEpId, epId,product_name);
     }
 
     /**

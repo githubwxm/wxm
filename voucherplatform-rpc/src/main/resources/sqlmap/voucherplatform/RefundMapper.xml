@@ -363,5 +363,39 @@
             </if>
         </where>
     </select>
+    <sql id="selectOrderRefundReportSql">
+        <where>
+            <if test="startTime!=null">
+                and `t_refund`.`refTime`>=#{startTime}
+            </if>
+            <if test="endTime!=null">
+                and `t_refund`.`refTime`>=#{endTime}
+            </if>
+            <if test="platformProdId!=null">
+                and `t_refund`.`platformprod_id`=#{platformProdId}
+            </if>
+            <if test="supplyProdId!=null">
+                and `t_refund`.`supplyprod_id`=#{supplyProdId}
+            </if>
+            <if test="refStatus!=null">
+                and `t_refund`.`refStatus`=#{refStatus}
+            </if>
+        </where>
+    </sql>
+    <select id="selectOrderRefundReportNumber" resultType="java.util.Map">
+        SELECT
+        HOUR (`t_refund`.`refTime`) as `hour`,
+        COUNT(0) as `number`
+        from `t_refund`
+        <include refid="selectOrderRefundReportSql"/>
+        GROUP BY HOUR (`t_refund`.`refTime`)
+    </select>
+    <select id="selectOrderRefundReportCount" resultType="java.util.Map">
+        SELECT HOUR (`t_refund`.`refTime`) as `hour`,
+        sum(refNumber) as `number`
+        from `t_refund`
+        <include refid="selectOrderRefundReportSql"/>
+        GROUP BY HOUR (`t_refund`.`refTime`)
+    </select>
 
 </mapper>

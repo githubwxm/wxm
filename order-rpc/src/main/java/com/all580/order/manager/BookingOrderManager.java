@@ -57,6 +57,10 @@ public class BookingOrderManager extends BaseOrderManager {
     @Autowired
     private OrderItemSalesChainMapper orderItemSalesChainMapper;
     @Autowired
+    private PackageOrderItemMapper packageOrderItemMapper;
+    @Autowired
+    private PackageOrderItemAccountMapper packageOrderItemAccountMapper;
+    @Autowired
     @Getter
     private MnsEventAspect eventManager;
     @Autowired
@@ -65,14 +69,17 @@ public class BookingOrderManager extends BaseOrderManager {
     private Integer resendTicketMax;
     @Value("${resend_ticket_interval}")
     private Integer resendTicketInterval;
+    @Autowired
+    private PackageOrderItemSalesChainMapper packageOrderItemSalesChainMapper;
 
     /**
      * 验证游客信息
-     * @param visitors 游客信息
+     *
+     * @param visitors       游客信息
      * @param productSubCode 子产品CODE
-     * @param bookingDate 预定时间
-     * @param maxCount 最大次数
-     * @param maxQuantity 最大张数
+     * @param bookingDate    预定时间
+     * @param maxCount       最大次数
+     * @param maxQuantity    最大张数
      * @return
      */
     public int validateVisitor(List<Map> visitors, Long productSubCode, Date bookingDate, Integer maxCount, Integer maxQuantity) {
@@ -111,6 +118,7 @@ public class BookingOrderManager extends BaseOrderManager {
 
     /**
      * 团队游客实名制信息验证
+     *
      * @param visitors 游客
      * @param realName 实名制
      * @param quantity 票数
@@ -160,6 +168,7 @@ public class BookingOrderManager extends BaseOrderManager {
 
     /**
      * 预定时间现在
+     *
      * @param bookingDate 预定时间
      * @param dayInfoList
      */
@@ -189,9 +198,10 @@ public class BookingOrderManager extends BaseOrderManager {
 
     /**
      * 判断身份证订单次数是否超过最大次数
+     *
      * @param productSubCode 子产品ID
-     * @param sid 身份证
-     * @param date 预定日期
+     * @param sid            身份证
+     * @param date           预定日期
      * @return
      */
     private int getOrderByCount(Long productSubCode, String sid, Date date) {
@@ -202,9 +212,10 @@ public class BookingOrderManager extends BaseOrderManager {
 
     /**
      * 判断身份证订票张数是否超过最大张数
+     *
      * @param productSubCode 子产品CODE
-     * @param sid 身份证
-     * @param date 预定日期
+     * @param sid            身份证
+     * @param date           预定日期
      * @return
      */
     private int getOrderByQuantity(Long productSubCode, String sid, Date date) {
@@ -215,16 +226,17 @@ public class BookingOrderManager extends BaseOrderManager {
 
     /**
      * 创建订单生成订单数据
-     * @param coreEpId 操作平台商
-     * @param buyEpId 销售企业ID
+     *
+     * @param coreEpId  操作平台商
+     * @param buyEpId   销售企业ID
      * @param buyEpName 下单企业名称
-     * @param userId 销售用户ID
-     * @param userName 销售用户名称
-     * @param from 来源
+     * @param userId    销售用户ID
+     * @param userName  销售用户名称
+     * @param from      来源
      * @return
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public Order generateOrder(Integer coreEpId, Integer buyEpId, String buyEpName, Integer userId, String userName, Integer from, String remark, String outerId) {
+    public Order generateOrder(Integer coreEpId, Integer buyEpId, String buyEpName, Integer userId, String userName, Integer from, String remark, String outerId, Integer source) {
         Order order = new Order();
         order.setNumber(UUIDGenerator.generateUUID());
         order.setStatus(OrderConstant.OrderStatus.PAY_WAIT);
@@ -237,17 +249,19 @@ public class BookingOrderManager extends BaseOrderManager {
         order.setRemark(remark);
         order.setPayee_ep_id(coreEpId);
         order.setOuter_id(StringUtils.isEmpty(outerId) ? "_" + order.getNumber() : outerId);
+        order.setSource(source);
         orderMapper.insertSelective(order);
         return order;
     }
 
     /**
      * 创建子订单生成子订单数据
-     * @param info 产品信息
+     *
+     * @param info       产品信息
      * @param saleAmount 进货价
-     * @param days 天数
-     * @param orderId 订单ID
-     * @param quantity 张数
+     * @param days       天数
+     * @param orderId    订单ID
+     * @param quantity   张数
      * @return
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
@@ -281,6 +295,7 @@ public class BookingOrderManager extends BaseOrderManager {
         orderItem.setResend_interval(resendTicketInterval);
         orderItem.setLast_resend_time(new Date());
         orderItem.setVoucher_msg(info.getVoucher_msg());
+        orderItem.setVoucher_template(info.getVoucher_template());
         orderItem.setTicket_msg(info.getTicket_msg());
         orderItem.setSend(isSend);
         orderItemMapper.insertSelective(orderItem);
@@ -289,9 +304,10 @@ public class BookingOrderManager extends BaseOrderManager {
 
     /**
      * 创建子订单详情
-     * @param info 产品信息
-     * @param itemId 子订单ID
-     * @param day 当天
+     *
+     * @param info     产品信息
+     * @param itemId   子订单ID
+     * @param day      当天
      * @param quantity 张数
      * @return
      */
@@ -342,6 +358,22 @@ public class BookingOrderManager extends BaseOrderManager {
     }
 
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public PackageOrderItemSalesChain generatePackagerChain(PackageOrderItem item, Integer epId, Date day, List<EpSalesInfo> daySales) {
+        AccountDataDto dataDto = AccountUtil.generateAccountData(daySales, epId, day);
+        PackageOrderItemSalesChain chain = new PackageOrderItemSalesChain();
+        chain.setPackage_order_item_id(item.getId());
+        chain.setDay(day);
+        chain.setEp_id(epId);
+        chain.setCore_ep_id(getCoreEpId(getCoreEpId(epId)));
+        chain.setSale_ep_id(dataDto.getSaleEpId());
+        chain.setSale_core_ep_id(getCoreEpId(getCoreEpId(dataDto.getSaleEpId())));
+        chain.setIn_price(dataDto.getInPrice());
+        chain.setOut_price(dataDto.getOutPrice());
+        packageOrderItemSalesChainMapper.insertSelective(chain);
+        return chain;
+    }
+
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public OrderItemSalesChain generateChain(OrderItem item, Integer epId, Date day, List<EpSalesInfo> daySales) {
         AccountDataDto dataDto = AccountUtil.generateAccountData(daySales, epId, day);
         OrderItemSalesChain chain = new OrderItemSalesChain();
@@ -359,7 +391,8 @@ public class BookingOrderManager extends BaseOrderManager {
 
     /**
      * 创建子订单游客信息
-     * @param v 游客参数
+     *
+     * @param v            游客参数
      * @param itemDetailId 子订单详情ID
      * @return
      */
@@ -379,6 +412,7 @@ public class BookingOrderManager extends BaseOrderManager {
 
     /**
      * 创建子订单游客信息
+     *
      * @param member
      * @param itemDetailId
      * @param groupId
@@ -399,8 +433,9 @@ public class BookingOrderManager extends BaseOrderManager {
 
     /**
      * 创建订单联系人
+     *
      * @param shippingMap 联系人参数
-     * @param orderId 订单ID
+     * @param orderId     订单ID
      * @return
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
@@ -424,7 +459,8 @@ public class BookingOrderManager extends BaseOrderManager {
 
     /**
      * 判断所有子订单是否审核通过
-     * @param orderId 订单ID
+     *
+     * @param orderId  订单ID
      * @param excludes 例外不做处理的
      * @return
      */
@@ -443,6 +479,7 @@ public class BookingOrderManager extends BaseOrderManager {
 
     /**
      * 计算分销价格
+     *
      * @param allDaysSales
      * @param buyEpId
      * @param quantity
@@ -466,23 +503,34 @@ public class BookingOrderManager extends BaseOrderManager {
             EpSalesInfo self = new EpSalesInfo();
             self.setSale_ep_id(buyEpId);
             self.setEp_id(buyEpId);
-            // 代收:叶子销售商以门市价卖出
-            self.setPrice(from == OrderConstant.FromType.TRUST ? info.getShop_price() : info.getPrice());
+            switch (from) {
+                // 代收:叶子销售商以门市价卖出
+                case OrderConstant.FromType.TRUST:
+                    self.setPrice(info.getShop_price());
+                    break;
+                // 最低售价:叶子销售商以产品最低售价卖出
+                case OrderConstant.FromType.MINIMUM_SALE:
+                    if (info.getPrice() > salesInfo.getMin_price()) throw new ApiException("供应价不能大于最低售价");
+                    self.setPrice(salesInfo.getMin_price());
+                    break;
+                default:
+                    self.setPrice(info.getPrice());
+            }
             if (self.getPrice() == null) {
                 self.setPrice(0);
             }
-            // 判断最低零售价
-//            if (from == OrderConstant.FromType.TRUST && self.getPrice() < salesInfo.getMin_price()) {
-//                throw new ApiException(String.format("产品:%s不能低于最低零售价:%f,当前售卖价格:%f",
-//                        salesInfo.getProduct_sub_name(), Arith.round(salesInfo.getMin_price()/100f, 2), Arith.round(self.getPrice()/100f, 2)))
-//                        .dataMap().putData("min", salesInfo.getMin_price()).putData("current", self.getPrice());
-//            }
-//            // 判断最高市场价
-//            if (self.getPrice() > salesInfo.getMarket_price()) {
-//                throw new ApiException(String.format("产品:%s不能高于市场价:%f,当前售卖价格:%f",
-//                        salesInfo.getProduct_sub_name(), Arith.round(salesInfo.getMarket_price()/100f, 2), Arith.round(self.getPrice()/100f, 2)))
-//                        .dataMap().putData("market", salesInfo.getMarket_price()).putData("current", self.getPrice());
-//            }
+            /*// 判断最低零售价
+            if (from == OrderConstant.FromType.TRUST && self.getPrice() < salesInfo.getMin_price()) {
+                throw new ApiException(String.format("产品:%s不能低于最低零售价:%f,当前售卖价格:%f",
+                        salesInfo.getProduct_sub_name(), Arith.round(salesInfo.getMin_price()/100f, 2), Arith.round(self.getPrice()/100f, 2)))
+                        .dataMap().putData("min", salesInfo.getMin_price()).putData("current", self.getPrice());
+            }
+            // 判断最高市场价
+            if (self.getPrice() > salesInfo.getMarket_price()) {
+                throw new ApiException(String.format("产品:%s不能高于市场价:%f,当前售卖价格:%f",
+                        salesInfo.getProduct_sub_name(), Arith.round(salesInfo.getMarket_price()/100f, 2), Arith.round(self.getPrice()/100f, 2)))
+                        .dataMap().putData("market", salesInfo.getMarket_price()).putData("current", self.getPrice());
+            }*/
             daySales.add(self);
             salePrice += self.getPrice() * quantity;
         }
@@ -491,9 +539,10 @@ public class BookingOrderManager extends BaseOrderManager {
 
     /**
      * 支付预分账
+     *
      * @param daySalesList 每天销售链
-     * @param orderItem 子订单
-     * @param finalEpId 最终售卖企业
+     * @param orderItem    子订单
+     * @param finalEpId    最终售卖企业
      * @return
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
@@ -509,6 +558,7 @@ public class BookingOrderManager extends BaseOrderManager {
 
     /**
      * 组装支付分账信息
+     *
      * @param order
      */
     public List<BalanceChangeInfo> packagingPaySplitAccount(Order order) {
@@ -517,13 +567,21 @@ public class BookingOrderManager extends BaseOrderManager {
 
     /**
      * 组装支付分账信息
+     *
      * @param order
      */
     public List<BalanceChangeInfo> packagingPaySplitAccount(Order order, List<OrderItem> orderItems) {
         List<BalanceChangeInfo> balanceChangeInfoList = new ArrayList<>();
+        // 套票
+        PackageOrderItem packageOrderItem = packageOrderItemMapper.selectByNumber(order.getNumber());
+        if (packageOrderItem != null) {
+            List<PackageOrderItemAccount> accounts = packageOrderItemAccountMapper.selectByOrderItem(packageOrderItem.getId());
+            List<BalanceChangeInfo> itemInfoList = AccountUtil.makerPayBalanceChangeInfo(AccountUtil.packageAccount2Account(accounts), packageOrderItem.getPayment_flag(), packageOrderItem.getEp_id(), packageOrderItem.getCore_ep_id(), order.getBuy_ep_id());
+            balanceChangeInfoList.addAll(itemInfoList);
+        }
         for (OrderItem orderItem : orderItems) {
             List<OrderItemAccount> accountList = orderItemAccountMapper.selectByOrderItem(orderItem.getId());
-            List<BalanceChangeInfo> itemInfoList = AccountUtil.makerPayBalanceChangeInfo(accountList, orderItem.getPayment_flag(), orderItem.getSupplier_ep_id(), orderItem.getSupplier_core_ep_id(), order.getBuy_ep_id());
+            List<BalanceChangeInfo> itemInfoList = AccountUtil.makerPayBalanceChangeInfo(accountList, orderItem.getPayment_flag(), orderItem.getSupplier_ep_id(), orderItem.getSupplier_core_ep_id(), packageOrderItem == null ? order.getBuy_ep_id() : packageOrderItem.getEp_id());
             balanceChangeInfoList.addAll(itemInfoList);
         }
         return balanceChangeInfoList;

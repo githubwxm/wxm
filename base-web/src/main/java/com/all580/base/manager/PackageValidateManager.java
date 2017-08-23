@@ -171,4 +171,21 @@ public class PackageValidateManager {
 
         return rules;
     }
+
+    public Map<String[], ValidRule[]> updateShopPriceValidate() {
+        Map<String[], ValidRule[]> rules = new HashMap<>();
+        // 校验不为空的参数
+        rules.put(new String[]{
+                "id",
+                "price"
+        }, new ValidRule[]{new ValidRule.NotNull()});
+
+        // 校验整数
+        rules.put(new String[]{
+                "id",
+                "price"
+        }, new ValidRule[]{new ValidRule.Digits()});
+
+        return rules;
+    }
 }

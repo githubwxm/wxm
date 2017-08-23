@@ -27,6 +27,7 @@
     <result column="remark" jdbcType="VARCHAR" property="remark" />
     <result column="update_time" jdbcType="TIMESTAMP" property="update_time" />
     <result column="audit_time" jdbcType="TIMESTAMP" property="audit_time" />
+    <result column="source" jdbcType="INTEGER" property="source" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--
@@ -37,7 +38,7 @@
     `id`, `number`, `pay_amount`, `status`, `buy_ep_id`, `buy_ep_name`, `buy_operator_id`,
     `buy_operator_name`, `payee_ep_id`, `create_time`, `payment_type`, `local_payment_serial_no`,
     `third_serial_no`, `pay_time`, `sale_amount`, `from_type`, `outer_id`, `remark`,
-    `update_time`, `audit_time`
+    `update_time`, `audit_time`,source
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     <!--
@@ -151,6 +152,10 @@
       <if test="audit_time != null">
         `audit_time`,
       </if>
+      <if test="source != null">
+        `source`,
+      </if>
+
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="number != null">
@@ -209,6 +214,9 @@
       </if>
       <if test="audit_time != null">
         #{audit_time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="source != null">
+        #{source,jdbcType=INTEGER},
       </if>
     </trim>
   </insert>

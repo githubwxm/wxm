@@ -58,6 +58,11 @@ public class EpConstant {
         public static final Integer  RESTS=10013;//其他
     }
 
+    public static class SMS_TYPE {
+        public static final int NORMAL = 13000;
+        public static final int VOUCHER = 13001;
+    }
+
     public static final String PUSH_ADAPTER = "PUSH_ADAPTER";
 
 //    public static class PaymentType{ //收款方式
