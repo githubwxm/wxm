@@ -377,64 +377,73 @@ public class SmsServiceImpl implements SmsService {
                 case "isp.RAM_PERMISSION_DENY":
                     result.setError("RAM权限DENY");
                     break;
-                case "isp.OUT_OF_SERVICE":
+                case "isv.OUT_OF_SERVICE":
                     result.setError("业务停机");
                     break;
-                case "isp.PRODUCT_UN_SUBSCRIPT":
+                case "isv.PRODUCT_UN_SUBSCRIPT":
                     result.setError("未开通云通信产品的阿里云客户");
                     break;
-                case "isp.PRODUCT_UNSUBSCRIBE":
+                case "isv.PRODUCT_UNSUBSCRIBE":
                     result.setError("产品未开通");
                     break;
-                case "isp.ACCOUNT_NOT_EXISTS":
+                case "isv.ACCOUNT_NOT_EXISTS":
                     result.setError("账户不存在");
                     break;
-                case "isp.ACCOUNT_ABNORMAL":
+                case "isv.ACCOUNT_ABNORMAL":
                     result.setError("账户异常");
                     break;
-                case "isp.SMS_TEMPLATE_ILLEGAL":
+                case "isv.SMS_TEMPLATE_ILLEGAL":
                     result.setError("短信模板不合法");
                     break;
-                case "isp.SMS_SIGNATURE_ILLEGAL":
+                case "isv.SMS_SIGNATURE_ILLEGAL":
                     result.setError("短信签名不合法");
                     break;
-                case "isp.INVALID_PARAMETERS":
+                case "isv.INVALID_PARAMETERS":
                     result.setError("参数异常");
                     break;
                 case "isp.SYSTEM_ERROR":
                     result.setError("系统错误");
                     break;
-                case "isp.MOBILE_NUMBER_ILLEGAL":
+                case "isv.MOBILE_NUMBER_ILLEGAL":
                     result.setError("非法手机号");
                     break;
-                case "isp.MOBILE_COUNT_OVER_LIMIT":
+                case "isv.MOBILE_COUNT_OVER_LIMIT":
                     result.setError("手机号码数量超过限制");
                     break;
-                case "isp.TEMPLATE_MISSING_PARAMETERS":
+                case "isv.TEMPLATE_MISSING_PARAMETERS":
                     result.setError("模板缺少变量");
                     break;
-                case "isp.BUSINESS_LIMIT_CONTROL":
+                case "isv.TEMPLATE_PARAMS_ILLEGAL":
+                    result.setError("模板参数非法");
+                    break;
+                case "isv.BUSINESS_LIMIT_CONTROL":
                     result.setError("业务限流");
                     break;
-                case "isp.INVALID_JSON_PARAM":
+                case "isv.INVALID_JSON_PARAM":
                     result.setError("JSON参数不合法，只接受字符串值");
                     break;
-                case "isp.BLACK_KEY_CONTROL_LIMIT":
+                case "isv.BLACK_KEY_CONTROL_LIMIT":
                     result.setError("黑名单管控");
                     break;
-                case "isp.PARAM_LENGTH_LIMIT":
+                case "isv.PARAM_LENGTH_LIMIT":
                     result.setError("参数超出长度限制");
                     break;
-                case "isp.PARAM_NOT_SUPPORT_URL":
+                case "isv.PARAM_NOT_SUPPORT_URL":
                     result.setError("不支持URL");
                     break;
-                case "isp.AMOUNT_NOT_ENOUGH":
+                case "isv.AMOUNT_NOT_ENOUGH":
                     result.setError("账户余额不足");
                     break;
             }
+            if (!result.isSuccess() && result.getError() == null) {
+                result.setError(result.get());
+            }
+            if (result.getError() != null) {
+                result.setError("短信发送失败:" + result.getError());
+            }
             return result;
         } catch (Exception e) {
-            return new Result<>(false, e.getMessage());
+            return new Result<>(false, "短信发送失败:" + e.getMessage());
         }
     }
 }

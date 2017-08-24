@@ -252,7 +252,8 @@
         `t_supplyproduct`.`code` as supplyPord_code,
         `t_supplyproduct`.`name` as supplyPord_name,
         `t_platformproduct`.`createTime`,
-        `t_platformproduct`.`modifyTime`
+        `t_platformproduct`.`modifyTime`,
+        `t_platformproduct`.`platform_id`
         from t_platformproduct
         JOIN `t_producttype` on `t_producttype`.`id`=`t_platformproduct`.`producttype_id`
         join `t_platform` on `t_platform`.`id`=`t_platformproduct`.`platform_id`

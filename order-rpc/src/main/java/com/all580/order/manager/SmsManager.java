@@ -5,6 +5,7 @@ import com.all580.notice.api.service.SmsService;
 import com.all580.order.dao.*;
 import com.all580.order.entity.*;
 import com.all580.payment.api.conf.PaymentConstant;
+import com.all580.product.api.consts.ProductConstants;
 import com.framework.common.Result;
 import com.framework.common.lang.DateFormatUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -313,6 +314,13 @@ public class SmsManager {
      * @param orderItem
      */
     public void sendHotelSendTicket(OrderItem orderItem) {
+        sendHotelSendTicket(orderItem, null);
+    }
+    /**
+     * 发送酒店出票短信
+     * @param orderItem
+     */
+    public void sendHotelSendTicket(OrderItem orderItem, String phone) {
         Assert.notNull(orderItem.getVoucher_template(), "订单没有凭证短信模板,短信发送失败");
 
         Shipping shipping = shippingMapper.selectByOrder(orderItem.getOrder_id());
@@ -326,7 +334,7 @@ public class SmsManager {
         }
 
         Map<String, String> sendSmsParams = parseParams(orderItem.getVoucher_msg(), order, orderItem, null, orderItem.getQuantity());
-        Result result = smsService.sendByTemplate(order.getPayee_ep_id(), orderItem.getVoucher_template(), sendSmsParams, shipping.getPhone());
+        Result result = smsService.sendByTemplate(orderItem.getSupplier_core_ep_id(), orderItem.getVoucher_template(), sendSmsParams, phone == null ? shipping.getPhone() : phone);
         if (!result.isSuccess()) {
             throw new ApiException("发送酒店出票短信失败:" + result.getError());
         }
@@ -337,6 +345,13 @@ public class SmsManager {
      * @param orderItem
      */
     public void sendLineSendTicket(OrderItem orderItem) {
+        sendLineSendTicket(orderItem, null);
+    }
+    /**
+     * 发送线路出票短信
+     * @param orderItem
+     */
+    public void sendLineSendTicket(OrderItem orderItem, String phone) {
         Assert.notNull(orderItem.getVoucher_template(), "订单没有凭证短信模板,短信发送失败");
 
         Shipping shipping = shippingMapper.selectByOrder(orderItem.getOrder_id());
@@ -350,7 +365,7 @@ public class SmsManager {
         }
 
         Map<String, String> sendSmsParams = parseParams(orderItem.getVoucher_msg(), order, orderItem, null, orderItem.getQuantity());
-        Result result = smsService.sendByTemplate(order.getPayee_ep_id(), orderItem.getVoucher_template(), sendSmsParams, shipping.getPhone());
+        Result result = smsService.sendByTemplate(orderItem.getSupplier_core_ep_id(), orderItem.getVoucher_template(), sendSmsParams, phone == null ? shipping.getPhone() : phone);
         if (!result.isSuccess()) {
             throw new ApiException("发送线路出票短信失败:" + result.getError());
         }
@@ -361,27 +376,57 @@ public class SmsManager {
      * @param orderItem
      */
     public void sendVoucher(OrderItem orderItem) {
+        sendVoucher(orderItem, null);
+    }
+
+    /**
+     * 发送凭证短信
+     * @param orderItem
+     */
+    public void sendVoucher(OrderItem orderItem, MaSendResponse response) {
         Assert.notNull(orderItem.getVoucher_template(), "订单没有凭证短信模板,短信发送失败");
 
         Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
         if (order == null) {
             throw new ApiException("订单不存在");
         }
-        List<MaSendResponse> maSendResponses = maSendResponseMapper.selectByOrderItemId(orderItem.getId());
         List<Visitor> visitors = visitorMapper.selectByOrderItem(orderItem.getId());
-
-        for (MaSendResponse maSendResponse : maSendResponses) {
-            Visitor visitor = getVisitor(maSendResponse.getVisitor_id(), visitors);
-            if (visitor == null) {
-                log.warn("发送凭证短信:游客:{},手机号码:{}失败,游客不存在", maSendResponse.getVisitor_id(), maSendResponse.getPhone());
-                continue;
+        if (response == null) {
+            List<MaSendResponse> maSendResponses = maSendResponseMapper.selectByOrderItemId(orderItem.getId());
+            for (MaSendResponse maSendResponse : maSendResponses) {
+                Visitor visitor = getVisitor(maSendResponse.getVisitor_id(), visitors);
+                sendVoucher(order, orderItem, maSendResponse, visitor);
             }
+        } else {
+            Visitor visitor = getVisitor(response.getVisitor_id(), visitors);
+            sendVoucher(order, orderItem, response, visitor);
+        }
+    }
 
-            Map<String, String> sendSmsParams = parseParams(orderItem.getVoucher_msg(), order, orderItem, maSendResponse, visitor.getQuantity());
-            Result result = smsService.sendByTemplate(order.getPayee_ep_id(), orderItem.getVoucher_template(), sendSmsParams, visitor.getPhone());
-            if (!result.isSuccess()) {
-                log.warn("发送凭证短信:游客:{},手机号码:{}失败:{}", new Object[]{maSendResponse.getVisitor_id(), maSendResponse.getPhone(), result.getError()});
-            }
+    public void sendVoucherMsg(OrderItem orderItem) {
+        switch (orderItem.getPro_type()) {
+            case ProductConstants.ProductType.HOTEL:
+                sendHotelSendTicket(orderItem);
+                break;
+            case ProductConstants.ProductType.ITINERARY:
+                sendLineSendTicket(orderItem);
+                break;
+            case ProductConstants.ProductType.SCENERY:
+                sendVoucher(orderItem);
+                break;
+        }
+    }
+
+    private void sendVoucher(Order order, OrderItem orderItem, MaSendResponse maSendResponse, Visitor visitor) {
+        if (visitor == null) {
+            log.warn("发送凭证短信:游客:{},手机号码:{}失败,游客不存在", maSendResponse.getVisitor_id(), maSendResponse.getPhone());
+            return;
+        }
+
+        Map<String, String> sendSmsParams = parseParams(orderItem.getVoucher_msg(), order, orderItem, maSendResponse, visitor.getQuantity());
+        Result result = smsService.sendByTemplate(orderItem.getSupplier_core_ep_id(), orderItem.getVoucher_template(), sendSmsParams, visitor.getPhone());
+        if (!result.isSuccess()) {
+            throw new ApiException(String.format("发送凭证短信:游客:%d,手机号码:%s失败:%s", maSendResponse.getVisitor_id(), maSendResponse.getPhone(), result.getError()));
         }
     }
 

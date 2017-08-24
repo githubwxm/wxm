@@ -3,7 +3,9 @@ package com.all580.voucherplatform.dao;
 import com.all580.voucherplatform.entity.Consume;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public interface ConsumeMapper {
     /**
@@ -49,7 +51,6 @@ public interface ConsumeMapper {
     int updateByPrimaryKey(Consume record);
 
     /**
-     *
      * @param orderId
      * @param orderCode
      * @param supplyId
@@ -63,4 +64,14 @@ public interface ConsumeMapper {
 
     List<Consume> selectConsumeByOrder(@Param("orderId") Integer orderId,
                                        @Param("orderCode") String orderCode);
+
+    List<Map> selectOrderConsumeReportNumber(@Param("startTime") Date startTime,
+                                             @Param("endTime") Date endTime,
+                                             @Param("platformProdId") Integer platformProdId,
+                                             @Param("supplyProdId") Integer supplyProdId);
+
+    List<Map> selectOrderConsumeReportCount(@Param("startTime") Date startTime,
+                                            @Param("endTime") Date endTime,
+                                            @Param("platformProdId") Integer platformProdId,
+                                            @Param("supplyProdId") Integer supplyProdId);
 }

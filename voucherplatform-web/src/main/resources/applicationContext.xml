@@ -17,7 +17,7 @@
 
 	<bean id="dbPlaceholderConfigurer"
 		class="com.framework.common.ext.spring.config.DBPlaceholderConfigurer">
-		<property name="appName" value="gateway" />
+		<property name="appName" value="voucherplatform" />
 		<property name="profileName" value="${active.profilename}" />
 		<property name="name" value="${active.name}" />
 		<property name="pwd" value="${active.pwd}" />
@@ -32,6 +32,5 @@
 	<import resource="classpath:spring/spring_servlet.xml" />
 	<import resource="classpath:spring/spring_client.xml" />
 	<import resource="classpath:spring/spring_cache.xml" />
-	<import resource="classpath:spring/spring_schedule.xml"/>
 	<aop:aspectj-autoproxy/>
 </beans>  

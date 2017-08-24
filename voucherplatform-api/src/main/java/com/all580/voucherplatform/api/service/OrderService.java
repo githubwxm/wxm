@@ -69,16 +69,18 @@ public interface OrderService {
 
 
     Result<PageRecord<Map>> selectGroupOrderList(Integer platformId,
-                                            Integer supplyId,
-                                            String orderCode,
-                                            String platformOrderId,
-                                            String mobile,
-                                            String idNumber,
-                                            String voucherNumber,
-                                            Integer status,
-                                            Date startTime,
-                                            Date endTime,
-                                            Integer recordStart,
-                                            Integer recordCount);
+                                                 Integer supplyId,
+                                                 String orderCode,
+                                                 String platformOrderId,
+                                                 String mobile,
+                                                 String idNumber,
+                                                 String voucherNumber,
+                                                 Integer status,
+                                                 Date startTime,
+                                                 Date endTime,
+                                                 Integer recordStart,
+                                                 Integer recordCount);
+
+    Result reConsume(Integer consumeId);
 
 }

@@ -825,4 +825,35 @@
             and `t_refund`.`prodType`=#{prodType}
         </if>
     </select>
+    <sql id="selectOrderReportSql">
+        <where>
+            <if test="startTime!=null">
+                and `t_order`.`createTime`&gt;=#{startTime}
+            </if>
+            <if test="endTime!=null">
+                and `t_order`.`createTime`&lt;=#{endTime}
+            </if>
+            <if test="platformProdId!=null">
+                and `t_order`.`platformprod_id`=#{platformProdId}
+            </if>
+            <if test="supplyProdId!=null">
+                and `t_order`.`supplyProdId`=#{supplyProdId}
+            </if>
+        </where>
+    </sql>
+    <select id="selectOrderReportNumber"  resultType="java.util.Map">
+        select
+        HOUR (`t_order`.`createTime`) as `hour`,
+        COUNT(0)  as `number`
+        from `t_order`
+        <include refid="selectOrderReportSql"/>
+        GROUP BY HOUR (`t_order`.`createTime`)
+    </select>
+    <select id="selectOrderReportCount" resultType="java.util.Map">
+        select HOUR (`t_order`.`createTime`) as `hour`,
+        sum(`t_order`.`number`) as `number`
+        from `t_order`
+        <include refid="selectOrderReportSql"/>
+        GROUP BY HOUR (`t_order`.`createTime`)
+    </select>
 </mapper>

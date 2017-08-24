@@ -196,4 +196,14 @@ public interface OrderMapper {
                                  @Param("prodType") Integer prodType,
                                  @Param("record_start") Integer recordStart,
                                  @Param("record_count") Integer recordCount);
+
+    List<Map> selectOrderReportNumber(@Param("startTime") Date startTime,
+                                @Param("endTime") Date endTime,
+                                @Param("platformProdId") Integer platformProdId,
+                                @Param("supplyProdId") Integer supplyProdId);
+
+    List<Map> selectOrderReportCount(@Param("startTime") Date startTime,
+                                     @Param("endTime") Date endTime,
+                                     @Param("platformProdId") Integer platformProdId,
+                                     @Param("supplyProdId") Integer supplyProdId);
 }
