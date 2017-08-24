@@ -72,7 +72,8 @@ public class PlanController extends BaseController {
     @RequestMapping(value = "update", method = RequestMethod.POST)
     @ResponseBody
     public Result<?> updateSalesPlan(@RequestBody Map params) {
-        return productSalesPlanService.updateProductPlan(CommonUtil.objectParseInteger(params.get("product_plan_id")), CommonUtil.objectParseInteger(params.get("stock")));
+        //return productSalesPlanService.updateProductPlan(CommonUtil.objectParseInteger(params.get("product_plan_id")), CommonUtil.objectParseInteger(params.get("stock")));
+        return productSalesPlanService.updateProductPlanList(params);
     }
 
     /**
