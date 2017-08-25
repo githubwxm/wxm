@@ -300,24 +300,26 @@ public class LockTransactionManager {
         eventManager.addEvent(OrderConstant.EventType.ORDER_REFUND_APPLY, refundOrder.getId());
 
         //todo 处理套票元素订单的退订
-        //获取套票元素订单的子订单，然后依次发起退订申请
-        List<OrderItem> orderItemList = refundOrderManager.getOrderItemsForPackageOrder(apply.getOrder());
-        if (!CollectionUtils.isEmpty(orderItemList)){
-            for (OrderItem orderItem : orderItemList) {
-                Map<String, Object> map = new HashMap<>();
-                map.put("order_item_sn", orderItem.getNumber());
-                map.put("quantity", orderItem.getQuantity() * orderItem.getDays());
+        if (apply.getOrder().getSource() == OrderConstant.OrderSourceType.SOURCE_TYPE_SYS){
+            //获取套票元素订单的子订单，然后依次发起退订申请
+            List<OrderItem> orderItemList = refundOrderManager.getOrderItemsForPackageOrder(apply.getOrder());
+            if (!CollectionUtils.isEmpty(orderItemList)){
+                for (OrderItem orderItem : orderItemList) {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("order_item_sn", orderItem.getNumber());
+                    map.put("quantity", orderItem.getQuantity() * orderItem.getDays());
 
-                Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
-                map.put(EpConstant.EpKey.EP_ID, order.getBuy_ep_id());
-                map.put("apply_from", order.getFrom_type());
-                map.put("operator_id", 0);
-                map.put("operator_name", OrderConstant.REFUND_ADAPTER);
-                try {
-                    applyRefund(map, orderItem.getNumber(), refundOrderInterface);
-                }catch (Exception e){
-                    //todo 如果元素订单不能退订
-                    e.printStackTrace();
+                    Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
+                    map.put(EpConstant.EpKey.EP_ID, order.getBuy_ep_id());
+                    map.put("apply_from", order.getFrom_type());
+                    map.put("operator_id", 0);
+                    map.put("operator_name", OrderConstant.REFUND_ADAPTER);
+                    try {
+                        applyRefund(map, orderItem.getNumber(), refundOrderInterface);
+                    }catch (Exception e){
+                        //todo 如果元素订单不能退订
+                        e.printStackTrace();
+                    }
                 }
             }
         }
