@@ -154,7 +154,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         mainOrder = orderMapper.selectByPrimaryKey(mainOrder.getId());
         List<OrderItem> mainItems = orderItemMapper.selectByOrderId(mainOrder.getId());
 
-        if (mainOrder.getSource() == OrderConstant.OrderSourceType.SOURCE_TYPE_SYS){
+        if (orderListMap.size() > 1){
             //逐级检查关联订单
             List<CreateOrderResultDto> resultDtoList = createOrderResult.getPackageCreateOrders();
             if (resultDtoList != null){
