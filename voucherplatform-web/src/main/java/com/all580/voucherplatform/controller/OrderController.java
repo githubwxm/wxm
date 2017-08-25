@@ -123,5 +123,11 @@ public class OrderController {
                 voucherNumber, status, startTime, endTime, recordStart, recordCount);
     }
 
+    @RequestMapping(value = "reConsume", method = RequestMethod.GET)
+    @ResponseBody
+    public Result reConsume(@RequestParam Integer consumeId) {
+        return orderService.reConsume(consumeId);
+    }
+
 
 }

@@ -33,7 +33,7 @@ public class PaidNotifyEventImpl extends  BaseNotifyEvent implements PaidNotifyE
         Assert.notNull(order, "订单不存在");
         Integer payment_type=order.getPayment_type();
         //微信支付宝  发送支付成功短信
-        if(payment_type-PaymentConstant.PaymentType.ALI_PAY==0||payment_type-PaymentConstant.PaymentType.WX_PAY==0){
+        if(payment_type != null && payment_type-PaymentConstant.PaymentType.ALI_PAY==0||payment_type-PaymentConstant.PaymentType.WX_PAY==0){
             List<OrderItem> list = orderItemMapper.selectByOrderId(order.getId());
             Assert.notNull(list, "子订单不存在");
             notifyEvent(list.get(0).getId(), "PAID",null);

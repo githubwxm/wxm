@@ -125,7 +125,7 @@ public class QunarPushMsgAdapter extends GeneralPushMsgAdapter implements PushMs
                 consumeOrderInfo.setPartnerorderId(map.get("number").toString());
                 Map consumeInfo = (Map) map.get("consume_info");
                 consumeOrderInfo.setConsumeInfo(String.format("本次消费%s张", consumeInfo.get("consume_amount")));
-                consumeOrderInfo.setUseQuantity(Integer.parseInt(map.get("usd_qty").toString()));
+                consumeOrderInfo.setUseQuantity(Integer.parseInt(map.get("total_usd_qty").toString()));
                 consumeOrderInfo.setOrderQuantity(Integer.parseInt(map.get("quantity").toString()));
                 consumedRequestBody.setOrderInfo(consumeOrderInfo);
                 return consumedRequestBody;

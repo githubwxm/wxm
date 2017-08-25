@@ -8,13 +8,13 @@ import com.all580.order.dto.*;
 import com.all580.order.entity.*;
 import com.all580.order.manager.BookingOrderManager;
 import com.all580.order.manager.LockTransactionManager;
+import com.all580.order.manager.SmsManager;
 import com.all580.product.api.consts.ProductConstants;
 import com.all580.product.api.model.EpSalesInfo;
 import com.all580.product.api.model.ProductSalesDayInfo;
 import com.all580.product.api.model.ProductSalesInfo;
 import com.all580.product.api.model.ProductSearchParams;
 import com.all580.product.api.service.ProductSalesPlanRPCService;
-import com.all580.voucher.api.model.ReSendTicketParams;
 import com.all580.voucher.api.service.VoucherRPCService;
 import com.framework.common.Result;
 import com.framework.common.distributed.lock.DistributedLockTemplate;
@@ -82,6 +82,8 @@ public class BookingOrderServiceImpl implements BookingOrderService {
     private MnsEventAspect eventManager;
     @Autowired
     private JobAspect jobManager;
+    @Autowired
+    private SmsManager smsManager;
 
     @Override
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
@@ -546,21 +548,37 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             return new Result(false, "该子订单已发起退票");
         }
         MaSendResponse response = maSendResponseMapper.selectByVisitorId(orderItem.getId(), visitorId, orderItem.getEp_ma_id());
+        Result result = new Result(true);
         if (orderItem.getStatus() == OrderConstant.OrderItemStatus.SEND && response != null) {
-            ReSendTicketParams reSendTicketParams = new ReSendTicketParams();
-            reSendTicketParams.setOrderSn(orderItem.getNumber());
-            reSendTicketParams.setVisitorId(visitorId);
-            reSendTicketParams.setMobile(phone);
-            reSendTicketParams.setMaOrderId(response.getMa_order_id());
-            reSendTicketParams.setMaProductId(response.getMa_product_id());
-            reSendTicketParams.setVoucher(response.getVoucher_value());
-            return voucherRPCService.resendTicket(orderItem.getEp_ma_id(), reSendTicketParams);
+            // 改为自己发送短信
+            try {
+                switch (orderItem.getPro_type()) {
+                    case ProductConstants.ProductType.SCENERY:
+                        response.setPhone(phone);
+                        smsManager.sendVoucher(orderItem, response);
+                        break;
+                    case ProductConstants.ProductType.HOTEL:
+                        smsManager.sendHotelSendTicket(orderItem, phone);
+                        break;
+                    case ProductConstants.ProductType.ITINERARY:
+                        smsManager.sendLineSendTicket(orderItem, phone);
+                        break;
+                    default:
+                        result.setError("改产品不支持重新发票");
+                }
+            } catch (Exception e) {
+                result.setError(e.getMessage());
+                Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
+                Map params = smsManager.parseParams(orderItem.getVoucher_msg(), order, orderItem, response, orderItem.getQuantity());
+                result.put(params);
+            }
+            return result;
         }
         // 出票
         // 记录任务
         Map<String, String> jobParam = new HashMap<>();
         jobParam.put("orderItemId", orderItem.getId().toString());
         jobManager.addJob(OrderConstant.Actions.SEND_TICKET, Collections.singleton(jobParam));
-        return new Result(true);
+        return result;
     }
 }

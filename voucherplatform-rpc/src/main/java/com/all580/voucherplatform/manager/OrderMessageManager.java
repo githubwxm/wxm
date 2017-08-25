@@ -30,7 +30,8 @@ public class OrderMessageManager {
                 for (Order order : orders) {
                     String message = order.getSms();
                     message = message.replace("{份数}", String.valueOf(order.getNumber()))
-                            .replace("{验证码}", MessageFormat.format("{0}，打开二维码: {1} ", order.getVoucherNumber(), order.getImgUrl()))
+                            .replace("{验证码}", MessageFormat.format("{0}，打开二维码: {1} ", order.getVoucherNumber(),
+                                    order.getImgUrl()))
                             .replace("{生效日期}", DateFormatUtils.converToStringTime(order.getValidTime()))
                             .replace("{有效年月日}", DateFormatUtils.converToStringTime(order.getInvalidTime()));
                     try {
@@ -43,14 +44,16 @@ public class OrderMessageManager {
         });
     }
 
-    public void sendOrderMessage(final String mobile, final Order... orders) {
+    public void sendOrderMessage(final String mobile,
+                                 final Order... orders) {
         asyncService.run(new Runnable() {
             @Override
             public void run() {
                 for (Order order : orders) {
                     String message = order.getSms();
                     message = message.replace("{份数}", String.valueOf(order.getNumber()))
-                            .replace("{验证码}", MessageFormat.format("{0}，打开二维码: {1} ", order.getVoucherNumber(), order.getImgUrl()))
+                            .replace("{验证码}", MessageFormat.format("{0}，打开二维码: {1} ", order.getVoucherNumber(),
+                                    order.getImgUrl()))
                             .replace("{生效日期}", DateFormatUtils.converToStringTime(order.getValidTime()))
                             .replace("{有效年月日}", DateFormatUtils.converToStringTime(order.getInvalidTime()));
                     try {

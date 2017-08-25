@@ -561,7 +561,8 @@ public class EpServiceImpl implements EpService {
         params.put("status", EpConstant.EpStatus.FREEZE);
         try {
             Result<Integer> result = updatePlatfrom(params);
-            if (result.isSuccess()) {
+            // 新短信模板平台商冻结没有短信
+            /*if (result.isSuccess()) {
                 String destPhoneNum = selectPhone(CommonUtil.objectParseInteger(map.get("id"))).get();
                 int ep_id = CommonUtil.objectParseInteger(map.get("ep_id"));
                 Map<String, String> smsParams = new HashMap<>();
@@ -571,7 +572,7 @@ public class EpServiceImpl implements EpService {
                     log.warn("冻结平台商发送消息失败");
                     throw new ApiException("冻结平台商发送消息失败");
                 }
-            }
+            }*/
             return result;
         } catch (ApiException e) {
             log.error(e.getMessage(), e);
@@ -588,7 +589,8 @@ public class EpServiceImpl implements EpService {
         params.put("status", EpConstant.EpStatus.STOP);
         try {
             Result<Integer> result = updatePlatfrom(params);
-            if (result.isSuccess()) {
+            // 新短信没有停用平台商短信模板
+            /*if (result.isSuccess()) {
                 String destPhoneNum = selectPhone(CommonUtil.objectParseInteger(map.get("id"))).get();
                 int ep_id = CommonUtil.objectParseInteger(map.get("ep_id"));
                 Map<String, String> smsParams = new HashMap<>();
@@ -598,7 +600,7 @@ public class EpServiceImpl implements EpService {
                     log.warn("停用平台商发送消息失败");
                     throw new ApiException("停用平台商发送消息失败");
                 }
-            }
+            }*/
             return result;
 
         } catch (ApiException e) {

@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
+import javax.lang.exception.ApiException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -153,8 +154,7 @@ public class LockPayManagerServiceImpl implements LockPayManagerService {
         }
         for (Capital capital : capitalMap.values()) {
             if (capital.getBalance() + capital.getCredit() < 0 && capital.getHistory_balance()>capital.getBalance()) {
-                BalanceChangeRsp changeRsp = new BalanceChangeRsp(capital.getEp_id(), capital.getCore_ep_id(), null);
-                throw new BusinessException("余额不足", changeRsp);
+                throw new ApiException(Result.BALANCE_LACK_FOR_PAYMENT, "余额不足");
             }
         }
         return capitalSerials;

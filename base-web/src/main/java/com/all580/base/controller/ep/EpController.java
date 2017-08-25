@@ -3,6 +3,7 @@ package com.all580.base.controller.ep;
 import com.all580.base.manager.PlatfromValidateManager;
 import com.all580.ep.api.conf.EpConstant;
 import com.all580.ep.api.service.EpService;
+import com.all580.report.api.service.EpInfoService;
 import com.framework.common.BaseController;
 import com.framework.common.Result;
 import com.framework.common.util.CommonUtil;
@@ -28,6 +29,8 @@ import java.util.Map;
 public class EpController extends BaseController {
     @Autowired
     private EpService epService;
+    @Autowired
+    private EpInfoService epInfoService;
 
     @Autowired
     private PlatfromValidateManager platfromValidateManager;//select
@@ -35,18 +38,12 @@ public class EpController extends BaseController {
     //  查询供应商平台商  包含供销平台商
     @RequestMapping(value = "select/ep_and_channel", method = RequestMethod.GET)
     @ResponseBody
-    public Result<?> create(HttpServletRequest request, String name, @RequestParam("ep_type")
+    public Result<?> epAndChannel(HttpServletRequest request, String name, @RequestParam("ep_type")
             Integer ep_type,Integer record_start,Integer record_count) {
-        if(!(ep_type==EpConstant.EpType.SELLER||ep_type==EpConstant.EpType.SUPPLIER)){
-              new ApiException("企业类型不合法");
+        if(!(ep_type == EpConstant.EpType.SELLER.intValue() || ep_type == EpConstant.EpType.SUPPLIER.intValue())){
+            throw new ApiException("企业类型不合法");
         }
-        Map map = new HashMap();
-        map.put("name",name);
-        map.put("epType",ep_type);
-        map.put("coreEpId",request.getAttribute(EpConstant.EpKey.CORE_EP_ID));
-        map.put("record_start", record_start);
-        map.put("record_count", record_count);
-        return epService.selectEpAndChannel(map);
+        return epInfoService.selectOrderEp(CommonUtil.objectParseInteger(request.getAttribute(EpConstant.EpKey.CORE_EP_ID)), ep_type, name, record_start, record_count);
     }
 
     /**

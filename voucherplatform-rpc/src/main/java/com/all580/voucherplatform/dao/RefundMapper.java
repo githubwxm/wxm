@@ -4,7 +4,9 @@ import com.all580.voucherplatform.entity.Consume;
 import com.all580.voucherplatform.entity.Refund;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public interface RefundMapper {
     /**
@@ -70,13 +72,26 @@ public interface RefundMapper {
 
     /**
      * 根据实体类查询数量
+     *
      * @param record
      * @return
      */
     Integer selectCount(Refund record);
 
 
-
     List<Refund> selectRefundByOrder(@Param("orderId") Integer orderId,
-                                       @Param("orderCode") String orderCode);
+                                     @Param("orderCode") String orderCode);
+
+
+    List<Map> selectOrderRefundReportNumber(@Param("startTime") Date startTime,
+                                            @Param("endTime") Date endTime,
+                                            @Param("platformProdId") Integer platformProdId,
+                                            @Param("supplyProdId") Integer supplyProdId,
+                                            @Param("refStatus") Integer refStatus);
+
+    List<Map> selectOrderRefundReportCount(@Param("startTime") Date startTime,
+                                         @Param("endTime") Date endTime,
+                                         @Param("platformProdId") Integer platformProdId,
+                                         @Param("supplyProdId") Integer supplyProdId,
+                                         @Param("refStatus") Integer refStatus);
 }

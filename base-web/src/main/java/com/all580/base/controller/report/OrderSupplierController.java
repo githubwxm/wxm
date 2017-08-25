@@ -31,7 +31,7 @@ public class OrderSupplierController extends BaseController {
                                              @RequestParam("statistic_ep_id") Integer statistic_ep_id,
                                              @RequestParam("statistics_type_id") String statistics_type_id,
                                              String start  ,String end,String pro_name,Integer group_id,
-                                             String file_name,String export_name,
+                                             String filename,String export_name,
                                              Integer record_start,Integer record_count){
         Map<String,Object> map = new HashMap<>();
         if(null==pro_type){
@@ -45,7 +45,7 @@ public class OrderSupplierController extends BaseController {
         map.put("group",group_id);
         map.put("pro_name",pro_name);
         map.put("export_name",export_name);
-        map.put("file_name",file_name);
+        map.put("filename",filename);
         map.put("record_start",record_start);
         map.put("record_count",record_count);
         map.put( EpConstant.EpKey.CORE_EP_ID,getAttribute( EpConstant.EpKey.CORE_EP_ID));
@@ -58,7 +58,7 @@ public class OrderSupplierController extends BaseController {
                                                    @RequestParam("statistic_ep_id") Integer statistic_ep_id,
                                                    String start  ,String end,Integer group_id,
                                                    String date_time  ,String condition,String pro_name,
-                                                   String file_name,String export_name,
+                                                   String filename,String export_name,
                                                    Integer record_start,Integer record_count){
         Map<String,Object> map = new HashMap<>();
         if(null==pro_type){
@@ -73,7 +73,7 @@ public class OrderSupplierController extends BaseController {
         map.put("start",start);
         map.put("end",end);
         map.put("export_name",export_name);
-        map.put("file_name",file_name);
+        map.put("filename",filename);
         map.put("record_start",record_start);
         map.put("record_count",record_count);
         map.put( EpConstant.EpKey.CORE_EP_ID,getAttribute( EpConstant.EpKey.CORE_EP_ID));
@@ -86,7 +86,7 @@ public class OrderSupplierController extends BaseController {
                                              @RequestParam("statistic_ep_id") Integer statistic_ep_id,
                                              @RequestParam("statistics_type_id") String statistics_type_id,
                                              String start  ,String end,String pro_name,
-                                             String file_name,String export_name,
+                                             String filename,String export_name,
                                              Integer record_start,Integer record_count){
         Map<String,Object> map = new HashMap<>();
         if(null==pro_type){
@@ -100,7 +100,7 @@ public class OrderSupplierController extends BaseController {
         map.put("end",end);
         map.put("pro_name",pro_name);
         map.put("export_name",export_name);
-        map.put("file_name",file_name);
+        map.put("filename",filename);
         map.put("record_start",record_start);
         map.put("record_count",record_count);
         map.put( EpConstant.EpKey.CORE_EP_ID,getAttribute( EpConstant.EpKey.CORE_EP_ID));
@@ -113,7 +113,7 @@ public class OrderSupplierController extends BaseController {
                                                    @RequestParam("statistic_ep_id") Integer statistic_ep_id,
                                                    String start  ,String end,Integer group_id,
                                                    String date_time  ,String condition,String pro_name,
-                                                   String export_name,String file_name,
+                                                   String export_name,String filename,
                                                    Integer record_start,Integer record_count){
         Map<String,Object> map = new HashMap<>();
         if(null==pro_type){
@@ -128,7 +128,7 @@ public class OrderSupplierController extends BaseController {
         map.put("start",start);
         map.put("end",end);
         map.put("export_name",export_name);
-        map.put("file_name",file_name);
+        map.put("filename",filename);
         map.put("record_start",record_start);
         map.put("record_count",record_count);
         map.put( EpConstant.EpKey.CORE_EP_ID,getAttribute( EpConstant.EpKey.CORE_EP_ID));
@@ -141,7 +141,7 @@ public class OrderSupplierController extends BaseController {
                                             @RequestParam("statistic_ep_id") Integer statistic_ep_id,
                                             @RequestParam("statistics_type_id") String statistics_type_id,
                                             String start  ,String end,Integer group_id,String pro_name,
-                                            String export_name,String file_name,
+                                            String export_name,String filename,
                                             Integer record_start,Integer record_count){
         Map<String,Object> map = new HashMap<>();
         if(null==pro_type){
@@ -155,7 +155,7 @@ public class OrderSupplierController extends BaseController {
         map.put("end",end);
         map.put("pro_name",pro_name);
         map.put("export_name",export_name);
-        map.put("file_name",file_name);
+        map.put("filename",filename);
         map.put("record_start",record_start);
         map.put("record_count",record_count);
         map.put( EpConstant.EpKey.CORE_EP_ID,getAttribute( EpConstant.EpKey.CORE_EP_ID));
@@ -168,7 +168,7 @@ public class OrderSupplierController extends BaseController {
                                             @RequestParam("statistic_ep_id") Integer statistic_ep_id,
                                             String start  ,String end,Integer group_id,
                                             String date_time  ,String condition,String pro_name,
-                                            String file_name,String export_name,
+                                            String filename,String export_name,
                                             Integer record_start,Integer record_count){
         Map<String,Object> map = new HashMap<>();
         if(null==pro_type){
@@ -183,7 +183,7 @@ public class OrderSupplierController extends BaseController {
         map.put("start",start);
         map.put("end",end);
         map.put("export_name",export_name);
-        map.put("file_name",file_name);
+        map.put("filename",filename);
         map.put("record_start",record_start);
         map.put("record_count",record_count);
         map.put( EpConstant.EpKey.CORE_EP_ID,getAttribute( EpConstant.EpKey.CORE_EP_ID));

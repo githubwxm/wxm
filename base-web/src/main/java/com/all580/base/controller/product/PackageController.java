@@ -107,6 +107,15 @@ public class PackageController extends BaseController {
         return packageService.selectByPackageHotel(ep_id, name, province, city, record_start, record_count);
     }
 
+    @RequestMapping("pending/package")
+    @ResponseBody
+    public Result<?> selectPendingPackage(@RequestParam Integer ep_id,
+                                                    String name, Integer province, Integer city,
+                                                    @RequestParam(defaultValue = "0") Integer record_start,
+                                                    @RequestParam(defaultValue = "20") Integer record_count) {
+        return packageService.selectByPackage(ep_id, name, province, city, record_start, record_count);
+    }
+
     @RequestMapping("view/main")
     @ResponseBody
     public Result<?> viewMain(@RequestParam Integer id) {

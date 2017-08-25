@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.lang.exception.ApiException;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -69,6 +70,7 @@ public class MeituanPushMsgAdapter extends GeneralPushMsgAdapter implements Init
                 break;
             case "SENT":
                 params.put("issueType", 1);
+                params.put("describe", "success");
                 body.put("orderId", map.get("outer_id"));
                 body.put("partnerOrderId", map.get("number"));
                 body.put("voucherType", 2);
@@ -110,10 +112,10 @@ public class MeituanPushMsgAdapter extends GeneralPushMsgAdapter implements Init
             String partnerId = configJson.getString("partnerId");
             msg.put("partnerId", partnerId);
             String string = JsonUtils.toJson(msg);
-            StringEntity postingString = new StringEntity(string);// json传递
+            StringEntity postingString = new StringEntity(string, Charset.forName("UTF-8"));// json传递
             request.setEntity(postingString);
             request.setHeader("PartnerId", partnerId);
-            request.setHeader("Content-type", "application/json");
+            request.setHeader("Content-type", "application/json; charset=UTF-8");
             BasicAuthorizationUtils.generateAuthAndDateHeader(request, clientId, clientSecret);
             log.debug("推送美团信息:url:{},content:{}", request.getURI().getPath(), string);
             HttpResponse response = httpClient.execute(request);
