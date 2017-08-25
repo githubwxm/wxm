@@ -439,7 +439,7 @@ public class SmsManager {
         return null;
     }
 
-    private Map<String, String> parseParams(String content, Order order, OrderItem orderItem, MaSendResponse maSendResponse, int quantity) {
+    public Map<String, String> parseParams(String content, Order order, OrderItem orderItem, MaSendResponse maSendResponse, int quantity) {
         Map<String, String> map = new HashMap<>();
         Matcher matcher = pattern.matcher(content);
         while (matcher.find()) {
