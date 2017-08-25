@@ -555,29 +555,37 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             return new Result(false, "该子订单已发起退票");
         }
         MaSendResponse response = maSendResponseMapper.selectByVisitorId(orderItem.getId(), visitorId, orderItem.getEp_ma_id());
+        Result result = new Result(true);
         if (orderItem.getStatus() == OrderConstant.OrderItemStatus.SEND && response != null) {
             // 改为自己发送短信
-            switch (orderItem.getPro_type()) {
-                case ProductConstants.ProductType.SCENERY:
-                    response.setPhone(phone);
-                    smsManager.sendVoucher(orderItem, response);
-                    break;
-                case ProductConstants.ProductType.HOTEL:
-                    smsManager.sendHotelSendTicket(orderItem, phone);
-                    break;
-                case ProductConstants.ProductType.ITINERARY:
-                    smsManager.sendLineSendTicket(orderItem, phone);
-                    break;
-                default:
-                    throw new ApiException("改产品不支持重新发票");
+            try {
+                switch (orderItem.getPro_type()) {
+                    case ProductConstants.ProductType.SCENERY:
+                        response.setPhone(phone);
+                        smsManager.sendVoucher(orderItem, response);
+                        break;
+                    case ProductConstants.ProductType.HOTEL:
+                        smsManager.sendHotelSendTicket(orderItem, phone);
+                        break;
+                    case ProductConstants.ProductType.ITINERARY:
+                        smsManager.sendLineSendTicket(orderItem, phone);
+                        break;
+                    default:
+                        result.setError("改产品不支持重新发票");
+                }
+            } catch (Exception e) {
+                result.setError(e.getMessage());
+                Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
+                Map params = smsManager.parseParams(orderItem.getVoucher_msg(), order, orderItem, response, orderItem.getQuantity());
+                result.put(params);
             }
-            return new Result(true);
+            return result;
         }
         // 出票
         // 记录任务
         Map<String, String> jobParam = new HashMap<>();
         jobParam.put("orderItemId", orderItem.getId().toString());
         jobManager.addJob(OrderConstant.Actions.SEND_TICKET, Collections.singleton(jobParam));
-        return new Result(true);
+        return result;
     }
 }

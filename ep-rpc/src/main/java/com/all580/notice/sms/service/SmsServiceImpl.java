@@ -1,5 +1,6 @@
 package com.all580.notice.sms.service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.all580.notice.api.service.SmsService;
 import com.all580.notice.dao.SmsAccountConfMapper;
 import com.all580.notice.dao.SmsTmplMapper;
@@ -363,6 +364,7 @@ public class SmsServiceImpl implements SmsService {
         if(smsSend.equals("0")) {
             return new Result<>(true);
         }
+        Result<String> result;
         try {
             Assert.notEmpty(phones, "接收号码至少需要一个");
             SmsAccountConf smsAccountConf = smsAccountConfMapper.selectByEpId(epId);
@@ -372,7 +374,7 @@ public class SmsServiceImpl implements SmsService {
                 NewMessageManager manager = new NewMessageManager(smsAccountConf.getApp_id(), smsAccountConf.getApp_pwd(), smsAccountConf.getUrl());
                 mnsMessageMap.put(smsAccountConf.getApp_id(), manager);
             }
-            Result<String> result = mnsMessageMap.get(smsAccountConf.getApp_id()).send(smsAccountConf.getEp_sign(), tmpl.getOut_sms_tpl_id(), params, phones);
+            result = mnsMessageMap.get(smsAccountConf.getApp_id()).send(smsAccountConf.getEp_sign(), tmpl.getOut_sms_tpl_id(), params, phones);
             switch (result.get()) {
                 case "isp.RAM_PERMISSION_DENY":
                     result.setError("RAM权限DENY");
@@ -441,9 +443,17 @@ public class SmsServiceImpl implements SmsService {
             if (result.getError() != null) {
                 result.setError("短信发送失败:" + result.getError());
             }
-            return result;
         } catch (Exception e) {
-            return new Result<>(false, "短信发送失败:" + e.getMessage());
+            result = new Result<>(false, "短信发送失败:" + e.getMessage());
         }
+        if (!result.isSuccess()) {
+            JSONObject json = new JSONObject();
+            json.put("phone", phones);
+            json.put("params", params);
+            json.put("ep", epId);
+            json.put("tmpl", tmpl.getId());
+            logger.error("发送短信失败: {}", json.toJSONString());
+        }
+        return result;
     }
 }
