@@ -98,7 +98,6 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         CreateOrderResultDto createOrderResult = this.createOrder(orderInterface, params, lockStockDtoMap, lockParams);
         //终端订单
         Order mainOrder = createOrderResult.getOrder();
-        List<OrderItem> mainItems = createOrderResult.getOrderItems();
 
         Map<Order, List<OrderItem>> orderListMap = new HashMap<>();
         orderListMap.put(createOrderResult.getOrder(), createOrderResult.getOrderItems());
@@ -151,7 +150,11 @@ public class BookingOrderServiceImpl implements BookingOrderService {
                     null, String.format("订单创建成功:%s", JsonUtils.toJson(params)), null));
         }
 
-        if (createOrderResult.getOrder().getSource() == OrderConstant.OrderSourceType.SOURCE_TYPE_SYS){
+        //获取数据库最新的订单对象
+        mainOrder = orderMapper.selectByPrimaryKey(mainOrder.getId());
+        List<OrderItem> mainItems = orderItemMapper.selectByOrderId(mainOrder.getId());
+
+        if (mainOrder.getSource() == OrderConstant.OrderSourceType.SOURCE_TYPE_SYS){
             //逐级检查关联订单
             List<CreateOrderResultDto> resultDtoList = createOrderResult.getPackageCreateOrders();
             if (resultDtoList != null){
