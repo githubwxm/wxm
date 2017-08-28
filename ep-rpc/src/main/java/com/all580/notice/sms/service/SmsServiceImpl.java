@@ -216,8 +216,10 @@ public class SmsServiceImpl implements SmsService {
         if (conf != null) {
             Assert.notNull(conf, "配置不存在");
             String app_pwd = conf.getApp_pwd();
-            int start = app_pwd.length() - 5 / 2;
-            conf.setApp_pwd(StringUtils.overlay(app_pwd, "*****", start, start + 5));
+            if (app_pwd.length() > 6) {
+                int start = (app_pwd.length() - 5) / 2;
+                conf.setApp_pwd(StringUtils.overlay(app_pwd, "*****", start, start + 5));
+            }
             result.put(JsonUtils.obj2map(conf));
         }
         return result;
