@@ -124,8 +124,8 @@ public class PackageController extends BaseController {
 
     @RequestMapping("view/sub")
     @ResponseBody
-    public Result<?> viewSub(@RequestParam Integer id) {
-        return packageSubService.view(id);
+    public Result<?> viewSub(@RequestParam Integer id, @RequestParam Integer ep_id) {
+        return packageSubService.view(id, ep_id);
     }
 
     @RequestMapping("can_sale/list")
