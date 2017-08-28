@@ -72,6 +72,8 @@ public class BookingOrderManager extends BaseOrderManager {
     private PackageOrderChainMapper packageOrderChainMapper;
     @Autowired
     private PackageOrderItemChainMapper packageOrderItemChainMapper;
+    @Autowired
+    private RefundOrderManager refundOrderManager;
 
     /**
      * 逐级处理套票关联子订单的出票状态
@@ -113,12 +115,18 @@ public class BookingOrderManager extends BaseOrderManager {
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public void dealAuditFailOrderItemChainForPackage(OrderItem item){
         OrderItem orderItem = this.getOrderItemChainForPackage(item, Boolean.FALSE);
+        Integer packageOrderId = null;
         while (orderItem != null){
             orderItem.setAudit_time(new Date());
             orderItem.setAudit(Boolean.FALSE);
             orderItemMapper.updateByPrimaryKeySelective(orderItem);
+            //记录套票订单id
+            packageOrderId = orderItem.getOrder_id();
             orderItem = this.getOrderItemChainForPackage(orderItem, Boolean.FALSE);
         }
+        //审核不通过，取消套票订单
+        Order order = orderMapper.selectByPrimaryKey(packageOrderId);
+        refundOrderManager.cancel(order);
     }
 
     /**

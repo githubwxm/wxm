@@ -163,7 +163,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
                     orderList.add(resultDto.getOrder());
                 }
                 //逐级处理套票关联订单的审核状态
-                bookingOrderManager.checkAuditOrderChainForPackage((Order[])orderList.toArray());
+                bookingOrderManager.checkAuditOrderChainForPackage(orderList.toArray(new Order[orderList.size()]));
             }
         }
 

@@ -964,31 +964,31 @@
 
   <select id="selectPackageOrderItem" resultMap="PackageOrderItem">
     SELECT
-      <include refid="Base_Column_List"></include>
+      oi.*
     FROM
       t_order_item oi
       LEFT JOIN t_package_order_item_chain poic
         ON poic.`order_item_id` = oi.`id`
-    WHERE poc.`ref_item_id` = #{id}
+    WHERE poic.`ref_item_id` = #{id}
   </select>
 
   <select id="selectOrderItemsForPackageOrder" resultMap="BaseResultMap">
     SELECT
-      <include refid="Base_Column_List"></include>
+      oi.*
     FROM
       t_order_item oi
       LEFT JOIN t_package_order_item_chain poic
         ON poic.`ref_item_id` = oi.`id`
-    WHERE poc.`order_item_id` = #{itemId}
+    WHERE poic.`order_item_id` = #{itemId}
   </select>
 
   <select id="selectOrderItemsForUpperPackageOrder" resultMap="BaseResultMap">
     SELECT
-      <include refid="Base_Column_List"></include>
+      oi.*
     FROM
       t_order_item oi
       LEFT JOIN t_package_order_chain poc
         ON poc.`ref_order_id` = oi.`order_id`
-    WHERE poc.`order_id` = #{id}
+    WHERE poic.`order_id` = #{id}
   </select>
 </mapper>

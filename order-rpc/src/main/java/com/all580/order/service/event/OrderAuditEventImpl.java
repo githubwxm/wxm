@@ -66,14 +66,16 @@ public class OrderAuditEventImpl implements OrderAuditEvent {
             }
             return new Result(true);
         }
+
+        smsManager.sendAuditRefuseSms(item);
         //审核不通过，对于套票订单审核状态的处理，记录子订单审核结果
         if (order.getSource() == OrderConstant.OrderSourceType.SOURCE_TYPE_SYS){
             bookingOrderManager.dealAuditFailOrderItemChainForPackage(item);
+        }else {
+            // 不通过取消订单
+            refundOrderManager.cancel(order);
         }
 
-        smsManager.sendAuditRefuseSms(item);
-        // 不通过取消订单
-        refundOrderManager.cancel(order);
         return new Result(true);
     }
 }
