@@ -12,12 +12,14 @@ import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.net.IPUtils;
 import com.framework.common.util.CommonUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.lang.exception.ApiException;
 import java.lang.reflect.Field;
 import java.util.*;
 
@@ -136,7 +138,7 @@ public class WxPayService {
         String response = client.getResContent();
         logger.info("微信获取openid返回: {}", response);
         Map map = JsonUtils.json2Map(response);
-        if (!map.containsKey("openid")) {
+        if (map == null || !map.containsKey("openid")) {
             throw new RuntimeException("微信获取openid失败");
         }
         return map;
@@ -180,9 +182,7 @@ public class WxPayService {
                     if (null != field.get(req)) {
                         queryReq.setParameter(field.getName(), field.get(req).toString());
                     }
-                } catch (IllegalArgumentException e) {
-                    logger.error(e.getMessage(), e);
-                } catch (IllegalAccessException e) {
+                } catch (IllegalArgumentException | IllegalAccessException e) {
                     logger.error(e.getMessage(), e);
                 }
             }
@@ -207,52 +207,39 @@ public class WxPayService {
             queryRes.setContent(returnResult);
             SortedMap map = queryRes.getAllParameters();
             // 验证是否失败
-            if (null != map.get(ConstantUtil.RETURN_CODE) && map.get(ConstantUtil.RETURN_CODE).equals(ConstantUtil.SUCCESS)) {
-                if (null != map.get(ConstantUtil.RESULT_CODE) && map.get(ConstantUtil.RESULT_CODE).equals(ConstantUtil.SUCCESS)) {
-                    for (Iterator it = map.entrySet().iterator(); it.hasNext(); ) {
-                        Map.Entry entry = (Map.Entry) it.next();
-                        Class clsss = entity.getClass();
-                        for (; clsss != Object.class; clsss = clsss.getSuperclass()) {
-                            Field[] fields = clsss.getDeclaredFields();
-                            for (Field field : fields) {
-                                field.setAccessible(true);
-                                try {
-                                    if (null != entry && entry.getKey().equals(field.getName())) {
-                                        if (field.getType().equals(Integer.class)) {
-                                            field.set(entity, entry.getValue() != null ? Integer.valueOf(entry.getValue().toString()) : 0);
-                                        } else {
-                                            field.set(entity, entry.getValue());
-                                        }
-                                    }
-                                } catch (IllegalArgumentException e) {
-                                    e.printStackTrace();
-                                    logger.error(e.getMessage(), e);
-                                } catch (IllegalAccessException e) {
-                                    e.printStackTrace();
-                                    logger.error(e.getMessage(), e);
+            if (map == null) throw new ApiException("请求微信异常");
+            if (!map.get(ConstantUtil.RETURN_CODE).equals(ConstantUtil.SUCCESS) || !map.get(ConstantUtil.RESULT_CODE).equals(ConstantUtil.SUCCESS)) {
+                String returnMsg = CommonUtil.objectParseString(map.get(ConstantUtil.RETURN_MSG));
+                String errorMsg = CommonUtil.objectParseString(map.get(ConstantUtil.ERR_CODE_DES));
+                throw new ApiException("微信返回:" + (StringUtils.isEmpty(returnMsg) ? errorMsg : returnMsg));
+            }
+            for (Object o : map.entrySet()) {
+                Map.Entry entry = (Map.Entry) o;
+                Class clsss = entity.getClass();
+                for (; clsss != Object.class; clsss = clsss.getSuperclass()) {
+                    Field[] fields = clsss.getDeclaredFields();
+                    for (Field field : fields) {
+                        field.setAccessible(true);
+                        try {
+                            if (null != entry && entry.getKey().equals(field.getName())) {
+                                if (field.getType().equals(Integer.class)) {
+                                    field.set(entity, entry.getValue() != null ? Integer.valueOf(entry.getValue().toString()) : 0);
+                                } else {
+                                    field.set(entity, entry.getValue());
                                 }
                             }
+                        } catch (IllegalArgumentException | IllegalAccessException e) {
+                            e.printStackTrace();
+                            logger.error("请求微信封装返回异常:" + e.getMessage(), e);
                         }
                     }
-                } else {
-                    if (null != map.get(ConstantUtil.ERR_CODE_DES) && !"".equals(map.get(ConstantUtil.ERR_CODE_DES))) {
-                        throw new Exception(map.get(ConstantUtil.ERR_CODE_DES).toString());
-                    } else {
-                        throw new Exception("微信接口调用失败");
-                    }
-                }
-            } else {
-                if (null != map.get(ConstantUtil.RETURN_MSG) && !"".equals(map.get(ConstantUtil.RETURN_MSG))) {
-                    throw new Exception(map.get(ConstantUtil.RETURN_MSG).toString());
-                } else {
-                    throw new Exception("微信接口调用失败");
                 }
             }
         } else {
             logger.info("后台调用通信失败");
             logger.info("" + httpClient.getResponseCode());
             logger.info(httpClient.getErrInfo());
-            throw new Exception("后台调用通信失败");
+            throw new Exception("微信后台调用通信失败:" + httpClient.getResponseCode());
         }
         return entity;
     }
