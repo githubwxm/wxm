@@ -265,7 +265,7 @@
         left join `t_ticketsys` on `t_supply`.`ticketsys_id`=`t_ticketsys`.`id`
         where 1=1
         <if test="name!=null and name!=''">
-            and `name` =#{name}
+            and `t_supply`.`name` =#{name}
         </if>
         order by `t_supply`.`id` desc
         limit #{record_start},#{record_count}
