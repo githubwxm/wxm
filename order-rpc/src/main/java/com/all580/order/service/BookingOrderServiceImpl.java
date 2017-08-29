@@ -12,13 +12,13 @@ import com.all580.order.dto.ValidateProductSub;
 import com.all580.order.entity.*;
 import com.all580.order.manager.BookingOrderManager;
 import com.all580.order.manager.LockTransactionManager;
+import com.all580.order.manager.SmsManager;
 import com.all580.product.api.consts.ProductConstants;
 import com.all580.product.api.model.EpSalesInfo;
 import com.all580.product.api.model.ProductSalesDayInfo;
 import com.all580.product.api.model.ProductSalesInfo;
 import com.all580.product.api.model.ProductSearchParams;
 import com.all580.product.api.service.ProductSalesPlanRPCService;
-import com.all580.voucher.api.model.ReSendTicketParams;
 import com.all580.voucher.api.service.VoucherRPCService;
 import com.framework.common.Result;
 import com.framework.common.distributed.lock.DistributedLockTemplate;
@@ -87,6 +87,8 @@ public class BookingOrderServiceImpl implements BookingOrderService {
     private MnsEventAspect eventManager;
     @Autowired
     private JobAspect jobManager;
+    @Autowired
+    private SmsManager smsManager;
     @Autowired
     private CreatePackageOrderService createPackageOrderService;
 
@@ -572,14 +574,22 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         }
         MaSendResponse response = maSendResponseMapper.selectByVisitorId(orderItem.getId(), visitorId, orderItem.getEp_ma_id());
         if (orderItem.getStatus() == OrderConstant.OrderItemStatus.SEND && response != null) {
-            ReSendTicketParams reSendTicketParams = new ReSendTicketParams();
-            reSendTicketParams.setOrderSn(orderItem.getNumber());
-            reSendTicketParams.setVisitorId(visitorId);
-            reSendTicketParams.setMobile(phone);
-            reSendTicketParams.setMaOrderId(response.getMa_order_id());
-            reSendTicketParams.setMaProductId(response.getMa_product_id());
-            reSendTicketParams.setVoucher(response.getVoucher_value());
-            return voucherRPCService.resendTicket(orderItem.getEp_ma_id(), reSendTicketParams);
+            // 改为自己发送短信
+            switch (orderItem.getPro_type()) {
+                case ProductConstants.ProductType.SCENERY:
+                    response.setPhone(phone);
+                    smsManager.sendVoucher(orderItem, response);
+                    break;
+                case ProductConstants.ProductType.HOTEL:
+                    smsManager.sendHotelSendTicket(orderItem, phone);
+                    break;
+                case ProductConstants.ProductType.ITINERARY:
+                    smsManager.sendLineSendTicket(orderItem, phone);
+                    break;
+                default:
+                    throw new ApiException("改产品不支持重新发票");
+            }
+            return new Result(true);
         }
         // 出票
         // 记录任务
