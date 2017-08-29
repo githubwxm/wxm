@@ -38,13 +38,14 @@
 
     </sql>
     <select id="selectPlatform" resultType="java.util.Map">
-        select id,name from t_ep where ep_type=10001;
+        select id,name from t_ep where ep_type=10001 and `status`=101 ;
     </select>
 
     <select id="selectPlatformSupplier" resultType="java.util.Map">
          select id,name from t_ep where ep_type=10001
        and id != #{supplier_core_ep_id}
-       and   id not in(select seller_core_ep_id from t_core_ep_channel where supplier_core_ep_id=#{supplier_core_ep_id});
+       and   id not in(select seller_core_ep_id from t_core_ep_channel where supplier_core_ep_id=#{supplier_core_ep_id})
+       and `status`=101;
     </select>
 
     <select id="getSellerPlatfromAccuntInfo" resultType="java.util.Map">
