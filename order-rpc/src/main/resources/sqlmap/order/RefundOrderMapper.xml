@@ -480,7 +480,7 @@
 
   <select id="selectRefundOrderForPackage" resultMap="PackageRefundOrder">
     SELECT
-      <include refid="Base_Column_List"></include>
+      ro.*
     FROM
       t_refund_order ro
       LEFT JOIN t_package_order_item_chain poic
@@ -490,7 +490,7 @@
 
   <select id="selectRefundOrderItemsForPackage" resultMap="BaseResultMap">
     SELECT
-      <include refid="Base_Column_List"></include>
+      ro.*
     FROM
       t_refund_order ro
       LEFT JOIN t_package_order_item_chain poic

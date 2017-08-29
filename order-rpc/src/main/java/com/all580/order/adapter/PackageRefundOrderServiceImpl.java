@@ -107,7 +107,7 @@ public class PackageRefundOrderServiceImpl extends AbstractRefundOrderImpl{
     public int getRefundQuantity(RefundOrderApply apply, Collection<RefundDay> refundDays, Map params) {
         Integer productTYpe = apply.getItem().getPro_type();
         if (productTYpe == ProductConstants.ProductType.PACKAGE){
-            return apply.getQuantity();
+            return apply.getItem().getQuantity();
         }
         return this.getCreateOrderInterface(productTYpe).getRefundQuantity(apply, refundDays, params);
     }

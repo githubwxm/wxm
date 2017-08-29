@@ -126,7 +126,7 @@ public class RefundOrderManager extends BaseOrderManager {
      */
     public PackageRefundOrderDto getRefundOrderForPackage(RefundOrder refundOrder, Boolean fetchItem){
         PackageRefundOrderDto refundOrderDto = refundOrderMapper.selectRefundOrderForPackage(refundOrder);
-        if (fetchItem){
+        if (fetchItem && refundOrderDto != null){
             refundOrderDto.setRefundOrderItems(refundOrderMapper.selectRefundOrderItemsForPackage(refundOrderDto.getOrder_item_id()));
         }
         return refundOrderDto;
@@ -837,10 +837,12 @@ public class RefundOrderManager extends BaseOrderManager {
                 if (refundOrderDto != null){
                     List<RefundOrder> refundOrders = refundOrderDto.getRefundOrderItems();
                     boolean isAllItemRefund = Boolean.TRUE;
-                    for (RefundOrder item : refundOrders) {
-                        if (item.getStatus() != OrderConstant.RefundOrderStatus.REFUND_SUCCESS ){
-                            isAllItemRefund = Boolean.FALSE;
-                            break;
+                    if (!CollectionUtils.isEmpty(refundOrders)){
+                        for (RefundOrder item : refundOrders) {
+                            if (item.getStatus() != OrderConstant.RefundOrderStatus.REFUND_SUCCESS ){
+                                isAllItemRefund = Boolean.FALSE;
+                                break;
+                            }
                         }
                     }
                     //所有元素子订单退款完成,上层订单发起退款任务

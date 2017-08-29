@@ -166,7 +166,7 @@ public class BookingOrderManager extends BaseOrderManager {
      */
     public PackageOrderItemDto getOrderItemChainForPackage(OrderItem orderItem, boolean fetchItem){
         PackageOrderItemDto packageOrderItemDto = orderItemMapper.selectPackageOrderItem(orderItem);
-        if (fetchItem){
+        if (fetchItem && packageOrderItemDto != null){
             packageOrderItemDto.setPackageOrderItems(orderItemMapper.selectOrderItemsForPackageOrder(packageOrderItemDto.getId()));
         }
         return packageOrderItemDto;
