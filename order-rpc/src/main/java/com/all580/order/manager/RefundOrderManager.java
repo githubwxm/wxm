@@ -85,7 +85,7 @@ public class RefundOrderManager extends BaseOrderManager {
         PackageRefundOrderDto packageRefundOrderDto = this.getRefundOrderForPackage(refundOrder, Boolean.TRUE);
         while (packageRefundOrderDto != null){
             if (isSuccess){
-                packageRefundOrderDto.setStatus(OrderConstant.RefundOrderStatus.REFUND_MONEY);
+                packageRefundOrderDto.setStatus(OrderConstant.RefundOrderStatus.REFUNDING);
                 List<RefundOrder> refundOrderItems = packageRefundOrderDto.getRefundOrderItems();
                 for (RefundOrder refundItem : refundOrderItems) {
                     if (refundItem.getStatus() == OrderConstant.RefundOrderStatus.REFUND_MONEY_FAIL){
@@ -105,7 +105,7 @@ public class RefundOrderManager extends BaseOrderManager {
     public void checkRefundTicketOrderItemChainForPackage(RefundOrder refundOrder){
         PackageRefundOrderDto packageRefundOrderDto = this.getRefundOrderForPackage(refundOrder, Boolean.TRUE);
         while (packageRefundOrderDto != null){
-            packageRefundOrderDto.setStatus(OrderConstant.RefundOrderStatus.REFUND_MONEY);
+            packageRefundOrderDto.setStatus(OrderConstant.RefundOrderStatus.REFUNDING);
             List<RefundOrder> refundOrderItems = packageRefundOrderDto.getRefundOrderItems();
             for (RefundOrder refundItem : refundOrderItems) {
                 if (refundItem.getStatus() == OrderConstant.RefundOrderStatus.FAIL){
@@ -833,28 +833,28 @@ public class RefundOrderManager extends BaseOrderManager {
 
             if (success){
                 //元素订单退款完成
-                PackageRefundOrderDto refundOrderDto = this.getRefundOrderForPackage(refundOrder, Boolean.FALSE);
+                PackageRefundOrderDto refundOrderDto = this.getRefundOrderForPackage(refundOrder, Boolean.TRUE);
                 if (refundOrderDto != null){
                     List<RefundOrder> refundOrders = refundOrderDto.getRefundOrderItems();
-                    boolean isAllItemRefund = Boolean.TRUE;
                     if (!CollectionUtils.isEmpty(refundOrders)){
+                        boolean isAllItemRefund = Boolean.TRUE;
                         for (RefundOrder item : refundOrders) {
                             if (item.getStatus() != OrderConstant.RefundOrderStatus.REFUND_SUCCESS ){
                                 isAllItemRefund = Boolean.FALSE;
                                 break;
                             }
                         }
-                    }
-                    //所有元素子订单退款完成,上层订单发起退款任务
-                    if (isAllItemRefund){
-                        Order pOrder = orderMapper.selectByRefundSn(refundOrderDto.getNumber());
-                        // 套票退款，记录任务
-                        Map<String, String> jobRefundMoneyParams = new HashMap<>();
-                        jobRefundMoneyParams.put("ordCode", String.valueOf(pOrder.getNumber()));
-                        jobRefundMoneyParams.put("serialNum", String.valueOf(refundOrderDto.getNumber()));
-                        jobRefundMoneyParams.put("apply", "true");
-                        //套票退款任务
-                        jobManager.addJob(OrderConstant.Actions.REFUND_MONEY, Collections.singleton(jobRefundMoneyParams));
+                        //所有元素子订单退款完成,上层订单发起退款任务
+                        if (isAllItemRefund){
+                            Order pOrder = orderMapper.selectByRefundSn(refundOrderDto.getNumber());
+                            // 套票退款，记录任务
+                            Map<String, String> jobRefundMoneyParams = new HashMap<>();
+                            jobRefundMoneyParams.put("ordCode", String.valueOf(pOrder.getNumber()));
+                            jobRefundMoneyParams.put("serialNum", String.valueOf(refundOrderDto.getNumber()));
+                            jobRefundMoneyParams.put("apply", "true");
+                            //套票退款任务
+                            jobManager.addJob(OrderConstant.Actions.REFUND_MONEY, Collections.singleton(jobRefundMoneyParams));
+                        }
                     }
                 }
             }
