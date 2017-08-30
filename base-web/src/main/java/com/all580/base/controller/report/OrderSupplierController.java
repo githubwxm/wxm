@@ -1,5 +1,6 @@
 package com.all580.base.controller.report;
 
+import com.all580.ep.api.conf.EpConstant;
 import com.all580.product.api.consts.ProductConstants;
 import com.all580.report.api.service.EpOrderService;
 import com.framework.common.BaseController;
@@ -30,6 +31,7 @@ public class OrderSupplierController extends BaseController {
                                              @RequestParam("statistic_ep_id") Integer statistic_ep_id,
                                              @RequestParam("statistics_type_id") String statistics_type_id,
                                              String start  ,String end,String pro_name,Integer group_id,
+                                             String filename,String export_name,
                                              Integer record_start,Integer record_count){
         Map<String,Object> map = new HashMap<>();
         if(null==pro_type){
@@ -42,8 +44,11 @@ public class OrderSupplierController extends BaseController {
         map.put("end",end);
         map.put("group",group_id);
         map.put("pro_name",pro_name);
+        map.put("export_name",export_name);
+        map.put("filename",filename);
         map.put("record_start",record_start);
         map.put("record_count",record_count);
+        map.put( EpConstant.EpKey.CORE_EP_ID,getAttribute( EpConstant.EpKey.CORE_EP_ID));
         return  epOrderService.selectSupplierOrderReserve(map);
     }
 
@@ -53,6 +58,8 @@ public class OrderSupplierController extends BaseController {
                                                    @RequestParam("statistic_ep_id") Integer statistic_ep_id,
                                                    String start  ,String end,Integer group_id,
                                                    String date_time  ,String condition,String pro_name,
+                                                    String filename,
+                                                  String export_name,
                                                    Integer record_start,Integer record_count){
         Map<String,Object> map = new HashMap<>();
         if(null==pro_type){
@@ -66,8 +73,11 @@ public class OrderSupplierController extends BaseController {
         map.put("pro_name",pro_name);
         map.put("start",start);
         map.put("end",end);
+        map.put("export_name",export_name);
+        map.put("filename",filename);
         map.put("record_start",record_start);
         map.put("record_count",record_count);
+        map.put( EpConstant.EpKey.CORE_EP_ID,getAttribute( EpConstant.EpKey.CORE_EP_ID));
         return  epOrderService.selectSupplierOrderReserveDetail(map);
     }
 
@@ -77,6 +87,7 @@ public class OrderSupplierController extends BaseController {
                                              @RequestParam("statistic_ep_id") Integer statistic_ep_id,
                                              @RequestParam("statistics_type_id") String statistics_type_id,
                                              String start  ,String end,String pro_name,
+                                             String filename,String export_name,
                                              Integer record_start,Integer record_count){
         Map<String,Object> map = new HashMap<>();
         if(null==pro_type){
@@ -89,8 +100,11 @@ public class OrderSupplierController extends BaseController {
         map.put("start",start);
         map.put("end",end);
         map.put("pro_name",pro_name);
+        map.put("export_name",export_name);
+        map.put("filename",filename);
         map.put("record_start",record_start);
         map.put("record_count",record_count);
+        map.put( EpConstant.EpKey.CORE_EP_ID,getAttribute( EpConstant.EpKey.CORE_EP_ID));
         return  epOrderService.selectSupplierOrderConsume(map);
     }
 
@@ -100,6 +114,8 @@ public class OrderSupplierController extends BaseController {
                                                    @RequestParam("statistic_ep_id") Integer statistic_ep_id,
                                                    String start  ,String end,Integer group_id,
                                                    String date_time  ,String condition,String pro_name,
+                                                   String export_name,
+                                                   String filename,
                                                    Integer record_start,Integer record_count){
         Map<String,Object> map = new HashMap<>();
         if(null==pro_type){
@@ -113,8 +129,11 @@ public class OrderSupplierController extends BaseController {
         map.put("pro_name",pro_name);
         map.put("start",start);
         map.put("end",end);
+        map.put("export_name",export_name);
+        map.put("filename",filename);
         map.put("record_start",record_start);
         map.put("record_count",record_count);
+        map.put( EpConstant.EpKey.CORE_EP_ID,getAttribute( EpConstant.EpKey.CORE_EP_ID));
         return  epOrderService.selectSupplierOrderConsumeDetail(map);
     }
 
@@ -124,6 +143,7 @@ public class OrderSupplierController extends BaseController {
                                             @RequestParam("statistic_ep_id") Integer statistic_ep_id,
                                             @RequestParam("statistics_type_id") String statistics_type_id,
                                             String start  ,String end,Integer group_id,String pro_name,
+                                            String export_name,String filename,
                                             Integer record_start,Integer record_count){
         Map<String,Object> map = new HashMap<>();
         if(null==pro_type){
@@ -136,8 +156,11 @@ public class OrderSupplierController extends BaseController {
         map.put("start",start);
         map.put("end",end);
         map.put("pro_name",pro_name);
+        map.put("export_name",export_name);
+        map.put("filename",filename);
         map.put("record_start",record_start);
         map.put("record_count",record_count);
+        map.put( EpConstant.EpKey.CORE_EP_ID,getAttribute( EpConstant.EpKey.CORE_EP_ID));
         return  epOrderService.selectSupplierOrderRefund(map);
     }
 
@@ -147,6 +170,8 @@ public class OrderSupplierController extends BaseController {
                                             @RequestParam("statistic_ep_id") Integer statistic_ep_id,
                                             String start  ,String end,Integer group_id,
                                             String date_time  ,String condition,String pro_name,
+                                             String filename,
+                                            String export_name,
                                             Integer record_start,Integer record_count){
         Map<String,Object> map = new HashMap<>();
         if(null==pro_type){
@@ -160,8 +185,11 @@ public class OrderSupplierController extends BaseController {
         map.put("pro_name",pro_name);
         map.put("start",start);
         map.put("end",end);
+        map.put("export_name",export_name);
+        map.put("filename",filename);
         map.put("record_start",record_start);
         map.put("record_count",record_count);
+        map.put( EpConstant.EpKey.CORE_EP_ID,getAttribute( EpConstant.EpKey.CORE_EP_ID));
         return  epOrderService.selectSupplierOrderRefundDetail(map);
     }
 }
