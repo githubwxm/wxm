@@ -178,6 +178,7 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
+                <log.level>DEBUG</log.level>
                 <active.profilename>dev</active.profilename>
                 <active.driverClass>com.mysql.jdbc.Driver</active.driverClass>
                 <active.name>root</active.name>
@@ -203,6 +204,7 @@
         <profile>
             <id>test</id>
             <properties>
+                <log.level>DEBUG</log.level>
                 <active.profilename>test</active.profilename>
                 <active.driverClass>com.mysql.jdbc.Driver</active.driverClass>
                 <active.name>root</active.name>
