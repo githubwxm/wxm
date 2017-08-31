@@ -29,15 +29,15 @@ public class ConfManager {
     private SupplyMapper supplyMapper;
 
     @Value("${voucherplatfrom.topicName}")
-    private String topicName= "allorder-rsp";
+    private String topicName;
     @Value("${voucherplatfrom.tag}")
-    private String tag="ticketV3.1";
+    private String tag;
     @Value("${voucherplatfrom.accessKeyId}")
-    private String accessKeyId="dDC0LZdqDRje0YJC";
+    private String accessKeyId;
     @Value("${voucherplatfrom.secretAccessKey}")
-    private String secretAccessKey="TR1BkfTY6IuajALJqHYxSTWwpSPGwl";
+    private String secretAccessKey;
     @Value("${voucherplatfrom.endpoint}")
-    private String endpoint="http://1356025265125084.mns.cn-shenzhen.aliyuncs.com/";
+    private String endpoint;
     private static final String strConf = "/**\n" +
             " * Created by %s on %s\n" +
             " */\n" +
