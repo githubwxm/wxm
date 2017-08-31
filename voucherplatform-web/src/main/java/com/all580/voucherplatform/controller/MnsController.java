@@ -32,7 +32,7 @@ public class MnsController extends BaseController {
     public String ticket(HttpServletRequest request) {
         String messageId = request.getHeader("x-mns-message-id");
         String tagName = request.getHeader("x-mns-message-tag");
-        log.debug("接收到MNS消息 MSGID={},TAG={}", new Object[]{messageId, tagName});
+        log.info("接收到MNS消息 MSGID={},TAG={}", new Object[]{messageId, tagName});
         String content = null;
         try {
             byte[] buffer = getRequestBuffer(request);
