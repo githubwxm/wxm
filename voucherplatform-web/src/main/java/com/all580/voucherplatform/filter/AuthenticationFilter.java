@@ -23,10 +23,10 @@ import java.util.Map;
 public class AuthenticationFilter extends OncePerRequestFilter {
 
     private RedisUtils redisUtils;
-    public static final int LOGINTIMEOUT = 60 * 30;
+    public static final int LOGINTIMEOUT = 1000 * 30;
     public static final String LOGINURL = "/api/user/login";
     public static final String POSURL = "/api/pos";
-    public static final String MNSURL = "/api/mns";
+    public static final String MNSURL = "/api/mns/ticket";
 
     public AuthenticationFilter() {
         this.redisUtils = BeanUtil.getApplicationContext().getBean(RedisUtils.class);
@@ -37,7 +37,9 @@ public class AuthenticationFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
         String url = request.getRequestURI();
-        if (url.endsWith(LOGINURL) || url.endsWith(MNSURL) || url.endsWith(POSURL)) {
+        //  mns url  地址修改  通过后缀来过滤
+        //if (url.endsWith(LOGINURL) || url.startsWith(MNSURL) || url.startsWith(POSURL)) {
+        if (url.endsWith(LOGINURL) || url.endsWith(MNSURL) || url.startsWith(POSURL)) {
             filterChain.doFilter(request, response);
         } else {
             String sessionId = request.getSession().getId();

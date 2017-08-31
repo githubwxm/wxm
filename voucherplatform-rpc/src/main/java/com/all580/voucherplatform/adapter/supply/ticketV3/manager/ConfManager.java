@@ -10,10 +10,10 @@ import com.framework.common.lang.StringUtils;
 import com.framework.common.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.lang.exception.ApiException;
-import java.text.MessageFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,6 +28,16 @@ public class ConfManager {
     @Autowired
     private SupplyMapper supplyMapper;
 
+    @Value("${voucherplatfrom.topicName}")
+    private String topicName= "allorder-rsp";
+    @Value("${voucherplatfrom.tag}")
+    private String tag="ticketV3.1";
+    @Value("${voucherplatfrom.accessKeyId}")
+    private String accessKeyId="dDC0LZdqDRje0YJC";
+    @Value("${voucherplatfrom.secretAccessKey}")
+    private String secretAccessKey="TR1BkfTY6IuajALJqHYxSTWwpSPGwl";
+    @Value("${voucherplatfrom.endpoint}")
+    private String endpoint="http://1356025265125084.mns.cn-shenzhen.aliyuncs.com/";
     private static final String strConf = "/**\n" +
             " * Created by %s on %s\n" +
             " */\n" +
@@ -63,12 +73,12 @@ public class ConfManager {
         String conf = String.format(strConf, "voucher platform",
                 DateFormatUtils.DATE_FORMAT.format(new Date()),
                 queueName,
-                "allorder-rsp",
+                topicName,
                 supply.getId().toString(),
-                "ticket",
-                "dDC0LZdqDRje0YJC",
-                "TR1BkfTY6IuajALJqHYxSTWwpSPGwl",
-                "http://1356025265125084.mns.cn-shenzhen.aliyuncs.com/");
+                tag,
+                accessKeyId,
+                secretAccessKey,
+                endpoint);
         map.put("aliconfig.js", conf);
 
     }
