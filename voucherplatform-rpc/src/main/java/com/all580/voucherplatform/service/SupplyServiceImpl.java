@@ -265,7 +265,6 @@ public class SupplyServiceImpl implements SupplyService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public Result setProd(int supplyId, List<Map> mapList) {
         for (Map map : mapList) {
             setProd(supplyId, map);
