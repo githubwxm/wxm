@@ -1,7 +1,6 @@
 package com.all580.voucherplatform.adapter.platform.all580V3.processor;
 
 import com.all580.voucherplatform.adapter.ProcessorService;
-import com.all580.voucherplatform.api.service.PlatformService;
 import com.all580.voucherplatform.dao.PlatformRoleMapper;
 import com.all580.voucherplatform.dao.SupplyProductMapper;
 import com.all580.voucherplatform.entity.Platform;
@@ -36,6 +35,7 @@ public class QueryTicketProcessorImpl implements ProcessorService<Platform> {
 
     @Override
     public Object processor(Platform platform, Map map) {
+        log.info("QueryTicketProcessorImpl.processor 参数信息 platform{},map{}",platform.toString(),map.toString());
         String authId = CommonUtil.objectParseString(map.get("mId"));
         PlatformRole platformRole = platformRoleMapper.getRoleByAuthInfo(authId, null);
         if (platformRole == null || platformRole.getPlatform_id() != platform.getId()) {
