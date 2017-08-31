@@ -35,7 +35,7 @@ public class QueryTicketProcessorImpl implements ProcessorService<Platform> {
 
     @Override
     public Object processor(Platform platform, Map map) {
-        log.info("QueryTicketProcessorImpl.processor 参数信息 platform{},map{}",platform.toString(),map.toString());
+        log.info("QueryTicketProcessorImpl.processor 参数信息 platform{},map{}",platform.getId(),map.toString());
         String authId = CommonUtil.objectParseString(map.get("mId"));
         PlatformRole platformRole = platformRoleMapper.getRoleByAuthInfo(authId, null);
         if (platformRole == null || platformRole.getPlatform_id() != platform.getId()) {
