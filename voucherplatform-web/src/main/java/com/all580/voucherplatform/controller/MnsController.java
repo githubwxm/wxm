@@ -41,6 +41,7 @@ public class MnsController extends BaseController {
             log.error("MNS读取请求数据流异常", ex);
         }
         Map map = JsonUtils.json2Map(content);
+        log.info("接收到MNS消息 content={}", content);
         Result result = all580Service.supplyProcess(map);
         if (!result.isSuccess()) {
             log.debug(result.getError());
