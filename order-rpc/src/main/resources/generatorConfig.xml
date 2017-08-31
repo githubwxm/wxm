@@ -5,7 +5,7 @@
 
 <generatorConfiguration>
     <classPathEntry
-            location="/home/alone/.m2/repository/mysql/mysql-connector-java/5.1.30/mysql-connector-java-5.1.30.jar"/>
+            location="D:/maven_repo/mysql/mysql-connector-java/5.1.30/mysql-connector-java-5.1.30.jar"/>
     <context id="my" targetRuntime="MyBatis3">
         <!-- 抑制警告 -->
         <property name="suppressTypeWarnings" value="true" />
@@ -24,357 +24,29 @@
                         password="abcd1234"/>
 
         <javaModelGenerator targetPackage="com.all580.order.entity"
-                            targetProject="/data/IdeaProjects/base/order-rpc/src/main/java">
+                            targetProject="D:/project/base/order-rpc/src/main/java">
             <property name="enableSubPackages" value="true"/>
             <property name="trimStrings" value="true"/>
         </javaModelGenerator>
 
         <sqlMapGenerator targetPackage="sqlmap.order"
-                         targetProject="/data/IdeaProjects/base/order-rpc/src/main/resources">
+                         targetProject="D:/project/base/order-rpc/src/main/resources">
             <property name="enableSubPackages" value="true"/>
         </sqlMapGenerator>
 
         <javaClientGenerator targetPackage="com.all580.order.dao"
-                             targetProject="/data/IdeaProjects/base/order-rpc/src/main/java" type="XMLMAPPER">
+                             targetProject="D:/project/base/order-rpc/src/main/java" type="XMLMAPPER">
             <property name="enableSubPackages" value="true"/>
         </javaClientGenerator>
 
-        <table tableName="t_order_item_account"
+        <table tableName="t_package_order_item_chain"
                enableCountByExample="false"
                enableUpdateByExample="false"
                enableDeleteByExample="false"
                enableSelectByExample="false"
                selectByExampleQueryId="false"
                delimitAllColumns="true"
-               domainObjectName="OrderItemAccount">
-            <property name="useActualColumnNames" value="true"/>
-            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
-            <columnOverride column="update_time" javaType="java.lang.String"/>
-        </table>
-        <table tableName="t_clearance_washed_serial"
-               enableCountByExample="false"
-               enableUpdateByExample="false"
-               enableDeleteByExample="false"
-               enableSelectByExample="false"
-               selectByExampleQueryId="false"
-               delimitAllColumns="true"
-               domainObjectName="ClearanceWashedSerial">
-            <property name="useActualColumnNames" value="true"/>
-            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
-            <columnOverride column="update_time" javaType="java.lang.String"/>
-        </table>
-        <table tableName="t_order"
-               enableCountByExample="false"
-               enableUpdateByExample="false"
-               enableDeleteByExample="false"
-               enableSelectByExample="false"
-               selectByExampleQueryId="false"
-               delimitAllColumns="true"
-               domainObjectName="Order">
-            <property name="useActualColumnNames" value="true"/>
-            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
-            <columnOverride column="update_time" javaType="java.lang.String"/>
-        </table>
-        <table tableName="t_order_clearance_detail"
-               enableCountByExample="false"
-               enableUpdateByExample="false"
-               enableDeleteByExample="false"
-               enableSelectByExample="false"
-               selectByExampleQueryId="false"
-               delimitAllColumns="true"
-               domainObjectName="OrderClearanceDetail">
-            <property name="useActualColumnNames" value="true"/>
-            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
-            <columnOverride column="update_time" javaType="java.lang.String"/>
-        </table>
-        <table tableName="t_order_clearance_serial"
-               enableCountByExample="false"
-               enableUpdateByExample="false"
-               enableDeleteByExample="false"
-               enableSelectByExample="false"
-               selectByExampleQueryId="false"
-               delimitAllColumns="true"
-               domainObjectName="OrderClearanceSerial">
-            <property name="useActualColumnNames" value="true"/>
-            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
-            <columnOverride column="update_time" javaType="java.lang.String"/>
-        </table>
-        <table tableName="t_order_item"
-               enableCountByExample="false"
-               enableUpdateByExample="false"
-               enableDeleteByExample="false"
-               enableSelectByExample="false"
-               selectByExampleQueryId="false"
-               delimitAllColumns="true"
-               domainObjectName="OrderItem">
-            <property name="useActualColumnNames" value="true"/>
-            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
-            <columnOverride column="update_time" javaType="java.lang.String"/>
-        </table>
-        <table tableName="t_order_item_detail"
-               enableCountByExample="false"
-               enableUpdateByExample="false"
-               enableDeleteByExample="false"
-               enableSelectByExample="false"
-               selectByExampleQueryId="false"
-               delimitAllColumns="true"
-               domainObjectName="OrderItemDetail">
-            <property name="useActualColumnNames" value="true"/>
-            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
-            <columnOverride column="update_time" javaType="java.lang.String"/>
-            <columnOverride column="cust_refund_rule" jdbcType="VARCHAR" />
-            <columnOverride column="saler_refund_rule" jdbcType="VARCHAR" />
-        </table>
-        <table tableName="t_refund_account"
-               enableCountByExample="false"
-               enableUpdateByExample="false"
-               enableDeleteByExample="false"
-               enableSelectByExample="false"
-               selectByExampleQueryId="false"
-               delimitAllColumns="true"
-               domainObjectName="RefundAccount">
-            <property name="useActualColumnNames" value="true"/>
-            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
-            <columnOverride column="update_time" javaType="java.lang.String"/>
-        </table>
-        <table tableName="t_refund_order"
-               enableCountByExample="false"
-               enableUpdateByExample="false"
-               enableDeleteByExample="false"
-               enableSelectByExample="false"
-               selectByExampleQueryId="false"
-               delimitAllColumns="true"
-               domainObjectName="RefundOrder">
-            <property name="useActualColumnNames" value="true"/>
-            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
-            <columnOverride column="update_time" javaType="java.lang.String"/>
-        </table>
-        <table tableName="t_refund_serial"
-               enableCountByExample="false"
-               enableUpdateByExample="false"
-               enableDeleteByExample="false"
-               enableSelectByExample="false"
-               selectByExampleQueryId="false"
-               delimitAllColumns="true"
-               domainObjectName="RefundSerial">
-            <property name="useActualColumnNames" value="true"/>
-            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
-            <columnOverride column="update_time" javaType="java.lang.String"/>
-        </table>
-        <table tableName="t_shipping"
-               enableCountByExample="false"
-               enableUpdateByExample="false"
-               enableDeleteByExample="false"
-               enableSelectByExample="false"
-               selectByExampleQueryId="false"
-               delimitAllColumns="true"
-               domainObjectName="Shipping">
-            <property name="useActualColumnNames" value="true"/>
-            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
-            <columnOverride column="update_time" javaType="java.lang.String"/>
-        </table>
-        <table tableName="t_visitor"
-               enableCountByExample="false"
-               enableUpdateByExample="false"
-               enableDeleteByExample="false"
-               enableSelectByExample="false"
-               selectByExampleQueryId="false"
-               delimitAllColumns="true"
-               domainObjectName="Visitor">
-            <property name="useActualColumnNames" value="true"/>
-            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
-            <columnOverride column="update_time" javaType="java.lang.String"/>
-        </table>
-        <table tableName="t_ma_send_response"
-               enableCountByExample="false"
-               enableUpdateByExample="false"
-               enableDeleteByExample="false"
-               enableSelectByExample="false"
-               selectByExampleQueryId="false"
-               delimitAllColumns="true"
-               domainObjectName="MaSendResponse">
-            <property name="useActualColumnNames" value="true"/>
-            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
-            <columnOverride column="update_time" javaType="java.lang.String"/>
-        </table>
-        <table tableName="t_refund_visitor"
-               enableCountByExample="false"
-               enableUpdateByExample="false"
-               enableDeleteByExample="false"
-               enableSelectByExample="false"
-               selectByExampleQueryId="false"
-               delimitAllColumns="true"
-               domainObjectName="RefundVisitor">
-            <property name="useActualColumnNames" value="true"/>
-            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
-            <columnOverride column="update_time" javaType="java.lang.String"/>
-        </table>
-        <table tableName="t_group"
-               enableCountByExample="false"
-               enableUpdateByExample="false"
-               enableDeleteByExample="false"
-               enableSelectByExample="false"
-               selectByExampleQueryId="false"
-               delimitAllColumns="true"
-               domainObjectName="Group">
-            <property name="useActualColumnNames" value="true"/>
-            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
-            <columnOverride column="update_time" javaType="java.lang.String"/>
-        </table>
-        <table tableName="t_guide"
-               enableCountByExample="false"
-               enableUpdateByExample="false"
-               enableDeleteByExample="false"
-               enableSelectByExample="false"
-               selectByExampleQueryId="false"
-               delimitAllColumns="true"
-               domainObjectName="Guide">
-            <property name="useActualColumnNames" value="true"/>
-            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
-            <columnOverride column="update_time" javaType="java.lang.String"/>
-        </table>
-        <table tableName="t_group_member"
-               enableCountByExample="false"
-               enableUpdateByExample="false"
-               enableDeleteByExample="false"
-               enableSelectByExample="false"
-               selectByExampleQueryId="false"
-               delimitAllColumns="true"
-               domainObjectName="GroupMember">
-            <property name="useActualColumnNames" value="true"/>
-            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
-            <columnOverride column="update_time" javaType="java.lang.String"/>
-        </table>
-        <table tableName="t_group_consume"
-               enableCountByExample="false"
-               enableUpdateByExample="false"
-               enableDeleteByExample="false"
-               enableSelectByExample="false"
-               selectByExampleQueryId="false"
-               delimitAllColumns="true"
-               domainObjectName="GroupConsume">
-            <property name="useActualColumnNames" value="true"/>
-            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
-            <columnOverride column="update_time" javaType="java.lang.String"/>
-        </table>
-        <table tableName="t_supplier_channel_bill"
-               enableCountByExample="false"
-               enableUpdateByExample="false"
-               enableDeleteByExample="false"
-               enableSelectByExample="false"
-               selectByExampleQueryId="false"
-               delimitAllColumns="true"
-               domainObjectName="SupplierChannelBill">
-            <property name="useActualColumnNames" value="true"/>
-            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
-        </table>
-        <table tableName="t_payment_job"
-               enableCountByExample="false"
-               enableUpdateByExample="false"
-               enableDeleteByExample="false"
-               enableSelectByExample="false"
-               selectByExampleQueryId="false"
-               delimitAllColumns="true"
-               domainObjectName="PaymentJob">
-            <property name="useActualColumnNames" value="true"/>
-            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
-        </table>
-        <table tableName="t_shipping_modify"
-               enableCountByExample="false"
-               enableUpdateByExample="false"
-               enableDeleteByExample="false"
-               enableSelectByExample="false"
-               selectByExampleQueryId="false"
-               delimitAllColumns="true"
-               domainObjectName="ShippingModify">
-            <property name="useActualColumnNames" value="true"/>
-            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
-        </table>
-        <table tableName="t_visitor_modify"
-               enableCountByExample="false"
-               enableUpdateByExample="false"
-               enableDeleteByExample="false"
-               enableSelectByExample="false"
-               selectByExampleQueryId="false"
-               delimitAllColumns="true"
-               domainObjectName="VisitorModify">
-            <property name="useActualColumnNames" value="true"/>
-            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
-        </table>
-        <table tableName="t_line_group"
-               enableCountByExample="false"
-               enableUpdateByExample="false"
-               enableDeleteByExample="false"
-               enableSelectByExample="false"
-               selectByExampleQueryId="false"
-               delimitAllColumns="true"
-               domainObjectName="LineGroup">
-            <property name="useActualColumnNames" value="true"/>
-            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
-        </table>
-        <table tableName="t_order_item_sales_chain"
-               enableCountByExample="false"
-               enableUpdateByExample="false"
-               enableDeleteByExample="false"
-               enableSelectByExample="false"
-               selectByExampleQueryId="false"
-               delimitAllColumns="true"
-               domainObjectName="OrderItemSalesChain">
-            <property name="useActualColumnNames" value="true"/>
-            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
-        </table>
-        <table tableName="t_package_order_item_account"
-               enableCountByExample="false"
-               enableUpdateByExample="false"
-               enableDeleteByExample="false"
-               enableSelectByExample="false"
-               selectByExampleQueryId="false"
-               delimitAllColumns="true"
-               domainObjectName="PackageOrderItemAccount">
-            <property name="useActualColumnNames" value="true"/>
-            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
-        </table>
-        <table tableName="t_package_order_item"
-               enableCountByExample="false"
-               enableUpdateByExample="false"
-               enableDeleteByExample="false"
-               enableSelectByExample="false"
-               selectByExampleQueryId="false"
-               delimitAllColumns="true"
-               domainObjectName="PackageOrderItem">
-            <property name="useActualColumnNames" value="true"/>
-            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
-        </table>
-        <table tableName="t_package_order_item_sales_chain"
-               enableCountByExample="false"
-               enableUpdateByExample="false"
-               enableDeleteByExample="false"
-               enableSelectByExample="false"
-               selectByExampleQueryId="false"
-               delimitAllColumns="true"
-               domainObjectName="PackageOrderItemSalesChain">
-            <property name="useActualColumnNames" value="true"/>
-            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
-        </table>
-        <table tableName="t_refund_package_account"
-               enableCountByExample="false"
-               enableUpdateByExample="false"
-               enableDeleteByExample="false"
-               enableSelectByExample="false"
-               selectByExampleQueryId="false"
-               delimitAllColumns="true"
-               domainObjectName="RefundPackageAccount">
-            <property name="useActualColumnNames" value="true"/>
-            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
-        </table>
-        <table tableName="t_refund_package_order"
-               enableCountByExample="false"
-               enableUpdateByExample="false"
-               enableDeleteByExample="false"
-               enableSelectByExample="false"
-               selectByExampleQueryId="false"
-               delimitAllColumns="true"
-               domainObjectName="RefundPackageOrder">
+               domainObjectName="PackageOrderItemChain">
             <property name="useActualColumnNames" value="true"/>
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
         </table>

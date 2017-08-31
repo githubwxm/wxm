@@ -1134,6 +1134,23 @@ public class EpServiceImpl implements EpService {
         result.put(epMapper.selectTypeName(map));
         return result;
     }
+    @Override
+    public  Result<?> selectEpAndChannel(Map map){
+        Result result =new Result(true);
+        CommonUtil.checkPage(map);
+        Map resultMap = new HashMap();
+        resultMap.put("list",epMapper.selectEpAndChannel(map));
+        resultMap.put("totalCount",epMapper.selectEpAndChannelCount(map));
+        result.put(resultMap);
+        return result;
+    }
+
+    @Autowired
+    public Result<?> selectPlatfrom(){
+        Result result =new Result(true);
+        result.put(epMapper.selectPlatfrom());
+        return result;
+    }
 
     @Override
     public Result<Boolean> isSendVoucher(int epId, int coreEpId) {

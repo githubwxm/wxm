@@ -10,6 +10,7 @@ import com.all580.order.entity.Order;
 import com.all580.order.entity.OrderItem;
 import com.all580.order.entity.RefundOrder;
 import com.all580.order.manager.BookingOrderManager;
+import com.all580.order.manager.RefundOrderManager;
 import com.all580.order.manager.SmsManager;
 import com.framework.common.Result;
 import com.framework.common.outside.JobAspect;
@@ -45,6 +46,8 @@ public class RefundTicketEventImpl implements RefundTicketEvent {
     private JobAspect jobManager;
     @Autowired
     private BookingOrderManager bookingOrderManager;
+    @Autowired
+    private RefundOrderManager refundOrderManager;
 
     @Override
     @JobTask
@@ -55,6 +58,7 @@ public class RefundTicketEventImpl implements RefundTicketEvent {
         log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(null, orderItem.getId(),
                 0, "ORDER_EVENT", OrderConstant.LogOperateCode.REFUND_TICKET,
                 refundOrder.getQuantity(), String.format("退票%s:%s", content.isStatus() ? "成功" : "失败", refundOrder.getNumber()), String.valueOf(refundOrder.getLocal_refund_serial_no())));
+        Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
         if (content.isStatus()) {
             // 还库存 记录任务
             Map<String, String> jobParams = new HashMap<>();
@@ -62,16 +66,22 @@ public class RefundTicketEventImpl implements RefundTicketEvent {
             jobManager.addJob(OrderConstant.Actions.REFUND_STOCK, Collections.singleton(jobParams));
 
             // 退款
-            Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
             Map<String, String> jobRefundMoneyParams = new HashMap<>();
             jobRefundMoneyParams.put("ordCode", String.valueOf(order.getNumber()));
             jobRefundMoneyParams.put("serialNum", String.valueOf(refundOrder.getNumber()));
             jobRefundMoneyParams.put("apply", "true");
             jobManager.addJob(OrderConstant.Actions.REFUND_MONEY, Collections.singleton(jobRefundMoneyParams));
+
+            //todo 处理套票元素订单
+            //如果退票的是套票的元素订单
+            if (order.getSource() == OrderConstant.OrderSourceType.SOURCE_TYPE_SYS){
+                refundOrderManager.checkRefundTicketOrderItemChainForPackage(refundOrder);
+            }
         } else {
             // 发送短信
             smsManager.sendRefundFailSms(orderItem, refundOrder, "可退余数不足，详情请咨询购买渠道。");
         }
+
         return new Result(true);
     }
 }

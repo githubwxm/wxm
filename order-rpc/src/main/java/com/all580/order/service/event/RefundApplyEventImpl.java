@@ -42,7 +42,8 @@ public class RefundApplyEventImpl implements RefundApplyEvent {
                 refundOrder.getApply_user_id(), refundOrder.getApply_user_name(), OrderConstant.LogOperateCode.REFUND_APPLY_SUCCESS,
                 refundOrder.getQuantity(), String.format("退订申请:退订订单:%s", refundOrder.getNumber()), String.valueOf(refundOrder.getNumber())));
         // 判断是否需要退订审核
-        if (refundOrder.getAudit_ticket() == ProductConstants.RefundAudit.NO) {
+        if (refundOrder.getAudit_ticket() == ProductConstants.RefundAudit.NO
+                && refundOrder.getStatus() == OrderConstant.RefundOrderStatus.AUDIT_WAIT) {
             eventManager.addEvent(OrderConstant.EventType.ORDER_REFUND_AUDIT, new RefundAuditEventParam(content, true));
         }
         return new Result(true);

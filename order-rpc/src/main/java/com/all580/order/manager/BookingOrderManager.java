@@ -3,6 +3,8 @@ package com.all580.order.manager;
 import com.all580.order.api.OrderConstant;
 import com.all580.order.dao.*;
 import com.all580.order.dto.AccountDataDto;
+import com.all580.order.dto.PackageOrderDto;
+import com.all580.order.dto.PackageOrderItemDto;
 import com.all580.order.dto.PriceDto;
 import com.all580.order.entity.*;
 import com.all580.order.util.AccountUtil;
@@ -27,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import javax.lang.exception.ApiException;
 import java.util.*;
@@ -57,10 +60,6 @@ public class BookingOrderManager extends BaseOrderManager {
     @Autowired
     private OrderItemSalesChainMapper orderItemSalesChainMapper;
     @Autowired
-    private PackageOrderItemMapper packageOrderItemMapper;
-    @Autowired
-    private PackageOrderItemAccountMapper packageOrderItemAccountMapper;
-    @Autowired
     @Getter
     private MnsEventAspect eventManager;
     @Autowired
@@ -70,7 +69,158 @@ public class BookingOrderManager extends BaseOrderManager {
     @Value("${resend_ticket_interval}")
     private Integer resendTicketInterval;
     @Autowired
-    private PackageOrderItemSalesChainMapper packageOrderItemSalesChainMapper;
+    private PackageOrderChainMapper packageOrderChainMapper;
+    @Autowired
+    private PackageOrderItemChainMapper packageOrderItemChainMapper;
+    @Autowired
+    private RefundOrderManager refundOrderManager;
+
+    /**
+     * 逐级处理套票关联子订单的出票状态
+     * @param orderItem
+     */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public void checkTicketOrderItemChainForPackage(OrderItem orderItem){
+        //获取元素子订单的上一层子订单
+        PackageOrderItemDto packageOrderItemDto = this.getOrderItemChainForPackage(orderItem, Boolean.TRUE);
+        while (packageOrderItemDto != null){
+            List<OrderItem> orderItemList = packageOrderItemDto.getPackageOrderItems();
+            for (OrderItem item : orderItemList) {
+                //todo 子订单出票状态
+                if (item.getStatus() == OrderConstant.OrderItemStatus.TICKET_FAIL){
+                    //元素订单出片失败
+                    packageOrderItemDto.setStatus(OrderConstant.OrderItemStatus.TICKET_FAIL);
+                    break;
+                }
+                if (item.getStatus() == OrderConstant.OrderItemStatus.TICKETING){
+                    //元素订单出票中
+                    packageOrderItemDto.setStatus(OrderConstant.OrderItemStatus.TICKETING);
+                    break;
+                }
+                if (item.getStatus() == OrderConstant.OrderItemStatus.SEND){
+                    //元素订单已出票
+                    packageOrderItemDto.setStatus(OrderConstant.OrderItemStatus.SEND);
+                }
+            }
+            //更改套票子订单出票状态
+            orderItemMapper.updateByPrimaryKeySelective(packageOrderItemDto);
+            packageOrderItemDto = this.getOrderItemChainForPackage(packageOrderItemDto, Boolean.TRUE);
+        }
+    }
+
+    /**
+     * 对于套票订单审核不通过状态的处理，记录子订单审核结果
+     * @param item
+     */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public void dealAuditFailOrderItemChainForPackage(OrderItem item){
+        OrderItem orderItem = this.getOrderItemChainForPackage(item, Boolean.FALSE);
+        Integer packageOrderId = null;
+        while (orderItem != null){
+            orderItem.setAudit_time(new Date());
+            orderItem.setAudit(Boolean.FALSE);
+            orderItemMapper.updateByPrimaryKeySelective(orderItem);
+            //记录套票订单id
+            packageOrderId = orderItem.getOrder_id();
+            orderItem = this.getOrderItemChainForPackage(orderItem, Boolean.FALSE);
+        }
+        //审核不通过，取消套票订单
+        Order order = orderMapper.selectByPrimaryKey(packageOrderId);
+        refundOrderManager.cancel(order);
+    }
+
+    /**
+     * 逐级处理套票关联订单的审核状态
+     * @param orders
+     */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public void checkAuditOrderChainForPackage(Order... orders){
+        //获取元素订单的上一层的订单
+        List<PackageOrderDto> packageOrderDtoList = this.getOrderChainForPackage(Arrays.asList(orders));
+        //递归调用
+        while (!CollectionUtils.isEmpty(packageOrderDtoList)){
+            for (PackageOrderDto packageOrderDto : packageOrderDtoList) {
+                List<Order> itemOrders = packageOrderDto.getPackageItemOrders();
+                for (Order itemOrder : itemOrders) {
+                    //如果套票有元素订单待审核
+                    if (itemOrder.getStatus() == OrderConstant.OrderStatus.AUDIT_WAIT){
+                        break;
+                    }
+                    if (packageOrderDto.getStatus() == OrderConstant.OrderStatus.AUDIT_WAIT){
+                        packageOrderDto.setStatus(OrderConstant.OrderStatus.PAY_WAIT);
+                        packageOrderDto.setAudit_time(new Date());
+                    }
+                }
+                //修改审核状态
+                orderMapper.updateByPrimaryKeySelective(packageOrderDto);
+            }
+            packageOrderDtoList = this.getOrderChainForPackage(packageOrderDtoList);
+        }
+    }
+
+    /**
+     * 获取套票元素子订单的上一层子订单
+     * @param orderItem
+     * @param fetchItem 是否子订单包其所关联的所有元素子订单
+     * @return
+     */
+    public PackageOrderItemDto getOrderItemChainForPackage(OrderItem orderItem, boolean fetchItem){
+        PackageOrderItemDto packageOrderItemDto = orderItemMapper.selectPackageOrderItem(orderItem);
+        if (fetchItem){
+            packageOrderItemDto.setPackageOrderItems(orderItemMapper.selectOrderItemsForPackageOrder(packageOrderItemDto.getId()));
+        }
+        return packageOrderItemDto;
+    }
+
+    /**
+     * 获取套票元素订单的上一层订单（每个订单包其所关联的所有元素订单）
+     * @param orders
+     * @return
+     */
+    public List<PackageOrderDto> getOrderChainForPackage(List<? extends Order> orders){
+        return orderMapper.selectPackageOrder(orders);
+    }
+
+    /**
+     * 套票打包创建订单参数组装
+     * @param params
+     * @param orderItem
+     * @param itemMap
+     * @return
+     */
+    public Map gerneratePackageItemParams(Map<String, Object> params, OrderItem orderItem, Map<String, List<Map>> itemMap){
+        //由打包商去下单购买元素产品
+        params.put("ep_id", orderItem.getSupplier_ep_id());
+        params.put("core_ep_id", orderItem.getSupplier_core_ep_id());
+        params.put("remark", "套票元素自动下单");
+        params.put("operator_id", 0);
+        params.put("operator_name", OrderConstant.CREATE_ADAPTER);
+        params.put("source", OrderConstant.OrderSourceType.SOURCE_TYPE_WEB);
+        params.put("product_type", ProductConstants.ProductType.PACKAGE);
+        params.put("source", OrderConstant.OrderSourceType.SOURCE_TYPE_SYS);
+
+        params.put("items", itemMap.get(String.valueOf(orderItem.getPro_sub_number())));
+
+        return params;
+    }
+
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public int insertPackageOrderChain(int orderId, int refOrderId){
+        PackageOrderChain orderChain = new PackageOrderChain();
+        orderChain.setOrder_id(orderId);
+        orderChain.setRef_order_id(refOrderId);
+        return packageOrderChainMapper.insertSelective(orderChain);
+    }
+
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public void insertPackageOrderItemChain(OrderItem orderItem, List<OrderItem> orderItems){
+        for (OrderItem item : orderItems) {
+            PackageOrderItemChain packageOrderItemChain = new PackageOrderItemChain();
+            packageOrderItemChain.setOrder_item_id(orderItem.getId());
+            packageOrderItemChain.setRef_item_id(item.getId());
+            packageOrderItemChainMapper.insertSelective(packageOrderItemChain);
+        }
+    }
 
     /**
      * 验证游客信息
@@ -330,47 +480,33 @@ public class BookingOrderManager extends BaseOrderManager {
         orderItemDetail.setUse_hours_limit(info.getUse_hours_limit());
         Date effectiveDate = orderItemDetail.getDay();
         Date expiryDate = null;
-        if (info.getEffective_type() == ProductConstants.EffectiveValidType.DAY) {
-            // 产品说就用预定的时间,即使下单时间比预定时间大也取预定时间
-            effectiveDate = orderItemDetail.getUse_hours_limit() != null ? DateUtils.addHours(effectiveDate, orderItemDetail.getUse_hours_limit()) : effectiveDate;
-            // 这里目前只做了门票的,默认结束日期就是当天的,酒店应该是第二天
-            expiryDate = DateUtils.addDays(orderItemDetail.getDay(), info.getEffective_day() - 1);
-            expiryDate = DateUtils.setHours(expiryDate, DateFormatUtils.get(info.getEnd_time(), Calendar.HOUR_OF_DAY));
-            expiryDate = DateUtils.setMinutes(expiryDate, DateFormatUtils.get(info.getEnd_time(), Calendar.MINUTE));
-            expiryDate = DateUtils.setSeconds(expiryDate, DateFormatUtils.get(info.getEnd_time(), Calendar.SECOND));
-        } else {
-            effectiveDate = date.after(info.getEffective_start_date()) ? (orderItemDetail.getUse_hours_limit() != null ? DateUtils.addHours(date, orderItemDetail.getUse_hours_limit()) : date) : info.getEffective_start_date();
-            expiryDate = info.getEffective_end_date();
+        if (info.getEffective_type() != null){
+            if (info.getEffective_type() == ProductConstants.EffectiveValidType.DAY) {
+                // 产品说就用预定的时间,即使下单时间比预定时间大也取预定时间
+                effectiveDate = orderItemDetail.getUse_hours_limit() != null ? DateUtils.addHours(effectiveDate, orderItemDetail.getUse_hours_limit()) : effectiveDate;
+                // 这里目前只做了门票的,默认结束日期就是当天的,酒店应该是第二天
+                expiryDate = DateUtils.addDays(orderItemDetail.getDay(), info.getEffective_day() - 1);
+                expiryDate = DateUtils.setHours(expiryDate, DateFormatUtils.get(info.getEnd_time(), Calendar.HOUR_OF_DAY));
+                expiryDate = DateUtils.setMinutes(expiryDate, DateFormatUtils.get(info.getEnd_time(), Calendar.MINUTE));
+                expiryDate = DateUtils.setSeconds(expiryDate, DateFormatUtils.get(info.getEnd_time(), Calendar.SECOND));
+            } else {
+                effectiveDate = date.after(info.getEffective_start_date()) ? (orderItemDetail.getUse_hours_limit() != null ? DateUtils.addHours(date, orderItemDetail.getUse_hours_limit()) : date) : info.getEffective_start_date();
+                expiryDate = info.getEffective_end_date();
+            }
+            if (effectiveDate.after(expiryDate)) {
+                throw new ApiException("该产品已过期");
+            }
+            // 不能购买已过销售计划的产品
+            if (date.after(info.getEnd_time())) {
+                throw new ApiException("预定时间已过期");
+            }
+            orderItemDetail.setEffective_date(effectiveDate);
+            orderItemDetail.setExpiry_date(expiryDate);
         }
-        if (effectiveDate.after(expiryDate)) {
-            throw new ApiException("该产品已过期");
-        }
-        // 不能购买已过销售计划的产品
-        if (date.after(info.getEnd_time())) {
-            throw new ApiException("预定时间已过期");
-        }
-        orderItemDetail.setEffective_date(effectiveDate);
-        orderItemDetail.setExpiry_date(expiryDate);
         orderItemDetail.setRefund_quantity(0);
         orderItemDetail.setUsed_quantity(0);
         orderItemDetailMapper.insertSelective(orderItemDetail);
         return orderItemDetail;
-    }
-
-    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public PackageOrderItemSalesChain generatePackagerChain(PackageOrderItem item, Integer epId, Date day, List<EpSalesInfo> daySales) {
-        AccountDataDto dataDto = AccountUtil.generateAccountData(daySales, epId, day);
-        PackageOrderItemSalesChain chain = new PackageOrderItemSalesChain();
-        chain.setPackage_order_item_id(item.getId());
-        chain.setDay(day);
-        chain.setEp_id(epId);
-        chain.setCore_ep_id(getCoreEpId(getCoreEpId(epId)));
-        chain.setSale_ep_id(dataDto.getSaleEpId());
-        chain.setSale_core_ep_id(getCoreEpId(getCoreEpId(dataDto.getSaleEpId())));
-        chain.setIn_price(dataDto.getInPrice());
-        chain.setOut_price(dataDto.getOutPrice());
-        packageOrderItemSalesChainMapper.insertSelective(chain);
-        return chain;
     }
 
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
@@ -539,10 +675,9 @@ public class BookingOrderManager extends BaseOrderManager {
 
     /**
      * 支付预分账
-     *
      * @param daySalesList 每天销售链
-     * @param orderItem    子订单
-     * @param finalEpId    最终售卖企业
+     * @param orderItem 子订单
+     * @param finalEpId 最终售卖企业
      * @return
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
@@ -558,7 +693,6 @@ public class BookingOrderManager extends BaseOrderManager {
 
     /**
      * 组装支付分账信息
-     *
      * @param order
      */
     public List<BalanceChangeInfo> packagingPaySplitAccount(Order order) {
@@ -567,21 +701,13 @@ public class BookingOrderManager extends BaseOrderManager {
 
     /**
      * 组装支付分账信息
-     *
      * @param order
      */
     public List<BalanceChangeInfo> packagingPaySplitAccount(Order order, List<OrderItem> orderItems) {
         List<BalanceChangeInfo> balanceChangeInfoList = new ArrayList<>();
-        // 套票
-        PackageOrderItem packageOrderItem = packageOrderItemMapper.selectByNumber(order.getNumber());
-        if (packageOrderItem != null) {
-            List<PackageOrderItemAccount> accounts = packageOrderItemAccountMapper.selectByOrderItem(packageOrderItem.getId());
-            List<BalanceChangeInfo> itemInfoList = AccountUtil.makerPayBalanceChangeInfo(AccountUtil.packageAccount2Account(accounts), packageOrderItem.getPayment_flag(), packageOrderItem.getEp_id(), packageOrderItem.getCore_ep_id(), order.getBuy_ep_id());
-            balanceChangeInfoList.addAll(itemInfoList);
-        }
         for (OrderItem orderItem : orderItems) {
             List<OrderItemAccount> accountList = orderItemAccountMapper.selectByOrderItem(orderItem.getId());
-            List<BalanceChangeInfo> itemInfoList = AccountUtil.makerPayBalanceChangeInfo(accountList, orderItem.getPayment_flag(), orderItem.getSupplier_ep_id(), orderItem.getSupplier_core_ep_id(), packageOrderItem == null ? order.getBuy_ep_id() : packageOrderItem.getEp_id());
+            List<BalanceChangeInfo> itemInfoList = AccountUtil.makerPayBalanceChangeInfo(accountList, orderItem.getPayment_flag(), orderItem.getSupplier_ep_id(), orderItem.getSupplier_core_ep_id(), order.getBuy_ep_id());
             balanceChangeInfoList.addAll(itemInfoList);
         }
         return balanceChangeInfoList;

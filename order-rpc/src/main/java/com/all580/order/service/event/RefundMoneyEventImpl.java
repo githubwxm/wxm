@@ -76,6 +76,7 @@ public class RefundMoneyEventImpl implements RefundMoneyEvent {
                 eventManager.addEvent(OrderConstant.EventType.REFUND_SUCCESS, refundOrder.getId());
             }
         }
+
         return new Result(true);
     }
 }

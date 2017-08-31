@@ -69,6 +69,11 @@ public class RefundOrderServiceImpl implements RefundOrderService {
                 && !String.valueOf(params.get(EpConstant.EpKey.CORE_EP_ID)).equals(String.valueOf(order.getPayee_ep_id()))) {
             throw new ApiException("非法请求:当前企业不能取消该订单");
         }
+        //套票元素订单不能单独取消
+        Order pOrder = orderMapper.selectPackageOrderById(order.getId());
+        if (pOrder != null){
+            throw new ApiException("非法请求:当前订单不能单独取消");
+        }
         return refundOrderManager.cancel(order);
     }
 
@@ -78,25 +83,18 @@ public class RefundOrderServiceImpl implements RefundOrderService {
         Assert.notNull(refundOrderInterface, type + " 类型退订申请订单适配器没找到");
 
         String orderItemSn = params.get("order_item_sn").toString();
+        //套票元素订单不能单独退订
+        OrderItem orderItem = orderItemMapper.selectBySN(Long.valueOf(orderItemSn));
+        Order pOrder = orderMapper.selectPackageOrderById(orderItem.getOrder_id());
+        if (pOrder != null){
+            throw new ApiException("非法请求:当前订单不能单独退订");
+        }
         // 分布式锁
         DistributedReentrantLock lock = distributedLockTemplate.execute(orderItemSn, lockTimeOut);
 
         // 锁成功
         try {
             return lockTransactionManager.applyRefund(params, Long.valueOf(orderItemSn), refundOrderInterface);
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    @Override
-    public Result<?> refundApplyForPackage(Map params) throws Exception {
-        String orderItemSn = params.get("order_sn").toString();
-        // 分布式锁
-        DistributedReentrantLock lock = distributedLockTemplate.execute(orderItemSn, lockTimeOut);
-        // 锁成功
-        try {
-            return lockTransactionManager.applyRefundForPackage(params, Long.valueOf(orderItemSn));
         } finally {
             lock.unlock();
         }

@@ -48,22 +48,24 @@ public class SplitCreateOrderEventImpl implements SplitCreateOrderEvent {
         List<Map<String, String>> jobParams = new ArrayList<>();
         List<Map<String, String>> jobGroupParams = new ArrayList<>();
         for (OrderItem orderItem : orderItems) {
-            Map<String, String> jobParam = new HashMap<>();
-            jobParam.put("orderItemId", orderItem.getId().toString());
-            // 团队票
-            if (orderItem.getGroup_id() != null && orderItem.getGroup_id() != 0 &&
-                    orderItem.getPro_sub_ticket_type() != null && orderItem.getPro_sub_ticket_type() == ProductConstants.TeamTicketType.TEAM &&
-                    orderItem.getPro_type() == ProductConstants.ProductType.SCENERY) {
-                jobGroupParams.add(jobParam);
-                continue;
+            if (orderItem.getPro_type() != ProductConstants.ProductType.PACKAGE){
+                Map<String, String> jobParam = new HashMap<>();
+                jobParam.put("orderItemId", orderItem.getId().toString());
+                // 团队票
+                if (orderItem.getGroup_id() != null && orderItem.getGroup_id() != 0 &&
+                        orderItem.getPro_sub_ticket_type() != null && orderItem.getPro_sub_ticket_type() == ProductConstants.TeamTicketType.TEAM &&
+                        orderItem.getPro_type() == ProductConstants.ProductType.SCENERY) {
+                    jobGroupParams.add(jobParam);
+                    continue;
+                }
+                // 酒店 线路
+                if (orderItem.getPro_type() == ProductConstants.ProductType.HOTEL ||
+                        orderItem.getPro_type() == ProductConstants.ProductType.ITINERARY) {
+                    selfSend(orderItem);
+                    continue;
+                }
+                jobParams.add(jobParam);
             }
-            // 酒店 线路
-            if (orderItem.getPro_type() == ProductConstants.ProductType.HOTEL ||
-                    orderItem.getPro_type() == ProductConstants.ProductType.ITINERARY) {
-                selfSend(orderItem);
-                continue;
-            }
-            jobParams.add(jobParam);
         }
         if (jobParams.size() > 0) {
             jobManager.addJob(OrderConstant.Actions.SEND_TICKET, jobParams);

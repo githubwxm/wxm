@@ -405,4 +405,28 @@
         OR toi.order_id = #{orderId}
     LIMIT 1
   </select>
+
+  <resultMap id="PackageOrder" type="com.all580.order.dto.PackageOrderDto" extends="BaseResultMap">
+      <!--<association property="packageOrder" select="selectPackageOrderById" column="id" javaType="com.all580.order.entity.Order"></association>-->
+      <collection property="packageItemOrders" select="selectPackageItemOrderById" column="id" ofType="com.all580.order.entity.Order"></collection>
+  </resultMap>
+
+  <select id="selectPackageOrder" resultMap="PackageOrder">
+      SELECT o.* FROM t_order o INNER JOIN t_package_order_chain poc ON poc.order_id = o.id
+      WHERE poc.ref_order_id  IN
+      <foreach collection="orders" open="(" close=")" separator="," item="order">
+          #{order.id}
+      </foreach>
+  </select>
+
+  <select id="selectPackageOrderById" resultMap="BaseResultMap">
+    SELECT o.* FROM t_order o INNER JOIN t_package_order_chain poc ON poc.order_id = o.id
+    WHERE poc.ref_order_id = #{orderId}
+  </select>
+
+  <select id="selectPackageItemOrderById" resultMap="BaseResultMap">
+    SELECT o.* FROM t_order o INNER JOIN t_package_order_chain poc ON poc.ref_order_id = o.id
+    WHERE poc.order_id = #{orderId}
+  </select>
+
 </mapper>

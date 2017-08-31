@@ -58,13 +58,24 @@ public class OrderAuditEventImpl implements OrderAuditEvent {
             if (allAudit) {
                 // TODO: 2016/11/16  目前只支持单子订单发送
                 smsManager.sendAuditSuccess(item);
+                //审核通过，对于套票订单审核状态的处理
+                if (order.getSource() == OrderConstant.OrderSourceType.SOURCE_TYPE_SYS){
+                    //逐级处理套票关联订单的审核状态
+                    bookingOrderManager.checkAuditOrderChainForPackage(order);
+                }
             }
             return new Result(true);
         }
 
         smsManager.sendAuditRefuseSms(item);
-        // 不通过取消订单
-        refundOrderManager.cancel(order);
+        //审核不通过，对于套票订单审核状态的处理，记录子订单审核结果
+        if (order.getSource() == OrderConstant.OrderSourceType.SOURCE_TYPE_SYS){
+            bookingOrderManager.dealAuditFailOrderItemChainForPackage(item);
+        }else {
+            // 不通过取消订单
+            refundOrderManager.cancel(order);
+        }
+
         return new Result(true);
     }
 }

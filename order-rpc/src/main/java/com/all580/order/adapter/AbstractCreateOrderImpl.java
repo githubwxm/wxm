@@ -8,6 +8,7 @@ import com.all580.order.dto.PriceDto;
 import com.all580.order.dto.ValidateProductSub;
 import com.all580.order.entity.*;
 import com.all580.order.manager.BookingOrderManager;
+import com.all580.product.api.consts.ProductConstants;
 import com.all580.product.api.model.EpSalesInfo;
 import com.all580.product.api.model.ProductSalesDayInfo;
 import com.all580.product.api.model.ProductSalesInfo;
@@ -68,6 +69,11 @@ public abstract class AbstractCreateOrderImpl implements CreateOrderInterface {
         return createOrder;
     }
 
+    @Override
+    public List<Map> getOrderItemParams(Map params) {
+        return (List<Map>) params.get("items");
+    }
+
     public ValidateProductSub parseItemParams(CreateOrder createOrder, Map item) {
         ValidateProductSub sub = new ValidateProductSub();
         sub.setCode(Long.parseLong(item.get("product_sub_code").toString()));
@@ -95,10 +101,16 @@ public abstract class AbstractCreateOrderImpl implements CreateOrderInterface {
         if (!bookingOrderManager.isEpStatus(epService.getEpStatus(createOrder.getEpId()), EpConstant.EpStatus.ACTIVE)) {
             throw new ApiException("销售商企业已冻结");
         }
+
         // 只有销售商可以下单
         Result<Integer> epType = epService.selectEpType(createOrder.getEpId());
+        //对于套票自动创建元素订单的处理的处理
+        Integer productType = CommonUtil.objectParseInteger(params.get("product_type"), 0);
+        boolean isPackageAutoOrder = (productType == ProductConstants.ProductType.PACKAGE &&
+                (bookingOrderManager.isEpType(epType, EpConstant.EpType.SELLER) ||
+                        bookingOrderManager.isEpType(epType, EpConstant.EpType.PLATFORM)));
         if (!bookingOrderManager.isEpType(epType, EpConstant.EpType.SELLER) &&
-                !bookingOrderManager.isEpType(epType, EpConstant.EpType.OTA)) {
+                !bookingOrderManager.isEpType(epType, EpConstant.EpType.OTA) && !isPackageAutoOrder) {
             throw new ApiException("该企业不能购买产品");
         }
 

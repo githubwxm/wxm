@@ -1,12 +1,12 @@
 package com.all580.order.adapter;
 
 import com.all580.order.api.OrderConstant;
+import com.all580.order.dao.OrderItemDetailMapper;
 import com.all580.order.dao.OrderItemMapper;
 import com.all580.order.dao.OrderMapper;
 import com.all580.order.dao.VisitorMapper;
 import com.all580.order.dto.RefundDay;
 import com.all580.order.dto.RefundOrderApply;
-import com.all580.order.entity.Order;
 import com.all580.order.entity.OrderItemDetail;
 import com.all580.order.entity.RefundOrder;
 import com.all580.order.entity.Visitor;
@@ -26,7 +26,7 @@ import java.util.Map;
  * Created by xiangzw on 2017/7/14.
  */
 @Component(OrderConstant.REFUND_ADAPTER + "PACKAGE")
-public class PackageRefundOrderItemServiceImpl extends AbstractRefundOrderImpl{
+public class PackageRefundOrderServiceImpl extends AbstractRefundOrderImpl{
 
     @Resource(name=OrderConstant.REFUND_ADAPTER + "TICKET",type = RefundOrderInterface.class)
     private RefundOrderInterface ticketRefundOrder;
@@ -36,6 +36,8 @@ public class PackageRefundOrderItemServiceImpl extends AbstractRefundOrderImpl{
     private RefundOrderInterface lineRefundOrder;
     @Autowired
     private VisitorMapper visitorMapper;
+    @Autowired
+    private OrderItemDetailMapper orderItemDetailMapper;
 
     @Override
     @Autowired
@@ -69,24 +71,14 @@ public class PackageRefundOrderItemServiceImpl extends AbstractRefundOrderImpl{
     }
 
     @Override
-    public RefundOrderApply validateAndParseParams(long itemNo, Map params) {
-        return (RefundOrderApply) params.get("RefundOrderApply");
-    }
-
-    @Override
-    public void checkAuth(RefundOrderApply apply, Map params) {
-
-    }
-
-    @Override
     public void canBeRefund(RefundOrderApply apply, List<OrderItemDetail> detailList, Map params) {
-        //元素订单退订不检查
-//        try {
-//            this.getCreateOrderInterface(apply.getItem().getPro_type()).canBeRefund(apply, detailList, params);
-//        }catch (Exception e){
-//            //不可退元素的处理
-//
-//        }
+        //元素订单退订检查
+        Integer productTYpe = apply.getItem().getPro_type();
+        if (productTYpe == ProductConstants.ProductType.PACKAGE){
+            super.canBeRefund(apply, detailList, params);
+        }else {
+            this.getCreateOrderInterface(productTYpe).canBeRefund(apply, detailList, params);
+        }
     }
 
     @Override
@@ -107,23 +99,29 @@ public class PackageRefundOrderItemServiceImpl extends AbstractRefundOrderImpl{
     }
 
     @Override
-    public int getRefundQuantity(RefundOrderApply apply, Collection<RefundDay> refundDays, Map params) {
+    public void validateRefundVisitor(RefundOrderApply apply, Collection<RefundDay> refundDays, Map params) {
 
-        return this.getCreateOrderInterface(apply.getItem().getPro_type()).getRefundQuantity(apply, refundDays, params);
     }
 
     @Override
-    public int[] calcRefundMoneyAndFee(RefundOrderApply apply, List<OrderItemDetail> detailList, Collection<RefundDay> refundDays, Map params) {
-        Order order = apply.getOrder();
-        //元素订单的购买者为打包商
-        order.setBuy_ep_id(apply.getPackageOrderItem().getEp_id());
-        order.setPayee_ep_id(apply.getPackageOrderItem().getCore_ep_id());
-        return refundOrderManager.calcRefundMoneyAndFee(apply.getItem(), apply.getOrder(), apply.getFrom(), refundDays, detailList, apply.getDate());
+    public int getRefundQuantity(RefundOrderApply apply, Collection<RefundDay> refundDays, Map params) {
+        Integer productTYpe = apply.getItem().getPro_type();
+        if (productTYpe == ProductConstants.ProductType.PACKAGE){
+            return apply.getQuantity();
+        }
+        return this.getCreateOrderInterface(productTYpe).getRefundQuantity(apply, refundDays, params);
     }
 
     @Override
     public void hasRemainAndInsertRefundVisitor(RefundOrderApply apply, RefundOrder refundOrder, List<OrderItemDetail> detailList, Collection<RefundDay> refundDays, Map params) {
-
-        this.getCreateOrderInterface(apply.getItem().getPro_type()).hasRemainAndInsertRefundVisitor(apply, refundOrder, detailList, refundDays, params);
+        Integer productTYpe = apply.getItem().getPro_type();
+        if (productTYpe == ProductConstants.ProductType.PACKAGE){
+            for (OrderItemDetail detail : detailList) {
+                detail.setRefund_quantity(detail.getQuantity());
+                orderItemDetailMapper.updateByPrimaryKeySelective(detail);
+            }
+        }else {
+            this.getCreateOrderInterface(productTYpe).hasRemainAndInsertRefundVisitor(apply, refundOrder, detailList, refundDays, params);
+        }
     }
 }

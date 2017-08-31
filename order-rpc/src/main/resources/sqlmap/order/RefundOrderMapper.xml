@@ -474,6 +474,30 @@
     WHERE toi.order_id = #{orderId}
   </select>
 
+  <resultMap id="PackageRefundOrder" type="com.all580.order.dto.PackageRefundOrderDto" extends="BaseResultMap">
+    <!--<collection property="refundOrderItems" select="selectRefundOrderItemsForPackage" column="order_item_id" ofType="com.all580.order.entity.RefundOrder"></collection>-->
+  </resultMap>
+
+  <select id="selectRefundOrderForPackage" resultMap="PackageRefundOrder">
+    SELECT
+      <include refid="Base_Column_List"></include>
+    FROM
+      t_refund_order ro
+      LEFT JOIN t_package_order_item_chain poic
+        ON poic.`order_item_id` = ro.`order_item_id`
+    WHERE poic.`ref_item_id` = #{order_item_id}
+  </select>
+
+  <select id="selectRefundOrderItemsForPackage" resultMap="BaseResultMap">
+    SELECT
+      <include refid="Base_Column_List"></include>
+    FROM
+      t_refund_order ro
+      LEFT JOIN t_package_order_item_chain poic
+        ON poic.`ref_item_id` = ro.`order_item_id`
+    WHERE poic.`order_item_id` = #{itemId}
+  </select>
+
   <select id="haveRefunding" resultType="int">
     SELECT count(*) from t_refund_order
     WHERE `order_item_id` = #{itemId}

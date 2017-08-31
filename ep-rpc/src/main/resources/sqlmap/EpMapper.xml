@@ -38,13 +38,14 @@
 
     </sql>
     <select id="selectPlatform" resultType="java.util.Map">
-        select id,name from t_ep where ep_type=10001;
+        select id,name from t_ep where ep_type=10001 and `status`=101 ;
     </select>
 
     <select id="selectPlatformSupplier" resultType="java.util.Map">
          select id,name from t_ep where ep_type=10001
        and id != #{supplier_core_ep_id}
-       and   id not in(select seller_core_ep_id from t_core_ep_channel where supplier_core_ep_id=#{supplier_core_ep_id});
+       and   id not in(select seller_core_ep_id from t_core_ep_channel where supplier_core_ep_id=#{supplier_core_ep_id})
+       and `status`=101;
     </select>
 
     <select id="getSellerPlatfromAccuntInfo" resultType="java.util.Map">
@@ -366,5 +367,51 @@
         <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
             #{item}
         </foreach>;
+    </select>
+
+    <select id="selectEpAndChannel" resultType="java.util.Map">
+       <include refid="selectEpAndChannelSql"/>
+        <include refid="limit"/>
+    </select>
+
+    <select id="selectEpAndChannelCount" resultType="java.lang.Integer">
+          select count(*) from (
+             <include refid="selectEpAndChannelSql"/>
+          )as a
+    </select>
+    <sql id="selectEpAndChannelSql">
+        select * from (
+        select id, name  from t_ep
+        where (ep_type=#{epType}
+        <if test="epType  == 10002">  <!--  供应平台才查出自己-->
+            or id = core_ep_id
+         </if>  )and core_ep_id=#{coreEpId}
+        union
+        select ep.id,CONCAT('', ep.name, '(平台商)') from t_ep ep join
+        t_core_ep_channel  channel
+        on
+        <if test="epType  == 10002">
+            supplier_core_ep_id=ep.id
+        </if>
+        <if test="epType  == 10003">
+            channel.seller_core_ep_id=ep.id
+        </if>
+        where 1=1
+        <if test="epType  == 10003">
+          and supplier_core_ep_id=#{coreEpId}
+        </if>
+        <if test="epType  == 10002">
+          and  channel.seller_core_ep_id=#{coreEpId}  and 1=2
+        </if>
+
+        ) as f where  1=1
+        <if test=" name != null">
+           and name like  CONCAT('%',#{name},'%')
+        </if>
+         ORDER BY id
+    </sql>
+
+    <select id="selectPlatfrom" resultType="java.lang.Integer">
+        select id from t_ep where core_ep_id=id;
     </select>
 </mapper>

@@ -1,5 +1,6 @@
 package com.all580.order.dao;
 
+import com.all580.order.dto.PackageRefundOrderDto;
 import com.all580.order.entity.RefundOrder;
 import org.apache.ibatis.annotations.Param;
 
@@ -121,6 +122,20 @@ public interface RefundOrderMapper {
      * @return
      */
     List<RefundOrder> selectByOrder(@Param("orderId") Integer orderId);
+
+    /**
+     * 获取套票元素退订订单的上层子订单的退订订单
+     * @param refundOrder
+     * @return
+     */
+    PackageRefundOrderDto selectRefundOrderForPackage(RefundOrder refundOrder);
+
+    /**
+     * 获取套票元素子订单的所有元素的退订订单
+     * @param itemId
+     * @return
+     */
+    List<RefundOrder> selectRefundOrderItemsForPackage(@Param("itemId") Integer itemId);
 
     /**
      * 获取子订单还有多少个退订中
