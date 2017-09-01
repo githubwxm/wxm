@@ -5,20 +5,17 @@ import com.all580.voucherplatform.adapter.platform.PlatformAdapterService;
 import com.all580.voucherplatform.api.VoucherConstant;
 import com.all580.voucherplatform.dao.*;
 import com.all580.voucherplatform.entity.*;
-import com.framework.common.Result;
 import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.lang.UUIDGenerator;
 import com.github.ltsopensource.core.domain.Job;
 import com.github.ltsopensource.jobclient.JobClient;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import javax.management.relation.RelationSupport;
 import java.util.*;
 
 /**
@@ -56,6 +53,7 @@ public class All580V3AdapterIImpl extends PlatformAdapterService {
     private void sendMessage(String action, Object value) {
         String content = JsonUtils.toJson(value);
         try {
+            log.info("调用小秘书content{}",content);
             voucherCallbackService.process(action, MSGID, content, new Date());
         } catch (Exception ex) {
             log.error("调用小秘书RPC异常:", ex);
