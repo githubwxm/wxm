@@ -1,7 +1,6 @@
 package com.all580.voucherplatform.adapter.supply.ticketV3.processor;
 
 import com.all580.voucherplatform.adapter.ProcessorService;
-import com.all580.voucherplatform.entity.Order;
 import com.all580.voucherplatform.entity.Supply;
 import com.all580.voucherplatform.manager.order.OrderSupplyReceiveManager;
 import com.framework.common.util.CommonUtil;
@@ -34,7 +33,9 @@ public class SendOrderProcessorImpl implements ProcessorService<Supply> {
         }
         try {
             orderSupplyReceiveManager.submit(mapList);
-        } catch (Exception ex) {}
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
 
         return null;
     }
