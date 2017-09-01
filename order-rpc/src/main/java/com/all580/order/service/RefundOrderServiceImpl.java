@@ -70,8 +70,7 @@ public class RefundOrderServiceImpl implements RefundOrderService {
             throw new ApiException("非法请求:当前企业不能取消该订单");
         }
         //套票元素订单不能单独取消
-        Order pOrder = orderMapper.selectPackageOrderById(order.getId());
-        if (pOrder != null){
+        if (order.getSource() == OrderConstant.OrderSourceType.SOURCE_TYPE_SYS){
             throw new ApiException("非法请求:当前订单不能单独取消");
         }
         return refundOrderManager.cancel(order);
@@ -85,8 +84,8 @@ public class RefundOrderServiceImpl implements RefundOrderService {
         String orderItemSn = params.get("order_item_sn").toString();
         //套票元素订单不能单独退订
         OrderItem orderItem = orderItemMapper.selectBySN(Long.valueOf(orderItemSn));
-        Order pOrder = orderMapper.selectPackageOrderById(orderItem.getOrder_id());
-        if (pOrder != null){
+        Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
+        if (order.getSource() == OrderConstant.OrderSourceType.SOURCE_TYPE_SYS){
             throw new ApiException("非法请求:当前订单不能单独退订");
         }
         // 分布式锁
