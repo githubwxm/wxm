@@ -44,8 +44,8 @@ public class OrderSupplyReceiveManager {
 
         Map map = Receive(mapList);
         Integer platformId = CommonUtil.objectParseInteger(map.get("platformId"));
-        Integer[] orderIds = (Integer[]) map.get("platformId");
-        notifyPlatform(platformId, orderIds);
+        Integer[] orderIds = (Integer[]) map.get("orderIds");  //
+        notifyPlatform(platformId, orderIds);//orderIds  原来参数传的   orderIds
     }
 
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class}, propagation = Propagation.REQUIRES_NEW)
