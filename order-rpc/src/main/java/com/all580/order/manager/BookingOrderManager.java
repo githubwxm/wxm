@@ -86,7 +86,12 @@ public class BookingOrderManager extends BaseOrderManager {
         while (packageOrderItemDto != null){
             List<OrderItem> orderItemList = packageOrderItemDto.getPackageOrderItems();
             for (OrderItem item : orderItemList) {
-                //todo 子订单出票状态
+                //todo
+                if (item.getStatus() == OrderConstant.OrderItemStatus.NON_SEND){
+                    //元素订单未出票
+                    packageOrderItemDto.setStatus(OrderConstant.OrderItemStatus.TICKETING);
+                    break;
+                }
                 if (item.getStatus() == OrderConstant.OrderItemStatus.TICKET_FAIL){
                     //元素订单出片失败
                     packageOrderItemDto.setStatus(OrderConstant.OrderItemStatus.TICKET_FAIL);
@@ -141,15 +146,19 @@ public class BookingOrderManager extends BaseOrderManager {
         while (!CollectionUtils.isEmpty(packageOrderDtoList)){
             for (PackageOrderDto packageOrderDto : packageOrderDtoList) {
                 List<Order> itemOrders = packageOrderDto.getPackageItemOrders();
+                boolean isAudit = Boolean.TRUE;
                 for (Order itemOrder : itemOrders) {
                     //如果套票有元素订单待审核
                     if (itemOrder.getStatus() == OrderConstant.OrderStatus.AUDIT_WAIT){
+                        isAudit = Boolean.FALSE;
                         break;
                     }
-                    if (packageOrderDto.getStatus() == OrderConstant.OrderStatus.AUDIT_WAIT){
-                        packageOrderDto.setStatus(OrderConstant.OrderStatus.PAY_WAIT);
-                        packageOrderDto.setAudit_time(new Date());
-                    }
+                }
+                if (isAudit){
+                    packageOrderDto.setStatus(OrderConstant.OrderStatus.PAY_WAIT);
+                    packageOrderDto.setAudit_time(new Date());
+                }else {
+                    packageOrderDto.setStatus(OrderConstant.OrderStatus.AUDIT_WAIT);
                 }
                 //修改审核状态
                 orderMapper.updateByPrimaryKeySelective(packageOrderDto);

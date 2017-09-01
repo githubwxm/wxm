@@ -73,10 +73,10 @@ public class RefundTicketEventImpl implements RefundTicketEvent {
             jobManager.addJob(OrderConstant.Actions.REFUND_MONEY, Collections.singleton(jobRefundMoneyParams));
 
             //todo 处理套票元素订单
-            //如果退票的是套票的元素订单
-            if (order.getSource() == OrderConstant.OrderSourceType.SOURCE_TYPE_SYS){
-                refundOrderManager.checkRefundTicketOrderItemChainForPackage(refundOrder);
-            }
+//            //如果退票的是套票的元素订单
+//            if (order.getSource() == OrderConstant.OrderSourceType.SOURCE_TYPE_SYS){
+//                refundOrderManager.checkRefundTicketOrderItemChainForPackage(refundOrder);
+//            }
         } else {
             // 发送短信
             smsManager.sendRefundFailSms(orderItem, refundOrder, "可退余数不足，详情请咨询购买渠道。");

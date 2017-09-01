@@ -236,10 +236,6 @@ public class OrderValidateManager {
         Map<String[], ValidRule[]> rules = new HashMap<>();
         // 校验不为空的参数
         rules.put(new String[]{
-                "product_sub_code", // 套票子产品CODE
-                "start", // 销售日历返回的start_date
-                "days", // 天数：景点固定1
-                "quantity", // 订票数量
                 "shipping.name", // 订单联系人姓名
                 "shipping.phone", // 订单联系人手机号码
                 "items.start", // 计划开始时间
@@ -251,7 +247,6 @@ public class OrderValidateManager {
 
         // 校验整数
         rules.put(new String[]{
-                "product_sub_code", // 套票子产品CODE
                 "items.product_sub_code", // 订单子产品CODE
                 "items.days", // 天数：景点固定1
                 "items.quantity", // 订票数量
@@ -277,7 +272,6 @@ public class OrderValidateManager {
 
         // 校验日期
         rules.put(new String[]{
-                "start", // 计划开始时间
                 "items.start" // 计划开始时间
         }, new ValidRule[]{new ValidRule.Date()});
 
