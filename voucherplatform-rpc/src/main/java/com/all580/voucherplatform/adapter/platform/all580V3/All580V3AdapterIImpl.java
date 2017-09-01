@@ -53,7 +53,6 @@ public class All580V3AdapterIImpl extends PlatformAdapterService {
     private void sendMessage(String action, Object value) {
         String content = JsonUtils.toJson(value);
         try {
-            log.info("调用小秘书content{}",content);
             voucherCallbackService.process(action, MSGID, content, new Date());
         } catch (Exception ex) {
             log.error("调用小秘书RPC异常:", ex);
