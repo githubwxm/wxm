@@ -27,7 +27,7 @@ public class OrderSupplierController extends BaseController {
 
     @RequestMapping(value = "supplier/reserve", method = RequestMethod.GET)
     @ResponseBody
-    public Result selectSupplierOrderReserve(Integer pro_type,
+    public Result selectSupplierOrderReserve(Integer ep_id,Integer pro_type,
                                              @RequestParam("statistic_ep_id") Integer statistic_ep_id,
                                              @RequestParam("statistics_type_id") String statistics_type_id,
                                              String start  ,String end,String pro_name,Integer group_id,
@@ -37,6 +37,7 @@ public class OrderSupplierController extends BaseController {
         if(null==pro_type){
             pro_type= ProductConstants.ProductType.SCENERY;
         }
+        map.put("ep_id",ep_id);
         map.put("pro_type",pro_type);
         map.put("statistic_ep_id",statistic_ep_id);
         map.put("key",statistics_type_id);
@@ -54,7 +55,7 @@ public class OrderSupplierController extends BaseController {
 
     @RequestMapping(value = "supplier/reserve/detail", method = RequestMethod.GET)
     @ResponseBody
-    public Result selectSupplierOrderReserveDetail(Integer pro_type,
+    public Result selectSupplierOrderReserveDetail(Integer ep_id,Integer pro_type,
                                                    @RequestParam("statistic_ep_id") Integer statistic_ep_id,
                                                    String start  ,String end,Integer group_id,
                                                    String date_time  ,String condition,String pro_name,
@@ -64,6 +65,7 @@ public class OrderSupplierController extends BaseController {
         if(null==pro_type){
             pro_type= ProductConstants.ProductType.SCENERY;
         }
+        map.put("ep_id",ep_id);
         map.put("group",group_id);
         map.put("pro_type",pro_type);
         map.put("statistic_ep_id",statistic_ep_id);
@@ -82,7 +84,7 @@ public class OrderSupplierController extends BaseController {
 
     @RequestMapping(value = "supplier/consume", method = RequestMethod.GET)
     @ResponseBody
-    public Result selectSupplierOrderConsume(Integer pro_type,Integer group_id,
+    public Result selectSupplierOrderConsume(Integer ep_id,Integer pro_type,Integer group_id,
                                              @RequestParam("statistic_ep_id") Integer statistic_ep_id,
                                              @RequestParam("statistics_type_id") String statistics_type_id,
                                              String start  ,String end,String pro_name,
@@ -92,6 +94,7 @@ public class OrderSupplierController extends BaseController {
         if(null==pro_type){
             pro_type= ProductConstants.ProductType.SCENERY;
         }
+        map.put("ep_id",ep_id);
         map.put("group",group_id);
         map.put("pro_type",pro_type);
         map.put("statistic_ep_id",statistic_ep_id);
@@ -109,7 +112,7 @@ public class OrderSupplierController extends BaseController {
 
     @RequestMapping(value = "supplier/consume/detail", method = RequestMethod.GET)
     @ResponseBody
-    public Result selectSupplierOrderConsumeDetail(Integer pro_type,
+    public Result selectSupplierOrderConsumeDetail(Integer ep_id,Integer pro_type,
                                                    @RequestParam("statistic_ep_id") Integer statistic_ep_id,
                                                    String start  ,String end,Integer group_id,
                                                    String date_time  ,String condition,String pro_name,
@@ -119,6 +122,7 @@ public class OrderSupplierController extends BaseController {
         if(null==pro_type){
             pro_type= ProductConstants.ProductType.SCENERY;
         }
+        map.put("ep_id",ep_id);
         map.put("group",group_id);
         map.put("pro_type",pro_type);
         map.put("statistic_ep_id",statistic_ep_id);
@@ -137,7 +141,7 @@ public class OrderSupplierController extends BaseController {
 
     @RequestMapping(value = "supplier/refund", method = RequestMethod.GET)
     @ResponseBody
-    public Result selectSupplierOrderRefund(Integer pro_type,
+    public Result selectSupplierOrderRefund(Integer ep_id,Integer pro_type,
                                             @RequestParam("statistic_ep_id") Integer statistic_ep_id,
                                             @RequestParam("statistics_type_id") String statistics_type_id,
                                             String start  ,String end,Integer group_id,String pro_name,
@@ -147,6 +151,7 @@ public class OrderSupplierController extends BaseController {
         if(null==pro_type){
             pro_type= ProductConstants.ProductType.SCENERY;
         }
+        map.put("ep_id",ep_id);
         map.put("group",group_id);
         map.put("pro_type",pro_type);
         map.put("statistic_ep_id",statistic_ep_id);
@@ -164,7 +169,7 @@ public class OrderSupplierController extends BaseController {
 
     @RequestMapping(value = "supplier/refund/detail", method = RequestMethod.GET)
     @ResponseBody
-    public Result selectSupplierOrderRefund(Integer pro_type,
+    public Result selectSupplierOrderRefund(Integer ep_id,Integer pro_type,
                                             @RequestParam("statistic_ep_id") Integer statistic_ep_id,
                                             String start  ,String end,Integer group_id,
                                             String date_time  ,String condition,String pro_name,
@@ -174,6 +179,7 @@ public class OrderSupplierController extends BaseController {
         if(null==pro_type){
             pro_type= ProductConstants.ProductType.SCENERY;
         }
+        map.put("ep_id",ep_id);
         map.put("group",group_id);
         map.put("pro_type",pro_type);
         map.put("statistic_ep_id",statistic_ep_id);
