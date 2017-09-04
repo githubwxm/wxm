@@ -82,7 +82,6 @@ public class IndexController extends BaseController {
 			return "";
 		}
 	}
-
 	@RequestMapping(value = "sms/set", method = RequestMethod.GET)
 	@ResponseBody
 	public Result setSms(HttpServletRequest request, HttpServletResponse response, @RequestParam boolean is){

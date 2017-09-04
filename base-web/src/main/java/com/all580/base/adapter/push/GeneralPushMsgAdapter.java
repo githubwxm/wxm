@@ -5,6 +5,7 @@ import com.framework.common.lang.JsonUtils;
 import com.framework.common.net.HttpUtils;
 import com.framework.common.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import javax.lang.exception.ApiException;
@@ -50,5 +51,27 @@ public class GeneralPushMsgAdapter implements PushMsgAdapter {
             log.warn("推送信息URL:{} 推送失败:{}", new Object[]{url, res});
             throw new ApiException(res);
         }
+    }
+
+    /**
+     * 生成签名
+     *
+     * @param epId      企业ID
+     * @param url       推送地址
+     * @param msg       消息
+     * @param originMsg 原始消息
+     * @param config    推送配置信息
+     * @return
+     */
+    @Override
+    public String sign(String epId, String url, Map msg, Map originMsg, Map config) {
+        String accessKey = CommonUtil.objectParseString(config.get("access_key"));
+        if (!StringUtils.isEmpty(accessKey)) {
+            log.warn("推送信息:{},没有企业:{}的access_key配置签名失败", url, epId);
+            return null;
+        }
+        String data = JsonUtils.toJson(msg);
+        data = data.replace("null", "").replaceAll("[\"\\\\\\[\\]\\{\\}]","");
+        return CommonUtil.signForData(accessKey,data);
     }
 }
