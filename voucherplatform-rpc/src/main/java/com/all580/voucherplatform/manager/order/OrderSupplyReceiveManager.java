@@ -44,7 +44,7 @@ public class OrderSupplyReceiveManager {
 
         Map map = Receive(mapList);
         Integer platformId = CommonUtil.objectParseInteger(map.get("platformId"));
-        Integer[] orderIds = (Integer[]) map.get("platformId");
+        Integer[] orderIds = (Integer[]) map.get("orderIds");
         notifyPlatform(platformId, orderIds);
     }
 

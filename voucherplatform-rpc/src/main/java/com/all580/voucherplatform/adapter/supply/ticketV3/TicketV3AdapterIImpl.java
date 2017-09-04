@@ -60,7 +60,7 @@ public class TicketV3AdapterIImpl extends SupplyAdapterService {
     private void sendMnsMessage(Supply supply, String action, Object value) {
         Map map = new HashMap();
         map.put("action", action);
-        map.put("createTime", DateFormatUtils.converToStringDate(new Date()));
+        map.put("createTime", DateFormatUtils.converToStringTime(new Date()));
         if (value == null) {
             map.put("content", "{}");
         } else {
@@ -126,7 +126,7 @@ public class TicketV3AdapterIImpl extends SupplyAdapterService {
         Map map = new HashMap();
         map.put("voucherId", consume.getOrder_code());
         map.put("voucherSeqId", consume.getConsumeCode());
-        map.put("consumeTime", DateFormatUtils.converToStringDate(consume.getConsumeTime()));
+        map.put("consumeTime", DateFormatUtils.converToStringTime(consume.getConsumeTime()));
         map.put("consumeNumber", consume.getConsumeNumber());
         map.put("consumeReason", consume.getAddress());
         sendMnsMessage(consume.getSupply_id(), "verifyOrder", map);
@@ -145,7 +145,7 @@ public class TicketV3AdapterIImpl extends SupplyAdapterService {
         map.put("voucherId", refund.getOrder_code());
         map.put("refId", refund.getRefundCode());
         map.put("refNumber", refund.getRefNumber());
-        map.put("refTime", DateFormatUtils.converToStringDate(refund.getRefTime()));
+        map.put("refTime", DateFormatUtils.converToStringTime(refund.getRefTime()));
         map.put("refReason", refund.getRefCause());
         sendMnsMessage(refund.getSupply_id(), action, map);
     }
@@ -158,8 +158,8 @@ public class TicketV3AdapterIImpl extends SupplyAdapterService {
         map.put("mobile", order.getMobile());
         map.put("idNumber", order.getIdNumber());
         map.put("qrCode", order.getVoucherNumber());
-        map.put("validTime", DateFormatUtils.converToStringDate(order.getValidTime()));
-        map.put("invalidTime", DateFormatUtils.converToStringDate(order.getInvalidTime()));
+        map.put("validTime", DateFormatUtils.converToStringTime(order.getValidTime()));
+        map.put("invalidTime", DateFormatUtils.converToStringTime(order.getInvalidTime()));
         sendMnsMessage(order.getSupply_id(), "updateOrder", map);
     }
 
