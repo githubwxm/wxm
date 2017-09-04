@@ -305,20 +305,26 @@ public class LockTransactionManager {
             List<OrderItem> orderItemList = refundOrderManager.getOrderItemsForPackageOrder(apply.getOrder());
             if (!CollectionUtils.isEmpty(orderItemList)){
                 for (OrderItem orderItem : orderItemList) {
-                    Map<String, Object> map = new HashMap<>();
-                    map.put("order_item_sn", orderItem.getNumber());
-                    map.put("quantity", orderItem.getQuantity() * orderItem.getDays());
-                    map.put("apply_from", ProductConstants.RefundEqType.SELLER);
+                    RefundOrder r = refundOrderMapper.selectByPrimaryKey(orderItem.getLast_refund_id());
+                    if (r == null || r.getStatus() == OrderConstant.RefundOrderStatus.FAIL){
+                        List<OrderItemDetail> orderItemDetails = orderItemDetailMapper.selectByItemId(orderItem.getId());
+                        boolean refund = true;
+                        for (OrderItemDetail detail : orderItemDetails) {
+                            refund = refund & refundOrderManager.canBeRefund(ProductConstants.RefundEqType.SELLER, detail);
+                        }
+                        if (!refund){
+                            continue;
+                        }
+                        Map<String, Object> map = new HashMap<>();
+                        map.put("order_item_sn", orderItem.getNumber());
+                        map.put("quantity", orderItem.getQuantity() * orderItem.getDays());
+                        map.put("apply_from", ProductConstants.RefundEqType.SELLER);
 
-                    Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
-                    map.put(EpConstant.EpKey.EP_ID, order.getBuy_ep_id());
-                    map.put("operator_id", 0);
-                    map.put("operator_name", OrderConstant.REFUND_ADAPTER);
-                    try {
+                        Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
+                        map.put(EpConstant.EpKey.EP_ID, order.getBuy_ep_id());
+                        map.put("operator_id", 0);
+                        map.put("operator_name", OrderConstant.REFUND_ADAPTER);
                         applyRefund(map, orderItem.getNumber(), refundOrderInterface);
-                    }catch (Exception e){
-                        //todo 如果元素订单不能退订
-                        e.printStackTrace();
                     }
                 }
             }

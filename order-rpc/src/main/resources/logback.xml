@@ -46,7 +46,7 @@
     </logger>
 
     <!--根logger控制-->
-    <root level="${log.level}">
+    <root level="debug">
         <appender-ref ref="console" />
         <appender-ref ref="file"/>
     </root>
