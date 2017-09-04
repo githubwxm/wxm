@@ -91,4 +91,9 @@ public class PaymentConstant {
         public static final String ALI_PAY_IMG = "star/upls/2017/03/03/58b92caa3f84c.png"; // 支付宝
         public static final String WX_PAY_IMG = "star/upls/2017/03/03/58b92ceca296d.png"; // 微信
     }
+
+    public static class Actions {
+        public static final String PAY_CALLBACK = "PAY_CALLBACK";
+        public static final String REFUND_CALLBACK = "REFUND_CALLBACK";
+    }
 }

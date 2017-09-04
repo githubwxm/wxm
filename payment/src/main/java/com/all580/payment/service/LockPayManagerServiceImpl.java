@@ -14,6 +14,8 @@ import com.framework.common.Result;
 import com.framework.common.event.MnsEvent;
 import com.framework.common.event.MnsEventAspect;
 import com.framework.common.mns.TopicPushManager;
+import com.framework.common.outside.JobAspect;
+import com.framework.common.outside.JobTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,10 +26,7 @@ import org.springframework.util.Assert;
 
 import javax.lang.exception.ApiException;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by wxming on 2017/1/10 0010.
@@ -49,10 +48,13 @@ public class LockPayManagerServiceImpl implements LockPayManagerService {
 
     @Autowired
     private MnsEventAspect eventAspect;
+    @Autowired
+    private JobAspect jobManager;
 
     @Override
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     @MnsEvent
+    @JobTask
     public Result<BalanceChangeRsp> changeBalances(List<BalanceChangeInfo> balanceChangeInfoList, Integer type,final String serialNum) {
         Assert.notNull(balanceChangeInfoList, "参数【balanceChangeInfoList】不能为空");
         Assert.notNull(type, "参数【type】不能为空");
@@ -84,24 +86,18 @@ public class LockPayManagerServiceImpl implements LockPayManagerService {
 
             // 回调订单模块-余额支付
             if (PaymentConstant.BalanceChangeType.BALANCE_PAY.equals(type)) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Result rst = paymentCallbackService.payCallback(Long.parseLong(serialNum), serialNum, null);
-                        logger.debug("余额支付回调成功：" + rst.isSuccess());
-                    }
-                }).start();
+                Map<String, String> jobParams = new HashMap<>();
+                jobParams.put("ordCode", serialNum);
+                jobParams.put("serialNum", serialNum);
+                jobManager.addJob(PaymentConstant.Actions.PAY_CALLBACK, Collections.singleton(jobParams));
             }
             // 回调订单模块-余额退款
             if (PaymentConstant.BalanceChangeType.BALANCE_REFUND.equals(type)) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Result rst = paymentCallbackService.refundCallback(Long.parseLong(serialNum), serialNum, null,
-                                true);
-                        logger.debug("余额退款回调成功：" + rst.isSuccess());
-                    }
-                }).start();
+                Map<String, String> jobParams = new HashMap<>();
+                jobParams.put("ordCode", serialNum);
+                jobParams.put("serialNum", serialNum);
+                jobParams.put("success", "true");
+                jobManager.addJob(PaymentConstant.Actions.REFUND_CALLBACK, Collections.singleton(jobParams));
             }
             result.setSuccess();
             logger.info("完成 -> 余额变更");
