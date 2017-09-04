@@ -18,7 +18,7 @@
     <bean id="jobManager" class="com.framework.common.outside.JobAspect">
         <property name="jobClient" ref="jobClient"/>
         <property name="maxRetryTimes" value="${task.maxRetryTimes}"/>
-        <property name="prefix" value="ORDER-JOB-"/>
+        <property name="prefix" value="PAYMENT-JOB-"/>
         <property name="taskTracker" value="${task.tracker}"/>
     </bean>
     <aop:config proxy-target-class="true">
