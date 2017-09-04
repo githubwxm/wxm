@@ -11,6 +11,7 @@ import com.all580.payment.api.service.EpPaymentConfService;
 import com.all580.payment.api.service.ThirdPayService;
 import com.all580.product.api.service.ProductRPCService;
 import com.all580.report.api.service.QueryOrderService;
+import com.all580.report.api.service.ReportExportTaskService;
 import com.all580.voucher.api.service.VoucherRPCService;
 import com.framework.common.BaseController;
 import com.framework.common.Result;
@@ -65,6 +66,22 @@ public class IndexController extends BaseController {
 	@Value("${mns.notify.top}")
 	private String topicName;
 
+	@Autowired
+	private ReportExportTaskService reportExportTaskService;
+
+	@RequestMapping(value = "report/export/task/down", method = RequestMethod.GET)
+	public String downFile(HttpServletRequest request, HttpServletResponse response, @RequestParam("id") int id){
+		// return "redirect:http://www.baidu.com";
+		Result  result= reportExportTaskService.downFile(id);
+		if(result.isSuccess()){
+			String url =(String) result.get();
+			//return  new ModelAndView(new RedirectView(url));
+			return "redirect:"+url;
+		}else{
+			reportExportTaskService.updateStart(id);
+			return "";
+		}
+	}
 	@RequestMapping(value = "sms/set", method = RequestMethod.GET)
 	@ResponseBody
 	public Result setSms(HttpServletRequest request, HttpServletResponse response, @RequestParam boolean is){

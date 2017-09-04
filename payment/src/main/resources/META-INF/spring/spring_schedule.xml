@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:task="http://www.springframework.org/schema/task"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        http://www.springframework.org/schema/task
+        http://www.springframework.org/schema/task/spring-task-3.0.xsd">
+
+
+	<bean id="jobClient" class="com.framework.common.task.NetJobClientFactoryBean" init-method="start">
+		<property name="clusterName" value="${task.cluster}"/>
+		<property name="registryAddress" value="${task.registry}"/>
+		<property name="nodeGroup" value="${task.client}"/>
+		<property name="configs">
+			<props>
+				<!-- 参数 -->
+				<prop key="job.fail.store">mapdb</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="taskTracker" class="com.framework.common.task.NetTaskTrackerAnnotationFactoryBean" init-method="start">
+		<property name="jobRunnerClass" value="com.framework.common.task.ActionTaskTracker"/>
+		<property name="bizLoggerLevel" value="INFO"/>
+		<property name="clusterName" value="${task.cluster}"/>
+		<property name="registryAddress" value="${task.registry}"/>
+		<property name="nodeGroup" value="${task.tracker}"/>
+		<property name="workThreads" value="20"/>
+		<property name="configs">
+			<props>
+				<prop key="job.fail.store">mapdb</prop>
+				<prop key="jobtracker.job.retry.interval.millis">${task.retry.interval}</prop>
+			</props>
+		</property>
+	</bean>
+
+	<task:annotation-driven/>
+</beans>
