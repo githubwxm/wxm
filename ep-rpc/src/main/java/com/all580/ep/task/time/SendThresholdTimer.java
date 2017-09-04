@@ -51,7 +51,7 @@ public class SendThresholdTimer {
        List<DistributedReentrantLock> listLock= new ArrayList<>();
        try{
            Date date = new Date();
-           String current = DateFormatUtils.converToStringDate(date);
+           String current = DateFormatUtils.converToStringTime(date);
            listLock.add(distributedLockTemplate.execute(current, lockTimeOut));
            String redis_date =  redisUtils.get(key);
            if(redis_date==null || DateFormatUtils.converToDate(current).after(DateFormatUtils.converToDate(redis_date))){

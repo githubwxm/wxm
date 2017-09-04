@@ -54,8 +54,8 @@ public class OrderManager {
             mapOrder.put("productId", prodId);
             mapOrder.put("payment", 1);
             mapOrder.put("consumeType", order.getConsumeType());
-            mapOrder.put("validTime", DateFormatUtils.converToStringDate(order.getValidTime()));
-            mapOrder.put("invalidTime", DateFormatUtils.converToStringDate(order.getInvalidTime()));
+            mapOrder.put("validTime", DateFormatUtils.converToStringTime(order.getValidTime()));
+            mapOrder.put("invalidTime", DateFormatUtils.converToStringTime(order.getInvalidTime()));
             mapOrder.put("validWeek", order.getValidWeek());
             mapOrder.put("invalidDate", order.getInvalidDate());
             mapOrder.put("qrCode", order.getVoucherNumber());

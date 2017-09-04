@@ -16,6 +16,8 @@ import com.framework.common.event.MnsEvent;
 import com.framework.common.event.MnsEventAspect;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.mns.TopicPushManager;
+import com.framework.common.outside.JobAspect;
+import com.framework.common.outside.JobTask;
 import com.framework.common.util.CommonUtil;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
@@ -30,6 +32,7 @@ import org.springframework.util.Assert;
 import javax.lang.exception.ApiException;
 import java.lang.reflect.Field;
 import java.text.MessageFormat;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -59,6 +62,8 @@ public class ThirdPayServiceImpl implements ThirdPayService {
 
     @Autowired
     private MnsEventAspect eventAspect;
+    @Autowired
+    private JobAspect jobManager;
 //    @Autowired
 //    private WxProperties wxProperties;
 
@@ -346,6 +351,7 @@ public class ThirdPayServiceImpl implements ThirdPayService {
 
     @Override
     @MnsEvent
+    @JobTask
     public Result<String> reqRefund(final long ordCode, int coreEpId, int payType, Map<String, Object> params) {
         Result<String> result = new Result<>();
         if (PaymentConstant.PaymentType.WX_PAY == payType) {
@@ -360,15 +366,11 @@ public class ThirdPayServiceImpl implements ThirdPayService {
                 money=money==null?0:money;
                 fireBalanceChangedEvent(coreEpId,serialNum,-money,PaymentConstant.BalanceChangeType.THIRD_QUIT_FOR_ORDER);
                 result.put(refundRsp.getTransaction_id());
-                // TODO panyi 异步回调订单-> 记录任务
-
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        logger.info("微信退款->回调订单开始。。。");
-                        paymentCallbackService.refundCallback(ordCode, serialNum, null, true);
-                    }
-                }).start();
+                Map<String, String> jobParams = new HashMap<>();
+                jobParams.put("ordCode", String.valueOf(ordCode));
+                jobParams.put("serialNum", serialNum);
+                jobParams.put("success", "true");
+                jobManager.addJob(PaymentConstant.Actions.REFUND_CALLBACK, Collections.singleton(jobParams));
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -387,7 +389,12 @@ public class ThirdPayServiceImpl implements ThirdPayService {
 
     @Override
     @MnsEvent
+    @JobTask
     public Result<Map<String, String>> payCallback(String ordId, String trade_no, Map<String, String> params, int payType) {
+        Map<String, String> jobParams = new HashMap<>();
+        jobParams.put("ordCode", ordId);
+        jobParams.put("serialNum", ordId);
+        jobParams.put("outTransId", trade_no);
         // 根据企业获取配置信息
         if (PaymentConstant.PaymentType.WX_PAY == payType) {
             String attach = params.get("attach");
@@ -395,12 +402,8 @@ public class ThirdPayServiceImpl implements ThirdPayService {
             Result<Map<String, String>> payCallback = getWxPayService(coreEpId, payType).payCallback(params, coreEpId);
             if (payCallback.isSuccess()) {
                 // 支付成功事件，参数:订单号，支付金额，流水号，收款平台商企业ID
-                Result result = paymentCallbackService.payCallback(Long.valueOf(ordId), ordId, trade_no);
-
+                jobManager.addJob(PaymentConstant.Actions.PAY_CALLBACK, Collections.singleton(jobParams));
                 fireBalanceChangedEvent(coreEpId,ordId, CommonUtil.objectParseInteger(params.get("total_fee")),PaymentConstant.BalanceChangeType.THIRD_PAY_FOR_ORDER);
-                if (result.isFault()) {
-                    logger.error("微信支付回调.回调订单失败");
-                }
             }
             return payCallback;
         } else if (PaymentConstant.PaymentType.ALI_PAY == payType) {
@@ -410,10 +413,8 @@ public class ThirdPayServiceImpl implements ThirdPayService {
             if (result.isSuccess()) {
                 Double m = Double.parseDouble(CommonUtil.objectParseString(params.get("total_fee")))*100;
                 fireBalanceChangedEvent(coreEpId,ordId,m.intValue(),PaymentConstant.BalanceChangeType.THIRD_PAY_FOR_ORDER);
-                Result callResult = paymentCallbackService.payCallback(Long.valueOf(ordId), ordId, trade_no);
-                if (callResult.isFault()) {
-                    logger.error("支付宝支付回调.回调订单失败");
-                }
+                // 支付成功事件，参数:订单号，支付金额，流水号，收款平台商企业ID
+                jobManager.addJob(PaymentConstant.Actions.PAY_CALLBACK, Collections.singleton(jobParams));
             }
             return result;
         } else {
@@ -423,6 +424,7 @@ public class ThirdPayServiceImpl implements ThirdPayService {
 
     @Override
     @MnsEvent
+    @JobTask
     public Result<Map<String, String>> wapPayCallback(String ordId, String trade_no, Map<String, String> params, int payType) {
         // 根据企业获取配置信息
         if (PaymentConstant.PaymentType.ALI_PAY == payType) {
@@ -432,10 +434,11 @@ public class ThirdPayServiceImpl implements ThirdPayService {
             if (result.isSuccess()) {
                 Double m = Double.parseDouble(CommonUtil.objectParseString(params.get("total_amount")))*100;
                 fireBalanceChangedEvent(coreEpId,ordId,m.intValue(),PaymentConstant.BalanceChangeType.THIRD_PAY_FOR_ORDER);
-                Result callResult = paymentCallbackService.payCallback(Long.valueOf(ordId), ordId, trade_no);
-                if (callResult.isFault()) {
-                    logger.error("支付宝WAP支付回调.回调订单失败");
-                }
+                Map<String, String> jobParams = new HashMap<>();
+                jobParams.put("ordCode", ordId);
+                jobParams.put("serialNum", ordId);
+                jobParams.put("outTransId", trade_no);
+                jobManager.addJob(PaymentConstant.Actions.PAY_CALLBACK, Collections.singleton(jobParams));
             }
             return result;
         } else {
@@ -445,6 +448,7 @@ public class ThirdPayServiceImpl implements ThirdPayService {
 
     @Override
     @MnsEvent
+    @JobTask
     public Result refundCallback(Map<String, String> params, int payType) {
         Result rst = new Result();
         // 根据企业获取配置信息
@@ -463,15 +467,14 @@ public class ThirdPayServiceImpl implements ThirdPayService {
 
             String batchNo = params.get("batch_no");
             String serialNum = batchNo.substring(8);
-            Result result1 = paymentCallbackService.refundCallback(null, serialNum, outTransId, isSuccess);
-            if (result1.isSuccess()) {
-                Double m = Double.parseDouble(CommonUtil.objectParseString(split[1]))*100;
-                fireBalanceChangedEvent(coreEpId,serialNum,-m.intValue() ,PaymentConstant.BalanceChangeType.THIRD_QUIT_FOR_ORDER);
-                rst.setSuccess();
-            } else {
-                // ....................
-                logger.error("支付宝退款回调订单->失败：" + result1.getError());
-            }
+            Map<String, String> jobParams = new HashMap<>();
+            jobParams.put("serialNum", serialNum);
+            jobParams.put("outTransId", outTransId);
+            jobParams.put("success", String.valueOf(isSuccess));
+            jobManager.addJob(PaymentConstant.Actions.REFUND_CALLBACK, Collections.singleton(jobParams));
+            Double m = Double.parseDouble(CommonUtil.objectParseString(split[1]))*100;
+            fireBalanceChangedEvent(coreEpId,serialNum,-m.intValue() ,PaymentConstant.BalanceChangeType.THIRD_QUIT_FOR_ORDER);
+            rst.setSuccess();
         } else {
             throw new RuntimeException("不支持的支付类型:" + payType);
         }
