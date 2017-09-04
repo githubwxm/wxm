@@ -6,6 +6,7 @@ import com.all580.ep.api.service.CoreEpChannelService;
 import com.all580.ep.api.service.EpService;
 import com.all580.order.api.OrderConstant;
 import com.all580.order.dao.*;
+import com.all580.order.dto.RefundOrderApply;
 import com.all580.order.entity.*;
 import com.all580.order.util.AccountUtil;
 import com.all580.payment.api.conf.PaymentConstant;
@@ -25,6 +26,8 @@ import com.framework.common.util.CommonUtil;
 import com.github.ltsopensource.core.domain.Job;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -84,6 +87,24 @@ public class BaseOrderManager {
 
     @Value("${task.maxRetryTimes}")
     private Integer maxRetryTimes;
+
+    /**
+     * 教研退回规则是否可退
+     * @param from
+     * @param detailList
+     * @return
+     */
+    public boolean canBeRefund(int from, OrderItemDetail detail){
+        String rule = from == ProductConstants.RefundEqType.SELLER ? detail.getCust_refund_rule() : detail.getSaler_refund_rule();
+        JSONObject jsonObject = JSONObject.parseObject(rule);
+        Object tmp = jsonObject.get("refund");
+        boolean refund = true;
+        if (tmp != null) {
+            String cs = tmp.toString();
+            refund = StringUtils.isNumeric(cs) ? BooleanUtils.toBoolean(Integer.parseInt(cs)) : BooleanUtils.toBoolean(cs);
+        }
+        return refund;
+    }
 
     /**
      * 获取卖家企业ID(null则返回自己)
