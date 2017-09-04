@@ -71,9 +71,9 @@ public class TicketV3AdapterIImpl extends SupplyAdapterService {
             String queueName = CommonUtil.objectParseString(mapConf.get("queueName"));
             String content = JsonUtils.toJson(map);
             if (!StringUtils.isEmpty(queueName)) {
-                log.debug("发送消息到MNS队列 supplyId={},queueName={},content={}", new Object[]{supply.getId(), queueName, content});
+                log.info("发送消息到MNS队列 supplyId={},queueName={},content={}", new Object[]{supply.getId(), queueName, content});
                 Message message = queuePushManager.push(queueName, content);
-                log.debug(message.getMessageId());
+                log.info(message.getMessageId());
             }
         }
     }
