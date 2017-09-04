@@ -22,7 +22,7 @@ import java.util.Map;
 @Slf4j
 public class ConsumeProcessorImpl implements ProcessorService<Supply> {
 
-    private static final String ACTION = "consumeOrder";
+    private static final String ACTION = "consumeOrderRsp";
     @Autowired
     private AdapterLoader adapterLoader;
     @Autowired
