@@ -23,8 +23,13 @@
         </property>
     </bean>
     <!-- **************************** 注解扫描 **************************** -->
-    <context:component-scan base-package="com.all580.ep.service,com.all580.payment.service,com.all580.payment.thirdpay.wx.service,
-    com.all580.payment.thirdpay.wx.model com.all580.payment.thirdpay.ali.service"/>
+    <context:component-scan base-package="
+    com.all580.ep.service,
+    com.all580.payment.service,
+    com.all580.payment.thirdpay.wx.service,
+    com.all580.payment.thirdpay.wx.model,
+    com.all580.payment.thirdpay.ali.service,
+    com.all580.payment.task"/>
     <!-- **************************** /注解扫描 **************************** -->
 
     <!-- **************************** 导入其他XML文件 **************************** -->
