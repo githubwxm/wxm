@@ -75,10 +75,11 @@ public class All580ServiceImpl implements All580Service {
         Supply supply = supplyMapper.selectByPrimaryKey(identity);
         if (supply == null) {
             return new Result(false, "身份数据校检失败");
-        } else if (!signInstance.checkSign(supply.getSignType(), supply.getPublicKey(), supply.getPrivateKey(), content,
-                signed)) {
-            // return new Result(false, "签名数据校检失败");
         }
+//        else if (!signInstance.checkSign(supply.getSignType(), supply.getPublicKey(), supply.getPrivateKey(), content,
+//                signed)) {
+//            // return new Result(false, "签名数据校检失败");     //  签名暂未用到
+//        }
         SupplyAdapterService supplyAdapterService = adapterLoader.getSupplyAdapterService(supply);
         return supplyAdapterService.process(action, supply, mapContent);
     }
