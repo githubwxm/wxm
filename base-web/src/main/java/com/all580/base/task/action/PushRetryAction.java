@@ -64,6 +64,10 @@ public class PushRetryAction implements JobRunner {
             }
             PushMsgAdapter adapter = pushMsgManager.getAdapter(type);
             Map content = pushMsgManager.getMsg(adapter, map, config, msg);
+            String sign = adapter.sign(epId, url, content, map, config);
+            if (sign != null) {
+                content.put("sign", sign);
+            }
             adapter.push(epId, url, content, map, config);
             log.info("推送信息结束:{} URL:{} CONTENT:{} 成功", new Object[]{msgId, url, content});
         } else {
