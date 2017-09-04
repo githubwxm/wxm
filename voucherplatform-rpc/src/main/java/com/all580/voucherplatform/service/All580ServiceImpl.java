@@ -9,8 +9,6 @@ import com.all580.voucherplatform.dao.SupplyMapper;
 import com.all580.voucherplatform.entity.Platform;
 import com.all580.voucherplatform.entity.Supply;
 import com.all580.voucherplatform.utils.sign.SignInstance;
-import com.all580.voucherplatform.utils.sign.SignKey;
-import com.all580.voucherplatform.utils.sign.SignService;
 import com.framework.common.Result;
 import com.framework.common.distributed.lock.DistributedLockTemplate;
 import com.framework.common.lang.JsonUtils;
@@ -19,7 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
@@ -54,7 +51,7 @@ public class All580ServiceImpl implements All580Service {
         String signed = CommonUtil.objectParseString(map.get("signed"));
         String content = CommonUtil.objectParseString(map.get("content"));
         Map mapContent = getMapFormContent(content);
-        log.debug("identity={},action={},content={},signed={}", new Object[]{identity, action, content, signed});
+        log.info("identity={},action={},content={},signed={}", new Object[]{identity, action, content, signed});
         Platform platform = platformMapper.selectByPrimaryKey(identity);
         if (platform == null) {
             return new Result(false, "身份数据校检失败");
@@ -73,7 +70,7 @@ public class All580ServiceImpl implements All580Service {
         String signed = CommonUtil.objectParseString(map.get("signed"));
         String content = CommonUtil.objectParseString(map.get("content"));
         Map mapContent = getMapFormContent(content);
-        log.debug("identity={},action={},content={},signed={}", new Object[]{identity, action, content, signed});
+        log.info("identity={},action={},content={},signed={}", new Object[]{identity, action, content, signed});
 
         Supply supply = supplyMapper.selectByPrimaryKey(identity);
         if (supply == null) {
