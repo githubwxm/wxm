@@ -199,20 +199,21 @@ public class All580V3AdapterIImpl extends PlatformAdapterService {
     @Override
     public Object activateGroupOrder(Integer groupOrderId) {
         GroupOrder order = groupOrderMapper.selectByPrimaryKey(groupOrderId);
-        List<GroupVisitor> visitorList = groupVisitorMapper.selectByActivate(order.getId());
+       // List<GroupVisitor> visitorList = groupVisitorMapper.selectByActivate(order.getId());
         Map map = new HashMap();
         map.put("orderSn", order.getPlatformOrderId());
         map.put("validateSn", order.getOrderCode());
         StringBuilder builder = new StringBuilder();
-        for (GroupVisitor visitor : visitorList) {
-            builder.append(visitor.getIdNumber());
-            builder.append(",");
-        }
-        if (!StringUtils.isEmpty(builder.toString())) {
-            builder.deleteCharAt(builder.length() - 1);
-        }
-        String sids =builder.toString();
-        map.put("sids", "".equals(sids)?"[]":sids.split(","));
+//        for (GroupVisitor visitor : visitorList) {
+//            builder.append(visitor.getIdNumber());
+//            builder.append(",");
+//        }
+//        if (!StringUtils.isEmpty(builder.toString())) {
+//            builder.deleteCharAt(builder.length() - 1);
+//        }
+//        String sids =builder.toString();
+        List sids= groupVisitorMapper.selectGroupVisitor(order.getId());
+        map.put("sids", sids.isEmpty()?null:sids);
         map.put("consumeQuantity", order.getActivateNum());
         map.put("procTime", DateFormatUtils.converToStringTime(new Date()));
         log.info("核销团队票  map {} order.getId() {}",map,order.getId());
