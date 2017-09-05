@@ -20,7 +20,7 @@ import java.util.Map;
 @Slf4j
 public class ActivateGroupOrderProcessorImpl implements ProcessorService<Supply> {
 
-    private static final String ACTION = "activateGroupOrder";
+    private static final String ACTION = "activateGroupOrderRsp";
     @Autowired
     private AdapterLoader adapterLoader;
 
