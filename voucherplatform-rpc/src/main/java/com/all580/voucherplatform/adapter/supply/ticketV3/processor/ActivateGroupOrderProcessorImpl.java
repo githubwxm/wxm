@@ -34,7 +34,12 @@ public class ActivateGroupOrderProcessorImpl implements ProcessorService<Supply>
         ConsumeGroupOrderManager consumeGroupOrderManager = adapterLoader.getBean(ConsumeGroupOrderManager.class);
         consumeGroupOrderManager.setOrder(voucherId);
         try {
-            consumeGroupOrderManager.submiConsume(number, StringUtils.split("idNumbers", ","));
+            if(idNumbers ==null  || idNumbers.equals("[]")){
+                consumeGroupOrderManager.submiConsume(number, null);
+            }else{
+                consumeGroupOrderManager.submiConsume(number, StringUtils.split(idNumbers, ","));
+            }
+
         } catch (Exception ex) {
             throw new ApiException(ex);
         }
