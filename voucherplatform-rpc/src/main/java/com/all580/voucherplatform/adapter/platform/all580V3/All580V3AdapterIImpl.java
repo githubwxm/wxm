@@ -215,7 +215,7 @@ public class All580V3AdapterIImpl extends PlatformAdapterService {
         map.put("sids", "".equals(sids)?"[]":sids.split(","));
         map.put("consumeQuantity", order.getActivateNum());
         map.put("procTime", DateFormatUtils.converToStringTime(new Date()));
-        log.info("核销团队票{}",map);
+        log.info("核销团队票  map {} order.getId() {}",map,order.getId());
         sendMessage("CONSUME_GROUP", map);
         return null;
     }
