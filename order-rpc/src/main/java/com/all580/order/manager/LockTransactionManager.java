@@ -380,7 +380,7 @@ public class LockTransactionManager {
         if (!String.valueOf(params.get(EpConstant.EpKey.CORE_EP_ID)).equals(String.valueOf(orderItem.getSupplier_core_ep_id()))) {
             throw new ApiException("非法请求:当前企业不能审核该退订订单");
         }
-        if (orderItem.getRefund_quantity() + orderItem.getUsed_quantity() + refundOrder.getQuantity() > orderItem.getQuantity()) {
+        if (orderItem.getPro_type() == ProductConstants.ProductType.SCENERY && orderItem.getRefund_quantity() + orderItem.getUsed_quantity() + refundOrder.getQuantity() > orderItem.getQuantity()) {
             throw new ApiException("审核失败:余票不足");
         }
         boolean status = Boolean.parseBoolean(params.get("status").toString());
