@@ -5,20 +5,17 @@ import com.all580.voucherplatform.adapter.platform.PlatformAdapterService;
 import com.all580.voucherplatform.api.VoucherConstant;
 import com.all580.voucherplatform.dao.*;
 import com.all580.voucherplatform.entity.*;
-import com.framework.common.Result;
 import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.lang.UUIDGenerator;
 import com.github.ltsopensource.core.domain.Job;
 import com.github.ltsopensource.jobclient.JobClient;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import javax.management.relation.RelationSupport;
 import java.util.*;
 
 /**
@@ -214,9 +211,11 @@ public class All580V3AdapterIImpl extends PlatformAdapterService {
         if (!StringUtils.isEmpty(builder.toString())) {
             builder.deleteCharAt(builder.length() - 1);
         }
-        map.put("sids", builder.toString());
+        String sids =builder.toString();
+        map.put("sids", "".equals(sids)?"[]":sids.split(","));
         map.put("consumeQuantity", order.getActivateNum());
         map.put("procTime", DateFormatUtils.converToStringTime(new Date()));
+        log.info("核销团队票{}",map);
         sendMessage("CONSUME_GROUP", map);
         return null;
     }
