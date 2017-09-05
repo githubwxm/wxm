@@ -212,9 +212,11 @@ public class All580V3AdapterIImpl extends PlatformAdapterService {
         if (!StringUtils.isEmpty(builder.toString())) {
             builder.deleteCharAt(builder.length() - 1);
         }
-        map.put("sids", builder.toString());
+        String sids =builder.toString();
+        map.put("sids", "".equals(sids)?"[]":sids.split(","));
         map.put("consumeQuantity", order.getActivateNum());
         map.put("procTime", DateFormatUtils.converToStringTime(new Date()));
+        log.info("核销团队票  map {} order.getId() {}",map,order.getId());
         sendMessage("CONSUME_GROUP", map);
         return null;
     }
