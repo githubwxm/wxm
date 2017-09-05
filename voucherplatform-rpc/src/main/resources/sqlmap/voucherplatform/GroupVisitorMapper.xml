@@ -238,4 +238,11 @@
         where `group_order_id`=#{groupId}
         and `activate`=TRUE
     </select>
+    <select id="selectGroupVisitor" resultType="java.lang.String">
+        SELECT
+        idNumber
+        from t_group_visitor
+        where `group_order_id`=#{groupId}
+        and `idType`=370
+    </select>
 </mapper>
