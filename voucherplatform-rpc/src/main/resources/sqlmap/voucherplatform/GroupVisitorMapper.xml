@@ -203,7 +203,7 @@
     <update id="updateActivateByIdNumber">
         update t_group_visitor
         set `activate`=TRUE
-        WHERE group_order_id=#{group_order_id}
+        WHERE group_order_id=#{groupId}
         <if test="IdNumbers!=null and IdNumbers.length>0">
             and `idNumber` in
             <foreach collection="IdNumbers" separator="," open="(" close=")" item="item">
@@ -237,5 +237,12 @@
         from t_group_visitor
         where `group_order_id`=#{groupId}
         and `activate`=TRUE
+    </select>
+    <select id="selectGroupVisitor" resultType="java.lang.String">
+        SELECT
+        idNumber
+        from t_group_visitor
+        where `group_order_id`=#{groupId}
+        and `idType`=370
     </select>
 </mapper>

@@ -20,7 +20,7 @@ import java.util.Map;
 @Slf4j
 public class ActivateGroupOrderProcessorImpl implements ProcessorService<Supply> {
 
-    private static final String ACTION = "activateGroupOrder";
+    private static final String ACTION = "activateGroupOrderRsp";
     @Autowired
     private AdapterLoader adapterLoader;
 
@@ -34,7 +34,12 @@ public class ActivateGroupOrderProcessorImpl implements ProcessorService<Supply>
         ConsumeGroupOrderManager consumeGroupOrderManager = adapterLoader.getBean(ConsumeGroupOrderManager.class);
         consumeGroupOrderManager.setOrder(voucherId);
         try {
-            consumeGroupOrderManager.submiConsume(number, StringUtils.split("idNumbers", ","));
+            if(idNumbers ==null  || idNumbers.equals("[]")){
+                consumeGroupOrderManager.submiConsume(number, null);
+            }else{
+                consumeGroupOrderManager.submiConsume(number, StringUtils.split(idNumbers, ","));
+            }
+
         } catch (Exception ex) {
             throw new ApiException(ex);
         }

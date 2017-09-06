@@ -253,6 +253,13 @@ public class LockTransactionManager {
     public Result<?> applyRefund(Map params, long itemNo, RefundOrderInterface refundOrderInterface) throws Exception {
         RefundOrderApply apply = refundOrderInterface.validateAndParseParams(itemNo, params);
 
+        if (!StringUtils.isEmpty(apply.getOuter())) {
+            RefundOrder refundOrder = refundOrderMapper.selectByItemIdAndOuter(apply.getItem().getId(), apply.getOuter());
+            if (refundOrder != null) {
+                throw new ApiException(Result.UNIQUE_KEY_ERROR, "重复操作", refundOrderMapper.selectByItemIdAndOuter(apply.getItem().getId(), apply.getOuter()));
+            }
+        }
+
         int count = refundOrderMapper.haveRefunding(apply.getItem().getId());
         Assert.isTrue(count <= 0, "您还有未处理完的退订订单");
 

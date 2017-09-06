@@ -446,7 +446,8 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         }
 
         if (orderItem.getStatus() == OrderConstant.OrderItemStatus.SEND) {
-            return voucherRPCService.resendGroupTicket(orderItem.getEp_ma_id(), orderItem.getNumber());
+            smsManager.sendGroupVoucher(orderItem, CommonUtil.objectParseString(params.get("phone")));
+            return new Result<>(true);
         }
         // 出票
         // 记录任务

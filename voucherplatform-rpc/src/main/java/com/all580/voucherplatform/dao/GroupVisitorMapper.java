@@ -3,7 +3,6 @@ package com.all580.voucherplatform.dao;
 import com.all580.voucherplatform.entity.GroupVisitor;
 import org.apache.ibatis.annotations.Param;
 
-import java.security.acl.Group;
 import java.util.List;
 
 public interface GroupVisitorMapper {
@@ -56,4 +55,5 @@ public interface GroupVisitorMapper {
     List<GroupVisitor> selectByActivate(Integer groupId);
     List<GroupVisitor> selectByGroupOrderId(Integer groupId);
     List<GroupVisitor> selectByGroupSeqId(@Param("groupId") Integer groupId,@Param("seqId") String... seqId);
+    List<String> selectGroupVisitor(Integer groupId);
 }
