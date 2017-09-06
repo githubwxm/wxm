@@ -105,7 +105,7 @@ public class RefundOrderManager extends BaseOrderManager {
     public void checkRefundTicketOrderItemChainForPackage(RefundOrder refundOrder){
         PackageRefundOrderDto packageRefundOrderDto = this.getRefundOrderForPackage(refundOrder, Boolean.TRUE);
         while (packageRefundOrderDto != null){
-            packageRefundOrderDto.setStatus(OrderConstant.RefundOrderStatus.REFUNDING);
+            packageRefundOrderDto.setStatus(OrderConstant.RefundOrderStatus.REFUND_MONEY_AUDITING);
             List<RefundOrder> refundOrderItems = packageRefundOrderDto.getRefundOrderItems();
             for (RefundOrder refundItem : refundOrderItems) {
                 if (refundItem.getStatus() == OrderConstant.RefundOrderStatus.FAIL){

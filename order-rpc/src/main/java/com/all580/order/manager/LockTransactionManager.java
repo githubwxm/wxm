@@ -520,13 +520,19 @@ public class LockTransactionManager {
             // 余额支付需要扣除销售商的钱
             List<OrderItemAccount> accounts = orderItemAccountMapper.selectByOrderAnEp(order.getId(), order.getBuy_ep_id(), order.getPayee_ep_id());
             for (OrderItemAccount account : accounts) {
-                // 把data JSON 反编译为JAVA类型
-                Collection<AccountDataDto> dataDtoList = AccountUtil.decompileAccountData(account.getData());
-                // 获取总出货价
-                int totalOutPrice = AccountUtil.getTotalOutPrice(dataDtoList);
-                OrderItem orderItem = orderItemMapper.selectByPrimaryKey(account.getOrder_item_id());
-                account.setMoney(account.getMoney() + (-totalOutPrice * orderItem.getQuantity()));
-                account.setProfit(account.getMoney());
+                if (account.getSale_ep_id().intValue() == account.getEp_id().intValue()){
+                    //自己产品
+                    account.setMoney(0);
+                    account.setProfit(0);
+                }else {
+                    // 把data JSON 反编译为JAVA类型
+                    Collection<AccountDataDto> dataDtoList = AccountUtil.decompileAccountData(account.getData());
+                    // 获取总出货价
+                    int totalOutPrice = AccountUtil.getTotalOutPrice(dataDtoList);
+                    OrderItem orderItem = orderItemMapper.selectByPrimaryKey(account.getOrder_item_id());
+                    account.setMoney(account.getMoney() + (-totalOutPrice * orderItem.getQuantity()));
+                    account.setProfit(account.getMoney());
+                }
                 orderItemAccountMapper.updateByPrimaryKeySelective(account);
             }
 
