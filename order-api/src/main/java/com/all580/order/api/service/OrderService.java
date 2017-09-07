@@ -141,4 +141,12 @@ public interface OrderService {
      * @return
      */
     Result<?> heartbeat();
+
+    /**
+     * view sms content
+     * @param number item number
+     * @param visitor visitor id(optional)
+     * @return
+     */
+    Result<?> viewVoucherSms(long number, Integer visitor);
 }

@@ -51,7 +51,7 @@ public class SmsManager {
 
     @Value("${order.pay.timeout}")
     private Integer payTimeOut;
-    private Pattern pattern = Pattern.compile("\\$\\{\\w*}");
+    public static Pattern pattern = Pattern.compile("\\$\\{\\w*}");
 
     /**
      * 发送核销短信
@@ -465,7 +465,7 @@ public class SmsManager {
         }
     }
 
-    private Visitor getVisitor(int id, List<Visitor> visitors) {
+    public Visitor getVisitor(int id, List<Visitor> visitors) {
         for (Visitor visitor : visitors) {
             if (visitor.getId() == id) {
                 return visitor;
