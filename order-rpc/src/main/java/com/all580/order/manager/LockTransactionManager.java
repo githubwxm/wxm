@@ -1,6 +1,7 @@
 package com.all580.order.manager;
 
 import com.all580.ep.api.conf.EpConstant;
+import com.all580.ep.api.service.EpService;
 import com.all580.order.adapter.RefundOrderInterface;
 import com.all580.order.api.OrderConstant;
 import com.all580.order.api.model.*;
@@ -88,6 +89,8 @@ public class LockTransactionManager {
     private ThirdPayService thirdPayService;
     @Autowired
     private VoucherRPCService voucherRPCService;
+    @Autowired
+    private EpService epService;
     @Autowired
     private MnsEventAspect eventManager;
     @Autowired
@@ -514,6 +517,20 @@ public class LockTransactionManager {
         order.setLocal_payment_serial_no(String.valueOf(UUIDGenerator.generateUUID()));
         order.setPayment_type(payType);
         order.setPay_time(new Date());
+        order.setPayment_ep_id(CommonUtil.objectParseInteger(params.get(EpConstant.EpKey.EP_ID)));
+        order.setPayment_operator_id(CommonUtil.objectParseInteger(params.get("operator_id")));
+        order.setPayment_operator_name(CommonUtil.objectParseString(params.get("operator_name")));
+        // 获取企业名称
+        String epName = null;
+        try {
+            Result<Map<String, Object>> epResult = epService.selectId(order.getPayment_ep_id());
+            if (epResult != null && epResult.isSuccess() && epResult.get() != null) {
+                epName = String.valueOf(epResult.get().get("name"));
+            }
+        } catch (Exception e) {
+            log.warn("get payment ep name error", e);
+        }
+        order.setPayment_ep_name(epName);
         orderMapper.updateByPrimaryKeySelective(order);
 
         log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(order.getId(), null,
