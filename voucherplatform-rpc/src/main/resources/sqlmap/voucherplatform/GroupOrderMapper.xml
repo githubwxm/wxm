@@ -48,7 +48,7 @@
         `platformProdId`, `supplyOrderId`, `supplyProdId`, `formAreaCode`, `formAddr`, `travelName`,
         `manager`, `groupNumber`, `guideName`, `guideIdNumber`, `guideMobile`, `payment`,
         `payTime`, `sendType`, `validTime`, `invalidTime`, `activateNum`, `activateStatus`,
-        `price`, `number`, `createTime`, `voucherNumber`, `imgUrl`, `status`
+        `price`, `number`, `createTime`, `voucherNumber`, `imgUrl`, `status`,`totalNumber`
     </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         <!--
@@ -383,6 +383,9 @@
             </if>
             <if test="status != null">
                 `status` = #{status,jdbcType=INTEGER},
+            </if>
+            <if test="totalNumber != null">
+                `totalNumber` = #{totalNumber,jdbcType=INTEGER},
             </if>
         </set>
         where `id` = #{id,jdbcType=INTEGER}

@@ -156,6 +156,11 @@ public class GroupOrder implements Serializable {
     private Integer status;
 
     /**
+     *  ,所属表字段为t_group_order.totalNumber   核销总数量
+     */
+    private Integer totalNumber;
+
+    /**
      * 序列化ID,t_group_order
      */
     private static final long serialVersionUID = 1L;
@@ -275,6 +280,14 @@ public class GroupOrder implements Serializable {
      */
     public Integer getPlatformProdId() {
         return platformProdId;
+    }
+
+    public Integer getTotalNumber() {
+        return totalNumber;
+    }
+
+    public void setTotalNumber(Integer totalNumber) {
+        this.totalNumber = totalNumber;
     }
 
     /**
