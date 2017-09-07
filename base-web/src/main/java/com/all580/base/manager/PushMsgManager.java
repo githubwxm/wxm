@@ -93,6 +93,10 @@ public class PushMsgManager {
         try {
             PushMsgAdapter adapter = getAdapter(type);
             Map content = getMsg(adapter, map, m, msg);
+            String sign = adapter.sign(epId, url, content, map, m);
+            if (sign != null) {
+                content.put("sign", sign);
+            }
             adapter.push(epId, url, content, map, m);
             log.info("推送信息结束:{} URL:{} CONTENT:{} 成功", new Object[]{id, url, content});
         } catch (Exception e) {

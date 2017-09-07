@@ -25,4 +25,15 @@ public interface PushMsgAdapter {
      * @param config 推送配置信息
      */
     void push(String epId, String url, Map msg, Map originMsg, Map config);
+
+    /**
+     * 生成签名
+     * @param epId 企业ID
+     * @param url 推送地址
+     * @param msg 消息
+     * @param originMsg 原始消息
+     * @param config 推送配置信息
+     * @return
+     */
+    String sign(String epId, String url, Map msg, Map originMsg, Map config);
 }
