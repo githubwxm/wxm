@@ -312,6 +312,11 @@ public class LockTransactionManager {
             List<OrderItem> orderItemList = refundOrderManager.getOrderItemsForPackageOrder(apply.getOrder());
             if (!CollectionUtils.isEmpty(orderItemList)){
                 for (OrderItem orderItem : orderItemList) {
+                    //已经使用不可退
+                    if(orderItem.getUsed_quantity() != null && orderItem.getUsed_quantity() > 0){
+                        throw new ApiException(Result.REFUNDABLE_LACK, "该票据已经使用");
+                    }
+                    //已经退订的不重复退
                     RefundOrder r = refundOrderMapper.selectByPrimaryKey(orderItem.getLast_refund_id());
                     if (r == null || r.getStatus() == OrderConstant.RefundOrderStatus.FAIL){
                         List<OrderItemDetail> orderItemDetails = orderItemDetailMapper.selectByItemId(orderItem.getId());
