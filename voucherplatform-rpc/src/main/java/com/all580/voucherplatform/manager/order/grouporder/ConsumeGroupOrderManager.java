@@ -42,13 +42,18 @@ public class ConsumeGroupOrderManager {
 
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class}, propagation = Propagation.REQUIRES_NEW)
     private void Consume(Integer number, String... IdNumbers) throws Exception {
-        if (groupOrder.getActivateStatus()) {
-            throw new Exception("订单状态已激活");
+        Integer  totalNumber=  groupOrder.getTotalNumber();//已经核销的数量
+//        if (groupOrder.getActivateStatus()) {// 核销多次不适用
+//            throw new Exception("订单状态已激活");
+//        }
+        if(totalNumber+number>groupOrder.getNumber()){
+            throw new Exception("没有足够核销的票");
         }
         GroupOrder updateGroupOrder = new GroupOrder();
         updateGroupOrder.setId(groupOrder.getId());
         updateGroupOrder.setActivateStatus(true);
         updateGroupOrder.setActivateNum(number);
+        updateGroupOrder.setTotalNumber(number+totalNumber);
         groupOrderMapper.updateByPrimaryKeySelective(updateGroupOrder);
         groupVisitorMapper.updateActivateByIdNumber(groupOrder.getId(), IdNumbers);
 
