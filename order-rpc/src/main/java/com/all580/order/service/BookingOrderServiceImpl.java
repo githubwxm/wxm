@@ -152,6 +152,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
 
         //获取数据库最新的订单对象
         mainOrder = orderMapper.selectByPrimaryKey(mainOrder.getId());
+        if (mainOrder.getPay_amount() == null) mainOrder.setPay_amount(0);
         List<OrderItem> mainItems = orderItemMapper.selectByOrderId(mainOrder.getId());
 
         if (orderListMap.size() > 1){
