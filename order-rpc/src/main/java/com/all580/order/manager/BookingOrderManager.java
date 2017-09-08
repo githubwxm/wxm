@@ -642,6 +642,9 @@ public class BookingOrderManager extends BaseOrderManager {
             switch (from) {
                 // 代收:叶子销售商以门市价卖出
                 case OrderConstant.FromType.TRUST:
+                    if (info.getShop_price() == null || info.getShop_price() < info.getPrice()) {
+                        throw new ApiException("零售价不能小于结算价");
+                    }
                     self.setPrice(info.getShop_price());
                     break;
                 // 最低售价:叶子销售商以产品最低售价卖出
