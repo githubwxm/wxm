@@ -322,6 +322,12 @@ public class OrderController extends BaseController {
         return orderService.selectOrderItemInfoByOta(number);
     }
 
+    @RequestMapping("view/voucher/sms")
+    @ResponseBody
+    public Result<?> viewVoucherSms(@RequestParam Long number, Integer visitor) {
+        return orderService.viewVoucherSms(number, visitor);
+    }
+
     private void checkPlatformOrderParams(String start_time, String end_time, String phone) {
         Map<String, Object> params = new HashMap<>();
         params.put("start_time", start_time);

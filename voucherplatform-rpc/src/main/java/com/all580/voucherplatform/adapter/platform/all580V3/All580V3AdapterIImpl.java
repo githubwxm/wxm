@@ -203,8 +203,8 @@ public class All580V3AdapterIImpl extends PlatformAdapterService {
        // List<GroupVisitor> visitorList = groupVisitorMapper.selectByActivate(order.getId());
         Map map = new HashMap();
         map.put("orderSn", order.getPlatformOrderId());
-        map.put("validateSn", order.getOrderCode());
-        StringBuilder builder = new StringBuilder();
+        map.put("validateSn", order.getOrderCode()+order.getTotalNumber());
+  //      StringBuilder builder = new StringBuilder();
 //        for (GroupVisitor visitor : visitorList) {
 //            builder.append(visitor.getIdNumber());
 //            builder.append(",");
