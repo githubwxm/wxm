@@ -91,7 +91,7 @@ public class BaseOrderManager {
     /**
      * 教研退回规则是否可退
      * @param from
-     * @param detailList
+     * @param detail
      * @return
      */
     public boolean canBeRefund(int from, OrderItemDetail detail){

@@ -130,8 +130,11 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             List<OrderItem> orderItems = orderListMap.get(order);
             // 更新订单状态
             for (OrderItem orderItem : orderItems) {
-                if (orderItem.getStatus() == OrderConstant.OrderItemStatus.AUDIT_WAIT
-                        || (orderItem.getPro_type() == ProductConstants.ProductType.PACKAGE && orderItems.size() == 1)) {
+                if (orderItem.getPro_type() == ProductConstants.ProductType.PACKAGE && orderItems.size() == 1){
+                    orderItem.setStatus(OrderConstant.OrderItemStatus.AUDIT_SUCCESS);
+                    orderItemMapper.updateByPrimaryKeySelective(orderItem);
+                }
+                if (orderItem.getStatus() == OrderConstant.OrderItemStatus.AUDIT_WAIT) {
                     order.setStatus(OrderConstant.OrderStatus.AUDIT_WAIT);
                     break;
                 }

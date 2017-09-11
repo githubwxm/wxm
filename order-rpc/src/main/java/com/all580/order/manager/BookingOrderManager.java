@@ -442,7 +442,8 @@ public class BookingOrderManager extends BaseOrderManager {
         orderItem.setMa_product_id(info.getMa_product_id());
         orderItem.setQuantity(quantity);
         orderItem.setPayment_flag(info.getPay_type());
-        orderItem.setStatus(OrderConstant.OrderItemStatus.AUDIT_SUCCESS);
+        orderItem.setStatus(info.getProduct_type() == ProductConstants.ProductType.PACKAGE ?
+                OrderConstant.OrderItemStatus.AUDIT_WAIT : OrderConstant.OrderItemStatus.AUDIT_SUCCESS);
         orderItem.setSupplier_ep_id(info.getEp_id());
         orderItem.setSupplier_core_ep_id(getCoreEpId(getCoreEpId(info.getEp_id())));
         orderItem.setSupplier_phone(info.getPhone());
