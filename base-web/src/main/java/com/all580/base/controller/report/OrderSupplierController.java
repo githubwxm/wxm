@@ -204,6 +204,7 @@ public class OrderSupplierController extends BaseController {
     }
 
     private void disposeSupplierPlatform(Integer ep_type, String ep_name, Map map) {
+        //平台供应商的特殊处理
         if (ep_type != null && ep_type.intValue() == EpConstant.EpType.SUPPLIER.intValue()) {
             if (ep_name != null) {
                 if (CommonUtil.find("\\(平台商\\)$", ep_name)) {
