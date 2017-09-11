@@ -143,6 +143,8 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             if (order.getStatus() != OrderConstant.OrderStatus.AUDIT_WAIT && order.getAudit_time() == null) {
                 order.setAudit_time(new Date());
             }
+            //到付产品支付金额设置为0
+            order.setPay_amount(order.getPay_amount() == null ? 0 : order.getPay_amount());
             orderMapper.updateByPrimaryKeySelective(order);
 
             // 触发事件
