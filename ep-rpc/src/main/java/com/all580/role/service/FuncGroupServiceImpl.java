@@ -6,6 +6,8 @@ import com.all580.role.api.service.FuncGroupLinkService;
 import com.all580.role.api.service.FuncGroupService;
 import com.all580.role.dao.FuncGroupMapper;
 import com.framework.common.Result;
+import com.framework.common.io.cache.redis.RedisUtils;
+import com.framework.common.util.Auth;
 import com.framework.common.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +30,9 @@ public class FuncGroupServiceImpl implements FuncGroupService {
     FuncGroupLinkService funcGroupLinkService;
     @Autowired
     private SyncEpData syncEpData;
+    @Autowired
+    private RedisUtils redisUtils;
+
 
     @Override
     public Result selectFuncGroupList() {
@@ -83,6 +88,7 @@ public class FuncGroupServiceImpl implements FuncGroupService {
             result.put(funcGroupMapper.deleteByPrimaryKey(id));
             syncEpData.syncDeleteAllData(EpConstant.Table.T_FUNC_GROUP,new Integer []{id} );
             funcGroupLinkService.deleteFuncGroupId(id);//删除组删除 组对应的关系
+            Auth.updateAuthMap(null,redisUtils);//更新鉴权数据
         } catch (Exception e) {
             log.error("删除组菜单功能异常", e);
             throw new javax.lang.exception.ApiException("删除组菜单功能异常");
