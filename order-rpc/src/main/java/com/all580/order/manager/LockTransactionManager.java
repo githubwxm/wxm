@@ -586,15 +586,15 @@ public class LockTransactionManager {
     public Result refundTicket(RefundTicketInfo info, Date procTime, OrderItem orderItem, RefundOrder refundOrder) {
         RefundSerial refundSerial = refundSerialMapper.selectByLocalSn(Long.valueOf(info.getRefId()));
         if (refundSerial == null) {
-            return new Result(false, "退票流水错误");
+            return new Result(false, String.format("退订订单:%s,退票流水:%s 错误", refundOrder.getNumber(), info.getRefId()));
         }
 
         if (refundSerial.getRefund_time() != null) {
-            return new Result(false, "退票流水:" + info.getRefId() + "重复操作");
+            return new Result(false, String.format("退订订单:%s,退票流水:%s 重复操作", refundOrder.getNumber(), info.getRefId()));
         }
 
         if (orderItem.getQuantity() < orderItem.getUsed_quantity() + orderItem.getRefund_quantity() + refundSerial.getQuantity() && info.isSuccess()) {
-            log.error("退订订单:{} 退票回调异常: 退票人:{} 可退票不足, 小秘书重置为退票失败", refundOrder.getNumber(), info.getVisitorSeqId());
+            log.error("退订订单:{},退票流水:{} 退票回调异常: 退票人:{} 可退票不足, 小秘书重置为退票失败", new Object[]{refundOrder.getNumber(), info.getRefId(), info.getVisitorSeqId()});
             info.setSuccess(false);
         }
         log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(null, orderItem.getId(),
@@ -617,7 +617,7 @@ public class LockTransactionManager {
         visitor.setReturn_quantity(visitor.getReturn_quantity() + refundSerial.getQuantity());
         int ret = visitorMapper.refundQuantity(visitor.getId(), refundSerial.getQuantity());
         if (ret < 1) {
-            log.warn("退订订单:{} 退票回调异常: 退票人:{} 可退票不足 退票信息:{}", new Object[]{refundOrder.getNumber(), info.getVisitorSeqId(), JsonUtils.toJson(info)});
+            log.warn("退订订单:{},退票流水:{} 退票回调异常: 退票人:{} 可退票不足 退票信息:{}", new Object[]{refundOrder.getNumber(), info.getRefId(), info.getVisitorSeqId(), JsonUtils.toJson(info)});
             throw new ApiException("没有可退的票");
         }
 
@@ -628,7 +628,7 @@ public class LockTransactionManager {
         orderItem.setRefund_quantity(orderItem.getRefund_quantity() + refundSerial.getQuantity());
         ret = orderItemMapper.refundQuantity(orderItem.getId(), refundSerial.getQuantity());
         if (ret < 1) {
-            log.warn("退订订单:{} 退票回调异常: 退票人:{} 可退票不足 退票信息:{}", new Object[]{refundOrder.getNumber(), info.getVisitorSeqId(), JsonUtils.toJson(info)});
+            log.warn("退订订单:{},退票流水:{} 退票回调异常: 退票人:{} 可退票不足 退票信息:{}", new Object[]{refundOrder.getNumber(), info.getRefId(), info.getVisitorSeqId(), JsonUtils.toJson(info)});
             throw new ApiException("没有可退的票");
         }
         refundSerialMapper.updateByPrimaryKeySelective(refundSerial);
@@ -647,11 +647,11 @@ public class LockTransactionManager {
     public Result refundGroupTicket(RefundGroupTicketInfo info, Date procTime, OrderItem orderItem, RefundOrder refundOrder) {
         RefundSerial refundSerial = refundSerialMapper.selectByLocalSn(Long.valueOf(info.getRefId()));
         if (refundSerial == null) {
-            return new Result(false, "退票流水错误");
+            return new Result(false, String.format("退订订单:%s,退票流水:%s 错误", refundOrder.getNumber(), info.getRefId()));
         }
 
         if (refundSerial.getRefund_time() != null) {
-            return new Result(false, "退票流水:" + info.getRefId() + "重复操作");
+            return new Result(false, String.format("退订订单:%s,退票流水:%s 重复操作", refundOrder.getNumber(), info.getRefId()));
         }
         eventManager.addEvent(OrderConstant.EventType.REFUND_TICKET, new RefundTicketEventParam(refundOrder.getId(), info.isSuccess()));
         // 退票失败
@@ -667,7 +667,7 @@ public class LockTransactionManager {
         orderItem.setRefund_quantity(orderItem.getRefund_quantity() + refundSerial.getQuantity());
         int ret = orderItemMapper.refundQuantity(orderItem.getId(), refundSerial.getQuantity());
         if (ret < 1) {
-            log.warn("退订订单:{} 退票回调异常: 可退票不足 退票信息:{}", new Object[]{refundOrder.getNumber(), JsonUtils.toJson(info)});
+            log.warn("退订订单:{},退票流水:{} 退票回调异常: 可退票不足 退票信息:{}", new Object[]{refundOrder.getNumber(), info.getRefId(), JsonUtils.toJson(info)});
             throw new ApiException("没有可退的票");
         }
         refundSerialMapper.updateByPrimaryKeySelective(refundSerial);

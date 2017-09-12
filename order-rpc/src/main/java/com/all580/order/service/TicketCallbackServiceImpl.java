@@ -179,7 +179,7 @@ public class TicketCallbackServiceImpl extends BasicSyncDataEvent implements Tic
     public Result consumeTicket(Long orderSn, ConsumeTicketInfo info, Date procTime) {
         OrderItem orderItem = orderItemMapper.selectBySN(orderSn);
         if (orderItem == null) {
-            return new Result(false, "订单不存在");
+            return new Result(false, String.format("订单:%s,核销流水:%s 子订单不存在", orderSn, info.getValidateSn()));
         }
 
         log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(null, orderItem.getId(),
@@ -190,17 +190,17 @@ public class TicketCallbackServiceImpl extends BasicSyncDataEvent implements Tic
         // 获取订单详情 设置核销数量
         List<OrderItemDetail> detailList = orderItemDetailMapper.selectByItemId(orderItem.getId());
         if (detailList == null || detailList.size() < 1) {
-            return new Result(false, "订单详情不存在");
+            return new Result(false, String.format("订单:%s,核销流水:%s 订单详情不存在", orderSn, info.getValidateSn()));
         }
 
         OrderClearanceSerial oldSerial = orderClearanceSerialMapper.selectBySn(info.getValidateSn());
         if (oldSerial != null) {
-            return new Result(false, "核销流水:" + info.getValidateSn() + "重复核销");
+            return new Result(false, String.format("订单:%s,核销流水:%s 重复核销", orderSn, info.getValidateSn()));
         }
 
         Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
         if (order == null) {
-            return new Result(false, "订单不存在");
+            return new Result(false, String.format("订单:%s,核销流水:%s 订单不存在", orderSn, info.getValidateSn()));
         }
 
 
@@ -216,7 +216,7 @@ public class TicketCallbackServiceImpl extends BasicSyncDataEvent implements Tic
         if (info.getVisitorSeqId() == null) {
             List<Visitor> visitors = visitorMapper.selectByOrderItem(orderItem.getId());
             if (visitors.size() > 1) {
-                throw new ApiException("该订单有多个游客");
+                throw new ApiException(String.format("订单:%s,核销流水:%s 该订单有多个游客", orderSn, info.getValidateSn()));
             }
             visitor = visitors.get(0);
         } else {
@@ -235,7 +235,7 @@ public class TicketCallbackServiceImpl extends BasicSyncDataEvent implements Tic
         // 修改已用数量
         int ret = orderItemMapper.useQuantity(orderItem.getId(), info.getConsumeQuantity());
         if (ret <= 0) {
-            log.warn("核销流水: {} 订单:{} 核销票不足 核销信息:{}", new Object[]{info.getValidateSn(), orderSn, JsonUtils.toJson(info)});
+            log.warn("订单:{} 核销流水: {} 订单:{} 核销票不足 核销信息:{}", new Object[]{orderSn, info.getValidateSn(), orderSn, JsonUtils.toJson(info)});
             throw new ApiException("没有可核销的票");
         }
 
@@ -266,7 +266,7 @@ public class TicketCallbackServiceImpl extends BasicSyncDataEvent implements Tic
     public Result consumeGroupTicket(Long orderSn, ConsumeGroupTicketInfo info, Date procTime) {
         OrderItem orderItem = orderItemMapper.selectBySN(orderSn);
         if (orderItem == null) {
-            return new Result(false, "订单不存在");
+            return new Result(false, String.format("订单:%s,核销流水:%s 子订单不存在", orderSn, info.getValidateSn()));
         }
 
         log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(null, orderItem.getId(),
@@ -277,22 +277,22 @@ public class TicketCallbackServiceImpl extends BasicSyncDataEvent implements Tic
         // 获取订单详情 设置核销数量
         List<OrderItemDetail> detailList = orderItemDetailMapper.selectByItemId(orderItem.getId());
         if (detailList == null || detailList.size() < 1) {
-            return new Result(false, "订单详情不存在");
+            return new Result(false, String.format("订单:%s,核销流水:%s 订单详情不存在", orderSn, info.getValidateSn()));
         }
 
         OrderClearanceSerial oldSerial = orderClearanceSerialMapper.selectBySn(info.getValidateSn());
         if (oldSerial != null) {
-            return new Result(false, "核销流水:" + info.getValidateSn() + "重复核销");
+            return new Result(false, String.format("订单:%s,核销流水:%s 重复核销", orderSn, info.getValidateSn()));
         }
 
         if (!(orderItem.getGroup_id() != null && orderItem.getGroup_id() != 0 &&
                 orderItem.getPro_sub_ticket_type() != null && orderItem.getPro_sub_ticket_type() == ProductConstants.TeamTicketType.TEAM)) {
-            return new Result(false, "该订单不是团队订单");
+            return new Result(false, String.format("订单:%s,核销流水:%s 不是团队订单", orderSn, info.getValidateSn()));
         }
 
         Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
         if (order == null) {
-            return new Result(false, "订单不存在");
+            return new Result(false, String.format("订单:%s,核销流水:%s 订单不存在", orderSn, info.getValidateSn()));
         }
 
         // 目前景点只有一天
@@ -319,7 +319,7 @@ public class TicketCallbackServiceImpl extends BasicSyncDataEvent implements Tic
         // 修改已用数量
         int ret = orderItemMapper.useQuantity(orderItem.getId(), info.getConsumeQuantity());
         if (ret <= 0) {
-            log.warn("核销流水: {} 订单:{} 核销票不足 核销信息:{}", new Object[]{info.getValidateSn(), orderSn, JsonUtils.toJson(info)});
+            log.warn("订单:{} 核销流水: {} 订单:{} 核销票不足 核销信息:{}", new Object[]{orderSn, info.getValidateSn(), orderSn, JsonUtils.toJson(info)});
             throw new ApiException("没有可核销的票");
         }
 
@@ -333,12 +333,12 @@ public class TicketCallbackServiceImpl extends BasicSyncDataEvent implements Tic
     public Result reConsumeTicket(Long orderSn, ReConsumeTicketInfo info, Date procTime) {
         OrderItem orderItem = orderItemMapper.selectBySN(orderSn);
         if (orderItem == null) {
-            return new Result(false, "订单不存在");
+            return new Result(false, String.format("订单:%s,反核销流水:%s 子订单不存在", orderSn, info.getReValidateSn()));
         }
 
         OrderClearanceSerial orderClearanceSerial = orderClearanceSerialMapper.selectBySn(info.getValidateSn());
         if (orderClearanceSerial == null) {
-            return new Result(false, "核销流水不存在");
+            return new Result(false, String.format("订单:%s,反核销流水:%s 核销号不存在", orderSn, info.getReValidateSn()));
         }
 
         log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(null, orderItem.getId(),
@@ -349,17 +349,17 @@ public class TicketCallbackServiceImpl extends BasicSyncDataEvent implements Tic
         // 获取订单详情 设置核销数量
         List<OrderItemDetail> detailList = orderItemDetailMapper.selectByItemId(orderItem.getId());
         if (detailList == null || detailList.size() < 1) {
-            return new Result(false, "订单详情不存在");
+            return new Result(false, String.format("订单:%s,反核销流水:%s 订单详情不存在", orderSn, info.getReValidateSn()));
         }
 
         ClearanceWashedSerial oldSerial = clearanceWashedSerialMapper.selectBySn(info.getReValidateSn());
         if (oldSerial != null) {
-            return new Result(false, "反核销流水:" + info.getReValidateSn() + "重复冲正");
+            return new Result(false, String.format("订单:%s,反核销流水:%s 重复冲正", orderSn, info.getReValidateSn()));
         }
 
         Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
         if (order == null) {
-            return new Result(false, "订单不存在");
+            return new Result(false, String.format("订单:%s,反核销流水:%s 订单不存在", orderSn, info.getReValidateSn()));
         }
 
         // 目前景点只有一天
@@ -377,7 +377,7 @@ public class TicketCallbackServiceImpl extends BasicSyncDataEvent implements Tic
         // 修改已用数量
         int ret = orderItemMapper.useQuantity(orderItem.getId(), -orderClearanceSerial.getQuantity());
         if (ret <= 0) {
-            log.warn("反核销流水: {} 订单:{} 反核销票不足 反核销信息:{}", new Object[]{info.getValidateSn(), orderSn, JsonUtils.toJson(info)});
+            log.warn("订单:{} 反核销流水: {} 订单:{} 反核销票不足 反核销信息:{}", new Object[]{orderSn, info.getValidateSn(), orderSn, JsonUtils.toJson(info)});
             throw new ApiException("没有可反核销的票");
         }
 
@@ -407,7 +407,7 @@ public class TicketCallbackServiceImpl extends BasicSyncDataEvent implements Tic
     public Result reConsumeGroupTicket(Long orderSn, ReConsumeGroupTicketInfo info, Date procTime) {
         OrderItem orderItem = orderItemMapper.selectBySN(orderSn);
         if (orderItem == null) {
-            return new Result(false, "订单不存在");
+            return new Result(false, String.format("订单:%s,反核销流水:%s 子订单不存在", orderSn, info.getReValidateSn()));
         }
 
         log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(null, orderItem.getId(),
@@ -417,27 +417,28 @@ public class TicketCallbackServiceImpl extends BasicSyncDataEvent implements Tic
 
         OrderClearanceSerial orderClearanceSerial = orderClearanceSerialMapper.selectBySn(info.getValidateSn());
         if (orderClearanceSerial == null) {
-            return new Result(false, "核销流水不存在");
+            return new Result(false, String.format("订单:%s,反核销流水:%s 核销号不存在", orderSn, info.getReValidateSn()));
         }
 
         // 获取订单详情 设置核销数量
         List<OrderItemDetail> detailList = orderItemDetailMapper.selectByItemId(orderItem.getId());
         if (detailList == null || detailList.size() < 1) {
-            return new Result(false, "订单详情不存在");
+            return new Result(false, String.format("订单:%s,反核销流水:%s 订单详情不存在", orderSn, info.getReValidateSn()));
         }
 
-        if (orderItem.getGroup_id() == null || orderItem.getGroup_id() == 0) {
-            return new Result(false, "该订单不是团队订单");
+        if (!(orderItem.getGroup_id() != null && orderItem.getGroup_id() != 0 &&
+                orderItem.getPro_sub_ticket_type() != null && orderItem.getPro_sub_ticket_type() == ProductConstants.TeamTicketType.TEAM)) {
+            return new Result(false, String.format("订单:%s,反核销流水:%s 不是团队订单", orderSn, info.getReValidateSn()));
         }
 
         Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
         if (order == null) {
-            return new Result(false, "订单不存在");
+            return new Result(false, String.format("订单:%s,反核销流水:%s 订单不存在", orderSn, info.getReValidateSn()));
         }
 
         ClearanceWashedSerial oldSerial = clearanceWashedSerialMapper.selectBySn(info.getReValidateSn());
         if (oldSerial != null) {
-            return new Result(false, "反核销流水:" + info.getReValidateSn() + "重复冲正");
+            return new Result(false, String.format("订单:%s,反核销流水:%s 重复冲正", orderSn, info.getReValidateSn()));
         }
 
         // 目前景点只有一天
@@ -451,7 +452,7 @@ public class TicketCallbackServiceImpl extends BasicSyncDataEvent implements Tic
         // 修改已用数量
         int ret = orderItemMapper.useQuantity(orderItem.getId(), -info.getQuantity());
         if (ret <= 0) {
-            log.warn("反核销流水: {} 订单:{} 反核销票不足 反核销信息:{}", new Object[]{info.getValidateSn(), orderSn, JsonUtils.toJson(info)});
+            log.warn("订单:{} 反核销流水: {} 订单:{} 反核销票不足 反核销信息:{}", new Object[]{orderSn, info.getValidateSn(), orderSn, JsonUtils.toJson(info)});
             throw new ApiException("没有可反核销的票");
         }
 
