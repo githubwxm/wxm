@@ -29,7 +29,9 @@ public interface IntfMapper {
     List<Map<String,Object>> selectFuncId(Map<String,Object> prarms);
      int selectFuncIdCount(Map<String,Object> prarms);
     int intListCount();
-    List<String> authIntf(int ep_role);
+
+    //  查询平台与企业的权限
+    List<String> authIntf(int ep_id);
     List<String> authCoreIntf(int core_ep_id);
     List<Map<String,Object>> intfList(Map<String,Object> params);
 }

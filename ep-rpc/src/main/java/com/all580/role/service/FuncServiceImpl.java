@@ -8,6 +8,8 @@ import com.all580.role.api.service.FuncService;
 import com.all580.role.api.service.UserRoleService;
 import com.all580.role.dao.FuncMapper;
 import com.framework.common.Result;
+import com.framework.common.io.cache.redis.RedisUtils;
+import com.framework.common.util.Auth;
 import com.framework.common.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +42,9 @@ public class FuncServiceImpl implements FuncService{
 
     @Autowired
     UserRoleService UserRoleService;
+
+    @Autowired
+    private RedisUtils redisUtils;
 
 
     @Override
@@ -98,6 +103,7 @@ public class FuncServiceImpl implements FuncService{
             funcGroupLinkService.deleteFuncId(id);
             epRoleService.deleteFuncIdsEpRole(list);
             UserRoleService.deleteFuncId(id);
+            Auth.updateAuthMap(null,redisUtils);//更新鉴权数据
         }catch (Exception e){
             log.error("删除菜单功能异常",e);
             throw  new ApiException("删除菜单功能异常");

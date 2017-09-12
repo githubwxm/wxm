@@ -14,6 +14,7 @@ import com.framework.common.lang.JsonUtils;
 import com.framework.common.util.CommonUtil;
 import com.framework.common.vo.Paginator;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -644,5 +645,12 @@ public class ProductController extends BaseController {
     @ResponseBody
     public Result<Map<String, Object>> searchAllProviderTicketList(@RequestParam("ep_id") Integer epId, @RequestParam(value = "park_name", required = false) String parkName, @RequestParam(value = "ticket_name", required = false) String ticketName, @RequestParam("record_start") Integer start, @RequestParam("record_count") Integer count) {
         return productService.searchThirdProducts(epId, parkName, ticketName, start, count);
+    }
+
+    @RequestMapping(value = "delete", method = RequestMethod.POST)
+    @ResponseBody
+    public Result<?> deleteScenery(@RequestBody Map params) {
+        Assert.notNull(params.get("id"));
+        return productService.deleteScenery(params);
     }
 }

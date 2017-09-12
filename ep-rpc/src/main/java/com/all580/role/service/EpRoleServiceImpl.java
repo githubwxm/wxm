@@ -45,7 +45,7 @@ public class EpRoleServiceImpl implements EpRoleService {
     public Result deleteFuncIdsEpRole(List<Integer> list){
         Result result = new Result();
         if(list!=null&&!list.isEmpty()){
-            Auth.updateAuthMap(epRoleFuncMapper.selectFuncIdsAllEpRoleCoreEpId(list),redisUtils);//更新鉴权数据
+            Auth.updateAuthMap(null,redisUtils);//更新鉴权数据
           //Auth.updateAuthMap(epRoleFuncMapper.selectFuncIdsAllEpRole(list),redisUtils);//更新鉴权数据
           List<Integer>  synDate = epRoleFuncMapper.selectFuncIdsAllEpRoleIds(list);//同步删除数据
             epRoleFuncMapper.deleteFuncIdsEpRole(list);//删除
@@ -212,7 +212,7 @@ public class EpRoleServiceImpl implements EpRoleService {
             //List<Integer> tempList = new ArrayList<Integer>();
             //tempList.add(ep_role_id);
             //epRoleFuncMapper.selectFuncIdsAllEpRole(tempList)
-           // Auth.updateAuthMap( tempList,redisUtils);//更新鉴权数据
+            Auth.updateAuthMap( null,redisUtils);//更新鉴权数据
         } catch (Exception e) {
             log.error("修改菜单出错 {}", e.getMessage());
             return new Result(false, e.getMessage());

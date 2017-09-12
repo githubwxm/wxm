@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -47,7 +46,7 @@ public class PlatFuncServiceImpl implements PlatFuncService {
             platFuncMapper.addPlatFuncList(core_ep_id,list);
             syncEpData.syncEpData(core_ep_id, EpConstant.Table.T_PLAT_FUNC, platFuncMapper.selectPlatGroupListAll(core_ep_id,list));
         }
-        Auth.updateAuthMap(Arrays.asList(core_ep_id),redisUtils);
+        Auth.updateAuthMap(null,redisUtils);
         result.setSuccess();
         return result;
     }
