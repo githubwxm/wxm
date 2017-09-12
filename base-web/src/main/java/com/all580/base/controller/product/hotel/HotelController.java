@@ -8,6 +8,7 @@ import com.framework.common.validate.ParamsMapValidate;
 import com.framework.common.validate.ValidRule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
 import javax.lang.exception.ParamsMapValidationException;
@@ -82,6 +83,13 @@ public class HotelController {
         }
         return hotelService.selectCanSaleList(from,ep_id, city, ticket_flag, start_time, end_time, keyword, price_min, price_max,
                 star, topic, person_min, person_max, price_sort, sale_sort, create_sort, record_start, record_count);
+    }
+
+    @RequestMapping(value = "delete", method = RequestMethod.POST)
+    @ResponseBody
+    public Result<?> deleteHotel(@RequestBody Map params) {
+        Assert.notNull(params.get("id"));
+        return hotelService.deleteHotel(params);
     }
 
 
