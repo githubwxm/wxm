@@ -168,6 +168,9 @@ public class VerifyFilter implements  Filter {
     }
     public boolean auth( HttpServletResponse httpResponse,ServletRequest request,String url,Integer ep_id){
      try {
+         if(1-ep_id.intValue()==0){//畅旅不鉴权
+             return  true;
+         }
          url = url.toLowerCase();
         if(Auth.isNotAuth(url)){// 如果是不需要鉴权的地址直接返回真
               return true;
@@ -175,12 +178,8 @@ public class VerifyFilter implements  Filter {
         // EpService epService= BeanUtil.getBean("epService", EpService.class);
          //Map<String,Object> map = epService.selectId(ep_id).get();
          //if(null!=map&&!map.isEmpty()){
-             Integer core_ep_id=CommonUtil.objectParseInteger(request.getAttribute(EpConstant.EpKey.CORE_EP_ID)) ;
-             if(1-core_ep_id==0){//畅旅不鉴权
-                 return  true;
-             }
              RedisUtils redisUtils= BeanUtil.getBean("redisUtils", RedisUtils.class);
-             List<String> auth=Auth.getAuthMap(redisUtils,core_ep_id);
+             List<String> auth=Auth.getAuthMap(redisUtils,ep_id);
              boolean ref = false;
              if(auth!=null&&auth.size()==1){
                  ref=null== auth.get(0);
@@ -190,8 +189,8 @@ public class VerifyFilter implements  Filter {
             // }
              if(null==auth||ref){
                  IntfService intfService= BeanUtil.getBean("intfService", IntfService.class);
-                 auth= intfService.authCoreIntf(core_ep_id).get();
-                 Auth.setAuthMap(redisUtils,auth,core_ep_id);
+                 auth= intfService.authIntf(ep_id).get();
+                 Auth.setAuthMap(redisUtils,auth,ep_id);
                  return auth.contains(url);
              }else{
                  return  CommonUtil.find(url+"[,\\]]",auth.get(0));

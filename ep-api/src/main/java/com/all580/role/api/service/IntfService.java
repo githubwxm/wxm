@@ -18,6 +18,6 @@ public interface IntfService {
 
     Result selectFuncId(Map<String,Object> params);
     Result intfList(Map<String,Object> params);
-    Result<List<String>> authIntf(int epRole);
+    Result<List<String>> authIntf(int epId);
     Result<List<String>> authCoreIntf(int CoreEpId);
 }

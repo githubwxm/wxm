@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.lang.exception.ApiException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,7 +55,7 @@ public class FuncGroupLinkServiceImpl implements FuncGroupLinkService {
             List<Integer> currentList = funcGroupLinkMapper.selectFuncGroupLinkFuncId(func_group_id);//已经存在 默认的需要添加
             List<Integer> deleteList=   Common.deleteAllList(func_ids,currentList);//最小化删除菜单id
             if(!deleteList.isEmpty()){
-                Auth.updateAuthMap( platFuncMapper.selectCoreEpIdFunc(deleteList),redisUtils);//更新鉴权数据
+                Auth.updateAuthMap(null,redisUtils);//更新鉴权数据
                 List<Integer> synDeleteList=funcGroupLinkMapper.selectFuncGroupLinkId(func_group_id,deleteList);//获取需要删除的同步id
                 funcGroupLinkMapper.deleteFuncGroupLinkList(func_group_id,deleteList);
                 syncEpData.syncDeleteAllData(EpConstant.Table.T_FUNC_GROUP_LINK,(Integer [])synDeleteList.toArray(new Integer[synDeleteList.size()]) );
@@ -64,7 +63,7 @@ public class FuncGroupLinkServiceImpl implements FuncGroupLinkService {
             Common.removeAllList(func_ids,currentList);
             if (func_ids != null && !func_ids.isEmpty()) {
                 funcGroupLinkMapper.addFuncGroupLinkList(func_group_id, func_ids);
-                Auth.updateAuthMap( platFuncMapper.selectCoreEpIdFunc(func_ids),redisUtils);//更新鉴权数据
+                Auth.updateAuthMap( null,redisUtils);//更新鉴权数据
                 syncEpData.syncEpAllData(EpConstant.Table.T_FUNC_GROUP_LINK, funcGroupLinkMapper.selectFuncGroupLinkMap(func_group_id,func_ids));
             }//
 
@@ -85,7 +84,7 @@ public class FuncGroupLinkServiceImpl implements FuncGroupLinkService {
             map.put("func_group_id", func_group_id);
             map.put("func_id", func_id);
             funcGroupLinkMapper.insertSelective(map);
-            Auth.updateAuthMap( platFuncMapper.selectCoreEpIdFunc(Arrays.asList(func_id)),redisUtils);//更新鉴权数据
+            Auth.updateAuthMap( null,redisUtils);//更新鉴权数据
             syncEpData.syncEpAllData(EpConstant.Table.T_FUNC_GROUP_LINK, funcGroupLinkMapper.selectByPrimaryKey(CommonUtil.objectParseInteger(map.get("id"))));
         } catch (Exception e) {
             throw new ApiException(e.getMessage());
@@ -97,7 +96,7 @@ public class FuncGroupLinkServiceImpl implements FuncGroupLinkService {
         Result result = new Result();
         try {
            List<Integer> synDeleteList= funcGroupLinkMapper.selectFuncIdLink(func_id);
-            Auth.updateAuthMap( platFuncMapper.selectCoreEpIdFunc(Arrays.asList(func_id)),redisUtils);//更新鉴权数据
+            Auth.updateAuthMap(null,redisUtils);//更新鉴权数据
             funcGroupLinkMapper.deleteFuncId(func_id);
             syncEpData.syncDeleteAllData(EpConstant.Table.T_FUNC_GROUP_LINK,(Integer [])synDeleteList.toArray(new Integer[synDeleteList.size()]) );
         } catch (Exception e) {
@@ -111,7 +110,7 @@ public class FuncGroupLinkServiceImpl implements FuncGroupLinkService {
         Result result = new Result();
         try {
             List<Integer> addList = funcGroupLinkMapper.selectFuncGroupLinkFuncId(func_group_id);//已经存在 默认的需要添加
-            Auth.updateAuthMap( platFuncMapper.selectCoreEpIdFunc(addList),redisUtils);//更新鉴权数据
+            Auth.updateAuthMap( null,redisUtils);//更新鉴权数据
             List<Integer> synDeleteList= funcGroupLinkMapper.selectFuncGroupLinkGroupId(func_group_id);
             if(synDeleteList!=null && !synDeleteList.isEmpty()){
                 funcGroupLinkMapper.deleteFuncGroupId(func_group_id);
