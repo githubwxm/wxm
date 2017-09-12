@@ -96,6 +96,9 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         List<ProductSearchParams> lockParams = new ArrayList<>();
         //创建终端订单
         CreateOrderResultDto createOrderResult = this.createOrder(orderInterface, params, lockStockDtoMap, lockParams);
+        if (!createOrderResult.isUniqueKey()){
+            return createOrderResult.getResult();
+        }
         //终端订单
         Order mainOrder = createOrderResult.getOrder();
 
@@ -248,7 +251,10 @@ public class BookingOrderServiceImpl implements BookingOrderService {
 
         Result validateResult = orderInterface.validate(createOrder, params);
         if (!validateResult.isSuccess()) {
-            throw  new ApiException(validateResult.getError());
+            CreateOrderResultDto dto = new CreateOrderResultDto();
+            dto.setUniqueKey(Boolean.FALSE);
+            dto.setResult(validateResult);
+            return dto;
         }
 
         // 创建订单
