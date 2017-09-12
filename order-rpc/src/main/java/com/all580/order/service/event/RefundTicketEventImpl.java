@@ -55,11 +55,11 @@ public class RefundTicketEventImpl implements RefundTicketEvent {
         RefundOrder refundOrder = refundOrderMapper.selectByPrimaryKey(content.getRefundId());
         Assert.notNull(refundOrder, "退订订单不存在");
         OrderItem orderItem = orderItemMapper.selectByPrimaryKey(refundOrder.getOrder_item_id());
-        log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(null, orderItem.getId(),
-                0, "ORDER_EVENT", OrderConstant.LogOperateCode.REFUND_TICKET,
-                refundOrder.getQuantity(), String.format("退票%s:%s", content.isStatus() ? "成功" : "失败", refundOrder.getNumber()), String.valueOf(refundOrder.getLocal_refund_serial_no())));
         Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
         if (content.isStatus()) {
+            log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(null, orderItem.getId(),
+                    0, "ORDER_EVENT", OrderConstant.LogOperateCode.REFUND_TICKET,
+                    refundOrder.getQuantity(), String.format("退票成功:%s", refundOrder.getNumber()), String.valueOf(refundOrder.getLocal_refund_serial_no())));
             // 还库存 记录任务
             Map<String, String> jobParams = new HashMap<>();
             jobParams.put("refundId", String.valueOf(refundOrder.getId()));
@@ -78,6 +78,9 @@ public class RefundTicketEventImpl implements RefundTicketEvent {
 //                refundOrderManager.checkRefundTicketOrderItemChainForPackage(refundOrder);
 //            }
         } else {
+            log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(null, orderItem.getId(),
+                    0, "ORDER_EVENT", OrderConstant.LogOperateCode.REFUND_TICKET_FAIL,
+                    refundOrder.getQuantity(), String.format("退票失败:%s", refundOrder.getNumber()), String.valueOf(refundOrder.getLocal_refund_serial_no())));
             // 发送短信
             smsManager.sendRefundFailSms(orderItem, refundOrder, "可退余数不足，详情请咨询购买渠道。");
         }
