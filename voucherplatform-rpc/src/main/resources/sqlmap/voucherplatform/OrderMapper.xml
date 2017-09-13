@@ -38,6 +38,7 @@
         <result column="sms" jdbcType="VARCHAR" property="sms"/>
         <result column="printText" jdbcType="VARCHAR" property="printText"/>
         <result column="imgUrl" jdbcType="VARCHAR" property="imgUrl"/>
+        <result column="longUrl" jdbcType="VARCHAR" property="longUrl"/>
         <result column="status" jdbcType="INTEGER" property="status"/>
     </resultMap>
     <sql id="Base_Column_List">
@@ -90,7 +91,7 @@
         `voucherNumber`, `validTime`, `invalidTime`,
         `validWeek`, `invalidDate`, `sendType`,
         `createTime`, `seqId`, `payTime`,
-        `sms`, `printText`, `imgUrl`,
+        `sms`, `printText`, `imgUrl`,`longUrl`,
         `status`)
         values (#{orderCode,jdbcType=VARCHAR}, #{platform_id,jdbcType=INTEGER}, #{platformprod_id,jdbcType=INTEGER},
         #{supply_id,jdbcType=INTEGER}, #{ticketsys_id,jdbcType=INTEGER}, #{platformOrderId,jdbcType=VARCHAR},
@@ -102,7 +103,7 @@
         #{validWeek,jdbcType=VARCHAR}, #{invalidDate,jdbcType=VARCHAR}, #{sendType,jdbcType=INTEGER},
         #{createTime,jdbcType=TIMESTAMP}, #{seqId,jdbcType=VARCHAR}, #{payTime,jdbcType=TIMESTAMP},
         #{sms,jdbcType=VARCHAR}, #{printText,jdbcType=VARCHAR}, #{imgUrl,jdbcType=VARCHAR},
-        #{status,jdbcType=INTEGER})
+        #{longUrl,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER})
     </insert>
     <insert id="insertSelective" parameterType="com.all580.voucherplatform.entity.Order">
         <!--
@@ -205,6 +206,9 @@
             <if test="imgUrl != null">
                 `imgUrl`,
             </if>
+            <if test="longUrl != null">
+                `longUrl`,
+            </if>
             <if test="status != null">
                 `status`,
             </if>
@@ -299,6 +303,9 @@
             </if>
             <if test="imgUrl != null">
                 #{imgUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="longUrl != null">
+                #{longUrl,jdbcType=VARCHAR},
             </if>
             <if test="status != null">
                 #{status,jdbcType=INTEGER},

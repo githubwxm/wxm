@@ -5,6 +5,7 @@ import com.all580.voucherplatform.adapter.supply.SupplyAdapterService;
 import com.all580.voucherplatform.api.VoucherConstant;
 import com.all580.voucherplatform.dao.*;
 import com.all580.voucherplatform.entity.*;
+import com.all580.voucherplatform.utils.UrlUtils;
 import com.all580.voucherplatform.utils.async.AsyncService;
 import com.all580.voucherplatform.utils.voucher.VoucherGenerate;
 import com.all580.voucherplatform.utils.voucher.VoucherUrlGenerate;
@@ -129,6 +130,8 @@ public class CreateGroupOrderManager {
         groupOrder.setVoucherNumber(voucherNumber);
         String voucherImgUrl = voucherUrlGenerate.getVoucherUrl(voucherNumber, qrRule.getErrorRate(), qrRule.getSize(),
                 qrRule.getForeColor());
+        groupOrder.setLongUrl(voucherImgUrl);
+        voucherImgUrl= UrlUtils.shortUri(voucherImgUrl);
         groupOrder.setImgUrl(voucherImgUrl);
         groupOrder.setActivateStatus(false);
         groupOrder.setStatus(VoucherConstant.OrderSyncStatus.WAIT_SYNC);
