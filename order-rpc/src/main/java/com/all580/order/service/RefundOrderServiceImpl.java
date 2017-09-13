@@ -84,7 +84,13 @@ public class RefundOrderServiceImpl implements RefundOrderService {
         String orderItemSn = params.get("order_item_sn").toString();
         //套票元素订单不能单独退订
         OrderItem orderItem = orderItemMapper.selectBySN(Long.valueOf(orderItemSn));
+        if (orderItem == null) {
+            throw new ApiException("子订单不存在");
+        }
         Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
+        if (order == null) {
+            throw new ApiException("订单不存在");
+        }
         if (order.getSource() == OrderConstant.OrderSourceType.SOURCE_TYPE_SYS){
             throw new ApiException("非法请求:当前订单不能单独退订");
         }

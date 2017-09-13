@@ -374,6 +374,9 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         Integer payType = CommonUtil.objectParseInteger(params.get("pay_type"));
 
         Order order = orderMapper.selectBySN(Long.parseLong(orderSn));
+        if (order == null) {
+            throw new ApiException("订单" + orderSn + "不存在");
+        }
         //套票元素订单不能单独支付
         if (order.getSource() == OrderConstant.OrderSourceType.SOURCE_TYPE_SYS){
             throw new ApiException("非法请求:当前订单不能单独支付");
