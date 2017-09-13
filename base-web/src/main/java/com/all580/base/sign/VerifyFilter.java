@@ -96,15 +96,15 @@ public class VerifyFilter implements  Filter {
                 log.info("Params:",postParams +", key:"+key);
                 boolean ref = SignVerify.verifyPost(postParams, currenttSing, key);
 //                // 去掉的代码
-                if(null == requestWrapper) {
-                    chain.doFilter(request, response);
-                    return ;
-                } else if(1==1){
-                    chain.doFilter(requestWrapper, response);
-                    return ;
-                }else{
-
-                }
+//                if(null == requestWrapper) {
+//                    chain.doFilter(request, response);
+//                    return ;
+//                } else if(1==1){
+//                    chain.doFilter(requestWrapper, response);
+//                    return ;
+//                }else{
+//
+//                }
 
                 //end
                 if (!ref) {
@@ -175,6 +175,10 @@ public class VerifyFilter implements  Filter {
         if(Auth.isNotAuth(url)){// 如果是不需要鉴权的地址直接返回真
               return true;
         }
+         Integer core_ep_id=CommonUtil.objectParseInteger(request.getAttribute(EpConstant.EpKey.CORE_EP_ID)) ;
+         if(1-core_ep_id==0){//畅旅不鉴权
+             return  true;
+         }
         // EpService epService= BeanUtil.getBean("epService", EpService.class);
          //Map<String,Object> map = epService.selectId(ep_id).get();
          //if(null!=map&&!map.isEmpty()){
@@ -189,7 +193,7 @@ public class VerifyFilter implements  Filter {
             // }
              if(null==auth||ref){
                  IntfService intfService= BeanUtil.getBean("intfService", IntfService.class);
-                 auth= intfService.authIntf(ep_id).get();
+                 auth= intfService.authIntf(ep_id,core_ep_id).get();
                  Auth.setAuthMap(redisUtils,auth,ep_id);
                  return auth.contains(url);
              }else{
