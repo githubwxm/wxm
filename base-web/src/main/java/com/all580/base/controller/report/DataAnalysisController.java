@@ -143,6 +143,49 @@ public class DataAnalysisController extends BalanceController {
         return dataAnalysisService.searchSubProduct(name, productCode, null, CommonUtil.objectParseInteger(core_ep_id));
     }
 
+    /**
+     * 线路订单经营分析
+     * @param name 企业名称
+     * @param ep_id
+     * @param start
+     * @param end
+     * @param record_start
+     * @param record_count
+     * @return
+     */
+    @RequestMapping("order/line")
+    @ResponseBody
+    public Result<?> lineOrderAnalysis(String name, Integer ep_id,
+                                       @RequestParam String start,
+                                       @RequestParam String end,
+                                       @RequestParam(defaultValue = "0") Integer record_start,
+                                       @RequestParam(defaultValue = "20") Integer record_count) {
+        Date[] dates = checkDate(start, end);
+        Object core_ep_id = getAttribute(EpConstant.EpKey.CORE_EP_ID);
+        return dataAnalysisService.selectLineAnalysis(name, dates[0], dates[1], ep_id, CommonUtil.objectParseInteger(core_ep_id), record_start, record_count);
+    }
+
+    /**
+     * 线路订单自销经营分析
+     * @param name 企业名称
+     * @param ep_id
+     * @param start
+     * @param end
+     * @param record_start
+     * @param record_count
+     * @return
+     */
+    @RequestMapping("order/line/self")
+    @ResponseBody
+    public Result<?> lineOrderAnalysisBySelf(String name, Integer ep_id,
+                                       @RequestParam String start,
+                                       @RequestParam String end,
+                                       @RequestParam(defaultValue = "0") Integer record_start,
+                                       @RequestParam(defaultValue = "20") Integer record_count) {
+        Date[] dates = checkDate(start, end);
+        return dataAnalysisService.selectLineAnalysisBySelf(name, dates[0], dates[1], ep_id, record_start, record_count);
+    }
+
     public static Date[] checkDate(String start_time, String end_time) {
         Date[] result = new Date[]{null, null};
         try {
