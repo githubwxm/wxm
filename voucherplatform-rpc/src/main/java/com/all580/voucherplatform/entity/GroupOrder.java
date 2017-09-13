@@ -149,6 +149,15 @@ public class GroupOrder implements Serializable {
      *  ,所属表字段为t_group_order.imgUrl
      */
     private String imgUrl;
+    private String longUrl;
+
+    public String getLongUrl() {
+        return longUrl;
+    }
+
+    public void setLongUrl(String longUrl) {
+        this.longUrl = longUrl;
+    }
 
     /**
      *  ,所属表字段为t_group_order.status

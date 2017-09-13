@@ -159,6 +159,15 @@ public class Order implements Serializable {
      */
     private String imgUrl;
 
+    public String getLongUrl() {
+        return longUrl;
+    }
+
+    public void setLongUrl(String longUrl) {
+        this.longUrl = longUrl;
+    }
+
+    private String longUrl;
     /**
      *  ,所属表字段为t_order.status
      */

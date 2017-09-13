@@ -36,7 +36,9 @@
         <result column="createTime" jdbcType="TIMESTAMP" property="createTime"/>
         <result column="voucherNumber" jdbcType="VARCHAR" property="voucherNumber"/>
         <result column="imgUrl" jdbcType="VARCHAR" property="imgUrl"/>
+        <result column="longUrl" jdbcType="VARCHAR" property="longUrl"/>
         <result column="status" jdbcType="INTEGER" property="status"/>
+        <result column="totalNumber" jdbcType="INTEGER" property="totalNumber"/>
     </resultMap>
     <sql id="Base_Column_List">
         <!--
@@ -88,7 +90,7 @@
         `sendType`, `validTime`, `invalidTime`,
         `activateNum`, `activateStatus`, `price`,
         `number`, `createTime`, `voucherNumber`,
-        `imgUrl`, `status`)
+        `imgUrl`,`longUrl`, `status`)
         values (#{orderCode,jdbcType=VARCHAR}, #{platform_id,jdbcType=INTEGER}, #{supply_id,jdbcType=INTEGER},
         #{ticketsys_id,jdbcType=INTEGER}, #{platformOrderId,jdbcType=VARCHAR}, #{platformProdId,jdbcType=INTEGER},
         #{supplyOrderId,jdbcType=VARCHAR}, #{supplyProdId,jdbcType=INTEGER}, #{formAreaCode,jdbcType=VARCHAR},
@@ -98,7 +100,7 @@
         #{sendType,jdbcType=INTEGER}, #{validTime,jdbcType=TIMESTAMP}, #{invalidTime,jdbcType=TIMESTAMP},
         #{activateNum,jdbcType=INTEGER}, #{activateStatus,jdbcType=BIT}, #{price,jdbcType=DECIMAL},
         #{number,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{voucherNumber,jdbcType=VARCHAR},
-        #{imgUrl,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER})
+        #{imgUrl,jdbcType=VARCHAR}, #{longUrl,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER})
     </insert>
     <insert id="insertSelective" parameterType="com.all580.voucherplatform.entity.GroupOrder">
         <!--
@@ -195,6 +197,9 @@
             <if test="imgUrl != null">
                 `imgUrl`,
             </if>
+            <if test="longUrl != null">
+                `longUrl`,
+            </if>
             <if test="status != null">
                 `status`,
             </if>
@@ -283,6 +288,9 @@
             </if>
             <if test="imgUrl != null">
                 #{imgUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="longUrl != null">
+                #{longUrl,jdbcType=VARCHAR},
             </if>
             <if test="status != null">
                 #{status,jdbcType=INTEGER},
