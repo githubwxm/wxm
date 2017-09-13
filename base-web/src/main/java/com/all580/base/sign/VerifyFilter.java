@@ -96,15 +96,15 @@ public class VerifyFilter implements  Filter {
                 log.info("Params:",postParams +", key:"+key);
                 boolean ref = SignVerify.verifyPost(postParams, currenttSing, key);
 //                // 去掉的代码
-//                if(null == requestWrapper) {
-//                    chain.doFilter(request, response);
-//                    return ;
-//                } else if(1==1){
-//                    chain.doFilter(requestWrapper, response);
-//                    return ;
-//                }else{
-//
-//                }
+                if(null == requestWrapper) {
+                    chain.doFilter(request, response);
+                    return ;
+                } else if(1==1){
+                    chain.doFilter(requestWrapper, response);
+                    return ;
+                }else{
+
+                }
 
                 //end
                 if (!ref) {
