@@ -5,7 +5,7 @@
 
 <generatorConfiguration>
     <classPathEntry
-            location="D:/maven_repo/mysql/mysql-connector-java/5.1.30/mysql-connector-java-5.1.30.jar"/>
+            location="/mnt/e/repository/mysql/mysql-connector-java/5.1.30/mysql-connector-java-5.1.30.jar"/>
     <context id="my" targetRuntime="MyBatis3">
         <!-- 抑制警告 -->
         <property name="suppressTypeWarnings" value="true" />
@@ -24,22 +24,22 @@
                         password="abcd1234"/>
 
         <javaModelGenerator targetPackage="com.all580.order.entity"
-                            targetProject="D:/project/base/order-rpc/src/main/java">
+                            targetProject="/mnt/e/IdeaProjects/base/order-rpc/src/main/java">
             <property name="enableSubPackages" value="true"/>
             <property name="trimStrings" value="true"/>
         </javaModelGenerator>
 
         <sqlMapGenerator targetPackage="sqlmap.order"
-                         targetProject="D:/project/base/order-rpc/src/main/resources">
+                         targetProject="/mnt/e/IdeaProjects/base/order-rpc/src/main/resources">
             <property name="enableSubPackages" value="true"/>
         </sqlMapGenerator>
 
         <javaClientGenerator targetPackage="com.all580.order.dao"
-                             targetProject="D:/project/base/order-rpc/src/main/java" type="XMLMAPPER">
+                             targetProject="/mnt/e/IdeaProjects/base/order-rpc/src/main/java" type="XMLMAPPER">
             <property name="enableSubPackages" value="true"/>
         </javaClientGenerator>
 
-        <table tableName="t_package_order_item_chain"
+        <!--<table tableName="t_package_order_item_chain"
                enableCountByExample="false"
                enableUpdateByExample="false"
                enableDeleteByExample="false"
@@ -49,6 +49,18 @@
                domainObjectName="PackageOrderItemChain">
             <property name="useActualColumnNames" value="true"/>
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+        </table>-->
+        <table tableName="t_order"
+               enableCountByExample="false"
+               enableUpdateByExample="false"
+               enableDeleteByExample="false"
+               enableSelectByExample="false"
+               selectByExampleQueryId="false"
+               delimitAllColumns="true"
+               domainObjectName="Order">
+            <property name="useActualColumnNames" value="true"/>
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+            <columnOverride column="update_time" javaType="java.lang.String"/>
         </table>
     </context>
 </generatorConfiguration>

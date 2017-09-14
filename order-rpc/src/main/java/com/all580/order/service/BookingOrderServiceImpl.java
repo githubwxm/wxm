@@ -130,8 +130,11 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             List<OrderItem> orderItems = orderListMap.get(order);
             // 更新订单状态
             for (OrderItem orderItem : orderItems) {
-                if (orderItem.getStatus() == OrderConstant.OrderItemStatus.AUDIT_WAIT
-                        || orderItem.getPro_type() == ProductConstants.ProductType.PACKAGE) {
+                if (orderItem.getPro_type() == ProductConstants.ProductType.PACKAGE && orderItems.size() == 1){
+                    orderItem.setStatus(OrderConstant.OrderItemStatus.AUDIT_SUCCESS);
+                    orderItemMapper.updateByPrimaryKeySelective(orderItem);
+                }
+                if (orderItem.getStatus() == OrderConstant.OrderItemStatus.AUDIT_WAIT) {
                     order.setStatus(OrderConstant.OrderStatus.AUDIT_WAIT);
                     break;
                 }
@@ -152,11 +155,6 @@ public class BookingOrderServiceImpl implements BookingOrderService {
                     null, String.format("订单创建成功:%s", JsonUtils.toJson(params)), null));
         }
 
-        //获取数据库最新的订单对象
-        mainOrder = orderMapper.selectByPrimaryKey(mainOrder.getId());
-        if (mainOrder.getPay_amount() == null) mainOrder.setPay_amount(0);
-        List<OrderItem> mainItems = orderItemMapper.selectByOrderId(mainOrder.getId());
-
         if (orderListMap.size() > 1){
             //逐级检查关联订单
             List<CreateOrderResultDto> resultDtoList = createOrderResult.getPackageCreateOrders();
@@ -169,6 +167,11 @@ public class BookingOrderServiceImpl implements BookingOrderService {
                 bookingOrderManager.checkAuditOrderChainForPackage(orderList.toArray(new Order[orderList.size()]));
             }
         }
+
+        //获取数据库最新的订单对象
+        mainOrder = orderMapper.selectByPrimaryKey(mainOrder.getId());
+        if (mainOrder.getPay_amount() == null) mainOrder.setPay_amount(0);
+        List<OrderItem> mainItems = orderItemMapper.selectByOrderId(mainOrder.getId());
 
         Result<Object> result = new Result<>(Boolean.TRUE);
         Map<String, Object> resultMap = new HashMap<>();
@@ -366,8 +369,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
 
         Order order = orderMapper.selectBySN(Long.parseLong(orderSn));
         //套票元素订单不能单独支付
-        Order pOrder = orderMapper.selectPackageOrderById(order.getId());
-        if (pOrder != null){
+        if (order.getSource() == OrderConstant.OrderSourceType.SOURCE_TYPE_SYS){
             throw new ApiException("非法请求:当前订单不能单独支付");
         }
         // 分布式锁
@@ -450,7 +452,8 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         }
 
         if (orderItem.getStatus() == OrderConstant.OrderItemStatus.SEND) {
-            return voucherRPCService.resendGroupTicket(orderItem.getEp_ma_id(), orderItem.getNumber());
+            smsManager.sendGroupVoucher(orderItem, CommonUtil.objectParseString(params.get("phone")));
+            return new Result<>(true);
         }
         // 出票
         // 记录任务

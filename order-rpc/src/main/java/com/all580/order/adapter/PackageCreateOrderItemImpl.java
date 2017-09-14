@@ -11,13 +11,15 @@ import com.all580.order.entity.OrderItem;
 import com.all580.order.entity.Visitor;
 import com.all580.order.manager.BookingOrderManager;
 import com.all580.product.api.consts.ProductConstants;
+import com.all580.product.api.model.PackageProductValidate;
 import com.all580.product.api.model.ProductSalesInfo;
-import com.all580.product.api.model.ProductSearchParams;
 import com.all580.product.api.service.ProductSalesPlanRPCService;
 import com.framework.common.Result;
+import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.util.CommonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import javax.lang.exception.ApiException;
@@ -76,6 +78,33 @@ public class PackageCreateOrderItemImpl extends AbstractCreateOrderImpl{
         super.productSalesPlanRPCService = productSalesPlanRPCService;
     }
 
+    /**
+     * 组装套票供应链查询参数
+     * @param item
+     * @param parent
+     * @return
+     */
+    private PackageProductValidate parasePackageProductSubParam(Map item){
+        Integer productType = CommonUtil.objectParseInteger(item.get("product_type"));
+        PackageProductValidate validate = new PackageProductValidate();
+        try {
+            validate.setStart(DateFormatUtils.parseString(DateFormatUtils.DATE_TIME_FORMAT, CommonUtil.objectParseString(item.get("start"))));
+        }catch (Exception e){
+            throw new ApiException("创建订单解析子订单数据异常:日期转换错误", e);
+        }
+        validate.setQuantity(CommonUtil.objectParseInteger(item.get("quantity")));
+        validate.setCode(Long.parseLong(item.get("product_sub_code").toString()));
+        if (productType == ProductConstants.ProductType.PACKAGE){
+            List<Map> maps = (List<Map>) item.get("items");
+            List<PackageProductValidate> productValidates = new ArrayList<>();
+            for (Map map : maps) {
+                productValidates.add(parasePackageProductSubParam(map));
+            }
+            validate.setItems(productValidates);
+        }
+        return validate;
+    }
+
     @Override
     public ProductSalesInfo validateProductAndGetSales(ValidateProductSub sub, CreateOrder createOrder, Map item) {
         Integer productType = CommonUtil.objectParseInteger(item.get("product_type"));
@@ -83,27 +112,26 @@ public class PackageCreateOrderItemImpl extends AbstractCreateOrderImpl{
             //如果不是套票走各自的验证查询
             return this.getCreateOrderInterface(productType).validateProductAndGetSales(sub, createOrder,item);
         }
-        ProductSearchParams packageParam = new ProductSearchParams();
-        packageParam.setSubProductCode(sub.getCode());
-        packageParam.setStartDate(sub.getBooking());
-        packageParam.setDays(sub.getDays());
-        packageParam.setQuantity(sub.getQuantity());
-        packageParam.setBuyEpId(createOrder.getEpId());
-        List<ProductSearchParams> searchParams = new ArrayList<>();
+        PackageProductValidate param = new PackageProductValidate();
+        param.setCode(sub.getCode());
+        param.setEpId(createOrder.getEpId());
+        param.setQuantity(sub.getQuantity());
+        param.setStart(sub.getBooking());
+
         List<Map> maps = (List<Map>) item.get("items");
-        for (Map map : maps){
-            ValidateProductSub productSub = this.parseItemParams(createOrder, map);
-            ProductSearchParams productSearchParams = new ProductSearchParams();
-            productSearchParams.setSubProductCode(productSub.getCode());
-            productSearchParams.setStartDate(productSub.getBooking());
-            searchParams.add(productSearchParams);
+        if (!CollectionUtils.isEmpty(maps)){
+            List<PackageProductValidate> items = new ArrayList<>();
+            for (Map map : maps){
+                items.add(parasePackageProductSubParam(map));
+            }
+            param.setItems(items);
         }
 
-        Result<ProductSalesInfo> salesInfoResult = productSalesPlanRPCService.validateProductSalesInfo(packageParam, searchParams);
+        Result<Map<Long, ProductSalesInfo>> salesInfoResult = productSalesPlanRPCService.validateProductSalesInfo(param);
         if (!salesInfoResult.isSuccess()) {
             throw new ApiException(salesInfoResult.getError());
         }
-        ProductSalesInfo salesInfo = salesInfoResult.get();
+        ProductSalesInfo salesInfo = salesInfoResult.get().get(sub.getCode());
         // 判断供应商状态是否为已冻结
         if (!bookingOrderManager.isEpStatus(epService.getEpStatus(salesInfo.getEp_id()), EpConstant.EpStatus.ACTIVE)) {
             throw new ApiException("供应商企业已冻结");
@@ -128,8 +156,7 @@ public class PackageCreateOrderItemImpl extends AbstractCreateOrderImpl{
         Integer productType = salesInfo.getProduct_type();
         if (productType == ProductConstants.ProductType.PACKAGE){
             //如果是套票，走景点创建子订单方法
-            return this.getCreateOrderInterface(ProductConstants.ProductType.SCENERY).
-                    insertItem(order, sub, salesInfo, price, item);
+            return super.insertItem(order, sub, salesInfo, price, item);
         }
         return this.getCreateOrderInterface(productType).insertItem(order, sub, salesInfo, price, item);
     }

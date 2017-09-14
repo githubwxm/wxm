@@ -32,7 +32,7 @@ public class MnsController extends BaseController {
     public String ticket(HttpServletRequest request) {
         String messageId = request.getHeader("x-mns-message-id");
         String tagName = request.getHeader("x-mns-message-tag");
-        log.debug("接收到MNS消息 MSGID={},TAG={}", new Object[]{messageId, tagName});
+        log.info("接收到MNS消息 MSGID={},TAG={}", new Object[]{messageId, tagName});
         String content = null;
         try {
             byte[] buffer = getRequestBuffer(request);
@@ -41,6 +41,7 @@ public class MnsController extends BaseController {
             log.error("MNS读取请求数据流异常", ex);
         }
         Map map = JsonUtils.json2Map(content);
+        log.info("接收到MNS消息 content={}", content);
         Result result = all580Service.supplyProcess(map);
         if (!result.isSuccess()) {
             log.debug(result.getError());

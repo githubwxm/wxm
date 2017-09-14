@@ -989,6 +989,6 @@
       t_order_item oi
       LEFT JOIN t_package_order_chain poc
         ON poc.`ref_order_id` = oi.`order_id`
-    WHERE poic.`order_id` = #{id}
+    WHERE poc.`order_id` = #{id}
   </select>
 </mapper>

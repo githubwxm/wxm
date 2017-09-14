@@ -122,6 +122,7 @@
     <dubbo:reference id="queryOrderService" interface="com.all580.report.api.service.QueryOrderService"/>
     <dubbo:reference id="reportExportTaskService" interface="com.all580.report.api.service.ReportExportTaskService"/>
 
+
     <!--事件订阅器-->
     <dubbo:reference id="balanceChangeSubscribeService"
                      interface="com.all580.notice.api.service.BalanceChangeSubscribeService"/>

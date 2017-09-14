@@ -1,6 +1,7 @@
 package com.all580.order.manager;
 
 import com.all580.ep.api.conf.EpConstant;
+import com.all580.ep.api.service.EpService;
 import com.all580.order.adapter.RefundOrderInterface;
 import com.all580.order.api.OrderConstant;
 import com.all580.order.api.model.*;
@@ -88,6 +89,8 @@ public class LockTransactionManager {
     private ThirdPayService thirdPayService;
     @Autowired
     private VoucherRPCService voucherRPCService;
+    @Autowired
+    private EpService epService;
     @Autowired
     private MnsEventAspect eventManager;
     @Autowired
@@ -307,25 +310,36 @@ public class LockTransactionManager {
         eventManager.addEvent(OrderConstant.EventType.ORDER_REFUND_APPLY, refundOrder.getId());
 
         //todo 处理套票元素订单的退订
-        if (apply.getOrder().getSource() == OrderConstant.OrderSourceType.SOURCE_TYPE_SYS){
+        if (apply.getItem().getPro_type() == ProductConstants.ProductType.PACKAGE){
             //获取套票元素订单的子订单，然后依次发起退订申请
             List<OrderItem> orderItemList = refundOrderManager.getOrderItemsForPackageOrder(apply.getOrder());
             if (!CollectionUtils.isEmpty(orderItemList)){
                 for (OrderItem orderItem : orderItemList) {
-                    Map<String, Object> map = new HashMap<>();
-                    map.put("order_item_sn", orderItem.getNumber());
-                    map.put("quantity", orderItem.getQuantity() * orderItem.getDays());
+                    //已经使用不可退
+                    if(orderItem.getUsed_quantity() != null && orderItem.getUsed_quantity() > 0){
+                        throw new ApiException(Result.REFUNDABLE_LACK, "该票据已经使用");
+                    }
+                    //已经退订的不重复退
+                    RefundOrder r = refundOrderMapper.selectByPrimaryKey(orderItem.getLast_refund_id());
+                    if (r == null || r.getStatus() == OrderConstant.RefundOrderStatus.FAIL){
+                        List<OrderItemDetail> orderItemDetails = orderItemDetailMapper.selectByItemId(orderItem.getId());
+                        boolean refund = true;
+                        for (OrderItemDetail detail : orderItemDetails) {
+                            refund = refund & refundOrderManager.canBeRefund(ProductConstants.RefundEqType.SELLER, detail);
+                        }
+                        if (!refund){
+                            continue;
+                        }
+                        Map<String, Object> map = new HashMap<>();
+                        map.put("order_item_sn", orderItem.getNumber());
+                        map.put("quantity", orderItem.getQuantity() * orderItem.getDays());
+                        map.put("apply_from", ProductConstants.RefundEqType.SELLER);
 
-                    Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
-                    map.put(EpConstant.EpKey.EP_ID, order.getBuy_ep_id());
-                    map.put("apply_from", order.getFrom_type());
-                    map.put("operator_id", 0);
-                    map.put("operator_name", OrderConstant.REFUND_ADAPTER);
-                    try {
+                        Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
+                        map.put(EpConstant.EpKey.EP_ID, order.getBuy_ep_id());
+                        map.put("operator_id", 0);
+                        map.put("operator_name", OrderConstant.REFUND_ADAPTER);
                         applyRefund(map, orderItem.getNumber(), refundOrderInterface);
-                    }catch (Exception e){
-                        //todo 如果元素订单不能退订
-                        e.printStackTrace();
                     }
                 }
             }
@@ -508,6 +522,20 @@ public class LockTransactionManager {
         order.setLocal_payment_serial_no(String.valueOf(UUIDGenerator.generateUUID()));
         order.setPayment_type(payType);
         order.setPay_time(new Date());
+        order.setPayment_ep_id(CommonUtil.objectParseInteger(params.get(EpConstant.EpKey.EP_ID)));
+        order.setPayment_operator_id(CommonUtil.objectParseInteger(params.get("operator_id")));
+        order.setPayment_operator_name(CommonUtil.objectParseString(params.get("operator_name")));
+        // 获取企业名称
+        String epName = null;
+        try {
+            Result<Map<String, Object>> epResult = epService.selectId(order.getPayment_ep_id());
+            if (epResult != null && epResult.isSuccess() && epResult.get() != null) {
+                epName = String.valueOf(epResult.get().get("name"));
+            }
+        } catch (Exception e) {
+            log.warn("get payment ep name error", e);
+        }
+        order.setPayment_ep_name(epName);
         orderMapper.updateByPrimaryKeySelective(order);
 
         log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(order.getId(), null,
@@ -521,13 +549,19 @@ public class LockTransactionManager {
             // 余额支付需要扣除销售商的钱
             List<OrderItemAccount> accounts = orderItemAccountMapper.selectByOrderAnEp(order.getId(), order.getBuy_ep_id(), order.getPayee_ep_id());
             for (OrderItemAccount account : accounts) {
-                // 把data JSON 反编译为JAVA类型
-                Collection<AccountDataDto> dataDtoList = AccountUtil.decompileAccountData(account.getData());
-                // 获取总出货价
-                int totalOutPrice = AccountUtil.getTotalOutPrice(dataDtoList);
-                OrderItem orderItem = orderItemMapper.selectByPrimaryKey(account.getOrder_item_id());
-                account.setMoney(account.getMoney() + (-totalOutPrice * orderItem.getQuantity()));
-                account.setProfit(account.getMoney());
+                if (account.getSale_ep_id().intValue() == account.getEp_id().intValue()){
+                    //自己产品
+                    account.setMoney(0);
+                    account.setProfit(0);
+                }else {
+                    // 把data JSON 反编译为JAVA类型
+                    Collection<AccountDataDto> dataDtoList = AccountUtil.decompileAccountData(account.getData());
+                    // 获取总出货价
+                    int totalOutPrice = AccountUtil.getTotalOutPrice(dataDtoList);
+                    OrderItem orderItem = orderItemMapper.selectByPrimaryKey(account.getOrder_item_id());
+                    account.setMoney(account.getMoney() + (-totalOutPrice * orderItem.getQuantity()));
+                    account.setProfit(account.getMoney());
+                }
                 orderItemAccountMapper.updateByPrimaryKeySelective(account);
             }
 

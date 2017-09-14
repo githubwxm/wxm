@@ -85,7 +85,7 @@ public class RefundOrderManager extends BaseOrderManager {
         PackageRefundOrderDto packageRefundOrderDto = this.getRefundOrderForPackage(refundOrder, Boolean.TRUE);
         while (packageRefundOrderDto != null){
             if (isSuccess){
-                packageRefundOrderDto.setStatus(OrderConstant.RefundOrderStatus.REFUND_MONEY);
+                packageRefundOrderDto.setStatus(OrderConstant.RefundOrderStatus.REFUND_MONEY_AUDITING);
                 List<RefundOrder> refundOrderItems = packageRefundOrderDto.getRefundOrderItems();
                 for (RefundOrder refundItem : refundOrderItems) {
                     if (refundItem.getStatus() == OrderConstant.RefundOrderStatus.REFUND_MONEY_FAIL){
@@ -105,7 +105,7 @@ public class RefundOrderManager extends BaseOrderManager {
     public void checkRefundTicketOrderItemChainForPackage(RefundOrder refundOrder){
         PackageRefundOrderDto packageRefundOrderDto = this.getRefundOrderForPackage(refundOrder, Boolean.TRUE);
         while (packageRefundOrderDto != null){
-            packageRefundOrderDto.setStatus(OrderConstant.RefundOrderStatus.REFUND_MONEY);
+            packageRefundOrderDto.setStatus(OrderConstant.RefundOrderStatus.REFUND_MONEY_AUDITING);
             List<RefundOrder> refundOrderItems = packageRefundOrderDto.getRefundOrderItems();
             for (RefundOrder refundItem : refundOrderItems) {
                 if (refundItem.getStatus() == OrderConstant.RefundOrderStatus.FAIL){
@@ -114,6 +114,14 @@ public class RefundOrderManager extends BaseOrderManager {
                 }
             }
             refundOrderMapper.updateByPrimaryKeySelective(packageRefundOrderDto);
+            //所有元素单都都退票成功
+            if (packageRefundOrderDto.getStatus() == OrderConstant.RefundOrderStatus.REFUNDING){
+                //套票还库存，记录任务
+                Map<String, String> jobParams = new HashMap<>();
+                jobParams.put("refundId", String.valueOf(packageRefundOrderDto.getId()));
+                jobManager.addJob(OrderConstant.Actions.REFUND_STOCK, Collections.singleton(jobParams));
+            }
+            //继续查找上层套票订单
             packageRefundOrderDto = this.getRefundOrderForPackage(packageRefundOrderDto, Boolean.TRUE);
         }
     }
@@ -126,7 +134,7 @@ public class RefundOrderManager extends BaseOrderManager {
      */
     public PackageRefundOrderDto getRefundOrderForPackage(RefundOrder refundOrder, Boolean fetchItem){
         PackageRefundOrderDto refundOrderDto = refundOrderMapper.selectRefundOrderForPackage(refundOrder);
-        if (fetchItem){
+        if (fetchItem && refundOrderDto != null){
             refundOrderDto.setRefundOrderItems(refundOrderMapper.selectRefundOrderItemsForPackage(refundOrderDto.getOrder_item_id()));
         }
         return refundOrderDto;
@@ -220,6 +228,9 @@ public class RefundOrderManager extends BaseOrderManager {
             // 调用退票
             refundTicket(refundOrder);
         } else {
+            //设置状态退票中
+            refundOrder.setStatus(OrderConstant.RefundOrderStatus.REFUNDING);
+            refundOrderMapper.updateByPrimaryKeySelective(refundOrder);
             // 触发退票成功事件
             eventManager.addEvent(OrderConstant.EventType.REFUND_TICKET, new RefundTicketEventParam(refundOrder.getId(), true));
             // 没有出票直接退款
@@ -393,8 +404,7 @@ public class RefundOrderManager extends BaseOrderManager {
         refundOrder.setQuantity(quantity);
         refundOrder.setData(JsonUtils.toJson(refundDays));
         //如果是套票，状态设置为退票中
-        refundOrder.setStatus(item.getPro_type() == ProductConstants.ProductType.PACKAGE ?
-                OrderConstant.RefundOrderStatus.REFUNDING : OrderConstant.RefundOrderStatus.AUDIT_WAIT);
+        refundOrder.setStatus(OrderConstant.RefundOrderStatus.AUDIT_WAIT);
         refundOrder.setCreate_time(new Date());
         refundOrder.setMoney(money);
         refundOrder.setFee(fee);
@@ -542,26 +552,32 @@ public class RefundOrderManager extends BaseOrderManager {
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public void refundFail(OrderItem orderItem, RefundOrder refundOrder) {
-        refundOrder.setStatus(OrderConstant.RefundOrderStatus.FAIL);
-        List<OrderItemDetail> detailList = orderItemDetailMapper.selectByItemId(refundOrder.getOrder_item_id());
-        Collection<RefundDay> refundDays = AccountUtil.decompileRefundDay(refundOrder.getData());
-        returnRefundForDays(refundDays, detailList);
-        refundOrderMapper.updateByPrimaryKeySelective(refundOrder);
+        updateRefundOrderForRefundFail(refundOrder);
 
-        //处理套票元素订单
-        Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
-        if (order.getSource() == OrderConstant.OrderSourceType.SOURCE_TYPE_SYS){
-            //保存退票失败信息
-            RefundOrder item = this.getRefundOrderForPackage(refundOrder, Boolean.FALSE);
-            while (item != null){
-                item.setStatus(OrderConstant.RefundOrderStatus.FAIL);
-                List<OrderItemDetail> orderItemDetailList = orderItemDetailMapper.selectByItemId(item.getOrder_item_id());
-                Collection<RefundDay> refundDayCollection = AccountUtil.decompileRefundDay(item.getData());
-                returnRefundForDays(refundDayCollection, orderItemDetailList);
-                refundOrderMapper.updateByPrimaryKeySelective(item);
-                item = this.getRefundOrderForPackage(item, Boolean.FALSE);
-            }
-        }
+//        //处理套票元素订单
+//        Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
+//        if (order.getSource() == OrderConstant.OrderSourceType.SOURCE_TYPE_SYS){
+//            //保存退票失败信息
+//            PackageRefundOrderDto item = this.getRefundOrderForPackage(refundOrder, Boolean.TRUE);
+//            while (item != null){
+//                updateRefundOrderForRefundFail(item);
+//                List<RefundOrder> refundOrderList = item.getRefundOrderItems();
+//                if (!CollectionUtils.isEmpty(refundOrderList)){
+//                    for (RefundOrder r : refundOrderList) {
+//                        updateRefundOrderForRefundFail(r);
+//                    }
+//                }
+//                item = this.getRefundOrderForPackage(item, Boolean.TRUE);
+//            }
+//        }
+    }
+
+    private void updateRefundOrderForRefundFail(RefundOrder item){
+        item.setStatus(OrderConstant.RefundOrderStatus.FAIL);
+        List<OrderItemDetail> orderItemDetailList = orderItemDetailMapper.selectByItemId(item.getOrder_item_id());
+        Collection<RefundDay> refundDayCollection = AccountUtil.decompileRefundDay(item.getData());
+        returnRefundForDays(refundDayCollection, orderItemDetailList);
+        refundOrderMapper.updateByPrimaryKeySelective(item);
     }
 
     /**
@@ -827,36 +843,38 @@ public class RefundOrderManager extends BaseOrderManager {
         refundOrderMapper.updateByPrimaryKeySelective(refundOrder);
 
         //todo 处理套票退款
-        if (order.getSource() == OrderConstant.OrderSourceType.SOURCE_TYPE_SYS){
-            //更新状态
-            this.checkRefundMoneyOrderItemChainForPackage(refundOrder, success);
-
-            if (success){
-                //元素订单退款完成
-                PackageRefundOrderDto refundOrderDto = this.getRefundOrderForPackage(refundOrder, Boolean.FALSE);
-                if (refundOrderDto != null){
-                    List<RefundOrder> refundOrders = refundOrderDto.getRefundOrderItems();
-                    boolean isAllItemRefund = Boolean.TRUE;
-                    for (RefundOrder item : refundOrders) {
-                        if (item.getStatus() != OrderConstant.RefundOrderStatus.REFUND_SUCCESS ){
-                            isAllItemRefund = Boolean.FALSE;
-                            break;
-                        }
-                    }
-                    //所有元素子订单退款完成,上层订单发起退款任务
-                    if (isAllItemRefund){
-                        Order pOrder = orderMapper.selectByRefundSn(refundOrderDto.getNumber());
-                        // 套票退款，记录任务
-                        Map<String, String> jobRefundMoneyParams = new HashMap<>();
-                        jobRefundMoneyParams.put("ordCode", String.valueOf(pOrder.getNumber()));
-                        jobRefundMoneyParams.put("serialNum", String.valueOf(refundOrderDto.getNumber()));
-                        jobRefundMoneyParams.put("apply", "true");
-                        //套票退款任务
-                        jobManager.addJob(OrderConstant.Actions.REFUND_MONEY, Collections.singleton(jobRefundMoneyParams));
-                    }
-                }
-            }
-        }
+//        if (order.getSource() == OrderConstant.OrderSourceType.SOURCE_TYPE_SYS){
+//            //更新状态
+//            this.checkRefundMoneyOrderItemChainForPackage(refundOrder, success);
+//
+//            if (success){
+//                //元素订单退款完成
+//                PackageRefundOrderDto refundOrderDto = this.getRefundOrderForPackage(refundOrder, Boolean.TRUE);
+//                if (refundOrderDto != null){
+//                    List<RefundOrder> refundOrders = refundOrderDto.getRefundOrderItems();
+//                    if (!CollectionUtils.isEmpty(refundOrders)){
+//                        boolean isAllItemRefund = Boolean.TRUE;
+//                        for (RefundOrder item : refundOrders) {
+//                            if (item.getStatus() != OrderConstant.RefundOrderStatus.REFUND_SUCCESS ){
+//                                isAllItemRefund = Boolean.FALSE;
+//                                break;
+//                            }
+//                        }
+//                        //所有元素子订单退款完成,上层订单发起退款任务
+//                        if (isAllItemRefund){
+//                            Order pOrder = orderMapper.selectByRefundSn(refundOrderDto.getNumber());
+//                            // 套票退款，记录任务
+//                            Map<String, String> jobRefundMoneyParams = new HashMap<>();
+//                            jobRefundMoneyParams.put("ordCode", String.valueOf(pOrder.getNumber()));
+//                            jobRefundMoneyParams.put("serialNum", String.valueOf(refundOrderDto.getNumber()));
+//                            //jobRefundMoneyParams.put("apply", "true");
+//                            //套票退款任务
+//                            jobManager.addJob(OrderConstant.Actions.REFUND_MONEY, Collections.singleton(jobRefundMoneyParams));
+//                        }
+//                    }
+//                }
+//            }
+//        }
     }
 
     /**

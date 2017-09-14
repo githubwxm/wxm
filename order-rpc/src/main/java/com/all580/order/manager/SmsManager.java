@@ -9,6 +9,7 @@ import com.all580.product.api.consts.ProductConstants;
 import com.framework.common.Result;
 import com.framework.common.lang.DateFormatUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -50,7 +51,7 @@ public class SmsManager {
 
     @Value("${order.pay.timeout}")
     private Integer payTimeOut;
-    private Pattern pattern = Pattern.compile("\\$\\{\\w*}");
+    public static Pattern pattern = Pattern.compile("\\$\\{\\w*}");
 
     /**
      * 发送核销短信
@@ -403,7 +404,41 @@ public class SmsManager {
         }
     }
 
+    /**
+     * 团队发送短信
+     * @param orderItem
+     * @param phone
+     */
+    public void sendGroupVoucher(OrderItem orderItem, String phone) {
+        Assert.notNull(orderItem.getVoucher_template(), "订单没有凭证短信模板,短信发送失败");
+
+        MaSendResponse maSendResponse = null;
+        if (orderItem.getPro_type() == ProductConstants.ProductType.SCENERY) {
+            maSendResponse = maSendResponseMapper.selectByVisitorId(orderItem.getId(), 0, orderItem.getEp_ma_id());
+            if (maSendResponse == null) throw new ApiException("数据异常:没有团队出票信息");
+        }
+
+        Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
+        if (order == null) {
+            throw new ApiException("订单不存在");
+        }
+        Shipping shipping = shippingMapper.selectByOrder(orderItem.getOrder_id());
+        if (shipping == null) {
+            throw new ApiException("导游不存在");
+        }
+        if (StringUtils.isEmpty(phone)) phone = shipping.getPhone();
+
+        Map<String, String> sendSmsParams = parseParams(orderItem.getVoucher_msg(), order, orderItem, maSendResponse, orderItem.getQuantity());
+        Result result = smsService.sendByTemplate(orderItem.getSupplier_core_ep_id(), orderItem.getVoucher_template(), sendSmsParams, phone);
+        if (!result.isSuccess()) {
+            throw new ApiException(String.format("发送团队凭证短信:手机号码:%s失败:%s", phone, result.getError()));
+        }
+    }
+
     public void sendVoucherMsg(OrderItem orderItem) {
+        if (orderItem.getGroup_id() != null && orderItem.getGroup_id() != 0) {
+            sendGroupVoucher(orderItem, null);
+        }
         switch (orderItem.getPro_type()) {
             case ProductConstants.ProductType.HOTEL:
                 sendHotelSendTicket(orderItem);
@@ -424,13 +459,13 @@ public class SmsManager {
         }
 
         Map<String, String> sendSmsParams = parseParams(orderItem.getVoucher_msg(), order, orderItem, maSendResponse, visitor.getQuantity());
-        Result result = smsService.sendByTemplate(orderItem.getSupplier_core_ep_id(), orderItem.getVoucher_template(), sendSmsParams, visitor.getPhone());
+        Result result = smsService.sendByTemplate(orderItem.getSupplier_core_ep_id(), orderItem.getVoucher_template(), sendSmsParams, maSendResponse.getPhone());
         if (!result.isSuccess()) {
             throw new ApiException(String.format("发送凭证短信:游客:%d,手机号码:%s失败:%s", maSendResponse.getVisitor_id(), maSendResponse.getPhone(), result.getError()));
         }
     }
 
-    private Visitor getVisitor(int id, List<Visitor> visitors) {
+    public Visitor getVisitor(int id, List<Visitor> visitors) {
         for (Visitor visitor : visitors) {
             if (visitor.getId() == id) {
                 return visitor;

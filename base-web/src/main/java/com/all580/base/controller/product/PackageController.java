@@ -124,8 +124,9 @@ public class PackageController extends BaseController {
 
     @RequestMapping("view/sub")
     @ResponseBody
-    public Result<?> viewSub(@RequestParam Integer id, @RequestParam Integer ep_id) {
-        return packageSubService.view(id, ep_id);
+    public Result<?> viewSub(@RequestParam Integer id, Integer epId) {
+        // 修改需要查看价格所以需要epId
+        return packageSubService.view(id, epId);
     }
 
     @RequestMapping("can_sale/list")

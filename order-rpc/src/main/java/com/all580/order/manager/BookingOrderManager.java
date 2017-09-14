@@ -86,7 +86,12 @@ public class BookingOrderManager extends BaseOrderManager {
         while (packageOrderItemDto != null){
             List<OrderItem> orderItemList = packageOrderItemDto.getPackageOrderItems();
             for (OrderItem item : orderItemList) {
-                //todo 子订单出票状态
+                //todo
+                if (item.getStatus() == OrderConstant.OrderItemStatus.NON_SEND){
+                    //元素订单未出票
+                    packageOrderItemDto.setStatus(OrderConstant.OrderItemStatus.TICKETING);
+                    break;
+                }
                 if (item.getStatus() == OrderConstant.OrderItemStatus.TICKET_FAIL){
                     //元素订单出片失败
                     packageOrderItemDto.setStatus(OrderConstant.OrderItemStatus.TICKET_FAIL);
@@ -141,15 +146,19 @@ public class BookingOrderManager extends BaseOrderManager {
         while (!CollectionUtils.isEmpty(packageOrderDtoList)){
             for (PackageOrderDto packageOrderDto : packageOrderDtoList) {
                 List<Order> itemOrders = packageOrderDto.getPackageItemOrders();
+                boolean isAudit = Boolean.TRUE;
                 for (Order itemOrder : itemOrders) {
                     //如果套票有元素订单待审核
                     if (itemOrder.getStatus() == OrderConstant.OrderStatus.AUDIT_WAIT){
+                        isAudit = Boolean.FALSE;
                         break;
                     }
-                    if (packageOrderDto.getStatus() == OrderConstant.OrderStatus.AUDIT_WAIT){
-                        packageOrderDto.setStatus(OrderConstant.OrderStatus.PAY_WAIT);
-                        packageOrderDto.setAudit_time(new Date());
-                    }
+                }
+                if (isAudit){
+                    packageOrderDto.setStatus(OrderConstant.OrderStatus.PAY_WAIT);
+                    packageOrderDto.setAudit_time(new Date());
+                }else {
+                    packageOrderDto.setStatus(OrderConstant.OrderStatus.AUDIT_WAIT);
                 }
                 //修改审核状态
                 orderMapper.updateByPrimaryKeySelective(packageOrderDto);
@@ -166,7 +175,7 @@ public class BookingOrderManager extends BaseOrderManager {
      */
     public PackageOrderItemDto getOrderItemChainForPackage(OrderItem orderItem, boolean fetchItem){
         PackageOrderItemDto packageOrderItemDto = orderItemMapper.selectPackageOrderItem(orderItem);
-        if (fetchItem){
+        if (fetchItem && packageOrderItemDto != null){
             packageOrderItemDto.setPackageOrderItems(orderItemMapper.selectOrderItemsForPackageOrder(packageOrderItemDto.getId()));
         }
         return packageOrderItemDto;
@@ -433,7 +442,8 @@ public class BookingOrderManager extends BaseOrderManager {
         orderItem.setMa_product_id(info.getMa_product_id());
         orderItem.setQuantity(quantity);
         orderItem.setPayment_flag(info.getPay_type());
-        orderItem.setStatus(OrderConstant.OrderItemStatus.AUDIT_SUCCESS);
+        orderItem.setStatus(info.getProduct_type() == ProductConstants.ProductType.PACKAGE ?
+                OrderConstant.OrderItemStatus.AUDIT_WAIT : OrderConstant.OrderItemStatus.AUDIT_SUCCESS);
         orderItem.setSupplier_ep_id(info.getEp_id());
         orderItem.setSupplier_core_ep_id(getCoreEpId(getCoreEpId(info.getEp_id())));
         orderItem.setSupplier_phone(info.getPhone());

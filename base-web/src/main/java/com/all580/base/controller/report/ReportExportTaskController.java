@@ -44,18 +44,6 @@ public class ReportExportTaskController {
         map.put("record_count",record_count);
         return  reportExportTaskService.selectExportTask(map);
     }
-    @RequestMapping(value = "task/down", method = RequestMethod.GET)
-    public String downFile(HttpServletRequest request, HttpServletResponse response, @RequestParam("id") int id){
 
-        Result  result= reportExportTaskService.downFile(id);
-        if(result.isSuccess()){
-            String url =(String) result.get();
-            //return  new ModelAndView(new RedirectView(url));
-            return "redirect:"+url;
-        }else{
-            reportExportTaskService.updateStart(id);
-            return null;
-        }
-    }
 
 }

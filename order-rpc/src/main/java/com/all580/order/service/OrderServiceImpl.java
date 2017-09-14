@@ -2,13 +2,15 @@ package com.all580.order.service;
 
 import com.all580.ep.api.service.EpService;
 import com.all580.order.api.service.OrderService;
-import com.all580.order.dao.OrderClearanceSerialMapper;
-import com.all580.order.dao.OrderItemMapper;
-import com.all580.order.dao.OrderMapper;
+import com.all580.order.dao.*;
+import com.all580.order.entity.MaSendResponse;
 import com.all580.order.entity.Order;
 import com.all580.order.entity.OrderItem;
+import com.all580.order.entity.Visitor;
 import com.all580.order.manager.BookingOrderManager;
+import com.all580.order.manager.SmsManager;
 import com.all580.order.service.event.BasicSyncDataEvent;
+import com.all580.product.api.consts.ProductConstants;
 import com.framework.common.Result;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.synchronize.SyncAccess;
@@ -19,8 +21,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
+import javax.lang.exception.ApiException;
 import java.util.*;
+import java.util.regex.Matcher;
 
 /**
  * @author zhouxianjun(Alone)
@@ -38,9 +43,15 @@ public class OrderServiceImpl extends BasicSyncDataEvent implements OrderService
     @Autowired
     private OrderClearanceSerialMapper orderClearanceSerialMapper;
     @Autowired
+    private MaSendResponseMapper maSendResponseMapper;
+    @Autowired
+    private VisitorMapper visitorMapper;
+    @Autowired
     private EpService epService;
     @Autowired
     private BookingOrderManager bookingOrderManager;
+    @Autowired
+    private SmsManager smsManager;
 
     @Value("${order.pay.timeout}")
     private Integer payTimeOut;
@@ -215,5 +226,48 @@ public class OrderServiceImpl extends BasicSyncDataEvent implements OrderService
     @Override
     public Result<?> heartbeat() {
         return new Result<>(true);
+    }
+
+    /**
+     * view sms content
+     *
+     * @param number  item number
+     * @param visitor visitor id(optional)
+     * @return
+     */
+    @Override
+    public Result<?> viewVoucherSms(long number, Integer visitor) {
+        OrderItem orderItem = orderItemMapper.selectBySN(number);
+        Assert.notNull(orderItem, "订单不存在");
+        Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
+        if (order == null) {
+            throw new ApiException("订单不存在");
+        }
+        if (StringUtils.isEmpty(orderItem.getVoucher_msg())) throw new ApiException("该订单没有短信模板");
+        boolean isGroup = orderItem.getGroup_id() != null && orderItem.getGroup_id() != 0;
+        if (orderItem.getPro_type() == ProductConstants.ProductType.SCENERY && (visitor == null || (visitor == 0 && !isGroup))) throw new ApiException("请输入要查看的游客");
+        MaSendResponse maSendResponse = null;
+        Visitor v = null;
+        if (visitor != null && (visitor > 0 || isGroup)) {
+            maSendResponse = maSendResponseMapper.selectByVisitorId(orderItem.getId(), visitor, orderItem.getEp_ma_id());
+        }
+        if (visitor != null && visitor > 0) {
+            List<Visitor> visitors = visitorMapper.selectByOrderItem(orderItem.getId());
+            v = smsManager.getVisitor(visitor, visitors);
+            Assert.notNull(v, "游客不存在");
+        }
+        Map<String, String> params = smsManager.parseParams(orderItem.getVoucher_msg(), order, orderItem, maSendResponse, v == null ? orderItem.getQuantity() : v.getQuantity());
+        Matcher matcher = SmsManager.pattern.matcher(orderItem.getVoucher_msg());
+        String res = orderItem.getVoucher_msg();
+        while (matcher.find()) {
+            String key = matcher.group();
+            String val = key.substring(key.indexOf("${") + 2, key.length() - 1);
+            if (params.containsKey(val)) {
+                res = res.replace(key, params.get(val));
+            }
+        }
+        Result<String> result = new Result<>(true);
+        result.put(res);
+        return result;
     }
 }
