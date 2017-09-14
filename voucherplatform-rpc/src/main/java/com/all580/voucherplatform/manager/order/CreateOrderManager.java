@@ -5,11 +5,11 @@ import com.all580.voucherplatform.adapter.supply.SupplyAdapterService;
 import com.all580.voucherplatform.api.VoucherConstant;
 import com.all580.voucherplatform.dao.*;
 import com.all580.voucherplatform.entity.*;
+import com.all580.voucherplatform.utils.UrlUtils;
 import com.all580.voucherplatform.utils.async.AsyncService;
 import com.all580.voucherplatform.utils.voucher.VoucherGenerate;
 import com.all580.voucherplatform.utils.voucher.VoucherUrlGenerate;
 import com.framework.common.distributed.lock.DistributedLockTemplate;
-import com.framework.common.io.cache.redis.RedisUtils;
 import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.UUIDGenerator;
 import com.framework.common.util.CommonUtil;
@@ -268,6 +268,8 @@ public class CreateOrderManager {
         String voucherNumber = voucherGenerate.getVoucher(qrRule.getSize(), qrRule.getPrefix(), qrRule.getPostfix());
         order.setVoucherNumber(voucherNumber);
         String voucherImgUrl = voucherUrlGenerate.getVoucherUrl(voucherNumber, qrRule.getErrorRate(), qrRule.getSize(), qrRule.getForeColor());
+         order.setLongUrl(voucherImgUrl);
+        voucherImgUrl= UrlUtils.shortUri(voucherImgUrl);
         order.setImgUrl(voucherImgUrl);
         order.setSms(sms);
         if (template != null) {

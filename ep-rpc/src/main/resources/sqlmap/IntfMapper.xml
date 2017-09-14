@@ -134,7 +134,7 @@
   <select id="authIntf" resultType="java.lang.String">
     select DISTINCT auth from t_intf where func_id in(
     select  ep.func_id from ( select DISTINCT func_id from t_func_group_link  l join t_plat_func p on l.func_group_id=p.func_group_id
-    where core_ep_id=#{ep_id}
+    where core_ep_id=#{core_ep_id}
      union select func_id from t_func_group_link where func_group_id in (select  id from t_func_group where show_type=0)   ) as  core
     join (select func_id from t_ep_role_func
     where ep_role_id =(select ep_role from t_ep where id =#{ep_id})) as ep

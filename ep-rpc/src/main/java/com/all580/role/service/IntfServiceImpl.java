@@ -54,10 +54,10 @@ public class IntfServiceImpl implements IntfService {
         return result;
     }
 
-    public Result<List<String>> authIntf(int epId){
+    public Result<List<String>> authIntf(int ep_id,int core_id_id){
         Result<List<String>> result=  new Result(true);
         try {
-            result.put(intfMapper.authIntf(epId));
+            result.put(intfMapper.authIntf(ep_id,core_id_id));
         } catch (Exception e) {
             log.error("添加接口异常", e);
             throw  new ApiException("添加接口异常");
