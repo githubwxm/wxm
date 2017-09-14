@@ -2,6 +2,7 @@ package com.all580.order.dto;
 
 import com.all580.order.entity.Order;
 import com.all580.order.entity.OrderItem;
+import com.framework.common.Result;
 import lombok.Data;
 
 import java.util.List;
@@ -21,4 +22,7 @@ public class CreateOrderResultDto {
     private List<OrderItem> packageOrderItems;
     //创建套票元素订单时的结果集
     private List<CreateOrderResultDto> PackageCreateOrders;
+
+    private boolean uniqueKey = Boolean.TRUE;
+    private Result<?> result;
 }

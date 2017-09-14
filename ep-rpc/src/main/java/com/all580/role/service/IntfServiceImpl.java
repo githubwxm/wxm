@@ -54,10 +54,10 @@ public class IntfServiceImpl implements IntfService {
         return result;
     }
 
-    public Result<List<String>> authIntf(int epRole){
+    public Result<List<String>> authIntf(int ep_id,int core_id_id){
         Result<List<String>> result=  new Result(true);
         try {
-            result.put(intfMapper.authIntf(epRole));
+            result.put(intfMapper.authIntf(ep_id,core_id_id));
         } catch (Exception e) {
             log.error("添加接口异常", e);
             throw  new ApiException("添加接口异常");
@@ -75,7 +75,9 @@ public class IntfServiceImpl implements IntfService {
             //  更新鉴权数据
             Integer func_id = CommonUtil.objectParseInteger(params.get("func_id"));
            // List<Integer> list= epRoleFuncMapper.selectFuncIdAllEpRole(func_id);
-            Auth.updateAuthMap(epRoleFuncMapper.selectFuncIdAllEpRoleCoreEpId(func_id),redisUtils);
+            // 查询出有这个菜单的平台 更新平台下有这个菜单的所有企业，
+            //更新有这个菜单的所有企业
+            Auth.updateAuthMap(null,redisUtils);
         } catch (Exception e) {
             log.error("添加接口异常", e);
             throw  new ApiException("添加接口异常");
@@ -132,7 +134,7 @@ public class IntfServiceImpl implements IntfService {
             // funcIntfMapper.deleteFuncIntf(id);
             Integer func_id =CommonUtil.objectParseInteger(intfMapper.selectByPrimaryKey(id).get("func_id")) ;
            // List<Integer> list= epRoleFuncMapper.selectFuncIdAllEpRole(func_id);
-            Auth.updateAuthMap( epRoleFuncMapper.selectFuncIdAllEpRoleCoreEpId(func_id),redisUtils);
+            Auth.updateAuthMap( null,redisUtils);
             intfMapper.deleteByPrimaryKey(id);
             syncEpData.syncDeleteAllData(EpConstant.Table.T_INTF,id);
         } catch (Exception e) {

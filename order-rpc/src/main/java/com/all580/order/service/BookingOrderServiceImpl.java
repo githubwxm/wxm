@@ -96,6 +96,9 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         List<ProductSearchParams> lockParams = new ArrayList<>();
         //创建终端订单
         CreateOrderResultDto createOrderResult = this.createOrder(orderInterface, params, lockStockDtoMap, lockParams);
+        if (!createOrderResult.isUniqueKey()){
+            return createOrderResult.getResult();
+        }
         //终端订单
         Order mainOrder = createOrderResult.getOrder();
 
@@ -248,7 +251,10 @@ public class BookingOrderServiceImpl implements BookingOrderService {
 
         Result validateResult = orderInterface.validate(createOrder, params);
         if (!validateResult.isSuccess()) {
-            throw  new ApiException(validateResult.getError());
+            CreateOrderResultDto dto = new CreateOrderResultDto();
+            dto.setUniqueKey(Boolean.FALSE);
+            dto.setResult(validateResult);
+            return dto;
         }
 
         // 创建订单
@@ -368,6 +374,9 @@ public class BookingOrderServiceImpl implements BookingOrderService {
         Integer payType = CommonUtil.objectParseInteger(params.get("pay_type"));
 
         Order order = orderMapper.selectBySN(Long.parseLong(orderSn));
+        if (order == null) {
+            throw new ApiException("订单" + orderSn + "不存在");
+        }
         //套票元素订单不能单独支付
         if (order.getSource() == OrderConstant.OrderSourceType.SOURCE_TYPE_SYS){
             throw new ApiException("非法请求:当前订单不能单独支付");
