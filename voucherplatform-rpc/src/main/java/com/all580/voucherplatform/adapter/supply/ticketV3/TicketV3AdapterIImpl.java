@@ -90,24 +90,26 @@ public class TicketV3AdapterIImpl extends SupplyAdapterService {
 
     @Override
     public void sendOrder(Integer... orderId) {
+        Map map=null;
         try {
-            Map map = orderManager.getMap(orderId);
+            map = orderManager.getMap(orderId);
             Integer supplyId = CommonUtil.objectParseInteger(map.get("supplyId"));
             sendMnsMessage(supplyId, "saveOrder", map);
         } catch (Exception ex) {
-
+            log.error("action  saveOrder map {} exception {}",map,ex.getMessage());
         }
 
     }
 
     @Override
     public void sendGroupOrder(Integer groupOrderId) {
+        Map map=null;
         try {
-            Map map = groupOrderManager.getMap(groupOrderId);
+            map= groupOrderManager.getMap(groupOrderId);
             Integer supplyId = CommonUtil.objectParseInteger(map.get("supplyId"));
             sendMnsMessage(supplyId, "sendGroupOrder", map);
         } catch (Exception ex) {
-
+            log.error("action  sendGroupOrder  map {} exception {}",map,ex.getMessage());
         }
     }
 
