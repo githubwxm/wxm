@@ -79,9 +79,11 @@ public class CreateGroupOrderManager {
             throw new Exception("订单已处理！");
         }
         groupOrder.setFormAreaCode(CommonUtil.objectParseString(map.get("formAreaCode")));
-        groupOrder.setFormAddr(StringUtils.isEmpty(groupOrder.getFormAddr())?groupOrder.getFormAreaCode():groupOrder.getFormAddr());
+        String  formAddr = CommonUtil.objectParseString(map.get("formAddr"));
+        groupOrder.setFormAddr(StringUtils.isEmpty(formAddr)?groupOrder.getFormAreaCode():formAddr);
         groupOrder.setTravelName(CommonUtil.objectParseString(map.get("travelName")));
-        groupOrder.setManager(StringUtils.isEmpty(groupOrder.getManager())?"经理人":groupOrder.getManager());
+        String  manager = CommonUtil.objectParseString(map.get("manager"));
+        groupOrder.setManager(StringUtils.isEmpty(manager)?"经理人":manager);
         groupOrder.setGroupNumber(CommonUtil.objectParseString(map.get("groupNumber")));
         groupOrder.setGuideName(CommonUtil.objectParseString(map.get("guideName")));
         groupOrder.setGuideMobile(CommonUtil.objectParseString(map.get("guideMobile")));
