@@ -211,7 +211,7 @@ public class OrderSupplierController extends BaseController {
                     Object temp=map.get("statistic_ep_id");
                     map.put("statistic_ep_id",map.get(EpConstant.EpKey.CORE_EP_ID));
                     map.put(EpConstant.EpKey.CORE_EP_ID,temp);
-                }
+                    map.put("ep_type",ep_type);                }
             }
         }
     }
