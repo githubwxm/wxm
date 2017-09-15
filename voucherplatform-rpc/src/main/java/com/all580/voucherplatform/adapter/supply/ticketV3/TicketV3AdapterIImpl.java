@@ -73,7 +73,7 @@ public class TicketV3AdapterIImpl extends SupplyAdapterService {
             if (!StringUtils.isEmpty(queueName)) {
                 log.info("发送消息到MNS队列 supplyId={},queueName={},content={}", new Object[]{supply.getId(), queueName, content});
                 Message message = queuePushManager.push(queueName, content);
-                log.info(message.getMessageId());
+                log.info("发送消息到MNS队列  messageId {} content{}",message.getMessageId(),content);
             }
         }
     }
