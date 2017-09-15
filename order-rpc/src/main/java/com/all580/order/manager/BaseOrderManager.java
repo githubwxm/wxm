@@ -402,9 +402,9 @@ public class BaseOrderManager {
     }
 
     public int[] getAuditConfig(Order order, OrderItem orderItem) {
-        if (orderItem.getPro_type() == ProductConstants.ProductType.HOTEL || orderItem.getPro_type() == ProductConstants.ProductType.ITINERARY) {
-            return new int[]{ProductConstants.RefundAudit.NO, ProductConstants.RefundMoneyAudit.NO};
-        }
+//        if (orderItem.getPro_type() == ProductConstants.ProductType.HOTEL || orderItem.getPro_type() == ProductConstants.ProductType.ITINERARY) {
+//            return new int[]{ProductConstants.RefundAudit.NO, ProductConstants.RefundMoneyAudit.NO};
+//        }
         // 获取退订审核
         int[] auditSupplierConfig = getAuditConfig(orderItem.getPro_sub_id(), orderItem.getSupplier_core_ep_id());
         int auditTicket = auditSupplierConfig[0];
