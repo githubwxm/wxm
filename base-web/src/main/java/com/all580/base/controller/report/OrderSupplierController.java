@@ -205,13 +205,14 @@ public class OrderSupplierController extends BaseController {
 
     private void disposeSupplierPlatform(Integer ep_type, String ep_name, Map map) {
         //平台供应商的特殊处理
+        map.put("ep_type",ep_type);
         if (ep_type != null && ep_type.intValue() == EpConstant.EpType.SUPPLIER.intValue()) {
             if (ep_name != null) {
                 if (CommonUtil.find("\\(平台商\\)$", ep_name)) {
                     Object temp=map.get("statistic_ep_id");
                     map.put("statistic_ep_id",map.get(EpConstant.EpKey.CORE_EP_ID));
                     map.put(EpConstant.EpKey.CORE_EP_ID,temp);
-                    map.put("ep_type",ep_type);                }
+                }
             }
         }
     }
