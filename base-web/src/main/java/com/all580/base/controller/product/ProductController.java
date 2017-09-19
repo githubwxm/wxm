@@ -101,8 +101,9 @@ public class ProductController extends BaseController {
      */
     @RequestMapping(value = "sub", method = RequestMethod.GET)
     @ResponseBody
-    public Result<?> selectProductSubBatch(@RequestParam("product_sub_id") Integer productSubId, @RequestParam("ep_id") Integer epId){
-        return productService.selectProductSubBatch(productSubId, epId);
+    public Result<?> selectProductSubBatch(@RequestParam("product_sub_id") Integer productSubId,
+                                           @RequestParam("ep_id") Integer epId, @RequestParam("status") Integer status){
+        return productService.selectProductSubBatch(productSubId, epId,status);
     }
 
     /**
@@ -113,7 +114,7 @@ public class ProductController extends BaseController {
     @RequestMapping(value = "sub_code", method = RequestMethod.GET)
     @ResponseBody
     public Result<?> selectProductSubBatchByCode (@RequestParam("code") Long productSubCode, @RequestParam("ep_id") Integer epId){
-        return productService.selectProductSubBatchByCode(productSubCode, epId);
+        return productService.selectProductSubBatchByCode(productSubCode, epId,null);
     }
 
     /**
