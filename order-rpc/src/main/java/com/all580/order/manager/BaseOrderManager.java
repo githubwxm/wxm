@@ -405,10 +405,10 @@ public class BaseOrderManager {
 //        if (orderItem.getPro_type() == ProductConstants.ProductType.HOTEL || orderItem.getPro_type() == ProductConstants.ProductType.ITINERARY) {
 //            return new int[]{ProductConstants.RefundAudit.NO, ProductConstants.RefundMoneyAudit.NO};
 //        }
-        // 获取退订审核
+        // 获取退订审核--供应侧平台商
         int[] auditSupplierConfig = getAuditConfig(orderItem.getPro_sub_id(), orderItem.getSupplier_core_ep_id());
         int auditTicket = auditSupplierConfig[0];
-        // 获取退款审核
+        // 获取退款审核--销售侧平台商
         int auditMoney = 0;
         if (orderItem.getSupplier_core_ep_id() == order.getPayee_ep_id().intValue()) {
             auditMoney = auditSupplierConfig[1];

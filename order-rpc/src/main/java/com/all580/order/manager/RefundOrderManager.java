@@ -228,9 +228,6 @@ public class RefundOrderManager extends BaseOrderManager {
             // 调用退票
             refundTicket(refundOrder);
         } else {
-            //设置状态退票中
-            refundOrder.setStatus(OrderConstant.RefundOrderStatus.REFUNDING);
-            refundOrderMapper.updateByPrimaryKeySelective(refundOrder);
             // 触发退票成功事件
             eventManager.addEvent(OrderConstant.EventType.REFUND_TICKET, new RefundTicketEventParam(refundOrder.getId(), true));
             // 没有出票直接退款
