@@ -28,7 +28,7 @@ public class OrderMessageManager {
             @Override
             public void run() {
                 for (Order order : orders) {
-                    if(order.getSendType().intValue()==0){
+                    if(order.getSendType()==null||order.getSendType().intValue()==0){
                         continue;
                     }
                     String message = order.getSms();
@@ -53,7 +53,7 @@ public class OrderMessageManager {
             @Override
             public void run() {
                 for (Order order : orders) {
-                    if(order.getSendType().intValue()==0){
+                    if(order.getSendType()==null|| order.getSendType().intValue()==0){
                         continue;
                     }
                     String message = order.getSms();
