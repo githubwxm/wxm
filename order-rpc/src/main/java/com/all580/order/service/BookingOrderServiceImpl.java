@@ -153,9 +153,11 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             // 触发事件
             eventManager.addEvent(OrderConstant.EventType.ORDER_CREATE, order.getId());
 
-            log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(order.getId(), null,
-                    order.getBuy_ep_id(), order.getBuy_ep_name(), OrderConstant.LogOperateCode.CREATE_SUCCESS,
-                    null, String.format("订单创建成功:%s", JsonUtils.toJson(params)), null));
+            for (OrderItem orderItem : orderItems) {
+                log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(null, orderItem.getId(),
+                        order.getBuy_ep_id(), order.getBuy_ep_name(), OrderConstant.LogOperateCode.CREATE_SUCCESS,
+                        null, String.format("订单创建成功:%s", JsonUtils.toJson(params)), null));
+            }
         }
 
         if (orderListMap.size() > 1){
