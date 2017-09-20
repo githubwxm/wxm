@@ -75,6 +75,30 @@ public class BookingOrderManager extends BaseOrderManager {
     @Autowired
     private RefundOrderManager refundOrderManager;
 
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public void dealPackageOrderItemConSume(OrderItem orderItem){
+        Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
+        if (order.getSource() == OrderConstant.OrderSourceType.SOURCE_TYPE_SYS){
+            //套票元素订单核销
+            PackageOrderItemDto packageOrderItemDto = this.getOrderItemChainForPackage(orderItem, Boolean.TRUE);
+            while (packageOrderItemDto != null){
+                List<OrderItem> packageOrderItems = packageOrderItemDto.getPackageOrderItems();
+                //所有子订单票据已使用，则套票订单已使用
+                Boolean isUsed = Boolean.FALSE;
+                for (OrderItem item : packageOrderItems) {
+                    //使用数等于预定数，则已使用
+                    isUsed = item.getQuantity().intValue() == item.getUsed_quantity();
+                }
+                if (isUsed){
+                    //设置套票订单使用数
+                    packageOrderItemDto.setUsed_quantity(packageOrderItemDto.getQuantity());
+                    orderItemMapper.updateByPrimaryKeySelective(packageOrderItemDto);
+                }
+                packageOrderItemDto = this.getOrderItemChainForPackage(packageOrderItemDto, Boolean.TRUE);
+            }
+        }
+    }
+
     /**
      * 逐级处理套票关联子订单的出票状态
      * @param orderItem
@@ -86,7 +110,6 @@ public class BookingOrderManager extends BaseOrderManager {
         while (packageOrderItemDto != null){
             List<OrderItem> orderItemList = packageOrderItemDto.getPackageOrderItems();
             for (OrderItem item : orderItemList) {
-                //todo
                 if (item.getStatus() == OrderConstant.OrderItemStatus.NON_SEND){
                     //元素订单未出票
                     packageOrderItemDto.setStatus(OrderConstant.OrderItemStatus.TICKETING);
@@ -109,6 +132,13 @@ public class BookingOrderManager extends BaseOrderManager {
             }
             //更改套票子订单出票状态
             orderItemMapper.updateByPrimaryKeySelective(packageOrderItemDto);
+            //套票出票成功
+            if (packageOrderItemDto.getStatus() == OrderConstant.OrderItemStatus.SEND){
+                //记录出票日志
+                log.info(OrderConstant.LogOperateCode.NAME, this.orderLog(null, packageOrderItemDto.getId(),
+                        0, "ORDER_EVENT", OrderConstant.LogOperateCode.SENDED,
+                        packageOrderItemDto.getQuantity() * packageOrderItemDto.getDays(), "已出票", null));
+            }
             packageOrderItemDto = this.getOrderItemChainForPackage(packageOrderItemDto, Boolean.TRUE);
         }
     }
