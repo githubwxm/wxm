@@ -28,6 +28,9 @@ public class OrderMessageManager {
             @Override
             public void run() {
                 for (Order order : orders) {
+                    if(order.getSendType().intValue()==0){
+                        continue;
+                    }
                     String message = order.getSms();
                     message = message.replace("{份数}", String.valueOf(order.getNumber()))
                             .replace("{验证码}", MessageFormat.format("{0}，打开二维码: {1} ", order.getVoucherNumber(),
@@ -50,6 +53,9 @@ public class OrderMessageManager {
             @Override
             public void run() {
                 for (Order order : orders) {
+                    if(order.getSendType().intValue()==0){
+                        continue;
+                    }
                     String message = order.getSms();
                     message = message.replace("{份数}", String.valueOf(order.getNumber()))
                             .replace("{验证码}", MessageFormat.format("{0}，打开二维码: {1} ", order.getVoucherNumber(),
