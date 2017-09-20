@@ -57,7 +57,7 @@ public class RefundMoneyEventImpl implements RefundMoneyEvent {
         Order order = orderMapper.selectByRefundSn(refundOrder.getNumber());
         Assert.notNull(order, "订单不存在");
 
-        log.info(OrderConstant.LogOperateCode.NAME, refundOrderManager.orderLog(order.getId(), null,
+        log.info(OrderConstant.LogOperateCode.NAME, refundOrderManager.orderLog(null, refundOrder.getOrder_item_id(),
                 0, "ORDER_EVENT", content.isSuccess() ? OrderConstant.LogOperateCode.REFUND_MONEY_SUCCESS : OrderConstant.LogOperateCode.REFUND_MONEY_FAIL,
                 0, "订单退款回调", content.getSerialNo()));
 
