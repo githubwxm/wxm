@@ -2,8 +2,10 @@ package com.all580.order.service.event;
 
 import com.all580.order.api.OrderConstant;
 import com.all580.order.api.service.event.PaidEvent;
+import com.all580.order.dao.OrderItemMapper;
 import com.all580.order.dao.OrderMapper;
 import com.all580.order.entity.Order;
+import com.all580.order.entity.OrderItem;
 import com.all580.order.manager.BookingOrderManager;
 import com.all580.payment.api.conf.PaymentConstant;
 import com.framework.common.Result;
@@ -14,10 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.lang.exception.ApiException;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author zhouxianjun(Alone)
@@ -31,6 +30,8 @@ public class PaidEventImpl implements PaidEvent {
     @Autowired
     private OrderMapper orderMapper;
     @Autowired
+    private OrderItemMapper orderItemMapper;
+    @Autowired
     private JobAspect jobManager;
     @Autowired
     private BookingOrderManager bookingOrderManager;
@@ -42,10 +43,12 @@ public class PaidEventImpl implements PaidEvent {
         if (order == null) {
             throw new ApiException("订单不存在");
         }
-
-        log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(order.getId(), null,
-                0, "ORDER_EVENT", OrderConstant.LogOperateCode.PAID_SUCCESS,
-                0, "订单支付成功", order.getLocal_payment_serial_no()));
+        List<OrderItem> orderItems = orderItemMapper.selectByOrderId(order.getId());
+        for (OrderItem orderItem : orderItems) {
+            log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(null, orderItem.getId(),
+                    0, "ORDER_EVENT", OrderConstant.LogOperateCode.PAID_SUCCESS,
+                    0, "订单支付成功", order.getLocal_payment_serial_no()));
+        }
 
         // 添加分账任务 余额不做后续分账(和支付的时候一起)
         if (order.getPayment_type() != null && order.getPayment_type() != PaymentConstant.PaymentType.BALANCE.intValue()) {

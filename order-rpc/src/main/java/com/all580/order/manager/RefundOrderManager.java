@@ -115,7 +115,7 @@ public class RefundOrderManager extends BaseOrderManager {
             }
             refundOrderMapper.updateByPrimaryKeySelective(packageRefundOrderDto);
             //所有元素单都都退票成功
-            if (packageRefundOrderDto.getStatus() == OrderConstant.RefundOrderStatus.REFUNDING){
+            if (packageRefundOrderDto.getStatus() == OrderConstant.RefundOrderStatus.REFUND_SUCCESS){
                 //套票还库存，记录任务
                 Map<String, String> jobParams = new HashMap<>();
                 jobParams.put("refundId", String.valueOf(packageRefundOrderDto.getId()));
@@ -223,8 +223,7 @@ public class RefundOrderManager extends BaseOrderManager {
             refundOrder.setAudit_time(new Date());
         }
         if (orderItem.getStatus() == OrderConstant.OrderItemStatus.SEND &&
-                orderItem.getPro_type() != ProductConstants.ProductType.HOTEL &&
-                orderItem.getPro_type() != ProductConstants.ProductType.ITINERARY) {
+                orderItem.getPro_type() == ProductConstants.ProductType.SCENERY) {
             // 调用退票
             refundTicket(refundOrder);
         } else {

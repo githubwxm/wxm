@@ -5,6 +5,7 @@ import com.all580.order.api.service.event.OrderCancelSyncDataEvent;
 import com.all580.order.dao.OrderItemMapper;
 import com.all580.order.dao.OrderMapper;
 import com.all580.order.entity.Order;
+import com.all580.order.entity.OrderItem;
 import com.all580.order.manager.RefundOrderManager;
 import com.framework.common.Result;
 import com.framework.common.synchronize.SyncAccess;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author zhouxianjun(Alone)
@@ -36,15 +38,18 @@ public class OrderCancelSyncDataEventImpl extends BasicSyncDataEvent implements 
         Order order = orderMapper.selectByPrimaryKey(content);
         Assert.notNull(order);
 
-        log.info(OrderConstant.LogOperateCode.NAME, refundOrderManager.orderLog(order.getId(), null,
-                0,  "ORDER_EVENT",
-                OrderConstant.LogOperateCode.CANCEL_SUCCESS,
-                null, "订单取消", null));
+        List<OrderItem> orderItems = orderItemMapper.selectByOrderId(order.getId());
+        for (OrderItem orderItem : orderItems) {
+            log.info(OrderConstant.LogOperateCode.NAME, refundOrderManager.orderLog(null, orderItem.getId(),
+                    0,  "ORDER_EVENT",
+                    OrderConstant.LogOperateCode.CANCEL_SUCCESS,
+                    null, "订单取消", null));
+        }
 
         SyncAccess syncAccess = getAccessKeys(order);
         syncAccess.getDataMap()
                 .add("t_order", order)
-                .add("t_order_item", orderItemMapper.selectByOrderId(order.getId()));
+                .add("t_order_item", orderItems);
 
         syncAccess.loop();
         sync(syncAccess.getDataMaps());
