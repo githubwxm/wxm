@@ -496,7 +496,7 @@ public class BookingOrderManager extends BaseOrderManager {
      * 创建子订单详情
      *
      * @param info     产品信息
-     * @param itemId   子订单ID
+     * @param item   子订单ID
      * @param day      当天
      * @param quantity 张数
      * @return
