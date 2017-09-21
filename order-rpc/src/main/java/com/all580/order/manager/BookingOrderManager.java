@@ -502,7 +502,7 @@ public class BookingOrderManager extends BaseOrderManager {
      * @return
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public OrderItemDetail generateDetail(ProductSalesDayInfo info, int itemId, Date day, int quantity, Integer lowQuantity, Integer supplyPrice, Integer salePrice) {
+    public OrderItemDetail generateDetail(ProductSalesDayInfo info, OrderItem item, Date day, int quantity, Integer lowQuantity, Integer supplyPrice, Integer salePrice) {
         OrderItemDetail orderItemDetail = new OrderItemDetail();
         orderItemDetail.setSettle_price(info.getSettle_price());
         orderItemDetail.setSupply_price(supplyPrice);
@@ -511,7 +511,7 @@ public class BookingOrderManager extends BaseOrderManager {
         orderItemDetail.setQuantity(quantity);
         orderItemDetail.setCust_refund_rule(info.getCust_refund_rule()); // 销售方退货规则
         orderItemDetail.setSaler_refund_rule(info.getSaler_refund_rule()); // 供应方退货规则
-        orderItemDetail.setOrder_item_id(itemId);
+        orderItemDetail.setOrder_item_id(item.getId());
         Date date = new Date();
         orderItemDetail.setCreate_time(date);
         orderItemDetail.setLow_quantity(lowQuantity);
@@ -538,7 +538,7 @@ public class BookingOrderManager extends BaseOrderManager {
             }
             // 不能购买已过销售计划的产品
             if (date.after(info.getEnd_time())) {
-                throw new ApiException("预定时间已过期");
+                throw new ApiException("您订购的产品[" + item.getPro_sub_name() + "]预定时间已过期");
             }
             orderItemDetail.setEffective_date(effectiveDate);
             orderItemDetail.setExpiry_date(expiryDate);
