@@ -6,7 +6,6 @@ import com.all580.ep.api.service.CoreEpChannelService;
 import com.all580.ep.api.service.EpService;
 import com.all580.order.api.OrderConstant;
 import com.all580.order.dao.*;
-import com.all580.order.dto.RefundOrderApply;
 import com.all580.order.entity.*;
 import com.all580.order.util.AccountUtil;
 import com.all580.payment.api.conf.PaymentConstant;
@@ -417,7 +416,8 @@ public class BaseOrderManager {
 
     /**
      * 返回记录订单日志数据
-     * @param id
+     * @param orderId
+     * @param itemId
      * @param operateId
      * @param operateName
      * @param code

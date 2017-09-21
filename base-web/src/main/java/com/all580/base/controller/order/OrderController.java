@@ -7,7 +7,6 @@ import com.all580.order.api.service.OrderService;
 import com.all580.order.api.service.RefundOrderService;
 import com.framework.common.BaseController;
 import com.framework.common.Result;
-import com.framework.common.lang.JsonUtils;
 import com.framework.common.validate.ParamsMapValidate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -153,7 +152,7 @@ public class OrderController extends BaseController {
     @ResponseBody
     public Result<?> refundApplyForPackage(@RequestBody Map params) throws Exception {
         // 验证参数
-
+        ParamsMapValidate.validate(params, orderValidateManager.refundApplyForHotelValidate());
         return refundOrderService.apply(params, "PACKAGE");
     }
 
