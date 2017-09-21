@@ -46,8 +46,9 @@ public class UserController extends BaseController {
             String userName = CommonUtil.emptyStringParseNull(map.get("userName"));
             Result userResult = userService.getUser(userName);
             Object o = userResult.get();
-            redisUtils.setex(VoucherConstant.REDISVOUCHERLOGINKEY + ":" + request.getSession().getId(),
-                    AuthenticationFilter.LOGINTIMEOUT, o);
+//            redisUtils.setex(VoucherConstant.REDISVOUCHERLOGINKEY + ":" + request.getSession().getId(),
+//                    AuthenticationFilter.LOGINTIMEOUT, o);
+            request.getSession().setAttribute("user", o);
         }
         return userService.login(map);
     }
@@ -64,7 +65,7 @@ public class UserController extends BaseController {
             return new Result(false, "原密码输入错误！");
         }
 
-        redisUtils.del(VoucherConstant.REDISVOUCHERLOGINKEY + ":" + request.getSession().getId());
+//        redisUtils.del(VoucherConstant.REDISVOUCHERLOGINKEY + ":" + request.getSession().getId());
 
         mapUser.put("password", CommonUtil.emptyStringParseNull(map.get("passWord")));
         return userService.update(mapUser);

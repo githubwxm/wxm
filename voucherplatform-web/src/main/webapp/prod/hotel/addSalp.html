@@ -1,0 +1,96 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <header-title></header-title>
+    <link href="../../static/css/style.css" rel="stylesheet">
+    <link href="../../static/script/amd/1.0/fullcalendar/fullcalendar.css" rel="stylesheet">
+</head>
+<body vtag="root">
+<div class="root-main">
+    <div class="main-container clearfix">
+        <div class=" main-warp">
+            <div v-if="stutas == 1">
+                <div class="title">
+                    <em></em><h3>库存</h3>
+                </div>
+                <validator name="checkSubForm">
+                    <form id="subForm" class="form-horizontal" method="post" onSubmit="return false;">
+                        <div class="form-group-top kucun clearfix">
+                            <label class="col-sm-2 col-md-2 col-lg-2 control-label"></label>
+                            <div class="col-sm-10 col-md-10 col-lg-8">
+                                <input type="radio" value="731" v-model="stock_type" v-validate:require_sid="{required:true}" initial="off"><span>日库存</span>
+                                <input type="radio" value="732" v-model="stock_type" v-validate:require_sid="{required:true}" initial="off"><span>每日时段库存</span>
+                            </div>
+                            <label v-show="$checkSubForm.stock_type.required" for="contactMobile" class="error">必填字段</label>
+                        </div>
+                        <div class="form-group-top clearfix">
+                            <label class="col-sm-2 col-md-2 col-lg-2 control-label"></label>
+                            <div class="col-sm-10 col-md-10 col-lg-8">
+                                <table class="table table-bordered">
+                                    <tbody>
+                                    <tr>
+                                        <td>起止日期</td>
+                                        <td>
+                                            <datepicker :value.sync="subFormData.start_date" class="col-sm-3 col-lg-3" language="ch"></datepicker>
+                                            <b>至</b>
+                                            <datepicker :value.sync="subFormData.end_date" class="col-sm-3 col-lg-3" language="ch"></datepicker>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>周期</td>
+                                        <td>
+                                            <div class="col-sm-12 col-md-12 col-lg-12 kucun-time clearfix">
+                                                <span><input type="checkbox" class="chekbox" value="1" v-model="subFormData.week" v-validate:week="{required:true}" initial="off">星期一</span>
+                                                <span><input type="checkbox" class="chekbox" value="2" v-model="subFormData.week" v-validate:week="{required:true}" initial="off">星期二</span>
+                                                <span><input type="checkbox" class="chekbox" value="3" v-model="subFormData.week" v-validate:week="{required:true}" initial="off">星期三</span>
+                                                <span><input type="checkbox" class="chekbox" value="4" v-model="subFormData.week" v-validate:week="{required:true}" initial="off">星期四</span>
+                                                <span><input type="checkbox" class="chekbox" value="5" v-model="subFormData.week" v-validate:week="{required:true}" initial="off">星期五</span>
+                                                <span><input type="checkbox" class="chekbox" value="6" v-model="subFormData.week" v-validate:week="{required:true}" initial="off">星期六</span>
+                                                <span><input type="checkbox" class="chekbox" value="7" v-model="subFormData.week" v-validate:week="{required:true}" initial="off">星期天</span>
+                                            </div>
+                                            <label v-show="$checkSubForm.week.required" for="contactMobile" class="error">必填字段</label>
+                                        </td>
+                                    </tr>
+                                    <tr v-if="stock_type == 731">
+                                        <td>日库存</td>
+                                        <td>
+                                            <input name="name" class="form-control form-input-3" type="text" maxlength="20" v-model="subFormData.stock" v-validate:stock="{required:true}" initial="off">
+                                            <label v-show="$checkSubForm.stock.required" for="contactMobile" class="error">必填字段</label>
+                                        </td>
+                                    </tr>
+                                    <tr v-if="stock_type == 732">
+                                        <td  rowspan="2">时段库存</td>
+                                        <td style="position: relative">
+                                            <div style="padding-left:20px;" class="form-group" v-for="item in subFormData.times" style="width:100%">
+                                                <input type="text" class="form-control form-input-2" style="width: 200px" v-model="item.time_start" @change="timeStartChange(item.timeStart)"/><b>时:分</b>
+                                                <input type="text" class="form-control form-input-2" style="width: 200px" v-model="item.time_end" @change="timeEndChange"(item.timeEnd)/><b>时:分</b>
+                                                <input type="text" class="form-control form-input-2" v-model="item.stock"/><b>库存</b>
+                                                <div class="form-odd"><a @click="remove($index)"><span>-</span></a></div>
+                                            </div style="padding-left:20px">
+                                            <div class="form-odd odd-2"><a @click="apend"><span>+</span></a></div>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                <div @click="comit" class="btn">确&nbsp;&nbsp;定</div>
+                            </div>
+                        </div>
+                    </form>
+                </validator>
+            </div>
+            <div class="business-two" v-if="stutas == 2">
+                <div class="title">
+                    <em></em><h3>库存日历表</h3>
+                </div>
+                <datepicker :value.sync="Date" class="col-sm-12 col-lg-12" style="overflow: auto; margin-top: 20px;" language="ch" :setting.sync="pickerSetting"></datepicker>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="../api/local/client/system/load_config"></script>
+<script type="text/javascript" src="../../static/script/local/require/require.js"></script>
+<script type="text/javascript" src="../../static/script/local/require_config.js"></script>
+<script type="text/javascript" src="../../static/script/local/view/prod/hotel/salpView.js"></script>
+</body>
+</html>

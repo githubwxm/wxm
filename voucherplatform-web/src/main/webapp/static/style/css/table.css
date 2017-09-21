@@ -1,0 +1,239 @@
+/*Table表格*/
+.table .tr-bt-sc{
+	 background:#f5f5f5;
+	 }
+.table-bordered a{ 
+  color:#23c377;
+  }
+.table .tr-bt-sc td{
+	font:normal 14px/30px microsoft yahei;
+	color:#666;
+	padding-left:10px;
+	}
+.table .tr-bt-sc span{ 
+  padding-right:10px;
+  }
+
+.table>thead>tr>th{
+	border-top:none;
+	font-size:14px;
+	font-weight:100;
+	font-family: microsoft yahei;
+	vertical-align: inherit;
+	color:#666;
+	padding-left:10px;
+	border-bottom: none;
+	}
+.table-banma>tbody>tr>td{ 
+  font:normal 12px/40px microsoft yahei;
+  }
+.table>.table-height>tr>td{
+	line-height: 40px;
+}
+.table>tbody>tr>td{
+	font-size:12px;
+	font-family: microsoft yahei;
+	vertical-align: inherit;
+	color:#333;
+	padding-left:10px;
+	}
+.table-striped>tbody>tr>td{
+	min-width:150px;
+	width:auto;
+	 }
+
+.table .yq-sc-1 a{
+	color:#23c377;
+	}	
+.table .zt-sc-1{
+	color:#67dfe3;
+	}
+.table .zt-sc-2{
+	color:#23c377;
+	}
+.table .zt-sc-3{
+	color:#ff6633;
+	}	
+.table .zt-sc-4{
+	color:#999;
+	}
+.table .no-state{
+	 background:#f5f5f5;
+	 }
+.table-top{
+	margin-top:20px;
+	float: left;
+  }
+.table tr .center{
+	text-align:center;	
+	}
+.dropdown-menu{
+	z-index:9;
+	min-width:80px;
+  }	
+.dropdown-menu li a:hover{
+	color:#fff !important;
+	}
+.dropdown .caret{
+	 margin-left:10px;
+	 }
+.dropdown-menu li a{ 
+     text-align:center; 
+     font:normal 12px/26px microsoft yahei;
+	 color:#333;
+	 }
+.dropdown-menu li a:hover{
+	 background:#37424f;
+	 color:#fff;
+	}
+.table .tr-lead{ 
+  background:#e3e3e3;
+  }
+.table .tr-son{
+ background:#eee;
+	}
+.table .odd{ 
+  margin-top:20px;
+  }
+.table-box>tbody>tr>td{
+	text-align:center;
+	} 	 	
+.table-box>thead>tr>th{
+	text-align:center;
+	border-bottom: none;
+}
+.table-condensed>thead>tr>td{ 
+  position:relative;
+  }
+.table-condensed>tbody>tr>td{
+	border-top:none;
+	border-bottom:1px dashed #ccc !important;
+	}
+.table-condensed .center span{ 
+   display:block; 
+   padding-bottom:10px;
+   }	
+.table-bordered .lirun{ 
+  width:150px;
+  }
+.profit-1{
+	float:left;
+	width:150px;
+	}
+.profit-2{
+	width:115px;
+	float:left;
+	position:relative;
+	}
+.profit-2 input{ 
+ float:left;
+ width:80px;
+ }
+.profit-2 i{ 
+ float:left;
+ }
+
+.table-bordered .form-input{
+	 width:150px; 
+	 float:left;
+	 }
+.table-bordered td i{
+  text-align:center;
+  font:normal 14px/32px microsoft yahei;
+  }
+.table-bordered td b{
+	float:left;
+	font:normal 12px/32px microsoft yahei;
+	padding:0 10px;
+	}
+.table-bordered td dd{ 
+  display:inline-block;
+  }
+.table-bordered .form-input-2{ 
+  width:70px; 
+  float:left;
+  }
+.table-bordered .form-input-3{ 
+ width:300px;
+ margin-left: 20px;
+}
+.table-bordered .form-odd{ 
+  float:left;
+  }
+.table-bordered .form-odd span{
+	width:20px; 
+	height:20px; 
+	border-radius:50%; 
+	background:#9c9c9c;
+	text-align:center;
+	display:block;
+	color:#fff;
+	margin-top:5px;
+	margin-left:10px;
+	}
+
+.table-bordered .form-odd span:hover{
+	background:#23c377;
+	}
+.table-bordered .form-jian span:hover{
+	background:#ff6633;
+	}	
+.odd-2{
+	position:absolute;
+    right:10px;
+    top:7px;
+   }
+.table-bordered tr .table-left{ 
+ text-align:left;
+ }
+
+.table-condensed>thead>tr>td{ 
+  position:relative;
+  }
+.table-condensed>tbody>tr>td{
+	border-top:none;
+	border-bottom:1px dashed #e6e6e6;
+	}
+.table-condensed .center span{ 
+   display:block; 
+   padding-bottom:10px;
+   }
+.table-condensed .icon-zhankai,.table-condensed .icon-baisoft-arrow-down{
+	font-size:30px;
+	font-weight:bold;
+	float:right;
+	margin-right:20px;
+	color:#ccc;
+	}
+.table-condensed .icon-zhankai:hover,.table-condensed .icon-baisoft-arrow-down:hover{
+	color:#23c377;
+	}
+.table-condensed .icon-iconfontshuaxin{
+	font-size:20px;
+	color:#999;
+	
+	}
+
+.form-odd{
+	float:left;
+}
+.form-odd span{
+	width:20px;
+	height:20px;
+	border-radius:50%;
+	background:#eee;
+	text-align:center;
+	display:block;
+	color:#666;
+	margin-top:6px;
+	margin-left:20px;
+	font-size:14px;
+	line-height:20px;
+}
+.form-odd span:hover{
+	background:#23c377;
+	color:#fff;
+}
+.table-responsive{
+	float: left;
+}

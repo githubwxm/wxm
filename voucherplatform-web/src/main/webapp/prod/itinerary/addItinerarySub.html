@@ -1,0 +1,150 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <header-title></header-title>
+    <link href="../../static/css/style.css" rel="stylesheet">
+    <link href="../../static/script/amd/1.0/dist/css/wangEditor.min.css" rel="stylesheet">
+</head>
+<body vtag="root">
+<div class="root-main">
+    <div class="main-container clearfix">
+        <div class="Establish clearfix">
+            <div class="ProgressBar">
+                <!---------------进度条----------------->
+                <div class="line-box clearfix">
+                    <ul class="steps">
+                        <li class="effect">
+                            <span class="num">1<span class="border"></span></span><span class="text">线路信息</span>
+                        </li>
+                        <li class="effect">
+                            <span class="num">2<span class="border"></span></span><span class="text">线路票类信息</span>
+                        </li>
+                        <li>
+                            <span class="num">3<span class="border"></span></span><span class="text">班期,价格,库存</span>
+                        </li>
+                    </ul>
+                    <!--默认状态下的进度条没有类名是灰色状态，有状态的时候加上effect的类名就会出现读取的样式-->
+                </div>
+                <!---------------线路票类信息内容----------------->
+                <validator name="checkSubForm">
+                    <div class="line-container clearfix">
+                        <!---------------基本信息----------------->
+                        <div  class="line-trip clearfix">
+                            <h3>基本信息</h3>
+                            <div class="form-group form-group-top clearfix">
+                                <label class="col-lg-1 col-md-1 control-label"><dd class="red">*</dd>票类名称：</label>
+                                <div class="col-lg-6 col-md-6">
+                                    <input type="text" class="form-control" v-model="subFormData.name" v-validate:name="{required:true}" initial="off">
+                                </div>
+                                <div v-show="$checkSubForm.name.required" for="contactMobile" ><img src="../../static/style/img/baocuo.png"><label class="error">请填写票类名称！</label></div>
+                            </div>
+                            <div class="form-group clearfix">
+                                <label class="col-lg-1 col-md-1 control-label"><dd class="red">*</dd>市场价：</label>
+                                <div class="col-lg-6 col-md-6">
+                                    <input type="text" class="form-control" v-model="subFormData.market_price" v-validate:market_price="{required:true,min:0}" initial="off">
+                                </div>
+                                <div class="Prompt">
+                                    <span v-if="$checkSubForm.market_price.required"><img src="../../static/style/img/baocuo.png"><label class="error">请填写市场价！</label></span>
+                                    <span v-if="$checkSubForm.market_price.min"><img src="../../static/style/img/baocuo.png"><label class="error">市场价最小为0！</label></span>
+                                </div>
+                            </div>
+                            <div class="form-group clearfix">
+                                <label class="col-lg-1 col-md-1 control-label"><dd class="red">*</dd>最低售价：</label>
+                                <div class="col-lg-6 col-md-6">
+                                    <input type="text" class="form-control" v-model="subFormData.min_sell_price" v-validate:min_sell_price="{required:true,min:0}" initial="off">
+                                </div>
+                                <div class="Prompt">
+                                    <span v-if="$checkSubForm.min_sell_price.required"><img src="../../static/style/img/baocuo.png"><label class="error">请填写最低零售价！</label></span>
+                                    <span v-if="$checkSubForm.min_sell_price.min"><img src="../../static/style/img/baocuo.png"><label class="error">最低零售价最小为0！</label></span>
+                                </div>
+                            </div>
+                            <div class="form-group clearfix">
+                                <label class="col-lg-1 col-md-1 control-label"><dd class="red">*</dd>在线支付：</label>
+                                <div class="col-lg-6 col-md-6 line-radio">
+                                    <input type="radio" value="5011" v-model="subFormData.pay_type"><span>在线支付</span>
+                                </div>
+                            </div>
+                            <div class="form-group clearfix">
+                                <label class="col-lg-1 col-md-1 control-label"><dd class="red">*</dd>团号：</label>
+                                <div class="line-height col-lg-5 col-md-6">
+                                    <input type="text" v-model="subFormData.team_prefix" class="form-control form-input-2" v-validate:team_prefix="{required:true}" initial="off">
+                                    <span>+出团日期+</span>
+                                    <input type="text" v-model="subFormData.team_suffix" class="form-control form-input-2" v-validate:team_suffix="{required:true}" initial="off">
+                                </div>
+                                <div v-show="$checkSubForm.team_prefix.required || $checkSubForm.team_suffix.required" for="contactMobile" ><img src="../../static/style/img/baocuo.png"><label class="error">请填写团号前后缀！</label></div>
+                                <!--<div v-show="$checkSubForm.team_suffix.required" for="contactMobile" ><img src="../../static/style/img/baocuo.png"><label class="error">请填写团号后缀！</label></div>-->
+                            </div>
+                        </div>
+                        <!---------- -----拓展设置----------------->
+                        <div  class="line-trip clearfix">
+                            <h3>拓展设置</h3>
+                            <div class="form-group form-group-top clearfix">
+                                <label class="col-lg-1 col-md-1 control-label"><dd class="red">*</dd>预定限制</label>
+                                <div class="line-height col-lg-7 col-md-7">
+                                    <span>需在</span>
+                                    <input type="number" v-model="subFormData.booking_day_limit" class="form-control form-input-2" v-validate:booking_day_limit="{required:true}" initial="off"><span>天前的</span>
+                                    <input type="text"class="form-control form-input-2" v-model="shi" v-validate:shi="{required:true}" initial="off">
+                                    <span>:</span>
+                                    <input type="text"class="form-control form-input-2" v-model="fen" v-validate:fen="{required:true}" initial="off">
+                                    <span>分前预定</span>
+                                </div>
+                                <div v-show="$checkSubForm.booking_day_limit.required || $checkSubForm.shi.required || $checkSubForm.fen.required" for="contactMobile" ><img src="../../static/style/img/baocuo.png"><label class="error">请填写预定限制！</label></div>
+                                <!--<div v-show="$checkSubForm.shi.required" for="contactMobile" ><img src="../../static/style/img/baocuo.png"><label class="error">请填写小时！</label></div>
+                                <div v-show="$checkSubForm.fen.required" for="contactMobile" ><img src="../../static/style/img/baocuo.png"><label class="error">请填写分钟！</label></div>-->
+                            </div>
+                            <div class="form-group clearfix">
+                                <label class="col-lg-1 col-md-1 control-label">购买限制</label>
+                                <div class="line-height col-lg-6 col-md-6">
+                                    <span>每次下单数量，最高</span>
+                                    <input type="number"class="form-control form-input-2" v-model="subFormData.max_buy_quantity">
+                                    <span>张</span>
+                                </div>
+                            </div>
+                            <div class="form-group clearfix">
+                                <label class="col-lg-1 col-md-1 control-label"><dd class="red">*</dd>身份证限制</label>
+                                <div class="col-lg-6 col-md-6 line-radio">
+                                    <div class="lind-right">
+                                        <input type="radio" value="5111" class="radio" v-model="subFormData.require_sid"><span>无需填写</span>
+                                    </div>
+                                    <input type="radio" value="5110" class="radio" v-model="subFormData.require_sid"><span>需填写所有游客身份证</span>
+                                </div>
+                            </div>
+                            <div class="form-group clearfix">
+                                <label class="col-lg-1 col-md-1 control-label"><dd class="red">*</dd>退货规则</label>
+                                <div class="col-lg-4 col-md-4">
+                                    <remote-sel :setting="refundSetting" :value.sync="subFormData.cust_refund_rule" @change="refundRule" v-validate:cust_refund_rule="{required:true}" initial="off"></remote-sel>
+                                </div>
+                                <div v-show="$checkSubForm.cust_refund_rule.required" for="contactMobile" ><img src="../../static/style/img/baocuo.png"><label class="error">请选择退货规则！</label></div>
+                            </div>
+                            <div class="form-group clearfix">
+                                <label class="col-lg-1 col-md-1 control-label"><dd class="red">*</dd>供应商确认</label>
+                                <div class="col-lg-6 col-md-6 line-radio">
+                                    <div class="lind-right">
+                                        <input type="radio" class="radio" value="1" v-model="subFormData.supplier_audit"><span>商家确认后，方可支付</span>
+                                    </div>
+                                    <input type="radio" class="radio" value="0" v-model="subFormData.supplier_audit"><span>无需商家确认</span>
+                                </div>
+                            </div>
+                            <div class="form-group clearfix">
+                                <label class="col-lg-1 col-md-1 control-label">预定须知</label>
+                                <div class="col-lg-6 col-md-6">
+                                    <textarea class="form-control" rows="10" v-model="subFormData.booking_notes"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div  class="col-lg-offset-2">
+                            <button class="btn btn-success" @click="addSub">保存，下一步</button>
+                        </div>
+                    </div>
+                </validator>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="../../static/script/local/config.js"></script>
+<script type="text/javascript" src="../../static/script/local/require/require.js"></script>
+<script type="text/javascript" src="../../static/script/local/require_config.js"></script>
+<script type="text/javascript" src="../../static/script/local/view/prod/itinerary/addItinerarySubView.js"></script>
+</body>
+</html>

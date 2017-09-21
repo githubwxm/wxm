@@ -1,0 +1,2071 @@
+.Establish li h1{
+  position:absolute;
+  right:15px; 
+  top:0px; 
+  width:60px;
+  height:34px;
+  border:1px solid #e6e6e6;
+  background:#f5f5f5; 
+  text-align:center; 
+  border-radius:0px 5px 5px 0px; 
+  font:normal 12px/34px microsoft yahei;
+  color:#333;
+  } 
+.Prompt-one{ 
+ width:100%;
+}
+.Prompt-left{
+	margin-left:15px;	
+	}
+.Prompt-one span{ 
+  padding:5px 10px; 
+  background:#ff6633;
+  display:inline-block; 
+  border-radius:3px;
+  margin-top:10px;
+  color:#fff;
+  margin-right:10px;
+}
+.Prompt-one b{
+	 font:normal 12px/30px microsoft yahei;
+	 color:#999;
+}  
+.hotel-checkbox{ 
+    padding-top:5px !important;
+    padding-left:0px;
+    width:120px;
+    float:left;
+    color:#666 !important;
+    line-height:20px;
+    margin-left: 15px;
+
+}
+.form-hotel{
+	 width:200px;
+	 float:left;
+}
+.Establish li h2{
+  width:60px;
+  height:34px;
+  border:1px solid #e6e6e6;
+  background:#f5f5f5; 
+  text-align:center; 
+  border-radius:0px 5px 5px 0px; 
+  font:normal 12px/34px microsoft yahei;
+  color:#333;
+  float:left;
+  margin-left:-2px;
+  z-index:999;
+  position:relative;	
+	}
+.input-hotel{ 
+ width:200px;
+ float:left;
+ }
+.business-two li dl{ 
+ float:left;
+ font:normal 12px/32px microsoft yahei; 
+ color:#666;
+ width:60px;
+ text-align:left;
+ }
+ 
+/*房型预订*/
+.hotelTop{
+	}
+.hotelTitle{ 
+  width:100%;
+  float:left;
+}
+.hotelTitle h3{
+	font:bold 24px/48px microsoft yahei;
+	color:#333;
+	float:left;
+	margin-right:20px;
+	}	
+.hotelTitle span{
+	color: #f80;
+    font-family: arial;
+	margin-top:18px;
+	float:left;
+}
+.star{
+	width: 95px;
+    height: 17px;
+    margin-right: 2px;
+    text-align: left;
+    background:url(../img/star.png) 0 -18px no-repeat;
+}
+.star label{
+	width: 95px;
+    height: 17px;
+    display: inline-block;
+    background: url(../img/star.png) 0 0 no-repeat;
+}
+.hotelAddress span b{ 
+ font:normal 12px/24px microsoft yahei; 
+ color:#3ab272;
+ display:inline-block;
+ margin-right:20px;
+}
+.hotelAddress span{
+	color:#333;
+}
+
+.hotelPhotos{
+  width:100%;
+  background:#fff;
+  float:left;
+  margin-top:20px;
+  height:440px;
+  -webkit-box-shadow: 0px -3px 3px #ddd;
+  -moz-box-shadow:0px -3px 3px #ddd;
+  box-shadow:0px -3px 3px #ddd;
+  
+}
+.hotelLeft{
+	width:100%;
+	height:400px;
+	margin:20px 0px;
+	}
+.photosTop{
+	width:100%;
+    height:400px;
+	float:left;
+}
+.hotelRight{
+	margin:20px;
+	}
+.photosMain{
+	width:70%;
+	height:400px;
+	float:left;
+	position:relative;
+}
+.photosRight{ 
+   float:left;
+   width:30%;
+   height:400px;
+   position:relative;
+   overflow:hidden;
+   }
+.Room-table{
+	position:absolute;
+	left:0px;
+	bottom:0px;
+	width:100%;
+	height:36px;
+	background:rgba(0,0,0,0.7);	
+}
+.Room-table ul li{ 
+  float:left;
+  font:normal 12px/36px microsoft yahei;
+  color:#fff;
+  padding:0 0 0 20px;
+  cursor:pointer;
+  }
+.Room-table ul li.active{
+	color:#3ab272;
+	}
+.slider_ul{
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+    z-index: 0;
+    height:400px;
+}
+.slider_ul li{
+    float: left;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+	width:100%;
+	height:400px;
+}
+.slider_ul li img{
+	width:100%;
+    height:400px;
+    display: block;
+}
+.photosTop .arrow{
+    width: 50px;
+    height: 60px;
+    cursor: pointer;
+}
+.photosTop .btns_one .disabled{
+	background:url(../img/ltdis.png) no-repeat !important;
+    cursor: default;
+}
+/*这里的样式图片是当酒店图片右切换的时候，就把左边的箭头切换成可以点击的样子，左边样式加深*/
+.photosTop .btns_one .left{
+	position:absolute;
+    left:0;
+    top:45%;
+    background:url(../img/ltbtn.png) no-repeat;
+}
+.photosTop .btns_one .right{
+	position:absolute;
+    right:0;
+    top:45%;
+    background:url(../img/rtbtn.png) no-repeat;	
+}
+.photosTop .photosRight .arrow{
+	width:100%;
+    height: 35px;
+    cursor: pointer;
+    display: block;
+	color:#fff;
+	font:normal 30px/35px microsoft yahei;
+	text-align:center;
+
+}
+.photosTop .photosRight .disabled{
+	background:rgba(0,0,0,0.3);
+	cursor:default;
+	}
+/*这里的样式图片是当酒店图片右切换的时候，就把左边的箭头切换成可以点击的样子，左边样式加深*/
+.photosTop .photosRight .topbtn{
+	position:absolute;
+    left:5%;
+    top:0;
+	background:rgba(0,0,0,0.3);
+	}
+.photosTop .photosRight .topbtn img,.photosTop .photosRight .botbtn img{
+	margin-top:12px;
+	}
+.photosTop .photosRight .botbtn{
+	position:absolute;
+    left:5%;
+    bottom:0;
+    background:rgba(0,0,0,0.8);
+	}	
+	
+.photosRight ul li img{
+    width:45%;
+    height:90px;
+    display: block;
+    float: left;
+    margin: 0 0 5% 5%;
+    cursor: pointer;
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;	
+	}
+.photosRight ul li .active{
+    border: 2px solid #23c377;
+	}
+.Rightmoney{ 
+  border-bottom:1px dotted #eee; 
+  padding-bottom:20px;
+  text-align:center;
+}	
+.Rightmoney em{
+	display:block;
+	font:normal 16px/48px microsoft yahei;
+	color:#ff6633;
+	padding-bottom:10px;
+}
+.Rightmoney em i{
+	font:bold 48px/48px microsoft yahei;
+	}
+.Rightmoney span a{
+	padding:10px 35px;
+	background:#ff6633;
+	color:#fff;
+	border-radius:5px;
+	font-size:16px;
+	text-decoration:none;
+	}
+.Right_ul{
+	border-bottom:1px dotted #eee; 
+	padding-bottom:20px;
+}
+.Right_ul li{ 
+width:100%;
+height:50px; 
+float:left; 
+margin-top:20px;
+}
+.Right_ul li.telephone{
+	cursor: default;
+    background:url(../img/rightpng_03.png) no-repeat 20px 9px #f5f5f5;
+}
+.Right_ul li.renovationtime{
+	cursor: default;
+    background:url(../img/rightpng_06.png) no-repeat 20px 4px #f5f5f5;
+	}
+.Right_ul li.pet{
+	cursor: default;
+    background:url(../img/rightpng_09.png) no-repeat 20px 11px #f5f5f5;
+	}
+.Right_ul li span{
+	margin-left:80px;
+	font:normal 14px/50px microsoft yahei;
+	color:#333;
+	}
+.hotellabel ul{
+	margin-top:10px;
+}
+.hotellabel ul li{
+	float: left;
+    width: 30px;
+    height: 30px;
+    margin-right: 8px;
+	}
+.hotellabel ul li.hotelicon_bg{
+	background:url(../img/icon-last.png) no-repeat;
+	position:relative;
+	}
+.hotellabel ul li.freewif{
+	background-position:0 -33px;
+	}
+.hotellabel ul li.freeparking{
+	background-position:0 -97px;
+	}
+.hotellabel ul li.restaurant{
+	background-position:0 -192px;
+	}
+.hotellabel ul li.gym{
+	background-position:0 -256px;
+	}
+.hotellabel ul li.meeting{
+    background-position:0 -290px;
+	}
+.hotellabel ul li.pickji{
+	background-position:0 -322px;
+	}
+.hotellabel ul li.swimming{
+	background-position:0 -354px;
+	}
+.hotellabel ul li.freewiredbroadband{
+	background-position:0 -162px;
+	}
+
+.Roominformation{ 
+ padding:20px;
+ background:#fff; 
+ float:left;
+ width:100%;
+}
+.RoomTable{
+ width:100%;
+ float:left;
+ border-bottom:1px  solid #e6e6e6;
+}
+.RoomTable ul li{ 
+ float:left;
+ padding:0 20px;
+ font:normal 18px/40px microsoft yahei;
+ margin-bottom:-2px;
+}
+.RoomTable ul li a{ 
+ color:#333;
+ text-decoration:none;
+}
+.RoomTable ul li.cur{
+	border-bottom:3px solid #3ab272;
+	color:#3ab272;
+}
+.hotel-room-mian{
+	margin-top:20px;
+	float:left;
+	width:100%;
+}
+.Check-date{
+	float:left;
+	cursor:pointer;
+    width:200px;
+}
+.Check-date label{
+  float:left;
+  font-weight: 400;
+  line-height:34px;
+  padding-right: 10px;
+}
+.Check-date span{
+ font:normal 12px/40px microsoft yahei;
+ color:#999;
+
+    float:left;
+}
+.Check-date .year-range span{
+    font-size: 20px;
+    color: #fff;
+}
+.Check-date .input[_v-29b8b991]{
+    padding-left:10px;
+    line-height: 20px;
+    height: 34px;
+}
+.Check-date input{ 
+ border: 1px solid #ccc;
+ background:#fff;
+ outline:none;
+ width:120px;
+ margin-left:10px;
+ padding-left: 10px;
+ height:34px;
+ border-radius: 2px;
+ font:normal 14px/32px microsoft yahei;
+ color:#333;  
+ cursor:pointer;
+ }
+.Check-date b img{ 
+ margin-right:10px; 
+ margin-bottom:4px;
+ }
+
+.Check-search{ 
+ float:left;
+}
+.Check-search span{
+	 padding:0px 20px; 
+	 font:normal 14px/32px microsoft yahei;
+	 color:#fff; 
+	 background:#ff6633;
+	 display:block;
+     cursor: pointer;
+	 border-radius:3px;
+}
+.Check-search span i{
+  margin-right:10px;
+}
+.Check-search span:hover{ 
+ background:#f98a66;
+ }
+.Room-item{
+ width:100%;
+ float:left;	 
+ border:1px solid #e6e6e6;
+ margin-top:20px;
+ position: relative;
+ }
+.Room-item-info{
+   position: relative;
+   cursor: pointer;
+}
+.Room-item-info dl {
+    overflow: hidden;
+    position: relative;
+    padding: 20px;
+}
+.Room-list-warp .Room-item-img img{
+    float: left;
+    width:160px;
+    height:90px;
+    margin:10px 20px;
+}
+.Room-list-one .table-condensed>tbody>tr>td {
+    border-bottom:none;
+}
+/*.Room-item-info dl dd{	*/
+	/*margin-left:200px;*/
+    /*margin-top:50px;*/
+/*}*/
+/*.Room-item-info dl dd p{*/
+	/*font-size: 18px;*/
+    /*color: #333;*/
+    /*margin-bottom: 10px;*/
+    /*overflow: hidden;*/
+    /*text-overflow: ellipsis;*/
+    /*white-space: nowrap;*/
+	/*}*/
+/*.Room-item-info dl dd span.line {*/
+    /*padding: 0 5px;*/
+/*}*/
+/*.Room-pirce{ */
+ /*position: absolute;*/
+    /*bottom:60px;*/
+    /*right:40px;*/
+    /*color:#f63;*/
+/*}*/
+/*.Room-pirce span{*/
+	/*font-size:16px;	*/
+/*}*/
+/*.Room-pirce span strong{ */
+  /*font-size:30px;*/
+  /*font-family: Arial;	*/
+/*}*/
+/*.Room-pirce span em{*/
+	/*font-size: 12px;*/
+    /*color: #999;*/
+    /*padding-left: 2px;*/
+/*}*/
+/*.Room-item-info i.arrow{*/
+   /*position: absolute;*/
+   /*bottom:72px;*/
+   /*right:20px;*/
+   /*background:url(../img/arrow-down.png) no-repeat;*/
+   /*width: 10px;*/
+   /*height: 7px;*/
+/*}*/
+.Room-warp{    
+  display: block;
+  border-top: 1px solid #ddd;
+}
+.Room-item-info:hover{
+ background:#fafdfb;
+}
+.no:hover{
+	background:#f5f5f5;
+	}
+.Room-title-warp{
+    background-color: #f5f5f5;
+    font-size: 12px;
+    color: #999;
+}
+.Room-title-warp ul{
+	 margin:0 0 0 220px;
+} 
+.Room-title-warp .table thead tr th{
+	 border-bottom:none; 
+	 line-height:26px;
+	 font-size:12px;
+}
+.Room-list-warp{
+	 padding-bottom:20px;
+}
+.Room-list-one{
+	padding:0 0 0 220px;	
+}
+
+.Room-payment{
+	padding:20px 0px;
+}
+.Room-payment a{
+	 text-decoration:none;
+}
+.Room-payment em{ 
+ display:block;
+ width:80px;
+ height:30px;
+ border-radius:3px 3px 0 0;
+ background:#ff6633;
+ text-align:center;
+ color:#fff;
+ line-height:30px;
+}
+.Room-list-one:hover .Room-payment em{
+	background:#fc551e;
+	}
+.Room-payment i{ 
+ display:block;
+ width:80px;
+ height:22px;
+ border-radius:0 0 3px 3px;
+ text-align:center;
+ color:#ff6633;
+ line-height:22px;
+ border:1px dotted #ff6633;
+ border-top:none
+} 
+.Room-list-one .red{ 
+ font-size:14px; 
+ color:#ff6633;
+}
+.daopay em{ 
+background:#ee751a;
+}
+.daopay i{
+	border:1px dotted #ee751a;
+	border-top:none;
+	color:#ee751a;
+}
+.Soldout em{
+	background:#ccc;
+	}
+.Soldout i{
+	border:1px dotted #ccc;
+	border-top:none;
+	color:#ccc;
+	}
+.sellout:hover .Room-payment em{
+	background:#ccc;
+	}
+.Room-load{ 
+text-align:center;
+padding:20px 0 0 0;
+font-size:14px;
+color:#3ab272;
+}
+
+.disable span,.disable span em{
+	color:#ccc;	
+	}
+.disable-img{ 
+ position:absolute; 
+ right:0px; 
+ top:0px;
+}
+
+.hotel-text{
+	float:left;
+	margin-top:40px;
+}
+.hotel-introduction h3,.hotel-details h3{
+	font:bold 18px/40px microsoft yahei;
+	color:#333;
+	}
+.hotel-introduction p{
+	text-indent:2em;
+	font:normal 12px/24px microsoft yahei;
+	color:#666;
+	}
+.hotel-details{ 
+ margin-top:20px;
+ }
+.hotel-details ul li{
+ width:100%;
+ float:left; 
+ margin-top:20px;
+}
+.hotel-details ul li .flhtl{
+    display: block;
+    font-weight: bold;
+    font-size: 14px;
+    line-height: 24px;
+    color: #666;
+    background: #F6F6F6;
+    width: 100%;
+    height: 30px;
+    line-height: 30px;
+    margin:0px 0 10px 0;
+}
+.hotel-details ul li .flhtl i{
+    width:2px;
+    height: 16px;
+    background: #22c233;
+    display: inline-block;
+    padding-top: 0px;
+    vertical-align: middle;
+    margin: 0 10px;
+}
+.hotel-details ul li .fltext i{
+	padding:0 0 0 20px;
+	font:normal 14px/24px microsoft yahei;
+	color:#333;
+	}
+.hotelServices{ 
+ margin-left:20px;
+ }
+.hotelServices .check_mark i{
+    background:url(../img/gou_07.png) no-repeat;
+    width:12px;
+    height:12px;
+    display: inline-block;
+	margin-right:10px;
+}
+.hotelServices .check_mark{
+    width: 180px;
+    display: inline-block;
+    height: 24px;
+	font-size:14px;
+	color:#333;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.hotel-details ul li .Credit{
+	float:left;
+	width:100px;
+	margin-left:20px;
+	margin-top:10px;
+	}
+.hotel-strategy .strategy{
+	font:normal 12px/12px microsoft yahei;
+	color:#333;
+	display:inline-block;
+	padding:20px 0px;
+	margin-right:50px;
+	}	
+.hotel-strategy .strategy i{
+	width:5px;
+	height:5px;
+	border-radius:50%;
+	background:#ff6633;
+	display:inline-block;
+	margin-right:10px;
+	margin-bottom:2px;
+}
+
+.hotel-product{ 
+ margin-top:20px;
+ }
+.product-condition{ 
+ margin:20px 0px;
+ }
+.product-condition span.Number{ 
+ float:left; 
+ margin-right:60px;
+ font:normal 14px/34px microsoft yahei;
+ color:#333;
+}
+.product-condition span.Number i{
+	color:#999;
+	padding:0 5px;
+}
+.product-condition span.one i{
+	color:#ff6633;
+}
+.product-condition .searchone span{
+	background:#3ab272;
+}
+.product-condition .searchone span:hover{
+	background:#59cd8f;
+}	
+.table-Price{
+	font-size:12px;
+	color:#ff6633;
+}
+.table-Price strong{
+	font-size:18px;
+	font-weight:400;
+}
+.table-titme em{
+	 display:block;
+}
+.table-Total{
+	float:right;
+	margin-right:20px;
+	}
+.table-Total em{
+	font-size:14px;
+	font-weight:bold;
+	color:#333;
+	}
+.table-Total i{
+	font-size:12px;
+	color:#ff6633;
+	}
+.table-Total i strong{
+	font-size:20px;
+	padding:0 5px;
+	}
+.hotel-list{
+ width:100%;
+ padding:20px;
+ background:#fff;
+ float: left;
+}
+
+.word{
+    width:300px;
+}
+.word input{
+	width:200px;
+	font-size:12px;
+	color:#ccc;
+}
+.hotelcondition{
+	background:#f5f5f5;
+	width:100%;
+	float:left;
+	padding:10px 20px;
+	border:1px solid #eee;
+}
+.hotelbox{
+	float:left;
+	margin-top:10px;
+	border:1px solid #e6e6e6;
+	width:100%;
+}
+.hotelbox ul li{	
+  width:100%;
+  float:left;
+  margin-bottom:2px;
+}	
+.hotelbox ul li:last-child{
+	 margin-bottom:0px;
+	}
+.hotelbox ul li .hotelbox-name{
+	width:5%;
+    padding: 10px 0 12px;
+    text-align: center;
+    line-height: 1;
+    color: #999;
+    font-size: 14px;
+    position: relative;
+	background:#f7f7f7;
+	white-space: nowrap;
+}
+.hotelbox ul li .hotelbox-detail{
+	width:91%;
+    position: relative;
+    background: #fff;
+	padding: 6px 15px 3px 0px;
+	margin-left:2%;
+	border-bottom:1px dashed #e6e6e6;
+}
+.hotelbox ul li>div{ 
+ float:left;
+}
+.hotelbox-detail .reset-singl{
+    height: 20px;
+    border-radius: 2px;
+    line-height: 20px;
+    width: 40px;
+    text-align: center;
+    margin-right: 22px;
+    color: #fff;
+    float: left;
+    cursor: pointer;
+    margin-bottom: 5px;
+    background-color: lightcoral;
+}
+.hotelbox-detail .reset-singl-new{
+    height: 20px;
+    border-radius: 2px;
+    line-height: 20px;
+    width: 40px;
+    text-align: center;
+    margin-right: 22px;
+    color: #333;
+    float: left;
+    cursor: pointer;
+    margin-bottom: 5px;
+    background-color: #fff;
+}
+.hotelbox-detail .select-single{
+	float:left;
+	height: 22px;
+    line-height: 22px;
+    width:130px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+	}
+.hotelbox-detail .select-single input{
+	float:left;
+	margin-top:5px;
+	margin-right:5px;	
+	}
+.hotelbox-detail .input-container{	
+    padding-left: 20px;
+    height: 22px;
+    line-height: 23px;
+}
+.hotelbox-detail .input-container .input-price{
+    width:56px;
+	height:20px;
+    padding: 2px 0 2px 2px;
+    font-size:12px;
+    border: 1px solid #ddd;
+    margin-left: 8px;
+	outline:none;
+}
+.hotelbox-detail .input-container span{
+    margin-left: 6px;
+    display: inline-block;
+    border: 1px solid #ddd;
+    background-color: #f7f7f7;
+    width: 43px;
+    height: 20px;
+    text-align: center;
+    line-height:18px;
+    cursor: pointer;
+    vertical-align: middle;
+}
+.hotelbox-detail .select-single span{
+	float:left;
+	}
+.hotelbox ul li .hotelbox-detail.no{
+	border-bottom:none;
+	}
+.hotel-ascending{
+	float:left;
+	width:100%;
+	margin-top:20px;
+	background:#f5f5f5;
+	border:1px solid #eee;
+}
+.hotel-ascending>div{
+	float: left;
+    width:150px;
+    text-align: center;
+    cursor: pointer;
+	}
+.hotel-ascending .line{
+    width: 1px;
+    background-color: #ddd;
+    height: 18px;
+    margin-top: 11px;
+    cursor: default;
+}
+.hotel-ascending .ascending-fll span{
+	font-size:12px;
+	color:#333;
+	line-height:40px;
+	display:inline-block;
+}
+.hotel-ascending .ascending-fll span:hover{
+	color:#ff6633;
+}
+.hotel-ascending .ascending-fll i{
+	display:inline-block;
+	padding:0 0 0 10px;
+}
+.hotel-warp{
+	width:100%;
+	float:left;
+	}
+.hotel-warp ul{
+  margin-top:10px;
+  }
+.hotel-warp ul li{
+	width:100%;
+	float:left;
+	padding:20px;
+	border-bottom:1px dashed #e6e6e6;
+	}
+.hotel-warp ul li:hover{
+	background:#fafdfb;
+	}
+.hotel-warp ul li>div{
+	float:left;
+	}
+.hotel-warp ul li .warp-img{
+	width:20%;
+	height:160px;
+}
+.hotel-warp ul li .warp-img img{
+	width:90%;
+	height:160px;
+	display:block;
+}
+.warp-left{ 
+ width:65%;
+ height:160px;
+ border-right:1px solid #e6e6e6;
+}
+.left-icon{
+  width:40%; 
+  float:left;
+}
+.warp-left .one-yahei i{
+	background:url(../img/one1_15.png) no-repeat 100% 100%;
+    width: 23px;
+    text-align: center;
+    font-size: 14px;
+    color: #fff;
+    line-height: 32px;
+    display: inline-block;
+    vertical-align: top;
+}
+.warp-left .one-yahei span{
+	font-size:16px;
+	color:#333;
+	vertical-align: -1px;
+    display: inline-block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: break-all;
+    height: 32px;
+	line-height:32px;
+	margin-left:5px;
+}
+.warp-left .one-yahei a{ 
+  text-decoration:none;
+  }
+.warp-left .one-yahei span:hover{ 
+    color:#ff6633;
+	}
+.warp-left .detailed-address{
+	margin-top:10px;
+    line-height: 12px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    height:52px;
+	}
+.warp-left .detailed-address a{
+	color:#3ab272;
+	margin-right:5px;
+	text-decoration:none;
+	cursor:default;	
+	}
+.warp-left .warp-icon i{
+ margin-right:8px;
+  float: left;
+}
+.warp-left .warp-icon .icon-wifr{
+	display: block;
+    width: 20px;
+    height: 20px;
+    background:url(../img/icon-lby.png) 0px 0 no-repeat;
+	}
+.warp-left .warp-icon .icon-wifr-free{
+	display: block;
+    width: 20px;
+    height: 20px;
+    background:url(../img/icon-lby.png) -20px 0 no-repeat;
+	}
+.warp-left .warp-icon .icon-parking{
+	display: block;
+    width: 20px;
+    height: 20px;
+    background:url(../img/icon-lby.png) -40px 0 no-repeat;
+	}	
+.warp-left .warp-icon .icon-parking-free{
+	display: block;
+    width: 20px;
+    height: 20px;
+    background:url(../img/icon-lby.png) -60px 0 no-repeat;
+	}
+.warp-left .warp-icon .icon-broadband{
+	display: block;
+    width: 20px;
+    height: 20px;
+    background:url(../img/icon-lby.png) -80px 0 no-repeat;
+	}
+.warp-left .warp-icon .icon-broadband-free{
+	display: block;
+    width: 20px;
+    height: 20px;
+    background:url(../img/icon-lby.png) -100px 0 no-repeat;
+	}
+.warp-left .warp-icon .icon-restaurant{
+	display: block;
+    width: 20px;
+    height: 20px;
+    background:url(../img/icon-lby.png) -120px 0 no-repeat;
+	}
+.warp-left .warp-icon .icon-pet{
+	display: block;
+    width: 20px;
+    height: 20px;
+    background:url(../img/icon-lby.png) -140px 0 no-repeat;
+	}
+.warp-left .warp-icon .icon-gym{
+	display: block;
+    width: 20px;
+    height: 20px;
+    background:url(../img/icon-lby.png) -160px 0 no-repeat;
+	}
+.warp-left .warp-icon .icon-conference{
+	display: block;
+    width: 20px;
+    height: 20px;
+    background:url(../img/icon-lby.png) -180px 0 no-repeat;
+	}
+.warp-left .warp-icon .icon-aircraft{
+	display: block;
+    width: 20px;
+    height: 20px;
+    background:url(../img/icon-lby.png) -200px 0 no-repeat;
+}
+.warp-left .warp-icon .icon-swimming{
+	display: block;
+    width: 20px;
+    height: 20px;
+    background:url(../img/icon-lby.png) -220px 0 no-repeat;
+}
+.hotel-map{
+	float:left;
+	margin-top:20px;
+	border: 1px solid #dcdcdc;
+    display: block;
+    width:70px;
+    height:24px;
+    text-align: center;
+    line-height: 20px;
+    border-radius: 2px;
+    color: #005bb5;
+    cursor: pointer;
+	}
+.hotel-map:hover{
+   border: 1px solid #6aa3d8;
+	}
+.hotel-map i{
+	float:left;
+	margin:5px 10px 0 10px;
+	}
+.hotel-map span{
+	float:left;
+	line-height:24px;
+	}
+.hotelstar{ 
+ width:20%;
+ float:left;
+ padding-left:5%;
+}
+.hotelstar h3{
+  font:normal 14px/40px microsoft yahei;
+  color:#333;
+  display:block;
+  width:95px;
+  text-align:center;
+  }
+.hotelstar span{ 
+ margin-top:5px;
+ }
+.hotel-telephone{
+  width:20%; 
+  float:left;
+  text-align:center;
+}
+.hotel-telephone h3{
+	 font:normal 14px/40px microsoft yahei;
+     color:#333;
+     display:block;
+}
+.hotel-telephone p{
+	font:normal 12px/24px microsoft yahei;
+	color:#999;
+}
+.hotel-telephone .phone{
+	font-size:14px;
+	font-family:Arial, Helvetica, sans-serif;
+}
+.hotel-reserve{
+	width:15%; 
+	float:left;
+	text-align:center;
+	}
+.hotel-reserve p.table-Price strong{ 
+  font-size:36px;
+  padding:0 5px;
+  }
+.hotel-reserve a.detail-btn{
+     display: block;
+    border-radius: 3px;
+    margin: 18px auto 0;
+    border: 1px solid #ff7800;
+    text-align: center;
+    width: 118px;
+    height: 28px;
+    line-height: 28px;
+    font-size: 14px;
+    color: #ff7800;
+    cursor: pointer;
+	text-decoration:none;
+}
+.hotel-warp ul li:hover .hotel-reserve a.detail-btn{
+	background:#ff7800;
+	color:#fff;
+}
+	
+	
+/*酒店订单确认*/
+.order-top{
+    width:100%;
+    background:#fff;
+    float:left;
+}
+.top-main{
+    width:1000px;
+    margin:0 auto;
+}
+.top-logo{
+    float:left;
+    padding:10px 0px;
+}
+.top-logo img{
+    float:left;
+}
+.top-logo em{
+    float:left;
+    border-left:1px solid #e6e6e6;
+    line-height:108px;
+    padding:0 20px;
+    font-size:24px;
+    margin-left:20px;
+}
+.top-process{
+    float:right;
+}
+.steps{
+    margin-top:40px;
+}
+.steps li {
+    float: left;
+    padding: 0px 40px;
+    overflow: inherit;
+}
+.steps .num {
+    position: relative;
+    padding:2px 7px;
+    background: #FFF;
+    border-radius:20px;
+    color: #FFF;
+    font-weight: bold;
+}
+.steps .num .border {
+    position: absolute;
+    border-top: 7px solid #FFF;
+    left:20px;
+    top: 30%;
+    width: 100px;
+    display: block;
+}
+.steps .effect .num {
+    color: #FFF;
+    background: #43b313;
+}
+.steps .effect .num .border {
+    border-top: 7px solid #43b313;
+}
+.steps .text {
+    display: block;
+    font-family: microsoft yahei;
+    margin: 7px 0px 0px -11px;
+}
+.steps .brief .num {
+    color: #746969;
+    background: #E7E7E7;
+}
+.order-main{
+    width:1000px;
+    margin:0px auto;
+}
+.order-title{
+    margin-top:20px;
+    float:left;
+}
+.order-title h3{
+    font:bold 18px/36px microsoft yahei;
+    color:#23c377;
+}
+.order-title p{
+    font:normal 14px/24px microsoft yahei;
+    color:#333;
+}
+.order-warp{
+    background:#fff;
+    float:left;
+    width:100%;
+    margin-top:20px;
+    padding:10px;
+}
+.order-info{
+    border-bottom: 1px dashed #eee;
+    margin: 25px;
+    padding-bottom: 20px;
+}
+.order-info h4{
+    font-size:18px;
+}
+.date-infos{
+    margin-top:20px;
+    color:#333;
+}
+.date-infos .label,.room-number .label,.order-pirce .label{
+    color:#333;
+    font:normal 12px/12px microsoft yahei;
+}
+.order-info .info .label{
+    margin: 0 30px 0 22px;
+}
+.date-infos .dao{
+    color:#999;
+    padding:0 10px;
+}
+.date-infos .days{
+    padding:0 20px 0  10px;
+}
+.date-infos  .update-date{
+    color:#23c377;
+    cursor:pointer;
+}
+.order-info .info{
+    margin-top:20px;
+}
+.numberbox{
+    width:150px;
+    display:inline-block;
+}
+.order-pirce .room-pirce{
+    border-bottom:1px dashed #ff6633;
+    font-size:14px;
+    color:#ff6633;
+    cursor:pointer;
+}
+.check-text{
+    border-bottom: 1px dashed #eee;
+    margin: 25px;
+    padding-bottom:20px;
+}
+.check-text h4{
+    font-size:18px;
+}
+.check-text .room-box{
+    margin-top:20px;
+}
+.check-text .room-box .label{
+    margin: 0 30px 0 8px;
+    color:#333;
+    width:75px;
+    text-align:right;
+    display:inline-block;
+    font:normal 12px/12px microsoft yahei;
+}
+.check-text .room-box .label i{
+    color:#ff6633;
+    margin-right:5px;
+}
+.input-name-box{
+    display:inline-block;
+}
+.input-txt{
+    border:1px solid #ddd;
+    height:30px;
+    padding:2px 4px;
+    font-size: 12px;
+    font-family: Microsoft Yahei!important;
+    width:150px;
+    outline:none;
+}
+.input-txt:focus{
+    border:1px solid #cdcdcd;
+}
+.Tips{
+    display: block;
+    color: #999;
+    position: relative;
+    line-height: 17px;
+    padding-left: 18px;
+    margin-left: 100px;
+    margin-top: 9px;
+}
+.Tips i{
+    color:#666;
+    cursor:pointer;
+    border-bottom:1px dashed #666;
+}
+.Tips em{
+    margin-right:10px;
+    color:#999;
+}
+.input-name-box .room-check{
+    margin-right:20px;
+    float:left;
+}
+.room-check i{
+    float:left;
+}
+.input-name-box .room-check input{
+    margin-right:5px;
+    float:left;
+    margin-top:2px;
+    position: relative;
+}
+.room-box.frist .label{
+    float:left;
+}
+.invoice{
+    margin-left:125px;
+
+}
+.Booking-notes{
+    width:1000px;
+    margin:20px auto auto;
+    background:#fff;
+    float:left;
+    padding-bottom:20px;
+}
+.Booking-text{
+    margin: 25px;
+    padding-bottom:20px;
+}
+.Booking-text h4{
+    font-size:18px;
+}
+.Booking-text p{
+    line-height:24px;
+    margin-top:10px;
+}
+.Booking-text em{
+    float:left;
+    margin-top:10px;
+}
+.Booking-text em a{
+    font:normal 14px/46px microsoft yahei;
+    color:#3ab272;
+    text-decoration:none;
+}
+.footer-bottom{
+    text-align:center;
+    width:100%;
+    float:left;
+    margin:30px 0px;
+}
+
+.payment-text{
+    margin-top:20px;
+    background:#fff;
+    float:left;
+    width:100%;
+}
+.payment-top,.patment-method{
+    border-top:2px solid #3ab272;
+    padding:0 20px 40px 20px;
+    width:100%;
+    float:left;
+}
+.payment-one{
+    border-bottom:1px  dashed #e6e6e6;
+    width:100%;
+    float:left;
+    padding:20px 0px;
+}
+.payment-one h3{
+    float:left;
+    font-size:18px;
+    line-height:24px;
+}
+.payment-one span{
+    float:right;
+    font-size:14px;
+    line-height:24px;
+}
+.payment-one span strong{
+    font-size:24px;
+    color:#ff6633;
+}
+.payment-top>p{
+    float:left;
+    width:100%;
+    margin-top:20px;
+    font-size:12px;
+    color:#333;
+}
+.payment-top>p em{
+    margin-right:5px;
+}
+.payment-top>p span{
+    margin-right:20px;
+}
+
+.methodbox li{
+    float:left;
+    width:100%;
+    margin-top:20px;
+}
+
+.methodbox li em{
+    float:left;
+    font:normal 14px/50px microsoft yahei;
+    color:#333;
+    margin-right:20px;
+    width:90px;
+    text-align:right;
+}
+.methodbox li i{
+    float:left;
+    width:200px;
+    height:50px;
+    border:1px solid #e6e6e6;
+    border-radius:5px;
+    line-height:50px;
+    font-size:18px;
+    color:#333;
+    cursor:pointer;
+}
+.methodbox li i input{
+    float:left;
+    width:16px;
+    height:16px;
+    margin:17px 20px 0 20px;
+}
+.methodbox li i img{
+    margin-top:12px;
+}
+.Reminder{
+    width:1000px;
+    margin:0px auto;
+}
+.Reminder-text{
+    padding:20px;
+}
+.Reminder-text h3{
+    font-size:14px;
+    color:#333;
+}
+.Reminder-text p{
+    margin-top:10px;
+    line-height:20px;
+}
+.order-pirce{
+    position: relative;
+}
+.Total-room{
+    position: absolute;
+    left:115px;
+    top:30px;
+    width: 440px;
+    border: 1px solid #dcdcdc;
+    z-index: 1;
+    background: #fff;
+    padding: 20px;
+}
+.Total-room .big-up-arrow {
+    left: 10px;
+    position: absolute;
+    top: -12px;
+    border-width: 6px;
+    border-style: dashed dashed solid dashed;
+    border-color: transparent transparent #dcdcdc transparent;
+    font-size: 0;
+    width: 0;
+    height: 0;
+    line-height: 0;
+}
+.Total-room .small-up-arrow {
+    left: 12px;
+    position: absolute;
+    top: -8px;
+    border-width: 4px;
+    border-style: dashed dashed solid dashed;
+    border-color: transparent transparent #fff transparent;
+    font-size: 0;
+    width: 0;
+    height: 0;
+    line-height: 0;
+}
+.Total-room li {
+    float: left;
+    width: 78px;
+    height: 117px;
+    border: 1px solid #eee;
+    margin-right: -1px;
+    margin-bottom: -1px;
+    position: relative;
+}
+.Total-room li .date_tip {
+    background: #f5f5f5;
+    height: 45px;
+    padding-top: 8px;
+    line-height: 16px;
+    text-align: center;
+}
+.Total-room li .data_list {
+    color: #999;
+    text-align: center;
+}
+.Total-room li .data_list .up_down_flag {
+    position: relative;
+    background: transparent;
+    height: 20px;
+    width: 20px;
+    display: block;
+    top: -4px;
+    left: 53px;
+}
+.Total-room li .data_list .price {
+    color: #f63;
+    display: block;
+    height: 34px;
+    line-height: 34px;
+    position: relative;
+    top: -15px;
+}
+.Total-room li .data_list .breakfastType {
+    position: relative;
+    top: -10px;
+}
+/*进度条样式*/
+.ProgressBar{
+    padding: 20px 20px 40px 20px;
+}
+.Bar-link li{
+    width: 25%;
+    float: left;
+    border-top:6px solid #dedede;
+    position:relative;
+    text-align:center;
+    line-height:45px;
+}
+.Bar-link li em{
+    position:absolute;
+    left:50%;
+    top:-13px;
+    margin-left:-11px;
+    display:block;
+    width:22px;
+    height:22px;
+    background:url(../img/y.png) -29px 0  no-repeat;
+}
+.Bar-link li.inlink{
+    border-top:6px solid #23c377;
+}
+.Bar-link li.inlink em{
+    position:absolute;
+    left:50%;
+    top:-13px;
+    margin-left:-11px;
+    display:block;
+    width:22px;
+    height:22px;
+    background:url(../img/y.png) 0 0 no-repeat;
+}
+.order-table{
+    width: 100%;
+    float: left;
+    border: 2px solid #ffb622;
+}
+.OredrTitle{
+    padding-left: 20px;
+    border-bottom: 1px solid #f5f5f5;
+    font:bold 18px/60px microsoft yahei;
+}
+.TableOn{
+    padding: 20px;
+}
+.shubox .b_num .sy_minus{
+    width: 30px;
+    height: 30px;
+    border: 1px solid #eee;
+    line-height: 30px;
+    float: left;
+    text-align: center;
+}
+.shubox .b_num .sy_num{
+    width: 100px;
+    height: 30px;
+    text-align: center;
+    border: 1px solid #eee;
+    float: left;
+    border-left: none;
+    border-right: none;
+}
+.shubox .b_num .sy_plus{
+    width: 30px;
+    height: 30px;
+    border: 1px solid #eee;
+    line-height: 30px;
+    float: left;
+    text-align: center;
+}
+.TableOn .table>thead>tr>th{
+    line-height: 30px;
+    font-size: 16px;
+    position: relative;
+}
+.TableOn .table>tbody>tr>td{
+    border-bottom: 1px solid #eee;
+}
+.TableOn .table>tbody>tr>td>span{
+    margin-top: 10px;
+    margin-right: 20px;
+    font-size: 14px;
+}
+.TableOn .table>tbody>tr>.table-riqi em{
+    margin-left: 10px;
+}
+.TableOn .table>tbody>tr>.TableSubtotal em{
+    margin-left: 10px;
+    font-weight: 400;
+    font-size: 14px;
+    color:#ff6633;
+}
+.TableSubtotal .red{
+    font-weight: bold;
+    font-size: 18px !important;
+    font-family:  Arial;
+    color: red;
+}
+.TeamXx{
+    margin-top: 20px;
+    float: left;
+    width: 100%;
+    border: 1px solid #eee;
+}
+.TeamOn{
+    padding: 20px;
+}
+
+.TeamInput{
+    width: 300px;
+    height: 32px;
+    border: 1px solid #eee;
+    outline: none;
+    float: left;
+    padding-left: 10px;
+    margin-left: 10px;
+}
+::-webkit-input-placeholder { /* WebKit browsers */
+    color: #ccc;
+}
+:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+    color: #ccc;
+}
+::-moz-placeholder { /* Mozilla Firefox 19+ */
+    color: #ccc;
+}
+:-ms-input-placeholder { /* Internet Explorer 10+ */
+    color: #ccc;
+}
+.formTeam{
+    width: 100%;
+    float: left;
+    margin-bottom: 20px;
+}
+.formTeam label dd{
+    display: inline-block;
+    line-height: 32px;
+    margin-right: 5px;
+}
+.formTeam label{
+    font: normal 14px/32px microsoft yahei;
+    float: left;
+    width: 100px;
+    text-align: right;
+}
+.formTeam p{
+    width: 100px;
+    height: 32px;
+    border: 1px solid #ddd;
+    float: left;
+    margin-left: 20px;
+    background: #f5f5f5;
+    text-align: center;
+    color: #333;
+    cursor: pointer;
+    line-height: 32px;
+}
+.formTeam em{
+    margin-left: 20px;
+    line-height: 32px;
+    color: #ccc;
+}
+.formTeam textarea{
+    margin-left: 10px;
+    outline: none;
+    border: 1px solid #eee;
+}
+.Demand{
+    width: 100%;
+    float: left;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+.HotelOn{
+    width: 100%;
+    float: left;
+    height: 100px;
+    margin-top: 20px;
+    background: #fdf6f3;
+    border: 1px solid #ffb622;
+}
+.HotelOn-left{
+    padding: 10px;
+    float: left;
+}
+.HotelOn-left a{
+    text-decoration: none;
+}
+.HotelOn-left span{
+    margin-left: 50px;
+    color:#18bc43;
+}
+.HotelOn-left em{
+    font:normal 14px/80px microsoft yahei;
+    margin-left:5px;
+}
+.HotelOn-right{
+    float: right;
+    padding: 10px;
+}
+.HotelPrice{
+    float:left;
+}
+.HotelPrice span{
+    font:normal 18px/80px microsoft yahei;
+}
+.HotelPrice span i{
+    font-size: 14px;
+    margin-left: 5px;
+    margin-right: 5px;
+    color: #ff6633;
+}
+.HotelPrice span em{
+    font-size: 24px;
+    font-weight: bold;
+    color:#ff6633;
+}
+.HotelSubmit{
+    float: right;
+    margin-top: 30px;
+    margin-left: 20px;
+    margin-right: 20px;
+}
+.HotelSubmit a{
+    padding: 10px 50px;
+    background: #ff6633;
+    border: 1px solid #f04006;
+    font-size: 18px;
+    color: #fff;
+    text-decoration: none;
+}
+.Reservation{
+    width: 100%;
+    float: left;
+    margin-top: 20px;
+    border: 1px solid #0ea744;
+}
+.Reservation>.OredrTitle{
+    background: #f0fbf4;
+    border-bottom: none;
+}
+.Reservation-text{
+    padding:20px;
+}
+.Reservation-text{
+    width: 100%;
+}
+.ResvationOn h2{
+    float: left;
+    font-size: 16px;
+    width: 150px;
+    font-weight: bold;
+    color:#333;
+}
+.ResvationOn span{
+    float: left;
+    margin-left: 50px;
+}
+.ResvationOn span p{
+    margin-bottom: 15px;
+    font-size: 14px;
+    color: #999;
+}
+.ResvationOn{
+    width: 100%;
+    float: left;
+}
+.Preferential{
+    margin-left: 20px;
+    position: relative;
+}
+.Preferential a{
+    color: #666;
+    text-decoration: none;
+}
+.Preferential a:hover{
+    color: #ff6633;
+}
+.PreferentialShow{
+    width:500px;
+    border: 1px solid #dcdcdc;
+    background: #fff;
+    position: absolute;
+    left:90px;
+    top:50px;
+}
+.PreferentialShow ul{
+    padding: 20px;
+}
+.PreferentialShow .big-up-arrow {
+    left: 10px;
+    position: absolute;
+    top: -20px;
+    border-width: 10px;
+    border-style: dashed dashed solid dashed;
+    border-color: transparent transparent #dcdcdc transparent;
+    font-size: 0;
+    width: 0;
+    height: 0;
+    line-height: 0;
+}
+.PreferentialShow .small-up-arrow {
+    left: 12px;
+    position: absolute;
+    top: -16px;
+    border-width: 8px;
+    border-style: dashed dashed solid dashed;
+    border-color: transparent transparent #fff transparent;
+    font-size: 0;
+    width: 0;
+    height: 0;
+    line-height: 0;
+}
+.Bar-twok li{
+    width: 33.33% !important;
+    float: left;
+}
+.Information-hotel{
+    width: 100%;
+}
+.Information-hotel ul li{
+    width: 100%;
+    float: left;
+
+}
+.Information-hotel ul li:first-child{
+    margin-top: 20px;
+}
+.Information-hotel ul li{
+    margin-bottom: 10px;
+}
+.infor-left{
+    width: 70%;
+    float: left;
+}
+.infor-right{
+    margin-top: 20px;
+    padding-left: 40px;
+    width: 29%;
+    float: left;
+    border-left: 1px solid #eee;
+}
+.zhifu{
+    width: 150px;
+    height: 50px;
+    line-height: 50px;
+    outline: none;
+    border: 1px solid #e1410b;
+    background: #fc4d13;
+    border-radius: 5px;
+    font-size: 18px;
+    color: #fff;
+}
+.quxiao{
+    width: 150px;
+    height: 50px;
+    line-height: 50px;
+    outline: none;
+    border: 1px solid #eee;
+    background: #f5f5f5;
+    border-radius: 5px;
+    font-size: 18px;
+    color: #999;
+}
+.infor-right i{
+    display: block;
+    font-size: 14px;
+    color: #999;
+    margin-top: 10px;
+}
+.Discount-show{
+    font-size: 16px;
+}
+.Discount-show i{
+    font-size: 14px;
+    margin-left: 10px;
+}
+
+/*线路，班期，库存，价格样式集合*/
+.line-box ul{
+    overflow: hidden;
+    margin-top: 0;
+}
+.line-box ul li{
+    width: 33.33%;
+    float: left;
+    position: relative;
+    padding: 0;
+}
+.line-box ul li .num{
+    position: static;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: block;
+    text-align: center;
+    font-size: 18px;
+    line-height: 40px;
+    padding:0;
+    background: #e7e7e7;
+    color:#ccc;
+}
+.line-box ul .effect .num{
+    background: #13bb6b;
+}
+.line-box .effect .border{
+    border-top: 7px solid #13bb6b!important;
+}
+.line-box ul li .border{
+    width: 100% !important;
+    /*z-index: -9;*/
+    left: 40px!important;
+    position: absolute;
+    border-top: 7px solid #e7e7e7!important;
+    width: 100% !important;
+    left: 40px!important;
+    top:25% !important;
+}
+.line-box ul li .text{
+    margin: 10px 0 0 0;
+    font-size: 16px;
+    color: #666;
+}
+.line-table{
+    margin-top: 40px;
+}
+.line-table ul li{
+    width: 25%;
+    float: left;
+}
+.line-table .line-active span{
+    background: #13bb6b;
+    border: 1px solid #0c9a57;
+    color: #fff;
+}
+.line-table ul li span{
+    margin: 0 20px 0 0;
+    background: #eee;
+    border-radius: 5px;
+    display: block;
+    text-align: center;
+    line-height: 50px;
+    font-size: 18px;
+    border:1px solid #dcdcdc;
+    color: #999;
+}
+.line-container{
+    margin-top: 40px;
+}
+.line-container .form-group .red{
+    display: inline-block;
+    margin-right: 5px;
+    color: red;
+}
+.line-list .form-group{
+    margin-bottom: 20px;
+}
+.line-list .form-group .form-img{
+    width: 300px;
+    height: 220px;
+    background-position: 110px 60px;
+}
+.line-list .form-group .form-img b{
+    bottom: 20px;
+}
+.line-list .form-group .control-label{
+    float: left;
+}
+.line-trip h3{
+    width: 100%;
+    background: #f5f5f5;
+    line-height: 50px;
+    font-size: 20px;
+    padding-left: 20px;
+}
+.line-trip .form-group .form-input-2{
+    width: 120px;
+    float: left;
+    margin-right: 5px;
+}
+.line-trip .form-group .line-height span{
+    line-height: 34px;
+    float: left;
+    margin-right: 5px;
+}
+.line-trip .form-group .line-height .radio{
+    float: left;
+}
+.line-radio span{
+    margin-left: 10px;
+    line-height: 32px;
+    float: left;
+}
+.lind-right{
+    margin-right: 50px;
+    float: left;
+}
+
+.traveller span{
+    padding: 10px 20px;
+    background: #eee;
+    float: left;
+}

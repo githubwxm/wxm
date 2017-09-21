@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <link href="../../static/css/style.css" rel="stylesheet">
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=1.4&key=sNHtfFMen9ktOAbQYpC23Gmc"></script>
+</head>
+<body vtag="root">
+
+<div class="event-main">
+    <div class="event-box">
+        <div class="title">
+            <b>基本信息</b>
+            <i></i>
+        </div>
+        <ul class="Generic">
+            <li>
+                <label class="col-md-2 col-sm-2 col-lg-3 control-label">酒店名称：</label>
+                <div class="col-sm-3 col-md-3 col-lg-3 form-control-static" v-cloak>{{prod_info.product_name}}</div>
+
+                <label class="col-md-2 col-sm-2 col-lg-2 control-label">房型名称：</label>
+                <div class="col-sm-3 col-md-3 col-lg-3 form-control-static" v-cloak>{{prod_info.name}}</div>
+            </li>
+
+            <li>
+                <label class="col-md-2 col-sm-2 col-lg-3 control-label">市场价：</label>
+                <div class="col-sm-3 col-md-3 col-lg-3 form-control-static" v-cloak>
+                    {{formatNumber(prod_info.market_price)}}
+                </div>
+
+                <!--<label class="col-md-2 col-sm-2 col-lg-2 control-label">最低销售价：</label>
+                <div class="col-sm-5 col-md-5 col-lg-4">
+                    {{prod_info.tel}}
+                </div>-->
+            </li>
+
+            <li>
+                <label class="col-md-2 col-sm-2 col-lg-3 control-label">团散类型：</label>
+                <div class="col-sm-3 col-md-3 col-lg-3 form-control-static" v-cloak>{{prod_info.ticket_flag_name}}</div>
+
+                <label class="col-md-2 col-sm-2 col-lg-2 control-label">支付方式：</label>
+                <div class="col-sm-3 col-md-3 col-lg-3 form-control-static" v-if="prod_info.pay_type==5011">
+                    在线付
+                </div>
+                <div class="col-sm-3 col-md-3 col-lg-3 form-control-static" v-if="prod_info.pay_type==5012">
+                    到场付
+                </div>
+            </li>
+        </ul>
+
+        <div class="business-two">
+            <div class="title">
+                <b>房型信息</b>
+                <i></i>
+            </div>
+            <ul>
+                <li>
+                    <label class="col-md-2 col-sm-2 col-lg-3 control-label">是否有窗：</label>
+                    <div class="col-sm-3 col-md-3 col-lg-3 form-control-static"v-if="prod_info.window==1">有窗</div>
+                    <div class="col-sm-3 col-md-3 col-lg-3 form-control-static"v-if="prod_info.window==0">无窗</div>
+
+                    <label class="col-md-2 col-sm-2 col-lg-2 control-label">可住人数：</label>
+                    <div class="col-sm-3 col-md-3 col-lg-3 form-control-static" v-cloak>{{prod_info.person}}人</div>
+                </li>
+                <li>
+                    <label class="col-md-2 col-sm-2 col-lg-3 control-label">所在楼层：</label>
+                    <div class="col-sm-3 col-md-3 col-lg-3 form-control-static" v-cloak>{{prod_info.floor}}层</div>
+
+                    <label class="col-md-2 col-sm-2 col-lg-2 control-label">床型：</label>
+                    <div class="col-sm-3 col-md-3 col-lg-3 form-control-static" v-cloak>{{prod_info.bed}}</div>
+                </li>
+                <li>
+                    <label class="col-md-3 col-sm-3 col-lg-3 control-label">是否可加床：</label>
+                    <div class="col-sm-9 col-md-9 col-lg-9" >
+                        <div class="col-sm-3 col-md-3 col-lg-2" v-if="prod_info.add_bed==1">
+                            <b>是</b>
+                        </div>
+                        <div class="col-sm-3 col-md-3 col-lg-2" v-if="prod_info.add_bed==0">
+                            <b>否</b>
+                        </div>
+                    </div>
+
+                </li>
+
+                <li v-if="prod_info.add_bed==1">
+                    <label class="col-md-3 col-sm-3 col-lg-3 control-label">加床费用：</label>
+                    <div class="col-sm-9 col-md-9 col-lg-9" v-cloak>
+                       {{formatNumber(prod_info.add_bed_money)}}元
+                    </div>
+                </li>
+
+                <li>
+                    <label class="col-md-3 col-sm-3 col-lg-3 control-label">含早类型：</label>
+                    <div class="col-sm-9 col-md-9 col-lg-9" v-if="prod_info.breakfast_type==5970">
+                        <b>不含早餐</b>
+                    </div>
+                    <div class="col-sm-9 col-md-9 col-lg-9" v-if="prod_info.breakfast_type==5971">
+                        <b>一份早餐</b>
+                    </div>
+                    <div class="col-sm-9 col-md-9 col-lg-9" v-if="prod_info.breakfast_type==5972">
+                        <b>两份早餐</b>
+                    </div>
+                    <div class="col-sm-9 col-md-9 col-lg-9" v-if="prod_info.breakfast_type==5973">
+                        <b>多份早餐</b>
+                    </div>
+                </li>
+                <li>
+                    <label class="col-md-3 col-sm-3 col-lg-3 control-label">上网方式：</label>
+                    <div class="col-sm-3 col-md-3 col-lg-2" v-cloak>
+                        {{prod_info.network}}
+                    </div>
+                </li>
+
+                <li>
+                    <label class="col-md-3 col-sm-3 col-lg-3 control-label">是否可参与返现活动：</label>
+                    <div class="col-sm-3 col-md-3 col-lg-3 form-control-static"v-if="prod_info.return_money==1">是</div>
+                    <div class="col-sm-3 col-md-3 col-lg-3 form-control-static"v-if="prod_info.return_money==0">否</div>
+                </li>
+            </ul>
+        </div>
+
+        <div class="business-two">
+            <div class="title">
+                <b>预订要求</b>
+                <i></i>
+            </div>
+            <ul>
+                <li>
+                    <label class="col-md-2 col-sm-2 col-lg-3 control-label">一次最大预订数量：</label>
+                    <div class="col-sm-3 col-md-3 col-lg-3 form-control-static" v-cloak>{{prod_info.max_num}}</div>
+
+                    <label class="col-md-2 col-sm-2 col-lg-2 control-label">预订和使用时间限制：</label>
+                    <div class="col-sm-3 col-md-3 col-lg-3 form-control-static" v-if="prod_info.booking_limit==5141">当天预订后即可入住</div>
+                    <div class="col-sm-3 col-md-3 col-lg-3 form-control-static" v-if="prod_info.booking_limit==5140" v-cloak>入住前{{prod_info.booking_day_limit}}天{{prod_info.booking_time_limit}}</div>
+                </li>
+                <li>
+                    <label class="col-md-2 col-sm-2 col-lg-3 control-label">预订须知：</label>
+                    <div class="col-sm-8 col-md-8 col-lg-8 form-control-static" v-cloak>
+                        {{prod_info.booking_notes}}
+                    </div>
+                </li>
+                <li>
+                    <label class="col-md-2 col-sm-2 col-lg-3 control-label">使用须知：</label>
+                    <div class="col-sm-8 col-md-8 col-lg-8 form-control-static" v-cloak>
+                        {{prod_info.use_notes}}
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <div class="business-two">
+            <div class="title">
+                <b>退订规则</b>
+                <i></i>
+            </div>
+            <ul>
+                <li>
+                    <div class="form-group clearfix" v-if="prod_info.refund_rule.all == 1">
+                        <label class="col-md-3 col-sm-3 col-lg-2 control-label">退货规则：</label>
+                        <div class=" col-md-4 form-control-static">
+                            无损退
+                        </div>
+                    </div>
+                    <div class="form-group clearfix" v-if="prod_info.refund_rule.all == 0">
+                        <label class="col-md-3 col-sm-3 col-lg-2 control-label">退货规则：</label>
+                        <div class="col-sm-6 col-md-6 col-lg-5 ">
+                            <table  class="table table-bordered table-condensed table-box">
+                                <tbody>
+                                <tr class="tr-bt-sc">
+                                    <td>退订时间T</td>
+                                    <td>手续费</td>
+                                </tr>
+                                <tr v-for="line in list">
+                                    <td v-if="line.befor == undefined" v-cloak>
+                                        T<={{line.this}}{{line.time}}
+                                    </td>
+                                    <td v-if="line.befor != undefined" v-cloak>
+                                        {{line.befor}}&lt;T&lt;={{line.this}}{{line.time}}
+                                    </td>
+                                    <td v-if="line.type == 5071" v-cloak>
+                                        手续费{{line.fixed}}
+                                    </td>
+                                    <td v-if="line.type == 5072" v-cloak>
+                                        手续费{{line.percent}}%
+                                    </td>
+                                </tr>
+                                <tr v-for="line in temp" v-cloak>
+                                    <td>
+                                        T&gt;{{line.befor}}
+                                    </td>
+                                    <td v-if="line.type == 5071" v-cloak>
+                                        手续费{{line.fixed}}
+                                    </td>
+                                    <td v-if="line.type == 5072" v-cloak>
+                                        手续费{{line.percent}}%
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <div class="business-two">
+            <div class="title">
+                <b>房型展示</b>
+                <i></i>
+            </div>
+            <ul>
+                <li>
+                    <label class="col-md-2 col-sm-2 col-lg-3 control-label">酒店图片：</label>
+                    <div class="col-sm-3 col-md-3 col-lg-3 form-control-static" v-for="(index,image) in images" v-if="index < 3">
+                        <img class="img-thumbnail" :src="base_url + image.link">
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" src="../api/local/client/system/load_config"></script>
+<script type="text/javascript" src="../../static/script/local/require/require.js"></script>
+<script type="text/javascript" src="../../static/script/local/require_config.js"></script>
+<script type="text/javascript" src="../../static/script/local/view/prod/hotel/subProdView.js"></script>
+
+</body>
+</html>

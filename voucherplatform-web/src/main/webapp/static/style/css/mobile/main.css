@@ -1,0 +1,152 @@
+@charset "utf-8";
+
+/*首页顶部邮件*/
+.main .bar-email .email-num{
+	display: inline-block;
+	padding: 2px;
+	vertical-align: text-top;
+	font: normal 8px/1 "Microsoft YaHei";
+	color: #fff;
+	background-color: #f00;
+	-webkit-transform: scale(.8);
+	-moz-transform: scale(.8);
+	-ms-transform: scale(.8);
+	-o-transform: scale(.8);
+	transform: scale(.8);
+	border-radius: 50%;
+}
+
+.main .mbox{
+	font: normal 14px/1.4 microsoft yahei;
+}
+	.main .mboxin{
+		border-bottom: 1px solid #e8e6e6;
+	}
+/*账号余额*/
+.main .remain-money{
+	padding: 0 15px;
+	font: normal 14px/4 "Microsoft YaHei";
+	background-color: #fff;
+}
+	.main .remain-money a{
+		display: block;
+		color: #333;
+	}
+		.main .remain-money .remain-text,.main .remain-money .remain-recharge{
+			display: inline-block;
+			vertical-align: middle;
+		}
+	        .main .remain-money .price{
+		        color: #f00;
+	        }
+        .main .remain-money .remain-recharge{
+	        margin-left: 10px;
+	        padding: 0 10px;
+	        font: normal 12px/1.7 "Microsoft YaHei";
+	        color: #fff;
+	        background-color: #ff9900;
+	        border-radius: 12px;
+        }
+        
+/*酒店预订等导航*/
+.main .shop-nav .am-row{
+	padding: 16px 8px 0;
+}
+.main .shop-nav .nav-list{
+	padding: 0 8px;
+	margin-bottom: 16px;
+}
+	.main .shop-nav .nav-list a{
+		display: block;
+		padding-left: 15px;
+		font: normal 18px/3 "Microsoft YaHei";
+		color: #fff;
+		background-color: #7bc00e;
+		border-radius: 5px;
+	}
+		.main .shop-nav .nav-list a > em{
+			display: inline-block;
+			vertical-align: middle;
+			padding-left: 10px;
+		}
+    /*各导航背景颜色*/
+	.main .shop-nav .mh-reverse a{
+		background-color: #ff9900;
+	}
+    .main .shop-nav .mt-reverse a{
+		background-color: #ff9900;
+	}
+/*首页列表*/
+.main .new-activity{
+	background-color: #fff;
+}
+.main .new-activity .activity-tit{
+	position: relative;
+	padding-left: 15px;
+	font: normal 16px/2.5 "Microsoft YaHei";
+	color: #333;
+}
+	.main .new-activity .activity-tit .title-text{
+		display: inline-block;
+		vertical-align: middle;
+		padding: 0 1.5em;
+	}
+	.main .new-activity .activity-tit .tit-border{
+		position: absolute;
+		left: 15px;
+		bottom: 0;
+		width: 7em;
+		height: 2px;
+		background-color: #23c478;
+	}
+.main .ativity-cont .activity-list{
+	
+}
+.main .ativity-cont .activity-list a{
+	display: block;
+	display: -webkit-box;
+	display: -moz-box;
+	display: -ms-flexbox;
+	display: flex;
+	padding: 15px;
+}
+.main .ativity-cont .activity-list .list-cont{
+	max-width: 65%;
+	width: 65%;
+	overflow: hidden;
+}
+	.main .ativity-cont .activity-list .list-cont .cont-tit,.main .ativity-cont .activity-list .list-cont .cont-price,.main .ativity-cont .activity-list .list-cont small{
+		display: block;
+	}
+	.main .ativity-cont .activity-list .list-cont .cont-tit{
+		font-size: 16px;
+	}
+	.main .ativity-cont .activity-list .list-cont small{
+		font: normal 12px/2 "Microsoft YaHei";
+		color: #a8a7a7;
+	}
+    .main .ativity-cont .activity-list .list-cont .cont-price{
+	    padding-top: 6px;
+	    font-size: 12px;
+    }
+        .main .ativity-cont .activity-list .list-cont .cont-price .current-price{
+	        color: #ff9900;
+        }
+	        .main .ativity-cont .activity-list .list-cont .cont-price .current-price > em{
+		        font-size: 16px;
+	        }
+        .main .ativity-cont .activity-list .list-cont .cont-price .delete{
+	        text-decoration: line-through;
+	        color: #bebfbf;
+        }
+	
+/*立即预定*/
+.main .ativity-cont .activity-list .list-link{
+	display: inline-block;
+	vertical-align: middle;
+	padding: 0 12px;
+	font: normal 14px/2 "Microsoft YaHei";
+	color: #fff;
+	background-color: #ff9900;
+	border-radius: 5px;
+}

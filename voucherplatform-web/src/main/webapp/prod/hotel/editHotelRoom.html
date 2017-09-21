@@ -1,0 +1,396 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <header-title></header-title>
+    <link href="../../static/css/style.css" rel="stylesheet">
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=1.4&key=sNHtfFMen9ktOAbQYpC23Gmc"></script>
+</head>
+<body vtag="root">
+<div class="root-main">
+    <div class="main-container clearfix">
+        <div class="Establish clearfix">
+            <div class="title">
+                <h3>修改房型</h3>
+                <em></em>
+            </div>
+            <validator name="checkSubForm">
+                <form id="subForm" class="form-horizontal" method="post" onSubmit="return false;">
+                    <ul>
+                        <li>
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>酒店名称：</label>
+                            <div class="col-sm-9 col-md-8 col-lg-6">
+                                <input class="form-control" type="text" maxlength="50" v-model="subFormData.product_name" v-validate:product_name="{required:true}" initial="off" disabled>
+                            </div>
+                            <div class="Prompt" v-show="$checkSubForm.product_name.required"><img src="../../static/style/img/baocuo.png"><label class="error">请填写酒店名称！</label></div>
+                        </li>
+                        <li>
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>房型名称：</label>
+                            <div class="col-sm-6 col-md-6 col-lg-4">
+                                <input type="text" class="form-control" v-model="subFormData.name" v-validate:name="{required:true}" initial="off"/>
+                                <div class="Prompt-one"><span>注意</span><b>同一酒店内房型名称必须为唯一</b></div>
+                            </div>
+                            <div class="Prompt" v-show="$checkSubForm.name.required"><img src="../../static/style/img/baocuo.png"><label class="error">请填写房型名称！</label></div>
+                        </li>
+                        <li>
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>市场价：</label>
+                            <div class="col-sm-3 col-md-2 col-lg-2">
+                                <input type="text" class="form-control" v-model="subFormData.market_price" v-validate:market_price="{required:true}" initial="off"/><h1>元</h1>
+                                <div v-show="$checkSubForm.market_price.required"><img src="../../static/style/img/baocuo.png"><label class="error">请填写市场价！</label></div>
+                            </div>
+
+
+                            <label class="col-md-2 col-sm-2 col-lg-1 control-label"><dd>*</dd>最低销售价：</label>
+                            <div class="col-sm-3 col-md-2 col-lg-3">
+                                <input type="text" class="form-control" v-model="subFormData.min_sell_price" v-validate:min_sell_price="{required:true}" initial="off"/><h1>元</h1>
+                            </div>
+                            <div class="Prompt" v-show="$checkSubForm.min_sell_price.required"><img src="../../static/style/img/baocuo.png"><label class="error">请填写最低销售价！</label></div>
+                        </li>
+                        <li>
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>团散类型：</label>
+                            <div class="col-sm-2 col-md-2 col-lg-1">
+                                <input type="radio" name="ticket_flag" value="5031" v-model="subFormData.ticket_flag" class="chekbox" checked><b class="policy-b">散客</b>
+                            </div>
+                            <div class="col-sm-2 col-md-2 col-lg-1">
+                                <input type="radio" name="ticket_flag" value="5032" v-model="subFormData.ticket_flag" class="chekbox"><b class="policy-b">团队</b>
+                            </div>
+                        </li>
+                        <li>
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>支付方式：</label>
+                            <div class="col-sm-2 col-md-2 col-lg-1">
+                                <input type="radio" name="pay_type" value="5011" v-model="subFormData.pay_type" class="chekbox" checked><b class="policy-b">在线支付</b>
+                            </div>
+                            <div class="col-sm-2 col-md-2 col-lg-1" v-if="ep_type != 10002">
+                                <input type="radio" name="pay_type" value="5012" v-model="subFormData.pay_type" class="chekbox" ><b class="policy-b">现场到付</b>
+                            </div>
+                        </li>
+                        <!--<li>
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label"><span class="icon-require" style="color: red">*</span>发码公司：</label>
+                            <div class="col-sm-4 col-md-4 col-lg-4">
+                                <remote-sel :setting="maTypeSetting" :value.sync="subFormData.ep_ma_id" v-validate:ep_ma_id="{required:true}" initial="off"></remote-sel>
+                            </div>
+                            <div class="Prompt" v-show="$checkSubForm.ep_ma_id.required"><img src="../../static/style/img/baocuo.png"><label class="error">请选择发码公司！</label></div>
+                        </li>-->
+                        <!--<li>
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>票务产品：</label>
+                            <div class="col-sm-6 col-md-6 col-lg-6">
+                                <remote-sel :setting="maProductTypeSetting" :value.sync="subFormData.ma_product_id" v-validate:ma_product_id="{required:true}" initial="off"></remote-sel>
+                            </div>
+                            <div v-show="$checkSubForm.ma_product_id.required" for="contactMobile"><img src="../../static/style/img/baocuo.png"><label class="error">请选择票务产品！</label></div>
+                        </li>-->
+                    </ul>
+
+                    <div class="business-two">
+                        <div class="title">
+                            <h3>房型信息</h3>
+                            <em></em>
+                        </div>
+                     <ul>
+                        <li>
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>是否有窗：</label>
+                            <div class="col-sm-2 col-md-2 col-lg-1">
+                                <input type="radio" name="window" value="1" v-model="subFormData.window" class="chekbox" checked><b>有窗</b>
+                            </div>
+                            <div class="col-sm-2 col-md-2 col-lg-1">
+                                <input type="radio" name="window" value="0" v-model="subFormData.window" class="chekbox"><b>无窗</b>
+                            </div>
+                        </li>
+
+                        <li>
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>可住人数：</label>
+                            <div class="col-sm-6 col-md-6 col-lg-6">
+                                <input type="text" class="form-control" v-model="subFormData.person" v-validate:person="{required:true}" initial="off"/><h1>人/间</h1>
+                            </div>
+                            <div class="Prompt" v-show="$checkSubForm.person.required"><img src="../../static/style/img/baocuo.png"><label class="error">请填写可住人数！</label></div>
+                        </li>
+
+                        <li>
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label">所在楼层：</label>
+                            <div class="col-sm-6 col-md-6 col-lg-6">
+                                <input type="text" class="form-control" v-model="subFormData.floor"/>
+                            </div>
+                            <em>如1，5表示1和5层，1-4表示1到4层</em>
+                        </li>
+
+                        <li>
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label">床型：</label>
+                            <div class="col-sm-6 col-md-6 col-lg-6">
+                                <input type="text" class="form-control" v-model="subFormData.bed"/>
+                            </div>
+                            <em>例如：大床房1.8米的大床</em>
+                        </li>
+
+                        <li>
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label">是否可加床：</label>
+                            <div class="col-sm-2 col-md-2 col-lg-1">
+                                <input type="radio" name="add_bed" value="1" v-model="subFormData.add_bed" class="chekbox"><span>是</span>
+                            </div>
+                            <div class="col-sm-2 col-md-2 col-lg-1">
+                                <input type="radio" name="add_bed" value="0" v-model="subFormData.add_bed" class="chekbox" checked><span>否</span>
+                            </div>
+                        </li>
+
+                        <li v-if="subFormData.add_bed==1">
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label">加床费用：</label>
+                            <div class="col-sm-6 col-md-6 col-lg-6">
+                                <input type="text" class="form-control" v-model="subFormData.add_bed_money"/>
+                            </div>
+                            <em>选择是就会出现费用文本框，选择否不出现文本框</em>
+                        </li>
+                         <li>
+                             <label class="col-md-3 col-sm-3 col-lg-3 control-label">含早类型：</label>
+                             <div class="col-sm-2 col-md-2 col-lg-2 radio-width">
+                                 <input type="radio" name="breakfast_type" value="5970" v-model="subFormData.breakfast_type" class="chekbox" checked><span>不含早餐</span>
+                             </div>
+                             <div class="col-sm-2 col-md-2 col-lg-2 radio-width">
+                                 <input type="radio" name="breakfast_type" value="5971" v-model="subFormData.breakfast_type" class="chekbox" ><span>一份早餐</span>
+                             </div>
+                             <div class="col-sm-2 col-md-2 col-lg-2 radio-width">
+                                 <input type="radio" name="breakfast_type" value="5972" v-model="subFormData.breakfast_type" class="chekbox"><span>两份早餐</span>
+                             </div>
+                             <div class="col-sm-2 col-md-2 col-lg-2 radio-width">
+                                 <input type="radio" name="breakfast_type" value="5973" v-model="subFormData.breakfast_type" class="chekbox"><span>多份早餐</span>
+                             </div>
+                         </li>
+                        <li>
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label">上网方式：</label>
+                            <div class="col-sm-6 col-md-6 col-lg-6">
+                                <input type="text" class="form-control" v-model="subFormData.network"/>
+                            </div>
+                            <em>例如：免费无线网或者有限宽带</em>
+                        </li>
+
+                        <li>
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>是否需要最晚到店时间：</label>
+                            <div class="col-sm-2 col-md-2 col-lg-1">
+                                <input type="radio" name="ischeck_in_latest" value="1" v-model="subFormData.ischeck_in_latest" class="chekbox"><span>是</span>
+                            </div>
+                            <div class="col-sm-2 col-md-2 col-lg-1">
+                                <input type="radio" name="ischeck_in_latest" value="0" v-model="subFormData.ischeck_in_latest " class="chekbox"><span>否</span>
+                            </div>
+                        </li>
+
+                        <!--<li>
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>是否可参与返现活动：</label>
+                            <div class="col-sm-2 col-md-2 col-lg-1">
+                                <input type="radio" name="return_money" value="1" v-model="subFormData.return_money" class="chekbox"><span>是</span>
+                            </div>
+                            <div class="col-sm-2 col-md-2 col-lg-1">
+                                <input type="radio" name="return_money" value="0" v-model="subFormData.return_money" class="chekbox" checked><span>否</span>
+                            </div>
+                        </li>-->
+                     </ul>
+                    </div>
+
+                    <div class="business-two">
+                       <div class="title">
+                           <h3>预订要求</h3>
+                           <em></em>
+                       </div>
+                      <ul>
+                          <li>
+                              <label class="col-md-3 col-sm-3 col-lg-3 control-label">限售：</label>
+                              <div class="col-sm-4 col-md-4 col-lg-4">
+                                  <input type="text" class="form-control" v-model="subFormData.total_stock" v-validate:total_stock="{min:0}" initial="off"/>
+                              </div>
+                              <div class="Prompt">
+                                  <span v-if="$checkSubForm.total_stock.min"><img src="../../static/style/img/baocuo.png"><label class="error">限售数量最低为0！</label></span>
+                              </div>
+                          </li>
+
+                          <li v-if="subFormData.ticket_flag == 5032">
+                              <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>一次最小预订数量：</label>
+                              <div class="col-sm-4 col-md-4 col-lg-4">
+                                  <input type="number" class="form-control" v-model="subFormData.min_buy_quantity" v-validate:min_buy_quantity="{required:true,min:1}" initial="off"/>
+                              </div>
+                              <div class="Prompt">
+                                  <span v-if="$checkSubForm.min_buy_quantity.required"><img src="../../static/style/img/baocuo.png"><label class="error">请填写最小预订数量！</label></span>
+                                  <span v-if="$checkSubForm.min_buy_quantity.min"><img src="../../static/style/img/baocuo.png"><label class="error">最小预订数量最低为1！</label></span>
+                              </div>
+                          </li>
+                          <li>
+                              <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>一次最大预订数量：</label>
+                              <div class="col-sm-4 col-md-4 col-lg-4">
+                                  <input type="number" class="form-control" v-model="subFormData.max_buy_quantity" v-validate:max_buy_quantity="{required:true,min:0}" initial="off"/>
+                              </div>
+                              <div class="Prompt">
+                                  <span v-if="$checkSubForm.max_buy_quantity.required"><img src="../../static/style/img/baocuo.png"><label class="error">请填写最大预订数量！</label></span>
+                                  <span v-if="$checkSubForm.max_buy_quantity.min"><img src="../../static/style/img/baocuo.png"><label class="error">最大预订数量最低为0！</label></span>
+                              </div>
+                          </li>
+                          <li>
+                              <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>供应商确认：</label>
+                              <div class="col-sm-2 col-md-2 col-lg-2">
+                                  <input type="radio" value="1" v-model="subFormData.supplier_audit" class="chekbox"><span>商家确认后，方可进行支付</span>
+                              </div>
+                              <div class="col-sm-2 col-md-2 col-lg-1">
+                                  <input type="radio" value="0" v-model="subFormData.supplier_audit" class="chekbox"><span>无需商家确认</span>
+                              </div>
+                          </li>
+                        <li>
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label">预订和使用时间限制：</label>
+                            <div class="col-sm-6 col-md-6 col-lg-6">
+                                <input type="radio" name="booking_limit" value="5141" v-model="subFormData.booking_limit" checked><span>当天预订后即可入住</span>
+                            </div>
+                        </li>
+                        <li>
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label"></label>
+                            <div class="col-sm-6 col-md-6 col-lg-6">
+                                <input type="radio" name="booking_limit" value="5140" v-model="subFormData.booking_limit" class="input-one-3"><span>入住前</span>
+                                <input class="input-one input-one-2" type="number" min="1" v-model="subFormData.booking_day_limit">天<input type="text" class="input-one" v-model="subFormData.shi"/>时
+                                <input type="text" class="input-one" v-model="subFormData.fen"/>分之前预订
+                            </div>
+                        </li>
+                        <li v-if="subFormData.ischeck_in_latest==1">
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label">最晚到店时间：</label>
+                            <div class="col-sm-6 col-md-6 col-lg-6">
+                                <div class=" col-sm-4 col-lg-4" id="check_in_latest" style="padding-left: 0px;">
+                                    <input type="text" class="form-control" v-model="subFormData.check_in_latest"/>
+                                </div>
+                                <em>例如：14:00</em>
+                            </div>
+
+                        </li>
+                        <li>
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label">预订须知：</label>
+                            <div class="col-sm-6 col-md-6 col-lg-6">
+                                <textarea class="form-control"  v-model="subFormData.booking_notes"></textarea>
+                            </div>
+                        </li>
+                        <li>
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label">使用须知：</label>
+                            <div class="col-sm-6 col-md-6 col-lg-6">
+                                <textarea class="form-control"  v-model="subFormData.use_notes"></textarea>
+                            </div>
+                        </li>
+                       </ul>
+                      </div>
+
+                    <div class="business-two">
+                       <div class="title">
+                        <h3>退货规则</h3>
+                        <em></em>
+                       </div>
+                      <ul>
+                        <li>
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>退货规则：</label>
+                            <div class="col-sm-8 col-md-8 col-lg-6 clearfix">
+                                <remote-sel :setting="refundSetting" :value.sync="subFormData.cust_refund_rule" @change="refundRule" v-validate:cust_refund_rule="{required:true}" initial="off"></remote-sel>
+                            </div>
+                            <div class="Prompt" v-show="$checkSubForm.cust_refund_rule.required"><img src="../../static/style/img/baocuo.png"><label class="error">请选择退货规则！</label></div>
+                        </li>
+                      </ul>
+                    </div>
+
+                        <div class="business-two">
+                           <div class="title">
+                               <h3>房型展示</h3>
+                               <em></em>
+                           </div>
+                         <ul>
+                            <li class="Estab-one">
+                                <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>房型图片：</label>
+                                <div class="col-sm-9 col-md-9  col-lg-9 form-img">
+                                    <upload-pic :setting.sync="upSetting" :list.sync="subFormData.img"></upload-pic>
+                                    <input type="hidden" v-model="subFormData.img.length" v-validate:img="{min:1}" initial="off"/>
+                                    <div  v-show="$checkSubForm.img.min"><img src="../../static/style/img/baocuo.png"><label class="error">请选择房型图片！</label></div>
+                                </div>
+
+                            </li>
+
+                            <div class="Matters">
+                                <label class="col-md-3 col-sm-3 col-lg-3 control-label"></label>
+                                <div class="col-sm-9 col-md-9  col-lg-9">
+                                    <span class="btn btn-orange">注意事项</span>
+                                    <!--<p>1.&nbsp;&nbsp;必须上转一张照片作为主图展示...</p>-->
+                                    <p>图片尺寸必须大于等于1024*768px，图片大小必须小于2000KB，仅支持png, gif, jpg图片格式...</p>
+                                </div>
+                            </div>
+                         </ul>
+                        </div>
+
+                    <div class="business-two">
+                            <div class="title">
+                                 <h3>库存日历</h3>
+                                 <em></em>
+                            </div>
+                     <ul>
+                        <li>
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>库存设置：</label>
+                            <div class="col-sm-2 col-md-2 col-lg-2">
+                                <input type="radio"  value="0" v-model="subFormData.isrepertory" class="chekbox" checked><span>不设库存，全人工确认</span>
+                            </div>
+                            <div class="col-sm-2 col-md-2 col-lg-2">
+                                <input type="radio"  value="1" v-model="subFormData.isrepertory" class="chekbox"><span>设库存，严格按库存销售</span>
+                            </div>
+                        </li>
+                        <li v-if="subFormData.isrepertory==1">
+                            <div class="form-group-top clearfix">
+                                <label class="col-sm-2 col-md-2 col-lg-2 control-label"></label>
+                                <div class="col-sm-10 col-md-10 col-lg-8">
+                                    <table class="table table-bordered">
+                                        <tbody>
+                                        <tr>
+                                            <td>起止日期</td>
+                                            <td>
+                                                <datepicker :value.sync="subFormData.start_date" class="col-sm-3 col-lg-3" language="ch"></datepicker>
+                                                <b>至</b>
+                                                <datepicker :value.sync="subFormData.end_date" class="col-sm-3 col-lg-3" language="ch"></datepicker>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>周期</td>
+                                            <td>
+                                                <div class="col-sm-12 col-md-12 col-lg-12 kucun-time kucun-chbox clearfix">
+                                                    <span><input type="checkbox" class="chekbox" value="1" name="week" v-model="subFormData.week" v-validate:week="{required:true}" initial="off">星期一</span>
+                                                    <span><input type="checkbox" class="chekbox" value="2" name="week" v-model="subFormData.week" v-validate:week="{required:true}" initial="off">星期二</span>
+                                                    <span><input type="checkbox" class="chekbox" value="3" name="week" v-model="subFormData.week" v-validate:week="{required:true}" initial="off">星期三</span>
+                                                    <span><input type="checkbox" class="chekbox" value="4" name="week" v-model="subFormData.week" v-validate:week="{required:true}" initial="off">星期四</span>
+                                                    <span><input type="checkbox" class="chekbox" value="5" name="week" v-model="subFormData.week" v-validate:week="{required:true}" initial="off">星期五</span>
+                                                    <span><input type="checkbox" class="chekbox" value="6" name="week" v-model="subFormData.week" v-validate:week="{required:true}" initial="off">星期六</span>
+                                                    <span><input type="checkbox" class="chekbox" value="0" name="week" v-model="subFormData.week" v-validate:week="{required:true}" initial="off">星期天</span>
+                                                </div>
+                                               <span class="Prompt" v-show="$checkSubForm.week.required"><label class="error">请选择日期！</label></span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>日库存</td>
+                                            <td>
+                                                <input id="stock1" class="form-control form-input-3" style="margin-left: 20px;" type="number" maxlength="20" v-model="subFormData.stock" v-validate:stock="{required:true}" initial="off">
+                                                <span class="Prompt" v-show="$checkSubForm.stock.required"><label class="error">请填写日库存！</label></span>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                    <!--<div class="kucun-time kucun-chek clearfix">
+                                        <input type="checkbox" class="chekbox" value="1" v-model="subFormData.isbeyond" initial="off"><b>允许超卖，需人工审核</b>
+                                    </div>-->
+                                    <div @click="comit" class="btn">确&nbsp;&nbsp;定</div>
+                                </div>
+                            </div>
+                        </li>
+                        <li v-if="pickStatus==true && subFormData.isrepertory!=0">
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label"></label>
+                            <div class="col-sm-8 col-md-8 col-lg-6 clearfix">
+                                <datepicker :value.sync="Date" v-ref:pick class="col-sm-2 col-lg-2" language="ch" :setting.sync="pickerSetting"></datepicker>
+                            </div>
+                        </li>
+                     </ul>
+                    </div>
+                </form>
+            </validator>
+            <div class="Button-box" v-if="subFormData.product_id == undefined">
+                <button class="btn" type="submit" @click="upload">添加</button>
+            </div>
+            <div class="Button-box" v-if="subFormData.product_id != undefined">
+                <button class="btn" type="submit" @click="upload">修改</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="../api/local/client/system/load_config"></script>
+<script type="text/javascript" src="../../static/script/local/require/require.js"></script>
+<script type="text/javascript" src="../../static/script/local/require_config.js"></script>
+<script type="text/javascript" src="../../static/script/local/view/prod/hotel/editHotelRoom.js"></script>
+</body>
+</html>
