@@ -1,8 +1,6 @@
 package com.all580.voucherplatform.controller;
 
-import com.all580.voucherplatform.api.VoucherConstant;
 import com.all580.voucherplatform.api.service.UserService;
-import com.all580.voucherplatform.filter.AuthenticationFilter;
 import com.all580.voucherplatform.manager.UserValidateManager;
 import com.framework.common.BaseController;
 import com.framework.common.Result;
@@ -46,8 +44,6 @@ public class UserController extends BaseController {
             String userName = CommonUtil.emptyStringParseNull(map.get("userName"));
             Result userResult = userService.getUser(userName);
             Object o = userResult.get();
-//            redisUtils.setex(VoucherConstant.REDISVOUCHERLOGINKEY + ":" + request.getSession().getId(),
-//                    AuthenticationFilter.LOGINTIMEOUT, o);
             request.getSession().setAttribute("user", o);
         }
         return userService.login(map);
@@ -64,9 +60,7 @@ public class UserController extends BaseController {
         if (!oldPassword.equals(CommonUtil.emptyStringParseNull(mapUser.get("password")))) {
             return new Result(false, "原密码输入错误！");
         }
-
-//        redisUtils.del(VoucherConstant.REDISVOUCHERLOGINKEY + ":" + request.getSession().getId());
-
+        request.getSession().invalidate();
         mapUser.put("password", CommonUtil.emptyStringParseNull(map.get("passWord")));
         return userService.update(mapUser);
 

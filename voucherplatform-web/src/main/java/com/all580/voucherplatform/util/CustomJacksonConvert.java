@@ -74,6 +74,7 @@ public class CustomJacksonConvert extends MappingJackson2HttpMessageConverter {
 			Map<String, Object> result = new HashMap<>();
 			result.put("code", r.getCode() == null ? (r.isSuccess() ? Result.SUCCESS : Result.FAIL) : r.getCode());
 			result.put("message", r.getError()== null ? (r.isSuccess() ? "操作成功" : "操作失败") :r.getError());
+			result.put("success", r.isSuccess());
 			result.put("data", r.get());
 			result.put("sync_data", r.getExt(Result.SYNC_DATA));
 			String key = CommonUtil.objectParseString(r.getExt("access_key"));
