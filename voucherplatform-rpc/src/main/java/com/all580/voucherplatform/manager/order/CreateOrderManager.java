@@ -250,7 +250,7 @@ public class CreateOrderManager {
         order.setOrderCode(String.valueOf(UUIDGenerator.generateUUID()));//生成订单号
         order.setPlatformOrderId(orderId);
         order.setPlatform_id(platformId);
-        order.setPlatformprod_id(platformProduct.getPlatform_id());
+        order.setPlatformprod_id(platformProduct.getId());
         order.setSupply_id(platformProduct.getSupply_id());
         order.setTicketsys_id(supply.getTicketsys_id());
         if (supplyProduct != null) {
