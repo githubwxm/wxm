@@ -47,9 +47,10 @@ public class AuthenticationFilter extends OncePerRequestFilter {
                         JSON.toJSONString(getOutPutMap(false, "对不起，你还没有登录", Result.NO_PERMISSION, null)));
                 return;
             }
-            Map mapUser = redisUtils.get(VoucherConstant.REDISVOUCHERLOGINKEY + ":" + sessionId, Map.class);
+//            Map mapUser = redisUtils.get(VoucherConstant.REDISVOUCHERLOGINKEY + ":" + sessionId, Map.class);
+            Map mapUser = (Map) request.getSession().getAttribute("user");
             if (mapUser != null) {
-                redisUtils.expire(VoucherConstant.REDISVOUCHERLOGINKEY + ":" + sessionId, LOGINTIMEOUT);
+//                redisUtils.expire(VoucherConstant.REDISVOUCHERLOGINKEY + ":" + sessionId, LOGINTIMEOUT);
                 request.setAttribute("user", mapUser);
                 filterChain.doFilter(request, response);
             } else {

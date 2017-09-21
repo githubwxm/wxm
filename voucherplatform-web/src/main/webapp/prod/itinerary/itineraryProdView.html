@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <link href="../../static/css/style.css" rel="stylesheet">
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=1.4&key=sNHtfFMen9ktOAbQYpC23Gmc"></script>
+</head>
+<body vtag="root">
+<div class=" event-box">
+    <div class="event-main">
+        <div class="title">
+            <b>基本信息</b>
+            <i></i>
+        </div>
+        <ul class="line_ul">
+            <li>
+                <label class=" control-label">行程类型：</label>
+                <div class="col-md-3 col-lg-3 form-control-static" v-if="subFromData.visa_type == 0">
+                    国内游
+                </div>
+                <div class="col-md-3 col-lg-3 form-control-static" v-if="subFromData.visa_type == 1">
+                    出国游
+                </div>
+                <label class="col-lg-offset-2 control-label">标签：</label>
+                <div class="col-md-5 col-lg-5 form-control-static">
+                    <span class="btn-tybe" v-for=" type in view_type" style="font: normal 5px/17px microsoft yahei;color: #23c377;margin: 0px 0px 5px 5px;">{{type.name}}</span>
+                </div>
+            </li>
+
+            <li>
+                <label class="control-label">出发地：</label>
+                <div class="col-md-3 col-lg-3 form-control-static">
+                    {{subFromData.start_area}}
+                </div>
+
+                <label class="col-lg-offset-2 control-label">目的地：</label>
+                <div class="col-md-4 col-lg-4 form-control-static">
+                    {{subFromData.end_area}}
+                </div>
+            </li>
+
+            <li>
+                <label class="control-label">联系人：</label>
+                <div class="col-md-3 col-lg-3 form-control-static ">
+                    {{subFromData.linkman}}
+                </div>
+
+                <label class="col-lg-offset-2 control-label">联系电话：</label>
+                <div class="col-md-4 col-lg-4 form-control-static">
+                    {{subFromData.link_phone}}
+                </div>
+            </li>
+
+            <li>
+                <label class="control-label">交通工具：</label>
+                <div class=" col-md-3 col-lg-3 form-control-static ">
+                    {{subFromData.vehicle}}
+                </div>
+            </li>
+        </ul>
+        <div class="business-two">
+            <div class="title">
+                <b>行程介绍</b>
+                <i></i>
+            </div>
+            <ul class="line_ul">
+                <li>
+                    <label class="control-label">行程天数：</label>
+                    <div class="col-md-3 col-lg-3  form-control-static">
+                        {{day}}天{{night}}晚
+                    </div>
+
+                    <label class="col-md-2  col-lg-2 control-label">集合地点：</label>
+                    <div class="col-md-3 col-lg-3  form-control-static">
+                        {{subFromData.set_area}}
+                    </div>
+                </li>
+
+                <li>
+                    <label class="control-label">行程描述：</label>
+                    <div class="search_contion" id="detail">
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div class="business-two">
+            <div class="title">
+                <b>预定须知</b>
+                <i></i>
+            </div>
+            <ul class="line_ul">
+                <li v-if="subFromData.visa_type == 1">
+                    <label class=" control-label">签证国家：</label>
+                    <div class="col-md-3 col-lg-3 form-control-static">
+                        {{visa_sumary.state}}
+                    </div>
+                    <label class="col-lg-offset-2 control-label">签证类型：</label>
+                    <div class="col-md-4 col-lg-4 form-control-static">
+                        {{visa_sumary.type}}
+                    </div>
+                </li>
+                <li v-if="subFromData.visa_type == 1">
+                    <label class=" control-label">办理时长：</label>
+                    <div class="col-md-3 col-lg-3 form-control-static">
+                        {{visa_sumary.time_long}}
+                    </div>
+                    <label class="col-lg-offset-2 control-label">受理范围：</label>
+                    <div class="col-md-4 col-lg-4 form-control-static">
+                        {{visa_sumary.area}}
+                    </div>
+                </li>
+                <li v-if="subFromData.visa_type == 1">
+                    <label class=" control-label">所需材料：</label>
+                    <div class="col-md-8 col-lg-8 form-control-static">
+                        {{visa_sumary.material}}
+                    </div>
+                </li>
+                <li>
+                    <label class=" control-label">所需材料：</label>
+                    <div class="search_contion">
+                        {{subFromData.booking_notes}}
+                    </div>
+                </li>
+                <li>
+                    <label class=" control-label">签约方式：</label>
+                    <div class="search_contion">
+                        {{subFromData.visa_notes}}
+                    </div>
+                </li>
+                <li>
+                    <label class="control-label">出游前须知：</label>
+                    <div class="search_contion">
+                        {{subFromData.outing_before}}
+                    </div>
+                </li>
+                <li>
+                    <label class="control-label">出游中须知：</label>
+                    <div class="search_contion">
+                        {{subFromData.outing_after}}
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div class="business-two">
+            <div class="title">
+                <b>费用包含</b>
+                <i></i>
+            </div>
+            <ul class="line_ul">
+                <li>
+                    <label class="control-label">费用包含：</label>
+                    <div class="search_contion">
+                        {{subFromData.cost_contain}}
+                    </div>
+                </li>
+                <li>
+                    <label class="control-label">费用不包含：</label>
+                    <div class="search_contion">
+                        {{subFromData.cost_notcontain}}
+                    </div>
+                </li>
+                <li>
+                    <label class="control-label">退款说明：</label>
+                    <div class="search_contion">
+                        {{subFromData.refund_explain}}
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="../../static/script/local/config.js"></script>
+<script type="text/javascript" src="../../static/script/local/require/require.js"></script>
+<script type="text/javascript" src="../../static/script/local/require_config.js"></script>
+<script type="text/javascript" src="../../static/script/local/view/prod/itinerary/itineraryProdView.js"></script>
+</body>
+</html>

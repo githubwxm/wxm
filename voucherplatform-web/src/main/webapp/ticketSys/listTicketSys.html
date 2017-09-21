@@ -1,0 +1,55 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <header-title></header-title>
+    <link href="../static/css/style.css" rel="stylesheet">
+</head>
+<body vtag="root">
+<div class="root-main">
+    <div class="main-container clearfix">
+        <div class="main-warp">
+            <div class="title" v-show="!isDialog"><em></em>
+                <h3>票务系统管理</h3>
+            </div>
+            <div class="table-responsive table-top">
+                <data-table-dyn :setting="dtSetting" :params="queryFormData" v-ref:dt-list></data-table-dyn>
+                <script type="text/x-template" id="data-table-dyn">
+                    <component :is="loadStatus"></component>
+                    <div v-show="loadStatus == 'dt-load-succ'" class="table-responsive">
+                        <table class="table table-bordered">
+                            <tbody>
+                            <tr class="tr-bt-sc">
+                                <td width="3%" style="text-align:center;">Id</td>
+                                <td width="20%" style="text-align:center;">票务验证终端名称</td>
+                                <td width="10%" style="text-align:center;">版本号</td>
+                                <td width="5%" style="text-align:center;">状态</td>
+                                <td width="20%" style="text-align:center;">创建时间</td>
+                                <td style="text-align:center;" v-show="$parent.isDialog">操作{{isDialog}}</td>
+                            </tr>
+                            <tr v-for="line in list">
+                                <td style="text-align:center;" v-cloak>{{line.id}}</td>
+                                <td style="text-align:center;" v-cloak>{{line.name}}</td>
+                                <td style="text-align:center;" v-cloak>{{line.version}}</td>
+                                <td style="text-align:center;" v-cloak>{{line.status}}</td>
+                                <td style="text-align:center;" v-cloak>{{line.createTime}}</td>
+                                <td style="text-align:center;" v-cloak v-show="$parent.$parent.isDialog">
+                                    <a href="javascript:;" @click="bind(line.id)">绑定</a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <pager :page="page"></pager>
+                    </div>
+                </script>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="../static/script/local/local_config.js"></script>
+<script type="text/javascript" src="../static/script/local/require/require.js"></script>
+<script type="text/javascript" src="../static/script/local/require_config.js"></script>
+<script type="text/javascript" src="../static/script/local/view/ticketSys/listTicketSysView.js"></script>
+</body>
+</html>

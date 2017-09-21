@@ -1,0 +1,117 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <header-title></header-title>
+    <link href="../static/css/style.css" rel="stylesheet">
+    <script src="../static/script/local/menu_config.js"></script>
+</head>
+
+<body vtag="root" class="index-body">
+<div class="top clearfix">
+    <div class="top-left clearfix">
+        <a v-bind:href="page_config.logo.link"><img v-bind:src="page_config.logo.src"/></a>
+    </div>
+    <!--<div class="nav-btn" v-for="item in page_config.nav_website"><a target="_blank" v-bind:href="item.link">{{ item.title }}</a></div>-->
+    <div class="top-right clearfix">
+        <ul>
+            <li>
+                <span v-cloak>{{serverData.name}}<i><img
+                        src="../static/style/img/sjx.png"/></i></span>
+                <div class="Administrators">
+                    <ul>
+                        <li><a href="javascript:;" @click="upMyInfo"><em class="iconfont icon-ziliao"></em><i>账户资料修改</i></a>
+                        </li>
+                        <li><a href="javascript:;" @click="upMyEp"><em
+                                class="iconfont icon-qicheqiye"></em><i>查看我的信息</i></a></li>
+                        <li v-if="showettingSysInfo()"><a href="javascript:;" @click="updatePassword"><em
+                                class="iconfont icon-qicheqiye"></em><i>修改密码</i></a></li>
+                        <li><a href="../api/local/client/index/logout"><em
+                                class="iconfont icon-zhuxiaozhanghu"></em><i>注销用户</i></a></li>
+                    </ul>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<!--左侧栏目导航-->
+<div class="{{menu_status == 'expand'?'nav':'nav-box'}} clearfix">
+    <div class="{{menu_status == 'expand'?'nav-qiehuan':'nav-qiehuan-2'}}" @click="changeMenuStatus">
+        <img src="../static/style/img/qiehuan_21.png" v-show="menu_status == 'expand'"/>
+        <img src="../static/style/img/qiehuan2.png" v-show="menu_status != 'expand'"/>
+    </div>
+    <ul>
+        <menu v-for="item in menuData" :menu="item" :menu_status="menu_status" v-ref:menu-container></menu>
+        <script type="text/x-template" id="menu">
+            <li class="nav-one" @click="toggle" v-show="menu_status == 'expand'">
+                <em class="iconfont {{menu.icon}}"></em>
+                <span v-cloak>{{ menu.name }}</span>
+                <i><img v-bind:src="togglepic()"/></i>
+                <div class="nav-two" v-show="open">
+                    <ul>
+                        <li v-for="child in menu.childs" @click.stop="menuClick(child)"><a href="javascript:;"
+                                                                                           v-bind:title="child.name">{{
+                            menu_replace(child.name) }}</a></li>
+                    </ul>
+                </div>
+            </li>
+            <li class="iconfont {{menu.icon}}" v-show="menu_status == 'collapse'">
+                <div class="nav-show">
+                    <p><img src="../static/style/img/name1.png"></p>
+                    <em v-cloak>{{ menu.name }}</em>
+                </div>
+            </li>
+        </script>
+    </ul>
+</div>
+
+<!--右边内容-->
+<div class="main clearfix">
+    <div class="{{menu_status == 'expand'?'content':'content-box'}}">
+        <!--内容导航栏-->
+        <div class="nav-main">
+            <ul>
+                <iframe-tab v-for="item in iframes" :iframe.sync="item"></iframe-tab>
+                <script type="text/x-template" id="iframe-tab">
+                    <li v-if="iframe.isHome" class="nav-taba" @click="active">
+                        <em class="iconfont icon-shouye"></em v-cloak>{{ iframe.title }}<em
+                            class="iconfont icon-suoding"></em>
+                    </li>
+                    <li v-else class="{{iframe.active ? 'nav-tabb' : ''}}" @click="active" v-cloak>{{ iframe.title }}<i
+                            class="iconfont icon-guanbi" @click="close"></i></li>
+                </script>
+            </ul>
+        </div>
+
+        <div class="tab-content">
+            <iframe-content v-for="item in iframes" :iframe.sync="item"></iframe-content>
+            <script type="text/x-template" id="iframe-content">
+                <div class="iframe tab-pane {{iframe.active ? 'active' : ''}}">
+                    <div v-if="iframe.isHome" class="panel">
+                        <div class="panel-body">
+                            <div class="alert alert-success">
+                                这是首页
+                                <!--您好，<span>狮口漂流</span>，今天是<span>2016年08月29日 星期一</span>-->
+                            </div>
+                        </div>
+                    </div>
+
+                    <iframe style="width: 100%;border: none;" v-else scrolling="no" v-bind:src="iframe.link"
+                            v-bind:height="iframe.height"></iframe>
+                </div>
+            </script>
+        </div>
+    </div>
+</div>
+
+<div class="event-right" style="z-index: 99999999"></div>
+
+<script type="text/javascript" src="../static/script/local/local_config.js"></script>
+<script type="text/javascript" src="../static/script/local/require/require.js"></script>
+<script type="text/javascript" src="../static/script/local/require_config.js"></script>
+<script type="text/javascript" src="../static/script/local/menu_config.js"></script>
+<script type="text/javascript" src="../static/script/local/view/index/indexView.js"></script>
+</body>
+</html>

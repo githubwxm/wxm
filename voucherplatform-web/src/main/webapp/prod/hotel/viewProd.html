@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <link href="../../static/css/style.css" rel="stylesheet">
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=1.4&key=sNHtfFMen9ktOAbQYpC23Gmc"></script>
+</head>
+<body vtag="root">
+
+<div class="event-main">
+    <div class="event-box">
+        <div class="title">
+            <b>基本信息</b>
+            <i></i>
+        </div>
+        <ul class="Generic">
+            <li>
+                <label class="col-md-2 col-sm-2 col-lg-3 control-label">酒店名称：</label>
+                <div class="col-sm-3 col-md-3 col-lg-3 form-control-static" v-cloak>{{prod_info.name}}</div>
+
+                <label class="col-md-2 col-sm-2 col-lg-2 control-label">酒店星级：</label>
+                <div class="col-sm-3 col-md-3 col-lg-3 form-control-static" v-cloak>{{prod_info.level_type_name}}</div>
+            </li>
+
+            <li>
+                <label class="col-md-2 col-sm-2 col-lg-3 control-label">酒店标签：</label>
+                <div class="col-sm-3 col-md-3 col-lg-3">
+                  {{prod_info.label_type_name}}
+                </div>
+
+                <label class="col-md-2 col-sm-2 col-lg-2 control-label">预订电话：</label>
+                <div class="col-sm-3 col-md-3 col-lg-3 form-control-static" v-cloak>
+                    {{prod_info.tel}}
+                </div>
+            </li>
+
+            <li>
+                <label class="col-md-2 col-sm-2 col-lg-3 control-label">团购起订间数：</label>
+                <div class="col-sm-3 col-md-3 col-lg-3 form-control-static" v-cloak>{{prod_info.team_num}}间起订</div>
+
+                <label class="col-md-2 col-sm-2 col-lg-2 control-label">返现策略：</label>
+                <div class="col-sm-3 col-md-3 col-lg-3 form-control-static" v-cloak>{{prod_info.return_money}}</div>
+            </li>
+            <li>
+                <label class="col-md-2 col-sm-2 col-lg-3 control-label">酒店地址：</label>
+                <div class="col-sm-3 col-md-3 col-lg-3 form-control-static" v-cloak>{{prod_info.pic_address}}</div>
+
+                <label class="col-md-2 col-sm-2 col-lg-2 control-label">酒店商圈：</label>
+                <div class="col-sm-3 col-md-3 col-lg-3 form-control-static" v-cloak>{{prod_info.trading_area}}</div>
+            </li>
+            <li>
+                <label class="col-md-2 col-sm-2 col-lg-3 control-label">地理位置：</label>
+                <div class="col-sm-8 col-md-8 col-lg-8">
+                    <div id="l-map" style="height:300px;margin-top: 10px;padding-left: 0px;">
+                        <i class="icon-spinner icon-spin icon-large"></i>地图加载中...
+                    </div>
+                </div>
+            </li>
+        </ul>
+
+        <div class="business-two">
+            <div class="title">
+                <b>酒店信息</b>
+                <i></i>
+            </div>
+
+            <ul>
+                <li>
+                    <label class="col-md-2 col-sm-2 col-lg-3 control-label">开业时间：</label>
+                    <div class="col-sm-3 col-md-3 col-lg-3 form-control-static" v-cloak>{{prod_info.start_time}}</div>
+
+                    <label class="col-md-2 col-sm-2 col-lg-2 control-label">装修时间：</label>
+                    <div class="col-sm-3 col-md-3 col-lg-3 form-control-static" v-cloak>{{prod_info.fitment_time}}</div>
+                </li>
+                <li>
+                    <label class="col-md-2 col-sm-2 col-lg-3 control-label">入住时间：</label>
+                    <div class="col-sm-3 col-md-3 col-lg-3 form-control-static" v-cloak>{{prod_info.in_time}}</div>
+
+                    <label class="col-md-2 col-sm-2 col-lg-2 control-label">离店时间：</label>
+                    <div class="col-sm-3 col-md-3 col-lg-3 form-control-static" v-cloak>{{prod_info.out_time}}</div>
+                </li>
+                <li>
+                    <label class="col-md-2 col-sm-2 col-lg-3 control-label">酒店服务：</label>
+                    <div  v-for=" server in server_type">
+                        <!--{{server}}-->
+                        <div class="hotel-checkbox" v-if="server.id == 5911">
+                            <input type="checkbox" class="chekbox" value="5911" v-model="subFormData.server_type" checked initial="off">接机服务
+                        </div>
+                        <div class="hotel-checkbox" v-if="server.id == 5912">
+                            <input type="checkbox" class="chekbox" value="5912" v-model="subFormData.server_type" checked initial="off">接站服务
+                        </div>
+                        <div class="hotel-checkbox" v-if="server.id == 5913">
+                            <input type="checkbox" class="chekbox" name="serverType" value="5913" checked initial="off">接待外宾
+                        </div>
+                        <div class="hotel-checkbox" v-if="server.id == 5914">
+                            <input type="checkbox" class="chekbox" name="serverType" value="5914" checked initial="off">行李寄存
+                        </div>
+                        <div class="hotel-checkbox" v-if="server.id == 5915">
+                            <input type="checkbox" class="chekbox" name="serverType" value="5915" checked initial="off">洗衣
+                        </div>
+                        <div class="hotel-checkbox" v-if="server.id == 5916">
+                            <input type="checkbox" class="chekbox" name="serverType" value="5916" checked initial="off">看护小孩
+                        </div>
+                        <div class="hotel-checkbox" v-if="server.id == 5917">
+                            <input type="checkbox" class="chekbox" name="serverType" value="5917" checked initial="off">租车
+                        </div>
+                        <div class="hotel-checkbox" v-if="server.id == 5918">
+                            <input type="checkbox" class="chekbox" name="serverType" value="5918" checked initial="off">叫醒服务
+                        </div>
+                    </div>
+
+                </li>
+
+                <li>
+                    <label class="col-md-3 col-sm-3 col-lg-3 control-label">酒店设施：</label>
+                    <div  v-for="facility in facility_type">
+                        <div class="hotel-checkbox" v-if="facility.id == 5920">
+                            <input type="checkbox" class="chekbox" name="facilityType" value="5920" checked initial="off">西式餐厅
+                        </div>
+                        <div class="hotel-checkbox" v-if="facility.id == 5921">
+                            <input type="checkbox" class="chekbox" name="facilityType" value="5921" checked initial="off">中式餐厅
+                        </div>
+                        <div class="hotel-checkbox" v-if="facility.id == 5922">
+                            <input type="checkbox" class="chekbox" name="facilityType" value="5922" checked  initial="off">室外游泳池
+                        </div>
+                        <div class="hotel-checkbox" v-if="facility.id == 5923">
+                            <input type="checkbox" class="chekbox" name="facilityType" value="5923" checked initial="off">室内游泳池
+                        </div>
+                        <div class="hotel-checkbox" v-if="facility.id == 5924">
+                            <input type="checkbox" class="chekbox" name="facilityType" value="5924" checked initial="off">残疾人设施
+                        </div>
+                        <div class="hotel-checkbox" v-if="facility.id == 5925">
+                            <input type="checkbox" class="chekbox" name="facilityType" value="5925" checked  initial="off">温泉
+                        </div>
+                        <div class="hotel-checkbox" v-if="facility.id == 5926">
+                            <input type="checkbox" class="chekbox" name="facilityType" value="5926" checked  initial="off">会议室
+                        </div>
+                        <div class="hotel-checkbox" v-if="facility.id == 5927">
+                            <input type="checkbox" class="chekbox" name="facilityType" value="5927" checked  initial="off">健身房
+                        </div>
+                        <div class="hotel-checkbox" v-if="facility.id == 5928">
+                            <input type="checkbox" class="chekbox" name="facilityType" value="5928" checked  initial="off">SPA
+                        </div>
+                        <div class="hotel-checkbox" v-if="facility.id == 5929">
+                            <input type="checkbox" class="chekbox" name="facilityType" value="5929" checked initial="off">棋牌室
+                        </div>
+                        <div class="hotel-checkbox" v-if="facility.id == 5930">
+                            <input type="checkbox" class="chekbox" name="facilityType" value="5930" checked  initial="off">酒吧
+                        </div>
+                        <div class="hotel-checkbox" v-if="facility.id == 5931">
+                            <input type="checkbox" class="chekbox" name="facilityType" value="5931" checked initial="off">商务中心
+                        </div>
+                    </div>
+
+                </li>
+
+                <li>
+                    <label class="col-md-3 col-sm-3 col-lg-3 control-label">网络情况：</label>
+                    <div  v-for="network in network_type">
+                        <div class="hotel-checkbox" v-if="network.id == 5933">
+                            <input type="checkbox" class="chekbox" name="networkType" value="5933" checked>免费WIFI
+                        </div>
+                        <div class="hotel-checkbox" v-if="network.id == 5934">
+                            <input type="checkbox" class="chekbox" name="networkType" value="5934" checked>免费宽带
+                        </div>
+                        <div class="hotel-checkbox" v-if="network.id == 5935">
+                            <input type="checkbox" class="chekbox" name="networkType" value="5935" checked>收费宽带
+                        </div>
+                        <div class="hotel-checkbox" v-if="network.id == 5936">
+                            <input type="checkbox" class="chekbox" name="networkType" value="5936" checked>无网络
+                        </div>
+                    </div>
+                </li>
+
+                <li>
+                    <label class="col-md-3 col-sm-3 col-lg-3 control-label">停车场：</label>
+                    <div class="col-sm-2 col-md-2 col-lg-2" v-if="depot_type==5940">
+                        <input type="radio" value="5940" v-model="depot_type" class="chekbox" checked><b>免费停车场</b>
+                    </div>
+
+                    <div class="col-sm-2 col-md-2 col-lg-2" v-if="depot_type==5941">
+                        <input type="radio"  value="5941" v-model="depot_type" class="chekbox" checked><b>收费停车场</b>
+                    </div>
+
+                    <div class="col-sm-2 col-md-2 col-lg-2" v-if="depot_type==5942">
+                        <input type="radio"  value="5942" v-model="depot_type" class="chekbox" checked><b>无停车场</b>
+                    </div>
+                </li>
+
+                <li>
+                    <label class="col-md-3 col-sm-3 col-lg-3 control-label">可接受的信用卡：</label>
+                    <div  v-for="card in card_type">
+                        <div class="hotel-checkbox" v-if="card.id==5950">
+                            <input type="checkbox" class="chekbox" name="cardType" value="5950" checked initial="off">Master
+                        </div>
+                        <div class="hotel-checkbox" v-if="card.id==5951">
+                            <input type="checkbox" class="chekbox" name="cardType" value="5951" checked  initial="off">Visa
+                        </div>
+                        <div class="hotel-checkbox" v-if="card.id==5952">
+                            <input type="checkbox" class="chekbox" name="cardType" value="5952" checked initial="off">国内银联卡
+                        </div>
+                        <div class="hotel-checkbox" v-if="card.id==5953">
+                            <input type="checkbox" class="chekbox" name="cardType" value="5953" checked  initial="off">信用卡
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <label class="col-md-3 col-sm-3 col-lg-3 control-label">可接受的支付方式：</label>
+                    <div  v-for="pay in pay_type">
+                        <div class="hotel-checkbox" v-if="pay.id==5960">
+                            <input type="checkbox" class="chekbox" name="payType" value="5960"  initial="off" checked>微信
+                        </div>
+                        <div class="hotel-checkbox" v-if="pay.id==5961">
+                            <input type="checkbox" class="chekbox" name="payType" value="5961" initial="off" checked>支付宝
+                        </div>
+                        <div class="hotel-checkbox" v-if="pay.id==5962">
+                            <input type="checkbox" class="chekbox" name="payType" value="5962" initial="off" checked>境内银联
+                        </div>
+                        <div class="hotel-checkbox" v-if="pay.id==5963">
+                            <input type="checkbox" class="chekbox" name="payType" value="5963" initial="off" checked>现金
+                        </div>
+                        <div class="hotel-checkbox" v-if="pay.id==5964">
+                            <input type="checkbox" class="chekbox" name="payType" value="5964"  initial="off" checked>境外银行卡
+                        </div>
+                    </div>
+                </li>
+
+                <li>
+                    <label class="col-md-3 col-sm-3 col-lg-3 control-label">宠物：</label>
+                    <div class="col-sm-3 col-md-3 col-lg-2" v-if="pet_type==1">
+                        <input type="radio"  value="1" v-model="subFormData.pet_type" class="chekbox" checked><b>可携带宠物</b>
+                    </div>
+
+                    <div class="col-sm-3 col-md-3 col-lg-2" v-if="pet_type==0">
+                        <input type="radio"  value="0" v-model="subFormData.pet_type" class="chekbox" checked><b>不可携带宠物</b>
+                    </div>
+                </li>
+                <li>
+                    <label class="col-md-2 col-sm-2 col-lg-3 control-label">酒店简介：</label>
+                    <div class="col-sm-8 col-md-8 col-lg-8 form-control-static" v-cloak>
+                        {{prod_info.summary}}
+                    </div>
+                </li>
+
+                <li>
+                    <label class="col-md-2 col-sm-2 col-lg-3 control-label">酒店图片：</label>
+                    <div class="col-sm-3 col-md-3 col-lg-3 form-control-static" v-for="(index,image) in images" v-if="index < 3">
+                        <img class="img-thumbnail" :src="base_url + image.link">
+                    </div>
+                </li>
+
+            </ul>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" src="../api/local/client/system/load_config"></script>
+<script type="text/javascript" src="../../static/script/local/require/require.js"></script>
+<script type="text/javascript" src="../../static/script/local/require_config.js"></script>
+<script type="text/javascript" src="../../static/script/local/view/prod/hotel/prodView.js"></script>
+
+</body>
+</html>
