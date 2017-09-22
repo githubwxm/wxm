@@ -1,0 +1,82 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <header-title></header-title>
+  <link href="../../static/css/style.css" rel="stylesheet">
+  <script src="http://libs.baidu.com/jquery/1.10.2/jquery.min.js"></script>
+  <script src="http://libs.baidu.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+</head>
+<body vtag="root">
+<div class="root-main">
+  <div class="main-container clearfix">
+    <form id="subForm" class="form-horizontal" method="post" onSubmit="return false;">
+      <div class="searchbox clearfix">
+        <div class="form-group">
+          <label class="col-sm-2 col-md-1 col-lg-1 control-label">酒店名称:</label>
+          <div class="col-sm-4 col-md-4 col-lg-3">
+            <input class="form-control" type="text" maxlength="30" v-model="queryFormData.product_name">
+          </div>
+          <div class="col-sm-1 col-lg-1">
+            <button class="btn btn-success" type="button" @click="queryFormSubmit">查询</button>
+          </div>
+        </div>
+      </div>
+      <div class="pingtai clearfix">
+        <div class="chuangjian">
+          <button class="btn" type="button" @click="addSalp(1)">添加销售计划</button>
+        </div>
+
+        <data-table :setting="dtxSetting" :params="queryFormData" v-ref:dt-list></data-table>
+        <script type="text/x-template" id="data-table">
+          <component :is="loadStatus"></component>
+          <div v-show="loadStatus == 'dt-load-succ'" class="table-responsive">
+            <table class="table table-bordered table-top table-box">
+              <tbody>
+              <tr class="tr-bt-sc">
+                <td width="26%" style="text-align:center;">名称</td>
+                <td width="8%" style="text-align:center;">有效开始时间</td>
+                <td width="8%" style="text-align:center;">有效结束时间</td>
+                <td width="8%" style="text-align:center;">供应价（元）</td>
+                <td width="8%" style="text-align:center;">状态</td>
+                <td width="8%" style="text-align:center;">操作</td>
+              </tr>
+              <tr v-for="line in list">
+                <td style="text-align:center;cursor:pointer" v-cloak @click="showSubSalp(line.id)"><!--<a href="javascript:void(0);"  @click="subProdName(line.id)">-->{{line.name}}<!--</a>--></td>
+                <td style="text-align:center" v-cloak>{{line.effective_start_date}}</td>
+                <td style="text-align:center" v-cloak>{{line.effective_end_date}}</td>
+                <td style="text-align:center" v-cloak>{{formatNumber(line.settle_price)}}</td>
+                <td style="text-align:center" v-cloak>
+                  <span class="label label-info" v-if="line.status==1">已上架</span>
+                  <span class="label label-default" v-if="line.status==0">已下架</span>
+                </td>
+                <td style="text-align:center;" v-cloak>
+                  <div class="dropdown pull-right">
+                    <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-expanded="false">操作<i class="fa fa-angle-down"></i>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                      <li v-if="line.status==0"><a class="offline" href="javascript:void(0);" v-show="hasrole('addSalp')" @click="shelvesSalp(line.id,line.name)">上架</a></li>
+                      <li v-if="line.status==1"><a class="offline" href="javascript:void(0);" v-show="hasrole('addSalp')" @click="unShelvesSalp(line.id,line.name)">下架</a></li>
+                      <li><a class="offline" href="javascript:void(0);" v-show="hasrole('addSalp')" @click="deleteSalp(line.id,line.name)">删除销售计划</a></li>
+                      <li><a class="offline" href="javascript:void(0);" v-show="hasrole('addSalp')" @click="updateSalp(line.id)">修改销售计划</a></li>
+                    </ul>
+                  </div>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </script>
+        <div class="col-sm-8 col-md-8 col-lg-6 clearfix" style="padding-left:23%;padding-top: 35px;" v-if="pickerType == true">
+          <datepicker :value.sync="Date" v-ref:pick class="col-sm-2 col-lg-2" language="ch" :setting.sync="pickerSetting"></datepicker>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+<script type="text/javascript" src="../api/local/client/system/load_config"></script>
+<script type="text/javascript" src="../../static/script/local/require/require.js"></script>
+<script type="text/javascript" src="../../static/script/local/require_config.js"></script>
+<script type="text/javascript" src="../../static/script/local/view/prod/hotel/hotelSalpList.js"></script>
+</body>
+</html>

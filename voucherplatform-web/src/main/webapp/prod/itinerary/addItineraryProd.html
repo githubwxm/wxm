@@ -1,0 +1,269 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <header-title></header-title>
+    <link href="../../static/css/style.css" rel="stylesheet">
+    <link href="../../static/script/amd/1.0/dist/css/wangEditor.min.css" rel="stylesheet">
+</head>
+<body vtag="root">
+<div class="root-main">
+    <div class="main-container clearfix">
+        <div class="Establish clearfix">
+            <div class="ProgressBar">
+                <!---------------进度条----------------->
+                <div class="line-box clearfix">
+                    <ul class="steps">
+                        <li class="effect">
+                            <span class="num">1<span class="border"></span></span><span class="text">线路信息</span>
+                        </li>
+                        <li>
+                            <span class="num">2<span class="border"></span></span><span class="text">线路票类信息</span>
+                        </li>
+                        <li>
+                            <span class="num">3<span class="border"></span></span><span class="text">班期,价格,库存</span>
+                        </li>
+                    </ul>
+                    <!--默认状态下的进度条没有类名是灰色状态，有状态的时候加上effect的类名就会出现读取的样式-->
+                </div>
+                <!---------------table切换事件----------------->
+                <div class="line-table clearfix">
+                    <ul>
+                        <li class="{{tabType == 1?'line-active':''}}"><span>路线信息</span></li>
+                        <li class="{{tabType == 2?'line-active':''}}"><span>行程介绍</span></li>
+                        <li class="{{tabType == 3?'line-active':''}}"><span>预定须知</span></li>
+                        <li class="{{tabType == 4?'line-active':''}}"><span>费用包含</span></li>
+                    </ul>
+                </div>
+                <validator name="checkItinerary">
+                <div class="line-container clearfix">
+                    <!-------------线路信息----------------->
+                    <div class="line-list" v-if="tabType == 1">
+                        <div class="form-group clearfix">
+                            <label class="col-lg-1 control-label"><dd class="red">*</dd>线路名称:</label>
+                            <div class="col-lg-4 col-md-4">
+                                <input type="text" class="form-control" maxlength="50" v-model="subFromData.name" v-validate:name="{required:true}" initial="off">
+                                <div v-show="$checkItinerary.name.required" for="contactMobile" ><img src="../../static/style/img/baocuo.png"><label class="error">请填写线路名称！</label></div>
+                            </div>
+                            <label class="col-lg-1 control-label"><dd class="red">*</dd>副标题:</label>
+                            <div class="col-lg-4 col-md-4">
+                                <input type="text" class="form-control" maxlength="50" v-model="subFromData.subhead" v-validate:subhead="{required:true}" initial="off">
+                                <div v-show="$checkItinerary.subhead.required" for="contactMobile" ><img src="../../static/style/img/baocuo.png"><label class="error">请填写副标题！</label></div>
+                            </div>
+                        </div>
+                        <div class="form-group clearfix">
+                            <label class="col-lg-1 control-label"><dd class="red">*</dd>行程类型:</label>
+                            <div class="col-lg-4 col-md-4">
+                                <remote-sel :setting="visaTypeSetting" :value.sync="subFromData.visa_type" v-validate:visa_type="{required:true}" initial="off"></remote-sel>
+                            </div>
+                            <label class="col-lg-1 control-label"><dd class="red">*</dd>出发地:</label>
+                            <div class="col-sm-3 col-md-3 col-lg-2">
+                                <remote-sel :setting="startProvinceSetting" :value.sync="subFromData.start_province" @change="startProvinceChange" v-validate:start_province="{required:true}" initial="off"></remote-sel>
+                                <span v-show="$checkItinerary.start_province.required" for="contactMobile"><img src="../../static/style/img/baocuo.png"><label class="error">请选择出发地！</label></span>
+                            </div>
+
+                            <div class="col-sm-3 col-md-3 col-lg-2">
+                                <remote-sel :setting="startCitySetting" :value.sync="subFromData.start_city" @change="startCityChange" v-ref:startCity v-validate:start_city="{required:true}" initial="off"></remote-sel>
+                                <span v-show="$checkItinerary.start_city.required" for="contactMobile"><img src="../../static/style/img/baocuo.png"><label class="error">请选择出发地！</label></span>
+                            </div>
+                        </div>
+                        <div class="form-group clearfix">
+                            <label class="col-lg-1 control-label"><dd class="red">*</dd>目的地:</label>
+                            <div class="col-sm-3 col-md-3 col-lg-2">
+                                <remote-sel :setting="endProvinceSetting" :value.sync="subFromData.end_province" @change="endProvinceChange" v-validate:end_province="{required:true}" initial="off"></remote-sel>
+                                <span v-show="$checkItinerary.end_province.required" for="contactMobile"><img src="../../static/style/img/baocuo.png"><label class="error">请选择目的地！</label></span>
+                            </div>
+
+                            <div class="col-sm-3 col-md-3 col-lg-2">
+                                <remote-sel :setting="endCitySetting" :value.sync="subFromData.end_city" @change="endCityChange" v-ref:endCity v-validate:end_city="{required:true}" initial="off"></remote-sel>
+                                <span v-show="$checkItinerary.end_city.required" for="contactMobile"><img src="../../static/style/img/baocuo.png"><label class="error">请选择目的地！</label></span>
+                            </div>
+                            <label class="col-lg-1 control-label"><dd class="red">*</dd>交通工具:</label>
+                            <div class="col-lg-4 col-md-4">
+                                <input type="text" class="form-control" v-model="subFromData.vehicle" v-validate:vehicle="{required:true}" initial="off">
+                                <div v-show="$checkItinerary.vehicle.required" for="contactMobile" ><img src="../../static/style/img/baocuo.png"><label class="error">请填写交通工具！</label></div>
+                            </div>
+                        </div>
+                        <div class="form-group clearfix">
+                            <label class="col-lg-1 control-label">联系人:</label>
+                            <div class="col-lg-4 col-md-4">
+                                <input type="text" class="form-control" v-model="subFromData.linkman">
+                            </div>
+                            <label class="col-lg-1 control-label">联系电话:</label>
+                            <div class="col-lg-4 col-md-4">
+                                <input type="text" class="form-control" v-model="subFromData.link_phone">
+                            </div>
+                        </div>
+                        <div class="form-group clearfix">
+                            <label class="col-lg-1 control-label"><dd  class="red">*</dd>缩略图:</label>
+                            <div class="col-sm-9 col-md-8  col-lg-6 form-img">
+                                <upload-pic :setting.sync="upSetting" :list.sync="subFromData.imgs"></upload-pic>
+                                <input type="hidden" v-model="subFromData.imgs.length" v-validate:imgs="{min:1}" initial="off"/>
+                            </div>
+                            <div v-show="$checkItinerary.imgs.min" for="contactMobile" ><img src="../../static/style/img/baocuo.png"><label class="error">请选择缩略图！</label></div>
+                            <label class="col-lg-3 control-label" style="padding-right: 3%;"><dd  class="red">*</dd>标签:</label>
+                            <div class="col-sm-4 col-md-4 col-lg-4" style="right: 2%">
+                                <div class="Choice col-sm-4 col-md-4 col-lg-4">
+                                    <div class="checkbox">
+                                        <label v-for="line in choosestr">
+                                                <em style="{{line.checked == 1?'background-color:#3cd084;color:white':''}}"><input @click="check(line)" style="display:none" name="checkbox" type="checkbox" v-bind:value="line.id" v-model="subFromData.label" v-validate:label="{required:true}" initial="off"/><div style="padding-top: 6px;">{{line.name}}</div></em>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div v-show="$checkItinerary.label.required" for="contactMobile"><img src="../../static/style/img/baocuo.png"><label class="error">请选择标签！</label></div>
+                        </div>
+                        <div  class="Button-box">
+                            <button class="btn btn-success" @click="nextItinerary(2)">下一步</button>
+                        </div>
+                    </div>
+                    <!-------------行程介绍----------------->
+                    <div class="line-list" v-if="tabType == 2">
+                        <div  class="line-trip clearfix">
+                            <h3>基本信息</h3>
+                            <div class="form-group form-group-top">
+                                <label class="col-lg-1 col-md-1 control-label"><dd class="red">*</dd>行程天数:</label>
+                                <div class="line-height col-lg-4 col-md-5">
+                                    <input type="number" class="form-control form-input-2" v-model="day" v-validate:day="{required:true,pattern:'/^[1-9]\\d*$/'}" initial="off"><span>天</span>
+                                    <input type="number" class="form-control form-input-2" v-model="night" v-validate:night="{required:true,pattern:'/^[1-9]\\d*$/'}" initial="off"><span>晚</span>
+                                    <div class="Prompt">
+                                        <span v-if="$checkItinerary.day.required ||　$checkItinerary.night.required"><img src="../../static/style/img/baocuo.png"><label class="error">请填写行程天数！</label></span>
+                                        <span v-if="$checkItinerary.day.pattern ||　$checkItinerary.night.pattern"><img src="../../static/style/img/baocuo.png"><label class="error">行程天数必须为正整数！</label></span>
+                                    </div>
+                                    <!--<div v-show="$checkItinerary.day.required ||　$checkItinerary.night.required" for="contactMobile" ><img src="../../static/style/img/baocuo.png"><label class="error">请填写行程天数！</label></div>-->
+                                </div>
+                                <label class="col-lg-1 col-md-1 control-label"><dd class="red">*</dd>集合地点:</label>
+                                <div class="col-lg-4 col-md-5">
+                                    <input type="text" class="form-control" v-model="subFromData.set_area" v-validate:set_area="{required:true}" initial="off">
+                                </div>
+                                <div v-show="$checkItinerary.set_area.required" for="contactMobile" ><img src="../../static/style/img/baocuo.png"><label class="error">请填写集合地点！</label></div>
+                            </div>
+                        </div>
+
+                        <div class="line-trip form-group-top clearfix">
+                            <h3>详细行程</h3>
+                            <div class="form-group-top" style="    margin-bottom: 20px;">
+                                <label class="col-lg-1 col-md-1 control-label"><dd style="display:inline-block;margin-right: 5px;color: red;">*</dd>行程描述:</label>
+                                <div class="col-lg-9 com-md-9">
+                                    <textarea id="textarea1" style="height:400px;max-height:500px;"></textarea>
+                                    <!--<textarea class="form-control" rows="10" v-model="subFromData.detail" v-validate:detail="{required:true}" initial="off"></textarea>-->
+                                    <div v-show="detailNull == true" for="contactMobile" ><img src="../../static/style/img/baocuo.png"><label class="error">请填写行程描述！</label></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div  class="Button-box">
+                            <button class="btn btn-success" @click="back(1)">上一步</button>
+                            <button class="btn btn-success" @click="nextItinerary(3)">下一步</button>
+                        </div>
+                    </div>
+                    <!-------------预定须知----------------->
+                    <div class="line-list" v-if="tabType == 3">
+                        <div class="line-trip clearfix">
+                            <!----------出国才有签证信息,不出国无签证信息这栏填写-------------->
+                            <h3 v-if="subFromData.visa_type == 1">签证信息</h3>
+                            <div class="form-group form-group-top clearfix" v-if="subFromData.visa_type == 1">
+                                <label class="col-lg-1 col-md-1 control-label">签证国家:</label>
+                                <div class="col-lg-4 col-md-5">
+                                    <input type="text" class="form-control" v-model="visa_sumary.state">
+                                </div>
+                                <label class="col-lg-1 col-md-1 control-label">签证类型:</label>
+                                <div class="col-lg-4 col-md-5">
+                                    <input type="text" class="form-control" v-model="visa_sumary.type">
+                                </div>
+                            </div>
+                            <div class="form-group clearfix" v-if="subFromData.visa_type == 1">
+                                <label class="col-lg-1 col-md-1 control-label">办理时长:</label>
+                                <div class="col-lg-4 col-md-5">
+                                    <input type="text" class="form-control" v-model="visa_sumary.time_long">
+                                </div>
+                                <label class="col-lg-1 col-md-1 control-label">受理范围:</label>
+                                <div class="col-lg-4 col-md-5">
+                                    <input type="text" class="form-control" v-model="visa_sumary.area">
+                                </div>
+                            </div>
+                            <div class="form-group clearfix" v-if="subFromData.visa_type == 1">
+                                <label class="col-lg-1 col-md-1 control-label">所需材料:</label>
+                                <div class="col-lg-7 col-md-7">
+                                    <textarea class="form-control" rows="10" v-model="visa_sumary.material"></textarea>
+                                </div>
+                            </div>
+
+                            <div class="line-trip clearfix">
+                                <h3>预定须知</h3>
+                                <div class="form-group form-group-top clearfix">
+                                    <label class="col-lg-1 col-md-1 control-label"><dd class="red">*</dd>预定须知:</label>
+                                    <div class="col-lg-7 col-md-7">
+                                        <textarea class="form-control" rows="10" v-model="subFromData.booking_notes" v-validate:booking_notes="{required:true}" initial="off"></textarea>
+                                        <div v-show="$checkItinerary.booking_notes.required" for="contactMobile" ><img src="../../static/style/img/baocuo.png"><label class="error">请填写预定须知！</label></div>
+                                    </div>
+                                </div>
+                                <div class="form-group clearfix">
+                                    <label class="col-lg-1 col-md-1 control-label"><dd class="red">*</dd>签约方式:</label>
+                                    <div class="col-lg-7 col-md-7">
+                                        <textarea class="form-control" rows="10" v-model="subFromData.visa_notes" v-validate:visa_notes="{required:true}" initial="off"></textarea>
+                                        <div v-show="$checkItinerary.visa_notes.required" for="contactMobile" ><img src="../../static/style/img/baocuo.png"><label class="error">请填写签约方式！</label></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="line-trip clearfix">
+                                <h3>出游须知</h3>
+                                <div class="form-group form-group-top clearfix">
+                                    <label class="col-lg-1 col-md-1 control-label">出游前须知:</label>
+                                    <div class="col-lg-7 col-md-7">
+                                        <textarea class="form-control" rows="10" v-model="subFromData.outing_before"></textarea>
+                                    </div>
+                                </div>
+                                <div class="form-group clearfix">
+                                    <label class="col-lg-1 col-md-1 control-label">出游中须知:</label>
+                                    <div class="col-lg-7 col-md-7">
+                                        <textarea class="form-control" rows="10" v-model="subFromData.outing_after"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div  class="Button-box">
+                                <button class="btn btn-success" @click="back(2)">上一步</button>
+                                <button class="btn btn-success" @click="nextItinerary(4)">下一步</button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-------------费用包含----------------->
+                    <div class="line-list" v-if="tabType == 4">
+                        <div class="line-trip clearfix">
+                            <h3>费用信息</h3>
+                            <div class="form-group form-group-top clearfix">
+                                <label class="col-lg-1 col-md-1 control-label"><dd class="red">*</dd>费用包含:</label>
+                                <div class="col-lg-7 col-md-7">
+                                    <textarea class="form-control" rows="10" v-model="subFromData.cost_contain" v-validate:cost_contain="{required:true}" initial="off"></textarea>
+                                    <div v-show="$checkItinerary.cost_contain.required" for="contactMobile" ><img src="../../static/style/img/baocuo.png"><label class="error">请填写费用包含！</label></div>
+                                </div>
+                            </div>
+                            <div class="form-group clearfix">
+                                <label class="col-lg-1 col-md-1 control-label">费用不包含:</label>
+                                <div class="col-lg-7 col-md-7">
+                                    <textarea class="form-control" rows="10" v-model="subFromData.cost_notcontain"></textarea>
+                                </div>
+                            </div>
+                            <div class="form-group clearfix">
+                                <label class="col-lg-1 col-md-1 control-label">退款说明:</label>
+                                <div class="col-lg-7 col-md-7">
+                                    <textarea class="form-control" rows="10" v-model="subFromData.refund_explain"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div  class="Button-box">
+                            <button class="btn btn-success" @click="back(3)">上一步</button>
+                            <button class="btn btn-success" @click="upload">保存，下一步</button>
+                        </div>
+                    </div>
+                </div>
+                </validator>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="../../static/script/local/config.js"></script>
+<script type="text/javascript" src="../../static/script/local/require/require.js"></script>
+<script type="text/javascript" src="../../static/script/local/require_config.js"></script>
+<script type="text/javascript" src="../../static/script/local/view/prod/itinerary/addItineraryProdView.js"></script>
+</body>
+</html>

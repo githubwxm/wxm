@@ -1,0 +1,123 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <header-title></header-title>
+    <link href="../static/css/style.css" rel="stylesheet">
+</head>
+<body vtag="root">
+<div class="root-main">
+    <div class="main-container clearfix">
+        <div class="Establish clearfix">
+            <div class="title">
+                <em></em>
+                <h3 v-if="subFormData.product_id == undefined">添加新供应商</h3>
+            </div>
+            <validator name="checkSubForm">
+                <form id="subForm" method="post" onSubmit="return false;">
+                    <ul>
+                        <li>
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label">
+                                <dd>*</dd>
+                                供应商名称：</label>
+                            <div class="col-sm-9 col-md-6 col-lg-6">
+                                <input class="form-control" type="text" maxlength="50" v-model="subFormData.name"
+                                       v-validate:name="{required:true}" initial="off"
+                                       placeholder="此名称必须是唯一的，建议采取认知度较高的标准名称">
+                            </div>
+                            <div v-show="$checkSubForm.name.required" for="contactMobile"><img
+                                    src="../static/style/img/baocuo.png"><label class="error">请填写供应商名称！</label></div>
+                        </li>
+                        <li>
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label">
+                                <dd>*</dd>
+                                所在区域：</label>
+                            <div class="col-sm-3 col-md-3 col-lg-2">
+                                <remote-sel :setting="provinceSetting" :value.sync="subFormData.props.province"
+                                            @change="provinceChange" v-validate:province="{required:true}"
+                                            initial="off"></remote-sel>
+                                <span v-show="$checkSubForm.province.required" for="contactMobile"><img
+                                        src="../static/style/img/baocuo.png"><label class="error">请选择所在区域！</label></span>
+                            </div>
+
+                            <div class="col-sm-3 col-md-3 col-lg-2">
+                                <remote-sel :setting="citySetting" :value.sync="subFormData.props.city"
+                                            @change="cityChange" v-ref:city v-validate:city="{required:true}"
+                                            initial="off"></remote-sel>
+                                <span v-show="$checkSubForm.city.required" for="contactMobile"><img
+                                        src="../static/style/img/baocuo.png"><label class="error">请选择所在区域！</label></span>
+                            </div>
+
+                            <div class="col-sm-3 col-md-3 col-lg-2">
+                                <remote-sel :setting="areaSetting" :value.sync="subFormData.region" v-ref:area
+                                            v-validate:area="{required:true}" initial="off"></remote-sel>
+                                <span v-show="$checkSubForm.area.required" for="contactMobile"><img
+                                        src="../static/style/img/baocuo.png"><label class="error">请选择所在区域！</label></span>
+                            </div>
+                        </li>
+
+                        <li>
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label">
+                                <dd>*</dd>
+                                详细地址：</label>
+                            <div class="col-sm-6 col-md-6 col-lg-6">
+                                <input name="address" class="form-control" type="text" maxlength="20"
+                                       v-model="subFormData.address" v-validate:address="{required:true}"
+                                       initial="off"
+                                       placeholder="请不要重复填写上述所在地区的相同信息">
+                            </div>
+                            <div v-show="$checkSubForm.address.required" for="contactMobile"><img
+                                    src="../static/style/img/baocuo.png"><label class="error">请填写详细地址！</label></div>
+                        </li>
+
+                        <li>
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label">
+                                <dd>*</dd>
+                                联系人：</label>
+                            <div class="col-sm-6 col-md-6 col-lg-6">
+                                <input name="agent" class="form-control" type="text" maxlength="20"
+                                       v-model="subFormData.agent" v-validate:agent="{required:true}"
+                                       initial="off"
+                                       placeholder="联系人">
+                            </div>
+                            <div v-show="$checkSubForm.agent.required" for="contactMobile"><img
+                                    src="../static/style/img/baocuo.png"><label class="error">请填写联系人！</label></div>
+                        </li>
+                        <li>
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label">
+                                <dd>*</dd>
+                                联系电话：</label>
+                            <div class="col-sm-6 col-md-6  col-lg-6">
+                                <input name="phone" class="form-control" type="text" maxlength="20"
+                                       v-model="subFormData.phone" v-validate:phone="{required:true}"
+                                       initial="off"
+                                       placeholder="联系电话">
+                            </div>
+                            <div v-show="$checkSubForm.level.required" for="contactMobile"><img
+                                    src="../static/style/img/baocuo.png"><label class="error">请填写景点级别！</label></div>
+                        </li>
+                        <li>
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label">
+                                <dd>*</dd>
+                                备注：</label>
+                            <div class="col-sm-9 col-md-8  col-lg-6">
+                                <textarea rows="4" class="form-control valid" style="resize:none"
+                                          v-model="subFormData.description" initial="off"></textarea>
+                            </div>
+                        </li>
+                    </ul>
+                </form>
+            </validator>
+            <div class="Button-box">
+                <button class="btn" type="submit" @click="save">添加</button>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript" src="../static/script/local/local_config.js"></script>
+    <script type="text/javascript" src="../static/script/local/require/require.js"></script>
+    <script type="text/javascript" src="../static/script/local/require_config.js"></script>
+    <script type="text/javascript" src="../static/script/local/city_config.js"></script>
+    <script type="text/javascript" src="../static/script/local/view/supply/addSupplyView.js"></script>
+</body>
+</html>

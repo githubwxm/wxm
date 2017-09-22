@@ -1,0 +1,157 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <header-title></header-title>
+    <link href="../../static/css/style.css" rel="stylesheet">
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=1.4&key=sNHtfFMen9ktOAbQYpC23Gmc"></script>
+</head>
+<body vtag="root">
+<div class="root-main">
+    <div class="main-container clearfix">
+        <div class="Establish clearfix">
+            <div class="title">
+                <em></em><h3 v-if="subFormData.product_id == undefined">添加新景点</h3><h3 v-if="subFormData.product_id != undefined">修改景点</h3>
+            </div>
+            <validator name="checkSubForm">
+                <form id="subForm"  method="post" onSubmit="return false;">
+                    <ul>
+                        <li>
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>景点名称：</label>
+                            <div class="col-sm-6 col-md-6 col-lg-6">
+                                <input class="form-control" type="text" maxlength="50" v-model="subFormData.name" v-validate:name="{required:true}" initial="off"
+                                       placeholder="此名称必须是唯一的，建议采取认知度较高的标准名称 例如： 张家界国家森林公园">
+                                <span class="label label-danger ">注意</span>
+                                <span>一旦保存后，将无法更改</span>
+                            </div>
+                            <div  v-show="$checkSubForm.name.required" for="contactMobile"><img src="../../static/style/img/baocuo.png"><label class="error">请填写景点名称！</label></div>
+                        </li>
+                        <li>
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>短信通知人：</label>
+                            <div class="col-sm-6 col-md-6 col-lg-6">
+                                <input name="address" class="form-control" type="text" maxlength="20" v-model="subFormData.phone" v-validate:phone="{required:true,pattern:'/^1[0-9]{10}$/'}" initial="off">
+                            </div>
+                            <div class="Prompt">
+                                <span v-if="$checkSubForm.phone.required" for="contactMobile" ><img src="../../static/style/img/baocuo.png"><label class="error">请填写手机号码！</label></span>
+                                <span v-if="$checkSubForm.phone.pattern" for="contactMobile"><img src="../../static/style/img/baocuo.png"><label class="error">手机号码格式不正确！</label></span>
+                            </div>
+                        </li>
+                        <li>
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>所在城市：</label>
+                            <div class="col-sm-3 col-md-3 col-lg-2">
+                                <remote-sel :setting="provinceSetting" :value.sync="subFormData.props.province" @change="provinceChange" v-validate:province="{required:true}" initial="off"></remote-sel>
+                                <span v-show="$checkSubForm.province.required" for="contactMobile"><img src="../../static/style/img/baocuo.png"><label class="error">请选择企业地址！</label></span>
+                            </div>
+
+                            <div class="col-sm-3 col-md-3 col-lg-2">
+                                <remote-sel :setting="citySetting" :value.sync="subFormData.props.city" @change="cityChange" v-ref:city v-validate:city="{required:true}" initial="off"></remote-sel>
+                                <span v-show="$checkSubForm.city.required" for="contactMobile"><img src="../../static/style/img/baocuo.png"><label class="error">请选择企业地址！</label></span>
+                            </div>
+
+                            <div class="col-sm-3 col-md-3 col-lg-2">
+                                <remote-sel :setting="areaSetting" :value.sync="subFormData.props.area" v-ref:area v-validate:area="{required:true}" initial="off"></remote-sel>
+                                <span v-show="$checkSubForm.area.required" for="contactMobile"><img src="../../static/style/img/baocuo.png"><label class="error">请选择企业地址！</label></span>
+                            </div>
+                        </li>
+
+                        <li>
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>详细地址：</label>
+                            <div class="col-sm-6 col-md-6 col-lg-6">
+                                <input name="address" class="form-control" type="text" maxlength="20" v-model="subFormData.props.address" v-validate:address="{required:true}" initial="off"
+                                       placeholder="请不要重复填写上述所在地区的相同信息">
+                            </div>
+                            <div  v-show="$checkSubForm.address.required" for="contactMobile"><img src="../../static/style/img/baocuo.png"><label class="error">请填写详细地址！</label></div>
+                        </li>
+
+                        <li>
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>景点类型：</label>
+                            <div class="col-sm-6 col-md-6 col-lg-6">
+                                <div class="Choice col-sm-9 col-md-8 col-lg-6">
+                                    <div class="checkbox">
+                                        <label v-for="line in choosestr">
+                                            <em style="{{line.checked == 1?'background-color:#3cd084;color:white':''}}"><input @click="check(line)" style="display:none" name="checkbox" type="checkbox" v-bind:value="line.id" v-model="subFormData.props.type" v-validate:type="{required:true}" initial="off"/><div>{{line.name}}</div></em>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div v-show="$checkSubForm.type.required" for="contactMobile"><img src="../../static/style/img/baocuo.png"><label class="error">请选择景点类型！</label></div>
+                        </li>
+
+                        <li>
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>景点级别：</label>
+                            <div class="col-sm-6 col-md-6  col-lg-6">
+                                <remote-sel :setting="prodRankSetting" :value.sync="subFormData.props.level" v-validate:level="{required:true}" initial="off"></remote-sel>
+                            </div>
+                            <div v-show="$checkSubForm.level.required" for="contactMobile"><img src="../../static/style/img/baocuo.png"><label class="error">请填写景点级别！</label></div>
+                        </li>
+                        <li>
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>营业时间：</label>
+                            <div class="col-sm-9 col-md-8  col-lg-6">
+                                <input name="busi_hours" class="form-control" type="text" maxlength="100" v-model="subFormData.props.business_time" v-validate:business_time="{required:true}" initial="off"
+                                       placeholder="旺季：8:00-18:00，淡季：9:00-17:00">
+                            </div>
+                            <div v-show="$checkSubForm.business_time.required" for="contactMobile"><img src="../../static/style/img/baocuo.png"><label class="error">请填写营业时间！</label></div>
+                        </li>
+                        <li>
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>景区服务电话：</label>
+                            <div class="col-sm-9 col-md-8  col-lg-6">
+                                <input name="tel" class="form-control" type="text" maxlength="100" v-model="subFormData.props.tel" v-validate:tel="{required:true,pattern:'/^(\\d{3,4}-)?\\d{7,8}([\,](\\d{3,4}-)?\\d{7,8})*$/'}" initial="off"
+                                       placeholder="区号-电话号码 形式，填写多个用英文的逗号隔开">
+                            </div>
+                            <div class="Prompt">
+                                <span v-if="$checkSubForm.tel.required" for="contactMobile" ><img src="../../static/style/img/baocuo.png"><label class="error">请填写电话！</label></span>
+                                <span v-if="$checkSubForm.tel.pattern" for="contactMobile"><img src="../../static/style/img/baocuo.png"><label class="error">格式不正确！</label></span>
+                            </div>
+                        </li>
+                        <li>
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>地理位置：</label>
+                            <div class="col-sm-9 col-md-8  col-lg-6">
+                                <div id="l-map" style="height:300px;">
+                                    <i class="icon-spinner icon-spin icon-large"></i>地图加载中...
+                                </div>
+
+                            </div>
+                        </li>
+                        <li>
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>交通线路：</label>
+                            <div class="col-sm-9 col-md-8  col-lg-6">
+                                <textarea rows="4" class="form-control valid" style="resize:none" v-model="subFormData.props.transit_lines" v-validate:transit_lines="{required:true}" initial="off"></textarea>
+                            </div>
+                            <div v-show="$checkSubForm.transit_lines.required" for="contactMobile"><img src="../../static/style/img/baocuo.png"><label class="error">请填写交通路线！</label></div>
+                        </li>
+                        <li>
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>景点简介：</label>
+                            <div class="col-sm-9 col-md-8  col-lg-6">
+                                <textarea rows="8" class="form-control valid" style="resize:none" v-model="subFormData.props.blurb" v-validate:blurb="{required:true}" initial="off"></textarea>
+                            </div>
+                            <div v-show="$checkSubForm.blurb.required" for="contactMobile"><img src="../../static/style/img/baocuo.png"><label class="error">请填写景点简介！</label></div>
+                        </li>
+                        <li>
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label">景点图片：</label>
+                            <div class="col-sm-9 col-md-9  col-lg-9 form-img">
+                               <upload-pic :setting.sync="upSetting" :list.sync="subFormData.props.imgs"></upload-pic>
+                            </div>
+                        </li>
+                        <div class="Matters">
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label"></label>
+                            <div class="col-sm-9 col-md-9  col-lg-9">
+                                <span class="btn btn-orange">注意事项</span>
+                                <!--<p>1.&nbsp;&nbsp;必须上转一张照片作为主图展示...</p>-->
+                                <p>2.&nbsp;&nbsp;图片尺寸必须大于等于1024*768px，图片大小必须小于2000KB，仅支持png, gif, jpg图片格式...</p>
+                            </div>
+                        </div>
+                    </ul>
+                </form>
+            </validator>
+            <div class="Button-box" v-if="subFormData.product_id == undefined">
+                <button class="btn" type="submit" @click="upload">添加</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="../api/local/client/system/load_config"></script>
+<script type="text/javascript" src="../../static/script/local/require/require.js"></script>
+<script type="text/javascript" src="../../static/script/local/require_config.js"></script>
+<script type="text/javascript" src="../../static/script/local/view/prod/supplierProd/addthirdPartySupplyProdView.js"></script>
+</body>
+</html>

@@ -11,7 +11,13 @@
           http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd"
 	default-autowire="byName">
 
- 
+	<!-- 基于springmvc和redis的session实现 -->
+	<bean id="redisHttpSessionConfiguration"
+		  class="org.springframework.session.data.redis.config.annotation.web.http.RedisHttpSessionConfiguration">
+		<property name="maxInactiveIntervalInSeconds" value="1800"/>
+	</bean>
+
+
 	<!-- POOL配置 -->
 	<bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
 		<property name="minIdle" value="${redis.pool.minIdle}" />

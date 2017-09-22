@@ -1,0 +1,89 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <header-title></header-title>
+    <link href="../static/css/style.css" rel="stylesheet">
+</head>
+<body vtag="root">
+<div class="root-main">
+    <div class="main-container clearfix">
+        <div class="main-warp">
+            <div class="title" v-show="!isDialog"><em></em>
+                <h3>平台授权</h3>
+            </div>
+            <div class="searchbox clearfix">
+                <form class="form-horizontal" method="post" onSubmit="return false;">
+                    <div class="form-group">
+                        <label class="col-sm-2 col-md-1 col-lg-1 control-label">平台商户号:</label>
+                        <div class="col-sm-4 col-md-2 col-lg-2">
+                            <input class="form-control" type="text" maxlength="30" v-model="queryFormData.code">
+                        </div>
+                        <label class="col-sm-2 col-md-1 col-lg-1 control-label">平台商户名:</label>
+                        <div class="col-sm-4 col-md-2 col-lg-2">
+                            <input class="form-control" type="text" maxlength="30" v-model="queryFormData.name">
+                        </div>
+                        <div class="col-sm-4 col-lg-4">
+                            <button class="btn btn-success" type="button" @click="queryFormSubmit">查询</button>
+                            <button class="btn btn-orange" type="button" v-show="isDialog" @click="createRoleButton">新平台授权</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 col-md-1 col-lg-1 control-label">authId:</label>
+                        <div class="col-sm-4 col-md-2 col-lg-2">
+                            <input class="form-control" type="text" maxlength="50" v-model="queryFormData.authId">
+                        </div>
+                        <label class="col-sm-2 col-md-1 col-lg-1 control-label">authKey:</label>
+                        <div class="col-sm-4 col-md-2 col-lg-2">
+                            <input class="form-control" type="text" maxlength="50" v-model="queryFormData.authKey">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="table-responsive table-top">
+                <data-table-dyn :setting="dtSetting" :params="queryFormData" v-ref:dt-list></data-table-dyn>
+                <script type="text/x-template" id="data-table-dyn">
+                    <component :is="loadStatus"></component>
+                    <div v-show="loadStatus == 'dt-load-succ'" class="table-responsive">
+                        <table class="table table-bordered">
+                            <tbody>
+                            <tr class="tr-bt-sc">
+                                <td width="3%" style="text-align:center;">Id</td>
+                                <td width="8%" style="text-align:center;">平台名</td>
+                                <td width="8%" style="text-align:center;">商户名</td>
+                                <td width="8%" style="text-align:center;">平台商户号</td>
+                                <td width="10%" style="text-align:center;">平台商户名</td>
+                                <td width="10%" style="text-align:center;">authId</td>
+                                <td width="5%" style="text-align:center;">authKey</td>
+                                <td width="8%" style="text-align:center;">创建时间</td>
+                                <td width="8%" style="text-align:center;">绑定时间</td>
+                                <td width="5%" style="text-align:center;">修改时间</td>
+                            </tr>
+                            <tr v-for="line in list">
+                                <td style="text-align:center;" v-cloak>{{line.id}}</td>
+                                <td style="text-align:center;" v-cloak>{{line.platform_name}}</td>
+                                <td style="text-align:center;" v-cloak>{{line.supply_name}}</td>
+                                <td style="text-align:center;" v-cloak>{{line.code}}</td>
+                                <td style="text-align:center;" v-cloak>{{line.name}}</td>
+                                <td style="text-align:center;" v-cloak>{{line.authId}}</td>
+                                <td style="text-align:center;" v-cloak>{{line.authKey}}</td>
+                                <td style="text-align:center;" v-cloak>{{line.createTime}}</td>
+                                <td style="text-align:center;" v-cloak>{{line.authTime||"-"}}</td>
+                                <td style="text-align:center;" v-cloak>{{line.modifyTime||"-"}}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <pager :page="page"></pager>
+                    </div>
+                </script>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="../static/script/local/local_config.js"></script>
+<script type="text/javascript" src="../static/script/local/require/require.js"></script>
+<script type="text/javascript" src="../static/script/local/require_config.js"></script>
+<script type="text/javascript" src="../static/script/local/view/role/listRoleView.js"></script>
+</body>
+</html>
