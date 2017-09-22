@@ -9,7 +9,7 @@ require_js_file(['vueValidator', 'vuePicker',], function (Vue, fnr, validator) {
             var self = this;
             var params = {
                 title: '添加分类',
-                url: '/platform/addProdType.html?id=' + id,
+                url: '../platform/addProdType.html?id=' + id,
                 width: 1200,
                 height: 800,
                 callbackSucc: function () {
@@ -63,7 +63,7 @@ require_js_file(['vueValidator', 'vuePicker',], function (Vue, fnr, validator) {
                 var self = this;
                 var params = {
                     title: '添加分类',
-                    url: '/platform/addProdType.html',
+                    url: '../platform/addProdType.html',
                     width: 1200,
                     height: 800,
                     callbackSucc: function () {

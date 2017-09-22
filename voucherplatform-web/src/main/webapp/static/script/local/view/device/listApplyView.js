@@ -6,7 +6,7 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
             var self = this;
             var params = {
                 title: '终端审核（选择终端组）',
-                url: '/device/auditDevice.html?id=' + id,
+                url: '../device/auditDevice.html?id=' + id,
                 width: 1200,
                 height: 800,
                 callbackSucc: function () {

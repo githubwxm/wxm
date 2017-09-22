@@ -33,9 +33,9 @@ require_js_file(['epRequestUrl'],function(Vue,fnr){
             edit:function(id){
                 var params = {};
                 if(id == undefined || id==''){
-                    params = {url:'/demo/curd/view.html',title:'添加'};
+                    params = {url:'../demo/curd/view.html',title:'添加'};
                 }else{
-                    params = {url:'/demo/curd/view.html?id='+id,title:'编辑'};
+                    params = {url:'../demo/curd/view.html?id='+id,title:'编辑'};
                 }
                 var self = this;
                 params.callbackSucc = function(){

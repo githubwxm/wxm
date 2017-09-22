@@ -86,7 +86,7 @@ require_js_file([], function (Vue, fnr) {
         },
         methods: {
             upMyInfo: function () {
-                fnr.openFrame({link: '/user/updatePwd.html', title: '修改登录密码'});
+                fnr.openFrame({link: '../user/updatePwd.html', title: '修改登录密码'});
             },
 
             closeAllMenu: function () {

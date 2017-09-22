@@ -9,10 +9,10 @@ require_js_file(['vueValidator', 'vuePicker',], function (Vue, fnr, validator) {
             alert(0);
         },
         edit: function (id) {
-            location.href = "/prod/editSub.html?productSubId=" + id;
+            location.href = "../prod/editSub.html?productSubId=" + id;
         },
         subProdName: function (id) {
-            var params = {title: '票据详情', url: '/prod/viewSubProd.html?productSubId=' + id, width: 1200, height: 800};
+            var params = {title: '票据详情', url: '../prod/viewSubProd.html?productSubId=' + id, width: 1200, height: 800};
             fnr.iDialog(params);
         }
     });

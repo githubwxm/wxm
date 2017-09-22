@@ -9,7 +9,7 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
             var self = this;
             var params = {
                 title: '添加设备',
-                url: '/device/addDevice.html?groupId=' + id,
+                url: '../device/addDevice.html?groupId=' + id,
                 width: 800,
                 height: 400,
                 callbackSucc: function () {
@@ -21,7 +21,7 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
         bindProd: function (id, supplyId) {
             var params = {
                 title: '绑定可验证的产品',
-                url: '/device/bindProd.html?groupId=' + id + '&supplyId=' + supplyId,
+                url: '../device/bindProd.html?groupId=' + id + '&supplyId=' + supplyId,
                 width: 1200,
                 height: 800,
             };
@@ -31,7 +31,7 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
             var self = this;
             var params = {
                 title: '查看已添加的设备',
-                url: '/device/listDevice.html?groupId=' + id,
+                url: '../device/listDevice.html?groupId=' + id,
                 width: 1200,
                 height: 800,
             };

@@ -87,7 +87,7 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
             /*新增or修改主产品End*/
             //*成功回调*/
             callBack: function () {
-                location.href = "/supply/listSupply.html";
+                location.href = "../supply/listSupply.html";
             },
             upload: function () {
 

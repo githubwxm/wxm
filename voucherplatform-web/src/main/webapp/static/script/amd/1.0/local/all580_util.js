@@ -295,7 +295,7 @@ define(['vue','vueResource'],function(Vue,vueResource){
             fnr.closeLoading(loading);
             var resp = result.json();
             if(resp.code == 99){
-                window.top.location = '/error/403.html';
+                window.top.location = '../error/403.html';
                 return;
             }
             if(resp.code == 98){

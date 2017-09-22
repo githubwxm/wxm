@@ -37,7 +37,7 @@ require_js_file(['vueValidator'], function (Vue, fnr, validator) {
                     if (resp.code == 200)
                     {
                         alert("密码修改成功，请重新登录");
-                        window.top.location='/';
+                        window.top.location='../';
                     }
                 }, function (error) {
                     fnr.alertErr('密码修改失败！');

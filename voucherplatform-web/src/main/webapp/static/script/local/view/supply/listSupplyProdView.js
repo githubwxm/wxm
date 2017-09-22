@@ -9,7 +9,7 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
             var self = this;
             var params = {
                 title: '票种编辑',
-                url: '/supply/addSupplyProd.html?supplyId=' + supplyId + '&prodId=' + prodId,
+                url: '../supply/addSupplyProd.html?supplyId=' + supplyId + '&prodId=' + prodId,
                 width: 1200,
                 height: 800,
                 callbackSucc: function () {

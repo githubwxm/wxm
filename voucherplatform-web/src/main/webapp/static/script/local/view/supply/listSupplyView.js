@@ -5,7 +5,7 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
         auth: function (supplyId) {
             var params = {
                 title: '供应商授权查看',
-                url: '/role/listRole.html?supplyId=' + supplyId,
+                url: '../role/listRole.html?supplyId=' + supplyId,
                 width: 1200,
                 height: 800
             };
@@ -25,7 +25,7 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
             var self = this;
             var params = {
                 title: '选择票务系统',
-                url: '/ticketSys/listTicketSys.html?supplyId=' + supplyId + '&ticketSysId=' + ticketSysId,
+                url: '../ticketSys/listTicketSys.html?supplyId=' + supplyId + '&ticketSysId=' + ticketSysId,
                 width: 1200,
                 height: 800,
                 callbackSucc: function () {
@@ -37,7 +37,7 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
         showProd: function (id) {
             var params = {
                 title: '查看票务产品',
-                url: '/supply/listSupplyProd.html?supplyId=' + id,
+                url: '../supply/listSupplyProd.html?supplyId=' + id,
                 width: 1200,
                 height: 800,
             };
@@ -46,7 +46,7 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
         editConf: function (supplyId) {
             var params = {
                 title: '修改配置信息',
-                url: "/supply/editConf.html?supplyId=" + supplyId,
+                url: "../supply/editConf.html?supplyId=" + supplyId,
                 width: 800,
                 height: 600
             };
@@ -55,7 +55,7 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
         editSignType: function (supplyId) {
             var params = {
                 title: '修改签名方式',
-                url: "/supply/editSignType.html?supplyId=" + supplyId,
+                url: "../supply/editSignType.html?supplyId=" + supplyId,
                 width: 800,
                 height: 600
             };

@@ -21,7 +21,7 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
             var self = this;
             var params = {
                 title: '设备名重命名',
-                url: '/device/renameDevice.html?id=' + id + "&name=" + encodeURI(name),
+                url: '../device/renameDevice.html?id=' + id + "&name=" + encodeURI(name),
                 width: 800,
                 height: 400,
                 callbackSucc: function () {
