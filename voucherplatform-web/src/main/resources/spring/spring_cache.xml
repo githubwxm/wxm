@@ -17,6 +17,9 @@
 		<property name="maxInactiveIntervalInSeconds" value="1800"/>
 	</bean>
 
+	<bean class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
+		<constructor-arg name="poolConfig" ref="jedisPoolConfig" />
+	</bean>
 
 	<!-- POOL配置 -->
 	<bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
