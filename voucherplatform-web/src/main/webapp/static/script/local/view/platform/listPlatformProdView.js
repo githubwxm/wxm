@@ -25,7 +25,7 @@ require_js_file(['vueValidator', 'vuePicker',], function (Vue, fnr, validator) {
                     {key: '', value: '--请选择--'},
                 ],
                 remote: {
-                    link: 'api/action/selectProdTyeList',
+                    link: '../api/action/selectProdTyeList',
                     options: {method: 'GET', alertMessage: 0}
                 },
                 fields: {root: 'data.list', key: 'id', value: 'name'}
