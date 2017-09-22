@@ -182,19 +182,21 @@ public class CreateGroupOrderManager {
         } else {
             visitorList = (List<Map>) map.get("visitors");
         }
-        for (Map m : visitorList) {
-            String seqId = CommonUtil.objectParseString(m.get("seqId"));
-            String customName = CommonUtil.objectParseString(m.get("customName"));
-            String mobile = CommonUtil.objectParseString(m.get("mobile"));
-            String idType = CommonUtil.objectParseString(m.get("idType"));
-            String idNumber = CommonUtil.objectParseString(m.get("idNumber"));
-            GroupVisitor groupVisitor = new GroupVisitor();
-            groupVisitor.setSeqId(seqId);
-            groupVisitor.setCustomName(customName);
-            groupVisitor.setMobile(mobile);
-            groupVisitor.setIdType(idType);
-            groupVisitor.setIdNumber(idNumber);
-            this.visitorList.add(groupVisitor);
+        if(visitorList!= null){
+            for (Map m : visitorList) {
+                String seqId = CommonUtil.objectParseString(m.get("seqId"));
+                String customName = CommonUtil.objectParseString(m.get("customName"));
+                String mobile = CommonUtil.objectParseString(m.get("mobile"));
+                String idType = CommonUtil.objectParseString(m.get("idType"));
+                String idNumber = CommonUtil.objectParseString(m.get("idNumber"));
+                GroupVisitor groupVisitor = new GroupVisitor();
+                groupVisitor.setSeqId(seqId);
+                groupVisitor.setCustomName(customName);
+                groupVisitor.setMobile(mobile);
+                groupVisitor.setIdType(idType);
+                groupVisitor.setIdNumber(idNumber);
+                this.visitorList.add(groupVisitor);
+            }
         }
     }
 
