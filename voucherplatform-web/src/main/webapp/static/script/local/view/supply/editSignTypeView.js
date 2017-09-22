@@ -13,7 +13,7 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
                     {key: '', value: '--请选择--'},
                 ],
                 remote: {
-                    link: 'api/supply/getSignType',
+                    link: '../api/supply/getSignType',
                     options: {method: "GET"}
 
                 },
