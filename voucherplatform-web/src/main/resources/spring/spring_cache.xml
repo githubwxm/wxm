@@ -18,7 +18,7 @@
 	</bean>
 
 	<bean class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
-		<constructor-arg name="poolConfig" ref="jedisPoolConfig" />
+		<constructor-arg index="0" type="redis.clients.jedis.JedisPoolConfig" ref="jedisPoolConfig" />
 	</bean>
 
 	<!-- POOL配置 -->
