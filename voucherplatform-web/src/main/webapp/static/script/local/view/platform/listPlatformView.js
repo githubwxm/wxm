@@ -8,7 +8,7 @@ require_js_file(['vueValidator', 'vuePicker',], function (Vue, fnr, validator) {
         showProd: function (id) {
             var params = {
                 title: '查看平台商产品',
-                url: "../platform/listPlatformProd.html?platformId=" + id,
+                url: "/voucher/platform/listPlatformProd.html?platformId=" + id,
                 width: 1200,
                 height: 800
             };
@@ -17,7 +17,7 @@ require_js_file(['vueValidator', 'vuePicker',], function (Vue, fnr, validator) {
         showSupply: function (id) {
             var params = {
                 title: '查看已授权商户',
-                url: "../platform/listRoleSupply.html?platformId=" + id,
+                url: "/voucher/platform/listRoleSupply.html?platformId=" + id,
                 width: 1200,
                 height: 800
             };
@@ -32,7 +32,7 @@ require_js_file(['vueValidator', 'vuePicker',], function (Vue, fnr, validator) {
                 //page:{record_count:20},
                 remote: {
                     link: function (params, options) {
-                        return fnr.ajaxJson("../api/action/selectPlatformList", params, options);
+                        return fnr.ajaxJson("/voucher/api/action/selectPlatformList", params, options);
                     },
                     options: {method: 'GET', alertMessage: 0}
                 }

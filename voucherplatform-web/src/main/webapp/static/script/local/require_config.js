@@ -1,5 +1,5 @@
 requirejs.config({
-    baseUrl: 'http://service.all580.com.cn/voucher/static/script/amd/1.0',
+    baseUrl: '/voucher/static/script/amd/1.0',
     paths:{
         'vue':'vue/vue.min',
         'vueResource':'vue/vue-resource.min',

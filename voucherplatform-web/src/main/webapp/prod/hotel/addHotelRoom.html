@@ -3,7 +3,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <header-title></header-title>
-    <link href="../../static/css/style.css" rel="stylesheet">
+    <link href="/voucher/static/css/style.css" rel="stylesheet">
     <script type="text/javascript" src="http://api.map.baidu.com/api?v=1.4&key=sNHtfFMen9ktOAbQYpC23Gmc"></script>
 </head>
 <body vtag="root">
@@ -22,7 +22,7 @@
                             <div class="col-sm-9 col-md-8 col-lg-6">
                                 <input class="form-control" type="text" maxlength="50" v-model="subFormData.product_name" v-validate:product_name="{required:true}" initial="off" disabled>
                             </div>
-                            <div class="Prompt" v-show="$checkSubForm.product_name.required"><img src="../../static/style/img/baocuo.png"><label class="error">请填写酒店名称！</label></div>
+                            <div class="Prompt" v-show="$checkSubForm.product_name.required"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请填写酒店名称！</label></div>
                         </li>
                         <li>
                             <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>房型名称：</label>
@@ -30,21 +30,21 @@
                                 <input type="text" class="form-control" v-model="subFormData.name" v-validate:name="{required:true}" initial="off"/>
                                 <div class="Prompt-one"><span>注意</span><b>同一酒店内房型名称必须为唯一</b></div>
                             </div>
-                            <div class="Prompt" v-show="$checkSubForm.name.required"><img src="../../static/style/img/baocuo.png"><label class="error">请填写房型名称！</label></div>
+                            <div class="Prompt" v-show="$checkSubForm.name.required"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请填写房型名称！</label></div>
                         </li>
                         <li>
                             <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>市场价：</label>
                             <div class="col-sm-3 col-md-2 col-lg-3">
                                 <input type="number" class="form-control" v-model="subFormData.market_price" v-validate:market_price="{required:true}" initial="off"/><h1>元</h1>
                             </div>
-                            <div class="Prompt" v-show="$checkSubForm.market_price.required"><img src="../../static/style/img/baocuo.png"><label class="error">请填写市场价！</label></div>
+                            <div class="Prompt" v-show="$checkSubForm.market_price.required"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请填写市场价！</label></div>
                         </li>
                         <li>
                             <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>最低销售价：</label>
                             <div class="col-sm-3 col-md-2 col-lg-3">
                                 <input type="number" class="form-control" v-model="subFormData.min_sell_price" v-validate:min_sell_price="{required:true}" initial="off"/><h1>元</h1>
                             </div>
-                            <div class="Prompt" v-show="$checkSubForm.min_sell_price.required"><img src="../../static/style/img/baocuo.png"><label class="error">请填写最低销售价！</label></div>
+                            <div class="Prompt" v-show="$checkSubForm.min_sell_price.required"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请填写最低销售价！</label></div>
                         </li>
                         <li>
                             <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>团散类型：</label>
@@ -69,14 +69,14 @@
                             <div class="col-sm-4 col-md-4 col-lg-4">
                                 <remote-sel :setting="maTypeSetting" :value.sync="subFormData.ep_ma_id" v-validate:ep_ma_id="{required:true}" initial="off"></remote-sel>
                             </div>
-                            <div class="Prompt" v-show="$checkSubForm.ep_ma_id.required"><img src="../../static/style/img/baocuo.png"><label class="error">请选择发码公司！</label></div>
+                            <div class="Prompt" v-show="$checkSubForm.ep_ma_id.required"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请选择发码公司！</label></div>
                         </li>-->
                         <!--<li>
                             <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>票务产品：</label>
                             <div class="col-sm-6 col-md-6 col-lg-6">
                                 <remote-sel :setting="maProductTypeSetting" :value.sync="subFormData.ma_product_id" v-validate:ma_product_id="{required:true}" initial="off"></remote-sel>
                             </div>
-                            <div v-show="$checkSubForm.ma_product_id.required" for="contactMobile"><img src="../../static/style/img/baocuo.png"><label class="error">请选择票务产品！</label></div>
+                            <div v-show="$checkSubForm.ma_product_id.required" for="contactMobile"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请选择票务产品！</label></div>
                         </li>-->
                     </ul>
 
@@ -102,7 +102,7 @@
                                 <input type="number" class="form-control" v-model="subFormData.person" v-validate:person="{required:true,min:1}" initial="off"><h1>人/间</h1>
                             </div>
                             <div class="Prompt">
-                                <span v-if="$checkSubForm.person.min"><img src="../../static/style/img/baocuo.png"><label class="error">可住人数最少有一人！</label></span>
+                                <span v-if="$checkSubForm.person.min"><img src="/voucher/static/style/img/baocuo.png"><label class="error">可住人数最少有一人！</label></span>
                             </div>
                         </li>
 
@@ -196,7 +196,7 @@
                                   <input type="number" class="form-control" v-model="subFormData.total_stock" v-validate:total_stock="{min:0}" initial="off"/>
                               </div>
                               <div class="Prompt">
-                                  <span v-if="$checkSubForm.total_stock.min"><img src="../../static/style/img/baocuo.png"><label class="error">限售数量最低为0！</label></span>
+                                  <span v-if="$checkSubForm.total_stock.min"><img src="/voucher/static/style/img/baocuo.png"><label class="error">限售数量最低为0！</label></span>
                               </div>
                           </li>
                           <li v-if="subFormData.ticket_flag == 5032">
@@ -205,8 +205,8 @@
                                   <input type="number" class="form-control" v-model="subFormData.min_buy_quantity" v-validate:min_buy_quantity="{required:true,min:1}" initial="off"/>
                               </div>
                               <div class="Prompt">
-                                  <span v-if="$checkSubForm.min_buy_quantity.required"><img src="../../static/style/img/baocuo.png"><label class="error">请填写最小预订数量！</label></span>
-                                  <span v-if="$checkSubForm.min_buy_quantity.min"><img src="../../static/style/img/baocuo.png"><label class="error">最小预订数量最低为1！</label></span>
+                                  <span v-if="$checkSubForm.min_buy_quantity.required"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请填写最小预订数量！</label></span>
+                                  <span v-if="$checkSubForm.min_buy_quantity.min"><img src="/voucher/static/style/img/baocuo.png"><label class="error">最小预订数量最低为1！</label></span>
                               </div>
                           </li>
                         <li>
@@ -215,8 +215,8 @@
                                 <input type="number" class="form-control" v-model="subFormData.max_buy_quantity" v-validate:max_buy_quantity="{required:true,min:0}" initial="off"/>
                             </div>
                             <div class="Prompt">
-                                <span v-if="$checkSubForm.max_buy_quantity.required"><img src="../../static/style/img/baocuo.png"><label class="error">请填写最大预订数量！</label></span>
-                                <span v-if="$checkSubForm.max_buy_quantity.min"><img src="../../static/style/img/baocuo.png"><label class="error">最大预订数量最低为0！</label></span>
+                                <span v-if="$checkSubForm.max_buy_quantity.required"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请填写最大预订数量！</label></span>
+                                <span v-if="$checkSubForm.max_buy_quantity.min"><img src="/voucher/static/style/img/baocuo.png"><label class="error">最大预订数量最低为0！</label></span>
                             </div>
                         </li>
                             <li>
@@ -301,7 +301,7 @@
                             <div class="col-sm-8 col-md-8 col-lg-6 clearfix">
                                 <remote-sel :setting="refundSetting" :value.sync="subFormData.cust_refund_rule" @change="refundRule" v-validate:cust_refund_rule="{required:true}" initial="off"></remote-sel>
                             </div>
-                            <div class="Prompt" v-show="$checkSubForm.cust_refund_rule.required"><img src="../../static/style/img/baocuo.png"><label class="error">请选择退货规则！</label></div>
+                            <div class="Prompt" v-show="$checkSubForm.cust_refund_rule.required"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请选择退货规则！</label></div>
                         </li>
                       </ul>
                     </div>
@@ -317,7 +317,7 @@
                                 <div class="col-sm-9 col-md-9  col-lg-9 form-img">
                                     <upload-pic :setting.sync="upSetting" :list.sync="subFormData.img"></upload-pic>
                                     <input type="hidden" v-model="subFormData.img.length" v-validate:img="{min:1}" initial="off"/>
-                                    <div  v-show="$checkSubForm.img.min"><img src="../../static/style/img/baocuo.png"><label class="error">请选择房型图片！</label></div>
+                                    <div  v-show="$checkSubForm.img.min"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请选择房型图片！</label></div>
                                 </div>
 
                             </li>
@@ -412,9 +412,9 @@
         </div>
     </div>
 </div>
-<script type="text/javascript" src="../../api/local/client/system/load_config"></script>
-<script type="text/javascript" src="../../static/script/local/require/require.js"></script>
-<script type="text/javascript" src="../../static/script/local/require_config.js"></script>
-<script type="text/javascript" src="../../static/script/local/view/prod/hotel/addHotelRoom.js"></script>
+<script type="text/javascript" src="/voucher/api/local/client/system/load_config"></script>
+<script type="text/javascript" src="/voucher/static/script/local/require/require.js"></script>
+<script type="text/javascript" src="/voucher/static/script/local/require_config.js"></script>
+<script type="text/javascript" src="/voucher/static/script/local/view/prod/hotel/addHotelRoom.js"></script>
 </body>
 </html>

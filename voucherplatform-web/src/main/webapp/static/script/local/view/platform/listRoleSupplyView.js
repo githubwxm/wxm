@@ -10,7 +10,7 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
             dtSetting: {
                 remote: {
                     link: function (params, options) {
-                        return fnr.ajaxJson("../api/action/selectRoleList", params, options);
+                        return fnr.ajaxJson("/voucher/api/action/selectRoleList", params, options);
                     },
                     options: {method: 'GET', alertMessage: 0},
                     isLoadOnPageInit: true

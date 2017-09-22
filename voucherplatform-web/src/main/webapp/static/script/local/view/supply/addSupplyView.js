@@ -72,7 +72,7 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
                 var self = this;
                 this.$validate();
                 if (this.$checkSubForm.valid) {
-                    var defrend = fnr.ajaxJson("../api/supply/create", self.subFormData, {});
+                    var defrend = fnr.ajaxJson("/voucher/api/supply/create", self.subFormData, {});
                     defrend.then(function (result) {
                         var resp = result.json();
                         if (resp.code == 200) {
@@ -87,7 +87,7 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
             /*新增or修改主产品End*/
             //*成功回调*/
             callBack: function () {
-                location.href = "../supply/listSupply.html";
+                location.href = "/voucher/supply/listSupply.html";
             },
             upload: function () {
 

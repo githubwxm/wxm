@@ -5,7 +5,7 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
         auth: function (supplyId) {
             var params = {
                 title: '供应商授权查看',
-                url: '../role/listRole.html?supplyId=' + supplyId,
+                url: '/voucher/role/listRole.html?supplyId=' + supplyId,
                 width: 1200,
                 height: 800
             };
@@ -25,7 +25,7 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
             var self = this;
             var params = {
                 title: '选择票务系统',
-                url: '../ticketSys/listTicketSys.html?supplyId=' + supplyId + '&ticketSysId=' + ticketSysId,
+                url: '/voucher/ticketSys/listTicketSys.html?supplyId=' + supplyId + '&ticketSysId=' + ticketSysId,
                 width: 1200,
                 height: 800,
                 callbackSucc: function () {
@@ -37,7 +37,7 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
         showProd: function (id) {
             var params = {
                 title: '查看票务产品',
-                url: '../supply/listSupplyProd.html?supplyId=' + id,
+                url: '/voucher/supply/listSupplyProd.html?supplyId=' + id,
                 width: 1200,
                 height: 800,
             };
@@ -46,7 +46,7 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
         editConf: function (supplyId) {
             var params = {
                 title: '修改配置信息',
-                url: "../supply/editConf.html?supplyId=" + supplyId,
+                url: "/voucher/supply/editConf.html?supplyId=" + supplyId,
                 width: 800,
                 height: 600
             };
@@ -55,7 +55,7 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
         editSignType: function (supplyId) {
             var params = {
                 title: '修改签名方式',
-                url: "../supply/editSignType.html?supplyId=" + supplyId,
+                url: "/voucher/supply/editSignType.html?supplyId=" + supplyId,
                 width: 800,
                 height: 600
             };
@@ -64,7 +64,7 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
         syncProd: function (id) {
             var param = {};
             param.supplyId = id;
-            var defrend = fnr.ajaxJson("../api/supply/syncProd", param, {method: "GET"});
+            var defrend = fnr.ajaxJson("/voucher/api/supply/syncProd", param, {method: "GET"});
             defrend.then(function (result) {
                 var resp = result.json();
                 if (resp.code == 200) {
@@ -75,7 +75,7 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
             });
         },
         downConf: function (id) {
-            window.open("../api/supply/downConf?supplyId=" + id);
+            window.open("/voucher/api/supply/downConf?supplyId=" + id);
         },
         getSignType: function (signType) {
             return this.$parent.signType[signType].toUpperCase();
@@ -92,7 +92,7 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
             dtSetting: {
                 remote: {
                     link: function (params, options) {
-                        return fnr.ajaxJson("../api/supply/selectSupplyList", params, options);
+                        return fnr.ajaxJson("/voucher/api/supply/selectSupplyList", params, options);
                     },
                     options: {method: 'GET', alertMessage: 0},
                     isLoadOnPageInit: false
@@ -117,7 +117,7 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
             },
             loadSignType: function () {
                 var self = this;
-                var defrend = fnr.ajaxJson("../api/supply/getSignType", {}, {method: "GET"});
+                var defrend = fnr.ajaxJson("/voucher/api/supply/getSignType", {}, {method: "GET"});
                 defrend.then(function (result) {
                     var resp = result.json();
                     if (resp.code == 200) {

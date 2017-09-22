@@ -2,8 +2,8 @@ var global_config = {
     page:{
         title:'畅旅小秘书',
         logo:{
-            src:'../static/style/img/logo.png',
-            link:'../index',
+            src:'/voucher/static/style/img/logo.png',
+            link:'/voucher/index/index.html',
         },
         nav_website:[
             //{title:'百度',link:'http://baidu.com'},

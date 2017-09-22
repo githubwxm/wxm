@@ -3,7 +3,7 @@
  */
 define(['jquery','ajaxfileupload'],function($){
   return {
-    service:'api/client/',
+    service:'/voucher/api/client/',
     doUpload : function(id,successMethod,failedMethod,url){
     	 $.ajaxFileUpload({
              url:url,

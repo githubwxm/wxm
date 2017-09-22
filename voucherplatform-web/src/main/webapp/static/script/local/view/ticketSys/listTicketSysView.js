@@ -10,7 +10,7 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
             var param = {};
             param.id = this.$parent.supplyId;
             param.ticketsysId = id;
-            var deferred = fnr.ajaxJson("../api/supply/updateTicketSys", param);
+            var deferred = fnr.ajaxJson("/voucher/api/supply/updateTicketSys", param);
             deferred.then(function (result) {
                 var resp = result.json();
                 if (resp.code == 200) {
@@ -32,7 +32,7 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
                 //page:{record_count:20},
                 remote: {
                     link: function (params, options) {
-                        return fnr.ajaxJson("../api/ticketSys/selectTicketSysList", params, options);
+                        return fnr.ajaxJson("/voucher/api/ticketSys/selectTicketSysList", params, options);
                     },
                     options: {method: 'GET', alertMessage: 0}
                 }

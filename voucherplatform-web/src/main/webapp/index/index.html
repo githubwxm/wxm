@@ -4,7 +4,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <header-title></header-title>
-    <link href="../static/css/style.css" rel="stylesheet">
+    <link href="/voucher/static/css/style.css" rel="stylesheet">
     <script src="../static/script/local/menu_config.js"></script>
 </head>
 
@@ -18,7 +18,7 @@
         <ul>
             <li>
                 <span v-cloak>{{serverData.name}}<i><img
-                        src="../static/style/img/sjx.png"/></i></span>
+                        src="/voucher/static/style/img/sjx.png"/></i></span>
                 <div class="Administrators">
                     <ul>
                         <li><a href="javascript:;" @click="upMyInfo"><em class="iconfont icon-ziliao"></em><i>账户资料修改</i></a>
@@ -27,7 +27,7 @@
                                 class="iconfont icon-qicheqiye"></em><i>查看我的信息</i></a></li>
                         <li v-if="showettingSysInfo()"><a href="javascript:;" @click="updatePassword"><em
                                 class="iconfont icon-qicheqiye"></em><i>修改密码</i></a></li>
-                        <li><a href="../api/local/client/index/logout"><em
+                        <li><a href="/voucher/api/local/client/index/logout"><em
                                 class="iconfont icon-zhuxiaozhanghu"></em><i>注销用户</i></a></li>
                     </ul>
                 </div>
@@ -39,8 +39,8 @@
 <!--左侧栏目导航-->
 <div class="{{menu_status == 'expand'?'nav':'nav-box'}} clearfix">
     <div class="{{menu_status == 'expand'?'nav-qiehuan':'nav-qiehuan-2'}}" @click="changeMenuStatus">
-        <img src="../static/style/img/qiehuan_21.png" v-show="menu_status == 'expand'"/>
-        <img src="../static/style/img/qiehuan2.png" v-show="menu_status != 'expand'"/>
+        <img src="/voucher/static/style/img/qiehuan_21.png" v-show="menu_status == 'expand'"/>
+        <img src="/voucher/static/style/img/qiehuan2.png" v-show="menu_status != 'expand'"/>
     </div>
     <ul>
         <menu v-for="item in menuData" :menu="item" :menu_status="menu_status" v-ref:menu-container></menu>
@@ -59,7 +59,7 @@
             </li>
             <li class="iconfont {{menu.icon}}" v-show="menu_status == 'collapse'">
                 <div class="nav-show">
-                    <p><img src="../static/style/img/name1.png"></p>
+                    <p><img src="/voucher/static/style/img/name1.png"></p>
                     <em v-cloak>{{ menu.name }}</em>
                 </div>
             </li>
@@ -108,10 +108,10 @@
 
 <div class="event-right" style="z-index: 99999999"></div>
 
-<script type="text/javascript" src="../static/script/local/local_config.js"></script>
-<script type="text/javascript" src="../static/script/local/require/require.js"></script>
-<script type="text/javascript" src="../static/script/local/require_config.js"></script>
-<script type="text/javascript" src="../static/script/local/menu_config.js"></script>
-<script type="text/javascript" src="../static/script/local/view/index/indexView.js"></script>
+<script type="text/javascript" src="/voucher/static/script/local/local_config.js"></script>
+<script type="text/javascript" src="/voucher/static/script/local/require/require.js"></script>
+<script type="text/javascript" src="/voucher/static/script/local/require_config.js"></script>
+<script type="text/javascript" src="/voucher/static/script/local/menu_config.js"></script>
+<script type="text/javascript" src="/voucher/static/script/local/view/index/indexView.js"></script>
 </body>
 </html>

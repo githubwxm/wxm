@@ -7,13 +7,17 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
             var param = {};
             param.supplyId = self.$parent.supplyId;
             param.platformId = id;
-            var deferred = fnr.ajaxJson("../api/action/createRole", param);
+            var deferred = fnr.ajaxJson("/voucher/api/action/createRole", param);
             deferred.then(function (result) {
                 var resp = result.json();
                 if (resp.code == 200) {
                     fnr.alert(resp.message);
                     window.location = 'listRole.html?supplyId=' + self.$parent.supplyId + '&componentid__=' + self.$parent.componentid__;
-                    self.$parent.succ();
+					try{
+						self.$parent.succ();	
+					}catch(e){
+						
+					}
                 }
             }, function (error) {
                 fnr.alertErr('操作失败！');
@@ -22,7 +26,7 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
             });
         },
         subProdName: function (id) {
-            var params = {title: '票据详情', url: '../prod/viewSubProd.html?productSubId=' + id, width: 1200, height: 800};
+            var params = {title: '票据详情', url: '/voucher/prod/viewSubProd.html?productSubId=' + id, width: 1200, height: 800};
             fnr.iDialog(params);
         }
     });
@@ -34,7 +38,7 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
                 //page:{record_count:20},
                 remote: {
                     link: function (params, options) {
-                        return fnr.ajaxJson("../api/action/selectPlatformList", params, options);
+                        return fnr.ajaxJson("/voucher/api/action/selectPlatformList", params, options);
                     },
                     options: {method: 'GET', alertMessage: 0}
                 }

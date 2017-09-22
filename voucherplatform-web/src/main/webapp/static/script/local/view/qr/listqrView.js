@@ -6,7 +6,7 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
             var self = this;
             var param = {};
             param.id = id;
-            var defrend = fnr.ajaxJson("../api/qr/delete", param, {method: "GET"});
+            var defrend = fnr.ajaxJson("/voucher/api/qr/delete", param, {method: "GET"});
             defrend.then(function (result) {
                 var resp = result.json();
                 if (resp.code == 200) {
@@ -24,7 +24,7 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
                 title: "修改二维码模板",
                 width: 1200,
                 height: 800,
-                url: "../qr/editqr.html?id=" + id,
+                url: "/voucher/qr/editqr.html?id=" + id,
                 callbackSucc: function (json) {
                     self.subFormData.supplyprod_id = json.id;
                     self.prop.supplyprod_name = json.name;
@@ -40,7 +40,7 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
             dtSetting: {
                 remote: {
                     link: function (params, options) {
-                        return fnr.ajaxJson("../api/qr/selectQrList", params, options);
+                        return fnr.ajaxJson("/voucher/api/qr/selectQrList", params, options);
                     },
                     options: {method: 'GET', alertMessage: 0}
                 }

@@ -9,7 +9,7 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
             var self = this;
             var params = {
                 title: '票种编辑',
-                url: '../supply/addSupplyProd.html?supplyId=' + supplyId + '&prodId=' + prodId,
+                url: '/voucher/supply/addSupplyProd.html?supplyId=' + supplyId + '&prodId=' + prodId,
                 width: 1200,
                 height: 800,
                 callbackSucc: function () {
@@ -31,7 +31,7 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
                 //page:{record_count:20},
                 remote: {
                     link: function (params, options) {
-                        return fnr.ajaxJson("../api/supply/selectSupplyProdList", params, options);
+                        return fnr.ajaxJson("/voucher/api/supply/selectSupplyProdList", params, options);
                     },
                     options: {method: 'GET', alertMessage: 0}
                 }
@@ -57,7 +57,7 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
                 var self = this;
                 var param = {};
                 param.supplyId = self.queryFormData.supplyId;
-                var defrend = fnr.ajaxJson("../api/supply/selectSupply", param, {method: "GET"});
+                var defrend = fnr.ajaxJson("/voucher/api/supply/selectSupply", param, {method: "GET"});
                 defrend.then(function (result) {
                     var resp = result.json();
                     if (resp.code == 200) {

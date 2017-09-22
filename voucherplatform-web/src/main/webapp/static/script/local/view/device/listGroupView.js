@@ -9,7 +9,7 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
             var self = this;
             var params = {
                 title: '添加设备',
-                url: '../device/addDevice.html?groupId=' + id,
+                url: '/voucher/device/addDevice.html?groupId=' + id,
                 width: 800,
                 height: 400,
                 callbackSucc: function () {
@@ -21,7 +21,7 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
         bindProd: function (id, supplyId) {
             var params = {
                 title: '绑定可验证的产品',
-                url: '../device/bindProd.html?groupId=' + id + '&supplyId=' + supplyId,
+                url: '/voucher/device/bindProd.html?groupId=' + id + '&supplyId=' + supplyId,
                 width: 1200,
                 height: 800,
             };
@@ -31,7 +31,7 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
             var self = this;
             var params = {
                 title: '查看已添加的设备',
-                url: '../device/listDevice.html?groupId=' + id,
+                url: '/voucher/device/listDevice.html?groupId=' + id,
                 width: 1200,
                 height: 800,
             };
@@ -46,7 +46,7 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
                 //page:{record_count:20},
                 remote: {
                     link: function (params, options) {
-                        return fnr.ajaxJson("../api/device/selectGroupList", params, options);
+                        return fnr.ajaxJson("/voucher/api/device/selectGroupList", params, options);
                     },
                     options: {method: 'GET', alertMessage: 0},
                     isLoadOnPageInit: false
@@ -85,7 +85,7 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
             },
             loadSignType: function () {
                 var self = this;
-                var defrend = fnr.ajaxJson("../api/supply/getSignType", {}, {method: "GET"});
+                var defrend = fnr.ajaxJson("/voucher/api/supply/getSignType", {}, {method: "GET"});
                 defrend.then(function (result) {
                     var resp = result.json();
                     if (resp.code == 200) {

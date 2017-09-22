@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <header-title></header-title>
+  <link href="/voucher/static/css/style.css" rel="stylesheet">
+</head>
+<body vtag="root">
+<div class="panel panel-success">
+  <div class="panel-heading" v-if="componentid__ == undefined">
+    <h3 class="panel-title">
+      <i class="fa fa-user"></i>curd</h3>
+  </div>
+
+  <div class="panel-body">
+    <validator name="checkSubForm">
+      <form id="subForm" class="form-horizontal" method="post" onSubmit="return false;">
+        <div class="form-group">
+          <div class="col-sm-2 col-lg-2">
+            <input class="form-control" type="text" v-model="subFormData.name"  v-validate:name="{exist:true}" initial="off"/>
+            <span v-show="$checkSubForm.name.required">请填写</span>
+            <span v-show="$checkSubForm.name.exist">已存在</span>
+          </div>
+          <div class="col-sm-2 col-lg-2">
+            <input type="submit" value="提交" @click="subFormSubmit"/>
+            <input type="submit" value="取消" @click="cancel"/>
+          </div>
+        </div>
+      </form>
+    </validator>
+  </div>
+</div>
+<script type="text/javascript" src="/voucher/api/local/client/system/load_config"></script>
+<script type="text/javascript" src="/voucher/static/script/local/require/require.js"></script>
+<script type="text/javascript" src="/voucher/static/script/local/require_config.js"></script>
+<script type="text/javascript">
+  var rootVue;
+  require_js_file(['vueValidator'],function(Vue,fnr,validator){
+    Vue.use(validator);
+    rootVue = new Vue({
+      el: '[vtag=root]',
+      data:{
+        id:undefined,
+        componentid__:undefined,
+        subFormData:{}
+      },
+      validators : {
+        exist:function(val){
+//          if(val == '')return true;
+          return fetch('/voucher/api/local/client/demo/read',{}).then(function(result){
+            return Promise.reject();
+          });
+        }
+      },
+      ready:function(){
+        this.componentid__ = fnr.getQueryString('componentid__');
+        this.id = fnr.getQueryString('id');
+        var self = this;
+        if(this.id != undefined){
+          var deferred = fnr.ajaxJson('/voucher/api/local/client/demo/read',{id:this.id});
+          deferred.then(function(result){
+            resp = result.json();
+            if(resp.code == 200){
+              self.subFormData = resp.data;
+            }
+          });
+        }
+      },
+      methods: {
+        subFormSubmit:function(){
+          this.$validate();
+          //不好用  差评
+//          console.log(this.$checkSubForm);
+//          console.log("invalid:"+this.$checkSubForm.invalid);
+//          console.log("valid:"+this.$checkSubForm.valid);
+//          console.log(this.$checkSubForm);
+          if(!this.$checkSubForm.valid){ return; }
+
+          var url= '';
+          if(this.id == undefined){
+            url = '/voucher/api/local/client/demo/insert';
+          }else{
+            url = '/voucher/api/local/client/demo/update';
+          }
+          var self = this;
+          var deferred = fnr.ajaxJson(url,this.subFormData);
+          deferred.then(function(result){
+            resp = result.json();
+            if(resp.code == 200){
+              self.succ();
+            }
+          });
+        },
+        succ:function(){
+          fnr.iDialogSucc(this.componentid__);
+        },
+        cancel:function(){
+          fnr.iDialogCancel(this.componentid__);
+        }
+      }
+    });
+  });
+</script>
+</body>
+</html>

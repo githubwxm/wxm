@@ -791,7 +791,7 @@
                     this.bindEvent();
                     this.wx.init();
                     // 加载qrcode库
-                    Util.loadjs('../static/script/amd/1.0/qrcode/qrcode.min.js', this.wx.startQR());
+                    Util.loadjs('/voucher/static/script/amd/1.0/qrcode/qrcode.min.js', this.wx.startQR());
                 }
             },
             bindEvent: function(){

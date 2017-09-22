@@ -13,7 +13,7 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
                     {key: '', value: '--请选择--'},
                 ],
                 remote: {
-                    link: '../api/supply/getSignType',
+                    link: '/voucher/api/supply/getSignType',
                     options: {method: "GET"}
 
                 },
@@ -35,7 +35,7 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
                 var self = this;
                 var param = {};
                 param.id = self.subFormData.id;
-                var defrend = fnr.ajaxJson("../api/supply/get", param, {method: "GET"});
+                var defrend = fnr.ajaxJson("/voucher/api/supply/get", param, {method: "GET"});
                 defrend.then(function (result) {
                     var resp = result.json();
                     if (resp.code == 200) {
@@ -48,7 +48,7 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
                 var self = this;
                 this.$validate();
                 if (this.$checkSubForm.valid) {
-                    var defrend = fnr.ajaxJson("../api/supply/updateSignType", self.subFormData, {});
+                    var defrend = fnr.ajaxJson("/voucher/api/supply/updateSignType", self.subFormData, {});
                     defrend.then(function (result) {
                         var resp = result.json();
                         if (resp.code == 200) {

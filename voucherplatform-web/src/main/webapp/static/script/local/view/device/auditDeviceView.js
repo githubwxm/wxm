@@ -7,7 +7,7 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
             var param = {};
             param.applyId = self.$parent.applyId;
             param.groupId = id;
-            var defrend = fnr.ajaxJson("../api/device/deviceAudit", param);
+            var defrend = fnr.ajaxJson("/voucher/api/device/deviceAudit", param);
             defrend.then(function (result) {
                 var resp = result.json();
                 if (resp.code == 200) {
@@ -24,7 +24,7 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
                 //page:{record_count:20},
                 remote: {
                     link: function (params, options) {
-                        return fnr.ajaxJson("../api/device/selectGroupList", params, options);
+                        return fnr.ajaxJson("/voucher/api/device/selectGroupList", params, options);
                     },
                     options: {method: 'GET', alertMessage: 0},
                     isLoadOnPageInit: false
@@ -49,7 +49,7 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
             },
             loadSignType: function () {
                 var self = this;
-                var defrend = fnr.ajaxJson("../api/supply/getSignType", {}, {method: "GET"});
+                var defrend = fnr.ajaxJson("/voucher/api/supply/getSignType", {}, {method: "GET"});
                 defrend.then(function (result) {
                     var resp = result.json();
                     if (resp.code == 200) {

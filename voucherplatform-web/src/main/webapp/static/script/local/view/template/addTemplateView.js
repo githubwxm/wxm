@@ -26,7 +26,7 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
                     title: "请选择供应商",
                     width: 1200,
                     height: 800,
-                    url: "../supply/dialogSupply.html",
+                    url: "/voucher/supply/dialogSupply.html",
                     callbackSucc: function (json) {
                         self.subFormData.supply_id = json.id;
                         self.prop.supply_name = json.name;
@@ -53,7 +53,7 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
                     title: "请选择供应商",
                     width: 1200,
                     height: 800,
-                    url: "../supply/dialogSupplyProd.html?supplyId=" + self.subFormData.supply_id,
+                    url: "/voucher/supply/dialogSupplyProd.html?supplyId=" + self.subFormData.supply_id,
                     callbackSucc: function (json) {
                         self.subFormData.supplyprod_id = json.id;
                         self.prop.supplyprod_name = json.name;
@@ -69,7 +69,7 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
                 var self = this;
                 this.$validate();
                 if (this.$checkSubForm.valid) {
-                    var defrend = fnr.ajaxJson("../api/template/create", self.subFormData, {});
+                    var defrend = fnr.ajaxJson("/voucher/api/template/create", self.subFormData, {});
                     defrend.then(function (result) {
                         var resp = result.json();
                         if (resp.code == 200) {
@@ -82,7 +82,7 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
                 }
             },
             callBack: function () {
-                location.href = "../template/listTemplate.html";
+                location.href = "/voucher/template/listTemplate.html";
             },
         }
     });
