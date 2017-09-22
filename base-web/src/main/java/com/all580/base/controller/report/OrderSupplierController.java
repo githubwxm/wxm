@@ -25,6 +25,34 @@ public class OrderSupplierController extends BaseController {
 
     @Autowired
     private EpOrderService epOrderService;
+    @RequestMapping(value = "supplier/analyze", method = RequestMethod.GET)
+    @ResponseBody
+    public Result supplierAnalyze( Integer ep_id,
+                                             @RequestParam("type") Integer type,
+                                             @RequestParam("start") String start,
+                                             @RequestParam("end") String end) {
+        Map<String,Object> map = new HashMap<>();
+        map.put("type",type);
+        map.put("ep_id",ep_id);
+        map.put("start",start);
+        map.put("end",end);
+        return epOrderService.supplierAnalyze(map);
+    }
+
+    @RequestMapping(value = "supplier/clearance", method = RequestMethod.GET)
+    @ResponseBody
+    public Result supplierClearance( Integer ep_id,
+                                   @RequestParam("start") String start,
+                                   @RequestParam("end") String end) {
+        Map<String,Object> map = new HashMap<>();
+        map.put("ep_id",ep_id);
+        map.put("start",start);
+        map.put("end",end);
+        return epOrderService.supplierClearance(map);
+    }
+
+
+
 
     @RequestMapping(value = "supplier/reserve", method = RequestMethod.GET)
     @ResponseBody
