@@ -310,7 +310,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
                                      Map item, Map<Integer, LockStockDto> lockStockDtoMap, List<ProductSearchParams> lockParams){
         ProductSalesInfo salesInfo = orderInterface.validateProductAndGetSales(sub, createOrder, item);
 
-        orderInterface.validateBookingDate(sub, salesInfo.getDay_info_list());
+        orderInterface.validateBookingDate(sub, salesInfo);
 
         // 判断游客信息
         List<?> visitors = (List<?>) item.get("visitor");
