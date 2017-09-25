@@ -1,0 +1,279 @@
+/*弹出遮罩层集合*/
+.Eject{
+	position:fixed;
+	left:0px;
+	top:0px;
+	width:100%; 
+	height:100%;
+	background:rgba(0,0,0,0.5);
+	z-index:9999;
+	}	  	
+.event{
+ width:80%;
+ position:absolute;
+ left:10%; 
+ top:100px;
+ }
+.event-right{
+	position:fixed;
+	right:3%;
+	top:10%;
+	}
+.event-box{
+  margin:0 auto; 
+  background:#fff; 
+  border-radius:5px;
+  position:relative;
+  /*overflow:auto;*/
+
+  }
+.event-bottom{ 
+  padding-bottom:40px;
+  }
+.event-box ul li{
+  width:100%; 
+  float:left;
+  position:relative;
+  padding-top:20px;
+  }
+.event-txt em{
+  text-align:center;
+	 }
+.event-txt h3{ 
+    font:normal 16px/30px microsoft yahei; 
+	color:#333;
+    padding-top:60px;
+	padding-bottom:20px;
+    padding-left:20px;
+	}
+.event-txt .event-show-1{ 
+	float:left;
+	width:30%;
+    }
+.event-show-1 .icon-tongguo{
+	font-size:42px;
+	color:#fff;
+	padding-left:20px;
+	padding-top:10px;
+	float:left;
+	}
+.event-show-1 .icon-baocuo{
+    font-size:60px;
+	color:#fff;
+	padding-left:20px;	
+	}
+.event-txt .event-show-2{ 
+   float:left;
+   width:70%;
+   padding-left:20px;
+   }
+.event-txt i{ 
+  font:normal 16px/16px microsoft yahei;
+  color:#fff;
+  padding-top:20px;
+  float:left;
+  width:100%;
+   }
+.event-txt p{ 
+   font:normal 12px/12px microsoft yahei;
+   color:#fff;
+   padding-top:10px;
+   float:left;
+   width:100%;
+   }
+.event-txt span{
+	text-align:center;
+	}
+.event-txt-2{ 
+  padding-top:20px;
+  }
+.event-txt-2 i{ 
+   color:#ff6633;
+   }
+.event-txt-2 .icon-baocuo{
+   font-size:40px;
+   color:#ff4507;
+   }
+.event-txt-2 span{
+	text-align:center; 
+	color:#666; 
+	display:block; 
+	font:normal 12px/32px microsoft yahei;
+	}
+.event-box .icon-guanbi{
+	 font-size:24px;
+	 color:#333;
+	 position:absolute; 
+	 right:5px; 
+	 top:0px;
+     cursor: pointer;
+	  }
+
+.Generic{ 
+  padding:0 20px;
+  }
+.Generic li i{ 
+  position:absolute;
+  right:0px;
+  top:10px;
+  }
+.Generic li dd{ 
+ display:inline-block;
+ color:#ff6633; 
+ margin-right:5px;
+ }
+.Generic li .role{ 
+  width:33.33%;
+  float:left; 
+  margin-bottom:20px;
+  }
+.Generic li em{ 
+ line-height:20px; 
+ margin-left:5px;
+ }
+.Generic h3{ 
+  font:normal 20px/40px microsoft yahei;
+  color:#333; 
+  text-align:center;
+  }
+.Generic h2{ 
+  font:normal 14px/32px  microsoft yahei;
+  color:#666;
+  }
+.Generic p{
+	font:normal 12px/30px microsoft yahei;
+	color:#999;
+	}
+.Generic-box li .control-label{ 
+  margin-top:8px;
+  }
+.Generic-box li  .form-control-static{ 
+  line-height:30px;
+  }
+.Generic li span{
+    margin-top: 10px;
+	margin-right:10px;
+	}
+.event-top{
+   width:100%;
+   border-radius:5px 5px 0 0; 
+   background:#23c377;
+   position:absolute; 
+   left:0px;
+   top:0px;
+   z-index:99;
+   }
+.event-top b a{ 
+  float:right; 
+  margin-right:50px;
+  font:normal 16px/42px microsoft yahei; 
+  color:#fff;
+  }
+.event-top em{ 
+   font:normal 16px/42px microsoft yahei;
+   color:#fff; 
+   padding-left:20px;
+   }
+.event-top .icon-guanbi{
+	 color:#fff;
+    cursor: pointer;
+	 }
+.title-padding{
+	padding:20px 0px;
+    margin:0 20px;
+	}
+.table-condensed tr td b{ 
+  font:normal 12px/30px microsoft yahei;
+  color:#999;
+  padding-left:10px;
+  } 
+.Generic-box li span{ 
+	border:1px solid #e6e6e6; 
+	border-radius:3px;
+	width:100px;
+	text-align:center;
+	float:left;
+	margin-top:10px; 
+	font:normal 14px/30px microsoft yahei;
+	color:#333;
+	position:relative;
+	}
+	.event-main{ 
+	padding:20px 20px;
+	width:100%; 
+    height:100%;
+	}
+.fileInput-box{     
+    height:100px;
+	width:100px;
+    overflow: hidden;
+    font-size:5px;
+    position:absolute;
+    right:0;
+    top:0;
+    opacity:0;
+    filter:alpha(opacity=0);
+    cursor:pointer;
+	background:#033;
+	}
+.event-container{
+	width:90%;
+	position:absolute;
+	left:5%;
+	top:10%;
+	}		
+.Generic li dt{
+	max-width:400px;
+    min-width:200px; 
+    float:left;
+	  }
+.Generic li{
+  width: 100%;
+  float: left;
+  padding-top: 20px;
+}
+.Generic>li>.name{
+    line-height: 20px;
+ }
+.Generic-show{
+    float: left;
+    width: 100%;
+}
+
+
+.mask-title{
+    background:#f5f5f5;
+    position:relative;
+}
+.mask-title h3{
+    font:normal 16px/30px microsoft yahei;
+    color:#333;
+    padding-left:10px;
+}
+.mask-title .icon-guanbi{
+    position:absolute;
+    right:-5px;
+    top:-10px;
+    z-index:99999;
+}
+.mask-main{
+    padding:40px;
+}
+.mask-main p{
+    font:normal 12px/28px microsoft yahei;
+    color:#333;
+}
+.mask-btn{
+    background:#fff;
+    border:1px solid #eee;
+    color:#666;
+    margin-top:10px;
+    width:120px;
+}
+.mask-btn:hover{
+    background:#23c377;
+    border:1px solid #dbfbec;
+}
+.mask-selection a{
+    font:normal 14px/30px microsoft yahei;
+}

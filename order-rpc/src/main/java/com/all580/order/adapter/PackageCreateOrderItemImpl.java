@@ -81,7 +81,6 @@ public class PackageCreateOrderItemImpl extends AbstractCreateOrderImpl{
     /**
      * 组装套票供应链查询参数
      * @param item
-     * @param parent
      * @return
      */
     private PackageProductValidate parasePackageProductSubParam(Map item){

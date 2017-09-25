@@ -1,0 +1,82 @@
+
+/*字体图标引用*/
+@import url('table.css');
+@import url('popup.css');
+
+
+@font-face {font-family: "iconfont";
+  src: url('../fotns/iconfont.eot?'); /* IE9*/
+  src: url('../fotns/iconfont.eot?') format('embedded-opentype'), /* IE6-IE8 */
+  url('../fotns/iconfont.woff?') format('woff'), /* chrome, firefox */
+  url('../fotns/iconfont.ttf?') format('truetype'), /* chrome, firefox, opera, Safari, Android, iOS 4.2+*/
+  url('../fotns/iconfont.svg?') format('svg'); /* iOS 4.1- */
+}
+
+.iconfont {
+  font-family:"iconfont" !important;
+  font-size:16px;
+  font-style:normal;
+  -webkit-font-smoothing: antialiased;
+}
+
+.icon-tongjibaobiao:before { content: "\e606"; }
+
+.icon-guanbi:before { content: "\e66b"; }
+
+.icon-tuihuo:before { content: "\e672"; }
+
+.icon-iconfontguanliyuanguanl:before { content: "\e786"; }
+
+.icon-baocuo:before { content: "\e63f"; }
+
+.icon-xitongshezhi:before { content: "\e623"; }
+
+.icon-iconfontshuaxin:before { content: "\e653"; }
+
+.icon-baocuo1:before { content: "\e671"; }
+
+.icon-shouye:before { content: "\e657"; }
+
+.icon-iconptfw:before { content: "\e692"; }
+
+.icon-ziliao:before { content: "\e613"; }
+
+.icon-qiye:before { content: "\e66d"; }
+
+.icon-chanpinguanli:before { content: "\e654"; }
+
+.icon-anquan:before { content: "\e609"; }
+
+.icon-tuanduiguanli:before { content: "\e76d"; }
+
+.icon-suoding:before { content: "\e7cb"; }
+
+.icon-fenxiaoguanli:before { content: "\e64b"; }
+
+.icon-lingshoutongji:before { content: "\e616"; }
+
+.icon-qicheqiye:before { content: "\e629"; }
+
+.icon-upload:before { content: "\e61f"; }
+
+.icon-caiwuguanli02:before { content: "\e607"; }
+
+.icon-zhuxiaozhanghu:before { content: "\e655"; }
+
+.icon-yuding:before { content: "\e628"; }
+
+.icon-1:before { content: "\e624"; }
+
+.icon-dingdanguanli:before { content: "\e61a"; }
+
+.icon-tongguo:before { content: "\e69d"; }
+
+.icon-baisoft-arrow-down:before { content: "\e617"; }
+
+.icon-zhankai:before { content: "\e633"; }
+
+.icon-13x13xialajiantou:before { content: "\e656"; }
+
+[v-cloak] { display: none; }
+
+

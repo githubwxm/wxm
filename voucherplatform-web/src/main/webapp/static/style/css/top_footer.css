@@ -1,0 +1,1286 @@
+/*----------------全局样式----------------------*/
+/*body,html{*/
+/*height:100%;*/
+/*}*/
+body {
+    color: #666;
+    line-height: 1.4;
+    font-family: microsoft yahei;
+    font-size: 100%;
+    font-size: 12px;
+    background: #fff;
+}
+
+body, form, input, ul, dl, dd, p, h1, h2, h3, h4, h5, h6, textarea, pre {
+    margin: 0;
+}
+
+ul, input {
+    padding: 0;
+}
+
+ul, li {
+    list-style: none;
+    list-style-position: outside;
+}
+
+h1, h2, h3, h4, h5, h6, input, button, textarea {
+    font-size: 100%;
+    font-weight: normal;
+}
+
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+a img {
+    border: none;
+}
+
+a, button {
+    cursor: pointer;
+}
+
+em, i {
+    font-style: normal;
+}
+
+textarea {
+    overflow: auto;
+    resize: none;
+}
+
+/*-------原子类-------------*/
+.clearfix:before, .clearfix:after {
+    content: '';
+    display: table;
+}
+
+.clearfix:after {
+    clear: both;
+}
+
+.clearfix {
+    *zoom: 1;
+}
+
+.name a {
+    color: #23c377;
+    padding-right: 20px;
+}
+
+.name a:hover {
+    color: #ff6633;
+}
+
+.name-box a {
+    padding-left: 10px;
+    color: #23c377;
+    white-space: nowrap;
+}
+
+.btn {
+    background: #23c377;
+    color: #fff;
+    padding: 5px 20px;
+
+}
+
+.btn a {
+    color: #fff;
+}
+
+.btn:hover {
+    background: #0e9555;
+    color: #fff;
+}
+
+.btn:focus {
+    color: #fff;
+}
+
+.btn-default {
+    background: #fff;
+    color: #666;
+}
+
+.btn-default:hover {
+    background: #23c377;
+    border: 1px solid #23c377;
+}
+
+.btn-default:focus {
+    background: #0e9555;
+    border: 1px solid #23c377;
+}
+
+.control-label {
+    white-space: nowrap;
+    font: normal 14px/30px microsoft yahei;
+    color: #333;
+    text-align: right;
+}
+
+.btn-lan {
+    display: block;
+    padding: 5px 10px;
+    float: left;
+    background: #63b2d7;
+    color: #fff;
+    border-radius: 3px;
+}
+
+.btn-gray {
+    display: block;
+    padding: 5px 10px;
+    float: left;
+    background: #a6a6a6;
+    color: #fff;
+    border-radius: 3px;
+}
+
+.btn-border {
+    border: 1px solid #e6e6e6;
+    background: #fff;
+    color: #666;
+}
+
+.btn-border:hover {
+    background: #f5f5f5;
+    border: 1px solid #e6e6e6;
+    color: #333;
+}
+
+.btn-danger {
+    background: #da4f49;
+}
+
+.btn-blue {
+    background: #3caed0;
+}
+
+.btn-blue:hover {
+    background: #299dc0;
+}
+
+.btn-danger:hover {
+    background: #be2e27;
+}
+
+.btn-success-2 {
+    background: #23c377;
+    padding: 3px 10px;
+}
+
+.btn-success-2:hover {
+    background: #ff6633;
+}
+
+.btn-orange {
+    background: #ff6633;
+    color: #fff;
+    cursor: default;
+}
+
+.btn-orange:hover {
+    background: #ff6633;
+}
+
+.has-error .form-control {
+    border: 1px solid #ff6633;
+}
+
+.has-error .form-control:focus {
+    border: 1px solid #ef531f;
+}
+
+.has-success .form-control {
+    border: 1px solid #23c377;
+}
+
+.has-success .form-control:focus {
+    border: 1px solid #12b065;
+}
+
+.form-control {
+    border: 1px solid #dbdbdb;
+}
+
+.form-control:focus {
+    border: 1px solid #ababab;
+    box-shadow: none;
+}
+
+/*头部*/
+.top {
+    width: 100%;
+    background: #23c377;
+    position: fixed;
+    left: 0px;
+    top: 0px;
+    z-index: 999;
+}
+
+.top-left {
+    width: 200px;
+    float: left;
+}
+
+.top-left img {
+    margin-left: 20px;
+    margin-top: 5px;
+}
+
+.top-right {
+    float: right;
+    width: 200px;
+}
+
+.top-right span {
+    width: 200px;
+    text-align: center;
+}
+
+.top-right li {
+    position: relative;
+    float: left;
+    cursor: pointer;
+}
+
+.top-right p:hover, .top-right b:hover, .top-right span:hover {
+    background: #0e9e59;
+    display: block;
+}
+
+.top-right p, .top-right b {
+    border-left: 1px solid #1cb76d;
+    display: block;
+    float: left;
+    position: relative;
+}
+
+.top-right p img {
+    margin: 15px 20px;
+}
+
+.top-right b em {
+    position: absolute;
+    top: 10px;
+    left: 15px;
+    width: 40px;
+    background: #ff6633;
+    display: block;
+    font: normal 12px/16px Arial;
+    color: #fff;
+    text-align: center;
+}
+
+.top-right b img {
+    margin: 17px 25px;
+}
+
+.top-right span {
+    border-left: 1px solid #1cb76d;
+    display: block;
+    float: left;
+    font: normal 14px/50px "Microsoft yahei";
+    color: #fff;
+    padding-left: 20px;
+}
+
+.top-right span i {
+    margin: 0 10px;
+}
+
+.top-right li:hover .yuebox {
+    display: block;
+}
+
+.top-right li:hover .txbox {
+    display: block;
+}
+
+.top-right li:hover .Administrators {
+    display: block;
+}
+
+/*头部隐藏掉的内容*/
+.yuebox {
+    width: 260px;
+    border: 1px solid #e6e6e6;
+    background: #fff;
+    position: absolute;
+    top: 50px;
+    z-index: 999;
+    display: none;
+}
+
+.yuebox ul li {
+    width: 100%;
+    float: left;
+    border-bottom: 1px dashed #e6e6e6;
+    font: bold 14px/58px microsoft yahei;
+    padding: 0 20px;
+    color: #333;
+    position: relative;
+}
+
+.yuebox li:last-child {
+    border-bottom: none;
+}
+
+.yuebox li em {
+    font: normal 20px/58px Arial, Helvetica, sans-serif;
+    color: #ff6633;
+}
+
+.yuebox li dd {
+    display: inline-block;
+    font: normal 20px/58px microsoft yahei;
+}
+
+.yuebox li i {
+    font: normal 12px/58px Arial, Helvetica, sans-serif;
+    color: #ff6633;
+}
+
+.yuebox li img {
+    position: absolute;
+    right: 20px;
+    top: 23px;
+}
+
+.txbox {
+    width: 320px;
+    border: 1px solid #e6e6e6;
+    background: #fff;
+    position: absolute;
+    top: 50px;
+    z-index: 999;
+    display: none;
+}
+
+.txbox ul h3 a {
+    width: 100%;
+    background: #f5f5f5;
+    font: normal 14px/32px microsoft yahei;
+    padding: 5px 20px;
+    color: #23c377;
+    display: block;
+}
+
+.txbox ul h3 a:hover {
+    color: #0fa65e;
+}
+
+.txbox li {
+    width: 100%;
+    float: left;
+    margin-top: 20px;
+    padding-left: 20px;
+    position: relative;
+    padding-bottom: 20px;
+    border-bottom: 1px dashed #e6e6e6;
+}
+
+.txbox li em {
+    display: block;
+    font: normal 12px/12px microsoft yahei;
+    color: #333;
+}
+
+.txbox li i {
+    display: block;
+    font: normal 12px/12px microsoft yahei;
+    color: #999;
+    width: 280px;
+    overflow: hidden;
+    margin-top: 15px;
+}
+
+.txbox li dd {
+    position: absolute;
+    right: 10px;
+    top: 0px;
+    width: 50px;
+    border-radius: 5px;
+    background: #ff6633;
+    display: block;
+    font: normal 12px/24px microsoft yahei;
+    color: #fff;
+    text-align: center;
+}
+
+.txbox li .tzbox {
+    background: #7bbf1a;
+}
+
+.txbox li .tkbox {
+    background: #e7815b;
+}
+
+.txbox li .cpbox {
+    background: #23c377;
+}
+
+.txbox h2 a {
+    font: normal 14px/14px microsoft yahei;
+    color: #333;
+    padding: 20px;
+    float: left;
+}
+
+.txbox h2 a:hover {
+    color: #23c377;
+}
+
+.Administrators {
+    width: 200px;
+    border: 1px solid #e6e6e6;
+    position: absolute;
+    top: 50px;
+    background: #fff;
+    display: none;
+    z-index: 999;
+}
+
+.Administrators ul li {
+    width: 100%;
+    float: left;
+    font: normal 14px/26px microsoft yahei;
+    color: #666;
+    padding: 20px;
+    border-bottom: 1px dashed #e6e6e6;
+}
+
+.Administrators li a {
+    color: #666;
+}
+
+.Administrators ul li a:hover .iconfont {
+    color: #23c377;
+}
+
+.Administrators ul li a:hover {
+    color: #23c377;
+}
+
+.Administrators ul li em {
+    display: block;
+    float: left;
+}
+
+.Administrators ul li i {
+    margin-left: 20px;
+}
+
+.Administrators ul li .iconfont {
+    font: normal 26px/26px microsoft yahei;
+    color: #aaa;
+}
+
+/*左侧栏导航*/
+.nav {
+    width: 180px;
+    height: 100%;
+    background: #293038;
+    float: left;
+    position: fixed;
+    left: 0px;
+    top: 50px;
+    z-index: 99;
+    padding-bottom: 40px;
+    overflow: auto;
+
+}
+
+.nav::-webkit-scrollbar-track-piece {
+    background-color: #3a4658;
+    border-left: 1px solid #3a4658;
+}
+
+.nav::-webkit-scrollbar {
+    width: 2px;
+}
+
+.nav::-webkit-scrollbar-thumb {
+    background-color: #63c9a3 !important;
+    background-clip: padding-box;
+    min-height: 28px;
+    background: #3a4658;
+}
+
+.nav-qiehuan {
+    width: 100%;
+    cursor: pointer;
+}
+
+.nav-qiehuan img {
+    margin: 9px 84px;
+}
+
+.nav ul li {
+    width: 100%;
+    font: normal 14px/40px microsoft yahei;
+    color: #fff;
+    margin-bottom: 1px;
+    background: #37424f;
+    cursor: pointer;
+}
+
+.nav .nav-one {
+    background: #4b5460;
+}
+
+.nav ul li em {
+    margin: 0px 10px;
+    display: inline-block;
+}
+
+.nav ul li .iconfont {
+    font: normal 16px/16px Sim sun;
+    color: #fff;
+}
+
+.nav ul li i {
+    float: right;
+    margin-right: 20px;
+    margin-top: 18px;
+}
+
+.nav-two ul li {
+    width: 100%;
+    font: normal 12px/40px microsoft yahei;
+    padding-left: 40px;
+    background: #293038;
+}
+
+.nav-two ul li:hover {
+    background: #1e1e1e;
+}
+
+.nav-two ul li a {
+    color: #fff;
+    text-decoration: none;
+}
+
+.nav-two .nav-twobar {
+    background: #23c377 !important;
+}
+
+.nav-two ul li {
+    margin-top: 0px !important;
+}
+
+/*左侧栏收起导航*/
+.nav-box {
+    height: 100%;
+    float: left;
+    background: #293038;
+    position: fixed;
+    left: 0px;
+    top: 50px;
+    z-index: 999;
+}
+
+.nav-qiehuan-2 img {
+    margin: 9px 22px
+}
+
+.nav-box li {
+    background: #37424f;
+    text-align: center;
+    line-height: 40px;
+    color: #fff;
+    margin-bottom: 2px;
+    position: relative;
+}
+
+.nav-box li:hover .nav-show {
+    display: block;
+}
+
+.nav-show {
+    position: absolute;
+    left: 65px;
+    top: 0px;
+    display: none;
+}
+
+.nav-show p img {
+    float: left;
+    margin-top: 15px;
+}
+
+.nav-show em {
+    font: normal 12px/40px microsoft yahei;
+    color: #fff;
+    background: #37424f;
+    white-space: nowrap;
+    float: left;
+    padding: 0 20px;
+    position: absolute;
+    left: 5px;
+    top: 0px;
+}
+
+/*右边内容导航*/
+.nav-main {
+    background: #fff;
+    border-bottom: 1px solid #e6e6e6;
+}
+
+.nav-main li {
+    border: 1px solid #eaeaea;
+    border-bottom: none;
+    border-radius: 5px 5px 0 0;
+    display: inline-block;
+    font: normal 12px/31px microsoft yahei;
+    padding: 0 15px;
+    position: relative;
+    background: #f5f5f5;
+}
+
+.nav-main li:first-child {
+
+    margin-left: 0px;
+    margin-right: 5px;
+}
+
+.nav-main li:hover {
+    background: #e3e3e3;
+    cursor: pointer;
+
+}
+
+.nav-taba {
+    background: #fff !important;
+    padding: 0 !important;
+    color: #23c377;
+}
+
+.nav-taba em {
+    margin: 0 10px;
+}
+
+.nav-taba a {
+    color: #23c377;
+    text-decoration: none;
+}
+
+.nav-main .iconfont {
+    color: #23c377;
+    font-size: 14px;
+}
+
+.nav-main .nav-tabb {
+    display: inline-block;
+    background: #37424f !important;
+    color: #fff;
+    border-radius: 5px 5px 0 0;
+}
+
+.nav-main li:hover i {
+    display: block;
+}
+
+.nav-main li i {
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    font: normal 12px/12px microsoft yahei;
+    color: #ff6633 !important;
+    display: none;
+}
+
+/*首页*/
+.condition-main {
+    width: 75%;
+    float: left;
+}
+
+.condition-right {
+    width: 23%;
+    float: left;
+    margin-left: 2%;
+}
+
+.index-top {
+    background: #fff;
+    width: 100%;
+    padding: 20px 20px 0 20px;
+    float: left;
+}
+
+.index-top tr {
+    height: 80px;
+}
+
+.index-top .table tr td {
+    padding-left: 5px;
+}
+
+.index-txt {
+    font: normal 20px/28px microsoft yahei;
+    color: #3cd084;
+    display: block;
+}
+
+.index-main {
+    width: 100%;
+    float: left;
+    margin-top: 20px;
+}
+
+.main-top li {
+    float: left;
+    padding: 10px 20px;
+    border-radius: 5px 5px 0 0;
+    background: #ececec;
+    color: #666;
+    margin-right: 20px;
+}
+
+.main-top .main-one {
+    background: #fff;
+    color: #333;
+}
+
+.main-box {
+    background: #fff;
+    width: 100%;
+    float: left;
+    padding: 20px;
+}
+
+.table-main-1 {
+    border-bottom: 1px dashed #e6e6e6;
+}
+
+.table-main-1 .table tr td, .table-main-2 .table tr td {
+    border-right: 1px solid #e6e6e6;
+    border-bottom: none;
+}
+
+.table-main-1 .table tr td:last-child, .table-main-2 .table tr td:last-child {
+    border-right: none;
+}
+
+.table-main-1 .table tr td i {
+    color: #ff6633;
+    padding: 0 10px;
+}
+
+.table-main-2 {
+    margin-top: 20px;
+}
+
+.table-main-2 .table tr td em {
+    display: block;
+}
+
+.table-main-2 .table tr td i {
+    color: #ff6633;
+}
+
+.table-bordered .table-tr-1 td {
+    font: normal 16px/40px microsoft yahei;
+    padding-left: 20px;
+}
+
+.table-tr-2 li {
+    float: left;
+    margin-left: 12px;
+}
+
+.table-tr-2 li h3 {
+    font: normal 14px/30px microsoft yahei;
+    color: #333;
+}
+
+.table-tr-2 li em {
+    width: 30px;
+    height: 5px;
+    border-radius: 5px;
+    background: #ff6633;
+    float: left;
+    margin-top: 13px;
+}
+
+.table-tr-2 li span {
+    width: 30px;
+    height: 5px;
+    border-radius: 5px;
+    background: #23c377;
+    float: left;
+    margin-top: 13px;
+}
+
+.table-tr-2 li i {
+    float: left;
+    font: normal 12px/30px microsoft yahei;
+    color: #999;
+}
+
+.table-tr-2 li img {
+    margin-top: 10px;
+}
+
+.table-main-3 .table .table-bottom td {
+    border: none;
+}
+
+.table-main-3 {
+    padding-left: 0px;
+    padding-right: 0px;
+}
+
+.table-main-4 {
+    padding-left: 0px;
+}
+
+.right-top {
+    background: #fff;
+    width: 100%;
+    float: left;
+    padding: 20px;
+}
+
+.right-title em {
+    font: normal 14px/14px microsoft yahei;
+    color: #333;
+    float: left;
+}
+
+.right-title i a {
+    float: right;
+    font: normal 12px/14px microsoft yahei;
+    color: #999;
+}
+
+.right-title i a:hover {
+    color: #23c377;
+}
+
+.right-top ul li {
+    width: 100%;
+    float: left;
+    position: relative;
+    margin-top: 20px;
+}
+
+.right-top ul li em {
+    padding: 5px 10px;
+    border: 1px solid #e6e6e6;
+    background: #f5f5f5;
+    border-radius: 3px;
+    float: left;
+}
+
+.right-top ul li i {
+    padding: 3px 5px;
+    background: #ff6633;
+    border-radius: 3px;
+    color: #fff;
+    position: absolute;
+    left: 30px;
+    top: -8px;
+    display: none;
+}
+
+.right-top ul li b {
+    font: normal 12px/24px microsoft yahei;
+    margin-left: 10px;
+    width: 70%;
+    float: left;
+    overflow: hidden;
+    height: 24px;
+}
+
+.right-top ul li b a {
+    color: #999;
+}
+
+.right-top ul li b a:hover {
+    color: #23c377;
+}
+
+.right-top ul li:hover em {
+    background: #23c377;
+    color: #fff;
+}
+
+.right-top ul li:hover i {
+    display: block;
+}
+
+.right-zhong {
+    margin-top: 20px;
+    width: 100%;
+    float: left;
+    background: #fff;
+    padding: 20px;
+}
+
+.right-zhong ul li {
+    padding: 0px;
+    margin-top: 20px;
+}
+
+.right-zhong ul li span {
+    padding: 8px 10px;
+    background: #f5f5f5;
+    color: #333;
+    white-space: nowrap;
+    float: left;
+    display: inline-block;
+}
+
+.right-zhong ul li .right-one {
+    background: #23c377;
+    color: #fff;
+}
+
+.right-show ul li {
+    width: 100%;
+    margin-top: 20px;
+    float: left;
+    overflow: hidden;
+    height: 16px;
+}
+
+.right-show ul li em {
+    font: normal 12px/12px microsoft yahei;
+    color: #999;
+}
+
+.right-show ul li i a {
+    margin-left: 10px;
+    color: #333;
+}
+
+.right-show ul li i a:hover {
+    color: #23c377;
+}
+
+.right-bottom {
+    width: 100%;
+    float: left;
+    margin-top: 20px;
+    background: #fff;
+    padding: 20px;
+}
+
+.right-bottom ul li {
+    width: 50%;
+    float: left;
+    margin-top: 20px;
+}
+
+.right-bottom ul li a {
+    font: normal 16px/16px microsoft yahei;
+    color: #23c377;
+}
+
+.right-bottom ul li a:hover {
+    color: #ff6633;
+}
+
+/*登录*/
+.Login {
+    width: 100%;
+    height: 100%;
+    background: #fff;
+}
+
+.logo {
+    width: 100%;
+    float: left;
+}
+
+.logo img {
+    padding: 20px 0px 40px 200px;
+}
+
+.banner {
+    width: 100%;
+    height: 550px;
+    background: #666;
+    float: left;
+    position: relative;
+    background-size: cover;
+}
+
+.bannimg img {
+    width: 100%;
+    height: 550px;
+}
+
+.login-box {
+    width: 420px;
+    height: 450px;
+    background: #fff;
+    border-radius: 5px;
+    position: absolute;
+    right: 100px;
+    top: 50px;
+    -webkit-box-shadow: 2px 2px 2px rgba(199, 202, 205, 0.5);
+    -moz-box-shadow: 2px 2px 2px rgba(199, 202, 205, 0.5);
+    box-shadow: 2px 2px 2px rgba(199, 202, 205, 0.5);
+    padding: 40px;
+}
+
+.login-box h3 {
+    font: normal 24px/24px microsoft yahei;
+    color: #333;
+}
+
+.login-box ul {
+    margin-top: 20px;
+}
+
+.login-box ul li {
+    width: 100%;
+    float: left;
+    position: relative;
+    margin-top: 20px;
+}
+
+.login-box .col-lg-12 {
+    padding-left: 0px;
+    padding-right: 0px;
+}
+
+.login-box ul li .form-control {
+    padding-left: 50px;
+}
+
+.login-box ul li .checkbox {
+    float: left;
+}
+
+.login-box li span {
+    position: absolute;
+    left: 20px;
+    top: 8px;
+}
+
+.login-box ul li i {
+    float: left;
+    margin-left: 10px;
+    font: normal 12px/20px microsoft yahei;
+    color: #666;
+}
+
+.login-box p {
+    color: #ff6633;
+    padding: 5px 10px;
+    border: 1px solid #ff6633;
+    background: #fcede8;
+}
+
+.login-box p .iconfont {
+    margin-right: 10px;
+}
+
+.login-box-2 {
+    padding-left: 0px;
+}
+
+.login-box-2 .form-control {
+    padding-left: 20px !important;
+}
+
+.login-box-2 b {
+    background: #f3fbfe;
+    display: block;
+    height: 34px;
+    width: 150px;
+    text-align: center;
+    line-height: 34px;
+    font: normal 12px/34px microsoft yahei;
+    color: #6c8e21;
+}
+
+.login-box ul li .denglu {
+    width: 100%;
+    background: #23c377;
+    border-radius: 5px;
+    border: none;
+    outline: none;
+    font: normal 16px/32px microsoft yahei;
+    color: #fff;
+}
+
+.footer {
+    width: 100%;
+    float: left;
+    margin-top: 40px;
+    text-align: center;
+}
+
+/*支付页面样式*/
+.Payment-main {
+    width: 1000px;
+    margin: 0 auto;
+}
+
+.payment-logo img {
+    margin-top: 20px;
+}
+
+.p-content {
+    background: #f5f5f5;
+    border-top: 1px solid #23c377;
+    font: 14px/28px 'Microsoft YaHei';
+    padding: 17px 20px;
+    margin: 20px auto;
+}
+
+.p-content dl span {
+    display: inline-block;
+    font: bold 16px/30px microsoft yahei;
+    color: #333;
+}
+
+.p-content dl {
+    border-bottom: 1px dotted #ccc;
+    padding-bottom: 10px;
+}
+
+.p-content dl .prce-right {
+    float: right;
+    font: normal 14px/30px microsoft yahei;
+}
+
+.p-content dl .prce-right strong {
+    font-size: 24px;
+    color: #f63;
+    font-weight: 400;
+}
+
+.p-content dd {
+    font: normal 14px/30px microsoft yahei;
+}
+
+.p-content dd i {
+    margin-right: 5px;
+}
+
+.p-content dd span {
+    color: #ff6633;
+}
+
+.p-babk {
+    border: 1px solid #ff6633;
+    padding: 20px;
+}
+
+.p-babk dl {
+    font: bold 16px/30px microsoft yahei;
+    color: #333;
+}
+
+.p-babk dl span {
+    font: normal 14px/30px microsoft yahei;
+    color: #666;
+    margin-left: 10px;
+}
+
+.bank-table {
+    margin-top: 20px;
+}
+
+.bank-table .table-switch {
+    height: 35px;
+    border-bottom: 1px solid #f0f0f0;
+    z-index: 1;
+
+}
+
+.bank-table .table-switch li {
+    float: left;
+    margin-bottom: -1px;
+    margin-right: 8px;
+    width: 142px;
+    height: 35px;
+    border: 1px solid #f0f0f0;
+    background-color: #f7f7f7;
+    text-align: center;
+    font: 16px/35px 'Microsoft YaHei';
+    color: #666;
+    cursor: pointer;
+}
+
+.bank-table ul .bank-on {
+    background-color: #FFF;
+    color: #333;
+    border-bottom: 1px solid #FFF;
+}
+
+.bank-card li {
+    float: left;
+    background-color: #FFF;
+    padding: 5px 0;
+    width: 188px;
+    margin-right: 12px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    border: 1px solid #eee;
+    border-radius: 2px;
+    margin-top: 20px;
+}
+
+.bank-card li:hover {
+    border: 2px solid #dfdfdf;
+    width: 186px;
+    padding: 4px 0;
+}
+
+.bank-logo {
+    background-image: url(../img/bank-logo-new-PC.png);
+    width: 125px;
+    height: 28px;
+    text-indent: -9999px;
+}
+
+.pl-time {
+}
+
+.pl-time .bank-logo {
+    margin-left: 25px;
+    display: block;
+}
+
+.bank-gsyh {
+    background-position: 0 -140px;
+}
+
+.bank-gfyh {
+    background-position: 0 -170px;
+}
+
+.bank-jsyh {
+    background-position: 0 -336px;
+}
+
+.bank-jtyh {
+    background-position: 0 -394px;
+}
+
+.bank-lyyh {
+    background-position: 0 -530px;
+}
+
+.bank-payh {
+    background-position: 0 -560px;
+}
+
+.bank-wxzf {
+    background-position: 0 -1888px;
+}
+
+.bank-zfb {
+    background-position: 0 -1854px;
+}

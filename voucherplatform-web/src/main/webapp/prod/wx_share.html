@@ -1,0 +1,101 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <header-title></header-title>
+  <link href="/voucher/static/css/style.css" rel="stylesheet">
+  <link href="/voucher/static/css/ishare.css" rel="stylesheet">
+</head>
+
+<body vtag="root">
+<div class="Establish clearfix">
+  <div class="share-erweima">
+    <div class="shaer-wx">
+      <h3 v-cloak>{{ep_name}}-{{user_name}}分享手机指定二维码</h3>
+      <span id="ma_div"></span>
+      <p>
+        <a href="javascript:;" @click="saveMa">下载图片</a>|
+        <a href="javascript:;" style="margin-left: 10px;" @click="show_link = !show_link" v-if="show_link">隐藏连接</a>
+        <a href="javascript:;" style="margin-left: 10px;" @click="show_link = !show_link" v-if="!show_link">显示连接</a>
+      </p>
+      <span v-show="show_link" style="border:1px solid #dcdcdc; background: #FFF;word-wrap:break-word;"><a v-bind:href="product.link" target="_blank">{{product.link}}</a></span>
+    </div>
+
+    <div class="shaer-table">
+      <h3 v-cloak>产品名称：{{product.title}}</h3>
+      <table class="table table-bordered table-top">
+        <thead>
+        <tr>
+          <th width="40%">类别</th>
+          <th width="30%">门市价</th>
+          <th width="30%">优惠价</th>
+        </tr>
+        </thead>
+
+        <tbody>
+
+        <tr v-for="(index,sub) in product.sub">
+          <td>{{sub.name}}</td>
+          <td>{{sub.market_price}}</td>
+          <td>{{sub.shop_price}}</td>
+        </tr>
+
+        </tbody>
+      </table>
+
+      <span>使用说明：</span>
+      <ol>
+        <li>此二维码可印刷，显示于各种杂志,报纸,电视机等宣传资料上，提供游客手机拍照码预订相关旅游产品</li>
+        <li>从登陆分销账号下载的二维码，游客拍码预订后的订单,利润将自动记录给此分销商</li>
+        <li>设置了零售价的产品游客才能在移动端订购</li>
+      </ol>
+    </div>
+  </div>
+
+
+
+</div>
+
+<script type="text/javascript" src="/voucher/api/local/client/system/load_config"></script>
+<script type="text/javascript" src="/voucher/static/script/local/require/require.js"></script>
+<script type="text/javascript" src="/voucher/static/script/local/require_config.js"></script>
+<script type="text/javascript">
+  require_js_file(['jquery','qrcode'],function(Vue,fnr) {
+    rootVue = new Vue({
+      el: '[vtag=root]',
+      data: {
+        componentid__:undefined,
+        show_link:false,
+        product:{},
+        user_name:window.top.rootVue.serverData.user.real_name,
+        ep_name:window.top.rootVue.serverData.ep.name
+      },
+      ready: function () {
+        this.componentid__ = fnr.getQueryString('componentid__');
+        this.product = JSON.parse( decodeURI(fnr.getQueryString('data')) );
+        new QRCode($('#ma_div')[0], this.product.link);
+      },
+      methods:{
+        saveMa:function() {
+          var content = $('img',$('#ma_div')).attr('src');
+          var filename = 'ma.png';
+          var obj_target = document.createElementNS('http://www.w3.org/1999/xhtml', 'a');
+          if (obj_target){//非ie
+            obj_target.href = content;
+            obj_target.download = filename;
+            var event = document.createEvent('MouseEvents');
+            event.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+            obj_target.dispatchEvent(event);
+          }else {
+            var w = window.open('about:blank');
+            w.document.write(content);
+            w.document.execCommand('Saveas', false, filename);
+            w.close();
+          }
+        }
+      }
+    });
+  });
+</script>
+</body>
+</html>

@@ -11,8 +11,15 @@
           http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd"
 	default-autowire="byName">
 
- 
-	<!-- POOL配置 -->
+	<!--<bean id="redisHttpSessionConfiguration"-->
+		  <!--class="org.springframework.session.data.redis.config.annotation.web.http.RedisHttpSessionConfiguration">-->
+		<!--<property name="maxInactiveIntervalInSeconds" value="1800"/>-->
+	<!--</bean>-->
+
+	<!--<bean class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">-->
+		<!--<constructor-arg index="0" type="redis.clients.jedis.JedisPoolConfig" ref="jedisPoolConfig" />-->
+	<!--</bean>-->
+
 	<bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
 		<property name="minIdle" value="${redis.pool.minIdle}" />
 		<property name="maxIdle" value="${redis.pool.maxIdle}" />
@@ -21,6 +28,14 @@
 		<property name="testWhileIdle" value="${redis.pool.testWhileIdle}" />
 		<property name="timeBetweenEvictionRunsMillis" value="${redis.pool.timeBetweenEvictionRunsMillis}" />
 	</bean>
+
+	<!--<bean id="jedisPool" class="redis.clients.jedis.JedisPool">-->
+		<!--<constructor-arg index="0" ref="jedisPoolConfig"/>-->
+		<!--<constructor-arg index="1" value="${redis.host}"/>-->
+		<!--<constructor-arg index="2" value="${redis.port}" type="int"/>-->
+		<!--<constructor-arg index="3" value="${redis.timeout}" type="int"/>-->
+		<!--<constructor-arg index="4" value="${redis.password}"/>-->
+	<!--</bean>-->
 
 	<bean id="redisUtils" class="com.framework.common.io.cache.redis.RedisUtils">
 		<constructor-arg index="0" value="${redis.url}" />

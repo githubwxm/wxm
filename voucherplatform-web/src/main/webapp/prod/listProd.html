@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <link href="/voucher/static/css/style.css" rel="stylesheet">
+</head>
+<body vtag="root">
+<div class="root-main">
+    <div class="main-container clearfix">
+        <div class="searchbg">
+            <form class="form-horizontal" onSubmit="return false;">
+                <div class="form-group">
+                    <label class="col-sm-1 col-md-1 col-lg-1 control-label">景点名称：</label>
+                    <div class="col-sm-2  col-lg-2">
+                        <input type="text" class="form-control" v-model="queryFormData.product_name"/>
+                    </div>
+
+                    <label class="col-sm-1 col-md-1 col-lg-1 control-label">票据名称：</label>
+                    <div class="col-sm-2  col-lg-2">
+                        <input type="text" class="form-control" v-model="queryFormData.product_sub_name"/>
+                    </div>
+
+                    <label class="col-sm-2 col-md-2 col-lg-1 control-label">景点级别：</label>
+                    <div class="col-sm-3  col-lg-2">
+                        <remote-sel :setting="productEvlLevelSetting" :value.sync="queryFormData.evl_level"
+                                    class="form-control"></remote-sel>
+                    </div>
+                </div>
+
+                <div class="form-group clearfix">
+                    <label class="col-sm-2 col-md-2 col-lg-1 control-label">景点所在地：</label>
+
+                    <div class="col-sm-2 col-md-2 col-lg-2">
+                        <remote-sel :setting="provinceSetting" :value.sync="queryFormData.province"
+                                    @change="provinceChange" class="form-control"></remote-sel>
+                    </div>
+                    <div class="col-sm-2 col-md-2 col-lg-2">
+                        <remote-sel :setting="citySetting" :value.sync="queryFormData.city" @change="cityChange"
+                                    class="form-control" v-ref:city></remote-sel>
+                    </div>
+                    <div class="col-sm-2 col-md-2 col-lg-2">
+                        <remote-sel :setting="areaSetting" :value.sync="queryFormData.area" class="form-control"
+                                    v-ref:area></remote-sel>
+                    </div>
+                    <div class="col-md-1 col-sm-1 col-lg-1">
+                        <button type="submit" class="btn btn-orange" @click="queryFormSubmit"><img
+                                src="/voucher/static/style/img/ss_03.png"/>搜索
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="searchbox search-main">
+            <form class="forml">
+                <div class="screen clearfix" v-cloak>
+                    <span class="control-label">您已选择：</span>
+                    <div class="control-width">
+                        <span class="scr-con" v-if="queryConditionStr.ticket_dict_desc != ''"><a href="javascript:;"
+                                                                                                 @click="removeQuery('ticketDict')">{{queryConditionStr.ticket_dict_desc}}<i>x</i></a></span>
+                        <span class="scr-con" v-if="queryConditionStr.ticket_flag_desc != ''"><a href="javascript:;"
+                                                                                                 @click="removeQuery('ticketFlag')">{{queryConditionStr.ticket_flag_desc}}<i>x</i></a></span>
+                        <span class="scr-con" v-if="queryConditionStr.pay_type_desc != ''"><a href="javascript:;"
+                                                                                              @click="removeQuery('payType')">{{queryConditionStr.pay_type_desc}}<i>x</i></a></span>
+                        <span class="scr-con" v-if="queryConditionStr.evl_type_desc != ''"><a href="javascript:;"
+                                                                                              @click="removeQuery('evlType')">{{queryConditionStr.evl_type_desc}}<i>x</i></a></span>
+                    </div>
+
+                </div>
+                <div class="form-group condition clearfix" v-cloak>
+                        <label class="control-label">门票类型：</label>
+                    <div class="control-width">
+                        <em class="{{queryFormData.ticket_dict == ''?'unlimited at':'unlimited'}}" title="不限" @click="setNothing('ticketDict')">不限</em>
+                        <div class="city-content">
+                            <div v-for="ticket in ticketDict">
+                            <a href="javascript:;"
+                               @click="queryTable('ticketDict',ticket)" class="city-action"
+                               v-if="ticket.id == queryFormData.ticket_dict">
+                                {{ticket.value}}
+                            </a>
+                            <a href="javascript:;"
+                               @click="queryTable('ticketDict',ticket)" v-else="ticket.id == queryFormData.ticket_dict">
+                                {{ticket.value}}
+                            </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group condition clearfix" v-cloak>
+                        <label class="control-label">团散类型：</label>
+                    <div class="control-width">
+                        <em class="{{queryFormData.ticket_flag == ''?'unlimited at':'unlimited'}}" title="不限" @click="setNothing('ticketFlag')">不限</em>
+                        <div class="city-content">
+                            <div v-for="ticketFlag in ticketsFlag">
+                                <a href="javascript:;"
+                                   @click="queryTable('ticketFlag',ticketFlag)" class="city-action"
+                                   v-if="ticketFlag.id == queryFormData.ticket_flag">
+                                    {{ticketFlag.value}}
+                                </a>
+                                <a href="javascript:;"
+                                   @click="queryTable('ticketFlag',ticketFlag)" v-else="ticketFlag.id == queryFormData.ticket_flag" v-cloak>
+                                    {{ticketFlag.value}}
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group condition clearfix" v-cloak>
+                        <label class="control-label">支付方式：</label>
+                    <div class="control-width">
+                        <em class="{{queryFormData.pay_type == ''?'unlimited at':'unlimited'}}" title="不限" @click="setNothing('payType')">不限</em>
+                            <div class="city-content" >
+                                <div v-for="payType in paysType">
+                                    <a href="javascript:;"
+                                       @click="queryTable('payType',payType)" class="city-action"
+                                       v-if="payType.id == queryFormData.pay_type">
+                                        {{payType.value}}
+                                    </a>
+                                    <a href="javascript:;"
+                                       @click="queryTable('payType',payType)" v-else="payType.id == queryFormData.pay_type" v-cloak>
+                                        {{payType.value}}
+                                    </a>
+                                </div>
+                            </div>
+                    </div>
+                </div>
+
+                <div class="form-group  condition clearfix" v-cloak style="border-bottom: none;">
+                        <label class="control-label">景点类型：</label>
+                        <div class="control-width">
+                            <em class="{{queryFormData.types == ''?'unlimited at':'unlimited'}}" title="不限" @click="setNothing('productEvlType')">不限</em>
+                            <div class="city-content">
+                                <div v-for="(idx,prodEvlType) in productEvlType">
+                                    <a href="javascript:;"
+                                       @click="queryTable('productEvlType',prodEvlType)" class="city-action"
+                                       v-if="prodEvlType.id == queryFormData.types">
+                                        {{prodEvlType.name}}
+                                    </a>
+                                    <a href="javascript:;"
+                                       @click="queryTable('productEvlType',prodEvlType)" v-else="prodEvlType.id == queryFormData.types">
+                                        {{prodEvlType.name}}
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+            </form>
+        </div>
+
+
+        <div class="Retrieval">
+                <label class="control-label">排序：</label>
+                <div class="control-width">
+                    <div class="city-content">
+                        <a href="javascript:;" @click="sortTable('sale')">销量<i v-if="orderBySale == 0">
+                            &#8593;</i><i v-else="orderBySale == 0">&#8595; </i></a>
+                        <a href="javascript:;" @click="sortTable('price')">价格<i v-if="orderByPrice == 0">
+                            &#8593;</i><i v-else="orderByPrice == 0">&#8595; </i></a></a>
+                        <a href="javascript:;" @click="sortTable('time')">上架时间<i v-if="orderByTime == 0">
+                            &#8593;</i><i v-else="orderByTime == 0">&#8595; </i></a>
+                    </div>
+                </div>
+                <div class="condition-box"><a href="javascript:;" @click="chooseType()"><em
+                        class="iconfont icon-1"></em></a>
+                </div>
+        </div>
+        <div class="main-warp">
+            <div v-show="showType == 1">
+                <data-page-table-dyn :setting.sync="dtxSetting" :params="queryFormData"
+                                     v-ref:dt-list></data-page-table-dyn>
+            </div>
+            <script type="text/x-template" id="data-page-table-dyn">
+                <div class="Product-list-2 clearfix" v-cloak>
+                    <ul>
+                        <li v-for="(idx,mainInfo) in list">
+                            <div class="Product-li-left">
+                                <div class="Product-img-2"><img :src="showImages(mainInfo.product.imgs)"
+                                                                class="img-responsive"></div>
+                                <div class="Product-txt-2">
+                                    <h3><em><a href="javascript:;"
+                                               @click="openProductFrame(mainInfo.product.product_id)">{{mainInfo.product.product_name}}</a></em><br/><i>供应商：{{mainInfo.product.supplier_ep_name}}</i></h3>
+                                </div>
+                            </div>
+
+                            <div class="Product-li-right">
+                                <em>&nbsp;</em>
+                                <i>{{mainInfo.product.address}}</i>
+                            </div>
+
+                            <div class="table-responsive">
+                                <table class="table table-condensed">
+                                    <thead>
+                                    <tr class="tr-bt-sc">
+                                        <td width="30%">景点门票</td>
+                                        <td width="6%">市场价</td>
+                                        <td width="6%">销售价</td>
+                                        <td width="20%"></td>
+                                        <td width="20%"></td>
+                                        <td v-if="mainInfo.isShow" width="20%"><em class="iconfont icon-zhankai"
+                                                                                   @click="isShow(mainInfo)"></em></td>
+                                        <td v-else="mainInfo.isShow" width="20%"><em
+                                                class="iconfont icon-baisoft-arrow-down" @click="isShow(mainInfo)"></em>
+                                        </td>
+                                    </tr>
+                                    </thead>
+
+                                    <tbody v-show="mainInfo.isShow">
+                                    <tr v-for="(index,subInfo) in mainInfo.sub_products"
+                                        v-show="index < 5 || mainInfo.nums != 0">
+                                        <td><a href='javascript:;'
+                                               @click='openSubFrame(subInfo.product_sub_id)'
+                                               style='text-decoration:none'
+                                               v-cloak>{{subInfo.product_sub_name}}</a><span class="btn-1" v-cloak>{{subInfo.ticket_flag == 5031 ? '散':'团'}}</span>
+                                        </td>
+                                        <td class="zt-sc-4">
+                                            <del v-cloak>￥{{formatNumber(subInfo.market_price)}}</del>
+                                        </td>
+                                        <td class="zt-sc-3" v-cloak>￥{{formatNumber(subInfo.price)}}</td>
+                                        <td width="30%" align="center" v-if="subInfo.pay_type=='5011'">在线支付
+                                        </td>
+                                        <td width="30%" align="center" v-if="subInfo.pay_type=='5012'">现场到付
+                                        </td>
+                                        <td><span class="btn btn-success-2"><a href="javascript:;"
+                                                                               @click='buyTicket(subInfo.product_sub_name,subInfo.product_sub_id,subInfo.ticket_flag)'>立即购买</a></span>
+                                        </td>
+                                        <td></td>
+                                    </tr>
+
+                                    <tr v-if="mainInfo.sub_products.length > 5 && mainInfo.nums == 0">
+                                        <td class="center" colspan="6"><i><a href="javascript:;"
+                                                                             @click="showMore(mainInfo)">加载更多</a></i>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <pager :page="page"></pager>
+            </script>
+
+            <div class="Product-list clearfix" v-show="showType == '2'" v-cloak>
+                <ul v-for="prodInfo in subProdTypeInfos.list">
+                    <li v-for="subProdInfo in prodInfo.sub_products">
+                        <a href="javascript:;"
+                           @click="buyProduct(prodInfo.product.imgs,prodInfo.product.product_name,subProdInfo.product_sub_id,prodInfo.product.level_name)">
+                            <div class="product-img"><img style="width:100%; height:200px;"
+                                                          :src="showImages(prodInfo.product.imgs)"
+                                                          :alt="subProdInfo.product_name"></div>
+                        </a>
+
+                        <div class="product-txt">
+                            <i v-cloak>￥{{formatNumber(subProdInfo.price)}}</i>
+                            <h3 v-cloak>{{subProdInfo.product_name}}</h3>
+                            <h3 v-cloak>{{subProdInfo.product_sub_name}}</h3>
+                            <span class="btn-success" v-cloak>{{subProdInfo.ticket_dict_name}}</span> <span
+                                class="btn-blue" v-cloak>{{subProdInfo.ticket_flag_name}}</span> <span
+                                class="btn-orange" v-cloak>{{subProdInfo.pay_type_name}}</span>
+                        </div>
+
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+ </div>
+    <script type="text/javascript" src="/voucher/api/local/client/system/load_config"></script>
+    <script type="text/javascript" src="/voucher/static/script/local/require/require.js"></script>
+    <script type="text/javascript" src="/voucher/static/script/local/require_config.js"></script>
+    <script type="text/javascript" src="/voucher/static/script/local/view/prod/prodListView.js"></script>
+</body>
+</html>

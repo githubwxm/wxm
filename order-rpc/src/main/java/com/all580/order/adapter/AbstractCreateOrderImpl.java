@@ -188,7 +188,7 @@ public abstract class AbstractCreateOrderImpl implements CreateOrderInterface {
             EpSalesInfo buyInfo = bookingOrderManager.getBuyingPrice(daySales, createOrder.getEpId());
             Assert.notNull(saleInfo, "该产品未正确配置");
             Assert.notNull(buyInfo, "该产品未正确配置");
-            OrderItemDetail orderItemDetail = bookingOrderManager.generateDetail(dayInfo, item.getId(),
+            OrderItemDetail orderItemDetail = bookingOrderManager.generateDetail(dayInfo, item,
                     DateUtils.addDays(sub.getBooking(), i), sub.getQuantity(), salesInfo.getLow_use_quantity(),
                     saleInfo.getPrice(), order.getFrom_type() == OrderConstant.FromType.TRUST ? buyInfo.getShop_price() : buyInfo.getPrice());
             details.add(orderItemDetail);

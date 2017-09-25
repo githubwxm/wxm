@@ -1,0 +1,406 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <header-title></header-title>
+    <link href="/voucher/static/css/style.css" rel="stylesheet">
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=1.4&key=sNHtfFMen9ktOAbQYpC23Gmc"></script>
+</head>
+<body vtag="root">
+<div class="root-main">
+    <div class="main-container clearfix">
+        <div class="Establish clearfix">
+            <div class="title">
+                <h3>酒店信息</h3>
+                <em></em>
+            </div>
+            <validator name="checkSubForm">
+                <form id="subForm" class="form-horizontal" method="post" onSubmit="return false;">
+                    <ul>
+                        <li>
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>酒店名称：</label>
+                            <div class="col-sm-9 col-md-8 col-lg-6">
+                                <input class="form-control" type="text" maxlength="50" v-model="subFormData.name" v-validate:name="{required:true}" initial="off"
+                                       placeholder="此名称必须是唯一的，建议采取认知度较高的标准名称 例如： 七天连锁酒店">
+                                <div class="Prompt-one"><span>注意</span><b>一旦保存，将无法更改</b></div>
+                            </div>
+                            <div class="Prompt" v-show="$checkSubForm.name.required"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请填写酒店名称！</label></div>
+                        </li>
+                        <!--<li>
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>团队起订间数：</label>
+                            <div class="col-sm-6 col-md-6 col-lg-4">
+                                <input type="number" class="form-control" v-model="subFormData.team_num" v-validate:team_num="{required:true}" initial="off"/><h1>间</h1>
+                            </div>
+                            <div class="Prompt" v-show="$checkSubForm.team_num.required"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请填写团队起订间数！</label></div>
+                        </li>-->
+                        <li class="Estab-one">
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>酒店地址：</label>
+                            <div class="col-sm-2 col-md-2 col-lg-2">
+                                <remote-sel :setting="provinceSetting" :value.sync="subFormData.province" @change="provinceChange" v-validate:province="{required:true}" initial="off"></remote-sel>
+                                <span  v-show="$checkSubForm.province.required"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请选择酒店地址！</label></span>
+                            </div>
+                            <div class="col-sm-2 col-md-2 col-lg-2">
+                                <remote-sel :setting="citySetting" :value.sync="subFormData.city" @change="cityChange" v-ref:city v-validate:city="{required:true}" initial="off"></remote-sel>
+                                <span v-show="$checkSubForm.city.required"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请选择酒店地址！</label></span>
+                            </div>
+                            <div class="col-sm-2 col-md-2 col-lg-2">
+                                <remote-sel :setting="areaSetting" :value.sync="subFormData.area" v-ref:area v-validate:area="{required:true}" initial="off"></remote-sel>
+                                <span  v-show="$checkSubForm.area.required"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请选择酒店地址！</label></span>
+                            </div>
+                        </li>
+                        <li>
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>详细地址：</label>
+                            <div class="col-sm-9 col-md-8 col-lg-6">
+                                <input name="address" class="form-control" type="text" maxlength="20" v-model="subFormData.address" v-validate:address="{required:true}" initial="off"
+                                       placeholder="请不要重复填写上述所在地区的相同信息">
+                            </div>
+                            <span  v-show="$checkSubForm.address.required"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请填写详细地址！</label></span>
+                        </li>
+                        <li>
+                            <label class="col-md-4 col-sm-4 col-lg-3 control-label"><dd>*</dd>酒店星级：</label>
+                            <div class="col-sm-2 col-md-2 col-lg-2">
+                                <remote-sel :setting="levelTypeSetting" :value.sync="subFormData.level_type" v-validate:level_type="{required:true}" initial="off"></remote-sel>
+                                <div v-show="$checkSubForm.level_type.required"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请选择酒店星级！</label></div>
+                            </div>
+
+
+                            <label class="col-md-1 col-sm-1 col-lg-1 control-label"><dd>*</dd>预订电话：</label>
+                            <div class="col-sm-3 col-md-3 col-lg-3">
+                                <input class="form-control" type="text" v-model="subFormData.tel" v-validate:tel="{required:true}" initial="off"/>
+
+                            </div>
+                            <span  v-show="$checkSubForm.tel.required"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请填写预订电话！</label></span>
+                        </li>
+                        <li>
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label">酒店标签：</label>
+                            <div class="col-sm-9 col-md-9 col-lg-9">
+                                <div class="hotel-checkbox group-top">
+                                    <label> <input type="checkbox" class="chekbox" value="5900" v-model="subFormData.label_type" v-validate:server_type="{required:true}" initial="off">顶级奢华酒店</label>
+                                </div>
+                                <div class="hotel-checkbox group-top">
+                                    <label> <input type="checkbox" class="chekbox" value="5901" v-model="subFormData.label_type" v-validate:server_type="{required:true}" initial="off">商务型酒店</label>
+                                </div>
+                                <div class="hotel-checkbox group-top">
+                                    <label><input type="checkbox" class="chekbox" value="5902" v-model="subFormData.label_type" v-validate:server_type="{required:true}" initial="off">连锁品牌</label>
+                                </div>
+                                <div class="hotel-checkbox group-top">
+                                    <label> <input type="checkbox" class="chekbox" value="5903" v-model="subFormData.label_type" v-validate:server_type="{required:true}" initial="off">假日酒店</label>
+                                </div>
+                                <div class="hotel-checkbox group-top">
+                                    <label><input type="checkbox" class="chekbox" value="5904" v-model="subFormData.label_type" v-validate:server_type="{required:true}" initial="off">公寓酒店</label>
+                                </div>
+                                <div class="hotel-checkbox group-top">
+                                    <label><input type="checkbox" class="chekbox" value="5905" v-model="subFormData.label_type" v-validate:server_type="{required:true}" initial="off">快捷酒店</label>
+                                </div>
+                                <div class="hotel-checkbox group-top">
+                                    <label><input type="checkbox" class="chekbox" value="5906" v-model="subFormData.label_type" v-validate:server_type="{required:true}" initial="off">经济型酒店</label>
+                                </div>
+                                <div class="hotel-checkbox group-top">
+                                    <label> <input type="checkbox" class="chekbox" value="5907" v-model="subFormData.label_type" v-validate:server_type="{required:true}" initial="off">主题日酒店</label>
+                                </div>
+                                <div class="hotel-checkbox group-top">
+                                    <label><input type="checkbox" class="chekbox" value="5908" v-model="subFormData.label_type" v-validate:server_type="{required:true}" initial="off">会议型酒店</label>
+                                </div>
+                                <div class="hotel-checkbox group-top">
+                                    <label><input type="checkbox" class="chekbox" value="5909" v-model="subFormData.label_type" v-validate:server_type="{required:true}" initial="off">精品酒店</label>
+                                </div>
+                                <div class="hotel-checkbox group-top">
+                                    <label> <input type="checkbox" cl*-ass="chekbox" value="5910" v-model="subFormData.label_type" v-validate:server_type="{required:true}" initial="off">民宿客栈</label>
+                                </div>
+                            </div>
+                        </li>
+                        <!--<li>
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label">返现策略：</label>
+                            <div class="col-sm-8 col-md-8 col-lg-6">
+                                <input class="form-control form-hotel" v-model="subFormData.num1" type="text" placeholder="列如：16免1">
+                                <h2>免</h2>
+                                <input class="form-control form-hotel" type="text" v-model="subFormData.num2" style="margin-left:-5px;">
+                                &lt;!&ndash;<div class="form-odd">
+                                    <span>+</span>
+                                </div>&ndash;&gt;
+                            </div>
+                        </li>
+
+                        <li>
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label"></label>
+                            <div class="col-sm-8 col-md-8 col-lg-6">
+                                <input class="form-control form-hotel" type="text" v-model="subFormData.num3">
+                                <h2>免</h2>
+                                <input class="form-control form-hotel" type="text" style="margin-left:-5px;" v-model="subFormData.num4">
+                               &lt;!&ndash; <div class="form-odd">
+                                    <span>-</span>
+                                </div>&ndash;&gt;
+                            </div>
+                        </li>-->
+                        <li>
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label">酒店商圈：</label>
+                            <div class="col-sm-6 col-md-6 col-lg-6">
+                                <textarea class="form-control"  v-model="subFormData.trading_area"></textarea>
+                                <div class="Prompt-one"><b>多个商圈之间用","号隔开</b></div>
+                            </div>
+
+                        </li>
+
+                        <li>
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label">酒店坐标：</label>
+                            <div class="col-sm-9 col-md-8  col-lg-6">
+                                <div id="l-map" style="height:300px;">
+                                    <i class="icon-spinner icon-spin icon-large"></i>地图加载中...
+                                </div>
+                            </div>
+                        </li>
+                        <div class="business-two">
+                            <div class="title">
+                                <h3>酒店信息</h3>
+                                <em></em>
+                            </div>
+                        <ul>
+                         <li>
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label">开业时间：</label>
+                            <div class="col-sm-3 col-md-3 col-lg-2">
+                                <input class="form-control" type="text" v-model="subFormData.start_time">
+                            </div>
+
+                            <label class="col-md-2 col-sm-2 col-lg-2 control-label">装修时间：</label>
+                            <div class="col-sm-3 col-md-3 col-lg-2">
+                                <input class="form-control" type="text" v-model="subFormData.fitment_time">
+                            </div>
+                        </li>
+
+                        <li>
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>是否提供发票：</label>
+                            <div class="col-sm-2 col-md-2 col-lg-1">
+                                <label><input type="radio" name="invoice" value="1" v-model="subFormData.invoice" class="chekbox" checked><b>是</b> </label>
+                            </div>
+                            <div class="col-sm-2 col-md-2 col-lg-1">
+                                <label><input type="radio" name="invoice" value="0" v-model="subFormData.invoice" class="chekbox"><b>否</b> </label>
+                            </div>
+                        </li>
+                         <li>
+                                <label class="col-md-3 col-sm-3 col-lg-3 control-label">入住时间：</label>
+                                <div class="col-sm-3 col-md-3 col-lg-2">
+                                    <input class="form-control" type="text" v-model="subFormData.in_time">
+                                </div>
+
+                                <label class="col-md-2 col-sm-2 col-lg-2 control-label">离店时间：</label>
+                                <div class="col-sm-3 col-md-3 col-lg-2">
+                                    <input class="form-control" type="text" v-model="subFormData.out_time">
+                                </div>
+                         </li>
+
+                        <li>
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>酒店服务：</label>
+                            <div class="col-sm-9 col-md-9 col-lg-9">
+                                <div class="hotel-checkbox group-top">
+                                    <label><input type="checkbox" class="chekbox" value="5911" v-model="subFormData.server_type" v-validate:server_type="{required:true}" initial="off">接机服务 </label>
+                                </div>
+                                <div class="hotel-checkbox group-top">
+                                    <label><input type="checkbox" class="chekbox" value="5912" v-model="subFormData.server_type" v-validate:server_type="{required:true}" initial="off">接站服务</label>
+                                </div>
+                                <div class="hotel-checkbox group-top">
+                                    <label><input type="checkbox" class="chekbox" name="serverType" value="5913" v-model="subFormData.server_type" v-validate:server_type="{required:true}" initial="off">接待外宾</label>
+                                </div>
+                                <div class="hotel-checkbox group-top">
+                                    <label><input type="checkbox" class="chekbox" name="serverType" value="5914" v-model="subFormData.server_type" v-validate:server_type="{required:true}" initial="off">行李寄存</label>
+                                </div>
+                                <div class="hotel-checkbox group-top">
+                                    <label> <input type="checkbox" class="chekbox" name="serverType" value="5915" v-model="subFormData.server_type" v-validate:server_type="{required:true}" initial="off">洗衣</label>
+                                </div>
+                                <div class="hotel-checkbox group-top">
+                                    <label><input type="checkbox" class="chekbox" name="serverType" value="5916" v-model="subFormData.server_type" v-validate:server_type="{required:true}" initial="off">看护小孩</label>
+                                </div>
+                                <div class="hotel-checkbox group-top">
+                                    <label><input type="checkbox" class="chekbox" name="serverType" value="5917" v-model="subFormData.server_type" v-validate:server_type="{required:true}" initial="off">租车</label>
+                                </div>
+                                <div class="hotel-checkbox group-top">
+                                        <label><input type="checkbox" class="chekbox" name="serverType" value="5918" v-model="subFormData.server_type" v-validate:server_type="{required:true}" initial="off">叫醒服务</label>
+                            </div>
+                                <span  v-show="$checkSubForm.server_type.required"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请选择酒店服务！</label></span>
+                            </div>
+
+                        </li>
+
+                        <li>
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>酒店设施：</label>
+                            <div class="col-sm-9 col-md-9 col-lg-9">
+                                <div class="hotel-checkbox group-top">
+                                    <label>  <input type="checkbox" class="chekbox" name="facilityType" value="5920" v-model="subFormData.facility_type" v-validate:facility_type="{required:true}" initial="off">西式餐厅</label>
+                                </div>
+                                <div class="hotel-checkbox group-top">
+                                    <label> <input type="checkbox" class="chekbox" name="facilityType" value="5921" v-model="subFormData.facility_type" v-validate:facility_type="{required:true}" initial="off">中式餐厅</label>
+                                </div>
+                                <div class="hotel-checkbox group-top">
+                                    <label>  <input type="checkbox" class="chekbox" name="facilityType" value="5922" v-model="subFormData.facility_type" v-validate:facility_type="{required:true}" initial="off">室外游泳池</label>
+                                </div>
+                                <div class="hotel-checkbox group-top">
+                                    <label> <input type="checkbox" class="chekbox" name="facilityType" value="5923" v-model="subFormData.facility_type" v-validate:facility_type="{required:true}" initial="off">室内游泳池</label>
+                                </div>
+                                <div class="hotel-checkbox group-top">
+                                    <label> <input type="checkbox" class="chekbox" name="facilityType" value="5924" v-model="subFormData.facility_type" v-validate:facility_type="{required:true}" initial="off">残疾人设施</label>
+                                </div>
+                                <div class="hotel-checkbox group-top">
+                                    <label> <input type="checkbox" class="chekbox" name="facilityType" value="5925" v-model="subFormData.facility_type" v-validate:facility_type="{required:true}" initial="off">温泉</label>
+                                </div>
+                                <div class="hotel-checkbox group-top">
+                                    <label> <input type="checkbox" class="chekbox" name="facilityType" value="5926" v-model="subFormData.facility_type" v-validate:facility_type="{required:true}" initial="off">会议室</label>
+                                </div>
+                                <div class="hotel-checkbox group-top">
+                                    <label> <input type="checkbox" class="chekbox" name="facilityType" value="5927" v-model="subFormData.facility_type" v-validate:facility_type="{required:true}" initial="off">健身房</label>
+                                </div>
+                                <div class="hotel-checkbox group-top">
+                                    <label> <input type="checkbox" class="chekbox" name="facilityType" value="5928" v-model="subFormData.facility_type" v-validate:facility_type="{required:true}" initial="off">SPA</label>
+                                </div>
+                                <div class="hotel-checkbox group-top">
+                                    <label><input type="checkbox" class="chekbox" name="facilityType" value="5929" v-model="subFormData.facility_type" v-validate:facility_type="{required:true}" initial="off">棋牌室</label>
+                                </div>
+                                <div class="hotel-checkbox group-top">
+                                    <label> <input type="checkbox" class="chekbox" name="facilityType" value="5930" v-model="subFormData.facility_type" v-validate:facility_type="{required:true}" initial="off">酒吧</label>
+                                </div>
+                                <div class="hotel-checkbox group-top">
+                                    <label><input type="checkbox" class="chekbox" name="facilityType" value="5931" v-model="subFormData.facility_type" v-validate:facility_type="{required:true}" initial="off">商务中心</label>
+                                </div>
+
+                                <span  v-show="$checkSubForm.facility_type.required" style="margin-left: 0px;"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请选择酒店设施！</label></span>
+                            </div>
+
+                        </li>
+
+                        <li>
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label">网络情况：</label>
+                            <div class="col-sm-9 col-md-9 col-lg-9">
+                                <div class="hotel-checkbox group-top">
+                                    <label> <input type="checkbox" class="chekbox" name="networkType" value="5933" v-model="subFormData.network_type">免费WIFI</label>
+                                </div>
+                                <div class="hotel-checkbox group-top">
+                                    <label><input type="checkbox" class="chekbox" name="networkType" value="5934" v-model="subFormData.network_type">免费宽带</label>
+                                </div>
+                                <div class="hotel-checkbox group-top">
+                                    <label> <input type="checkbox" class="chekbox" name="networkType" value="5935" v-model="subFormData.network_type">收费宽带</label>
+                                </div>
+                                <div class="hotel-checkbox group-top">
+                                    <label><input type="checkbox" class="chekbox" name="networkType" value="5936" v-model="subFormData.network_type">无网络</label>
+                                </div>
+                            </div>
+                        </li>
+
+                        <li>
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>停车场：</label>
+                            <div class="col-sm-3 col-md-3 col-lg-2">
+                                <label> <input type="radio" name="depotType" value="5940" v-model="subFormData.depot_type" class="chekbox" checked><b>免费停车场</b></label>
+                            </div>
+
+                            <div class="col-sm-3 col-md-3 col-lg-2">
+                                <label><input type="radio" name="depotType" value="5941" v-model="subFormData.depot_type" class="chekbox"><b>收费停车场</b></label>
+                            </div>
+
+                            <div class="col-sm-2 col-md-2 col-lg-2">
+                                <label><input type="radio" name="depotType" value="5942" v-model="subFormData.depot_type" class="chekbox"><b>无停车场</b></label>
+                            </div>
+                        </li>
+
+                        <li>
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>可接受的信用卡：</label>
+                            <div class="col-sm-9 col-md-9 col-lg-9">
+                                <div class="hotel-checkbox group-top">
+                                    <label> <input type="checkbox" class="chekbox" name="cardType" value="5950" v-model="subFormData.card_type" v-validate:card_type="{required:true}" initial="off">Master</label>
+                                </div>
+                                <div class="hotel-checkbox group-top">
+                                    <label>  <input type="checkbox" class="chekbox" name="cardType" value="5951" v-model="subFormData.card_type" v-validate:card_type="{required:true}" initial="off">Visa</label>
+                                </div>
+                                <div class="hotel-checkbox group-top">
+                                    <label> <input type="checkbox" class="chekbox" name="cardType" value="5952" v-model="subFormData.card_type" v-validate:card_type="{required:true}" initial="off">国内银联卡</label>
+                                </div>
+                                <div class="hotel-checkbox group-top">
+                                    <label> <input type="checkbox" class="chekbox" name="cardType" value="5953" v-model="subFormData.card_type" v-validate:card_type="{required:true}" initial="off">信用卡</label>
+                                </div>
+
+                            </div>
+                            <span  v-show="$checkSubForm.card_type.required"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请选择可接受的信用卡！</label></span>
+
+                        </li>
+
+                        <li>
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>可接受的支付方式：</label>
+                            <div class="col-sm-9 col-md-9 col-lg-9">
+                                <div class="hotel-checkbox group-top">
+                                    <label> <input type="checkbox" class="chekbox" name="payType" value="5960" v-model="subFormData.pay_type" v-validate:pay_type="{required:true}" initial="off">微信</label>
+                                </div>
+                                <div class="hotel-checkbox group-top">
+                                    <label> <input type="checkbox" class="chekbox" name="payType" value="5961" v-model="subFormData.pay_type" v-validate:pay_type="{required:true}" initial="off">支付宝</label>
+                                </div>
+                                <div class="hotel-checkbox group-top">
+                                    <label> <input type="checkbox" class="chekbox" name="payType" value="5962" v-model="subFormData.pay_type" v-validate:pay_type="{required:true}" initial="off">境内银联</label>
+                                </div>
+                                <div class="hotel-checkbox group-top">
+                                    <label>  <input type="checkbox" class="chekbox" name="payType" value="5963" v-model="subFormData.pay_type" v-validate:pay_type="{required:true}" initial="off">现金</label>
+                                </div>
+                                <div class="hotel-checkbox group-top">
+                                    <label>  <input type="checkbox" class="chekbox" name="payType" value="5964" v-model="subFormData.pay_type" v-validate:pay_type="{required:true}" initial="off">境外银行卡</label>
+                                </div>
+                            </div>
+                            <span  v-show="$checkSubForm.pay_type.required"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请选择可接受的支付方式！</label></span>
+                        </li>
+
+                        <li>
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>宠物：</label>
+                            <div class="col-sm-3 col-md-3 col-lg-2">
+                                <label> <input type="radio" name="petType" value="1" v-model="subFormData.pet_type" class="chekbox" checked><b>可携带宠物</b></label>
+                            </div>
+
+                            <div class="col-sm-3 col-md-3 col-lg-2">
+                                <label><input type="radio" name="petType" value="0" v-model="subFormData.pet_type" class="chekbox" ><b>不可携带宠物</b></label>
+                            </div>
+                        </li>
+
+                        <li>
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label">酒店简介：</label>
+                            <div class="col-sm-6 col-md-6 col-lg-6">
+                                <textarea class="form-control" rows="6"  v-model="subFormData.summary"></textarea>
+                            </div>
+                        </li>
+                     </ul>
+                    </div>
+
+                    <div class="business-two">
+                        <div class="title">
+                            <h3>酒店宣传图</h3>
+                            <em></em>
+                        </div>
+                     <ul>
+                        <li class="Estab-one">
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>酒店图片：</label>
+                            <div class="col-sm-9 col-md-9  col-lg-9 form-img">
+                                <upload-pic :setting.sync="upSetting" :list.sync="subFormData.imgs"></upload-pic>
+                                <input type="hidden" v-model="subFormData.imgs.length" v-validate:imgs="{min:1}" initial="off"/>
+                                <div class="Prompt" v-show="$checkSubForm.imgs.min"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请选择酒店图片！</label></div>
+                            </div>
+
+                        </li>
+
+                        <div class="Matters">
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label"></label>
+                            <div class="col-sm-9 col-md-9  col-lg-9">
+                                <span class="btn btn-orange">注意事项</span>
+                                <!--<p>1.&nbsp;&nbsp;必须上转一张照片作为主图展示...</p>-->
+                                <p>2.&nbsp;&nbsp;图片尺寸必须大于等于1024*768px，图片大小必须小于2000KB，仅支持png, gif, jpg图片格式...</p>
+                            </div>
+                        </div>
+                    </ul>
+                   </div>
+               </form>
+            </validator>
+            <div class="Button-box" v-if="subFormData.product_id == undefined">
+                <button class="btn" type="submit" @click="upload">添加</button>
+            </div>
+            <div class="Button-box" v-if="subFormData.product_id != undefined">
+                <button class="btn" type="submit" @click="upload">修改</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="/voucher/api/local/client/system/load_config"></script>
+<script type="text/javascript" src="/voucher/static/script/local/require/require.js"></script>
+<script type="text/javascript" src="/voucher/static/script/local/require_config.js"></script>
+<script type="text/javascript" src="/voucher/static/script/local/view/prod/hotel/editHotelProd.js"></script>
+</body>
+</html>

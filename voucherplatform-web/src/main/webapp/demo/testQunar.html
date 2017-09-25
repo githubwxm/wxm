@@ -1,0 +1,111 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <header-title></header-title>
+  <link href="/voucher/static/css/style.css" rel="stylesheet">
+</head>
+
+<body vtag="root">
+<div class="Establish clearfix">
+  <div class="title"><em></em><h3>qunar</h3></div>
+  <ul>
+    <li>
+      <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>接口：</label>
+      <div class="col-sm-5 col-md-5 col-lg-5">
+        <input class="form-control" type="text" v-model="subFormData.method"/>
+      </div>
+    </li>
+
+    <li>
+      <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>报文：</label>
+      <div class="col-sm-5 col-md-5 col-lg-5">
+        <textarea style="width:800px;height:400px;" v-model="subFormData.requestParam"></textarea>
+      </div>
+    </li>
+
+    <div class="Button-box">
+      <button type="button" class="btn" @click="subFormSubmit">执行</button>
+    </div>
+  </ul>
+</div>
+
+<script type="text/javascript" src="/voucher/api/local/client/system/load_config"></script>
+<script type="text/javascript" src="/voucher/static/script/local/require/require.js"></script>
+<script type="text/javascript" src="/voucher/static/script/local/require_config.js"></script>
+
+<script type="text/javascript" src="/voucher/static/script/amd/1.0/jquery/jquery-3.1.0.min.js"></script>
+<script type="text/javascript" src="http://www.gongjuji.net/Content/files/jquery.md5.js"></script>
+<script type="text/javascript">
+
+  require_js_file(['jquery','vueResource'],function(Vue,fnr,$,vueResource) {
+    rootVue = new Vue({
+      el: '[vtag=root]',
+      data: {
+        subFormData:{method:'getproductbyqunar'}
+      },
+      methods:{
+        subFormSubmit:function(){
+          var self = this;
+          var param = {str:self.subFormData.requestParam};
+          var deferred = fnr.ajaxJson('/voucher/api/local/client/demo/base64encode',param);
+          deferred.then(function(result){
+            var resp = result.json();
+            self.xxoo(resp.data);
+          });
+        },
+        xxoo:function(data){
+          var self = this;
+          var key = '';
+          var requestParam = {};
+          requestParam.data = data;
+          requestParam.signed = $.md5(key+data);
+          requestParam.securityType = 'MD5';
+          var param = {
+            method:self.subFormData.method,
+            requestParam:JSON.stringify(requestParam)
+          };
+          console.log(param);
+          var url = '/qunar';
+          var deferred = fnr.ajaxJson(url,param,{method:'GET'});
+          deferred.then(function(result){
+//            console.log(result);
+          });
+        },
+        aavv:function(){
+          var key = '';
+          var str = 'aa=cc&bb=ss&access_id=1478919995594YAHNUJQ8';
+          var sign = $.md5(str+key);
+          var url = '/voucher/api/remote/client/index/test?'+str;
+
+          var reqParam = { headers: {'Content-Type': 'application/x-www-form-urlencoded','sign':sign}, params: {} };
+          Vue.use(vueResource);
+          alert(str+','+key);
+          var deferred = new Vue().$http.get(url,reqParam);
+          deferred.then(function(result){
+          });
+        },
+        ccav:function(){
+          var url = '/voucher/api/remote/client/order/batch_create';
+          var param = {
+            access_id:"d63dc1caa6e61eab7e359bd210f17bf9",
+            outer_id:"12345",
+            item:[{
+              mobile:"13007312922",
+              pro_sub_id:"1",
+            },{
+              mobile:"13007312822",
+              pro_sub_id:"2",
+            }]
+          };
+          var deferred = fnr.ajaxJson(url,param,{method:'POST'});
+          deferred.then(function(result){
+//            console.log(result);
+          });
+        }
+      }
+    });
+  });
+</script>
+</body>
+</html>

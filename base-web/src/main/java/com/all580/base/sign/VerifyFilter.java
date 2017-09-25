@@ -58,8 +58,8 @@ public class VerifyFilter implements  Filter {
         }
         currenttSing =CommonUtil.objectParseString( map.remove("sign"));//获取当前传来的加密// 去掉sing
         if(null==currenttSing){
-            log.error("数据未加密");
-            renderingByJsonPData(httpResponse, JSON.toJSONString(getOutPutMap(false,"数据未加密", Result.SIGN_FAIL,null)));
+            log.error("数据未加密:"+url);
+            renderingByJsonPData(httpResponse, JSON.toJSONString(getOutPutMap(false,"数据未加密:"+url, Result.SIGN_FAIL,null)));
             return;
         }
         if(null==map.get("access_id")){

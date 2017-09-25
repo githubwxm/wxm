@@ -1,0 +1,628 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <header-title></header-title>
+    <link href="/voucher/static/css/style.css" rel="stylesheet">
+    <link type="text/css" rel="stylesheet" href="/voucher/static/script/amd/1.0/jedate/skin/jedate.css">
+    <style>
+        .bodys { padding: 50px 0 0 50px; }
+        .datainp { width: 130px; height: 30px; border: 1px #A5D2EC solid; font-size: 15px}
+        .datep { margin-bottom: 40px; line-height: 24px; margin-right: 15px; }
+        .wicon { background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAQCAYAAADj5tSrAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEgAACxIB0t1+/AAAABZ0RVh0Q3JlYXRpb24gVGltZQAwNi8xNS8xNGnF/oAAAAAcdEVYdFNvZnR3YXJlAEFkb2JlIEZpcmV3b3JrcyBDUzVxteM2AAAAoElEQVQ4jWPceOnNfwYqAz9dYRQ+E7UtwAaGjyUsDAyYYUgJ2HT5LXZLcEmSCnA6duOlN///////H0bDALl8dPH/////Z8FuNW6Qtvw2nL3lyjsGBgYGhlmRqnj1kGwJuqHIlhJlCXq8EOITEsdqCXLEbbr8FisfFkTo+vBZRFZwERNEFFkCiw90nxJtCalxQmzegltCzVyP1RJq5HZ8AABuNZr0628DMwAAAABJRU5ErkJggg=="); background-repeat: no-repeat; background-position: right center; }
+    </style>
+</head>
+<body vtag="root">
+<div class="root-main">
+    <div class="main-container clearfix">
+        <div class="main-warp" v-if="showNext == 1">
+            <div class="title clearfix">
+                <h3>添加子产品</h3>
+                <em></em>
+            </div>
+            <validator name="checkForm">
+                <div class="form-group form-group-top">
+                    <label class="col-md-3 col-sm-3 col-lg-3 control-label">产品名称：</label>
+                    <div class="col-sm-9 col-md-8 col-lg-6">
+                        <input name="prod_name" class="form-control" type="text"
+                               disabled v-model="subFromData.product_name">
+                    </div>
+                </div>
+                <div class="form-group form-group-one" style="padding-top: 20px">
+                    <label class="col-md-3 col-sm-3 col-lg-3 control-label"><b class="icon-require" style="color: red;margin-right: 5px;">*</b>子产品名称：</label>
+                    <div class="col-sm-9 col-md-8 col-lg-6">
+                        <input name="name" class="form-control" type="text" maxlength="50" v-model="subFromData.name" v-validate:name="{required:true}" initial="off">
+                        <p class="help-block">同一产品内票据名称必须为唯一</p>
+                    </div>
+                    <div class="Prompt" v-show="$checkForm.name.required" for="contactMobile"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请填写子产品名称！</label></div>
+                </div>
+
+                <div class="Ticket clearfix">
+                    <div class="title clearfix">
+                        <h3>标签选择</h3>
+                        <em></em>
+                    </div>
+                    <div class="form-group form-group-top">
+                        <label class="col-md-3 col-sm-3 col-lg-3 control-label"><b class="icon-require" style="color: red;margin-right: 5px;">*</b>票种：</label>
+                        <div class="col-md-3 col-sm-3 col-lg-2">
+                            <label class="radio-inline">
+                                <input type="checkbox" class="chekbox" name="ticketDict" value="5051" v-model="subFromData.ticket_dict" v-validate:ticket_dict="{required:true}" initial="off"><i>普通票</i>
+                            </label>
+                        </div>
+
+                        <div class="col-md-5 col-sm-5 col-lg-5">
+                            <label class="radio-inline">
+                                <input type="checkbox" class="chekbox" name="ticketDict" value="5052" v-model="subFromData.ticket_dict" v-validate:ticket_dict="{required:true}" initial="off"><i>优惠票</i>
+                                <div class="Prompt" v-show="$checkForm.ticket_dict.required" for="contactMobile"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请选择一种票种！</label></div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group form-group-top">
+                        <label class="col-md-3 col-sm-3 col-lg-3 control-label"><b class="icon-require" style="color: red;margin-right: 5px;">*</b>团/散票：</label>
+                        <div class="col-md-3 col-sm-3 col-lg-2">
+                            <label class="radio-inline">
+                                <input type="checkbox" name="ticketFlag" class="chekbox" value="5032" v-model="subFromData.ticket_flag" v-validate:ticket_flag="{required:true}" initial="off"><i>团队</i>
+                            </label>
+                        </div>
+                        <div class="col-md-5 col-sm-5 col-lg-5">
+                            <label class="radio-inline">
+                                <input type="checkbox" name="ticketFlag" class="chekbox" value="5031" v-model="subFromData.ticket_flag" v-validate:ticket_flag="{required:true}" initial="off"><i>散客</i>
+                                <div class="Prompt" v-show="$checkForm.ticket_flag.required" for="contactMobile"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请选择团散类型！</label> </div>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group form-group-top">
+                        <label class="col-md-3 col-sm-3 col-lg-3 control-label"><b class="icon-require" style="color: red;margin-right: 5px;">*</b>支付方式：</label>
+                        <div class="col-md-3 col-sm-3 col-lg-2">
+                            <label class="radio-inline">
+                                <input type="checkbox" name="payType" class="chekbox" value="5011" v-model="subFromData.pay_type" v-validate:pay_type="{required:true}" initial="off"><i>在线支付</i>
+                            </label>
+                        </div>
+                        <div class="col-md-5 col-sm-5 col-lg-5">
+                            <label class="radio-inline" v-if="ep_type != 10002">
+                                <input type="checkbox" name="payType" class="chekbox" value="5012" v-model="subFromData.pay_type" v-validate:pay_type="{required:true}" initial="off"><i>现场支付</i>
+                            </label>
+                            <div class="Prompt" v-show="$checkForm.pay_type.required" for="contactMobile"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请选择支付方式！</label></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="business-two" v-if="subFromData.ticket_flag[0] == 5032 || subFromData.ticket_flag[1] == 5032">
+                    <div class="title clearfix">
+                        <h3>团队预订要求</h3>
+                        <em></em>
+                    </div>
+                    <ul>
+                        <li class="form-group form-group-top">
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>最低购买数量：</label>
+                            <div class="col-sm-9 col-md-8 col-lg-4">
+                                <input name="name" class="form-control" type="number" min="0" maxlength="50" v-model="subFromData.groupFromData.min_buy_quantity" v-validate:min_buy_quantity="{required:true}" initial="off">
+                            </div>
+                            <div v-show="$checkForm.min_buy_quantity.required" for="contactMobile"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请设置最低购买数量！</label></div>
+                        </li>
+
+                        <li class="form-group form-group-top">
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>实名制要求：</label>
+                            <div class="col-md-3 col-sm-3 col-lg-2 clearfix">
+                                <remote-sel :setting="realNameSetting" :value.sync="subFromData.groupFromData.real_name" v-validate:real_name="{required:true}" initial="off"></remote-sel>
+                            </div>
+                            <div class="Prompt" v-show="$checkForm.real_name.required" for="contactMobile" class="error"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请选择是否实名制！</label> </div>
+                        </li>
+
+                        <!--<li class="form-group form-group-top" v-if="subFromData.groupFromData.real_name == 5130">
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label"></label>
+                            <div class="col-md-9 col-sm-9 col-lg-9 clearfix">
+                                一张身份证一天内购买<input class="input-one" v-model="subFromData.groupFromData.sid_day_count" v-validate:sid_day_count="{required:true}" initial="off"/>次，
+                                0表示不限次书，每日最多购买<input class="input-one" v-model="subFromData.groupFromData.sid_day_quantity" v-validate:sid_day_quantity="{required:true}" initial="off"/>张，0表示不限张数
+                            </div>
+                        </li>-->
+                        <li class="form-group form-group-top">
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label">最低使用限制：</label>
+                            <div class="col-sm-9 col-md-8 col-lg-8">
+                                最低使用<input class="input-one" class="form-control" type="number" min="0" maxlength="50" v-model="subFromData.groupFromData.low_use_quantity">张,0表示不限制
+                            </div>
+                        </li>
+                        <li class="form-group form-group-top">
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label">每单最高购买限制：</label>
+                            <div class="col-sm-9 col-md-8 col-lg-8">
+                                最高购买<input class="input-one" class="form-control" type="number" min="0" maxlength="50" v-model="subFromData.groupFromData.max_buy_quantity">张,0表示不限制
+                            </div>
+                        </li>
+
+                        <li class="form-group form-group-top">
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>预订和使用时间限制：</label>
+                            <div class="col-sm-9 col-md-8 col-lg-8">
+                                <label class="radio-inline">
+                                    <input type="radio" class="input-one-3" value="5141" v-model="subFromData.groupFromData.booking_limit" v-validate:booking_limit="{required:true}" initial="off">可当天预订，预订后<input type="number" min="0" class="input-one" value="0" v-model="subFromData.groupFromData.use_hours_limit"/>小时方可入园
+                                </label>
+                                <div class="Prompt" v-show="$checkForm.use_hours_limit.required" for="contactMobile"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请填写游玩时间！</label></div>
+                            </div>
+                            <div v-if="subFromData.groupFromData.booking_limit == 5141" style="display:none;">
+                                <input type="hidden" v-model="subFromData.groupFromData.use_hours_limit" v-validate:use_hours_limit="{required:true}" initial="off"/>
+                            </div>
+                        </li>
+                        <li class="form-group form-group-top">
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label"></label>
+                            <div class="col-sm-9 col-md-9 col-lg-9">
+                                <label class="radio-inline">
+                                    <input type="radio" class="input-one-3" value="5140" v-model="subFromData.groupFromData.booking_limit" v-validate:booking_limit="{required:true}" initial="off">
+                                    游玩前<input type="number" min="0" class="input-one" style="width:150px" v-model="subFromData.groupFromData.booking_day_limit"/>天
+                                    <div v-if="subFromData.groupFromData.booking_limit == 5140" style="display:none;">
+                                        <input type="hidden" v-model="subFromData.groupFromData.booking_day_limit" v-validate:booking_day_limit="{required:true}" initial="off"/>
+                                    </div>
+                                    <div class="Prompt prom-right" v-show="$checkForm.booking_day_limit.required" for="contactMobile" class="error"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请填写游玩天数！</label></div>
+                                    <input class="datainp wicon" id="group"  type="text" placeholder="格式为08:00" @click="testShow('#group')" readonly>时:分之前预定
+                                    <div v-if="subFromData.groupFromData.booking_limit == 5140" style="display:none;">
+                                        <input type="hidden" v-model="subFromData.groupFromData.booking_time_limit" v-validate:booking_time_limit="{required:true}" initial="off"/>
+                                    </div>
+                                    <div class="Prompt prom-right" v-show="$checkForm.booking_time_limit.required" for="contactMobile"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请填写游玩时间！</label></div>
+                                </label>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="business-two" v-if="subFromData.ticket_flag[0] ==5031 || subFromData.ticket_flag[1]== 5031">
+                    <div class="title clearfix">
+                        <h3>散客预订限制</h3>
+                        <em></em>
+                    </div>
+                    <ul>
+                        <li class="form-group form-group-top">
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>购买时是否需要身份证：</label>
+                            <div class="col-md-3 col-sm-3 col-lg-2 clearfix">
+                                <label class="radio-inline">
+                                    <input class="chekbox" type="radio" value="5110" v-model="subFromData.visitorFromData.require_sid" v-validate:require_sid="{required:true}" initial="off"><b>是</b>
+                                </label>
+                            </div>
+                            <div class="col-md-3 col-sm-3 col-lg-2 clearfix">
+                                <label class="radio-inline">
+                                    <input type="radio" class="chekbox" value="5111" v-model="subFromData.visitorFromData.require_sid" v-validate:require_sid="{required:true}" initial="off"><b>否</b>
+                                </label>
+                            </div>
+                        </li>
+                        <li class="form-group form-group-top" v-if="subFromData.visitorFromData.require_sid == 5110">
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label"></label>
+                            <div class="col-md-9 col-sm-9 col-lg-9 clearfix">
+                                一张身份证一天内购买<input class="input-one" type="number" min="0" v-model="subFromData.visitorFromData.sid_day_count" v-validate:sid_day_count="{required:true}" initial="off"/>次，0表示不限次数，
+                                每日最多购买<input class="input-one" type="number" min="0" v-model="subFromData.visitorFromData.sid_day_quantity" v-validate:sid_day_quantity="{required:true}" initial="off"/>张，0表示不限张数
+                            </div>
+                        </li>
+
+                        <li class="form-group form-group-top">
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label">每单最高购买限制：</label>
+                            <div class="col-sm-9 col-md-8 col-lg-8">
+                                最高购买<input class="input-one" class="form-control" type="number" min="0" maxlength="50" v-model="subFromData.visitorFromData.max_buy_quantity">张,0表示不限制
+                            </div>
+                        </li>
+                        <li class="form-group form-group-top">
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label">预订和使用时间限制：</label>
+                            <div class="col-sm-9 col-md-8 col-lg-8">
+                                <label class="radio-inline">
+                                    <input type="radio" class="input-one-3" value="5141" v-model="subFromData.visitorFromData.booking_limit" v-validate:booking_limit="{required:true}" initial="off">
+                                    可当天预订，预订后<input class="input-one" type="number" min="0" value="0" v-model="subFromData.visitorFromData.use_hours_limit"/>小时方可入园
+                                </label>
+                                <div class="Prompt" v-show="$checkForm.use_hours_limit.required" for="contactMobile" ><img src="/voucher/static/style/img/baocuo.png"><label class="error">请选择游玩时间！</label></div>
+                            </div>
+                            <div v-if="subFromData.visitorFromData.booking_limit == 5141" style="display:none;">
+                                <input type="hidden" v-model="subFromData.visitorFromData.use_hours_limit" v-validate:use_hours_limit="{required:true}" initial="off"/>
+                            </div>
+                        </li>
+                        <li class="form-group form-group-top">
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label"></label>
+                            <div class="col-sm-9 col-md-9 col-lg-9 clearfix">
+                                <label class="radio-inline">
+                                    <input class="input-one-3" type="radio" value="5140" v-model="subFromData.visitorFromData.booking_limit" v-validate:booking_limit="{required:true}" initial="off">
+                                    游玩前<input class="input-one" type="number" min="0" style="width:150px" v-model="subFromData.visitorFromData.booking_day_limit"/>天
+                                    <div v-if="subFromData.visitorFromData.booking_limit == 5140" style="display:none;">
+                                        <input type="hidden" v-model="subFromData.visitorFromData.booking_day_limit" v-validate:booking_day_limit="{required:true}" initial="off"/>
+                                    </div>
+                                    <div class="Prompt prom-right" v-show="$checkForm.booking_day_limit.required" for="contactMobile"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请填写游玩天数！</label></div>
+                                    <input class="datainp wicon" id="visitor"  type="text" placeholder="格式为08:00" @click="testShow('#visitor')" readonly>时:分之前预定
+                                    <div v-if="subFromData.visitorFromData.booking_limit == 5140" style="display:none;">
+                                        <input type="hidden" v-model="subFromData.visitorFromData.booking_time_limit" v-validate:booking_time_limit="{required:true}" initial="off"/>
+                                    </div>
+                                    <div class="Prompt prom-right" v-show="$checkForm.booking_time_limit.required" for="contactMobile"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请填写游玩时间！</label></div>
+                                </label>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="business-two">
+                    <div class="title clearfix">
+                        <h3>其他</h3>
+                        <em></em>
+
+                    </div>
+                    <div class="form-group form-group-top">
+                        <label class="col-md-3 col-sm-3 col-lg-3 control-label"><b class="icon-require" style="color: red;margin-right: 5px;">*</b>发码公司：</label>
+                        <div class="col-sm-4 col-md-4 col-lg-4">
+                            <remote-sel :setting="maTypeSetting" :value.sync="subFromData.ep_ma_id" v-validate:ep_ma_id="{required:true}" initial="off"></remote-sel>
+                        </div>
+                        <div v-show="$checkForm.ep_ma_id.required" for="contactMobile" ><img src="/voucher/static/style/img/baocuo.png"><label class="error">请选择发码公司！</label></div>
+                        <button class="btn" type="button" @click="addVoucherMerchant()">关联凭证商户</button>
+                        <button class="btn" type="submit" @click="refreshMa">刷新</button>
+                    </div>
+                    <div class="Button-box">
+                        <button class="btn" type="submit" @click="next">下一步</button>
+                    </div>
+                </div>
+            </validator>
+        </div>
+        <div class="main-warp" v-if="showNext == 2">
+            <div class="Establish clearfix">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-box">
+                        <tbody>
+                        <tr class="tr-bt-sc">
+                            <td>子产品名称</td>
+                            <td>票种</td>
+                            <td>团/散</td>
+                            <td>支付方式</td>
+                            <td>操作</td>
+                        </tr>
+                        <tr v-for="line in list">
+                            <td v-cloak>{{line.name}}</td>
+                            <td v-cloak>{{line.ticket_dict}}</td>
+                            <td v-cloak>{{line.ticket_flag}}</td>
+                            <td v-cloak>{{line.pay_type}}</td>
+                            <td class="name">
+                                <a href="javascript:void(0);" @click="edit(line)" v-if="line.ticketForm.show == false">设置</a>
+                                <span v-if="line.ticketForm.show == true">已保存</span>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!-- 产品信息Start -->
+        <div class="Establish clearfix" v-if="showNext == 2 && productStutas == true">
+            <div class="title">
+                <h3>基本信息</h3>
+                <em></em>
+            </div>
+            <validator name="checkSubForm">
+                <form method="post" onSubmit="return false;">
+                    <ul>
+                        <li>
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label">产品名称：</label>
+                            <div class="col-sm-9 col-md-8 col-lg-6">
+                                <input name="prod_name" class="form-control" type="text"
+                                       disabled="disabled" v-model="ticketForm.product_name">
+                            </div>
+                        </li>
+                        <li>
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>票据名称：</label>
+                            <div class="col-sm-9 col-md-8 col-lg-6">
+                                <input name="name" class="form-control" type="text" maxlength="50" v-model="ticketForm.name" v-validate:name="{required:true}" initial="off">
+                                <div  v-show="$checkSubForm.name.required" for="contactMobile"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请填写票据名称！</label></div>
+                                <div class="label-box btn-success" v-cloak>{{ticketForm.ticket_dict_name}}</div> <div class="label-box btn-blue" v-cloak>{{ticketForm.ticket_flag_name}}</div>
+                                <div class="label-box btn-orange" v-cloak>{{ticketForm.pay_type_name}}</div>
+                            </div>
+                        </li>
+                        <li>
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>市场价：</label>
+                            <div class="col-sm-6 col-md-6 col-lg-6">
+                                <input name="name" class="form-control" type="number" min="0" maxlength="50" v-model="ticketForm.market_price" v-validate:market_price="{required:true}" initial="off">
+                            </div>
+                            <div v-show="$checkSubForm.market_price.required" for="contactMobile"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请填写市场价！</label></div>
+                        </li>
+                        <li>
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>限制最低售价：</label>
+                            <div class="col-sm-6 col-md-6 col-lg-6">
+                                <input name="name" class="form-control" type="number" min="0" maxlength="50" v-model="ticketForm.min_sell_price" v-validate:min_sell_price="{required:true}" initial="off">
+                            </div>
+                            <div v-show="$checkSubForm.min_sell_price.required" for="contactMobile"><img src="/voucher/static/style/img/baocuo.png"><label class="error" >请填写最低销售价！</label></div>
+                        </li>
+                        <li>
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>结算价：</label>
+                            <div class="col-sm-6 col-md-6 col-lg-6">
+                                <input name="name" class="form-control" type="number" min="0" maxlength="50" v-model="ticketForm.settle_price" v-validate:settle_price="{required:true}" initial="off">
+                            </div>
+                            <div v-show="$checkSubForm.settle_price.required" for="contactMobile" ><img src="/voucher/static/style/img/baocuo.png"><label class="error">请填写结算价！</label></div>
+                        </li>
+                        <li>
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>发码公司：</label>
+                            <div class="col-sm-6 col-md-6 col-lg-6">
+                                <remote-sel :setting="maTypeSetting" :value.sync="ticketForm.ep_ma_id" v-validate:ep_ma_id="{required:true}" initial="off"  disabled="disabled"></remote-sel>
+                            </div>
+                            <!--<div v-show="$checkSubForm.ep_ma_id.required" for="contactMobile" ><img src="/voucher/static/style/img/baocuo.png"><label class="error">请选择发码公司！</label></div>-->
+                        </li>
+                        <li>
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>票务产品：</label>
+                            <div class="col-sm-6 col-md-6 col-lg-6">
+                                <remote-sel :setting="maProductTypeSetting" :value.sync="ticketForm.ma_product_id" v-validate:ma_product_id="{required:true}" initial="off"></remote-sel>
+                            </div>
+                            <div v-show="$checkSubForm.ma_product_id.required" for="contactMobile"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请选择票务产品！</label></div>
+                            <button class="btn btn-success" type="button" @click="refreshMaProduct(ticketForm.ep_ma_id)">刷新</button>
+                        </li>
+                        <li>
+                            <label class="col-md-3 col-sm-3 col-lg-3 control-label">票据图片：</label>
+                            <div class="col-sm-9 col-md-8  col-lg-6 form-img">
+                                <upload-pic :setting.sync="upSetting" :list.sync="ticketForm.img"></upload-pic>
+                            </div>
+                        </li>
+                    </ul>
+                    <div class="business-two clearfix">
+                        <div class="title clearfix">
+                            <h3>预订须知</h3>
+                            <em></em>
+                        </div>
+                        <ul>
+                            <!--散客Start-->
+                            <li v-if="ticketForm.ticket_flag == 5031">
+                                <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>购票时是否需要身份证：</label>
+                                <div class="col-md-3 col-sm-3 col-lg-2 clearfix">
+                                    <label class="radio-inline">
+                                        <input type="radio" class="chekbox" value="5110" @change="spliceBookingNotes" v-model="ticketForm.require_sid" v-validate:require_sid="{required:true}" initial="off"><b>是</b>
+                                    </label>
+                                </div>
+                                <div class="col-md-3 col-sm-3 col-lg-2 clearfix">
+                                    <label class="radio-inline">
+                                        <input type="radio" class="chekbox" value="5111" @change="spliceBookingNotes" v-model="ticketForm.require_sid" v-validate:require_sid="{required:true}" initial="off"><b>否</b>
+                                    </label>
+                                </div>
+                            </li>
+                            <li v-if="ticketForm.require_sid == 5110 && ticketForm.ticket_flag == 5031">
+                                <label class="col-md-3 col-sm-3 col-lg-3 control-label"></label>
+                                <div class="col-md-9 col-sm-9 col-lg-9 clearfix">
+                                    一张身份证一天内购买<input class="input-one" type="number" min="0" v-model="ticketForm.sid_day_count" v-validate:sid_day_count="{required:true}" initial="off" @change="spliceBookingNotes"/>次，0表示不限次数，每日最多购买
+                                    <input type="number" min="0" class="input-one" v-model="ticketForm.sid_day_quantity" v-validate:sid_day_quantity="{required:true}" initial="off" @change="spliceBookingNotes"/>张，0表示不限张数
+                                    <label v-show="$checkSubForm.sid_day_count.required" for="contactMobile" class="error">必填字段</label>
+                                    <label v-show="$checkSubForm.sid_day_quantity.required" for="contactMobile" class="error">必填字段</label>
+                                </div>
+                            </li>
+                            <!--散客End-->
+                            <!--团队Start-->
+                            <li class="form-group form-group-top" v-if="ticketForm.ticket_flag == 5032">
+                                <label class="col-md-3 col-sm-3 col-lg-3 control-label">最低使用限制：</label>
+                                <div class="col-sm-9 col-md-8 col-lg-4">
+                                    最低使用<input class="input-one" class="form-control" type="number" min="0" maxlength="50" v-model="ticketForm.low_use_quantity">张,0表示不限制
+                                </div>
+                            </li>
+                            <li class="form-group form-group-top" v-if="ticketForm.ticket_flag == 5032">
+                                <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>最低购买数量：</label>
+                                <div class="col-sm-9 col-md-8 col-lg-4">
+                                    <input class="form-control" type="number" min="0" maxlength="50" v-model="ticketForm.min_buy_quantity" v-validate:min_buy_quantity="{required:true}" initial="off">
+                                </div>
+                                <div class="Prompt" v-show="$checkSubForm.min_buy_quantity.required" for="contactMobile"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请填写购买数量！</label></div>
+                            </li>
+                            <li v-if="ticketForm.ticket_flag == 5032">
+                                <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>购票时是否需要身份证：</label>
+                                <div class="col-md-3 col-sm-3 col-lg-2 clearfix">
+                                    <remote-sel :setting="realNameSetting" @change="spliceBookingNotes" :value.sync="ticketForm.real_name" v-validate:real_name="{required:true}" initial="off"></remote-sel>
+                                </div>
+                                <div class="Prompt" v-show="$checkSubForm.real_name.required" for="contactMobile"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请选择是否需要身份证！</label></div>
+                            </li>
+                            <!--团队End-->
+                            <li>
+                                <label class="col-md-3 col-sm-3 col-lg-3 control-label">是否允许超卖：</label>
+                                <div class="col-md-6 col-sm-6 col-lg-6 clearfix">
+                                    <label class="radio-inline">
+                                        <input type="radio" class="chekbox" value="5060" v-model="ticketForm.sale_rule_type"><b>不允许超卖</b>
+                                    </label>
+                                    <label class="radio-inline">
+                                        <input type="radio" class="chekbox" value="5061" v-model="ticketForm.sale_rule_type"><b>允许超卖</b>
+                                    </label>
+                                    <label class="radio-inline">
+                                        <input type="radio" class="chekbox" value="5062" v-model="ticketForm.sale_rule_type"><b>超卖需审核</b>
+                                    </label>
+                                    <label class="radio-inline">
+                                        <input type="radio" class="chekbox" value="5063" v-model="ticketForm.sale_rule_type"><b>全人工</b>
+                                    </label>
+                                </div>
+                            </li>
+                            <li>
+                                <label class="col-md-3 col-sm-3 col-lg-3 control-label">每单最高购买限制：</label>
+                                <div class="col-sm-6 col-md-6 col-lg-6">
+                                    最高购买<input name="name" class="input-one" type="number" min="0" maxlength="50" v-model="ticketForm.max_buy_quantity">张,0表示不限制
+                                </div>
+                            </li>
+                            <li>
+                                <label class="col-md-3 col-sm-3 col-lg-3 control-label">预订和使用时间限制：</label>
+                                <div class="col-sm-8 col-md-8 col-lg-8">
+                                    <label class="radio-inline">
+                                        <input type="radio" class="chekbox" value="5141" @change="spliceBookingNotes" v-model="ticketForm.booking_limit">
+                                        可当天预订，预订后<input class="input-one" type="number" min="0" v-model="ticketForm.use_hours_limit" @change="spliceBookingNotes"/>小时方可入园
+                                    </label>
+                                    <label v-show="$checkSubForm.use_hours_limit.required" for="contactMobile" class="error">必填字段</label>
+                                </div>
+                                <div v-if="ticketForm.booking_limit == 5141" style="display:none;">
+                                    <input type="hidden" v-model="ticketForm.use_hours_limit" v-validate:use_hours_limit="{required:true}" initial="off"/>
+                                </div>
+                            </li>
+                            <li>
+                                <label class="col-md-3 col-sm-3 col-lg-3 control-label"></label>
+                                <div class="col-sm-8 col-md-8 col-lg-8">
+                                    <label class="radio-inline">
+                                        <input type="radio" class="chekbox" value="5140" @change="spliceBookingNotes" v-model="ticketForm.booking_limit">
+                                        游玩前<input class="input-one" type="number" min="0" style="width:150px" v-model="ticketForm.booking_day_limit" @change="spliceBookingNotes"/>天
+                                        <div v-if="ticketForm.booking_limit == 5140" style="display:none;">
+                                            <input type="hidden" v-model="ticketForm.booking_day_limit" v-validate:booking_day_limit="{required:true}" initial="off"/>
+                                        </div>
+                                        <div class="Prompt prom-right" v-show="$checkSubForm.booking_day_limit.required" for="contactMobile" class="error"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请填写游玩天数！</label></div>
+                                        <input class="datainp wicon" id="allTime"  type="text" placeholder="格式为08:00"  @click="testShow('#allTime')" readonly>时:分之前预订
+                                        <!--<input class="input-one" style="width:150px" v-model="ticketForm.booking_time_limit" @change="spliceBookingNotes" placeholder="格式为08:00"/>-->
+                                        <div v-if="ticketForm.booking_limit == 5140" style="display:none;">
+                                            <input type="hidden" v-model="ticketForm.booking_time_limit" v-validate:booking_time_limit="{required:true}" initial="off"/>
+                                        </div>
+                                        <div class="Prompt prom-right" v-show="$checkSubForm.booking_time_limit.required" for="contactMobile"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请填写游玩时间！</label></div>
+                                    </label>
+                                </div>
+                            </li>
+                            <li>
+                                <label class="col-md-3 col-sm-3 col-lg-3 control-label">是否限购：</label>
+                                <div class="col-md-3 col-sm-3 col-lg-2 clearfix">
+                                    <label class="radio-inline">
+                                        <input type="radio" class="chekbox" value="5020" v-model="ticketForm.stock_limit" v-validate:stock_limit="{required:true}" initial="off"><b>是</b>
+                                    </label>
+                                </div>
+                                <div class="col-md-3 col-sm-3 col-lg-2 clearfix">
+                                    <label class="radio-inline">
+                                        <input type="radio" class="chekbox" value="5021" v-model="ticketForm.stock_limit" v-validate:stock_limit="{required:true}" initial="off"><b>否</b>
+                                    </label>
+                                    <label v-show="$checkSubForm.stockLimit.required" for="contactMobile" class="error">必填字段</label>
+                                </div>
+                            </li>
+                            <li v-if="ticketForm.stock_limit == 5020">
+                                <label class="col-md-3 col-sm-3 col-lg-3 control-label"></label>
+                                <div style="margin-left: 15px; float: left;">
+                                    总限购数量<input class="input-one" type="number" min="0" v-model="ticketForm.total_stock" v-validate:total_stock="{required:true}" initial="off"/>
+                                    <span class="Prompt" v-show="$checkSubForm.total_stock.required" for="contactMobile"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请填写数量！</label></span>
+                                </div>
+
+                            </li>
+                            <li v-if="ticketForm.stock_limit == 5020">
+                                <label class="col-md-3 col-sm-3 col-lg-3 control-label"></label>
+                                <datepicker :value.sync="ticketForm.buy_start_date" class="col-sm-2 col-lg-2" language="ch"></datepicker>
+                                <datepicker :value.sync="ticketForm.buy_end_date" class="col-sm-2 col-lg-2" language="ch"></datepicker>
+                            </li>
+                            <li>
+                                <label class="col-md-3 col-sm-3 col-lg-3 control-label">预订须知：</label>
+                                <div class="bs-example col-md-8 col-sm-8 col-lg-8 ">
+                                    <textarea rows="4" class="form-control valid" style="resize:none;border-bottom: 0px" v-model="ticketForm.booking_notes" v-validate:booking_notes="{required:true}" initial="off" disabled readonly></textarea>
+                                    <textarea rows="4" class="form-control valid" style="resize:none;top: 0px" v-model="ticketForm.booking_notes_extend"></textarea>
+                                    <em>说明：1、2、3、4点是默认生成的，根据前面的选项默认生成的须知，您可以再添加须知.</em>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="business-two">
+                        <div class="title clearfix">
+                            <h3>使用限制</h3>
+                            <em></em>
+                        </div>
+                        <ul>
+                            <li>
+                                <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>有效天数：</label>
+                                <div class="col-sm-8 col-md-8 col-lg-8">
+                                    <label class="radio-inline">
+                                        <input type="radio" class="chekbox" value="5081" @change="disableWeek" v-model="ticketForm.effective_type" v-validate:effective_type="{required:true}" initial="off">
+                                        预订游玩日起<input class="input-one" type="number" min="0" style="width:150px" v-model="ticketForm.effective_day" @change="disableWeek"/>
+                                        天内有效
+
+                                    </label>
+                                    <div class="Prompt" v-show="$checkSubForm.effective_day.required" for="contactMobile"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请选择游玩日期！</label></div>
+                                </div>
+                            </li>
+                            <li>
+                                <label class="col-md-3 col-sm-3 col-lg-3 control-label"></label>
+                                <div v-if="ticketForm.effective_type == 5081" style="display:none;">
+                                    <input type="hidden" v-model="ticketForm.effective_day" v-validate:effective_day="{required:true}" initial="off"/>
+                                </div>
+                                <div class="col-sm-8 col-md-8 col-lg-8 ">
+                                    <input type="radio" class="chekbox" value="5082" @change="disableWeek" v-model="ticketForm.effective_type" v-validate:effective_type="{required:true}" initial="off">
+                                    <datepicker :value.sync="ticketForm.effective_start_date" class="col-sm-3 col-lg-3" language="ch"></datepicker>
+                                    <datepicker :value.sync="ticketForm.effective_end_date" class="col-sm-3 col-lg-3" language="ch"></datepicker>
+                                </div>
+                            </li>
+                            <li>
+                                <label class="col-md-3 col-sm-3 col-lg-3 control-label">禁用日期：</label>
+                                <div class="col-sm-9 col-md-9 col-lg-9 clearfix">
+                                    <label class="radio-inline" style="padding-left: 0px;">
+                                        <input type="checkbox" class="chekbox" value="1" v-model="ticketForm.disable_week" @change="disableWeek"><b>星期一</b>
+                                    </label>
+                                    <label class="radio-inline" style="padding-left: 0px;">
+                                        <input type="checkbox" class="chekbox" value="2" v-model="ticketForm.disable_week" @change="disableWeek"><b>星期二</b>
+                                    </label>
+                                    <label class="radio-inline" style="padding-left: 0px;">
+                                        <input type="checkbox" class="chekbox" value="3" v-model="ticketForm.disable_week" @change="disableWeek"><b>星期三</b>
+                                    </label>
+                                    <label class="radio-inline" style="padding-left: 0px;">
+                                        <input type="checkbox" class="chekbox" value="4" v-model="ticketForm.disable_week" @change="disableWeek"><b>星期四</b>
+                                    </label>
+                                    <label class="radio-inline" style="padding-left: 0px;">
+                                        <input type="checkbox" class="chekbox" value="5" v-model="ticketForm.disable_week" @change="disableWeek"><b>星期五</b>
+                                    </label>
+                                    <label class="radio-inline" style="padding-left: 0px;">
+                                        <input type="checkbox" class="chekbox" value="6" v-model="ticketForm.disable_week" @change="disableWeek"><b>星期六</b>
+                                    </label>
+                                    <label class="radio-inline" style="padding-left: 0px;">
+                                        <input type="checkbox" class="chekbox" value="7" v-model="ticketForm.disable_week" @change="disableWeek"><b>星期天</b>
+                                    </label>
+                                </div>
+                            </li>
+                            <li>
+                                <label class="col-md-3 col-sm-3 col-lg-3 control-label"></label>
+                                <div class="col-sm-8 col-md-8 col-lg-8" style=" padding-left:0px;">
+                                    <div class="col-sm-6 col-md-6 col-lg-6">
+                                        <textarea rows="5" class="form-control valid" style="resize:none" v-model="DisableDate"></textarea>
+                                    </div>
+                                    <div class="col-md-6 col-sm-6 col-lg-6">
+                                        <datepicker :value.sync="disable_date" class="col-sm-4 col-lg-4" language="ch"></datepicker>
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <label class="col-md-3 col-sm-3 col-lg-3 control-label">使用须知：</label>
+                                <div class="bs-example  col-md-8 col-sm-8 col-lg-8 ">
+                                    <textarea rows="5" class="form-control valid" style="resize:none" v-model="ticketForm.use_notes" v-validate:use_notes="{required:true}" initial="off"  disabled readonly></textarea>
+                                    <textarea rows="4" class="form-control valid" style="resize:none;top: 0px" v-model="ticketForm.use_notes_extend"></textarea>
+                                    <em>说明：1、2、3点是默认生成的，根据前面的选项默认生成的须知，您可以再添加须知.</em>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="business-two clearfix">
+                        <div class="title">
+                            <h3>退货规则</h3>
+                            <em></em>
+                        </div>
+                        <ul>
+                            <li>
+                                <label class="col-md-3 col-sm-3 col-lg-3 control-label">退货规则：</label>
+                                <div class="col-sm-8 col-md-8 col-lg-6 clearfix">
+                                    <remote-sel :setting="refundSetting" :value.sync="ticketForm.saler_refund_rule" @change="refundRule" v-validate:saler_refund_rule="{required:true}" initial="off"></remote-sel>
+
+                                </div>
+                                <div class="Prompt" v-show="$checkSubForm.saler_refund_rule.required" for="contactMobile"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请选择退货规则！</label></div>
+                                <button class="btn btn-success" type="button" @click="addRefund()">新增退货规则</button>
+                                <button class="btn btn-success" type="button" @click="refreshRefund()">刷新</button>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="business-two clearfix">
+                        <div class="title">
+                            <em></em><h3>其它信息</h3>
+                        </div>
+                        <ul>
+                            <li>
+                                <label class="col-md-3 col-sm-3 col-lg-3 control-label">短信凭证内容：</label>
+                                <div class="bs-example col-md-8 col-sm-8 col-lg-8 clearfix">
+                                    <textarea class="form-control" rows="6" v-model="ticketForm.voucher_msg"></textarea>
+                                </div>
+                            </li>
+                            <li>
+                                <label class="col-md-3 col-sm-3 col-lg-3 control-label">打印小票内容：</label>
+                                <div class="bs-example col-md-8 col-sm-8 col-lg-8 clearfix">
+                                    <textarea class="form-control" rows="6" v-model="ticketForm.ticket_msg"></textarea>
+                                </div>
+                            </li>
+                            <li>
+                                <label class="col-md-3 col-sm-3 col-lg-3 control-label" style="color:red;font-size: 15px">标签说明：</label>
+                                <div class="col-md-8 col-sm-8 col-lg-8 form-control-static clearfix" style="color:red;font-size: 15px">
+                                    支持这些标签,{标题},{份数},{验证码},{有效期},{生效日期},{有效年月日}当您传入这些标签后,系统将在发送此信息时用相对的内容来替换，短信内容不宜过长，超过65字时将按65字每条收费(以最终收到的短信字数为准)!
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="business-two clearfix">
+                        <div class="Button-box" v-if="ticketForm.disabled == false">
+                            <button class="btn" type="submit" @click="upload()">提交</button>
+                        </div>
+                        <div class="Button-box" v-if="ticketForm.disabled == true">
+                            <button class="btn btn-success" type="submit" @click="upload()" disabled>提交</button>
+                        </div>
+                    </div>
+                </form>
+            </validator>
+        </div>
+        <!-- 产品信息End -->
+    </div>
+</div>
+<script type="text/javascript" src="/voucher/api/local/client/system/load_config"></script>
+<script type="text/javascript" src="/voucher/static/script/local/require/require.js"></script>
+<script type="text/javascript" src="/voucher/static/script/local/require_config.js"></script>
+<script type="text/javascript" src="/voucher/static/script/local/view/prod/addSubView.js"></script>
+</body>
+</html>

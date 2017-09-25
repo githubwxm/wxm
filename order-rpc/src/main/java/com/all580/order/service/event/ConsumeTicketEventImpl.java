@@ -7,6 +7,7 @@ import com.all580.order.dao.OrderClearanceSerialMapper;
 import com.all580.order.dao.OrderItemMapper;
 import com.all580.order.entity.OrderClearanceSerial;
 import com.all580.order.entity.OrderItem;
+import com.all580.order.manager.BookingOrderManager;
 import com.framework.common.Result;
 import com.framework.common.outside.JobAspect;
 import com.framework.common.outside.JobTask;
@@ -29,6 +30,8 @@ import java.util.Map;
 public class ConsumeTicketEventImpl implements ConsumeTicketEvent {
     @Autowired
     private OrderItemMapper orderItemMapper;
+    @Autowired
+    private BookingOrderManager bookingOrderManager;
     @Autowired
     private OrderClearanceSerialMapper orderClearanceSerialMapper;
 
@@ -56,6 +59,8 @@ public class ConsumeTicketEventImpl implements ConsumeTicketEvent {
             Map<String, String> jobParams = new HashMap<>();
             jobParams.put("sn", serial.getSerial_no());
             jobManager.addJob(OrderConstant.Actions.CONSUME_SPLIT_ACCOUNT, Collections.singleton(jobParams));
+
+            bookingOrderManager.dealPackageOrderItemConSume(orderItem);
         }
         return new Result(true);
     }

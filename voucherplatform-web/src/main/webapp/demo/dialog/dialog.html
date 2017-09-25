@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <header-title></header-title>
+  <link href="/voucher/static/css/style.css" rel="stylesheet">
+</head>
+<body vtag="root">
+<div class="panel panel-success" v-if="componentid__ == undefined">
+  <div class="panel-heading">
+    <h3 class="panel-title">
+      <i class="fa fa-user"></i>dialog</h3>
+  </div>
+</div>
+<div>
+  <input type="text" v-model="result"/>
+  <input type="button" value="确定" @click="succ"/>
+  <input type="button" value="取消" @click="cancel"/>
+  <input type="button" value="再弹一个" @click="cc"/>
+</div>
+<script type="text/javascript" src="/voucher/api/local/client/system/load_config"></script>
+<script type="text/javascript" src="/voucher/static/script/local/require/require.js"></script>
+<script type="text/javascript" src="/voucher/static/script/local/require_config.js"></script>
+<script>
+  var rootVue;
+  require_js_file([],function(Vue,fnr){
+    rootVue = new Vue({
+      el: '[vtag=root]',
+      data:{
+        fnr:fnr,
+        componentid__:'',
+        parent__:'',
+        result:''
+      },
+      ready:function(){
+        this.componentid__ = fnr.getQueryString('componentid__');
+        this.parent__ = fnr.getQueryString('parent__');
+      },
+      methods: {
+        succ:function(){
+          fnr.iDialogSucc(this.componentid__,this.result);
+        },
+        cancel:function(){
+          fnr.iDialogCancel(this.componentid__);
+        },
+        cc:function(){
+          var self = this;
+          var params = {title:'demo',url:'http://baidu.com',parent:this.parent__};
+          fnr.iDialog(params);
+        }
+      }
+    });
+  });
+</script>
+</body>
+</html>
