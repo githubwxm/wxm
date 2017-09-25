@@ -521,6 +521,9 @@ public class SmsManager {
                     Date expiryDate = orderItemDetailMapper.selectByItemId(orderItem.getId()).get(0).getExpiry_date();
                     map.put(val, DateFormatUtils.parseDateToDatetimeString(expiryDate));
                     break;
+                case "${buy_ep}":
+                    map.put(val, order.getBuy_ep_name());
+                    break;
             }
         }
         return map;
