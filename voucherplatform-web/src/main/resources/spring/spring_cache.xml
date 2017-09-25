@@ -11,13 +11,19 @@
           http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd"
 	   default-autowire="byName">
 
+	<bean id="defaultCookieSerializer" class="org.springframework.session.web.http.DefaultCookieSerializer">
+		<!--<property name="domainName" value=".example.com"/>-->
+		<property name="cookieName" value="JSESSIONID"/>
+		<!--<property name="domainNamePattern" value="^.+?\\.(\\w+\\.[a-z]+)$"/>-->
+	</bean>
+
 	<bean id="redisHttpSessionConfiguration"
 		  class="org.springframework.session.data.redis.config.annotation.web.http.RedisHttpSessionConfiguration">
 		<property name="maxInactiveIntervalInSeconds" value="1800"/>
+		<property name="cookieSerializer" ref="defaultCookieSerializer"/>
 	</bean>
 
 	<bean id="jedisConnectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
-		<!--<constructor-arg index="0" type="redis.clients.jedis.JedisPoolConfig" ref="jedisPoolConfig" />-->
 		<property name="poolConfig" ref="jedisPoolConfig" />
 		<property name="hostName" value="${redis.host}" />
 		<property name="port" value="${redis.port}" />
@@ -36,7 +42,6 @@
 	</bean>
 
 	<bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate">
-
 		<property name="connectionFactory" ref="jedisConnectionFactory" />
 		<property name="keySerializer">
 			<bean class="org.springframework.data.redis.serializer.StringRedisSerializer"/>
@@ -45,14 +50,6 @@
 			<bean class="org.springframework.data.redis.serializer.JdkSerializationRedisSerializer"/>
 		</property>
 	</bean>
-
-	<!--<bean id="jedisPool" class="redis.clients.jedis.JedisPool">-->
-		<!--<constructor-arg index="0" ref="jedisPoolConfig"/>-->
-		<!--<constructor-arg index="1" value="${redis.host}"/>-->
-		<!--<constructor-arg index="2" value="${redis.port}" type="int"/>-->
-		<!--<constructor-arg index="3" value="${redis.timeout}" type="int"/>-->
-		<!--<constructor-arg index="4" value="${redis.password}"/>-->
-	<!--</bean>-->
 
 	<bean id="redisUtils" class="com.framework.common.io.cache.redis.RedisUtils">
 		<constructor-arg index="0" value="${redis.url}" />
