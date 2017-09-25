@@ -77,6 +77,7 @@ public class CreateOrderManager {
     private String invalidTime;
     private String validWeek;
     private String invalidDate;
+    private String channel;
     private String payTime;
     private String sms;
     private List<Order> orderList;
@@ -126,7 +127,7 @@ public class CreateOrderManager {
         payTime = CommonUtil.objectParseString(map.get("payTime"));
         sms = CommonUtil.objectParseString(map.get("sms"));
         sms = replaceSmsTemplate();
-
+        channel=CommonUtil.objectParseString(map.get("channel"));
         if (StringUtils.isEmpty(validWeek)) {
             validWeek = "1111111";
         }
@@ -165,7 +166,7 @@ public class CreateOrderManager {
     }
 
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class}, propagation = Propagation.REQUIRES_NEW)
-    private Integer[] saveOrder() {
+    public Integer[] saveOrder() {
         Integer[] orderIdList = new Integer[orderList.size()];
         for (int i = 0; i < orderList.size(); i++) {
             orderMapper.insertSelective(orderList.get(i));
@@ -272,6 +273,7 @@ public class CreateOrderManager {
         voucherImgUrl= UrlUtils.shortUri(voucherImgUrl);
         order.setImgUrl(voucherImgUrl);
         order.setSms(sms);
+        order.setChannel(channel);
         if (template != null) {
             order.setPrintText(template.getPrintText());
         }

@@ -112,6 +112,8 @@ public class SendGroupTicketAction extends BasicSyncDataEvent implements JobRunn
         sendGroupTicketParams.setCity(group.getCity());
         sendGroupTicketParams.setArea(group.getArea());
         sendGroupTicketParams.setAddress(group.getAddress());
+        sendGroupTicketParams.setChannelName(order.getBuy_ep_name());
+        sendGroupTicketParams.setChannelCode(String.valueOf(order.getBuy_ep_id()));
 
         sendGroupTicketParams.setPrice(orderItem.getSale_amount() / orderItem.getQuantity());
         sendGroupTicketParams.setQuantity(orderItem.getQuantity());

@@ -22,6 +22,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -70,6 +71,8 @@ public class SendTicketAction extends BasicSyncDataEvent implements JobRunner {
             log.warn("出票任务,该订单不是散客订单");
             throw new Exception("该订单不是散客订单");
         }
+        Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
+        Assert.notNull(order, "订单不存在");
         if (orderItem.getStatus() == OrderConstant.OrderItemStatus.SEND) {
             List<MaSendResponse> maSendResponses = maSendResponseMapper.selectByOrderItemId(orderItem.getId());
             if (maSendResponses != null) {
@@ -99,6 +102,8 @@ public class SendTicketAction extends BasicSyncDataEvent implements JobRunner {
         sendTicketParams.setDisableWeek(detail.getDisable_week());
         sendTicketParams.setDisableDate(detail.getDisable_day());
         sendTicketParams.setMaProductId(orderItem.getMa_product_id());
+        sendTicketParams.setChannelName(order.getBuy_ep_name());
+        sendTicketParams.setChannelCode(String.valueOf(order.getBuy_ep_id()));
         // TODO: 2016/11/3 出票发送短信
         sendTicketParams.setSendSms(false);
         sendTicketParams.setSms(orderItem.getVoucher_msg());
@@ -125,7 +130,6 @@ public class SendTicketAction extends BasicSyncDataEvent implements JobRunner {
             throw new Exception("出票失败:" + r.getError());
         }
 
-        Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
         SyncAccess syncAccess = getAccessKeys(order);
         syncAccess.getDataMap()
                 .add("t_order_item", orderItemMapper.selectByPrimaryKey(orderItem.getId()));
