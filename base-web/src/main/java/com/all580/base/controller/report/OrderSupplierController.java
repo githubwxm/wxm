@@ -30,12 +30,15 @@ public class OrderSupplierController extends BaseController {
     public Result supplierAnalyze( Integer ep_id,
                                              @RequestParam("type") Integer type,
                                              @RequestParam("start") String start,
-                                             @RequestParam("end") String end) {
+                                             @RequestParam("end") String end,
+                                   Integer record_start, Integer record_count) {
         Map<String,Object> map = new HashMap<>();
         map.put("type",type);
         map.put("ep_id",ep_id);
         map.put("start",start);
         map.put("end",end);
+        map.put("record_start", record_start);
+        map.put("record_count", record_count);
         return epOrderService.supplierAnalyze(map);
     }
 
