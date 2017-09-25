@@ -78,6 +78,7 @@ public class CreateGroupOrderManager {
             log.warn("订单号为{}的订单已存在", orderId);
             throw new Exception("订单已处理！");
         }
+        groupOrder.setChannel(CommonUtil.objectParseString(map.get("channel")));
         groupOrder.setFormAreaCode(CommonUtil.objectParseString(map.get("formAreaCode")));
         String  formAddr = CommonUtil.objectParseString(map.get("formAddr"));
         groupOrder.setFormAddr(StringUtils.isEmpty(formAddr)?groupOrder.getFormAreaCode():formAddr);
@@ -206,7 +207,7 @@ public class CreateGroupOrderManager {
     }
 
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class}, propagation = Propagation.REQUIRES_NEW)
-    private Integer saveOrder() {
+    public Integer saveOrder() {
         orderMapper.insertSelective(groupOrder);
 
         for (GroupVisitor groupVisitor : visitorList) {

@@ -145,6 +145,17 @@ public class GroupOrder implements Serializable {
      */
     private String voucherNumber;
 
+    public String getChannel() {
+        return channel;
+    }
+
+    public void setChannel(String channel) {
+        this.channel = channel;
+    }
+
+    private String channel;
+
+
     /**
      *  ,所属表字段为t_group_order.imgUrl
      */
