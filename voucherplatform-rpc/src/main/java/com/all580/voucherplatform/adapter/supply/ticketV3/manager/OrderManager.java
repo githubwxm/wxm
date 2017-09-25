@@ -63,6 +63,7 @@ public class OrderManager {
             mapOrder.put("mobile", order.getMobile());
             mapOrder.put("idNumber", order.getIdNumber());
             mapOrder.put("number", order.getNumber());
+            mapOrder.put("channel",order.getChannel());
             mapList.add(mapOrder);
         }
         return mapList;

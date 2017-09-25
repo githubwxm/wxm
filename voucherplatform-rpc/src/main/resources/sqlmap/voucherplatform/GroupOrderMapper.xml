@@ -39,6 +39,7 @@
         <result column="longUrl" jdbcType="VARCHAR" property="longUrl"/>
         <result column="status" jdbcType="INTEGER" property="status"/>
         <result column="totalNumber" jdbcType="INTEGER" property="totalNumber"/>
+        <result column="totalNumber" jdbcType="VARCHAR" property="channel"/>
     </resultMap>
     <sql id="Base_Column_List">
         <!--
@@ -50,7 +51,7 @@
         `platformProdId`, `supplyOrderId`, `supplyProdId`, `formAreaCode`, `formAddr`, `travelName`,
         `manager`, `groupNumber`, `guideName`, `guideIdNumber`, `guideMobile`, `payment`,
         `payTime`, `sendType`, `validTime`, `invalidTime`, `activateNum`, `activateStatus`,
-        `price`, `number`, `createTime`, `voucherNumber`, `imgUrl`, `status`,`totalNumber`
+        `price`, `number`, `createTime`, `voucherNumber`, `imgUrl`, `status`,`totalNumber`,`channel`
     </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         <!--
@@ -90,7 +91,7 @@
         `sendType`, `validTime`, `invalidTime`,
         `activateNum`, `activateStatus`, `price`,
         `number`, `createTime`, `voucherNumber`,
-        `imgUrl`,`longUrl`, `status`)
+        `imgUrl`,`longUrl`, `status`,`channel`)
         values (#{orderCode,jdbcType=VARCHAR}, #{platform_id,jdbcType=INTEGER}, #{supply_id,jdbcType=INTEGER},
         #{ticketsys_id,jdbcType=INTEGER}, #{platformOrderId,jdbcType=VARCHAR}, #{platformProdId,jdbcType=INTEGER},
         #{supplyOrderId,jdbcType=VARCHAR}, #{supplyProdId,jdbcType=INTEGER}, #{formAreaCode,jdbcType=VARCHAR},
@@ -100,7 +101,7 @@
         #{sendType,jdbcType=INTEGER}, #{validTime,jdbcType=TIMESTAMP}, #{invalidTime,jdbcType=TIMESTAMP},
         #{activateNum,jdbcType=INTEGER}, #{activateStatus,jdbcType=BIT}, #{price,jdbcType=DECIMAL},
         #{number,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{voucherNumber,jdbcType=VARCHAR},
-        #{imgUrl,jdbcType=VARCHAR}, #{longUrl,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER})
+        #{imgUrl,jdbcType=VARCHAR}, #{longUrl,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, #{channel,jdbcType=VARCHAR})
     </insert>
     <insert id="insertSelective" parameterType="com.all580.voucherplatform.entity.GroupOrder">
         <!--
@@ -203,6 +204,9 @@
             <if test="status != null">
                 `status`,
             </if>
+            <if test="channel != null">
+                `channel`,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="orderCode != null">
@@ -294,6 +298,9 @@
             </if>
             <if test="status != null">
                 #{status,jdbcType=INTEGER},
+            </if>
+            <if test="channel != null">
+                #{channel,jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>
