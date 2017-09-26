@@ -12,16 +12,20 @@ import com.all580.voucherplatform.utils.voucher.VoucherUrlGenerate;
 import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.lang.UUIDGenerator;
-import com.framework.common.net.HttpUtils;
 import com.framework.common.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -178,7 +182,14 @@ public class CreateGroupOrderManager {
         dataUrl = CommonUtil.objectParseString(map.get("dataUrl"));
         List<Map> visitorList = null;
         if (!StringUtils.isEmpty(dataUrl)) {
-            String content = HttpUtils.get(dataUrl, null, "utf-8");
+            CloseableHttpClient httpClient = HttpClientBuilder.create().build();
+            HttpGet httpGet = new HttpGet(dataUrl);
+            String content = null;
+            try {
+                content = IOUtils.toString(httpClient.execute(httpGet).getEntity().getContent());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             visitorList = JsonUtils.json2List(content);
         } else {
             visitorList = (List<Map>) map.get("visitors");
