@@ -39,7 +39,7 @@
         <result column="longUrl" jdbcType="VARCHAR" property="longUrl"/>
         <result column="status" jdbcType="INTEGER" property="status"/>
         <result column="totalNumber" jdbcType="INTEGER" property="totalNumber"/>
-        <result column="totalNumber" jdbcType="VARCHAR" property="channel"/>
+        <result column="channel" jdbcType="VARCHAR" property="channel"/>
     </resultMap>
     <sql id="Base_Column_List">
         <!--

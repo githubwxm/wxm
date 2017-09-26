@@ -31,7 +31,11 @@ require_js_file(['vueValidator'], function (Vue, fnr, validator) {
                     fnr.alertErr('要修改的密码和确认密码不一致！');
                     return;
                 }
+<<<<<<< HEAD
                 var deferred = fnr.ajaxJson('api/user/updatePassword', params);
+=======
+                var deferred = fnr.ajaxJson('/voucher/api/user/updatePassword', params);
+>>>>>>> fix_master
                 deferred.then(function (result) {
                     var resp = result.json();
                     if (resp.code == 200)

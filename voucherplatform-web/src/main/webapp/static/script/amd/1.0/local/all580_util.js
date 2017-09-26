@@ -295,7 +295,11 @@ define(['vue','vueResource'],function(Vue,vueResource){
             fnr.closeLoading(loading);
             var resp = result.json();
             if(resp.code == 99){
+<<<<<<< HEAD
                 window.top.location = '/error/403.html';
+=======
+                window.top.location = '/voucher/error/403.html';
+>>>>>>> fix_master
                 return;
             }
             if(resp.code == 98){
@@ -355,7 +359,11 @@ define(['vue','vueResource'],function(Vue,vueResource){
         template:
         '<div style="width:100%; height:100%; position:fixed; left:0px;top:0px;z-index: 99999998">' +
         '<div style="position:absolute; left:50%; top:50%; margin-left:-50px; margin-top:-50px; border:1px solid #e6e6e6; border-radius:5px;">' +
+<<<<<<< HEAD
         '<img src="../static/images/2222023P4-12.gif" />' +
+=======
+        '<img src="/voucher/static/images/2222023P4-12.gif" />' +
+>>>>>>> fix_master
         '</div>' +
         '</div>',
         methods:{
@@ -1077,7 +1085,11 @@ define(['vue','vueResource'],function(Vue,vueResource){
     Vue.component('input-sel',{
         template: '<div style="position: relative;float:left;width: 100%;">' +
                 '<input class="form-control" ctag="input" @focus="inputFocus" @blur="inputBlur" @input="filterOptions"/>' +
+<<<<<<< HEAD
                 '<span style="position:absolute;right: 0;top:0;height:100%;width:18px;background:#f0f0f0;" @click="showOptions"><img src="../static/style/img/sjx.png" style="margin-top:14px;margin-left:4px;"></span>' +
+=======
+                '<span style="position:absolute;right: 0;top:0;height:100%;width:18px;background:#f0f0f0;" @click="showOptions"><img src="/voucher/static/style/img/sjx.png" style="margin-top:14px;margin-left:4px;"></span>' +
+>>>>>>> fix_master
                 '<select class="form-control" style="position: absolute;z-index: 100"' +
                 'id="{{ setting.tags.id }}" name="{{ setting.tags.name }}"' +
                 'ctag="select" v-model="value" v-show="show" v-bind:size="size" @focus="selectFocus" @blur="selectBlur" @change="inputText">' +
@@ -1207,7 +1219,11 @@ define(['vue','vueResource'],function(Vue,vueResource){
             '<div>'+
             '<div class="uploaded_container" v-for="(idx,item) in list"><div class="uploaded">' +
             '<img v-bind:src="item.isNew == true?item.link:\''+global_config.resBaseUrl+'\'+item.link" @click="add(idx)"/>' +
+<<<<<<< HEAD
             '<p @click.stop="remove(idx)"><img src="../static/style/img/gb.png" /></p>' +
+=======
+            '<p @click.stop="remove(idx)"><img src="/voucher/static/style/img/gb.png" /></p>' +
+>>>>>>> fix_master
             '</div></div>' +
             '<span v-show="list.length < setting.amount" @click="add(\'\')"><b>格式：jpg,png不大于{{size}}M</b></span><input type="file" style="display: none;" @change="fileSelected"/>' +
             '</div>',

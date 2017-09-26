@@ -2,8 +2,13 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <header-title></header-title>
+<<<<<<< HEAD
     <link href="../../static/css/style.css" rel="stylesheet">
     <link type="text/css" rel="stylesheet" href="../../static/script/amd/1.0/jedate/skin/jedate.css">
+=======
+    <link href="/voucher/static/css/style.css" rel="stylesheet">
+    <link type="text/css" rel="stylesheet" href="/voucher/static/script/amd/1.0/jedate/skin/jedate.css">
+>>>>>>> fix_master
     <style>
         .bodys { padding: 50px 0 0 50px; }
         .datainp { width: 130px; height: 30px; border: 1px #A5D2EC solid; font-size: 15px}
@@ -32,7 +37,11 @@
                             <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>票据名称：</label>
                             <div class="col-sm-9 col-md-8 col-lg-6">
                                 <input name="name" class="form-control" type="text" maxlength="50" v-model="subFromData.name" v-validate:name="{required:true}" initial="off">
+<<<<<<< HEAD
                                 <div v-show="$checkSubForm.name.required" for="contactMobile"><img src="../../static/style/img/baocuo.png"><label class="error">请填写票据名称！</label></div>
+=======
+                                <div v-show="$checkSubForm.name.required" for="contactMobile"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请填写票据名称！</label></div>
+>>>>>>> fix_master
                                 <div class="label-box btn-success">{{subFromData.ticket_dict_name}}</div> <div class="label-box btn-blue">{{subFromData.ticket_flag_name}}</div>
                                 <div class="label-box btn-orange">{{subFromData.pay_type_name}}</div>
                             </div>
@@ -42,35 +51,55 @@
                             <div class="col-sm-9 col-md-8 col-lg-6">
                                 <input name="name" class="form-control" type="number" min="0.00" maxlength="50" v-model="subFromData.market_price" v-validate:market_price="{required:true}" initial="off">
                             </div>
+<<<<<<< HEAD
                             <div v-show="$checkSubForm.market_price.required" for="contactMobile"><img src="../../static/style/img/baocuo.png"><label class="error">请填写市场价！</label> </div>
+=======
+                            <div v-show="$checkSubForm.market_price.required" for="contactMobile"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请填写市场价！</label> </div>
+>>>>>>> fix_master
                         </li>
                         <li>
                             <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>限制最低售价：</label>
                             <div class="col-sm-9 col-md-8 col-lg-6">
                                 <input name="name" class="form-control" type="number" min="0.00" maxlength="50" v-model="subFromData.min_sell_price" v-validate:min_sell_price="{required:true}" initial="off">
                             </div>
+<<<<<<< HEAD
                             <div v-show="$checkSubForm.min_sell_price.required" for="contactMobile" class="error"><img src="../../static/style/img/baocuo.png"><label class="error">请填写最低售价！</label> </div>
+=======
+                            <div v-show="$checkSubForm.min_sell_price.required" for="contactMobile" class="error"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请填写最低售价！</label> </div>
+>>>>>>> fix_master
                         </li>
                         <li>
                             <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>结算价：</label>
                             <div class="col-sm-9 col-md-8 col-lg-6">
                                 <input name="name" class="form-control" type="number" min="0.00" maxlength="50" v-model="subFromData.settle_price" v-validate:settle_price="{required:true}" initial="off">
                             </div>
+<<<<<<< HEAD
                             <div v-show="$checkSubForm.settle_price.required" for="contactMobile"><img src="../../static/style/img/baocuo.png"><label class="error">请填写结算价！</label></div>
+=======
+                            <div v-show="$checkSubForm.settle_price.required" for="contactMobile"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请填写结算价！</label></div>
+>>>>>>> fix_master
                         </li>
                         <!--<li>
                             <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>发码公司：</label>
                             <div class="col-sm-3 col-md-3 col-lg-6">
                                 <remote-sel :setting="maTypeSetting" :value.sync="subFromData.ep_ma_id" v-validate:ep_ma_id="{required:true}" initial="off"></remote-sel>
                             </div>
+<<<<<<< HEAD
                             <div v-show="$checkSubForm.ep_ma_id.required" for="contactMobile"><img src="../../static/style/img/baocuo.png"><label class="error">请选择发码公司！</label></div>
+=======
+                            <div v-show="$checkSubForm.ep_ma_id.required" for="contactMobile"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请选择发码公司！</label></div>
+>>>>>>> fix_master
                         </li>
                         <li>
                             <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>票务产品：</label>
                             <div class="col-sm-3 col-md-3 col-lg-6">
                                 <remote-sel :setting="maProductTypeSetting" :value.sync="subFromData.ma_product_id" v-validate:ma_product_id="{required:true}" initial="off"></remote-sel>
                             </div>
+<<<<<<< HEAD
                             <div v-show="$checkSubForm.ma_product_id.required" for="contactMobile"><img src="../../static/style/img/baocuo.png"><label class="error">请选择票务产品！</label></div>
+=======
+                            <div v-show="$checkSubForm.ma_product_id.required" for="contactMobile"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请选择票务产品！</label></div>
+>>>>>>> fix_master
                         </li>-->
                         <li>
                             <label class="col-md-3 col-sm-3 col-lg-3 control-label">票据图片：</label>
@@ -151,13 +180,21 @@
                                         <div v-if="subFromData.booking_limit == 5140" style="display:none;">
                                             <input type="hidden" v-model="subFromData.booking_day_limit" v-validate:booking_day_limit="{required:true}" initial="off"/>
                                         </div>
+<<<<<<< HEAD
                                         <div class="Prompt prom-right" v-show="$checkSubForm.booking_day_limit.required" for="contactMobile" class="error"><img src="../../static/style/img/baocuo.png"><label class="error">请填写游玩天数！</label></div>
+=======
+                                        <div class="Prompt prom-right" v-show="$checkSubForm.booking_day_limit.required" for="contactMobile" class="error"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请填写游玩天数！</label></div>
+>>>>>>> fix_master
                                         <input class="datainp wicon" id="visitor"  type="text" placeholder="格式为08:00" @click="testShow('#visitor')" readonly>时:分之前预订
                                         <!--<input class="input-one" style="width:150px" v-model="subFromData.booking_time_limit" @change="bookingNotes" placeholder="格式为08:00"/>-->
                                         <div v-if="subFromData.booking_limit == 5140" style="display:none;">
                                             <input type="hidden" v-model="subFromData.booking_time_limit" v-validate:booking_time_limit="{required:true}" initial="off"/>
                                         </div>
+<<<<<<< HEAD
                                         <div class="Prompt prom-right" v-show="$checkSubForm.booking_time_limit.required" for="contactMobile"><img src="../../static/style/img/baocuo.png"><label class="error">请填写游玩时间！</label></div>
+=======
+                                        <div class="Prompt prom-right" v-show="$checkSubForm.booking_time_limit.required" for="contactMobile"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请填写游玩时间！</label></div>
+>>>>>>> fix_master
                                     </label>
                                 </div>
                             </li>
@@ -283,7 +320,11 @@
                                 <div class="col-sm-8 col-md-8 col-lg-6 clearfix">
                                     <remote-sel :setting="refundSetting" :value.sync="subFromData.saler_refund_rule" @change="refundRule" v-validate:cust_refund_rule="{required:true}" initial="off"></remote-sel>
                                 </div>
+<<<<<<< HEAD
                                 <div v-show="$checkSubForm.cust_refund_rule.required" for="contactMobile"><img src="../../static/style/img/baocuo.png"><label class="error">请选择退货规则！</label></div>
+=======
+                                <div v-show="$checkSubForm.cust_refund_rule.required" for="contactMobile"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请选择退货规则！</label></div>
+>>>>>>> fix_master
                             </li>
                         </ul>
                     </div>
@@ -325,9 +366,16 @@
         </div>
     </div>
 </div>
+<<<<<<< HEAD
 <script type="text/javascript" src="../api/local/client/system/load_config"></script>
 <script type="text/javascript" src="../../static/script/local/require/require.js"></script>
 <script type="text/javascript" src="../../static/script/local/require_config.js"></script>
 <script type="text/javascript" src="../../static/script/local/view/prod/supplierProd/addSubView.js"></script>
+=======
+<script type="text/javascript" src="/voucher/api/local/client/system/load_config"></script>
+<script type="text/javascript" src="/voucher/static/script/local/require/require.js"></script>
+<script type="text/javascript" src="/voucher/static/script/local/require_config.js"></script>
+<script type="text/javascript" src="/voucher/static/script/local/view/prod/supplierProd/addSubView.js"></script>
+>>>>>>> fix_master
 </body>
 </html>

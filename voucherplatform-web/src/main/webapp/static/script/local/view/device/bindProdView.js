@@ -14,7 +14,11 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
             param.groupId = self.$parent.queryFormData.groupId;
             param.list = new Array();
             param.list.push({prodId: prodId, status: status});
+<<<<<<< HEAD
             var defrend = fnr.ajaxJson("../api/device/setProd", param);
+=======
+            var defrend = fnr.ajaxJson("/voucher/api/device/setProd", param);
+>>>>>>> fix_master
             defrend.then(function (result) {
                 var resp = result.json();
                 if (resp.code == 200) {
@@ -31,7 +35,11 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
                 //page:{record_count:20},
                 remote: {
                     link: function (params, options) {
+<<<<<<< HEAD
                         return fnr.ajaxJson("../api/device/getProd", params, options);
+=======
+                        return fnr.ajaxJson("/voucher/api/device/getProd", params, options);
+>>>>>>> fix_master
                     },
                     options: {method: 'GET', alertMessage: 0},
                     //isLoadOnPageInit: false
@@ -53,7 +61,11 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
                 var self = this;
                 var param = {};
                 param.groupId = self.groupId;
+<<<<<<< HEAD
                 var defrend = fnr.ajaxJson("../api/device/getProd", param, {method: "GET"});
+=======
+                var defrend = fnr.ajaxJson("/voucher/api/device/getProd", param, {method: "GET"});
+>>>>>>> fix_master
                 defrend.then(function (result) {
                     console.log(resp);
                     var resp = result.json();

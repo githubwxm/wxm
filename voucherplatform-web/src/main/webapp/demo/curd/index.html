@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <header-title></header-title>
+  <link href="/voucher/static/css/style.css" rel="stylesheet">
+</head>
+<body vtag="root">
+<div class="panel panel-success">
+  <div class="panel-heading">
+    <h3 class="panel-title">
+      <i class="fa fa-user"></i>curd</h3>
+  </div>
+  <div class="panel-body">
+    <form id="qryForm" class="form-horizontal" method="post" onSubmit="return false;">
+      <div class="form-group">
+        <div class="col-sm-2 col-lg-2">
+          <input type="text" v-model="queryFormData.name"/>
+        </div>
+        <div class="col-sm-2 col-lg-2">
+          <input type="submit" value="查询" @click="queryFormSubmit"/>
+          <input type="button" value="新增" @click="edit()"/>
+        </div>
+      </div>
+    </form>
+    <div class="adv-table">
+      <data-page-table :setting="dtSetting" :params="queryFormData" v-ref:dt-list></data-page-table>
+      <div style="clear: both;"></div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript" src="/voucher/api/local/client/system/load_config"></script>
+<script type="text/javascript" src="/voucher/static/script/local/require/require.js"></script>
+<script type="text/javascript" src="/voucher/static/script/local/require_config.js"></script>
+<script type="text/javascript" src="/voucher/static/script/local/demo/view/curd/listView.js"></script>
+</body>
+</html>

@@ -8,7 +8,11 @@ require_js_file([], function (Vue, fnr) {
         },
         methods: {
             togglepic: function () {
+<<<<<<< HEAD
                 return this.open ? '../static/style/img/sjx.png' : '../static/style/img/sjt_12.png';
+=======
+                return this.open ? '/voucher/static/style/img/sjx.png' : '/voucher/static/style/img/sjt_12.png';
+>>>>>>> fix_master
             },
             toggle: function () {
                 var val = !this.open;
@@ -64,7 +68,11 @@ require_js_file([], function (Vue, fnr) {
         },
         ready: function () {
             var self = this;
+<<<<<<< HEAD
             var deferred = fnr.ajaxJson("../api/user/getLoginUser", {}, {method: "GET"})
+=======
+            var deferred = fnr.ajaxJson("/voucher/api/user/getLoginUser", {}, {method: "GET"})
+>>>>>>> fix_master
             deferred.then(function (result) {
                 var resp = result.json();
                 if (resp.code == 98) {
@@ -86,7 +94,11 @@ require_js_file([], function (Vue, fnr) {
         },
         methods: {
             upMyInfo: function () {
+<<<<<<< HEAD
                 fnr.openFrame({link: '/user/updatePwd.html', title: '修改登录密码'});
+=======
+                fnr.openFrame({link: '/voucher/user/updatePwd.html', title: '修改登录密码'});
+>>>>>>> fix_master
             },
 
             closeAllMenu: function () {

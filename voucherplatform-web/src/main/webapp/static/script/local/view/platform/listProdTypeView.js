@@ -9,7 +9,11 @@ require_js_file(['vueValidator', 'vuePicker',], function (Vue, fnr, validator) {
             var self = this;
             var params = {
                 title: '添加分类',
+<<<<<<< HEAD
                 url: '/platform/addProdType.html?id=' + id,
+=======
+                url: '/voucher/platform/addProdType.html?id=' + id,
+>>>>>>> fix_master
                 width: 1200,
                 height: 800,
                 callbackSucc: function () {
@@ -22,7 +26,11 @@ require_js_file(['vueValidator', 'vuePicker',], function (Vue, fnr, validator) {
             var self = this;
             var param = {};
             param.prodTypeId = id;
+<<<<<<< HEAD
             var defrend = fnr.ajaxJson("../api/action/delProdType", param, {method: "GET"});
+=======
+            var defrend = fnr.ajaxJson("/voucher/api/action/delProdType", param, {method: "GET"});
+>>>>>>> fix_master
             defrend.then(function (result) {
                 var resp = result.json();
                 if (resp.code == 200) {
@@ -39,7 +47,11 @@ require_js_file(['vueValidator', 'vuePicker',], function (Vue, fnr, validator) {
                 //page:{record_count:20},
                 remote: {
                     link: function (params, options) {
+<<<<<<< HEAD
                         return fnr.ajaxJson("../api/action/selectProdTyeList", params, options);
+=======
+                        return fnr.ajaxJson("/voucher/api/action/selectProdTyeList", params, options);
+>>>>>>> fix_master
                     },
                     options: {method: 'GET', alertMessage: 0}
                 }
@@ -63,7 +75,11 @@ require_js_file(['vueValidator', 'vuePicker',], function (Vue, fnr, validator) {
                 var self = this;
                 var params = {
                     title: '添加分类',
+<<<<<<< HEAD
                     url: '/platform/addProdType.html',
+=======
+                    url: '/voucher/platform/addProdType.html',
+>>>>>>> fix_master
                     width: 1200,
                     height: 800,
                     callbackSucc: function () {

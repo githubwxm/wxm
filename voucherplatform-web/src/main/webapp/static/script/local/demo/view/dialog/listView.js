@@ -15,7 +15,11 @@ require_js_file([],function(Vue,fnr){
         methods: {
             click1:function(){
                 var self = this;
+<<<<<<< HEAD
                 var params = {title:'demo',url:'/demo/dialog/dialog.html',callbackSucc:function(result){
+=======
+                var params = {title:'demo',url:'/voucher/demo/dialog/dialog.html',callbackSucc:function(result){
+>>>>>>> fix_master
                     self.area1 = result;
                 }};
                 fnr.iDialog(params);
@@ -35,7 +39,11 @@ require_js_file([],function(Vue,fnr){
             },
             click4:function(){
                 var self = this;
+<<<<<<< HEAD
                 var params = {title:'demo',url:'/demo/dialog/dialog.html',parent:'curr',callbackSucc:function(result){
+=======
+                var params = {title:'demo',url:'/voucher/demo/dialog/dialog.html',parent:'curr',callbackSucc:function(result){
+>>>>>>> fix_master
                     self.area4 = result;
                 }};
                 fnr.iDialog(params);

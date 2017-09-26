@@ -6,7 +6,11 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
             var self = this;
             var param = {};
             param.id = id;
+<<<<<<< HEAD
             var defrend = fnr.ajaxJson("../api/template/delete", param, {method: "GET"});
+=======
+            var defrend = fnr.ajaxJson("/voucher/api/template/delete", param, {method: "GET"});
+>>>>>>> fix_master
             defrend.then(function (result) {
                 var resp = result.json();
                 if (resp.code == 200) {
@@ -24,7 +28,11 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
                 title: "修改二维码模板",
                 width: 1200,
                 height: 800,
+<<<<<<< HEAD
                 url: "../template/editTemplate.html?id=" + id,
+=======
+                url: "/voucher/template/editTemplate.html?id=" + id,
+>>>>>>> fix_master
                 callbackSucc: function (json) {
                     self.reload();
                 }
@@ -39,7 +47,11 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
             dtSetting: {
                 remote: {
                     link: function (params, options) {
+<<<<<<< HEAD
                         return fnr.ajaxJson("../api/template/selectTemplateList", params, options);
+=======
+                        return fnr.ajaxJson("/voucher/api/template/selectTemplateList", params, options);
+>>>>>>> fix_master
                     },
                     options: {method: 'GET', alertMessage: 0}
                 }

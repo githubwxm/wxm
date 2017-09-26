@@ -11,12 +11,20 @@
 .product-wx{
     width: 32px;
     height: 32px;
+<<<<<<< HEAD
     background: url("../static/style/img/wx_03.png") no-repeat;
+=======
+    background: url("/voucher/static/style/img/wx_03.png") no-repeat;
+>>>>>>> fix_master
     display: block;
     margin-top:46px;
 }
 .product-wx:hover{
+<<<<<<< HEAD
     background: url("../static/style/img/wx2_03.png") no-repeat;
+=======
+    background: url("/voucher/static/style/img/wx2_03.png") no-repeat;
+>>>>>>> fix_master
 }
 .iShare a i{
     color: #aaa;

@@ -3,10 +3,17 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
     Vue.use(validator);
     fnr.dataPageTable('data-table-dyn', {
         edit: function (id) {
+<<<<<<< HEAD
             location.href = "/prod/editSub.html?productSubId=" + id;
         },
         subProdName: function (id) {
             var params = {title: '票据详情', url: '/prod/viewSubProd.html?productSubId=' + id, width: 1200, height: 800};
+=======
+            location.href = "/voucher/prod/editSub.html?productSubId=" + id;
+        },
+        subProdName: function (id) {
+            var params = {title: '票据详情', url: '/voucher/prod/viewSubProd.html?productSubId=' + id, width: 1200, height: 800};
+>>>>>>> fix_master
             fnr.iDialog(params);
         }
     });
@@ -18,7 +25,11 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
                 //page:{record_count:20},
                 remote: {
                     link: function (params, options) {
+<<<<<<< HEAD
                         return fnr.ajaxJson("../api/action/selectRoleList", params, options);
+=======
+                        return fnr.ajaxJson("/voucher/api/action/selectRoleList", params, options);
+>>>>>>> fix_master
                     },
                     options: {method: 'GET', alertMessage: 0}
                 }

@@ -1,5 +1,9 @@
 requirejs.config({
+<<<<<<< HEAD
     baseUrl: 'http://service.all580.com.cn/voucher/static/script/amd/1.0',
+=======
+    baseUrl: '/voucher/static/script/amd/1.0',
+>>>>>>> fix_master
     paths:{
         'vue':'vue/vue.min',
         'vueResource':'vue/vue-resource.min',
@@ -62,4 +66,8 @@ var require_js_file = function (arr,func){
     Array.prototype.push.apply(def_require_jsfile_arr_alias,arr);
     Array.prototype.push.apply(def_require_jsfile_arr_alias,def_require_jsfile_arr);
     requirejs(def_require_jsfile_arr_alias,func);
+<<<<<<< HEAD
 };
+=======
+};
+>>>>>>> fix_master

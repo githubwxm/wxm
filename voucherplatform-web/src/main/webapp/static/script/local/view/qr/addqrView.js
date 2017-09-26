@@ -61,7 +61,11 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
                     title: "请选择供应商",
                     width: 1200,
                     height: 800,
+<<<<<<< HEAD
                     url: "../supply/dialogSupply.html",
+=======
+                    url: "/voucher/supply/dialogSupply.html",
+>>>>>>> fix_master
                     callbackSucc: function (json) {
                         self.subFormData.supply_id = json.id;
                         self.prop.supply_name = json.name;
@@ -88,7 +92,11 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
                     title: "请选择供应商",
                     width: 1200,
                     height: 800,
+<<<<<<< HEAD
                     url: "../supply/dialogSupplyProd.html?supplyId=" + self.subFormData.supply_id,
+=======
+                    url: "/voucher/supply/dialogSupplyProd.html?supplyId=" + self.subFormData.supply_id,
+>>>>>>> fix_master
                     callbackSucc: function (json) {
                         self.subFormData.supplyprod_id = json.id;
                         self.prop.supplyprod_name = json.name;
@@ -104,7 +112,11 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
                 var self = this;
                 this.$validate();
                 if (this.$checkSubForm.valid) {
+<<<<<<< HEAD
                     var defrend = fnr.ajaxJson("../api/qr/create", self.subFormData, {});
+=======
+                    var defrend = fnr.ajaxJson("/voucher/api/qr/create", self.subFormData, {});
+>>>>>>> fix_master
                     defrend.then(function (result) {
                         var resp = result.json();
                         if (resp.code == 200) {
@@ -117,7 +129,11 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
                 }
             },
             callBack: function () {
+<<<<<<< HEAD
                 location.href = "../qr/listqr.html";
+=======
+                location.href = "/voucher/qr/listqr.html";
+>>>>>>> fix_master
             },
         }
     });
