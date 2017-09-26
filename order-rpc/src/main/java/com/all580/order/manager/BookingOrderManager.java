@@ -84,10 +84,10 @@ public class BookingOrderManager extends BaseOrderManager {
             while (packageOrderItemDto != null){
                 List<OrderItem> packageOrderItems = packageOrderItemDto.getPackageOrderItems();
                 //所有子订单票据已使用，则套票订单已使用
-                Boolean isUsed = Boolean.FALSE;
+                Boolean isUsed = Boolean.TRUE;
                 for (OrderItem item : packageOrderItems) {
                     //使用数等于预定数，则已使用
-                    isUsed = item.getQuantity().intValue() == item.getUsed_quantity();
+                    isUsed = item.getQuantity().intValue() == item.getUsed_quantity() && isUsed;
                 }
                 if (isUsed){
                     //设置套票订单使用数
