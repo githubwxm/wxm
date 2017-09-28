@@ -102,6 +102,7 @@ public class RefundResultManager {
         }
     }
 
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class}, propagation = Propagation.REQUIRES_NEW)
     public void submitSuccess(String supplyRefId, Date procTime) {
         DistributedReentrantLock distributedReentrantLock = distributedLockTemplate.execute(VoucherConstant.DISTRIBUTEDLOCKORDER + order.getOrderCode(), lockTimeOut);
         try {
@@ -114,6 +115,7 @@ public class RefundResultManager {
         }
     }
 
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class}, propagation = Propagation.REQUIRES_NEW)
     public void submitFaild() {
         DistributedReentrantLock distributedReentrantLock = distributedLockTemplate.execute(VoucherConstant.DISTRIBUTEDLOCKORDER + order.getOrderCode(), lockTimeOut);
         try {
@@ -125,7 +127,6 @@ public class RefundResultManager {
     }
 
 
-    @Transactional(rollbackFor = {Exception.class, RuntimeException.class}, propagation = Propagation.REQUIRES_NEW)
     private void refundSuccess(String supplyRefId, Date procTime) throws Exception {
 
         Refund refundUpdate = new Refund();
@@ -145,7 +146,6 @@ public class RefundResultManager {
 
     }
 
-    @Transactional(rollbackFor = {Exception.class, RuntimeException.class}, propagation = Propagation.REQUIRES_NEW)
     private void refundFaild() {
         Refund refundUpdate = new Refund();
         refundUpdate.setId(refund.getId());

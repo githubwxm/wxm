@@ -31,7 +31,6 @@ public class QueryConsumeProcessorImpl implements ProcessorService<Supply> {
     public Object processor(Supply supply,
                             Map map) {
         Device device = (Device) map.get("device");
-        Date requestTime = DateFormatUtils.converToDateTime(CommonUtil.emptyStringParseNull(map.get("requestTime")));
         String voucher = CommonUtil.emptyStringParseNull(map.get("voucher"));
         Date startTime = DateFormatUtils.converToDateTime(CommonUtil.objectParseString(map.get("startTime")));
         Date endTime = DateFormatUtils.converToDateTime(CommonUtil.objectParseString(map.get("endTime")));
