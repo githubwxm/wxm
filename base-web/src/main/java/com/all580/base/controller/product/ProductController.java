@@ -655,4 +655,11 @@ public class ProductController extends BaseController {
         Assert.notNull(params.get("id"));
         return productService.deleteScenery(params);
     }
+
+    @RequestMapping(value = "delete/sub", method = RequestMethod.POST)
+    @ResponseBody
+    public Result<?> deleteSub(@RequestBody Map params) {
+        Assert.notNull(params.get("id"));
+        return productService.deleteSub(params);
+    }
 }
