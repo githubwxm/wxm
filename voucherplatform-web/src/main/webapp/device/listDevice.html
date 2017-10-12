@@ -1,0 +1,83 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <header-title></header-title>
+    <link href="/voucher/static/css/style.css" rel="stylesheet">
+</head>
+<body vtag="root">
+<div class="root-main">
+    <div class="main-container clearfix">
+        <div class="main-warp">
+            <div class="title" v-show="!isDialog"><em></em>
+                <h3>终端组管理</h3>
+            </div>
+            <div class="searchbox clearfix">
+                <form class="form-horizontal" method="post" onSubmit="return false;">
+                    <div class="form-group">
+                        <label class="col-sm-2 col-md-1 col-lg-1 control-label">设备名字:</label>
+                        <div class="col-sm-4 col-md-2 col-lg-2">
+                            <input class="form-control" type="text" maxlength="30" v-model="queryFormData.name">
+                        </div>
+                        <label class="col-sm-2 col-md-1 col-lg-1 control-label">设备号:</label>
+                        <div class="col-sm-4 col-md-2 col-lg-2">
+                            <input class="form-control" type="text" maxlength="30" v-model="queryFormData.code">
+                        </div>
+                        <div class="col-sm-4 col-lg-4">
+                            <button class="btn btn-success" type="button" @click="queryFormSubmit">查询</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="table-responsive table-top">
+                <data-table-dyn :setting="dtSetting" :params="queryFormData" v-ref:dt-list></data-table-dyn>
+                <script type="text/x-template" id="data-table-dyn">
+                    <component :is="loadStatus"></component>
+                    <div v-show="loadStatus == 'dt-load-succ'" class="table-responsive">
+                        <table class="table table-bordered">
+                            <tbody>
+                            <tr class="tr-bt-sc">
+                                <td width="3%" style="text-align:center;">Id</td>
+                                <td width="10%" style="text-align:center;">设备名</td>
+                                <td width="10%" style="text-align:center;">设备号</td>
+                                <td width="15%" style="text-align:center;">描述</td>
+                                <td width="8" style="text-align:center;" v-show="!$parent.isDialog">商户名</td>
+                                <td width="8%" style="text-align:center;" v-show="!$parent.isDialog">组名称</td>
+                                <td width="6%" style="text-align:center;">签名方式</td>
+                                <td width="10%" style="text-align:center;">创建时间</td>
+                                <td width="15%" style="text-align:center;">操作</td>
+                            </tr>
+                            <tr v-for="line in list">
+                                <td style="text-align:center;" v-cloak>{{line.id}}</td>
+                                <td style="text-align:center;" v-cloak>{{line.name}}</td>
+                                <td style="text-align:center;" v-cloak>{{line.code}}</td>
+                                <td style="text-align:center;" v-cloak>{{line.description||'-'}}</td>
+                                <td style="text-align:center;" v-cloak v-show="!$parent.$parent.isDialog">
+                                    {{line.supply_name}}
+                                </td>
+                                <td style="text-align:center;" v-cloak v-show="!$parent.$parent.isDialog">
+                                    {{line.groupName}}
+                                </td>
+                                <td style="text-align:center;" v-cloak>{{getSignType(line.signType)}}</td>
+                                <td style="text-align:center;" v-cloak>{{line.createTime}}</td>
+                                <td style="text-align:center;" v-cloak>
+                                    <a href="javascript:;" @click="rename(line.id,line.name)">设备名重命名</a>
+                                    <a href="javascript:;" @click="delDevice(line.code)">删除</a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <pager :page="page"></pager>
+                    </div>
+                </script>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="/voucher/static/script/local/local_config.js"></script>
+<script type="text/javascript" src="/voucher/static/script/local/require/require.js"></script>
+<script type="text/javascript" src="/voucher/static/script/local/require_config.js"></script>
+<script type="text/javascript" src="/voucher/static/script/local/view/device/listDeviceView.js"></script>
+</body>
+</html>

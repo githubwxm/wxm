@@ -1,0 +1,908 @@
+@charset "utf-8";
+
+em{
+	font-style: normal;
+}
+label{
+	margin: 0;
+}
+.icon{
+	vertical-align: middle;
+}
+input[readonly]{
+	background-color: transparent;
+}
+.mboxin-padding{
+	padding-left: 10px;
+	padding-right: 10px;
+}
+.hide{
+	display: none;
+}
+.navbar{
+	height: auto;
+	line-height: normal;
+	color: #fff;
+	background: #23c478;
+}
+	.navbar a{
+		display: inline-block;
+		padding-right: 5px;
+		color: #fff;
+	}
+	.navbar .icon{
+		vertical-align: text-top;
+		font-size: 20px;
+	}
+	/*链接*/
+	.navbar-nav-item + .navbar-nav-item{
+		margin: 0;
+	}
+	/*标题*/
+	.navbar .navbar-title{
+		font-size: 18px;
+		line-height: 2.5;
+		font-weight: normal;
+	}
+
+	/*底部导航文字*/
+	.tabbar{
+		padding: 10px 0 2px;
+		height: auto;
+	}
+	.tabbar-dark a {
+		color: #939393;
+	}
+	.tabbar .icon ~ .tabbar-label{
+		font: normal 14px/2 "Microsoft YaHei";
+	}
+
+/*顶部右侧下拉*/
+.navbar-right .vip-dropdown a > span {
+	margin-right: .5em;
+}
+/*tab导航样式*/
+.root .am-tabs-bd{
+	border: none;
+}
+.root .am-nav{
+	background-color: #fff;
+	text-align: center;
+}
+.root .am-nav-tabs>li{
+	width: 50%;
+}
+	.root .am-nav>li>a{
+		margin: 0;
+		line-height: 2.5;
+		color: #737373;
+		border-bottom: 2px solid transparent;
+	}
+	.root .am-nav>li.am-active>a,.root .am-nav>li.am-active>a:focus,.root .am-nav>li.am-active>a:hover{
+		border: none;
+		color: #23c478;
+		border-bottom: 2px solid #23c478;
+	}
+
+/*模态框文字大小*/
+.am-modal .am-modal-bd,.am-modal .am-modal-btn{
+	font-size: 14px;
+}
+/*二维码模态框大小*/
+#qrcode-modal .am-modal-dialog{
+	width: auto;
+}
+
+/*向上模态框样式*/
+.am-modal-actions-group{
+	margin: 0;
+}
+	.am-modal-actions-group .am-modal-actions-header{
+		font-size: 14px;
+	}
+	.am-modal-actions-group a{
+		color: #666;
+	}
+	
+/*订单内容公共部分*/
+.order-cont .cont-link,.order-cont .cont-tit,.order-cont .contc,.order-cont .contc .cont-list,.order-cont .cont-foot{
+	display: block;
+}
+.order-cont .cont-tit span,.order-cont .cont-tit em,.order-cont .cont-list span,.order-cont .cont-list em{
+	display: inline-block;
+	vertical-align: middle;
+}
+
+.order-cont .cont-tit .icon{
+	margin-right: 10px;
+}
+.order-cont .cont-tit .order-state{
+	float: right;
+}
+
+.order-cont .cont-foot{
+	padding-top: 12px;
+	text-align: right;
+	border-top: 1px solid #dedede;
+}
+	.order-cont .cont-foot .order-prev,.order-cont .cont-foot .order-next{
+		display: inline-block;
+		min-width: 6em;
+		margin-left: 15px;
+		padding: 0 15px;
+		vertical-align: middle;
+		font:normal 14px/2 microsoft yahei;
+		text-align: center;
+		border:1px solid #ccc;
+		border-radius: 3px;
+	}
+	.order-cont .cont-foot .order-next{
+		color: #fff;
+		background-color: #ff7e00;
+		border-color: #ff7e00;
+	}
+
+/*列表页公共*/
+.order-cont{
+	padding: 0 15px 15px;
+	margin-bottom: 15px;
+	font: normal 14px/2.5 "Microsoft YaHei";
+	background-color: #fff;
+}
+	.order-cont a{
+		color: #797979;
+	}
+		.order-cont .cont-tit,.tourist-list-page .order-cont .contc{
+			border-bottom: 1px solid #e8e6e6;
+		}
+		.order-cont .cont-tit{
+			font: normal 16px/2.5 "Microsoft YaHei";
+		}
+			.order-cont .cont-tit .icon{
+				width: 24px;
+				height: 24px;
+				padding: 6px;
+				font-size: 12px;
+				color: #cae69f;
+				background-color: #7bc00e;
+				border-radius: 50%;
+			}
+			.order-cont .cont-tit .order-state{
+				font:normal 12px/3.5 "Microsoft YaHei";
+			}
+
+		.order-cont .contc{
+			padding: 5px 0;
+			line-height: 2;
+		}
+			.order-cont .contc .cont-head{
+				font-size: 16px;
+				color: #333;
+			}
+			.order-cont .contc .price{
+				color: #f00;
+			}
+
+
+/*图片*/
+.disimg{
+	display: block;
+	margin: 0 auto;
+}
+	.disimg img{
+		display: block;
+		max-width: 100%;
+		margin: 0 auto;
+	}
+/*白色背景、下外边距*/
+.bg-block{
+	margin-bottom: 15px;
+	background-color: #fff;
+}
+	.bg-block .border-list{
+		padding: 0 10px;
+		border-bottom: 1px solid #cdcdcd;
+	}
+		.bg-block .list-cont{
+			position: relative;
+			display: -webkit-box;
+			display: -moz-box;
+			display: -webkit-flex;
+		    display: -ms-flexbox;
+		    display: flex;
+			
+		    -webkit-box-align: start;
+			-moz-box-align: start;
+			-webkit-align-items: flex-start;
+			-ms-flex-align: start;
+			align-items: flex-start;
+			
+		    -webkit-box-pack: start;
+			-moz-box-pack: start;
+			-webkit-justify-content: flex-start;
+			-ms-flex-pack: start;
+			justify-content: flex-start;
+
+			overflow: hidden;
+		}
+		.bg-block .list-cont > span,.bg-block .list-cont em{
+			display: inline-block;
+			vertical-align: middle;
+		}
+		.bg-block .list-cont > span{
+			min-width: 6.5em;
+		}
+		.bg-block .list-cont > div{
+			display: inline-block\0;
+			vertical-align: middle;
+		}
+		.bg-block .list-cont .list-label{
+			color: #a2a2a2;
+		}
+		
+/*固定底部公共部分*/
+.foot-fixed{
+	position: fixed;
+	left: 0;
+	bottom: 0;
+	z-index: 999;
+	padding: 10px 10px;
+	width: 100%;
+	font-size: .875rem;
+	text-align: right;
+	background-color: #fff;
+}
+	.foot-fixed .prev-link{
+		position: absolute;
+		left: 0;
+		bottom:50%;
+		width: 50%;
+		margin-bottom: -1em;
+		text-align: center;
+		color: #8a8a8a;
+	}
+		.foot-fixed .prev-link a{
+			display: block;
+			color: #999;
+		}
+			.foot-fixed .prev-link .price{
+				font-size: 1.2em;
+				color: #ff9000;
+			}
+	.foot-fixed .next-link{
+		display: inline-block;
+		vertical-align: middle;
+		padding: 0 2em;
+		font: normal 16px/2.5 microsoft yahei;
+		color: #fff;
+		background-color: #fe932b;
+		border-radius: 3px;
+	}
+	
+/*支付方式公共*/
+.paylist-wrap .list{
+	margin: 0;
+}
+	.paylist-wrap .list a{
+		color: #333;
+	}
+		.paylist-wrap .list .item-title{
+			font: normal 14px/1.8 "Microsoft YaHei";
+		}
+			.paylist-wrap .list .item-title > span,.paylist-wrap .list .item-title > em{
+				display: block;
+			}
+			.paylist-wrap .list .item-title > em{
+				font-size: 12px;
+				color: #9e9e9e;
+			}
+				.paylist-wrap .list .item-title .tit-primary{
+					padding: 0 5px;
+					margin-left: 5px;
+					font-size: 12px;
+					color: #fff;
+					background-color: #fe6714;
+				}
+		.paylist-wrap .list .item-main input[type="radio"]{
+			display: none;
+			margin: 0;
+			width: 20px;
+			height: 20px;
+		}
+		.paylist-wrap .list .item-main input[type="radio"] + label{
+			width: 20px;
+			height: 20px;
+			border: 1px solid #ccc;
+			border-radius: 50%;
+		}
+		.paylist-wrap .list .item-main input[type="radio"]:checked + label{
+			background: url("../../img/checked.png") center center no-repeat;
+			background-size: cover;
+		}
+		
+/*搜素框*/
+ .mbox-search{
+	font: normal 14px/3 "Microsoft YaHei";
+	border: none;
+}
+ .mbox-search .item{
+	padding: 8px 10px;
+}
+	 .mbox-search input{
+		padding: 0;
+		margin: 0;
+		 height: 3em;
+		font: normal 14px/3 "Microsoft YaHei";
+		text-indent: 2em;
+		border: 1px solid #e8e6e6;
+		border-radius: 3px;
+		 outline: none;
+	}
+	    .mbox-search input:focus{
+		    border: 1px solid #e8e6e6;
+	    }
+	 .mbox-search .search-text{
+		 display: inline-block;
+		margin-left: 10px;
+		padding: 0 10px;
+		 text-align: center;
+		 text-indent: 0;
+		color: #fff;
+		background-color: #ff7e00;
+		border-radius: 5px;
+	}
+	 .mbox-search .item-main{
+		 position: relative;
+	 }
+	 .mbox-search .search-icon{
+		 position: absolute;
+		 left: .6em;
+		 top: .1em;
+		 z-index: 999;
+		 font: normal 14px/3 "Microsoft YaHei";
+		 color: #999;
+	 }
+	 
+	 
+/*表单公共*/
+.form-style .am-form-group{
+	position: relative;
+	padding-top: 10px;
+	margin-bottom: 0;
+	border-bottom: 1px solid #cdcdcd;
+}
+	.form-style .text-lebel{
+		position: absolute;
+		left: .5em;
+		bottom: 1px;
+		color: #999;
+	}
+	.form-style .input-wrap{
+		padding-left: 3em;
+	}
+	
+	.form-style .am-form-group input{
+		padding: 0;
+		margin: 0;
+		font: normal 14px/3 "Microsoft YaHei";
+		border: none;
+		background-color: transparent;
+	}
+	.form-style .am-form-group input:focus{
+		background-color: transparent;
+		-webkit-box-shadow: none;
+		-moz-box-shadow: none;
+		box-shadow: none;
+		border: none;
+	}
+
+/*列表导航公共*/
+.list-tab-nav {
+	position: relative;
+	margin-bottom: 15px;
+	font-size: 0;
+	background-color: #fff;
+	border-bottom: 1px solid #dedede;
+}
+	.list-tab-nav .tab-list{
+		display: inline-block;
+		vertical-align: middle;
+		width: 49%;
+	}
+
+		.list-tab-nav .tab-list .list-in{
+			padding: 10px 0;
+			font:normal 14px/1.5 "Microsoft YaHei";
+		}
+		.list-tab-nav .tab-list .list-in ul,.list-tab-nav .tab-list .list-in li{
+			padding: 0;
+			margin: 0;
+			list-style: none;
+			line-height: 2;
+		}
+
+		/*按钮*/
+		.list-tab-nav .tab-list .list-in .list-btn{
+			display: block;
+			text-align: center;
+		}
+		.list-tab-nav .tab-list.active .list-btn{
+			color: #2ebd59;
+		}
+		.list-tab-nav .tab-list:first-of-type .list-in .list-btn{
+			border-right: 1px solid #dedede;
+		}
+		.list-tab-nav .tab-list .list-in .list-btn .icon{
+			margin-left: 10px;
+			font: normal 14px/2 "Microsoft YaHei";
+		}
+
+		.list-tab-nav .tab-list .list-in .list-hidden{
+			position: absolute;
+			left: 0;
+			top: 100%;
+			z-index: 999;
+			width: 100%;
+			padding: 10px;
+			background-color: #fff;
+			border-top: 1px solid #dedede;
+			display: none;
+		}
+			.list-tab-nav .tab-list .list-in .list-hidden > span,.list-tab-nav .tab-list .list-in .list-hidden a{
+				display: inline-block;
+				vertical-align: middle;
+			}
+			.list-tab-nav .tab-list .list-in .list-hidden .list-text{
+				color: #999;
+			}
+			.list-tab-nav .tab-list .list-in .list-hidden a{
+				padding: 0 5px;
+				text-align: center;
+				color: #666666;
+			}
+			.list-tab-nav .tab-list .list-in .list-hidden a:hover span{
+				color: #fff;
+				background-color: #5cb911;
+			}
+
+				.list-tab-nav .tab-list .list-in .list-hidden a span{
+					padding: 2px 5px;
+					font-size: 12px;
+				}
+
+			.list-tab-nav .tab-list .list-in .list-hidden a.active span{
+				color: #fff;
+				background-color: #5cb911;
+			}
+
+/*门票列表公共样式*/
+.ticket-list a{
+	padding: 10px;
+	border-bottom: 1px solid #dedede;
+	background-color: #fff;
+}
+	/*图片*/
+ .ticket-list .list-left .disimg{
+	width: 35%;
+	 max-width: 35%;
+	 margin: 0;
+}
+ .ticket-list .list-left .disimg img{
+	width: 100%;
+}
+/*景点名称*/
+ .ticket-list .list-left{
+	 width: 78%;
+	font-size: 0;
+}
+ .ticket-list .list-left .list-cont{
+	 width: 64%;
+	padding-left: 8px;
+	line-height: 1.6;
+	overflow: hidden;
+
+	 -webkit-box-flex: 1;
+	 -moz-box-flex: 1;
+	 -ms-flex: 1;
+	 -webkit-flex: 1;
+	 flex: 1;
+}
+ .ticket-list .list-left .list-cont > span{
+	display: block;
+}
+
+.ticket-list .list-left .list-cont .list-tit, .ticket-list .list-left .list-cont .list-local, .ticket-list .list-left .list-cont .list-score{
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+ .ticket-list .list-left .list-cont .list-tit{
+	font-size: 14px;
+}
+ .ticket-list .list-left .list-cont .list-local{
+	font-size: 12px;
+	color: #999;
+}
+ .ticket-list .list-left .list-cont .list-score{
+	font-size: 12px;
+	color: #5cb911;
+}
+
+/*价格*/
+ .ticket-list .list-right{
+	text-align: right;
+}
+ .ticket-list .list-right > span{
+	display: block;
+}
+ .ticket-list .list-right .delete{
+	font-size: 10px;
+	line-height: 1;
+	text-decoration: line-through;
+	color: #999;
+}
+
+ .ticket-list .list-right .list-price{
+	font-size: 12px;
+	line-height: 1.6;
+}
+ .ticket-list .list-right .list-price > span{
+	color: #ff0000;
+}
+ .ticket-list .list-right .list-price .price{
+	font-size: 14px;
+	color: #ff0000;
+}
+
+ .ticket-list .list-right .look-more{
+	padding: 0 8px;
+	font-size: 10px;
+	color: #fff;
+	background-color: #ffba00;
+	border-radius: 15px;
+}
+
+
+/*供应商头部公共*/
+.supply .navbar .top-text{
+	font: normal 14px/2 "Microsoft YaHei";
+}
+.supply .navbar .down-icon{
+	padding-left: 5px;
+	font: normal 12px/2.2 "Microsoft YaHei";
+}
+.supply .navbar .mbox-search .item{
+	position: relative;
+}
+.supply .navbar .mbox-search input{
+	height: 2em;
+	font: normal 12px/2 "Microsoft YaHei";
+}
+.supply .navbar .mbox-search input[type="text"]{
+	color: #fff;
+	background-color: #91e1bb;
+	border: transparent;
+}
+	.supply .navbar .mbox-search .search-icon{
+		font: normal 12px/2 "Microsoft YaHei";
+		color: #fff;
+	}
+	.supply .navbar .mbox-search .search-text{
+		display: none;
+		position: absolute;
+		right: 0;
+		top: 8px;
+		margin: 0;
+		border: 2px solid #ff7e00;
+	}
+/*供应商顶部邮件公共*/
+.supply .bar-email .email-num{
+	display: inline-block;
+	padding: 2px;
+	vertical-align: text-top;
+	font: normal 8px/1 "Microsoft YaHei";
+	color: #fff;
+	background-color: #f00;
+	-webkit-transform: scale(.8);
+	-moz-transform: scale(.8);
+	-ms-transform: scale(.8);
+	-o-transform: scale(.8);
+	transform: scale(.8);
+	border-radius: 50%;
+}
+
+
+/*供应商余额以及产品图标公共*/
+.type-wrap .item,.product-all-wrap .item{
+	padding: 20px 0;
+}
+.type-wrap .item .item-main,.product-all-wrap .item .item-main{
+	-webkit-box-orient: vertical;
+	-ms-flex-direction: column;
+	-webkit-flex-direction: column;
+	flex-direction: column;
+	color: #4d4d4d;
+}
+.type-wrap .item .item-main:nth-of-type(odd),.product-all-wrap .item .item-main:nth-of-type(odd){
+	border-right: 1px solid #dedede;
+}
+/*余额*/
+type-wrap .remain-type{
+	font: normal 14px/2 "Microsoft YaHei";
+}
+.type-wrap .remain-type .type-text{
+	color: #999;
+}
+.type-wrap .remain-type .remain-num{
+	color: #333333;
+}
+.type-wrap .remain-type .icon{
+	margin-right: 5px;
+}
+.type-wrap .zhanghu-remain .icon{
+	color: #f00;
+}
+.type-wrap .yue-remain .icon{
+	color: #ff9900;
+}
+
+/*产品等*/
+.product-all-wrap .icon-wrap{
+	display: inline-block;
+	width: 34px;
+	height: 34px;
+	padding: 9px;
+	font-size: 0;
+	text-align: center;
+	background-color: #3399ff;
+}
+.product-all-wrap .icon-wrap .icon{
+	font-size: 16px;
+	color: #fff;
+}
+
+.product-all-wrap .product-text{
+	line-height: 2.5;
+}
+
+/*图标的背景颜色*/
+.product-all-wrap .tourist-order .icon-wrap{
+	background-color: #ff9900;
+}
+.product-all-wrap .hotel-product .icon-wrap{
+	background-color: #ff5a5e;
+}
+.product-all-wrap .hotel-order .icon-wrap{
+	background-color: #6cc209;
+}
+.product-all-wrap .travel-product .icon-wrap{
+	background-color: #cd66cf;
+}
+.product-all-wrap .travel-order .icon-wrap{
+	background-color: #5eadde;
+}
+
+
+/*供应商查询输入框*/
+.supply-search{
+	text-align: center;
+}
+	.supply-search .bg-block{
+		padding: 20px 0;
+	}
+		.supply-search .search-inputw{
+			font-size: 0;
+		}
+			.supply-search input{
+				display: inline-block;
+				vertical-align: middle;
+				height: 2em;
+				padding: 0;
+				margin: 0;
+				font: normal 12px/2 "Microsoft YaHei";
+				border: none;
+			}
+			.supply-search .search-tit{
+				padding-bottom: 1em;
+				font-size: 12px;
+			}
+			.supply-search .search-input{
+				width: 50%;
+				border: 1px solid #dedede;
+			}
+			.supply-search .search-text{
+				margin-left: 5px;
+				padding: 0 1em;
+				color: #fff;
+				background-color: #ff7e00;
+				border-radius: 3px;
+			}
+
+/*门票验证结果公共*/
+.result-sure{
+	text-align: center;
+	font: normal 12px/2 "Microsoft YaHei";
+	color: #000;
+}
+.result-sure .bg-block{
+	padding: 30px 0;
+}
+.result-sure .result-top{
+	padding-right: 1em;
+}
+	.result-sure .result-top .icon{
+		margin-right: 5px;
+		color: #23c377;
+	}
+
+/*供应商消费验证消费冲正公共*/
+.supply .order-cont .cont-foot .order-return{
+	color: #fff;
+	background-color: #979797;
+}
+
+.supply .mbox ul,.supply .mbox li{
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+/*酒店订单详情页返回样式公共*/
+.hotel-back{
+	padding: 15px 10px;
+	margin-bottom: 15px;
+	font: normal 16px/2 "Microsoft YaHei";
+	background-color: #fff;
+}
+.hotel-back a{
+	color: #23c377;
+}
+.supply.hotel-list-cont-page .hotel-back a .icon{
+	font: normal 20px/1.5 "Microsoft YaHei";
+}
+.hotel-back .right-icon{
+	float: right;
+}
+
+/*退票模态框公共*/
+.order-back-modal{
+	max-height: 70%;
+	overflow-y: auto;
+	font: normal 12px/2 "Microsoft YaHei";
+	text-align: left;
+}
+.order-back-modal .am-modal-actions-group{
+	background-color: #fff;
+}
+	.order-back-modal .bg-block{
+		margin: 0;
+	}
+		.order-back-modal .bg-block .border-list{
+			padding: 10px 15px;
+		}
+		.order-back-modal .bg-block .border-list:last-of-type{
+			border: none;
+		}
+.order-back-modal .bg-block .border-list .list-cont{
+	padding: 10px 0;
+}
+.order-back-modal input{
+	display: inline-block;
+	vertical-align: middle;
+	padding: 0;
+	margin: 0;
+	width: 2em;
+	font: normal 12px/2 "Microsoft YaHei";
+	text-align: center;
+	border: 1px solid #dedede;
+}
+.order-back-modal .reduce + input[type="text"]{
+	border-left: none;
+	border-right: none;
+}
+.order-back-modal input[type="button"]{
+	color: #797979;
+}
+.order-back-modal input[type="button"].active{
+	color: #ff6633;
+}
+.order-back-modal select{
+	padding: 0;
+	margin: 0;
+	width: 200px;
+	font: normal 12px/2 "Microsoft YaHei";
+	text-indent:1em;
+	background-color: transparent;
+}
+/*数量*/
+.order-back-modal .back-num .num-input-wrap{
+	font-size: 0;
+}
+.order-back-modal .back-num .num-notice{
+	display: inline-block;
+	vertical-align: middle;
+	padding: 0 10px;
+	color: #aeaeae;
+}
+/*价格*/
+.order-back-modal .price{
+	color: #f00;
+}
+/*提示*/
+.order-back-modal .order-back-notice{
+	color: #f00;
+}
+
+/*关闭按钮*/
+.order-back-modal .order-modal-footer{
+	padding: 10px 0;
+	font: normal 12px/2 "Microsoft YaHei";
+	text-align: center;
+}
+	.order-back-modal .order-modal-footer .am-btn{
+		margin: 0 5px;
+		font: normal 14px/1 "Microsoft YaHei";
+		text-align: center;
+	}
+	.order-back-modal .order-modal-footer .order-back-next{
+		color: #fff;
+	}
+
+/*陈随易(2017.2.6)+销售商日期选择*/
+.chen-date-header{
+    height:30px;
+    border-bottom:1px solid #ddd;
+    background-color:#eee;
+}
+.chen-date-header span{
+    width:14.28%;
+    float:left;
+    height:100%;
+    text-align:center;
+}
+.chen-date-header span:first-child{
+    color:#59bee9;
+}
+.chen-date-header span:last-child{
+    color:#59bee9;
+}
+.chen-date-panel{
+    
+}
+.chen-date-name{
+    height:40px;
+    line-height:40px;
+    text-align:center;
+}
+.chen-date-content{
+    
+}
+.chen-date-content::after{
+    content:"";
+    display:block;
+    height:0;
+    overflow:hidden;
+    clear:both;
+    visibility:hidden;
+}
+.chen-date-content div{
+    width:14.28%;
+    height:50px;
+    float:left;
+    text-align:center;
+    padding-bottom:10px;
+}
+.chen-date-content div span{
+    display:block;
+    height:20px;
+    float:left;
+    line-height:20px;
+    width:100%;
+}
+.chen-date-content div span.day{
+    font-size:16px;
+}
+.chen-date-content div span.price{
+    font-size:12px;
+    color:#ff9641;
+}

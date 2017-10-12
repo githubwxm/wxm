@@ -4,13 +4,16 @@ import com.aliyun.mns.model.Message;
 import com.all580.voucherplatform.adapter.supply.SupplyAdapterService;
 import com.all580.voucherplatform.adapter.supply.ticketV3.manager.ConfManager;
 import com.all580.voucherplatform.adapter.supply.ticketV3.manager.GroupOrderManager;
-import com.all580.voucherplatform.adapter.supply.ticketV3.manager.OrderManager;
 import com.all580.voucherplatform.adapter.supply.ticketV3.manager.UpdateGroupManager;
-import com.all580.voucherplatform.dao.*;
+import com.all580.voucherplatform.dao.ConsumeMapper;
+import com.all580.voucherplatform.dao.OrderMapper;
+import com.all580.voucherplatform.dao.RefundMapper;
+import com.all580.voucherplatform.dao.SupplyMapper;
 import com.all580.voucherplatform.entity.Consume;
 import com.all580.voucherplatform.entity.Order;
 import com.all580.voucherplatform.entity.Refund;
 import com.all580.voucherplatform.entity.Supply;
+import com.all580.voucherplatform.manager.order.OrderManager;
 import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.mns.QueuePushManager;
@@ -73,7 +76,7 @@ public class TicketV3AdapterIImpl extends SupplyAdapterService {
             if (!StringUtils.isEmpty(queueName)) {
                 log.info("发送消息到MNS队列 supplyId={},queueName={},content={}", new Object[]{supply.getId(), queueName, content});
                 Message message = queuePushManager.push(queueName, content);
-                log.info(message.getMessageId());
+                log.info("发送消息到MNS队列  messageId {} content{}",message.getMessageId(),content);
             }
         }
     }
@@ -90,24 +93,26 @@ public class TicketV3AdapterIImpl extends SupplyAdapterService {
 
     @Override
     public void sendOrder(Integer... orderId) {
+        Map map=null;
         try {
-            Map map = orderManager.getMap(orderId);
+            map = orderManager.getMap(orderId);
             Integer supplyId = CommonUtil.objectParseInteger(map.get("supplyId"));
             sendMnsMessage(supplyId, "saveOrder", map);
         } catch (Exception ex) {
-
+            log.error("action  saveOrder map {} exception {}",map,ex.getMessage());
         }
 
     }
 
     @Override
     public void sendGroupOrder(Integer groupOrderId) {
+        Map map=null;
         try {
-            Map map = groupOrderManager.getMap(groupOrderId);
+            map= groupOrderManager.getMap(groupOrderId);
             Integer supplyId = CommonUtil.objectParseInteger(map.get("supplyId"));
             sendMnsMessage(supplyId, "sendGroupOrder", map);
         } catch (Exception ex) {
-
+            log.error("action  sendGroupOrder  map {} exception {}",map,ex.getMessage());
         }
     }
 

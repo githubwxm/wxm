@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <header-title></header-title>
+  <link href="/voucher/static/css/style.css" rel="stylesheet">
+</head>
+<body vtag="root">
+<div class="panel panel-success">
+  <div class="panel-heading">
+    <h3 class="panel-title">
+      <i class="fa fa-user"></i>upload</h3>
+  </div>
+  <div class="panel-body">
+    <upload-pic :setting.sync="upSetting" :list.sync="subFormData.list"></upload-pic>
+  </div>
+  <input type="button" value="上传" @click="upload"/>
+
+</div>
+<script type="text/javascript" src="/voucher/api/local/client/system/load_config"></script>
+<script type="text/javascript" src="/voucher/static/script/local/require/require.js"></script>
+<script type="text/javascript" src="/voucher/static/script/local/require_config.js"></script>
+<script type="text/javascript">
+  var rootVue;
+  require_js_file([],function(Vue,fnr){
+
+    rootVue = new Vue({
+      el: '[vtag=root]',
+      data:{
+        upSetting:{
+          amount:5
+        },
+        subFormData: {
+          xx: 'oo',
+          list:[
+            {link:'gen1/upls/2016/08/13/1471052132446870.jpg'},
+          ]
+        }
+      },
+      methods:{
+        getFirstUploadFile:function(list){
+          for(var i = 0; i<list.length; i++){
+            if(list[i].isNew == true)return list[i];
+          }
+          return false;
+        },
+        upload:function(){
+          var self = this;
+          var item = this.getFirstUploadFile(this.subFormData.list);
+          if(item == false){this.doSubForm();return;}
+          var params = {file:item.link.replace(/^data:image\/\w+;base64,/, ""),name:item.name};
+          var deferred = fnr.request.upload(params);
+          deferred.then(function(result){
+            var resp = result.json();
+            if(resp.code != 200)return;
+            item.link = resp.data.link;
+            delete item.isNew;
+            delete item.name;
+            self.upload();
+          },function(error){
+
+          }).catch(function(exception){
+
+          });
+        },
+        doSubForm:function(){
+          console.log(this.subFormData);
+          alert('do submit form');
+        }
+      }
+    });
+  });
+</script>
+</body>
+</html>

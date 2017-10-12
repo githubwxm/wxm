@@ -398,8 +398,15 @@ public class LockTransactionManager {
         if (order == null) {
             throw new ApiException("订单不存在");
         }
-        if (!String.valueOf(params.get(EpConstant.EpKey.CORE_EP_ID)).equals(String.valueOf(orderItem.getSupplier_core_ep_id()))) {
-            throw new ApiException("非法请求:当前企业不能审核该退订订单");
+        if (orderItem.getPro_type() == ProductConstants.ProductType.PACKAGE){
+            //如果是套票，退款审核为打包商，也就是套票供应商
+            if (CommonUtil.objectParseInteger(params.get(EpConstant.EpKey.EP_ID)) != orderItem.getSupplier_ep_id().intValue()){
+                throw new ApiException("非法请求:当前企业不能审核该退订订单");
+            }
+        }else {
+            if (!String.valueOf(params.get(EpConstant.EpKey.CORE_EP_ID)).equals(String.valueOf(orderItem.getSupplier_core_ep_id()))) {
+                throw new ApiException("非法请求:当前企业不能审核该退订订单");
+            }
         }
         boolean status = Boolean.parseBoolean(params.get("status").toString());
         if (status && orderItem.getPro_type() == ProductConstants.ProductType.SCENERY && orderItem.getRefund_quantity() + orderItem.getUsed_quantity() + refundOrder.getQuantity() > orderItem.getQuantity()) {

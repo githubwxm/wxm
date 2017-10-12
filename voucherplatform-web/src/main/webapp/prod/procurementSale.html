@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en" vtag="root">
+<head>
+    <meta charset="UTF-8">
+    <header-title></header-title>
+    <link href="/voucher/static/css/style.css" rel="stylesheet">
+</head>
+<body>
+<div class="Establish">
+    <validator name="checkSubForm">
+        <form id="subForm" class="form-horizontal" method="post" onSubmit="return false;">
+            <div class="form-group">
+                <label class="col-md-2 col-sm-2 col-lg-2 control-label">市场价:</label>
+                <div class="col-sm-5 col-lg-5 col-md-5">
+                    <input class="form-control" type="text" maxlength="30" v-model="subFormData.market_price" disabled>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-2 col-sm-2 col-lg-2 control-label">最低零售价:</label>
+                <div class="col-sm-5 col-lg-5 col-md-5">
+                    <input class="form-control" type="text" maxlength="30" v-model="subFormData.min_price" disabled>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-2 col-sm-2 col-lg-2 control-label">进货价:</label>
+                <div class="col-sm-5 col-lg-5 col-md-5">
+                    <input class="form-control" type="text" maxlength="30" v-model="subFormData.buying_price" disabled>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-2 col-sm-2 col-lg-2 control-label">利润类型:</label>
+                <div class="col-sm-5 col-lg-5 col-md-5">
+                    <remote-sel :setting="priceTypeSetting" :value.sync="subFormData.sale" @change="priceTypeChange"></remote-sel>
+                </div>
+            </div>
+            <div class="form-group" v-if="subFormData.sale == 5071">
+                <label class="col-md-2 col-sm-2 col-lg-2 control-label">利润:</label>
+                <div class="col-sm-5 col-lg-5 col-md-5">
+                    <input type="number" class="form-control" min="0" v-model="subFormData.price_pixed" v-validate:price_pixed="{required:true,pattern:'/^[1-9]{1}[0-9]{0,6}(\\.[0-9]{1,2}){0,1}$|^0(\\.[0-9]{1,2}){0,1}$/'}" initial="off" @blur="pricePixed"/>
+                </div>
+                <div class="Prompt">
+                    <span v-if="$checkSubForm.price_pixed.required"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请填写利润！</label></span>
+                    <span v-if="$checkSubForm.price_pixed.pattern"><img src="/voucher/static/style/img/baocuo.png"><label class="error">格式不正确！</label></span>
+                </div>
+            </div>
+            <div v-if="subFormData.sale == 5072" style="padding-bottom:15px">
+                <label class="col-md-2 col-sm-2 col-lg-2 control-label" style="padding-right: 24px;">利润:</label>
+                <div class="input-group" style="width: 40%;padding-left:5px">
+                    <input type="number" class="form-control" min="0" v-model="subFormData.price_percent" v-validate:price_percent="{required:true,pattern:'/^[1-9]{1}[0-9]{0,6}(\\.[0-9]{1,2}){0,1}$|^0(\\.[0-9]{1,2}){0,1}$/'}" initial="off" @blur="pricePercent">
+                    <span class="input-group-addon" style="position:absolute;right:-2px;top:0px; width:34px;height: 34px; z-index: 999; padding:0px; line-height: 34px;;">%</span>
+                </div>
+                <div class="Prompt">
+                    <span v-if="$checkSubForm.price_percent.required"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请填写利润！</label></span>
+                    <span v-if="$checkSubForm.price_percent.pattern"><img src="/voucher/static/style/img/baocuo.png"><label class="error">格式不正确！</label></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-2 col-sm-2 col-lg-2 control-label">出货价:</label>
+                <div class="col-sm-5 col-lg-5 col-md-5">
+                    <input class="form-control" type="text" maxlength="30" v-model="subFormData.unit_price" disabled>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-2 col-sm-2 col-lg-2 control-label">&nbsp;</label>
+                <div class="col-md-6 col-sm-6 col-lg-6">
+                    <button class="btn btn-success" type="submit" @click="add">确定</button>
+                    <button class="btn btn-success" type="submit" @click="close">关闭</button>
+                </div>
+            </div>
+        </form>
+    </validator>
+</div>
+<script type="text/javascript" src="/voucher/api/local/client/system/load_config"></script>
+<script type="text/javascript" src="/voucher/static/script/local/require/require.js"></script>
+<script type="text/javascript" src="/voucher/static/script/local/require_config.js"></script>
+<script type="text/javascript" src="/voucher/static/script/local/view/prod/procurementSaleView.js"></script>
+</body>
+</html>

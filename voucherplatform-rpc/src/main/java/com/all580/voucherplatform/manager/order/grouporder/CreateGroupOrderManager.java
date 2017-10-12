@@ -12,16 +12,20 @@ import com.all580.voucherplatform.utils.voucher.VoucherUrlGenerate;
 import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.lang.UUIDGenerator;
-import com.framework.common.net.HttpUtils;
 import com.framework.common.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -78,10 +82,13 @@ public class CreateGroupOrderManager {
             log.warn("订单号为{}的订单已存在", orderId);
             throw new Exception("订单已处理！");
         }
+        groupOrder.setChannel(CommonUtil.objectParseString(map.get("channel")));
         groupOrder.setFormAreaCode(CommonUtil.objectParseString(map.get("formAreaCode")));
-        groupOrder.setFormAreaCode(CommonUtil.objectParseString(map.get("formAddr")));
+        String  formAddr = CommonUtil.objectParseString(map.get("formAddr"));
+        groupOrder.setFormAddr(StringUtils.isEmpty(formAddr)?groupOrder.getFormAreaCode():formAddr);
         groupOrder.setTravelName(CommonUtil.objectParseString(map.get("travelName")));
-        groupOrder.setManager(CommonUtil.objectParseString(map.get("manager")));
+        String  manager = CommonUtil.objectParseString(map.get("manager"));
+        groupOrder.setManager(StringUtils.isEmpty(manager)?"经理人":manager);
         groupOrder.setGroupNumber(CommonUtil.objectParseString(map.get("groupNumber")));
         groupOrder.setGuideName(CommonUtil.objectParseString(map.get("guideName")));
         groupOrder.setGuideMobile(CommonUtil.objectParseString(map.get("guideMobile")));
@@ -175,24 +182,33 @@ public class CreateGroupOrderManager {
         dataUrl = CommonUtil.objectParseString(map.get("dataUrl"));
         List<Map> visitorList = null;
         if (!StringUtils.isEmpty(dataUrl)) {
-            String content = HttpUtils.get(dataUrl, null, "utf-8");
+            CloseableHttpClient httpClient = HttpClientBuilder.create().build();
+            HttpGet httpGet = new HttpGet(dataUrl);
+            String content = null;
+            try {
+                content = IOUtils.toString(httpClient.execute(httpGet).getEntity().getContent());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             visitorList = JsonUtils.json2List(content);
         } else {
             visitorList = (List<Map>) map.get("visitors");
         }
-        for (Map m : visitorList) {
-            String seqId = CommonUtil.objectParseString(m.get("seqId"));
-            String customName = CommonUtil.objectParseString(m.get("customName"));
-            String mobile = CommonUtil.objectParseString(m.get("mobile"));
-            String idType = CommonUtil.objectParseString(m.get("idType"));
-            String idNumber = CommonUtil.objectParseString(m.get("idNumber"));
-            GroupVisitor groupVisitor = new GroupVisitor();
-            groupVisitor.setSeqId(seqId);
-            groupVisitor.setCustomName(customName);
-            groupVisitor.setMobile(mobile);
-            groupVisitor.setIdType(idType);
-            groupVisitor.setIdNumber(idNumber);
-            this.visitorList.add(groupVisitor);
+        if(visitorList!= null){
+            for (Map m : visitorList) {
+                String seqId = CommonUtil.objectParseString(m.get("seqId"));
+                String customName = CommonUtil.objectParseString(m.get("customName"));
+                String mobile = CommonUtil.objectParseString(m.get("mobile"));
+                String idType = CommonUtil.objectParseString(m.get("idType"));
+                String idNumber = CommonUtil.objectParseString(m.get("idNumber"));
+                GroupVisitor groupVisitor = new GroupVisitor();
+                groupVisitor.setSeqId(seqId);
+                groupVisitor.setCustomName(customName);
+                groupVisitor.setMobile(mobile);
+                groupVisitor.setIdType(idType);
+                groupVisitor.setIdNumber(idNumber);
+                this.visitorList.add(groupVisitor);
+            }
         }
     }
 
@@ -202,7 +218,7 @@ public class CreateGroupOrderManager {
     }
 
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class}, propagation = Propagation.REQUIRES_NEW)
-    private Integer saveOrder() {
+    public Integer saveOrder() {
         orderMapper.insertSelective(groupOrder);
 
         for (GroupVisitor groupVisitor : visitorList) {

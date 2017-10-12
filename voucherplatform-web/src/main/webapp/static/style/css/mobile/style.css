@@ -1,0 +1,1696 @@
+@charset "utf-8";
+/*消息列表页*/
+.message-list-page .mbox{
+	font: normal 14px/1.4 "Microsoft YaHei";
+}
+.message-list-page .message-tab .am-tabs-bd .am-tab-panel{
+	padding: 0;
+	background-color: #fff;
+}
+	/*消息列表*/
+	.message-list-page .message-tab .message-list a{
+		position: relative;
+		display: block;
+		padding: 15px;
+		color: #666;
+		border-bottom: 1px solid #e8e6e6;
+	}
+		.message-list-page .message-tab .message-list .list-cont,.message-list-page  .message-list .cont-tit,.message-list-page .message-list .cont-intro{
+			display: block;
+		}
+		.message-list-page .message-tab .message-list .list-icon{
+			position: absolute;
+			left: 15px;
+			top: 50%;
+			padding: 6px;
+			margin-top: -18px;
+			font: normal 18px/1 "Microsoft YaHei";
+			color: #fff;
+			background-color: #ffc600;
+			border-radius: 5px;
+		}
+		.message-list-page .message-tab .message-list .list-cont{
+			margin-left: 50px;
+		}
+		.message-list-page  .message-list .cont-tit{
+			position: relative;
+		}
+			.message-list-page  .message-list .cont-tit .tit-text{
+				display: inline-block;
+				max-width: 80%;
+				vertical-align: middle;
+				font:normal 16px/2 "Microsoft YaHei";
+			}
+			.message-list-page  .message-list .cont-tit .tit-date{
+				float: right;
+				font: normal 12px/2.5 "Microsoft YaHei";
+				color: #a8a7a7;
+			}
+		.message-list-page  .message-list .cont-intro{
+			padding-bottom: 8px;
+			font: normal 12px/1 "Microsoft YaHei";
+			color: #a8a7a7;
+		}
+
+/*消息详情页*/
+.message-cont-page .mbox{
+	font: normal 14px/1.4 "Microsoft YaHei";
+}
+.message-cont-page .message-cont{
+	padding:15px 15px 40px;
+	background-color: #fff;
+}
+	.message-cont-page .message-cont .message-tit{
+		margin-bottom: 10px;
+		font: normal 18px/1 "Microsoft YaHei";
+		color: #333;
+	}
+	.message-cont-page .message-cont .message-date{
+		color: #999;
+	}
+	.message-cont-page .message-cont .cont-intro{
+		padding-top: 15px;
+		font: normal 14px/2 "Microsoft YaHei";
+		color: #999999;
+	}
+    
+/*景点订单列表页*/
+.tourist-list-page .mbox{
+	font: normal 14px/1.4 "Microsoft YaHei";
+}
+
+.tourist-list-page .am-tab-panel{
+	padding: 0;
+}
+.tourist-list-page .mboxin-padding{
+	padding-top: 15px;
+}
+		
+/*订单各状态*/
+/*已完成*/
+.order-done .order-state{
+	color: #2ebd59;
+}
+/*已确认*/
+.order-comfirmed .order-state{
+	color: #36a0f8;
+}
+/*待确认*/
+.order-willcomfirm .order-state{
+	color: #ff8c2a;
+}
+/*已支付*/
+.order-payed .order-state{
+	color: #ff0000;
+}
+/*待付款*/
+.order-willpay .order-state{
+	color: #ff7e00;
+}
+/*预订成功*/
+.order-success .order-state{
+	color: #2ebd59;
+}
+	.order-success .cont-foot .order-next{
+		color: #797979;
+		background-color: transparent;
+		border-color: #ccc;
+	}
+	
+
+/*景点订单详情页*/
+.tourist-list-cont-page .mbox{
+	padding-bottom: 60px;
+	font: normal 14px/3 "Microsoft YaHei";
+	color: #4a4949;
+}
+	.tourist-list-cont-page .tourist-list-cont .list-primary{
+		padding-top: 5px;
+		font: normal 16px/2 "Microsoft YaHei";
+		color: #333;
+	}
+    /*票价支付方式*/
+	.tourist-list-cont-page .list-cont .pay-type{
+		position: absolute;
+		right: 0;
+		top: 0;
+		min-width: unset;
+	}
+    /*金额*/
+	.tourist-list-cont-page .price-wrap .price{
+		color: #f00;
+	}
+    /*订单信息*/
+	.tourist-list-cont-page .ticket-info{
+		padding:6px 0 0;
+	}
+	    /*入园方式*/
+		.tourist-list-cont-page .ticket-method .method-type{
+			padding: .5em 0 1em;
+			line-height: 2;
+		}
+    /*景点名称信息*/
+	.tourist-list-cont-page .scene-info a{
+		display: block;
+		color: #4a4949;
+	}
+		.tourist-list-cont-page .scene-info .icon{
+			
+			font: normal 14px/3 "Microsoft YaHei";
+			color: #a2a2a2;
+		}
+        .tourist-list-cont-page .scene-info .scene-link .icon{
+	        position: absolute;
+			right: 0;;
+			top: 0;
+        }
+		.tourist-list-cont-page .scene-info .scene-link .list-label{
+			min-width: 5em;
+		}
+        .tourist-list-cont-page .scene-info .local-link .icon{
+	        margin-right: .2em;
+	        vertical-align: middle;
+	        font: normal 18px/2.3 "Microsoft YaHei";
+        }
+        .tourist-list-cont-page .scene-info .local-link{
+	        overflow: hidden;
+        }
+		.tourist-list-cont-page .scene-info .local-link .list-label{
+			min-width: 2em;
+		}
+        .tourist-list-cont-page .scene-info .local-link .text-nowrap{
+	        max-width: 87%;
+        }
+
+/*订单在线支付*/
+.paytype-choose-page .mbox{
+	padding-bottom: 75px;
+	font: normal 14px/2 "Microsoft YaHei";
+}
+.paytype-choose-page .bg-block{
+	margin-bottom: 0;
+}
+	.paytype-choose-page .product-info-wrap .am-panel{
+		border: none;
+	}
+	.paytype-choose-page .product-info-wrap .am-panel-hd{
+		padding: 0 15px;
+		font: normal 14px/3 "Microsoft YaHei";
+		border: none;
+		background-color: #fff;
+	}
+	.paytype-choose-page .product-info-wrap .am-panel-bd{
+		padding: 15px;
+		background-color: #f2f4f7;
+		/*border: none!important;*/
+	}
+	.paytype-choose-page .product-info-wrap .am-panel-group{
+		margin: 0;
+	}
+	.paytype-choose-page .bg-block .list-cont > span{
+		min-width: 5.5em;
+	}
+        .paytype-choose-page .product-info-wrap .panel-title-in .price{
+	        font-size: 16px;
+	        color: #f86a16;
+        }
+            .paytype-choose-page .product-info-wrap .panel-title-in .icon{
+	            float: right;
+	            font: normal 14px/3.2 "Microsoft YaHei";
+            }
+
+/*预定须知页面*/
+.order-notice-page .mbox{
+	font: normal 14px/3 "Microsoft YaHei";
+}
+	.order-notice-page .mboxin{
+		padding-top: 15px;
+	}
+    .order-notice-page .bg-block{
+		padding: 0 15px 15px;
+	}
+        .order-notice-page .bg-block dl,.order-notice-page .bg-block dt,.order-notice-page .bg-block dd{
+	        margin: 0;
+	        padding: 0;
+        }
+            .order-notice-page .bg-block dt{
+	            font: normal 16px/3 "Microsoft YaHei";
+	            color: #4e4e4e;
+            }
+            .order-notice-page .bg-block dd{
+	            font: normal 14px/2 "Microsoft YaHei";
+	            color: #7d7c7c;
+            }
+/*景点介绍 */
+.tourist-intro-page .mbox{
+	font: normal 14px/3 "Microsoft YaHei";
+}
+	.tourist-intro-page .mboxin{
+		padding-top: 15px;
+	}
+    .tourist-intro-page .bg-block{
+	    padding: 0 15px 15px;
+    }
+    
+    .tourist-intro-page  .name-wrap{
+	    padding: 0 15px;
+    }
+    
+    .tourist-intro-page .bg-block .list-tit{
+	    padding-top: .5em;
+	    font: normal 16px/3 "Microsoft YaHei";
+	    color: #333;
+    }
+    .tourist-intro-page .bg-block dl,.tourist-intro-page .bg-block dt,.tourist-intro-page .bg-block dd{
+	        margin: 0;
+	        padding: 0;
+        }
+            .tourist-intro-page .bg-block dt{
+	            font: normal 14px/2 "Microsoft YaHei";
+	            color: #4e4e4e;
+            }
+            .tourist-intro-page .bg-block dd{
+	            font: normal 14px/2 "Microsoft YaHei";
+	            color: #7d7c7c;
+            }
+            
+/*登陆页*/
+.logoin-page .container{
+	background-color: #eefdf6;
+}
+.logoin-page .mbox{
+	padding-bottom: 20px;
+	font: normal 14px/3 "Microsoft YaHei";
+}
+.logoin-page .mboxin-padding{
+	padding: 0 40px;
+}
+	/*logo*/
+	.logoin-page .com-logo{
+		padding: 50px 0 20px;
+	}
+	.logoin-page .com-logo .disimg{
+		max-width: 50%;
+	}
+	
+	/*表单*/
+		/*验证码*/
+		.logoin-page .logoin-form .msgcode{
+			border: none;
+		}
+			.logoin-page .logoin-form .msgcode .input-wrap{
+				padding: 0;
+				font-size: 0;
+			}
+			.logoin-page .logoin-form .msgcode input{
+				display: inline-block;
+				width: 49%;
+				text-indent: .5em;
+				border-bottom: 1px solid #cdcdcd;
+			}
+			
+			.logoin-page .logoin-form .msgcode .disimg{
+				position: absolute;
+				left: 50%;
+				bottom: 1px;
+			}
+		/*提交*/
+		.logoin-page .logoin-form .submit-wrap{
+			padding-top: 35px;
+			border: none;
+		}
+			.logoin-page .logoin-form .submit-wrap input{
+				width: 100%;
+				font-size: 16px;
+				text-align: center;
+				letter-spacing: 2em;
+				text-indent: 2em;
+				color: #fff;
+				background-color: #23c377;
+			}
+            
+/*景区订单填写*/
+.tourist-form-page .mbox{
+	padding-bottom: 70px;
+	font: normal 14px/3 "Microsoft YaHei";
+}
+.tourist-form-page .mboxin-tit{
+	padding: 0 14px;
+}
+	.tourist-form-page .form-style .am-form-group{
+		padding: 0;
+		background-color: #fff;
+	}
+	.tourist-form-page .form-style .input-wrap{
+		padding-left: 6em;
+		padding-right: 10px;
+	}
+        .tourist-form-page .form-style .text-lebel{
+			top: 50%;
+			left: 1em;
+			margin-top: -1.5em;
+	        font: normal 14px/3 "Microsoft YaHei";
+        }
+
+	/*产品名称*/
+	.tourist-form-page .product-form-information{
+		padding: 10px;
+		line-height: 2;
+	}
+		.tourist-form-page .product-form-information .info-tit{
+			display: -webkit-box;
+			display: -moz-box;
+			display: -webkit-flex;
+			display: -ms-flexbox;
+			display: flex;
+
+			-webkit-box-align: center;
+			-moz-box-align: center;
+			-ms-flex-align: center;
+			-webkit-align-items: center;
+			align-items: center;
+
+			-webkit-box-pack:justify;
+			-moz-box-pack:justify;
+			-ms-flex-pack:justify;
+			-webkit-justify-content: space-between;
+			justify-content: space-between;
+		}
+		.tourist-form-page .product-form-information .info-tit > span{
+			display: inline-block;
+			vertical-align: middle;
+		}
+			.tourist-form-page .product-form-information .info-tit .score{
+				/*display: inline-block;*/
+				padding: 0 10px;
+				margin-left: 10px;
+				vertical-align: middle;
+				font: normal 12px/2 "Microsoft YaHei";
+				color: #ea6e0c;
+				border: 1px solid #ea6e0c;
+			}
+		.tourist-form-page .product-form-information .info-tit .info-price{
+			color: #ff0000;
+		}
+			.tourist-form-page .product-form-information .info-tit .info-price .price{
+				font-size: 18px;
+			}
+		.tourist-form-page .product-form-information .info-tit .info-text{
+			max-width: 80%;
+		}
+	/*出行日期*/
+	.tourist-form-page .form-style .form-date{
+		
+	}
+		.tourist-form-page .form-style .form-date .input-wrap{
+			padding: 10px;
+			text-align: right;
+		}
+			.tourist-form-page .form-style .form-date .input-wrap .icon{
+				color: #999;
+			}
+			.tourist-form-page .form-style .form-date .date-list{
+				position: relative;
+				display: inline-block;
+				vertical-align: middle;
+				padding: 4px 10px;
+				border: 1px solid #dedede;
+			}
+			/*今天*/
+			.tourist-form-page .form-style .form-date .today{
+				color: #999;
+			}
+				.tourist-form-page .form-style .form-date .date-list > span,.tourist-form-page .form-style .form-date .date-list > em{
+					display: block;
+					font: normal 12px/1.5 "Microsoft YaHei";
+					text-align: center;
+				}
+
+			/*明天*/
+			.tourist-form-page .form-style .form-date .tomorrow.active{
+				color: #25c077;
+			}
+
+			/*更多日期*/
+			.tourist-form-page .form-style .form-date .more-date.active{
+				color: #25c077;
+			}
+			.tourist-form-page .form-style .form-date .more-date{
+				max-width: 64px;
+			}
+			.tourist-form-page .form-style .form-date .more-date input{
+				position: absolute;
+				left: 0;
+				top: 0;
+				z-index: 333;
+				width: 100%;
+				opacity: 0;
+			}
+
+	/*预定数量*/
+	.tourist-form-page .form-style .product-number .input-wrap{
+		padding-top: 10px;
+		padding-bottom: 10px;
+		font-size: 0;
+		text-align: right;
+	}
+		.tourist-form-page .form-style .product-number .input-wrap input{
+			display: inline-block;
+			vertical-align: middle;
+			width: 30px;
+			height: 30px;
+			line-height: 1;
+			border: 1px solid #dedede;
+			text-align: center;
+		}
+		.tourist-form-page .form-style .product-number .input-wrap .reduce.active{
+			color: #ff7200;
+		}
+		.tourist-form-page .form-style .product-number .input-wrap input[type="text"]{
+			color: #23c478;
+		}
+		.tourist-form-page .form-style .product-number .input-wrap .add{
+			color: #ff7200;
+		}
+
+	.tourist-form-page .form-style .reduce-icon{
+		text-align: right;
+		padding: 10px 10px 0;
+		line-height: 1;
+		background-color: #fff;
+	}
+		.tourist-form-page .form-style .reduce-icon > span{
+			display: inline-block;
+			vertical-align: middle;
+			width: 2em;
+			font:normal 12px/2 "Microsoft YaHei";
+			text-align: center;
+			color: #fff;
+			background-color: #25c077;
+			border-radius: 50%;
+		}
+
+
+	/*等待登陆页面*/
+.loading-page .container{
+	background-color: #edfdf5;
+}
+.loading-page .mbox{
+	font: normal 14px/3 "Microsoft YaHei";
+}
+/*logo*/
+.loading-page .com-logo{
+	padding: 105px 0 15px;
+	text-align: center;
+	color: #626262;
+}
+.loading-page .com-logo .disimg{
+	max-width: 20%;
+}
+/*提示信息*/
+	.loading-page .loading-msg{
+		line-height: 1.8;
+		text-align: center;
+	}
+		.loading-page .loading-msg .msg-cont{
+			display: inline-block;
+			padding: 10px 15px;
+			color: #626262;
+			background-color: #f2f5b6;
+			border-radius: 10px;
+		}
+			.loading-page .loading-msg .msg-cont .help-tel{
+				font-size: 18px;
+				font-weight: bold;
+				color: #ff7800;
+			}
+
+/*景区门票列表页面*/
+.tourist-ticket-list-page .mbox{
+	font: normal 14px/2 "Microsoft YaHei";
+}
+/*搜索框*/
+.tourist-ticket-list-page .mbox-search .search-text{
+	background-color: #ffba00;
+}
+
+/*景点门票内容页面*/
+.tourist-ticket-cont-page .mbox{
+	font: normal 14px/3 "Microsoft YaHei";
+}
+/*搜索框*/
+.tourist-ticket-cont-page .mbox-search .search-text{
+	background-color: #ffba00;
+}
+/*门票提供商*/
+.tourist-ticket-cont-page .tourist-name-wrap{
+	padding: 10px;
+	font: normal 12px/2 "Microsoft YaHei";
+}
+.tourist-ticket-cont-page .tourist-name-wrap .tourist-logo img{
+	float: left;
+	height: 24px;
+}
+.tourist-ticket-cont-page .tourist-name-wrap .tourist-logo > em{
+	padding-left: 1em;
+}
+
+
+.tourist-ticket-cont-page .tourist-ticket-cont .tourist-name{
+	padding: 0 20px;
+}
+.tourist-ticket-cont-page .tourist-ticket-cont .border-list a{
+	display: block;
+	color: #4e4e4e;
+}
+	.tourist-ticket-cont-page .tourist-ticket-cont .bg-block .list-label{
+		min-width: unset;
+		padding-right: 10px;
+	}
+	.tourist-ticket-cont-page .tourist-ticket-cont .bg-block .text-nowrap{
+		max-width: 80%;
+	}
+	.tourist-ticket-cont-page .tourist-ticket-cont .list-cont .icon{
+		color: #999;
+	}
+	.tourist-ticket-cont-page .tourist-ticket-cont .list-cont .right-icon{
+		position: absolute;
+		right: 0;
+		top: 0;
+		font: normal 14px/3 "Microsoft YaHei";
+	}
+
+	/*票种*/
+	.tourist-ticket-cont-page .ticket-type .type-head{
+		padding: 0 10px;
+		background-color: #fff;
+	}
+		.tourist-ticket-cont-page .ticket-type .type-head .icon{
+			font: normal 14px/3 "Microsoft YaHei";
+			color: #999;
+		}
+		.tourist-ticket-cont-page .ticket-type .type-head .left-icon{
+			padding: 5px;
+			line-height: 1;
+			color: #fff;
+			background-color: #7bc00e;
+			border-radius: 50%;
+		}
+		.tourist-ticket-cont-page .ticket-type .type-head .right-icon{
+			float: right;
+		}
+
+		/*票价等*/
+	.tourist-ticket-cont-page .ticket-type .type-in{
+		padding: 10px;
+		line-height: 2;
+	}
+		.tourist-ticket-cont-page .ticket-type .type-in .ticket-tit{
+			color: #7d7c7c;
+		}
+		.tourist-ticket-cont-page .ticket-type .type-in small{
+			display: block;
+			color: #a9a8a8;
+		}
+		.tourist-ticket-cont-page .ticket-type .type-in .ticket-score{
+			display: inline-block;
+			padding: 0 10px;
+			font-size: 12px;
+			color: #ffba00;
+			border: 1px solid #ffba00;
+		}
+
+		.tourist-ticket-cont-page .ticket-type .type-in .ticket-intro{
+			font-size: 0;
+		}
+		.tourist-ticket-cont-page .type-in .ticket-intro .intro-price,.tourist-ticket-cont-page .type-in .ticket-intro .intro-link{
+			display: inline-block;
+			vertical-align: middle;
+			width: 49%;
+			font-size: 14px;
+		}
+			.tourist-ticket-cont-page .type-in .ticket-intro .price{
+				color: #f00;
+			}
+
+		/*票价等*/
+		.tourist-ticket-cont-page .type-in .ticket-intro .intro-price{
+			padding-top: 10px;
+		}
+		.tourist-ticket-cont-page .type-in .ticket-intro .intro-price .price{
+			font-size: 10px;
+		}
+			.tourist-ticket-cont-page .type-in .ticket-intro .intro-price .price span{
+				font-size: 14px;
+			}
+		.tourist-ticket-cont-page .type-in .ticket-intro .intro-price .delete{
+			margin-left: 5px;
+			font-size: 10px;
+			color: #666;
+			text-decoration: line-through;
+		}
+		/*票型说明链接*/
+		.tourist-ticket-cont-page .type-in .ticket-intro .intro-price .ticket-intro-link{
+			display: inline-block;
+			padding: 0 5px;
+			font: normal 12px/2 "Microsoft YaHei";
+			color: #fff;
+			background-color: #7bc00e;
+		}
+
+		/*库存*/
+		.tourist-ticket-cont-page .type-in .ticket-intro .intro-price .ticket-remain{
+			padding-right: 10px;
+			font-size: 12px;
+			color: #b6b6b6;
+		}
+
+	/*预定链接*/
+	.tourist-ticket-cont-page .type-in .ticket-intro .intro-link a{
+		display: block;
+		text-align: right;
+		color: #555;
+	}
+		.tourist-ticket-cont-page .type-in .ticket-intro .intro-link a .link-text{
+			display: block;
+			min-width: 45px;
+			padding: 0 10px;
+			text-align: center;
+			color: #ffba00;
+			border: 1px solid #ffba00;
+		}
+		.tourist-ticket-cont-page .type-in .ticket-intro .intro-link .link-text-wrap{
+			color: #fff;
+			display: inline-block;
+		}
+		.tourist-ticket-cont-page .type-in .ticket-intro .intro-link a .link-text:first-child{
+			color: #fff;
+			background-color: #ffba00;
+		}
+			.tourist-ticket-cont-page .type-in .ticket-intro .intro-link a .link-text + .link-text{
+				line-height: 1.5;
+			}
+		.tourist-ticket-cont-page .type-in .ticket-intro .intro-link .price-other{
+			display: block;
+			padding-top: 5px;
+			font-size: 12px;
+		}
+
+/*酒店介绍页面*/
+.hotel-introduction-page .mbox{
+	font: normal 14px/3 "Microsoft YaHei";
+}
+	.hotel-introduction-page .hotel-introduction dl,.hotel-introduction-page .hotel-introduction dt,.hotel-introduction-page .hotel-introduction dd{
+		margin: 0;
+		padding: 0;
+		font: normal 14px/2 "Microsoft YaHei";
+	}
+	.hotel-introduction-page .hotel-introduction dt,.hotel-introduction-page .hotel-introduction dd{
+		padding-left: 10px;
+		line-height: 2;
+	}
+	.hotel-introduction-page .hotel-introduction dt{
+		color: #333333;
+	}
+	.hotel-introduction-page .hotel-introduction dd{
+		color: #797979;
+	}
+
+	/*酒店名*/
+	.hotel-introduction-page .hotel-introduction .hotel-name-tel{
+		font-size: 0;
+	}
+	.hotel-introduction-page .hotel-introduction .hotel-name-tel .hotel-name,.hotel-introduction-page .hotel-introduction .hotel-name-tel .hotel-tel{
+		display: inline-block;
+		vertical-align: middle;
+	}
+	.hotel-introduction-page .hotel-introduction .hotel-name-tel .hotel-name{
+		width: 80%;
+		font:normal 16px/4.5 "Microsoft YaHei";
+		border-right: 1px solid #dedede;
+	}
+	/*电话*/
+	.hotel-introduction-page .hotel-introduction .hotel-name-tel .hotel-tel{
+		width: 19%;
+		text-align: center;
+	}
+		.hotel-introduction-page .hotel-introduction .hotel-name-tel .hotel-tel a{
+			display: block;
+			padding-left: 10px;
+			color: #23c377;
+		}
+			.hotel-introduction-page .hotel-introduction .hotel-name-tel .hotel-tel .icon{
+				font: normal 30px/2.5 "Microsoft YaHei";
+			}
+
+	/*交通信息、酒店介绍标题*/
+	.hotel-introduction-page .hotel-introduction .list-tit{
+		padding-top: 10px;
+		font-size: 16px;
+		line-height: 3;
+	}
+	.hotel-introduction-page .hotel-introduction .list-tit a{
+		display: block;
+		color: #333;
+	}
+		.hotel-introduction-page .hotel-introduction .list-tit a .tit-link{
+			float: right;
+			color: #23c377;
+		}
+			.hotel-introduction-page .hotel-introduction .list-tit a .tit-link .icon{
+				vertical-align: text-bottom;
+			}
+
+	/*交通信息*/
+	.hotel-introduction-page .traffic-info .list-content{
+		margin: 0 -10px;
+		padding: 10px;
+		border-bottom: 1px solid #dedede;
+	}
+	.hotel-introduction-page .traffic-info .list-content:last-of-type{
+		border: none;
+	}
+		.hotel-introduction-page .traffic-info .list-content .distance{
+			float: right;
+		}
+	.hotel-introduction-page .traffic-info .list-content dt{
+		position: relative;
+	}
+	.hotel-introduction-page .traffic-info .list-content dt:before{
+		content: "";
+		position: absolute;
+		left: 0;
+		top: 50%;
+		z-index: 200;
+		width: 2px;
+		height: 2px;
+		margin-top: -1px;
+		background-color: #000;
+	}
+	/*酒店介绍*/
+	.hotel-introduction-page .hotel-brief{
+		line-height: 2;
+	}
+	.hotel-introduction-page .hotel-brief .list-content{
+		font-size: 0;
+		color: #797979;
+	}
+		.hotel-introduction-page .hotel-brief .list-content .brief-list{
+			display: inline-block;
+			vertical-align: middle;
+			width: 49.5%;
+			font-size: 14px;
+		}
+		.hotel-introduction-page .hotel-brief  .brief-list .list-inblock > span{
+			margin-right: 10px;
+		}
+
+	.hotel-introduction-page .hotel-brief .brief-text{
+		padding: 5px 0;
+		color: #797979;
+	}
+
+/*酒店列表页面*/
+.hotel-list-page .mbox{
+	font: normal 14px/1.4 "Microsoft YaHei";
+}
+	.hotel-list-page .mboxin-padding{
+		padding: 0;
+	}
+
+.hotel-list-page .am-nav-tabs>li{
+	width: 25%;
+}
+
+/*酒店订单详情页面*/
+.hotel-list-cont-page .mbox{
+	padding-bottom: 60px;
+	font: normal 14px/3 "Microsoft YaHei";
+	color: #4a4949;
+}
+.hotel-list-cont-page .bg-block{
+	padding: 5px 0;
+}
+	.hotel-list-cont-page .bg-block .border-list{
+		border: none;
+	}
+	.hotel-list-cont-page .bg-block .list-cont .list-label{
+		min-width: 5.5em;
+	}
+/*订单跟踪*/
+.hotel-list-cont-page .order-state-after a{
+	display: block;
+	padding: 10px 0;
+	color: #666;
+}
+.hotel-list-cont-page .order-state-after .list-cont .list-label{
+	min-width: 7.5em;
+}
+	.hotel-list-cont-page .order-state-after .list-cont{
+		position: relative;
+	}
+	.hotel-list-cont-page .order-state-after .cont-text{
+		padding-top: 7px;
+		line-height: 2;
+	}
+	.hotel-list-cont-page .order-state-after .right-icon{
+		position: absolute;
+		right: 0;
+		top:50%;
+		margin-top: -.5em;
+		font: normal 18px/1 "Microsoft YaHei";
+		color: #999;
+	}
+	.hotel-list-cont-page .order-state-after .icon-wrap{
+		position: absolute;
+		left: 5em;
+		top: 15px;
+		min-width: 20px;
+		line-height: 1;
+	}
+	.hotel-list-cont-page .order-state-after .icon-wrap:after{
+		content: "";
+		position: absolute;
+		top: 100%;
+		left: 50%;
+		width: 4px;
+		height: 30px;
+		margin-left: -2px;
+		background-color: #b6b6b6;
+		background: -webkit-radial-gradient( farthest-side at top, #b6b6b6, #fff); /* Safari 5.1 - 6.0 */
+		background: -o-radial-gradient( farthest-side at top, #b6b6b6,  #fff); /* Opera 11.6 - 12.0 */
+		background: -moz-radial-gradient( farthest-side at top, #b6b6b6,  #fff); /* Firefox 3.6 - 15 */
+		background: radial-gradient( farthest-side at top,#b6b6b6,  #fff); /* 标准的语法 */
+	}
+		.hotel-list-cont-page .order-state-after .icon-wrap .icon{
+			width: 20px;
+			height: 20px;
+			padding: 4px;
+			font-size: 12px;
+			color: #fff;
+			background-color: #7bc00e;
+			border-radius: 50%;
+		}
+
+	.hotel-list-cont-page .order-state-after .cont-text > span,.hotel-list-cont-page .order-state-after .cont-text > em{
+		display: block;
+	}
+/*订单状态*/
+.hotel-list-cont-page .order-state-wrap .price,.hotel-list-cont-page .order-state-wrap .state-text{
+	color: #f00;
+}
+
+/*酒店名称信息*/
+.hotel-list-cont-page .hotel-info .border-list:first-of-type{
+	padding-bottom: 5px;
+	border-bottom: 1px solid #dedede;
+}
+.hotel-list-cont-page .hotel-info a{
+	display: block;
+	color: #4a4949;
+}
+	.hotel-list-cont-page .hotel-info .icon{
+		font: normal 14px/3 "Microsoft YaHei";
+		color: #a2a2a2;
+	}
+	/*酒店内容链接*/
+		.hotel-list-cont-page .hotel-info .hotel-link{
+			position: relative;
+			display: block;
+			color: #4a4949;
+		}
+
+		.hotel-list-cont-page .hotel-info .hotel-link .icon{
+			position: absolute;
+			right: 0;;
+			top: 50%;
+			font-size: 18px;
+			margin-top: -1.5em;
+		}
+	.hotel-list-cont-page .hotel-info .local-link .icon{
+		margin-right: .2em;
+		vertical-align: middle;
+		font: normal 18px/2.3 "Microsoft YaHei";
+	}
+	.hotel-list-cont-page .hotel-info .local-link .list-label{
+		min-width: 2em;
+	}
+	.hotel-list-cont-page .hotel-info .local-link .right-icon{
+		position: absolute;
+		top: 50%;
+		right: 0;
+		margin-top: -.4em;
+		margin-right: 0;
+		line-height: 1;
+	}
+		.hotel-list-cont-page .hotel-info .local-link{
+			overflow: hidden;
+		}
+			.hotel-list-cont-page .hotel-info .local-link .text-nowrap{
+				max-width: 87%;
+			}
+
+/*酒店内容页*/
+.hotel-ticket-list-cont-page .mbox{
+	font: normal 14px/3 "Microsoft YaHei";
+}
+	.hotel-ticket-list-cont-page .bg-block .icon{
+		font: normal 16px/3 "Microsoft YaHei";
+	}
+	.hotel-ticket-list-cont-page .item{
+		position: relative;
+	}
+		.hotel-ticket-list-cont-page .item-linked a{
+			padding: 0;
+		}
+	.hotel-ticket-list-cont-page input{
+		padding: 0;
+		margin: 0;
+		border: none;
+		font-size: 14px;
+	}
+
+	/*酒店名称*/
+	.hotel-ticket-list-cont-page .hotel-name-wrap{
+		padding: 10px;
+		line-height: 1.5;
+		border: none;
+		color: #000;
+	}
+		.hotel-ticket-list-cont-page .hotel-name-wrap .hotel-name{
+			font-size: 16px;
+		}
+	/*酒店政策*/
+	.hotel-ticket-list-cont-page .hotel-rules{
+		color: #000;
+	}
+	.hotel-ticket-list-cont-page .hotel-rules .icon{
+		color: #999;
+	}
+	/*酒店详情*/
+	.hotel-ticket-list-cont-page .hotel-content{
+		border-bottom: 1px solid #dedede;
+	}
+	.hotel-ticket-list-cont-page .hotel-content .item-main{
+		color: #666;
+	}
+	.hotel-ticket-list-cont-page .hotel-content .item-title{
+		color: #0e90d2;
+	}
+	.hotel-ticket-list-cont-page .hotel-content .right-icon{
+		margin-left: 5px;
+		vertical-align: text-bottom;
+		color: #999;
+	}
+	/*酒店地址*/
+	.hotel-ticket-list-cont-page .hotel-local{
+		padding: 5px 10px;
+		border: none;
+	}
+	/*入住时间*/
+	.hotel-ticket-list-cont-page .hotel-date{
+		text-align: center;
+	}
+	.hotel-ticket-list-cont-page .hotel-date .date-list{
+		display: inline-block;
+		vertical-align: middle;
+		width: 49%;
+	}
+		.hotel-ticket-list-cont-page .hotel-date input{
+			color: #23c377;
+		}
+	.hotel-ticket-list-cont-page .hotel-date .total-day{
+		position: absolute;
+		left: 50%;
+		top: 20px;
+		padding: 0 1em;
+		margin-left: -2.5em;
+		font: normal 12px/1.2 "Microsoft YaHei";
+		border: 1px solid #999;
+		border-radius: 8px;
+	}
+		.hotel-ticket-list-cont-page .date-leave input{
+			text-indent: 1em;
+			text-align: right;
+			border-left: 1px solid #dedede;
+		}
+	/*房间列表*/
+	.hotel-ticket-list-cont-page .room-list{
+		line-height: 1.5;
+	}
+	.hotel-ticket-list-cont-page .room-list a{
+		display: block;
+		color: #797979;
+	}
+		.hotel-ticket-list-cont-page .room-list .list-desc{
+			/*display: inline-block;*/
+			font-size: 12px;
+			color: #797979;
+		}
+		.hotel-ticket-list-cont-page .room-list .list-desc a{
+			display: block;
+			width: 100%;
+		}
+		.hotel-ticket-list-cont-page .room-list .list-desc .room-type{
+			font-size: 16px;
+			color: #000;
+		}
+
+	/*价格*/
+	.hotel-ticket-list-cont-page .room-list .list-price .price{
+		margin-right: 5px;
+		color: #ff0000;
+	}
+
+.hotel-ticket-list-cont-page .room-list .list-price .order-link span,.hotel-ticket-list-cont-page .room-list .list-price .order-link em{
+	display: inline-block;
+	margin-top: 5px;
+	padding: 0 .6em;
+	vertical-align: middle;
+	font: normal 12px/2 "Microsoft YaHei";
+	border: 1px solid #ff7e00;
+}
+	.hotel-ticket-list-cont-page .room-list .list-price .order-link span{
+		color: #fff;
+		background-color: #ff7e00;
+	}
+	.hotel-ticket-list-cont-page .room-list .list-price .order-link em{
+		color: #ff7e00;
+	}
+
+/*房型介绍页面*/
+.room-introduction-page .mbox{
+	padding-bottom: 60px;
+	font: normal 14px/2 "Microsoft YaHei";
+}
+.room-introduction-page .border-list{
+	border-color: #dedede;
+}
+.room-introduction-page .room-intro-tit{
+	font: normal 16px/4 "Microsoft YaHei";
+}
+	.room-introduction-page .room-contain{
+		padding: 10px;
+	}
+	.room-introduction-page .room-contain .contain-in{
+		height: 8em;
+		overflow: hidden;
+	}
+		.room-introduction-page .room-contain .list-label{
+			color: #333;
+		}
+			.room-introduction-page .room-contain .list-label .icon{
+				margin-right: .5em;
+				color: #ccc;
+			}
+	/*查看更多*/
+	.room-introduction-page .look-more{
+		padding-top: 1em;
+	}
+	.room-introduction-page .look-more .icon{
+		margin-left: 1em;
+		font: normal 14px/2 "Microsoft YaHei";
+		color: #999;
+	}
+	/*担保等*/
+	.room-introduction-page .room-notice{
+		padding: 10px;
+	}
+		.room-introduction-page .room-notice .list-label{
+			min-width: 3.2em;
+		}
+			.room-introduction-page .room-notice .list-label em{
+				display: inline-block;
+				min-width: 2.5em;
+				text-align: center;
+				line-height: 1.5;
+				color: #fff;
+				background-color: #ff7e00;
+			}
+		.room-introduction-page .room-notice .list-cont:nth-of-type(even) .list-label em{
+			background-color: #3399fe;
+		}
+		.room-introduction-page .room-notice .list-cont{
+			margin-bottom: 5px;
+			color: #797979;
+		}
+
+/*酒店列表页面*/
+.hotel-ticket-list-page .mbox{
+	font: normal 14px/2 "Microsoft YaHei";
+}
+/*搜索框*/
+.hotel-ticket-list-page .mbox-search .item{
+	border: none;
+}
+.hotel-ticket-list-page .mbox-search .search-text{
+	background-color: #ffba00;
+}
+
+
+.product-nav{
+	padding: 0 10px;
+}
+.product-nav .product-nav-in{
+	position: relative;
+	font-size: 0;
+	white-space: nowrap;
+	overflow-y: hidden;
+	overflow-x: auto;
+}
+.product-nav .product-nav-in::-webkit-scrollbar{
+	height: 1px;
+	background-color: transparent;
+}
+.product-nav .product-nav-in a{
+	display: inline-block;
+	padding: 0 1em;
+	margin: 0 10px 10px 0;
+	vertical-align: middle;
+	font: normal 12px/2 "Microsoft YaHei";
+	text-align: center;
+	color: #575757;
+	border: 1px solid #dedede;
+}
+.product-nav .product-nav-in a:hover{
+	color: #87dea5;
+	background-color: #d6fbe9;
+	border-color: #87dea5;
+}
+.product-nav .product-nav-in a.active{
+	color: #87dea5;
+	background-color: #d6fbe9;
+	border-color: #87dea5;
+}
+
+
+/*酒店订单填写*/
+.hotel-form-page .mbox{
+	padding-bottom: 60px;
+	font: normal 14px/3 "Microsoft YaHei";
+}
+.hotel-form-page .form-style .border-list{
+	padding: 10px;
+}
+	.hotel-form-page .form-style .input-wrap{
+		padding-left: 5em;
+	}
+	.hotel-form-page .form-style .am-form-group{
+		padding: 0;
+		border: none;
+	}
+	.hotel-form-page .form-style .text-lebel{
+		left: 0;
+		color: #444;
+	}
+
+	/*酒店名称*/
+	.hotel-form-page .form-style .hotel-form-tit{
+		font-size: 0;
+		color: #333;
+	}
+		.hotel-form-page .form-style .hotel-form-tit .hotel-name{
+			font: normal 16px/2 "Microsoft YaHei";
+		}
+		/*日期*/
+		.hotel-form-page .form-style .hotel-form-tit .hotel-date{
+			font: normal 12px/2 "Microsoft YaHei";
+		}
+		.hotel-form-page .form-style .hotel-form-tit input{
+			font: normal 12px/2 "Microsoft YaHei";
+		}
+
+		.hotel-form-page .form-style .hotel-form-tit .hotel-date .date-list{
+			display: inline-block;
+			vertical-align: middle;
+			width: 44%;
+		}
+		.hotel-form-page .form-style .hotel-form-tit .hotel-date .date-duration{
+			color: #f00;
+		}
+
+	/*酒店房型*/
+	.hotel-form-page .form-style .room-intro{
+		font: normal 12px/1.5 "Microsoft YaHei";
+	}
+	.hotel-form-page .form-style .room-intro .list-in{
+		display: inline-block;
+		vertical-align: middle;
+		padding-right: 15px;
+		color: #999;
+	}
+	/*用户信息*/
+	.hotel-form-page .form-style .user-room-info .border-list{
+		padding: 5px 10px;
+	}
+		.hotel-form-page .form-style .user-room-info .user-info{
+			position: relative;
+			padding: 5px 10px 3em;
+		}
+		.hotel-form-page .form-style .user-room-info .user-info .text-lebel{
+			position: absolute;
+			left: 10px;
+			bottom: 50%;
+			margin-bottom: -.5em;
+		}
+		.hotel-form-page .form-style .user-room-info .user-info .input-wrap{
+			position: relative;
+			padding: 0;
+			margin-left: 5em;
+			border-bottom: 1px solid #dedede;
+		}
+
+		/*输入框右侧图标*/
+		.hotel-form-page .form-style .user-room-info .input-wrap .right-icon{
+			position: absolute;
+			right: .5em;
+			top: 50%;
+			margin-top: -.5em;
+			color: #23c478;
+		}
+
+		/*售价*/
+		.hotel-form-page .form-style .user-room-info .sell-price em{
+			float: right;
+			color: #999;
+		}
+	/*温馨提示*/
+	.hotel-form-page .form-style .hotel-notice{
+		padding: 0 10px 10px;
+		font: normal 12px/2 "Microsoft YaHei";
+	}
+		.hotel-form-page .form-style .hotel-notice .notice-tit{
+			padding-bottom: 5px;
+			font-size: 14px;
+		}
+
+
+/*供应商产品列表*/
+.hotel-product-page .mbox{
+	font: normal 14px/3 "Microsoft YaHei";
+}
+.hotel-product-page .bg-block{
+	padding: 10px;
+}
+	.hotel-product-page .product-info{
+		line-height: 2.5;
+		color: #666;
+	}
+		.hotel-product-page .product-info .info-label{
+			display: inline-block;
+			vertical-align: middle;
+			min-width: 5.5em;
+			padding-right: .5em;
+			text-align: right;
+		}
+		.hotel-product-page .product-info .info-cont{
+			color: #999;
+		}
+
+
+	.hotel-product-page .user-info .info-tit{
+		font-size: 16px;
+		color: #4e4e4e;
+		border-bottom: 1px solid #dedede;
+	}
+
+
+.hotel-product-page .bg-block dl,.hotel-product-page .bg-block dt,.hotel-product-page .bg-block dd{
+	margin: 0;
+	padding: 0;
+	color: #666;
+}
+.hotel-product-page .bg-block dl{
+	padding-top: 10px;
+	font-size: 0;
+}
+.hotel-product-page .bg-block ul,.hotel-product-page .bg-block li{
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	font-size: 0;
+}
+	.hotel-product-page .bg-block li .info-cont,.hotel-product-page .bg-block dd{
+		display: inline-block;
+		vertical-align: middle;
+		font: normal 12px/2 "Microsoft YaHei";
+		text-align: center;
+	}
+	.hotel-product-page .bg-block dd{
+		font: normal 14px/2 "Microsoft YaHei";
+	}
+	.hotel-product-page .bg-block li .info-cont{
+		color: #999;
+	}
+	.hotel-product-page .bg-block li .user-name,.hotel-product-page .bg-block .cap-name{
+		min-width: 12%;
+		max-width: 16%;
+		text-align: left;
+	}
+	.hotel-product-page .bg-block li .user-tel,.hotel-product-page .bg-block .cap-tel{
+		width: 29%;
+	}
+	.hotel-product-page .bg-block li .user-id,.hotel-product-page .bg-block .cap-id{
+		width: 44%;
+	}
+	.hotel-product-page .bg-block li .user-num,.hotel-product-page .bg-block .cap-num{
+		min-width: 9%;
+		max-width: 10%;
+	}
+
+	.hotel-product-page .bg-block .table-foot{
+		padding: 20px 0;
+		text-align: right;
+	}
+	.hotel-product-page .bg-block .table-foot .prev-link,.hotel-product-page .bg-block .table-foot .next-link{
+		display: inline-block;
+		vertical-align: middle;
+		padding: 0 1em;
+		margin-left: .8em;
+		font: normal 14px/2 "Microsoft YaHei";
+		color: #797979;
+		border: 1px solid #999;
+		border-radius: 5px;
+	}
+	.hotel-product-page .bg-block .table-foot .next-link{
+		color: #fff;
+		background-color: #ff7e00;
+		border-color: #ff7e00;
+	}
+
+
+/*供应商首页*/
+.supply-main-page .mbox{
+	font: normal 14px/2 "Microsoft YaHei";
+}
+
+/*供应商景点产品*/
+.supply-tourist-product-page .mbox{
+	font: normal 14px/1.5 "Microsoft YaHei";
+}
+.supply-tourist-product-page .mbox .item,.supply-tourist-product-page .mbox .item-linked > a{
+	-webkit-box-align: start;
+	-ms-flex-align: start;
+	-webkit-align-items: flex-start;
+	align-items: flex-start;
+	padding: 15px 0;
+}
+	.supply-tourist-product-page .mbox .item .item-main,.supply-tourist-product-page .mbox .item-linked > a .item-main{
+		padding: 0 10px;
+
+		-webkit-box-orient: vertical;
+		-ms-flex-direction: column;
+		-webkit-flex-direction: column;
+		flex-direction: column;
+
+		-webkit-box-align: start;
+		-ms-flex-align: start;
+		-webkit-align-items: flex-start;
+		align-items: flex-start;
+	}
+
+	/*产品介绍*/
+	.supply-tourist-product-page .product-intro .disimg{
+		width: 30%;
+		margin: 0;
+	}
+		.supply-tourist-product-page .product-intro .disimg img{
+			width: 100%;
+		}
+
+	.supply-tourist-product-page .product-intro .intro-tit{
+		color: #333;
+	}
+	/*产品列表*/
+	.supply-tourist-product-page .prolist-wrap .list-left{
+		padding-top: .4em;
+	}
+	.supply-tourist-product-page .prolist-wrap .list-left span{
+		display: inline-block;
+		padding: 0 4px;
+		color: #ffffff;
+		background-color: #23c377;
+	}
+	.supply-tourist-product-page .prolist-wrap  .single-wrap .list-left span{
+		background-color: #0099ff;
+	}
+
+	/*产品名称*/
+	.supply-tourist-product-page .prolist-wrap .list-center{
+		color: #333333;
+	}
+	/*产品价格*/
+	.supply-tourist-product-page .prolist-wrap .list-price{
+		color: #bebebe;
+		font-size: 13px;
+	}
+		.supply-tourist-product-page .prolist-wrap .list-price .price-now{
+			color: #f00;
+		}
+		.supply-tourist-product-page .prolist-wrap .look-more{
+			padding-top: 5px;
+			font-size: 0;
+			text-align: right;
+		}
+			.supply-tourist-product-page .prolist-wrap .look-more span{
+				display: inline-block;
+				vertical-align: middle;
+				padding: 0 1em;
+				font: normal 12px/1.5 "Microsoft YaHei";
+				color: #fff;
+				background-color: #ffba00;
+				border-radius: 9px;
+			}
+
+/*供应商景点门票验证*/
+.supply-tourist-ticketcom-page .mbox{
+	font: normal 12px/2 "Microsoft YaHei";
+}
+.supply-tourist-ticketcom-page .search-result .item-linked > a{
+
+	-webkit-box-orient: vertical;
+	-moz-box-orient: vertical;
+	-ms-flex-direction: column;
+	-webkit-flex-direction: column;
+	flex-direction: column;
+
+	-webkit-box-align: start;
+	-ms-flex-align: start;
+	-webkit-align-items: flex-start;
+	align-items: flex-start;
+
+	padding: 15px;
+}
+	.supply-tourist-ticketcom-page .search-result .item-linked a .result-label{
+		display: inline-block;
+		vertical-align: middle;
+		min-width: 4.5em;
+	}
+	.supply-tourist-ticketcom-page .search-result .item-linked a .result-cont{
+		color: #797979;
+	}
+
+/*开始验证页面*/
+.supply-tourist-ticket-tocom-page .mbox{
+	font: normal 12px/2 "Microsoft YaHei";
+}
+.supply-tourist-ticket-tocom-page .result-list{
+	padding: 15px;
+	text-align: center;
+}
+.supply-tourist-ticket-tocom-page .result-in{
+	display: inline-block;
+	text-align: left;
+}
+	.supply-tourist-ticket-tocom-page .result-list .result-label{
+		display: inline-block;
+		vertical-align: middle;
+		min-width: 6em;
+		padding-right: 1em;
+		text-align: right;
+	}
+	.supply-tourist-ticket-tocom-page .result-list .result-cont{
+		color: #797979;
+	}
+	.supply-tourist-ticket-tocom-page .result-list .check-num .result-cont{
+		font-size: 0;
+	}
+		.supply-tourist-ticket-tocom-page .result-list input{
+			display: inline-block;
+			vertical-align: middle;
+			height: 2em;
+			padding: 0;
+			margin: 0;
+			font: normal 12px/2 "Microsoft YaHei";
+			border: 1px solid #dedede;
+			text-align: center;
+		}
+		.supply-tourist-ticket-tocom-page .result-list .check-num input{
+			width: 2em;
+		}
+		.supply-tourist-ticket-tocom-page .result-list .check-num .reduce + input[type="text"]{
+			border-left: none;
+			border-right: none;
+		}
+		.supply-tourist-ticket-tocom-page .result-list .check-num input[type="button"].active{
+			color: #ff7e00;
+		}
+
+	.supply-tourist-ticket-tocom-page .check-btn-wrap{
+		padding: 2em 0;
+		text-align: center;
+	}
+		.supply-tourist-ticket-tocom-page .check-btn-wrap .check-btn{
+			display: inline-block;
+			padding: 0 2em;
+			color: #fff;
+			background-color: #ff7e00;
+			border-radius: 3px;
+		}
+
+/*供应商确认列表*/
+.supply-consume-list-page .mbox{
+	font: normal 14px/3 "Microsoft YaHei";
+}
+/*提示*/
+.supply-consume-list-page .notice-text{
+	padding: 20px;
+	font: normal 12px/2 "Microsoft YaHei";
+	color: #ff7e00;
+	background-color: #fcf8e2;
+}
+/*列表*/
+.supply-consume-list-page .consume-list-wrap{
+	padding: 0 15px;
+	margin: 0 10px;
+}
+.supply-consume-list-page .consume-list-wrap li{
+	border-bottom: 1px solid #dedede;
+}
+.supply-consume-list-page .consume-list-wrap .consume-rules{
+	position: relative;
+	font: normal 14px/3.5 "Microsoft YaHei";
+}
+	.supply-consume-list-page .consume-list-wrap li .consume-rules .icon{
+		font: normal 14px/3.5 "Microsoft YaHei";
+		color: #ff6633;
+	}
+	.supply-consume-list-page .consume-list-wrap li .consume-rules .rule-text{
+		margin: 0 5px;
+		color: #ff6633;
+	}
+	.supply-consume-list-page .consume-list-wrap .consume-input{
+		position: absolute;
+		right: 0;
+		top: 50%;
+		margin-top: -14px;
+		font-size: 0;
+	}
+		.supply-consume-list-page .consume-list-wrap .consume-input input{
+			display: inline-block;
+			vertical-align: middle;
+			padding: 0;
+			margin: 0;
+			width: 2em;
+			font: normal 14px/2 "Microsoft YaHei";
+			text-align: center;
+			border: 1px solid #dedede;
+		}
+		.supply-consume-list-page .consume-list-wrap .consume-input .reduce + input[type="text"]{
+			border-left: none;
+			border-right: none;
+		}
+		.supply-consume-list-page .consume-list-wrap .consume-input input[type="button"]{
+			color: #797979;
+		}
+		.supply-consume-list-page .consume-list-wrap .consume-input input[type="button"].active{
+			color: #ff6633;
+		}
+
+	/*确认按钮*/
+	.supply-consume-list-page .consume-list-wrap .comfirm-btnw{
+		padding: 20px 0;
+		text-align: right;
+	}
+		.supply-consume-list-page .consume-list-wrap .comfirm-btnw .comfirm-btn{
+			display: inline-block;
+			vertical-align: middle;
+			padding: 0 1em;
+			font: normal 14px/2 "Microsoft YaHei";
+			color: #fff;
+			background-color: #ea6e0c;
+			border-radius: 3px;
+		}
+
+	/*隐藏部分*/
+	.supply-consume-list-page .consume-list-wrap  .rules-cont{
+		padding: 10px 0;
+	}
+		.supply-consume-list-page .consume-list-wrap  .rules-cont dt,.supply-consume-list-page .consume-list-wrap  .rules-cont dd{
+			font: normal 12px/2 "Microsoft YaHei";
+			color: #7d7c7c;
+		}
+		.supply-consume-list-page .consume-list-wrap  .rules-cont dt{
+			color: #4e4e4e;
+		}
+
+/*供应商酒店列表页*/
+.supply-hotel-list-page .am-nav-tabs>li{
+	width: 33%;
+}
+
+/*供应商酒店订单详情页*/
+
+/*供应商验证弹窗*/
+.validate-modal .am-modal-dialog{
+	font: normal 14px/2 "Microsoft YaHei";
+}
+.validate-modal .am-modal-dialog input{
+	display: inline-block;
+	vertical-align: middle;
+	width: 60%;
+	height: 2em;
+	padding: 0;
+	margin: 0;
+	font: normal 14px/2 "Microsoft YaHei";
+	text-indent: .5em;
+}
+	.validate-modal .am-modal-dialog .am-modal-hd{
+		font: normal 14px/2 "Microsoft YaHei";
+	}
+	.validate-modal .am-modal-dialog .am-modal-bd{
+		border: none;
+	}
+
+	.validate-modal .am-modal-dialog a{
+		display: inline-block;
+		vertical-align: middle;
+		background-color: #ea6e0c;
+		color: #fff;
+	}
+
+	.validate-modal .am-modal-dialog .qrcode-wrap{
+		padding: 0 10px;
+	}
+		.validate-modal .am-modal-dialog .qrcode-wrap .icon{
+			font: normal 20px/1.5 "Microsoft YaHei";
+			vertical-align: top;
+		}
+
+	.validate-modal .am-modal-dialog .am-modal-footer{
+		height: auto;
+		margin-bottom: 15px;
+		border: none;
+	}
+		.validate-modal .am-modal-dialog .am-modal-footer .am-modal-btn{
+			display: inline-block!important;
+			height: auto;
+			padding: 0 2em;
+			margin: 0 .5em;
+			font: normal 14px/2.5 "Microsoft YaHei";
+			border-radius: 3px;
+		}
+		.validate-modal .am-modal-dialog .am-modal-footer .validate-close{
+			color: #444444;
+			background-color: #dedede;
+		}

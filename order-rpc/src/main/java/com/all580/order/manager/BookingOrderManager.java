@@ -75,6 +75,30 @@ public class BookingOrderManager extends BaseOrderManager {
     @Autowired
     private RefundOrderManager refundOrderManager;
 
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public void dealPackageOrderItemConSume(OrderItem orderItem){
+        Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
+        if (order.getSource() == OrderConstant.OrderSourceType.SOURCE_TYPE_SYS){
+            //套票元素订单核销
+            PackageOrderItemDto packageOrderItemDto = this.getOrderItemChainForPackage(orderItem, Boolean.TRUE);
+            while (packageOrderItemDto != null){
+                List<OrderItem> packageOrderItems = packageOrderItemDto.getPackageOrderItems();
+                //所有子订单票据已使用，则套票订单已使用
+                Boolean isUsed = Boolean.TRUE;
+                for (OrderItem item : packageOrderItems) {
+                    //使用数等于预定数，则已使用
+                    isUsed = item.getQuantity().intValue() == item.getUsed_quantity() && isUsed;
+                }
+                if (isUsed){
+                    //设置套票订单使用数
+                    packageOrderItemDto.setUsed_quantity(packageOrderItemDto.getQuantity());
+                    orderItemMapper.updateByPrimaryKeySelective(packageOrderItemDto);
+                }
+                packageOrderItemDto = this.getOrderItemChainForPackage(packageOrderItemDto, Boolean.TRUE);
+            }
+        }
+    }
+
     /**
      * 逐级处理套票关联子订单的出票状态
      * @param orderItem
@@ -86,7 +110,6 @@ public class BookingOrderManager extends BaseOrderManager {
         while (packageOrderItemDto != null){
             List<OrderItem> orderItemList = packageOrderItemDto.getPackageOrderItems();
             for (OrderItem item : orderItemList) {
-                //todo
                 if (item.getStatus() == OrderConstant.OrderItemStatus.NON_SEND){
                     //元素订单未出票
                     packageOrderItemDto.setStatus(OrderConstant.OrderItemStatus.TICKETING);
@@ -109,6 +132,13 @@ public class BookingOrderManager extends BaseOrderManager {
             }
             //更改套票子订单出票状态
             orderItemMapper.updateByPrimaryKeySelective(packageOrderItemDto);
+            //套票出票成功
+            if (packageOrderItemDto.getStatus() == OrderConstant.OrderItemStatus.SEND){
+                //记录出票日志
+                log.info(OrderConstant.LogOperateCode.NAME, this.orderLog(null, packageOrderItemDto.getId(),
+                        0, "ORDER_EVENT", OrderConstant.LogOperateCode.SENDED,
+                        packageOrderItemDto.getQuantity() * packageOrderItemDto.getDays(), "已出票", null));
+            }
             packageOrderItemDto = this.getOrderItemChainForPackage(packageOrderItemDto, Boolean.TRUE);
         }
     }
@@ -329,11 +359,11 @@ public class BookingOrderManager extends BaseOrderManager {
      * 预定时间现在
      *
      * @param bookingDate 预定时间
-     * @param dayInfoList
+     * @param salesInfo
      */
-    public void validateBookingDate(Date bookingDate, List<ProductSalesDayInfo> dayInfoList) {
+    public void validateBookingDate(Date bookingDate, ProductSalesInfo salesInfo) {
         Date when = new Date();
-        for (ProductSalesDayInfo dayInfo : dayInfoList) {
+        for (ProductSalesDayInfo dayInfo : salesInfo.getDay_info_list()) {
             if (dayInfo.isBooking_limit()) {
                 int dayLimit = dayInfo.getBooking_day_limit();
                 Date limit = DateUtils.addDays(bookingDate, -dayLimit);
@@ -349,7 +379,7 @@ public class BookingOrderManager extends BaseOrderManager {
                     throw new ApiException("预定时间限制数据不合法", e);
                 }
                 if (when.after(limit)) {
-                    throw new ApiException(String.format("该产品有预订限制，需在订购时间的前%d天的%s前预订", dayLimit, time == null ? "00:00" : time));
+                    throw new ApiException(String.format(salesInfo.getProduct_sub_name() + "产品有预订限制，需在订购时间的前%d天的%s前预订", dayLimit, time == null ? "00:00" : time));
                 }
             }
         }
@@ -466,13 +496,13 @@ public class BookingOrderManager extends BaseOrderManager {
      * 创建子订单详情
      *
      * @param info     产品信息
-     * @param itemId   子订单ID
+     * @param item   子订单ID
      * @param day      当天
      * @param quantity 张数
      * @return
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public OrderItemDetail generateDetail(ProductSalesDayInfo info, int itemId, Date day, int quantity, Integer lowQuantity, Integer supplyPrice, Integer salePrice) {
+    public OrderItemDetail generateDetail(ProductSalesDayInfo info, OrderItem item, Date day, int quantity, Integer lowQuantity, Integer supplyPrice, Integer salePrice) {
         OrderItemDetail orderItemDetail = new OrderItemDetail();
         orderItemDetail.setSettle_price(info.getSettle_price());
         orderItemDetail.setSupply_price(supplyPrice);
@@ -481,7 +511,7 @@ public class BookingOrderManager extends BaseOrderManager {
         orderItemDetail.setQuantity(quantity);
         orderItemDetail.setCust_refund_rule(info.getCust_refund_rule()); // 销售方退货规则
         orderItemDetail.setSaler_refund_rule(info.getSaler_refund_rule()); // 供应方退货规则
-        orderItemDetail.setOrder_item_id(itemId);
+        orderItemDetail.setOrder_item_id(item.getId());
         Date date = new Date();
         orderItemDetail.setCreate_time(date);
         orderItemDetail.setLow_quantity(lowQuantity);
@@ -508,7 +538,7 @@ public class BookingOrderManager extends BaseOrderManager {
             }
             // 不能购买已过销售计划的产品
             if (date.after(info.getEnd_time())) {
-                throw new ApiException("预定时间已过期");
+                throw new ApiException("您订购的产品[" + item.getPro_sub_name() + "]预定时间已过期");
             }
             orderItemDetail.setEffective_date(effectiveDate);
             orderItemDetail.setExpiry_date(expiryDate);

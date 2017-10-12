@@ -25,6 +25,37 @@ public class OrderSupplierController extends BaseController {
 
     @Autowired
     private EpOrderService epOrderService;
+    @RequestMapping(value = "supplier/analyze", method = RequestMethod.GET)
+    @ResponseBody
+    public Result supplierAnalyze( Integer ep_id,
+                                             @RequestParam("type") Integer type,
+                                             @RequestParam("start") String start,
+                                             @RequestParam("end") String end,
+                                   Integer record_start, Integer record_count) {
+        Map<String,Object> map = new HashMap<>();
+        map.put("type",type);
+        map.put("ep_id",ep_id);
+        map.put("start",start);
+        map.put("end",end);
+        map.put("record_start", record_start);
+        map.put("record_count", record_count);
+        return epOrderService.supplierAnalyze(map);
+    }
+
+    @RequestMapping(value = "supplier/clearance", method = RequestMethod.GET)
+    @ResponseBody
+    public Result supplierClearance( Integer ep_id,
+                                   @RequestParam("start") String start,
+                                   @RequestParam("end") String end) {
+        Map<String,Object> map = new HashMap<>();
+        map.put("ep_id",ep_id);
+        map.put("start",start);
+        map.put("end",end);
+        return epOrderService.supplierClearance(map);
+    }
+
+
+
 
     @RequestMapping(value = "supplier/reserve", method = RequestMethod.GET)
     @ResponseBody
@@ -205,6 +236,7 @@ public class OrderSupplierController extends BaseController {
 
     private void disposeSupplierPlatform(Integer ep_type, String ep_name, Map map) {
         //平台供应商的特殊处理
+        map.put("ep_type",ep_type);
         if (ep_type != null && ep_type.intValue() == EpConstant.EpType.SUPPLIER.intValue()) {
             if (ep_name != null) {
                 if (CommonUtil.find("\\(平台商\\)$", ep_name)) {

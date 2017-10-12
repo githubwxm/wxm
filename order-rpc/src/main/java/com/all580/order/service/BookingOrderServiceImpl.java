@@ -153,9 +153,11 @@ public class BookingOrderServiceImpl implements BookingOrderService {
             // 触发事件
             eventManager.addEvent(OrderConstant.EventType.ORDER_CREATE, order.getId());
 
-            log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(order.getId(), null,
-                    order.getBuy_ep_id(), order.getBuy_ep_name(), OrderConstant.LogOperateCode.CREATE_SUCCESS,
-                    null, String.format("订单创建成功:%s", JsonUtils.toJson(params)), null));
+            for (OrderItem orderItem : orderItems) {
+                log.info(OrderConstant.LogOperateCode.NAME, bookingOrderManager.orderLog(null, orderItem.getId(),
+                        order.getBuy_ep_id(), order.getBuy_ep_name(), OrderConstant.LogOperateCode.CREATE_SUCCESS,
+                        null, String.format("订单创建成功:%s", JsonUtils.toJson(params)), null));
+            }
         }
 
         if (orderListMap.size() > 1){
@@ -308,7 +310,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
                                      Map item, Map<Integer, LockStockDto> lockStockDtoMap, List<ProductSearchParams> lockParams){
         ProductSalesInfo salesInfo = orderInterface.validateProductAndGetSales(sub, createOrder, item);
 
-        orderInterface.validateBookingDate(sub, salesInfo.getDay_info_list());
+        orderInterface.validateBookingDate(sub, salesInfo);
 
         // 判断游客信息
         List<?> visitors = (List<?>) item.get("visitor");
@@ -316,7 +318,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
 
         // 每天的价格
         List<List<EpSalesInfo>> allDaysSales = salesInfo.getSales();
-        Assert.notEmpty(allDaysSales, "该产品未被分销");
+        Assert.notEmpty(allDaysSales, salesInfo.getProduct_sub_name() + "产品未被分销");
 
         // 子订单总进货价
         PriceDto price = bookingOrderManager.calcSalesPrice(allDaysSales, salesInfo, createOrder.getEpId(), sub.getQuantity(), createOrder.getFrom());

@@ -58,8 +58,8 @@ public class VerifyFilter implements  Filter {
         }
         currenttSing =CommonUtil.objectParseString( map.remove("sign"));//获取当前传来的加密// 去掉sing
         if(null==currenttSing){
-            log.error("数据未加密");
-            renderingByJsonPData(httpResponse, JSON.toJSONString(getOutPutMap(false,"数据未加密", Result.SIGN_FAIL,null)));
+            log.error("数据未加密:"+url);
+            renderingByJsonPData(httpResponse, JSON.toJSONString(getOutPutMap(false,"数据未加密:"+url, Result.SIGN_FAIL,null)));
             return;
         }
         if(null==map.get("access_id")){
@@ -176,9 +176,9 @@ public class VerifyFilter implements  Filter {
               return true;
         }
          Integer core_ep_id=CommonUtil.objectParseInteger(request.getAttribute(EpConstant.EpKey.CORE_EP_ID)) ;
-         if(1-core_ep_id==0){//畅旅不鉴权
-             return  true;
-         }
+//         if(1-core_ep_id==0){//畅旅不鉴权
+//             return  true;
+//         }
         // EpService epService= BeanUtil.getBean("epService", EpService.class);
          //Map<String,Object> map = epService.selectId(ep_id).get();
          //if(null!=map&&!map.isEmpty()){
@@ -186,10 +186,7 @@ public class VerifyFilter implements  Filter {
              List<String> auth=Auth.getAuthMap(redisUtils,ep_id);
              boolean ref = false;
              if(auth!=null&&auth.size()==1){
-                 ref=null== auth.get(0);
-                 if(!ref){
-                     ref="".equals(auth.get(0));
-                 }
+                ref=true;
             // }
              if(null==auth||ref){
                  IntfService intfService= BeanUtil.getBean("intfService", IntfService.class);

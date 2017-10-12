@@ -45,7 +45,7 @@ public class GroupOrderManager {
         map.put("voucherId", groupOrder.getOrderCode());
         map.put("otaOrderId", groupOrder.getPlatformOrderId());
         map.put("formAreaCode", groupOrder.getFormAreaCode());
-        map.put("formAddr", StringUtils.isEmpty(groupOrder.getManager())?groupOrder.getFormAreaCode():groupOrder.getFormAddr());
+        map.put("formAddr", StringUtils.isEmpty(groupOrder.getFormAddr())?groupOrder.getFormAreaCode():groupOrder.getFormAddr());
         map.put("travelName", groupOrder.getTravelName());
         map.put("manager", StringUtils.isEmpty(groupOrder.getManager())?"经理人":groupOrder.getManager()  );
         map.put("groupNumber", groupOrder.getGroupNumber());
@@ -60,6 +60,7 @@ public class GroupOrderManager {
         map.put("products", getProdMap(groupOrder));
         map.put("visitors", getVisitorMap(groupOrder));
         map.put("supplyId", groupOrder.getSupply_id());
+        map.put("channel",groupOrder.getChannel());
         return map;
     }
 

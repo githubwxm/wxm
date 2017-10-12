@@ -1,0 +1,95 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <header-title></header-title>
+    <link href="/voucher/static/css/style.css" rel="stylesheet">
+    <link href="/voucher/static/script/amd/1.0/fullcalendar/fullcalendar.css" rel="stylesheet">
+</head>
+<body vtag="root">
+        <div class=" main-warp">
+            <div v-if="stutas == 1">
+                <validator name="checkSubForm">
+                    <form id="subForm" class="form-horizontal" method="post" onSubmit="return false;">
+                        <div class="form-group-top clearfix">
+                            <label class="col-sm-2 col-md-2 col-lg-2 control-label"></label>
+                            <div class="col-sm-10 col-md-10 col-lg-6">
+                                <table class="table table-bordered">
+                                    <tbody>
+                                    <tr>
+                                        <td>名称</td>
+                                        <td>
+                                            <input class="form-control" type="text" v-model="subFormData.name"  v-validate:name="{required:true}" initial="off">
+                                            <span  v-show="$checkSubForm.name.required" style="margin-left: 0px;"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请填写名称！</label></span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>起止日期</td>
+                                        <td>
+                                            <datepicker :value.sync="subFormData.effective_start_date" class="col-sm-3 col-lg-3" language="ch"></datepicker>
+                                            <b>至</b>
+                                            <datepicker :value.sync="subFormData.effective_end_date" class="col-sm-3 col-lg-3" language="ch"></datepicker>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>周期</td>
+                                        <td>
+                                            <div class="col-sm-12 col-md-12 col-lg-12 kucun-time clearfix">
+                                                <label><span><input type="checkbox" class="chekbox" value="1" v-model="subFormData.week" v-validate:week="{required:true}" initial="off">星期一</span></label>
+                                                <label><span><input type="checkbox" class="chekbox" value="2" v-model="subFormData.week" v-validate:week="{required:true}" initial="off">星期二</span></label>
+                                                <label><span><input type="checkbox" class="chekbox" value="3" v-model="subFormData.week" v-validate:week="{required:true}" initial="off">星期三</span></label>
+                                                <label><span><input type="checkbox" class="chekbox" value="4" v-model="subFormData.week" v-validate:week="{required:true}" initial="off">星期四</span></label>
+                                                <label><span><input type="checkbox" class="chekbox" value="5" v-model="subFormData.week" v-validate:week="{required:true}" initial="off">星期五</span></label>
+                                                <label><span><input type="checkbox" class="chekbox" value="6" v-model="subFormData.week" v-validate:week="{required:true}" initial="off">星期六</span></label>
+                                                <label><span><input type="checkbox" class="chekbox" value="7" v-model="subFormData.week" v-validate:week="{required:true}" initial="off">星期天</span></label>
+                                            </div>
+                                            <label v-show="$checkSubForm.week.required" for="contactMobile" class="error">必填字段</label>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>供应价</td>
+                                        <td>
+                                            <input name="name" class="form-control form-input-3" type="number" maxlength="20" v-model="subFormData.settle_price" v-validate:settle_price="{required:true}" initial="off">
+                                            <label v-show="$checkSubForm.settle_price.required" for="contactMobile" class="error">必填字段</label>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                <div @click="comit" class="btn">确&nbsp;&nbsp;定</div>
+                            </div>
+                        </div>
+                    </form>
+                </validator>
+            </div>
+            <div class="business-two" v-if="stutas == 3">
+                <div class="title">
+                    <em></em><h3>销售计划日历表</h3>
+                </div>
+                <datepicker :value.sync="Date" class="col-sm-12 col-lg-12" style="overflow: auto; margin-top: 20px;" language="ch" :setting.sync="pickerSetting"></datepicker>
+            </div>
+            <div class="business-two" v-if="stutas == 2">
+                <div class="title">
+                    <em></em><h3>保留日期</h3>
+                </div>
+                <em style="font-size: 15px;color: #0fa65e;">刚刚添加的销售计划时间段中，有以下日期已存在于同房型其他销售计划中，请选择需要保留在刚刚添加的销售计划中的日期：</em><br>
+                <em style="font-size: 10px">1、选择保留后，该日期会只存在于新增的销售计划中，且会从之前的销售计划中去除掉</em><br>
+                <em style="font-size: 10px">2、选择不保留，则该日期会只存在于之前的销售计划中，而本次新增的销售计划中不会包含</em>
+               <!-- <input type="checkbox" class="chekbox" name="all" @click="checkedAll" id="checkboxID" >全选日期-->
+                <div v-for="line in list">
+                    <!--<input type="checkbox" class="chekbox" name="start" value="{{date(line.start)}}"  v-model="subFormData.start">{{date(line.start)}}-->
+                    <input type="checkbox" v-model="subFormData.choiseStr" value="{{line.start}}">{{date(line.start)}}
+                    <div style="display:none">{{line.id}}</div>
+                   <!-- <input type="text"  v-model="subFormData.id" value="{{line.id}}" initial="off">-->
+                    <input style="display:none" type="text" class="style:none"   v-model="data.batch_id" value="{{line.batch_id}}" initial="off">
+
+                </div>
+                <div @click="submit" class="btn">保&nbsp;&nbsp;留</div>  <div @click="unsubmit" class="btn">不保留</div>
+            </div>
+        </div>
+
+<script type="text/javascript" src="/voucher/api/local/client/system/load_config"></script>
+<script type="text/javascript" src="/voucher/static/script/local/require/require.js"></script>
+<script type="text/javascript" src="/voucher/static/script/local/require_config.js"></script>
+<script type="text/javascript" src="/voucher/static/script/local/view/prod/hotel/addHotelSalp.js"></script>
+</body>
+</html>

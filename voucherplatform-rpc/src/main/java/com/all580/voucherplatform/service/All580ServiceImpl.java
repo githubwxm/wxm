@@ -55,10 +55,12 @@ public class All580ServiceImpl implements All580Service {
         Platform platform = platformMapper.selectByPrimaryKey(identity);
         if (platform == null) {
             return new Result(false, "身份数据校检失败");
-        } else if (!signInstance.checkSign(platform.getSignType(), platform.getPublicKey(), platform.getPrivateKey(),
-                content, signed)) {
-            return new Result(false, "签名数据校检失败");
         }
+//        else if (!signInstance.checkSign(platform.getSignType(), platform.getPublicKey(), platform.getPrivateKey(),
+//                content, signed)) {
+//            throw new ApiException("签名数据校检失败 voucherplatform");
+//            //return new Result(false, "签名数据校检失败");
+//        }
         PlatformAdapterService platformAdapterService = adapterLoader.getPlatformAdapterService(platform);
         return platformAdapterService.process(action, platform, mapContent);
     }

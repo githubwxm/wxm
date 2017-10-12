@@ -40,6 +40,7 @@
         <result column="imgUrl" jdbcType="VARCHAR" property="imgUrl"/>
         <result column="longUrl" jdbcType="VARCHAR" property="longUrl"/>
         <result column="status" jdbcType="INTEGER" property="status"/>
+        <result column="channel" jdbcType="VARCHAR" property="channel"/>
     </resultMap>
     <sql id="Base_Column_List">
         <!--
@@ -51,7 +52,7 @@
         `platformOrderId`, `supplyOrderId`, `supplyProdId`, `voucherType`, `consumeType`,
         `customName`, `mobile`, `idNumber`, `number`, `consume`, `reverse`, `refunding`,
         `refund`, `voucherNumber`, `validTime`, `invalidTime`, `validWeek`, `invalidDate`,
-        `sendType`, `createTime`, `seqId`, `payTime`, `sms`, `printText`, `imgUrl`, `status`
+        `sendType`, `createTime`, `seqId`, `payTime`, `sms`, `printText`, `imgUrl`, `status`,`channel`
     </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         <!--
@@ -92,7 +93,7 @@
         `validWeek`, `invalidDate`, `sendType`,
         `createTime`, `seqId`, `payTime`,
         `sms`, `printText`, `imgUrl`,`longUrl`,
-        `status`)
+        `status`,`channel`)
         values (#{orderCode,jdbcType=VARCHAR}, #{platform_id,jdbcType=INTEGER}, #{platformprod_id,jdbcType=INTEGER},
         #{supply_id,jdbcType=INTEGER}, #{ticketsys_id,jdbcType=INTEGER}, #{platformOrderId,jdbcType=VARCHAR},
         #{supplyOrderId,jdbcType=VARCHAR}, #{supplyProdId,jdbcType=INTEGER}, #{voucherType,jdbcType=INTEGER},
@@ -103,7 +104,7 @@
         #{validWeek,jdbcType=VARCHAR}, #{invalidDate,jdbcType=VARCHAR}, #{sendType,jdbcType=INTEGER},
         #{createTime,jdbcType=TIMESTAMP}, #{seqId,jdbcType=VARCHAR}, #{payTime,jdbcType=TIMESTAMP},
         #{sms,jdbcType=VARCHAR}, #{printText,jdbcType=VARCHAR}, #{imgUrl,jdbcType=VARCHAR},
-        #{longUrl,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER})
+        #{longUrl,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, #{channel,jdbcType=VARCHAR})
     </insert>
     <insert id="insertSelective" parameterType="com.all580.voucherplatform.entity.Order">
         <!--
@@ -212,6 +213,9 @@
             <if test="status != null">
                 `status`,
             </if>
+            <if test="channel != null">
+                `channel`,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="orderCode != null">
@@ -310,6 +314,10 @@
             <if test="status != null">
                 #{status,jdbcType=INTEGER},
             </if>
+            <if test="channel != null">
+                #{channel,jdbcType=VARCHAR},
+            </if>
+
         </trim>
     </insert>
     <update id="updateByPrimaryKeySelective" parameterType="com.all580.voucherplatform.entity.Order">

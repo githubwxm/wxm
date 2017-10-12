@@ -1,0 +1,97 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <header-title></header-title>
+    <link href="/voucher/static/css/style.css" rel="stylesheet">
+    <link href="/voucher/static/script/amd/1.0/dist/css/wangEditor.min.css" rel="stylesheet">
+</head>
+<body vtag="root">
+<div class="root-main">
+    <div class="main-container clearfix">
+        <div class="Establish clearfix">
+            <div class="ProgressBar">
+                <!---------------进度条----------------->
+                <div class="line-box clearfix">
+                    <ul class="steps">
+                        <li class="effect">
+                            <span class="num">1<span class="border"></span></span><span class="text">线路信息</span>
+                        </li>
+                        <li class="effect">
+                            <span class="num">2<span class="border"></span></span><span class="text">线路票类信息</span>
+                        </li>
+                        <li class="effect">
+                            <span class="num">3<span class="border"></span></span><span class="text">班期,价格,库存</span>
+                        </li>
+                    </ul>
+                    <!--默认状态下的进度条没有类名是灰色状态，有状态的时候加上effect的类名就会出现读取的样式-->
+                </div>
+
+                <!---------------班期，价格，库存----------------->
+                <div class="line-container clearfix">
+                    <div class="title">
+                        <h3>班期计划管理</h3>
+                        <em></em>
+                    </div>
+                    <div  class="line-trip clearfix">
+                        <div class="line-time">
+                            <div class="line-add form-group-top"><a class="btn btn-success" @click="addSalp(1)">添加班期</a><a class="btn btn-success" @click="backProdList">返回产品列表</a></div>
+                            <div class="table-responsive table-top">
+                                <data-table :setting="dtxSetting" :params="queryFormData" v-ref:dt-list></data-table>
+                                <script type="text/x-template" id="data-table">
+                                    <component :is="loadStatus"></component>
+                                    <div v-show="loadStatus == 'dt-load-succ'" class="table-responsive">
+                                        <table class="table table-bordered">
+                                            <thead>
+                                            <tr class="tr-bt-sc">
+                                                <th>名称</th>
+                                                <th>有效开始日期</th>
+                                                <th>有效结束日期</th>
+                                                <th>周期</th>
+                                                <th>供应价</th>
+                                                <th>库存</th>
+                                                <th>状态</th>
+                                                <th>操作</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr v-for="line in list">
+                                                <td>{{line.name}}</td>
+                                                <td>{{formatDate(line.effective_start_date)}}</td>
+                                                <td>{{formatDate(line.effective_end_date)}}</td>
+                                                <td>{{formatWeek(line.week)}}</td>
+                                                <td>{{formatNumber(line.settle_price)}}</td>
+                                                <td>{{line.stock}}</td>
+                                                <td>
+                                                    <span class="label label-info" v-if="line.status==1">已上架</span>
+                                                    <span class="label label-default" v-if="line.status==0">已下架</span>
+                                                </td>
+                                                <td>
+                                                    <a v-if="line.status==0"@click="shelvesSalp(line.id,line.name)">上架</a>
+                                                    <a v-if="line.status==1"@click="unShelvesSalp(line.id,line.name)">下架</a>
+                                                    <a href="#" @click="updateSalp(line.id)">修改</a>
+                                                    <a href="#" @click="deleteSalp(line.id,line.name)">删除</a>
+                                                    <a @click="showSubSalp(line.id)">查看</a>
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </script>
+                                <div class="col-sm-8 col-md-8 col-lg-6 clearfix" style="padding-left:23%;padding-top: 35px;" v-if="pickerType == true">
+                                    <datepicker :value.sync="Date" v-ref:pick class="col-sm-2 col-lg-2" language="ch" :setting.sync="pickerSetting"></datepicker>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="/voucher/static/script/local/config.js"></script>
+<script type="text/javascript" src="/voucher/static/script/local/require/require.js"></script>
+<script type="text/javascript" src="/voucher/static/script/local/require_config.js"></script>
+<script type="text/javascript" src="/voucher/static/script/local/view/prod/itinerary/itinerarySalesPlanListView.js"></script>
+</body>
+</html>

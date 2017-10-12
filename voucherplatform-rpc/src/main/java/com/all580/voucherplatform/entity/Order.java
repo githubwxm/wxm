@@ -172,6 +172,14 @@ public class Order implements Serializable {
      *  ,所属表字段为t_order.status
      */
     private Integer status;
+    private String channel;
+    public String getChannel() {
+        return channel;
+    }
+
+    public void setChannel(String channel) {
+        this.channel = channel;
+    }
 
     /**
      * 序列化ID,t_order

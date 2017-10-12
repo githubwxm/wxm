@@ -153,22 +153,22 @@ public abstract class AbstractCreateOrderImpl implements CreateOrderInterface {
             throw new ApiException("供应商企业已冻结");
         }
         if (salesInfo.getDay_info_list().size() != sub.getDays()) {
-            throw new ApiException("预定天数与获取产品天数不匹配");
+            throw new ApiException(salesInfo.getProduct_sub_name() + "预定天数与获取产品天数不匹配");
         }
         // 验证最低购票
         if (salesInfo.getMin_buy_quantity() != null && salesInfo.getMin_buy_quantity() > sub.getQuantity()) {
-            throw new ApiException("低于最低购买票数");
+            throw new ApiException(salesInfo.getProduct_sub_name() + "低于最低购买票数");
         }
         // 判断最高票数
         if (salesInfo.getMax_buy_quantity() != null && salesInfo.getMax_buy_quantity() > 0 && sub.getQuantity() > salesInfo.getMax_buy_quantity()) {
-            throw new ApiException(String.format("超过订单最高购买限制: 当前购买:%d, 最大购买:%d", sub.getQuantity(), salesInfo.getMax_buy_quantity())).dataMap()
+            throw new ApiException(String.format(salesInfo.getProduct_sub_name() + "超过订单最高购买限制: 当前购买:%d, 最大购买:%d", sub.getQuantity(), salesInfo.getMax_buy_quantity())).dataMap()
                     .putData("current", sub.getQuantity()).putData("max", salesInfo.getMax_buy_quantity());
         }
         return salesInfo;
     }
 
-    public void validateBookingDate(ValidateProductSub sub, List<ProductSalesDayInfo> dayInfoList) {
-        bookingOrderManager.validateBookingDate(sub.getBooking(), dayInfoList);
+    public void validateBookingDate(ValidateProductSub sub, ProductSalesInfo salesInfo) {
+        bookingOrderManager.validateBookingDate(sub.getBooking(), salesInfo);
     }
 
     public OrderItem insertItem(Order order, ValidateProductSub sub, ProductSalesInfo salesInfo, PriceDto price, Map item) {
@@ -183,12 +183,12 @@ public abstract class AbstractCreateOrderImpl implements CreateOrderInterface {
         int i = 0;
         for (ProductSalesDayInfo dayInfo : salesInfo.getDay_info_list()) {
             List<EpSalesInfo> daySales = allDaysSales.get(i);
-            Assert.notEmpty(daySales, "该产品销售计划不全");
+            Assert.notEmpty(daySales,  salesInfo.getProduct_sub_name() + "产品销售计划不全");
             EpSalesInfo saleInfo = bookingOrderManager.getSalePrice(daySales, item.getSupplier_ep_id());
             EpSalesInfo buyInfo = bookingOrderManager.getBuyingPrice(daySales, createOrder.getEpId());
-            Assert.notNull(saleInfo, "该产品未正确配置");
-            Assert.notNull(buyInfo, "该产品未正确配置");
-            OrderItemDetail orderItemDetail = bookingOrderManager.generateDetail(dayInfo, item.getId(),
+            Assert.notNull(saleInfo, salesInfo.getProduct_sub_name() + "产品未正确配置");
+            Assert.notNull(buyInfo, salesInfo.getProduct_sub_name() + "产品未正确配置");
+            OrderItemDetail orderItemDetail = bookingOrderManager.generateDetail(dayInfo, item,
                     DateUtils.addDays(sub.getBooking(), i), sub.getQuantity(), salesInfo.getLow_use_quantity(),
                     saleInfo.getPrice(), order.getFrom_type() == OrderConstant.FromType.TRUST ? buyInfo.getShop_price() : buyInfo.getPrice());
             details.add(orderItemDetail);
