@@ -3,13 +3,8 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <header-title></header-title>
-<<<<<<< HEAD
-    <link href="../../static/css/style.css" rel="stylesheet">
-    <link type="text/css" rel="stylesheet" href="../../static/script/amd/1.0/jedate/skin/jedate.css">
-=======
     <link href="/voucher/static/css/style.css" rel="stylesheet">
     <link type="text/css" rel="stylesheet" href="/voucher/static/script/amd/1.0/jedate/skin/jedate.css">
->>>>>>> fix_master
     <style>
         .bodys { padding: 50px 0 0 50px; }
         .datainp { width: 130px; height: 30px; border: 1px #A5D2EC solid; font-size: 15px}
@@ -39,11 +34,7 @@
                         <input name="name" class="form-control" type="text" maxlength="50" v-model="subFromData.name" v-validate:name="{required:true}" initial="off">
                         <p class="help-block">同一产品内票据名称必须为唯一</p>
                     </div>
-<<<<<<< HEAD
-                    <div class="Prompt" v-show="$checkForm.name.required" for="contactMobile"><img src="../../static/style/img/baocuo.png"><label class="error">请填写子产品名称！</label></div>
-=======
                     <div class="Prompt" v-show="$checkForm.name.required" for="contactMobile"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请填写子产品名称！</label></div>
->>>>>>> fix_master
                 </div>
 
                 <div class="Ticket clearfix">
@@ -62,11 +53,7 @@
                         <div class="col-md-5 col-sm-5 col-lg-5">
                             <label class="radio-inline">
                                 <input type="checkbox" class="chekbox" name="ticketDict" value="5052" v-model="subFromData.ticket_dict" v-validate:ticket_dict="{required:true}" initial="off"><i>优惠票</i>
-<<<<<<< HEAD
-                                <div class="Prompt" v-show="$checkForm.ticket_dict.required" for="contactMobile"><img src="../../static/style/img/baocuo.png"><label class="error">请选择一种票种！</label></div>
-=======
                                 <div class="Prompt" v-show="$checkForm.ticket_dict.required" for="contactMobile"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请选择一种票种！</label></div>
->>>>>>> fix_master
                             </label>
                         </div>
                     </div>
@@ -81,11 +68,7 @@
                         <div class="col-md-5 col-sm-5 col-lg-5">
                             <label class="radio-inline">
                                 <input type="checkbox" name="ticketFlag" class="chekbox" value="5031" v-model="subFromData.ticket_flag" v-validate:ticket_flag="{required:true}" initial="off"><i>散客</i>
-<<<<<<< HEAD
-                                <div class="Prompt" v-show="$checkForm.ticket_flag.required" for="contactMobile"><img src="../../static/style/img/baocuo.png"><label class="error">请选择团散类型！</label> </div>
-=======
                                 <div class="Prompt" v-show="$checkForm.ticket_flag.required" for="contactMobile"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请选择团散类型！</label> </div>
->>>>>>> fix_master
                             </label>
                         </div>
                     </div>
@@ -100,11 +83,7 @@
                             <label class="radio-inline" v-if="ep_type != 10002">
                                 <input type="checkbox" name="payType" class="chekbox" value="5012" v-model="subFromData.pay_type" v-validate:pay_type="{required:true}" initial="off"><i>现场支付</i>
                             </label>
-<<<<<<< HEAD
-                            <div class="Prompt" v-show="$checkForm.pay_type.required" for="contactMobile"><img src="../../static/style/img/baocuo.png"><label class="error">请选择支付方式！</label></div>
-=======
                             <div class="Prompt" v-show="$checkForm.pay_type.required" for="contactMobile"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请选择支付方式！</label></div>
->>>>>>> fix_master
                         </div>
                     </div>
                 </div>
@@ -119,11 +98,7 @@
                             <div class="col-sm-9 col-md-8 col-lg-4">
                                 <input name="name" class="form-control" type="number" min="0" maxlength="50" v-model="subFromData.groupFromData.min_buy_quantity" v-validate:min_buy_quantity="{required:true}" initial="off">
                             </div>
-<<<<<<< HEAD
-                            <div v-show="$checkForm.min_buy_quantity.required" for="contactMobile"><img src="../../static/style/img/baocuo.png"><label class="error">请设置最低购买数量！</label></div>
-=======
                             <div v-show="$checkForm.min_buy_quantity.required" for="contactMobile"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请设置最低购买数量！</label></div>
->>>>>>> fix_master
                         </li>
 
                         <li class="form-group form-group-top">
@@ -131,11 +106,7 @@
                             <div class="col-md-3 col-sm-3 col-lg-2 clearfix">
                                 <remote-sel :setting="realNameSetting" :value.sync="subFromData.groupFromData.real_name" v-validate:real_name="{required:true}" initial="off"></remote-sel>
                             </div>
-<<<<<<< HEAD
-                            <div class="Prompt" v-show="$checkForm.real_name.required" for="contactMobile" class="error"><img src="../../static/style/img/baocuo.png"><label class="error">请选择是否实名制！</label> </div>
-=======
                             <div class="Prompt" v-show="$checkForm.real_name.required" for="contactMobile" class="error"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请选择是否实名制！</label> </div>
->>>>>>> fix_master
                         </li>
 
                         <!--<li class="form-group form-group-top" v-if="subFromData.groupFromData.real_name == 5130">
@@ -164,11 +135,7 @@
                                 <label class="radio-inline">
                                     <input type="radio" class="input-one-3" value="5141" v-model="subFromData.groupFromData.booking_limit" v-validate:booking_limit="{required:true}" initial="off">可当天预订，预订后<input type="number" min="0" class="input-one" value="0" v-model="subFromData.groupFromData.use_hours_limit"/>小时方可入园
                                 </label>
-<<<<<<< HEAD
-                                <div class="Prompt" v-show="$checkForm.use_hours_limit.required" for="contactMobile"><img src="../../static/style/img/baocuo.png"><label class="error">请填写游玩时间！</label></div>
-=======
                                 <div class="Prompt" v-show="$checkForm.use_hours_limit.required" for="contactMobile"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请填写游玩时间！</label></div>
->>>>>>> fix_master
                             </div>
                             <div v-if="subFromData.groupFromData.booking_limit == 5141" style="display:none;">
                                 <input type="hidden" v-model="subFromData.groupFromData.use_hours_limit" v-validate:use_hours_limit="{required:true}" initial="off"/>
@@ -183,20 +150,12 @@
                                     <div v-if="subFromData.groupFromData.booking_limit == 5140" style="display:none;">
                                         <input type="hidden" v-model="subFromData.groupFromData.booking_day_limit" v-validate:booking_day_limit="{required:true}" initial="off"/>
                                     </div>
-<<<<<<< HEAD
-                                    <div class="Prompt prom-right" v-show="$checkForm.booking_day_limit.required" for="contactMobile" class="error"><img src="../../static/style/img/baocuo.png"><label class="error">请填写游玩天数！</label></div>
-=======
                                     <div class="Prompt prom-right" v-show="$checkForm.booking_day_limit.required" for="contactMobile" class="error"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请填写游玩天数！</label></div>
->>>>>>> fix_master
                                     <input class="datainp wicon" id="group"  type="text" placeholder="格式为08:00" @click="testShow('#group')" readonly>时:分之前预定
                                     <div v-if="subFromData.groupFromData.booking_limit == 5140" style="display:none;">
                                         <input type="hidden" v-model="subFromData.groupFromData.booking_time_limit" v-validate:booking_time_limit="{required:true}" initial="off"/>
                                     </div>
-<<<<<<< HEAD
-                                    <div class="Prompt prom-right" v-show="$checkForm.booking_time_limit.required" for="contactMobile"><img src="../../static/style/img/baocuo.png"><label class="error">请填写游玩时间！</label></div>
-=======
                                     <div class="Prompt prom-right" v-show="$checkForm.booking_time_limit.required" for="contactMobile"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请填写游玩时间！</label></div>
->>>>>>> fix_master
                                 </label>
                             </div>
                         </li>
@@ -242,11 +201,7 @@
                                     <input type="radio" class="input-one-3" value="5141" v-model="subFromData.visitorFromData.booking_limit" v-validate:booking_limit="{required:true}" initial="off">
                                     可当天预订，预订后<input class="input-one" type="number" min="0" value="0" v-model="subFromData.visitorFromData.use_hours_limit"/>小时方可入园
                                 </label>
-<<<<<<< HEAD
-                                <div class="Prompt" v-show="$checkForm.use_hours_limit.required" for="contactMobile" ><img src="../../static/style/img/baocuo.png"><label class="error">请选择游玩时间！</label></div>
-=======
                                 <div class="Prompt" v-show="$checkForm.use_hours_limit.required" for="contactMobile" ><img src="/voucher/static/style/img/baocuo.png"><label class="error">请选择游玩时间！</label></div>
->>>>>>> fix_master
                             </div>
                             <div v-if="subFromData.visitorFromData.booking_limit == 5141" style="display:none;">
                                 <input type="hidden" v-model="subFromData.visitorFromData.use_hours_limit" v-validate:use_hours_limit="{required:true}" initial="off"/>
@@ -261,20 +216,12 @@
                                     <div v-if="subFromData.visitorFromData.booking_limit == 5140" style="display:none;">
                                         <input type="hidden" v-model="subFromData.visitorFromData.booking_day_limit" v-validate:booking_day_limit="{required:true}" initial="off"/>
                                     </div>
-<<<<<<< HEAD
-                                    <div class="Prompt prom-right" v-show="$checkForm.booking_day_limit.required" for="contactMobile"><img src="../../static/style/img/baocuo.png"><label class="error">请填写游玩天数！</label></div>
-=======
                                     <div class="Prompt prom-right" v-show="$checkForm.booking_day_limit.required" for="contactMobile"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请填写游玩天数！</label></div>
->>>>>>> fix_master
                                     <input class="datainp wicon" id="visitor"  type="text" placeholder="格式为08:00" @click="testShow('#visitor')" readonly>时:分之前预定
                                     <div v-if="subFromData.visitorFromData.booking_limit == 5140" style="display:none;">
                                         <input type="hidden" v-model="subFromData.visitorFromData.booking_time_limit" v-validate:booking_time_limit="{required:true}" initial="off"/>
                                     </div>
-<<<<<<< HEAD
-                                    <div class="Prompt prom-right" v-show="$checkForm.booking_time_limit.required" for="contactMobile"><img src="../../static/style/img/baocuo.png"><label class="error">请填写游玩时间！</label></div>
-=======
                                     <div class="Prompt prom-right" v-show="$checkForm.booking_time_limit.required" for="contactMobile"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请填写游玩时间！</label></div>
->>>>>>> fix_master
                                 </label>
                             </div>
                         </li>
@@ -291,11 +238,7 @@
                         <div class="col-sm-4 col-md-4 col-lg-4">
                             <remote-sel :setting="maTypeSetting" :value.sync="subFromData.ep_ma_id" v-validate:ep_ma_id="{required:true}" initial="off"></remote-sel>
                         </div>
-<<<<<<< HEAD
-                        <div v-show="$checkForm.ep_ma_id.required" for="contactMobile" ><img src="../../static/style/img/baocuo.png"><label class="error">请选择发码公司！</label></div>
-=======
                         <div v-show="$checkForm.ep_ma_id.required" for="contactMobile" ><img src="/voucher/static/style/img/baocuo.png"><label class="error">请选择发码公司！</label></div>
->>>>>>> fix_master
                         <button class="btn" type="button" @click="addVoucherMerchant()">关联凭证商户</button>
                         <button class="btn" type="submit" @click="refreshMa">刷新</button>
                     </div>
@@ -352,11 +295,7 @@
                             <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>票据名称：</label>
                             <div class="col-sm-9 col-md-8 col-lg-6">
                                 <input name="name" class="form-control" type="text" maxlength="50" v-model="ticketForm.name" v-validate:name="{required:true}" initial="off">
-<<<<<<< HEAD
-                                <div  v-show="$checkSubForm.name.required" for="contactMobile"><img src="../../static/style/img/baocuo.png"><label class="error">请填写票据名称！</label></div>
-=======
                                 <div  v-show="$checkSubForm.name.required" for="contactMobile"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请填写票据名称！</label></div>
->>>>>>> fix_master
                                 <div class="label-box btn-success" v-cloak>{{ticketForm.ticket_dict_name}}</div> <div class="label-box btn-blue" v-cloak>{{ticketForm.ticket_flag_name}}</div>
                                 <div class="label-box btn-orange" v-cloak>{{ticketForm.pay_type_name}}</div>
                             </div>
@@ -366,44 +305,28 @@
                             <div class="col-sm-6 col-md-6 col-lg-6">
                                 <input name="name" class="form-control" type="number" min="0" maxlength="50" v-model="ticketForm.market_price" v-validate:market_price="{required:true}" initial="off">
                             </div>
-<<<<<<< HEAD
-                            <div v-show="$checkSubForm.market_price.required" for="contactMobile"><img src="../../static/style/img/baocuo.png"><label class="error">请填写市场价！</label></div>
-=======
                             <div v-show="$checkSubForm.market_price.required" for="contactMobile"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请填写市场价！</label></div>
->>>>>>> fix_master
                         </li>
                         <li>
                             <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>限制最低售价：</label>
                             <div class="col-sm-6 col-md-6 col-lg-6">
                                 <input name="name" class="form-control" type="number" min="0" maxlength="50" v-model="ticketForm.min_sell_price" v-validate:min_sell_price="{required:true}" initial="off">
                             </div>
-<<<<<<< HEAD
-                            <div v-show="$checkSubForm.min_sell_price.required" for="contactMobile"><img src="../../static/style/img/baocuo.png"><label class="error" >请填写最低销售价！</label></div>
-=======
                             <div v-show="$checkSubForm.min_sell_price.required" for="contactMobile"><img src="/voucher/static/style/img/baocuo.png"><label class="error" >请填写最低销售价！</label></div>
->>>>>>> fix_master
                         </li>
                         <li>
                             <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>结算价：</label>
                             <div class="col-sm-6 col-md-6 col-lg-6">
                                 <input name="name" class="form-control" type="number" min="0" maxlength="50" v-model="ticketForm.settle_price" v-validate:settle_price="{required:true}" initial="off">
                             </div>
-<<<<<<< HEAD
-                            <div v-show="$checkSubForm.settle_price.required" for="contactMobile" ><img src="../../static/style/img/baocuo.png"><label class="error">请填写结算价！</label></div>
-=======
                             <div v-show="$checkSubForm.settle_price.required" for="contactMobile" ><img src="/voucher/static/style/img/baocuo.png"><label class="error">请填写结算价！</label></div>
->>>>>>> fix_master
                         </li>
                         <li>
                             <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>发码公司：</label>
                             <div class="col-sm-6 col-md-6 col-lg-6">
                                 <remote-sel :setting="maTypeSetting" :value.sync="ticketForm.ep_ma_id" v-validate:ep_ma_id="{required:true}" initial="off"  disabled="disabled"></remote-sel>
                             </div>
-<<<<<<< HEAD
-                            <!--<div v-show="$checkSubForm.ep_ma_id.required" for="contactMobile" ><img src="../../static/style/img/baocuo.png"><label class="error">请选择发码公司！</label></div>-->
-=======
                             <!--<div v-show="$checkSubForm.ep_ma_id.required" for="contactMobile" ><img src="/voucher/static/style/img/baocuo.png"><label class="error">请选择发码公司！</label></div>-->
->>>>>>> fix_master
                         </li>
                         <li>
                             <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>第三方子产品ID：</label>
@@ -411,11 +334,7 @@
                                 <input name="name" class="form-control" type="number" min="0" maxlength="50" v-model="ticketForm.ma_product_id" v-validate:ma_product_id="{required:true}" initial="off">
                                 <!--<remote-sel :setting="maProductTypeSetting" :value.sync="ticketForm.ma_product_id" v-validate:ma_product_id="{required:true}" initial="off"></remote-sel>-->
                             </div>
-<<<<<<< HEAD
-                            <div v-show="$checkSubForm.ma_product_id.required" for="contactMobile"><img src="../../static/style/img/baocuo.png"><label class="error">请选择票务产品！</label></div>
-=======
                             <div v-show="$checkSubForm.ma_product_id.required" for="contactMobile"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请选择票务产品！</label></div>
->>>>>>> fix_master
                             <!--<button class="btn btn-success" type="button" @click="refreshMaProduct(ticketForm.ep_ma_id)">刷新</button>-->
                         </li>
                         <li>
@@ -467,22 +386,14 @@
                                 <div class="col-sm-9 col-md-8 col-lg-4">
                                     <input class="form-control" type="number" min="0" maxlength="50" v-model="ticketForm.min_buy_quantity" v-validate:min_buy_quantity="{required:true}" initial="off">
                                 </div>
-<<<<<<< HEAD
-                                <div class="Prompt" v-show="$checkSubForm.min_buy_quantity.required" for="contactMobile"><img src="../../static/style/img/baocuo.png"><label class="error">请填写购买数量！</label></div>
-=======
                                 <div class="Prompt" v-show="$checkSubForm.min_buy_quantity.required" for="contactMobile"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请填写购买数量！</label></div>
->>>>>>> fix_master
                             </li>
                             <li v-if="ticketForm.ticket_flag == 5032">
                                 <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>购票时是否需要身份证：</label>
                                 <div class="col-md-3 col-sm-3 col-lg-2 clearfix">
                                     <remote-sel :setting="realNameSetting" @change="spliceBookingNotes" :value.sync="ticketForm.real_name" v-validate:real_name="{required:true}" initial="off"></remote-sel>
                                 </div>
-<<<<<<< HEAD
-                                <div class="Prompt" v-show="$checkSubForm.real_name.required" for="contactMobile"><img src="../../static/style/img/baocuo.png"><label class="error">请选择是否需要身份证！</label></div>
-=======
                                 <div class="Prompt" v-show="$checkSubForm.real_name.required" for="contactMobile"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请选择是否需要身份证！</label></div>
->>>>>>> fix_master
                             </li>
                             <!--团队End-->
                             <li>
@@ -530,21 +441,13 @@
                                         <div v-if="ticketForm.booking_limit == 5140" style="display:none;">
                                             <input type="hidden" v-model="ticketForm.booking_day_limit" v-validate:booking_day_limit="{required:true}" initial="off"/>
                                         </div>
-<<<<<<< HEAD
-                                        <div class="Prompt prom-right" v-show="$checkSubForm.booking_day_limit.required" for="contactMobile" class="error"><img src="../../static/style/img/baocuo.png"><label class="error">请填写游玩天数！</label></div>
-=======
                                         <div class="Prompt prom-right" v-show="$checkSubForm.booking_day_limit.required" for="contactMobile" class="error"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请填写游玩天数！</label></div>
->>>>>>> fix_master
                                         <input class="datainp wicon" id="allTime"  type="text" placeholder="格式为08:00"  @click="testShow('#allTime')" readonly>时:分之前预订
                                         <!--<input class="input-one" style="width:150px" v-model="ticketForm.booking_time_limit" @change="spliceBookingNotes" placeholder="格式为08:00"/>-->
                                         <div v-if="ticketForm.booking_limit == 5140" style="display:none;">
                                             <input type="hidden" v-model="ticketForm.booking_time_limit" v-validate:booking_time_limit="{required:true}" initial="off"/>
                                         </div>
-<<<<<<< HEAD
-                                        <div class="Prompt prom-right" v-show="$checkSubForm.booking_time_limit.required" for="contactMobile"><img src="../../static/style/img/baocuo.png"><label class="error">请填写游玩时间！</label></div>
-=======
                                         <div class="Prompt prom-right" v-show="$checkSubForm.booking_time_limit.required" for="contactMobile"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请填写游玩时间！</label></div>
->>>>>>> fix_master
                                     </label>
                                 </div>
                             </li>
@@ -566,11 +469,7 @@
                                 <label class="col-md-3 col-sm-3 col-lg-3 control-label"></label>
                                 <div style="margin-left: 15px; float: left;">
                                     总限购数量<input class="input-one" type="number" min="0" v-model="ticketForm.total_stock" v-validate:total_stock="{required:true}" initial="off"/>
-<<<<<<< HEAD
-                                    <span class="Prompt" v-show="$checkSubForm.total_stock.required" for="contactMobile"><img src="../../static/style/img/baocuo.png"><label class="error">请填写数量！</label></span>
-=======
                                     <span class="Prompt" v-show="$checkSubForm.total_stock.required" for="contactMobile"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请填写数量！</label></span>
->>>>>>> fix_master
                                 </div>
 
                             </li>
@@ -604,11 +503,7 @@
                                         天内有效
 
                                     </label>
-<<<<<<< HEAD
-                                    <div class="Prompt" v-show="$checkSubForm.effective_day.required" for="contactMobile"><img src="../../static/style/img/baocuo.png"><label class="error">请选择游玩日期！</label></div>
-=======
                                     <div class="Prompt" v-show="$checkSubForm.effective_day.required" for="contactMobile"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请选择游玩日期！</label></div>
->>>>>>> fix_master
                                 </div>
                             </li>
                             <li>
@@ -680,11 +575,7 @@
                                     <remote-sel :setting="refundSetting" :value.sync="ticketForm.saler_refund_rule" @change="refundRule" v-validate:saler_refund_rule="{required:true}" initial="off"></remote-sel>
 
                                 </div>
-<<<<<<< HEAD
-                                <div class="Prompt" v-show="$checkSubForm.saler_refund_rule.required" for="contactMobile"><img src="../../static/style/img/baocuo.png"><label class="error">请选择退货规则！</label></div>
-=======
                                 <div class="Prompt" v-show="$checkSubForm.saler_refund_rule.required" for="contactMobile"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请选择退货规则！</label></div>
->>>>>>> fix_master
                                 <button class="btn btn-success" type="button" @click="addRefund()">新增退货规则</button>
                                 <button class="btn btn-success" type="button" @click="refreshRefund()">刷新</button>
                             </li>
@@ -729,16 +620,9 @@
         <!-- 产品信息End -->
     </div>
 </div>
-<<<<<<< HEAD
-<script type="text/javascript" src="../../static/script/local/config.js"></script>
-<script type="text/javascript" src="../../static/script/local/require/require.js"></script>
-<script type="text/javascript" src="../../static/script/local/require_config.js"></script>
-<script type="text/javascript" src="../../static/script/local/view/prod/supplierProd/addThirdSubView.js"></script>
-=======
 <script type="text/javascript" src="/voucher/static/script/local/config.js"></script>
 <script type="text/javascript" src="/voucher/static/script/local/require/require.js"></script>
 <script type="text/javascript" src="/voucher/static/script/local/require_config.js"></script>
 <script type="text/javascript" src="/voucher/static/script/local/view/prod/supplierProd/addThirdSubView.js"></script>
->>>>>>> fix_master
 </body>
 </html>

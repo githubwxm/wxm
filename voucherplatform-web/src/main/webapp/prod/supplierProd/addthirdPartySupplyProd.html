@@ -3,11 +3,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <header-title></header-title>
-<<<<<<< HEAD
-    <link href="../../static/css/style.css" rel="stylesheet">
-=======
     <link href="/voucher/static/css/style.css" rel="stylesheet">
->>>>>>> fix_master
     <script type="text/javascript" src="http://api.map.baidu.com/api?v=1.4&key=sNHtfFMen9ktOAbQYpC23Gmc"></script>
 </head>
 <body vtag="root">
@@ -28,11 +24,7 @@
                                 <span class="label label-danger ">注意</span>
                                 <span>一旦保存后，将无法更改</span>
                             </div>
-<<<<<<< HEAD
-                            <div  v-show="$checkSubForm.name.required" for="contactMobile"><img src="../../static/style/img/baocuo.png"><label class="error">请填写景点名称！</label></div>
-=======
                             <div  v-show="$checkSubForm.name.required" for="contactMobile"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请填写景点名称！</label></div>
->>>>>>> fix_master
                         </li>
                         <li>
                             <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>短信通知人：</label>
@@ -40,42 +32,25 @@
                                 <input name="address" class="form-control" type="text" maxlength="20" v-model="subFormData.phone" v-validate:phone="{required:true,pattern:'/^1[0-9]{10}$/'}" initial="off">
                             </div>
                             <div class="Prompt">
-<<<<<<< HEAD
-                                <span v-if="$checkSubForm.phone.required" for="contactMobile" ><img src="../../static/style/img/baocuo.png"><label class="error">请填写手机号码！</label></span>
-                                <span v-if="$checkSubForm.phone.pattern" for="contactMobile"><img src="../../static/style/img/baocuo.png"><label class="error">手机号码格式不正确！</label></span>
-=======
                                 <span v-if="$checkSubForm.phone.required" for="contactMobile" ><img src="/voucher/static/style/img/baocuo.png"><label class="error">请填写手机号码！</label></span>
                                 <span v-if="$checkSubForm.phone.pattern" for="contactMobile"><img src="/voucher/static/style/img/baocuo.png"><label class="error">手机号码格式不正确！</label></span>
->>>>>>> fix_master
                             </div>
                         </li>
                         <li>
                             <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>所在城市：</label>
                             <div class="col-sm-3 col-md-3 col-lg-2">
                                 <remote-sel :setting="provinceSetting" :value.sync="subFormData.props.province" @change="provinceChange" v-validate:province="{required:true}" initial="off"></remote-sel>
-<<<<<<< HEAD
-                                <span v-show="$checkSubForm.province.required" for="contactMobile"><img src="../../static/style/img/baocuo.png"><label class="error">请选择企业地址！</label></span>
-=======
                                 <span v-show="$checkSubForm.province.required" for="contactMobile"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请选择企业地址！</label></span>
->>>>>>> fix_master
                             </div>
 
                             <div class="col-sm-3 col-md-3 col-lg-2">
                                 <remote-sel :setting="citySetting" :value.sync="subFormData.props.city" @change="cityChange" v-ref:city v-validate:city="{required:true}" initial="off"></remote-sel>
-<<<<<<< HEAD
-                                <span v-show="$checkSubForm.city.required" for="contactMobile"><img src="../../static/style/img/baocuo.png"><label class="error">请选择企业地址！</label></span>
-=======
                                 <span v-show="$checkSubForm.city.required" for="contactMobile"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请选择企业地址！</label></span>
->>>>>>> fix_master
                             </div>
 
                             <div class="col-sm-3 col-md-3 col-lg-2">
                                 <remote-sel :setting="areaSetting" :value.sync="subFormData.props.area" v-ref:area v-validate:area="{required:true}" initial="off"></remote-sel>
-<<<<<<< HEAD
-                                <span v-show="$checkSubForm.area.required" for="contactMobile"><img src="../../static/style/img/baocuo.png"><label class="error">请选择企业地址！</label></span>
-=======
                                 <span v-show="$checkSubForm.area.required" for="contactMobile"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请选择企业地址！</label></span>
->>>>>>> fix_master
                             </div>
                         </li>
 
@@ -85,11 +60,7 @@
                                 <input name="address" class="form-control" type="text" maxlength="20" v-model="subFormData.props.address" v-validate:address="{required:true}" initial="off"
                                        placeholder="请不要重复填写上述所在地区的相同信息">
                             </div>
-<<<<<<< HEAD
-                            <div  v-show="$checkSubForm.address.required" for="contactMobile"><img src="../../static/style/img/baocuo.png"><label class="error">请填写详细地址！</label></div>
-=======
                             <div  v-show="$checkSubForm.address.required" for="contactMobile"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请填写详细地址！</label></div>
->>>>>>> fix_master
                         </li>
 
                         <li>
@@ -103,11 +74,7 @@
                                     </div>
                                 </div>
                             </div>
-<<<<<<< HEAD
-                            <div v-show="$checkSubForm.type.required" for="contactMobile"><img src="../../static/style/img/baocuo.png"><label class="error">请选择景点类型！</label></div>
-=======
                             <div v-show="$checkSubForm.type.required" for="contactMobile"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请选择景点类型！</label></div>
->>>>>>> fix_master
                         </li>
 
                         <li>
@@ -115,11 +82,7 @@
                             <div class="col-sm-6 col-md-6  col-lg-6">
                                 <remote-sel :setting="prodRankSetting" :value.sync="subFormData.props.level" v-validate:level="{required:true}" initial="off"></remote-sel>
                             </div>
-<<<<<<< HEAD
-                            <div v-show="$checkSubForm.level.required" for="contactMobile"><img src="../../static/style/img/baocuo.png"><label class="error">请填写景点级别！</label></div>
-=======
                             <div v-show="$checkSubForm.level.required" for="contactMobile"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请填写景点级别！</label></div>
->>>>>>> fix_master
                         </li>
                         <li>
                             <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>营业时间：</label>
@@ -127,11 +90,7 @@
                                 <input name="busi_hours" class="form-control" type="text" maxlength="100" v-model="subFormData.props.business_time" v-validate:business_time="{required:true}" initial="off"
                                        placeholder="旺季：8:00-18:00，淡季：9:00-17:00">
                             </div>
-<<<<<<< HEAD
-                            <div v-show="$checkSubForm.business_time.required" for="contactMobile"><img src="../../static/style/img/baocuo.png"><label class="error">请填写营业时间！</label></div>
-=======
                             <div v-show="$checkSubForm.business_time.required" for="contactMobile"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请填写营业时间！</label></div>
->>>>>>> fix_master
                         </li>
                         <li>
                             <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>景区服务电话：</label>
@@ -140,13 +99,8 @@
                                        placeholder="区号-电话号码 形式，填写多个用英文的逗号隔开">
                             </div>
                             <div class="Prompt">
-<<<<<<< HEAD
-                                <span v-if="$checkSubForm.tel.required" for="contactMobile" ><img src="../../static/style/img/baocuo.png"><label class="error">请填写电话！</label></span>
-                                <span v-if="$checkSubForm.tel.pattern" for="contactMobile"><img src="../../static/style/img/baocuo.png"><label class="error">格式不正确！</label></span>
-=======
                                 <span v-if="$checkSubForm.tel.required" for="contactMobile" ><img src="/voucher/static/style/img/baocuo.png"><label class="error">请填写电话！</label></span>
                                 <span v-if="$checkSubForm.tel.pattern" for="contactMobile"><img src="/voucher/static/style/img/baocuo.png"><label class="error">格式不正确！</label></span>
->>>>>>> fix_master
                             </div>
                         </li>
                         <li>
@@ -163,22 +117,14 @@
                             <div class="col-sm-9 col-md-8  col-lg-6">
                                 <textarea rows="4" class="form-control valid" style="resize:none" v-model="subFormData.props.transit_lines" v-validate:transit_lines="{required:true}" initial="off"></textarea>
                             </div>
-<<<<<<< HEAD
-                            <div v-show="$checkSubForm.transit_lines.required" for="contactMobile"><img src="../../static/style/img/baocuo.png"><label class="error">请填写交通路线！</label></div>
-=======
                             <div v-show="$checkSubForm.transit_lines.required" for="contactMobile"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请填写交通路线！</label></div>
->>>>>>> fix_master
                         </li>
                         <li>
                             <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>景点简介：</label>
                             <div class="col-sm-9 col-md-8  col-lg-6">
                                 <textarea rows="8" class="form-control valid" style="resize:none" v-model="subFormData.props.blurb" v-validate:blurb="{required:true}" initial="off"></textarea>
                             </div>
-<<<<<<< HEAD
-                            <div v-show="$checkSubForm.blurb.required" for="contactMobile"><img src="../../static/style/img/baocuo.png"><label class="error">请填写景点简介！</label></div>
-=======
                             <div v-show="$checkSubForm.blurb.required" for="contactMobile"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请填写景点简介！</label></div>
->>>>>>> fix_master
                         </li>
                         <li>
                             <label class="col-md-3 col-sm-3 col-lg-3 control-label">景点图片：</label>
@@ -203,16 +149,9 @@
         </div>
     </div>
 </div>
-<<<<<<< HEAD
-<script type="text/javascript" src="../api/local/client/system/load_config"></script>
-<script type="text/javascript" src="../../static/script/local/require/require.js"></script>
-<script type="text/javascript" src="../../static/script/local/require_config.js"></script>
-<script type="text/javascript" src="../../static/script/local/view/prod/supplierProd/addthirdPartySupplyProdView.js"></script>
-=======
 <script type="text/javascript" src="/voucher/api/local/client/system/load_config"></script>
 <script type="text/javascript" src="/voucher/static/script/local/require/require.js"></script>
 <script type="text/javascript" src="/voucher/static/script/local/require_config.js"></script>
 <script type="text/javascript" src="/voucher/static/script/local/view/prod/supplierProd/addthirdPartySupplyProdView.js"></script>
->>>>>>> fix_master
 </body>
 </html>

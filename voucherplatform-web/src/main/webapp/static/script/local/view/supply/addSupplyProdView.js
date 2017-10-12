@@ -36,11 +36,7 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
                 this.$validate();
                 if (this.$checkSubForm.valid) {
                     self.subFormData.supplyId = self.supplyId;
-<<<<<<< HEAD
-                    var defrend = fnr.ajaxJson("../api/supply/setProd", self.subFormData);
-=======
                     var defrend = fnr.ajaxJson("/voucher/api/supply/setProd", self.subFormData);
->>>>>>> fix_master
                     defrend.then(function (result) {
                         var resp = result.json();
                         if (resp.code == 200) {
@@ -66,11 +62,7 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
                 var param = {};
                 param.supplyId = self.supplyId;
                 param.prodId = self.prodId;
-<<<<<<< HEAD
-                var defrend = fnr.ajaxJson("../api/supply/getProd", param, {method: "GET"});
-=======
                 var defrend = fnr.ajaxJson("/voucher/api/supply/getProd", param, {method: "GET"});
->>>>>>> fix_master
                 defrend.then(function (result) {
                   //  self.edit = result.code == 200;
                     var resp = result.json();

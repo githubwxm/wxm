@@ -13,11 +13,7 @@ require_js_file(['vueValidator'], function (Vue, fnr, validator) {
         //加载首页个性设置
         ready: function () {
             /*var self = this;
-<<<<<<< HEAD
-             var url = 'api/local/client/system/load_config';
-=======
              var url = '/voucher/api/local/client/system/load_config';
->>>>>>> fix_master
              var deferred = fnr.ajaxJson(url, {}, {method:'POST',alertMessage:0});*/
             /*deferred.then(function(result){
              var resp = result.json();
@@ -62,20 +58,12 @@ require_js_file(['vueValidator'], function (Vue, fnr, validator) {
                 }
                 this.errMessage = '';
 
-<<<<<<< HEAD
-                var deferred = fnr.ajaxJson("api/user/login",this.formData);
-=======
                 var deferred = fnr.ajaxJson("/voucher/api/user/login",this.formData);
->>>>>>> fix_master
                 var self = this;
                 deferred.then(function (result) {
                     resp = result.json();
                     if (resp.code == 200) {
-<<<<<<< HEAD
-                        window.location = 'index/index.html';
-=======
                         window.location = '/voucher/index/index.html';
->>>>>>> fix_master
                         return;
                     }
                     self.errMessage = resp.message;
@@ -86,11 +74,7 @@ require_js_file(['vueValidator'], function (Vue, fnr, validator) {
 });
 
 var img = new Image();
-<<<<<<< HEAD
-//img.src = "../static/style/img/banr1_02.jpg";
-=======
 //img.src = "/voucher/static/style/img/banr1_02.jpg";
->>>>>>> fix_master
 img.src = global_config.page.main_pic;
 img.onload = function () {
     document.getElementById('myImage').src = this.src;

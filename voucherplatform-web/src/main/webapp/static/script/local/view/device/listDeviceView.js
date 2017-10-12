@@ -9,11 +9,7 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
             var self = this;
             var param = {};
             param.code = code;
-<<<<<<< HEAD
-            var defrend = fnr.ajaxJson("../api/device/delDevice", param, {method: "GET"});
-=======
             var defrend = fnr.ajaxJson("/voucher/api/device/delDevice", param, {method: "GET"});
->>>>>>> fix_master
             defrend.then(function (result) {
                 var resp = result.json();
                 if (resp.code == 200) {
@@ -25,11 +21,7 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
             var self = this;
             var params = {
                 title: '设备名重命名',
-<<<<<<< HEAD
-                url: '/device/renameDevice.html?id=' + id + "&name=" + encodeURI(name),
-=======
                 url: '/voucher/device/renameDevice.html?id=' + id + "&name=" + encodeURI(name),
->>>>>>> fix_master
                 width: 800,
                 height: 400,
                 callbackSucc: function () {
@@ -47,11 +39,7 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
                 remote: {
                     link: function (params, options) {
                         console.log(JSON.stringify(params));
-<<<<<<< HEAD
-                        return fnr.ajaxJson("../api/device/selectDeviceList", params, options);
-=======
                         return fnr.ajaxJson("/voucher/api/device/selectDeviceList", params, options);
->>>>>>> fix_master
                     },
                     options: {method: 'GET'},
                     isLoadOnPageInit: false
@@ -79,11 +67,7 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
             },
             loadSignType: function () {
                 var self = this;
-<<<<<<< HEAD
-                var defrend = fnr.ajaxJson("../api/supply/getSignType", {}, {method: "GET"});
-=======
                 var defrend = fnr.ajaxJson("/voucher/api/supply/getSignType", {}, {method: "GET"});
->>>>>>> fix_master
                 defrend.then(function (result) {
                     var resp = result.json();
                     if (resp.code == 200) {
