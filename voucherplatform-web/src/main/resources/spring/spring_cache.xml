@@ -56,5 +56,9 @@
     <constructor-arg index="1" ref="jedisPoolConfig" />
   </bean>
 
-
-</beans>
+	<bean id="ossStoreManager" class="com.framework.common.mns.OssStoreManager">
+		<property name="accessId" value="${oss.access.id}"/>
+		<property name="accessKey" value="${oss.access.key}"/>
+		<property name="accountEndpoint" value="${oss.endpoint}"/>
+	</bean>
+</beans>  

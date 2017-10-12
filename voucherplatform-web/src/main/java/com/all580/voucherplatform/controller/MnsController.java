@@ -3,9 +3,11 @@ package com.all580.voucherplatform.controller;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.all580.voucherplatform.api.service.All580Service;
+import com.all580.voucherplatform.api.service.OrderService;
 import com.framework.common.BaseController;
 import com.framework.common.Result;
 import com.framework.common.lang.JsonUtils;
+import com.framework.common.mns.OssStoreManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -14,8 +16,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.nio.charset.Charset;
 import java.util.Map;
 
 /**
@@ -28,6 +30,10 @@ public class MnsController extends BaseController {
 
     @Autowired
     private All580Service all580Service;
+    @Autowired
+    private OssStoreManager ossStoreManager;
+    @Autowired
+    private OrderService orderService;
 
     @RequestMapping(value = "ticket", method = RequestMethod.POST)
     @ResponseBody
@@ -65,6 +71,7 @@ public class MnsController extends BaseController {
                     JSONObject item = events.getJSONObject(i);
                     String key = item.getJSONObject("oss").getJSONObject("object").getString("key");
                     log.info("OSS PUT 事件通知 key: {}", key);
+                    syncConsume(key);
                 }
             }
         } catch (IOException ex) {
@@ -78,5 +85,37 @@ public class MnsController extends BaseController {
         InputStream inputStream = request.getInputStream();
         inputStream.read(requestBuffer, 0, requestBuffer.length);
         return requestBuffer;
+    }
+
+    private void syncConsume(String key) {
+        try {
+            String folder = System.getProperty("java.io.tmpdir");
+            File file = new File(folder, key.substring(key.lastIndexOf("/") + 1));
+            ossStoreManager.download(key, file.getAbsolutePath());
+            InputStream inputStream = new FileInputStream(file);
+            int line = 0;
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, Charset.forName("utf8")));
+            try {
+                String lineStr = null;
+                while ((lineStr = reader.readLine()) != null) {
+                    try {
+                        orderService.consumeSync(JsonUtils.json2Map(lineStr));
+                        log.info("同步文件 {} 核销数据: {}", key, lineStr);
+                    } catch (Throwable e) {
+                        log.warn("解析文件 {} 第 {} 行 异常", new Object[]{key, line, e});
+                    }
+                    line++;
+                }
+            } finally {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            log.info("文件 {} 同步完成一共 {} 行", key, line);
+        } catch (Throwable e) {
+            log.warn("下载OSS文件 {} 异常", key, e);
+        }
     }
 }
