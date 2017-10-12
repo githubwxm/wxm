@@ -2,9 +2,18 @@
 <web-app version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee
-	http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+  http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
 
-
+    <filter>
+        <filter-name>springSessionRepositoryFilter</filter-name>
+        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>springSessionRepositoryFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+        <dispatcher>ERROR</dispatcher>
+    </filter-mapping>
     <filter>
         <filter-name>characterEncodingFilter</filter-name>
         <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
@@ -29,25 +38,6 @@
         <filter-name>voucherFilter</filter-name>
         <url-pattern>/api/*</url-pattern>
     </filter-mapping>
-<<<<<<< HEAD
-    <filter>
-        <filter-name>springSessionRepositoryFilter</filter-name>
-        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
-    </filter>
-    <filter-mapping>
-        <filter-name>springSessionRepositoryFilter</filter-name>
-        <url-pattern>/*</url-pattern>
-    </filter-mapping>
-=======
-    <!--<filter>-->
-        <!--<filter-name>springSessionRepositoryFilter</filter-name>-->
-        <!--<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>-->
-    <!--</filter>-->
-    <!--<filter-mapping>-->
-        <!--<filter-name>springSessionRepositoryFilter</filter-name>-->
-        <!--<url-pattern>/*</url-pattern>-->
-    <!--</filter-mapping>-->
->>>>>>> fix_master
     <servlet>
         <servlet-name>mvc</servlet-name>
         <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
@@ -55,17 +45,24 @@
             <param-name>contextConfigLocation</param-name>
             <param-value>classpath:applicationContext.xml</param-value>
         </init-param>
-        <load-on-startup>1</load-on-startup>
+        <load-on-startup>2</load-on-startup>
     </servlet>
-    <session-config>
-        <session-timeout>30</session-timeout>
-        <cookie-config>
-            <name>JSESSIONID</name>
-            <max-age>108000</max-age>
-            <path>/</path>
-        </cookie-config>
-    </session-config>
+    <!--<session-config>-->
+        <!--<session-timeout>30</session-timeout>-->
+        <!--<cookie-config>-->
+            <!--<name>JSESSIONID</name>-->
+            <!--<max-age>108000</max-age>-->
+            <!--<path>/</path>-->
+        <!--</cookie-config>-->
+    <!--</session-config>-->
 
+    <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>classpath:applicationContext.xml</param-value>
+    </context-param>
     <servlet-mapping>
         <servlet-name>mvc</servlet-name>
         <url-pattern>/</url-pattern>
@@ -75,6 +72,14 @@
         <url-pattern>*.css</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>*.json</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>*.apk</url-pattern>
+    </servlet-mapping>
+     <servlet-mapping>
         <servlet-name>default</servlet-name>
         <url-pattern>*.gif</url-pattern>
     </servlet-mapping>
