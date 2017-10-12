@@ -26,7 +26,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     public static final int LOGINTIMEOUT = 1000 * 30;
     public static final String LOGINURL = "/voucher/api/user/login";
     public static final String POSURL = "/voucher/api/pos";
-    public static final String MNSURL = "/voucher/api/mns/ticket";
+    public static final String MNSURL = "/voucher/api/mns";
 
     public AuthenticationFilter() {
         this.redisUtils = BeanUtil.getApplicationContext().getBean(RedisUtils.class);
@@ -47,10 +47,8 @@ public class AuthenticationFilter extends OncePerRequestFilter {
                         JSON.toJSONString(getOutPutMap(false, "对不起，你还没有登录", Result.NO_PERMISSION, null)));
                 return;
             }
-//            Map mapUser = redisUtils.get(VoucherConstant.REDISVOUCHERLOGINKEY + ":" + sessionId, Map.class);
             Map mapUser = (Map) request.getSession().getAttribute("user");
             if (mapUser != null) {
-//                redisUtils.expire(VoucherConstant.REDISVOUCHERLOGINKEY + ":" + sessionId, LOGINTIMEOUT);
                 request.setAttribute("user", mapUser);
                 filterChain.doFilter(request, response);
             } else {

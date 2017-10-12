@@ -5,7 +5,6 @@ import com.all580.order.dto.PriceDto;
 import com.all580.order.dto.ValidateProductSub;
 import com.all580.order.entity.*;
 import com.all580.product.api.model.EpSalesInfo;
-import com.all580.product.api.model.ProductSalesDayInfo;
 import com.all580.product.api.model.ProductSalesInfo;
 import com.framework.common.Result;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,7 +33,7 @@ public interface CreateOrderInterface {
 
     ProductSalesInfo validateProductAndGetSales(ValidateProductSub sub, CreateOrder createOrder, Map item);
 
-    void validateBookingDate(ValidateProductSub sub, List<ProductSalesDayInfo> dayInfoList);
+    void validateBookingDate(ValidateProductSub sub, ProductSalesInfo salesInfo);
 
     void validateVisitor(ProductSalesInfo salesInfo, ValidateProductSub sub, List<?> visitorList, Map item);
 

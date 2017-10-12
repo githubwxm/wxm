@@ -4,7 +4,6 @@ import com.all580.voucherplatform.api.service.UserService;
 import com.all580.voucherplatform.manager.UserValidateManager;
 import com.framework.common.BaseController;
 import com.framework.common.Result;
-import com.framework.common.io.cache.redis.RedisUtils;
 import com.framework.common.util.CommonUtil;
 import com.framework.common.validate.ParamsMapValidate;
 import lombok.extern.slf4j.Slf4j;
@@ -30,8 +29,6 @@ public class UserController extends BaseController {
 
     @Autowired
     private UserService userService;
-    @Autowired
-    private RedisUtils redisUtils;
 
     @RequestMapping(value = "login", method = RequestMethod.POST)
     @ResponseBody

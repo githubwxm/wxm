@@ -1,7 +1,7 @@
 package com.all580.voucherplatform.test.manager;
 
 import com.all580.voucherplatform.adapter.AdapterLoader;
-import com.all580.voucherplatform.manager.order.ConsumeOrderManager;
+import com.all580.voucherplatform.manager.order.OrderManager;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,15 +28,12 @@ public class ConsumeManagerTest {
 
     @Test
     public void TestConsume() {
-        ConsumeOrderManager consumeOrderManager = adapterLoader.getBean(ConsumeOrderManager.class);
+        OrderManager orderManager = adapterLoader.getBean(OrderManager.class);
         try {
-            consumeOrderManager.setOrder("1499133036679250");
-            consumeOrderManager.submitConsume(UUID.randomUUID().toString(), 1, "Address", new Date(), "0123");
+            orderManager.submitConsume(UUID.randomUUID().toString(), 1, "Address", new Date(), "0123", orderManager.getOrder("1499133036679250"));
             Thread.sleep(20000);
         } catch (Exception ex) {
             throw new ApiException(ex);
         }
-
     }
-
 }
