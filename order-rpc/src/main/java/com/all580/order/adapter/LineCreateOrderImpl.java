@@ -3,6 +3,7 @@ package com.all580.order.adapter;
 import com.all580.ep.api.service.EpService;
 import com.all580.order.api.OrderConstant;
 import com.all580.order.dao.LineGroupMapper;
+import com.all580.order.dto.CreateOrder;
 import com.all580.order.dto.PriceDto;
 import com.all580.order.dto.ValidateProductSub;
 import com.all580.order.entity.LineGroup;
@@ -10,6 +11,7 @@ import com.all580.order.entity.Order;
 import com.all580.order.entity.OrderItem;
 import com.all580.order.entity.Visitor;
 import com.all580.order.manager.BookingOrderManager;
+import com.all580.product.api.consts.ProductConstants;
 import com.all580.product.api.model.LineInfo;
 import com.all580.product.api.model.ProductSalesInfo;
 import com.all580.product.api.service.ProductSalesPlanRPCService;
@@ -19,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
+import javax.lang.exception.ApiException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -90,5 +93,14 @@ public class LineCreateOrderImpl extends TicketCreateOrderImpl {
     @Autowired
     public void setProductSalesPlanRPCService(ProductSalesPlanRPCService productSalesPlanRPCService) {
         super.productSalesPlanRPCService = productSalesPlanRPCService;
+    }
+
+    @Override
+    public ProductSalesInfo validateProductAndGetSales(ValidateProductSub sub, CreateOrder createOrder, Map item) {
+        ProductSalesInfo salesInfo = super.validateProductAndGetSales(sub, createOrder, item);
+        if (salesInfo.getProduct_type() != ProductConstants.ProductType.ITINERARY){
+            throw new ApiException("线路创建异常:" );
+        }
+        return salesInfo;
     }
 }

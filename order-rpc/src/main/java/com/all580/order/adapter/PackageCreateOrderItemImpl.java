@@ -50,7 +50,7 @@ public class PackageCreateOrderItemImpl extends AbstractCreateOrderImpl{
         if(ProductConstants.ProductType.ITINERARY == productType){
             return this.lineCreateOrder;
         }
-        throw new ApiException("未找到对应产品类型的订单接口");
+        throw new ApiException("未找到对应产品类型的订单接口1");
     }
 
     @Override
@@ -131,6 +131,9 @@ public class PackageCreateOrderItemImpl extends AbstractCreateOrderImpl{
             throw new ApiException(salesInfoResult.getError());
         }
         ProductSalesInfo salesInfo = salesInfoResult.get().get(sub.getCode());
+        if (salesInfo.getProduct_type() != ProductConstants.ProductType.PACKAGE){
+            throw new ApiException("套票创建异常:" );
+        }
         // 判断供应商状态是否为已冻结
         if (!bookingOrderManager.isEpStatus(epService.getEpStatus(salesInfo.getEp_id()), EpConstant.EpStatus.ACTIVE)) {
             throw new ApiException("供应商企业已冻结");

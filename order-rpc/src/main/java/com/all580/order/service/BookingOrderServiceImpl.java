@@ -91,6 +91,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
     public Result<?> create(Map params, String type) throws Exception {
         CreateOrderInterface orderInterface = applicationContext.getBean(OrderConstant.CREATE_ADAPTER + type, CreateOrderInterface.class);
         Assert.notNull(orderInterface, type + " 类型创建订单适配器没找到");
+
         // 锁定库存集合(统一锁定)
         Map<Integer, LockStockDto> lockStockDtoMap = new HashMap<>();
         List<ProductSearchParams> lockParams = new ArrayList<>();

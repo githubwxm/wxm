@@ -300,6 +300,7 @@ public class BookingOrderManager extends BaseOrderManager {
                             .dataMap().putData("idCard", sid).putData("booking", quantity).putData("max", maxQuantity);
                 }
             }
+
             sids.add(sid);
         }
         return total;

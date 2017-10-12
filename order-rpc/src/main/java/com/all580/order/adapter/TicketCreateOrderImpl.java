@@ -2,8 +2,10 @@ package com.all580.order.adapter;
 
 import com.all580.ep.api.service.EpService;
 import com.all580.order.api.OrderConstant;
+import com.all580.order.dto.CreateOrder;
 import com.all580.order.dto.ValidateProductSub;
 import com.all580.order.manager.BookingOrderManager;
+import com.all580.product.api.consts.ProductConstants;
 import com.all580.product.api.model.ProductSalesInfo;
 import com.all580.product.api.service.ProductSalesPlanRPCService;
 import lombok.Setter;
@@ -33,7 +35,9 @@ public class TicketCreateOrderImpl extends AbstractCreateOrderImpl {
             if (total != sub.getAllQuantity()) {
                 throw new ApiException("游客票数与总票数不符");
             }
+
         }
+
     }
 
     @Override
@@ -52,5 +56,15 @@ public class TicketCreateOrderImpl extends AbstractCreateOrderImpl {
     @Autowired
     public void setProductSalesPlanRPCService(ProductSalesPlanRPCService productSalesPlanRPCService) {
         super.productSalesPlanRPCService = productSalesPlanRPCService;
+    }
+
+    @Override
+    public ProductSalesInfo validateProductAndGetSales(ValidateProductSub sub, CreateOrder createOrder, Map item) {
+        ProductSalesInfo salesInfo = super.validateProductAndGetSales(sub, createOrder, item);
+        if (salesInfo.getProduct_type() != ProductConstants.ProductType.SCENERY){
+            throw new ApiException("景点创建异常:" );
+        }
+
+        return salesInfo;
     }
 }

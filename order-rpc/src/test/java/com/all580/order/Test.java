@@ -87,12 +87,12 @@ public class Test {
                 DateFormatUtils.converToDateTime("2016-11-09 00:00:00"), DateFormatUtils.converToDateTime("2016-11-09 16:30:00"));
         System.out.println(rule);
 
-        double percent = new BigDecimal(200 / (double)1500).setScale(2, BigDecimal.ROUND_DOWN).doubleValue();
+        double percent = new BigDecimal(200 / (double) 1500).setScale(2, BigDecimal.ROUND_DOWN).doubleValue();
         System.out.println(percent);
         System.out.println(new BigDecimal(1000 * 1 * (1 - percent)));
         System.out.println(500 * 1 * (1 - percent));
 
-        percent = new BigDecimal(13/100.0).setScale(4, BigDecimal.ROUND_DOWN).doubleValue();
+        percent = new BigDecimal(13 / 100.0).setScale(4, BigDecimal.ROUND_DOWN).doubleValue();
         System.out.println(percent);
         System.out.println(1000 * 1 * (1 - percent));
 
@@ -162,7 +162,10 @@ public class Test {
         test2.add("123");
         System.out.println(ParamsMapValidate.getValue(Collections.singletonMap("test", test2), "test"));
         ParamsMapValidate.validate(Collections.singletonMap("test", test2), Collections.singletonMap(new String[]{"test"}, new ValidRule[]{new ValidRule.IdCard()}));
+
+
     }
+
     public static void validateParams(Map params) {
         Map<String[], ValidRule[]> validRuleMap = new HashMap<>();
         validRuleMap.put(new String[]{
@@ -178,4 +181,7 @@ public class Test {
         validRuleMap.put(new String[]{"orderSn", "visitorSeqId"}, new ValidRule[]{new ValidRule.Digits()});
         ParamsMapValidate.validate(params, validRuleMap);
     }
+
+
+
 }

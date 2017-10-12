@@ -2,12 +2,14 @@ package com.all580.order.adapter;
 
 import com.all580.ep.api.service.EpService;
 import com.all580.order.api.OrderConstant;
+import com.all580.order.dto.CreateOrder;
 import com.all580.order.dto.PriceDto;
 import com.all580.order.dto.ValidateProductSub;
 import com.all580.order.entity.Order;
 import com.all580.order.entity.OrderItem;
 import com.all580.order.entity.Visitor;
 import com.all580.order.manager.BookingOrderManager;
+import com.all580.product.api.consts.ProductConstants;
 import com.all580.product.api.model.ProductSalesInfo;
 import com.all580.product.api.service.ProductSalesPlanRPCService;
 import com.framework.common.util.CommonUtil;
@@ -15,6 +17,7 @@ import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.lang.exception.ApiException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -60,5 +63,16 @@ public class HotelCreateOrderImpl extends AbstractCreateOrderImpl {
     @Autowired
     public void setProductSalesPlanRPCService(ProductSalesPlanRPCService productSalesPlanRPCService) {
         super.productSalesPlanRPCService = productSalesPlanRPCService;
+    }
+
+    @Override
+    public ProductSalesInfo validateProductAndGetSales(ValidateProductSub sub, CreateOrder createOrder, Map item) {
+        ProductSalesInfo salesInfo = super.validateProductAndGetSales(sub, createOrder, item);
+        if (salesInfo.getProduct_type() != ProductConstants.ProductType.HOTEL){
+            throw new ApiException("酒店创建异常:" );
+        }
+
+        return salesInfo;
+
     }
 }
