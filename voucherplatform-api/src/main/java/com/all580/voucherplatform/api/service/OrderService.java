@@ -83,5 +83,5 @@ public interface OrderService {
 
     Result reConsume(Integer consumeId);
 
-    void consumeSync();
+    void consumeSync(Map params);
 }
