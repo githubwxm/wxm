@@ -51,10 +51,14 @@
     </property>
   </bean>
 
-  <bean id="redisUtils" class="com.framework.common.io.cache.redis.RedisUtils">
-    <constructor-arg index="0" value="${redis.url}" />
-    <constructor-arg index="1" ref="jedisPoolConfig" />
-  </bean>
+	<bean id="redisUtils" class="com.framework.common.io.cache.redis.RedisUtils">
+		<constructor-arg index="0" value="${redis.url}" />
+		<constructor-arg index="1" ref="jedisPoolConfig" />
+	</bean>
 
-
+	<bean id="ossStoreManager" class="com.framework.common.mns.OssStoreManager">
+		<property name="accessId" value="${oss.access.id}"/>
+		<property name="accessKey" value="${oss.access.key}"/>
+		<property name="accountEndpoint" value="${oss.endpoint}"/>
+	</bean>
 </beans>

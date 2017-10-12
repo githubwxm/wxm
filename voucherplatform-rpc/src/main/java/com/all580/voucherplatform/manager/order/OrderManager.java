@@ -4,7 +4,9 @@ import com.all580.voucherplatform.adapter.AdapterLoader;
 import com.all580.voucherplatform.adapter.platform.PlatformAdapterService;
 import com.all580.voucherplatform.api.VoucherConstant;
 import com.all580.voucherplatform.dao.OrderMapper;
+import com.all580.voucherplatform.dao.SupplyProductMapper;
 import com.all580.voucherplatform.entity.Order;
+import com.all580.voucherplatform.entity.SupplyProduct;
 import com.all580.voucherplatform.utils.async.AsyncService;
 import com.framework.common.distributed.lock.DistributedLockTemplate;
 import com.framework.common.distributed.lock.DistributedReentrantLock;
@@ -16,8 +18,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.lang.exception.ApiException;
-import java.util.Date;
-import java.util.Map;
+import java.util.*;
 
 @Component
 @Slf4j
@@ -27,7 +28,11 @@ public class OrderManager {
     @Autowired
     private AsyncService asyncService;
     @Autowired
-    private OrderMapper orderMapper;
+    private ConsumeOrderManager consumeOrderManager;
+    @Autowired
+    public OrderMapper orderMapper;
+    @Autowired
+    public SupplyProductMapper supplyProductMapper;
 
     @Value("${lock.timeout}")
     private int lockTimeOut = 3;
@@ -40,8 +45,6 @@ public class OrderManager {
                                  Date consumeTime,
                                  String deviceId, final Order order) {
 
-        ConsumeOrderManager consumeOrderManager = adapterLoader.getBean(ConsumeOrderManager.class);
-        if (consumeOrderManager == null) throw new ApiException("没有找到核销订单管理器");
         DistributedReentrantLock distributedReentrantLock = distributedLockTemplate.execute(
                 VoucherConstant.DISTRIBUTEDLOCKORDER + order.getOrderCode(), lockTimeOut);
         try {
@@ -94,5 +97,48 @@ public class OrderManager {
     public Order getOrder(Integer supplyId,
                          String supplyOrderId) throws Exception {
         return orderMapper.selectBySupply(supplyId, supplyOrderId);
+    }
+
+    public Map getMap(Integer... orderId) throws Exception {
+        List<Order> orderList = orderMapper.selectOrderListByPrimaryKey(orderId);
+        Map map = new HashMap();
+        String batchNo = orderList.get(0).getOrderCode();
+        if (orderList.get(0).getSupplyProdId() == null) {
+            log.debug("订单号为{}未绑定票务产品", new Object[]{orderList.get(0).getOrderCode()});
+            throw new Exception("订单未绑定票务产品");
+        }
+        SupplyProduct supplyProduct = supplyProductMapper.selectByPrimaryKey(orderList.get(0).getSupplyProdId());
+
+        if (supplyProduct == null) { log.debug("订单号为{}未绑定票务产品", new Object[]{orderList.get(0).getOrderCode()});
+            throw new Exception("订单未绑定票务产品");
+        }
+        map.put("batch", batchNo);
+        map.put("orders", getVisitorMap(orderList, supplyProduct.getCode()));
+        map.put("supplyId", supplyProduct.getSupply_id());
+        return map;
+    }
+
+    private List<Map> getVisitorMap(List<Order> orderList, String prodId) {
+        List<Map> mapList = new ArrayList<>();
+        for (Order order : orderList) {
+            Map mapOrder = new HashMap();
+            mapOrder.put("voucherId", order.getOrderCode());
+            mapOrder.put("otaOrderId", order.getPlatformOrderId());
+            mapOrder.put("productId", prodId);
+            mapOrder.put("payment", 1);
+            mapOrder.put("consumeType", order.getConsumeType());
+            mapOrder.put("validTime", DateFormatUtils.converToStringTime(order.getValidTime()));
+            mapOrder.put("invalidTime", DateFormatUtils.converToStringTime(order.getInvalidTime()));
+            mapOrder.put("validWeek", order.getValidWeek());
+            mapOrder.put("invalidDate", order.getInvalidDate());
+            mapOrder.put("qrCode", order.getVoucherNumber());
+            mapOrder.put("customName", order.getCustomName());
+            mapOrder.put("mobile", order.getMobile());
+            mapOrder.put("idNumber", order.getIdNumber());
+            mapOrder.put("number", order.getNumber());
+            mapOrder.put("channel",order.getChannel());
+            mapList.add(mapOrder);
+        }
+        return mapList;
     }
 }

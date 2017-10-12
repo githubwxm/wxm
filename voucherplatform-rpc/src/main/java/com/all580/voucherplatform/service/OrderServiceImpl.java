@@ -5,27 +5,24 @@ import com.all580.voucherplatform.api.service.OrderService;
 import com.all580.voucherplatform.dao.GroupOrderMapper;
 import com.all580.voucherplatform.dao.OrderMapper;
 import com.all580.voucherplatform.entity.Order;
-import com.all580.voucherplatform.manager.order.CreateOrderManager;
 import com.all580.voucherplatform.manager.order.OrderManager;
 import com.all580.voucherplatform.manager.order.OrderReverseManager;
 import com.framework.common.Result;
 import com.framework.common.vo.PageRecord;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import javax.lang.exception.ApiException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * Created by Linv2 on 2017/5/14.
  */
 
 @Service
-@Transactional(rollbackFor = {Exception.class, RuntimeException.class})
 @Slf4j
 public class OrderServiceImpl implements OrderService {
 
@@ -202,7 +199,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void consumeSync() {
-
+    public void consumeSync(Map params) {
+        orderManager.submitConsume(params);
     }
 }
