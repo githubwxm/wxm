@@ -26,7 +26,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     public static final int LOGINTIMEOUT = 1000 * 30;
     public static final String LOGINURL = "/voucher/api/user/login";
     public static final String POSURL = "/voucher/api/pos";
-    public static final String MNSURL = "/voucher/api/mns/ticket";
+    public static final String MNSURL = "/voucher/api/mns";
 
     public AuthenticationFilter() {
         this.redisUtils = BeanUtil.getApplicationContext().getBean(RedisUtils.class);
