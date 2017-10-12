@@ -45,12 +45,14 @@ public class OrderValidateManager {
                 "items.days", // 天数：景点固定1
                 "items.quantity", // 订票数量
                 "ep_id", // 订票企业ID
-                "operator_id" // 订票用户ID
+                "operator_id", // 订票用户ID
+                "items.visitor.quantity" //游客订票数量
         }, new ValidRule[]{new ValidRule.Digits()});
 
         rules.put(new String[]{
                 "items.days", // 天数：景点固定1
-                "items.quantity" // 订票数量
+                "items.quantity", // 订票数量
+                "items.visitor.quantity" //游客订票数量
         }, new ValidRule[]{new ValidRule.Digits(1L, 10000L)});
 
         // 校验身份证
@@ -98,13 +100,15 @@ public class OrderValidateManager {
                 "items.product_sub_code", // 订单子产品CODE
                 "items.days", // 天数：景点固定1
                 "items.quantity", // 订票数量
+                "items.visitor.quantity", //游客订票数量
                 "ep_id", // 订票企业ID
                 "operator_id" // 订票用户ID
         }, new ValidRule[]{new ValidRule.Digits()});
 
         rules.put(new String[]{
                 "items.days", // 天数：景点固定1
-                "items.quantity" // 订票数量
+                "items.quantity", // 订票数量
+                "items.visitor.quantity" //游客订票数量
         }, new ValidRule[]{new ValidRule.Digits(1L, 10000L)});
 
         // 校验手机号码
@@ -191,13 +195,15 @@ public class OrderValidateManager {
                 "items.product_sub_code", // 订单子产品CODE
                 "items.days", // 天数：景点固定1
                 "items.quantity", // 订票数量
+                "items.visitor.quantity", //游客订票数量
                 "ep_id", // 订票企业ID
                 "operator_id" // 订票用户ID
         }, new ValidRule[]{new ValidRule.Digits()});
 
         rules.put(new String[]{
                 "items.days", // 天数：景点固定1
-                "items.quantity" // 订票数量
+                "items.quantity", // 订票数量
+                "items.visitor.quantity" //游客订票数量
         }, new ValidRule[]{new ValidRule.Digits(1L, 10000L)});
 
         // 校验身份证
@@ -255,13 +261,15 @@ public class OrderValidateManager {
                 "items.product_sub_code", // 订单子产品CODE
                 "items.days", // 天数：景点固定1
                 "items.quantity", // 订票数量
+                "items.visitor.quantity", //游客订票数量
                 "ep_id", // 订票企业ID
                 "operator_id" // 订票用户ID
         }, new ValidRule[]{new ValidRule.Digits()});
 
         rules.put(new String[]{
                 "items.days", // 天数：景点固定1
-                "items.quantity" // 订票数量
+                "items.quantity", // 订票数量
+                "items.visitor.quantity" //游客订票数量
         }, new ValidRule[]{new ValidRule.Digits(1L, 10000L)});
 
         // 校验身份证
@@ -310,6 +318,7 @@ public class OrderValidateManager {
                 "items.product_sub_code", // 订单子产品ID
                 "items.days", // 天数：景点固定1
                 "items.quantity", // 订票数量
+                "items.visitor.quantity", //游客订票数量
                 "ep_id", // 订票企业ID
                 "operator_id" // 订票用户ID
         }, new ValidRule[]{new ValidRule.Digits()});
