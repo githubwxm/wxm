@@ -33,11 +33,7 @@ require_js_file(['vueValidator', 'vuePicker',], function (Vue, fnr, validator) {
                 //page:{record_count:20},
                 remote: {
                     link: function (params, options) {
-<<<<<<< HEAD
-                        return fnr.ajaxJson("../api/order/selectOrderList", params, options);
-=======
                         return fnr.ajaxJson("/voucher/api/order/selectOrderList", params, options);
->>>>>>> fix_master
                     },
                     options: {method: 'GET', alertMessage: 0}
                 }

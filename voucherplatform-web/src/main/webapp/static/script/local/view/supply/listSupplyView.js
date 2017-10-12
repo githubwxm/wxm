@@ -5,11 +5,7 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
         auth: function (supplyId) {
             var params = {
                 title: '供应商授权查看',
-<<<<<<< HEAD
-                url: '/role/listRole.html?supplyId=' + supplyId,
-=======
                 url: '/voucher/role/listRole.html?supplyId=' + supplyId,
->>>>>>> fix_master
                 width: 1200,
                 height: 800
             };
@@ -29,11 +25,7 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
             var self = this;
             var params = {
                 title: '选择票务系统',
-<<<<<<< HEAD
-                url: '/ticketSys/listTicketSys.html?supplyId=' + supplyId + '&ticketSysId=' + ticketSysId,
-=======
                 url: '/voucher/ticketSys/listTicketSys.html?supplyId=' + supplyId + '&ticketSysId=' + ticketSysId,
->>>>>>> fix_master
                 width: 1200,
                 height: 800,
                 callbackSucc: function () {
@@ -45,11 +37,7 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
         showProd: function (id) {
             var params = {
                 title: '查看票务产品',
-<<<<<<< HEAD
-                url: '/supply/listSupplyProd.html?supplyId=' + id,
-=======
                 url: '/voucher/supply/listSupplyProd.html?supplyId=' + id,
->>>>>>> fix_master
                 width: 1200,
                 height: 800,
             };
@@ -58,11 +46,7 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
         editConf: function (supplyId) {
             var params = {
                 title: '修改配置信息',
-<<<<<<< HEAD
-                url: "/supply/editConf.html?supplyId=" + supplyId,
-=======
                 url: "/voucher/supply/editConf.html?supplyId=" + supplyId,
->>>>>>> fix_master
                 width: 800,
                 height: 600
             };
@@ -71,11 +55,7 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
         editSignType: function (supplyId) {
             var params = {
                 title: '修改签名方式',
-<<<<<<< HEAD
-                url: "/supply/editSignType.html?supplyId=" + supplyId,
-=======
                 url: "/voucher/supply/editSignType.html?supplyId=" + supplyId,
->>>>>>> fix_master
                 width: 800,
                 height: 600
             };
@@ -84,11 +64,7 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
         syncProd: function (id) {
             var param = {};
             param.supplyId = id;
-<<<<<<< HEAD
-            var defrend = fnr.ajaxJson("../api/supply/syncProd", param, {method: "GET"});
-=======
             var defrend = fnr.ajaxJson("/voucher/api/supply/syncProd", param, {method: "GET"});
->>>>>>> fix_master
             defrend.then(function (result) {
                 var resp = result.json();
                 if (resp.code == 200) {
@@ -99,11 +75,7 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
             });
         },
         downConf: function (id) {
-<<<<<<< HEAD
-            window.open("../api/supply/downConf?supplyId=" + id);
-=======
             window.open("/voucher/api/supply/downConf?supplyId=" + id);
->>>>>>> fix_master
         },
         getSignType: function (signType) {
             return this.$parent.signType[signType].toUpperCase();
@@ -120,11 +92,7 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
             dtSetting: {
                 remote: {
                     link: function (params, options) {
-<<<<<<< HEAD
-                        return fnr.ajaxJson("../api/supply/selectSupplyList", params, options);
-=======
                         return fnr.ajaxJson("/voucher/api/supply/selectSupplyList", params, options);
->>>>>>> fix_master
                     },
                     options: {method: 'GET', alertMessage: 0},
                     isLoadOnPageInit: false
@@ -149,11 +117,7 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
             },
             loadSignType: function () {
                 var self = this;
-<<<<<<< HEAD
-                var defrend = fnr.ajaxJson("../api/supply/getSignType", {}, {method: "GET"});
-=======
                 var defrend = fnr.ajaxJson("/voucher/api/supply/getSignType", {}, {method: "GET"});
->>>>>>> fix_master
                 defrend.then(function (result) {
                     var resp = result.json();
                     if (resp.code == 200) {

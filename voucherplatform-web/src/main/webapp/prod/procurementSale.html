@@ -3,11 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <header-title></header-title>
-<<<<<<< HEAD
-    <link href="../static/css/style.css" rel="stylesheet">
-=======
     <link href="/voucher/static/css/style.css" rel="stylesheet">
->>>>>>> fix_master
 </head>
 <body>
 <div class="Establish">
@@ -43,13 +39,8 @@
                     <input type="number" class="form-control" min="0" v-model="subFormData.price_pixed" v-validate:price_pixed="{required:true,pattern:'/^[1-9]{1}[0-9]{0,6}(\\.[0-9]{1,2}){0,1}$|^0(\\.[0-9]{1,2}){0,1}$/'}" initial="off" @blur="pricePixed"/>
                 </div>
                 <div class="Prompt">
-<<<<<<< HEAD
-                    <span v-if="$checkSubForm.price_pixed.required"><img src="../static/style/img/baocuo.png"><label class="error">请填写利润！</label></span>
-                    <span v-if="$checkSubForm.price_pixed.pattern"><img src="../static/style/img/baocuo.png"><label class="error">格式不正确！</label></span>
-=======
                     <span v-if="$checkSubForm.price_pixed.required"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请填写利润！</label></span>
                     <span v-if="$checkSubForm.price_pixed.pattern"><img src="/voucher/static/style/img/baocuo.png"><label class="error">格式不正确！</label></span>
->>>>>>> fix_master
                 </div>
             </div>
             <div v-if="subFormData.sale == 5072" style="padding-bottom:15px">
@@ -59,13 +50,8 @@
                     <span class="input-group-addon" style="position:absolute;right:-2px;top:0px; width:34px;height: 34px; z-index: 999; padding:0px; line-height: 34px;;">%</span>
                 </div>
                 <div class="Prompt">
-<<<<<<< HEAD
-                    <span v-if="$checkSubForm.price_percent.required"><img src="../static/style/img/baocuo.png"><label class="error">请填写利润！</label></span>
-                    <span v-if="$checkSubForm.price_percent.pattern"><img src="../static/style/img/baocuo.png"><label class="error">格式不正确！</label></span>
-=======
                     <span v-if="$checkSubForm.price_percent.required"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请填写利润！</label></span>
                     <span v-if="$checkSubForm.price_percent.pattern"><img src="/voucher/static/style/img/baocuo.png"><label class="error">格式不正确！</label></span>
->>>>>>> fix_master
                 </div>
             </div>
             <div class="form-group">
@@ -84,16 +70,9 @@
         </form>
     </validator>
 </div>
-<<<<<<< HEAD
-<script type="text/javascript" src="../api/local/client/system/load_config"></script>
-<script type="text/javascript" src="../static/script/local/require/require.js"></script>
-<script type="text/javascript" src="../static/script/local/require_config.js"></script>
-<script type="text/javascript" src="../static/script/local/view/prod/procurementSaleView.js"></script>
-=======
 <script type="text/javascript" src="/voucher/api/local/client/system/load_config"></script>
 <script type="text/javascript" src="/voucher/static/script/local/require/require.js"></script>
 <script type="text/javascript" src="/voucher/static/script/local/require_config.js"></script>
 <script type="text/javascript" src="/voucher/static/script/local/view/prod/procurementSaleView.js"></script>
->>>>>>> fix_master
 </body>
 </html>

@@ -2,13 +2,8 @@ var global_config = {
     page: {
         title: '畅旅凭证平台',
         logo: {
-<<<<<<< HEAD
-            src: '../static/style/img/logo.png',
-            link: '../index',
-=======
             src: '/voucher/static/style/img/logo.png',
             link: '/voucher/index/index.html',
->>>>>>> fix_master
         },
         nav_website: [
             //{title:'百度',link:'http://baidu.com'},

@@ -1,27 +1,14 @@
-<<<<<<< HEAD
-@import url('../static/style/css/style.css');
-=======
 @import url('/voucher/static/style/css/style.css');
->>>>>>> fix_master
 
 
 @import url('http://at.alicdn.com/t/font_v1cxgrq7zj1w0zfr.css');
 @import url('http://cdn.amazeui.org/amazeui/2.7.2/css/amazeui.min.css');
-<<<<<<< HEAD
-@import url('../static/style/css/mobile/amazeui.touch.css');
-@import url('../static/style/css/mobile/top_footer.css');
-@import url('../static/style/css/mobile/style.css');
-
-@import url('../static/style/css/content.css');
-@import url('../static/style/css/top_footer.css');
-=======
 @import url('/voucher/static/style/css/mobile/amazeui.touch.css');
 @import url('/voucher/static/style/css/mobile/top_footer.css');
 @import url('/voucher/static/style/css/mobile/style.css');
 
 @import url('/voucher/static/style/css/content.css');
 @import url('/voucher/static/style/css/top_footer.css');
->>>>>>> fix_master
 .main{padding: 0px;}
 .icon-guanbi:before { content: ""; }
 .event{top:50px;}

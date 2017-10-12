@@ -3,11 +3,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <header-title></header-title>
-<<<<<<< HEAD
-    <link href="../../static/css/style.css" rel="stylesheet">
-=======
     <link href="/voucher/static/css/style.css" rel="stylesheet">
->>>>>>> fix_master
     <script type="text/javascript" src="http://api.map.baidu.com/api?v=1.4&key=sNHtfFMen9ktOAbQYpC23Gmc"></script>
 </head>
 <body vtag="root">
@@ -28,38 +24,19 @@
                                        placeholder="此名称必须是唯一的，建议采取认知度较高的标准名称 例如： 七天连锁酒店">
                                 <div class="Prompt-one"><span>注意</span><b>一旦保存，将无法更改</b></div>
                             </div>
-<<<<<<< HEAD
-                            <div class="Prompt" v-show="$checkSubForm.name.required"><img src="../../static/style/img/baocuo.png"><label class="error">请填写酒店名称！</label></div>
-=======
                             <div class="Prompt" v-show="$checkSubForm.name.required"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请填写酒店名称！</label></div>
->>>>>>> fix_master
                         </li>
                         <!--<li>
                             <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>团队起订间数：</label>
                             <div class="col-sm-6 col-md-6 col-lg-4">
                                 <input type="number" class="form-control" v-model="subFormData.team_num" v-validate:team_num="{required:true}" initial="off"/><h1>间</h1>
                             </div>
-<<<<<<< HEAD
-                            <div class="Prompt" v-show="$checkSubForm.team_num.required"><img src="../../static/style/img/baocuo.png"><label class="error">请填写团队起订间数！</label></div>
-=======
                             <div class="Prompt" v-show="$checkSubForm.team_num.required"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请填写团队起订间数！</label></div>
->>>>>>> fix_master
                         </li>-->
                         <li class="Estab-one">
                             <label class="col-md-3 col-sm-3 col-lg-3 control-label"><dd>*</dd>酒店地址：</label>
                             <div class="col-sm-2 col-md-2 col-lg-2">
                                 <remote-sel :setting="provinceSetting" :value.sync="subFormData.province" @change="provinceChange" v-validate:province="{required:true}" initial="off"></remote-sel>
-<<<<<<< HEAD
-                                <span  v-show="$checkSubForm.province.required"><img src="../../static/style/img/baocuo.png"><label class="error">请选择酒店地址！</label></span>
-                            </div>
-                            <div class="col-sm-2 col-md-2 col-lg-2">
-                                <remote-sel :setting="citySetting" :value.sync="subFormData.city" @change="cityChange" v-ref:city v-validate:city="{required:true}" initial="off"></remote-sel>
-                                <span v-show="$checkSubForm.city.required"><img src="../../static/style/img/baocuo.png"><label class="error">请选择酒店地址！</label></span>
-                            </div>
-                            <div class="col-sm-2 col-md-2 col-lg-2">
-                                <remote-sel :setting="areaSetting" :value.sync="subFormData.area" v-ref:area v-validate:area="{required:true}" initial="off"></remote-sel>
-                                <span  v-show="$checkSubForm.area.required"><img src="../../static/style/img/baocuo.png"><label class="error">请选择酒店地址！</label></span>
-=======
                                 <span  v-show="$checkSubForm.province.required"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请选择酒店地址！</label></span>
                             </div>
                             <div class="col-sm-2 col-md-2 col-lg-2">
@@ -69,7 +46,6 @@
                             <div class="col-sm-2 col-md-2 col-lg-2">
                                 <remote-sel :setting="areaSetting" :value.sync="subFormData.area" v-ref:area v-validate:area="{required:true}" initial="off"></remote-sel>
                                 <span  v-show="$checkSubForm.area.required"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请选择酒店地址！</label></span>
->>>>>>> fix_master
                             </div>
                         </li>
                         <li>
@@ -78,21 +54,13 @@
                                 <input name="address" class="form-control" type="text" maxlength="20" v-model="subFormData.address" v-validate:address="{required:true}" initial="off"
                                        placeholder="请不要重复填写上述所在地区的相同信息">
                             </div>
-<<<<<<< HEAD
-                            <span  v-show="$checkSubForm.address.required"><img src="../../static/style/img/baocuo.png"><label class="error">请填写详细地址！</label></span>
-=======
                             <span  v-show="$checkSubForm.address.required"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请填写详细地址！</label></span>
->>>>>>> fix_master
                         </li>
                         <li>
                             <label class="col-md-4 col-sm-4 col-lg-3 control-label"><dd>*</dd>酒店星级：</label>
                             <div class="col-sm-2 col-md-2 col-lg-2">
                                 <remote-sel :setting="levelTypeSetting" :value.sync="subFormData.level_type" v-validate:level_type="{required:true}" initial="off"></remote-sel>
-<<<<<<< HEAD
-                                <div v-show="$checkSubForm.level_type.required"><img src="../../static/style/img/baocuo.png"><label class="error">请选择酒店星级！</label></div>
-=======
                                 <div v-show="$checkSubForm.level_type.required"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请选择酒店星级！</label></div>
->>>>>>> fix_master
                             </div>
 
 
@@ -101,11 +69,7 @@
                                 <input class="form-control" type="text" v-model="subFormData.tel" v-validate:tel="{required:true}" initial="off"/>
 
                             </div>
-<<<<<<< HEAD
-                            <span  v-show="$checkSubForm.tel.required"><img src="../../static/style/img/baocuo.png"><label class="error">请填写预订电话！</label></span>
-=======
                             <span  v-show="$checkSubForm.tel.required"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请填写预订电话！</label></span>
->>>>>>> fix_master
                         </li>
                         <li>
                             <label class="col-md-3 col-sm-3 col-lg-3 control-label">酒店标签：</label>
@@ -251,11 +215,7 @@
                                 <div class="hotel-checkbox group-top">
                                         <label><input type="checkbox" class="chekbox" name="serverType" value="5918" v-model="subFormData.server_type" v-validate:server_type="{required:true}" initial="off">叫醒服务</label>
                             </div>
-<<<<<<< HEAD
-                                <span  v-show="$checkSubForm.server_type.required"><img src="../../static/style/img/baocuo.png"><label class="error">请选择酒店服务！</label></span>
-=======
                                 <span  v-show="$checkSubForm.server_type.required"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请选择酒店服务！</label></span>
->>>>>>> fix_master
                             </div>
 
                         </li>
@@ -300,11 +260,7 @@
                                     <label><input type="checkbox" class="chekbox" name="facilityType" value="5931" v-model="subFormData.facility_type" v-validate:facility_type="{required:true}" initial="off">商务中心</label>
                                 </div>
 
-<<<<<<< HEAD
-                                <span  v-show="$checkSubForm.facility_type.required" style="margin-left: 0px;"><img src="../../static/style/img/baocuo.png"><label class="error">请选择酒店设施！</label></span>
-=======
                                 <span  v-show="$checkSubForm.facility_type.required" style="margin-left: 0px;"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请选择酒店设施！</label></span>
->>>>>>> fix_master
                             </div>
 
                         </li>
@@ -359,11 +315,7 @@
                                 </div>
 
                             </div>
-<<<<<<< HEAD
-                            <span  v-show="$checkSubForm.card_type.required"><img src="../../static/style/img/baocuo.png"><label class="error">请选择可接受的信用卡！</label></span>
-=======
                             <span  v-show="$checkSubForm.card_type.required"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请选择可接受的信用卡！</label></span>
->>>>>>> fix_master
 
                         </li>
 
@@ -386,11 +338,7 @@
                                     <label>  <input type="checkbox" class="chekbox" name="payType" value="5964" v-model="subFormData.pay_type" v-validate:pay_type="{required:true}" initial="off">境外银行卡</label>
                                 </div>
                             </div>
-<<<<<<< HEAD
-                            <span  v-show="$checkSubForm.pay_type.required"><img src="../../static/style/img/baocuo.png"><label class="error">请选择可接受的支付方式！</label></span>
-=======
                             <span  v-show="$checkSubForm.pay_type.required"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请选择可接受的支付方式！</label></span>
->>>>>>> fix_master
                         </li>
 
                         <li>
@@ -424,11 +372,7 @@
                             <div class="col-sm-9 col-md-9  col-lg-9 form-img">
                                 <upload-pic :setting.sync="upSetting" :list.sync="subFormData.imgs"></upload-pic>
                                 <input type="hidden" v-model="subFormData.imgs.length" v-validate:imgs="{min:1}" initial="off"/>
-<<<<<<< HEAD
-                                <div class="Prompt" v-show="$checkSubForm.imgs.min"><img src="../../static/style/img/baocuo.png"><label class="error">请选择酒店图片！</label></div>
-=======
                                 <div class="Prompt" v-show="$checkSubForm.imgs.min"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请选择酒店图片！</label></div>
->>>>>>> fix_master
                             </div>
 
                         </li>
@@ -454,16 +398,9 @@
         </div>
     </div>
 </div>
-<<<<<<< HEAD
-<script type="text/javascript" src="../api/local/client/system/load_config"></script>
-<script type="text/javascript" src="../../static/script/local/require/require.js"></script>
-<script type="text/javascript" src="../../static/script/local/require_config.js"></script>
-<script type="text/javascript" src="../../static/script/local/view/prod/hotel/editHotelProd.js"></script>
-=======
 <script type="text/javascript" src="/voucher/api/local/client/system/load_config"></script>
 <script type="text/javascript" src="/voucher/static/script/local/require/require.js"></script>
 <script type="text/javascript" src="/voucher/static/script/local/require_config.js"></script>
 <script type="text/javascript" src="/voucher/static/script/local/view/prod/hotel/editHotelProd.js"></script>
->>>>>>> fix_master
 </body>
 </html>

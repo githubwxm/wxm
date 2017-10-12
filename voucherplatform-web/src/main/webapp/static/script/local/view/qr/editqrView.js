@@ -58,11 +58,7 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
                 var self = this;
                 var param = {};
                 param.id = self.id;
-<<<<<<< HEAD
-                var defrend = fnr.ajaxJson("../api/qr/get", param, {method: "GET"});
-=======
                 var defrend = fnr.ajaxJson("/voucher/api/qr/get", param, {method: "GET"});
->>>>>>> fix_master
                 defrend.then(function (result) {
                     var resp = result.json();
                     fnr.mergeJson(resp.data, self.subFormData);
@@ -73,11 +69,7 @@ require_js_file(['vueValidator', 'vuePicker'], function (Vue, fnr, validator) {
                 var self = this;
                 this.$validate();
                 if (this.$checkSubForm.valid) {
-<<<<<<< HEAD
-                    var defrend = fnr.ajaxJson("../api/qr/update", self.subFormData, {});
-=======
                     var defrend = fnr.ajaxJson("/voucher/api/qr/update", self.subFormData, {});
->>>>>>> fix_master
                     defrend.then(function (result) {
                         var resp = result.json();
                         if (resp.code == 200) {

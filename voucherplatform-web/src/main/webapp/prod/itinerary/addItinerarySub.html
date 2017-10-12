@@ -3,13 +3,8 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <header-title></header-title>
-<<<<<<< HEAD
-    <link href="../../static/css/style.css" rel="stylesheet">
-    <link href="../../static/script/amd/1.0/dist/css/wangEditor.min.css" rel="stylesheet">
-=======
     <link href="/voucher/static/css/style.css" rel="stylesheet">
     <link href="/voucher/static/script/amd/1.0/dist/css/wangEditor.min.css" rel="stylesheet">
->>>>>>> fix_master
 </head>
 <body vtag="root">
 <div class="root-main">
@@ -42,11 +37,7 @@
                                 <div class="col-lg-6 col-md-6">
                                     <input type="text" class="form-control" v-model="subFormData.name" v-validate:name="{required:true}" initial="off">
                                 </div>
-<<<<<<< HEAD
-                                <div v-show="$checkSubForm.name.required" for="contactMobile" ><img src="../../static/style/img/baocuo.png"><label class="error">请填写票类名称！</label></div>
-=======
                                 <div v-show="$checkSubForm.name.required" for="contactMobile" ><img src="/voucher/static/style/img/baocuo.png"><label class="error">请填写票类名称！</label></div>
->>>>>>> fix_master
                             </div>
                             <div class="form-group clearfix">
                                 <label class="col-lg-1 col-md-1 control-label"><dd class="red">*</dd>市场价：</label>
@@ -54,13 +45,8 @@
                                     <input type="text" class="form-control" v-model="subFormData.market_price" v-validate:market_price="{required:true,min:0}" initial="off">
                                 </div>
                                 <div class="Prompt">
-<<<<<<< HEAD
-                                    <span v-if="$checkSubForm.market_price.required"><img src="../../static/style/img/baocuo.png"><label class="error">请填写市场价！</label></span>
-                                    <span v-if="$checkSubForm.market_price.min"><img src="../../static/style/img/baocuo.png"><label class="error">市场价最小为0！</label></span>
-=======
                                     <span v-if="$checkSubForm.market_price.required"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请填写市场价！</label></span>
                                     <span v-if="$checkSubForm.market_price.min"><img src="/voucher/static/style/img/baocuo.png"><label class="error">市场价最小为0！</label></span>
->>>>>>> fix_master
                                 </div>
                             </div>
                             <div class="form-group clearfix">
@@ -69,13 +55,8 @@
                                     <input type="text" class="form-control" v-model="subFormData.min_sell_price" v-validate:min_sell_price="{required:true,min:0}" initial="off">
                                 </div>
                                 <div class="Prompt">
-<<<<<<< HEAD
-                                    <span v-if="$checkSubForm.min_sell_price.required"><img src="../../static/style/img/baocuo.png"><label class="error">请填写最低零售价！</label></span>
-                                    <span v-if="$checkSubForm.min_sell_price.min"><img src="../../static/style/img/baocuo.png"><label class="error">最低零售价最小为0！</label></span>
-=======
                                     <span v-if="$checkSubForm.min_sell_price.required"><img src="/voucher/static/style/img/baocuo.png"><label class="error">请填写最低零售价！</label></span>
                                     <span v-if="$checkSubForm.min_sell_price.min"><img src="/voucher/static/style/img/baocuo.png"><label class="error">最低零售价最小为0！</label></span>
->>>>>>> fix_master
                                 </div>
                             </div>
                             <div class="form-group clearfix">
@@ -91,13 +72,8 @@
                                     <span>+出团日期+</span>
                                     <input type="text" v-model="subFormData.team_suffix" class="form-control form-input-2" v-validate:team_suffix="{required:true}" initial="off">
                                 </div>
-<<<<<<< HEAD
-                                <div v-show="$checkSubForm.team_prefix.required || $checkSubForm.team_suffix.required" for="contactMobile" ><img src="../../static/style/img/baocuo.png"><label class="error">请填写团号前后缀！</label></div>
-                                <!--<div v-show="$checkSubForm.team_suffix.required" for="contactMobile" ><img src="../../static/style/img/baocuo.png"><label class="error">请填写团号后缀！</label></div>-->
-=======
                                 <div v-show="$checkSubForm.team_prefix.required || $checkSubForm.team_suffix.required" for="contactMobile" ><img src="/voucher/static/style/img/baocuo.png"><label class="error">请填写团号前后缀！</label></div>
                                 <!--<div v-show="$checkSubForm.team_suffix.required" for="contactMobile" ><img src="/voucher/static/style/img/baocuo.png"><label class="error">请填写团号后缀！</label></div>-->
->>>>>>> fix_master
                             </div>
                         </div>
                         <!---------- -----拓展设置----------------->
@@ -113,15 +89,9 @@
                                     <input type="text"class="form-control form-input-2" v-model="fen" v-validate:fen="{required:true}" initial="off">
                                     <span>分前预定</span>
                                 </div>
-<<<<<<< HEAD
-                                <div v-show="$checkSubForm.booking_day_limit.required || $checkSubForm.shi.required || $checkSubForm.fen.required" for="contactMobile" ><img src="../../static/style/img/baocuo.png"><label class="error">请填写预定限制！</label></div>
-                                <!--<div v-show="$checkSubForm.shi.required" for="contactMobile" ><img src="../../static/style/img/baocuo.png"><label class="error">请填写小时！</label></div>
-                                <div v-show="$checkSubForm.fen.required" for="contactMobile" ><img src="../../static/style/img/baocuo.png"><label class="error">请填写分钟！</label></div>-->
-=======
                                 <div v-show="$checkSubForm.booking_day_limit.required || $checkSubForm.shi.required || $checkSubForm.fen.required" for="contactMobile" ><img src="/voucher/static/style/img/baocuo.png"><label class="error">请填写预定限制！</label></div>
                                 <!--<div v-show="$checkSubForm.shi.required" for="contactMobile" ><img src="/voucher/static/style/img/baocuo.png"><label class="error">请填写小时！</label></div>
                                 <div v-show="$checkSubForm.fen.required" for="contactMobile" ><img src="/voucher/static/style/img/baocuo.png"><label class="error">请填写分钟！</label></div>-->
->>>>>>> fix_master
                             </div>
                             <div class="form-group clearfix">
                                 <label class="col-lg-1 col-md-1 control-label">购买限制</label>
@@ -145,11 +115,7 @@
                                 <div class="col-lg-4 col-md-4">
                                     <remote-sel :setting="refundSetting" :value.sync="subFormData.cust_refund_rule" @change="refundRule" v-validate:cust_refund_rule="{required:true}" initial="off"></remote-sel>
                                 </div>
-<<<<<<< HEAD
-                                <div v-show="$checkSubForm.cust_refund_rule.required" for="contactMobile" ><img src="../../static/style/img/baocuo.png"><label class="error">请选择退货规则！</label></div>
-=======
                                 <div v-show="$checkSubForm.cust_refund_rule.required" for="contactMobile" ><img src="/voucher/static/style/img/baocuo.png"><label class="error">请选择退货规则！</label></div>
->>>>>>> fix_master
                             </div>
                             <div class="form-group clearfix">
                                 <label class="col-lg-1 col-md-1 control-label"><dd class="red">*</dd>供应商确认</label>
@@ -176,16 +142,9 @@
         </div>
     </div>
 </div>
-<<<<<<< HEAD
-<script type="text/javascript" src="../../static/script/local/config.js"></script>
-<script type="text/javascript" src="../../static/script/local/require/require.js"></script>
-<script type="text/javascript" src="../../static/script/local/require_config.js"></script>
-<script type="text/javascript" src="../../static/script/local/view/prod/itinerary/addItinerarySubView.js"></script>
-=======
 <script type="text/javascript" src="/voucher/static/script/local/config.js"></script>
 <script type="text/javascript" src="/voucher/static/script/local/require/require.js"></script>
 <script type="text/javascript" src="/voucher/static/script/local/require_config.js"></script>
 <script type="text/javascript" src="/voucher/static/script/local/view/prod/itinerary/addItinerarySubView.js"></script>
->>>>>>> fix_master
 </body>
 </html>
