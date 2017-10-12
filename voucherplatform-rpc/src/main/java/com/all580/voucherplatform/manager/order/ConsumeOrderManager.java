@@ -4,13 +4,13 @@ import com.all580.voucherplatform.dao.ConsumeMapper;
 import com.all580.voucherplatform.dao.OrderMapper;
 import com.all580.voucherplatform.entity.Consume;
 import com.all580.voucherplatform.entity.Order;
+import com.framework.common.Result;
 import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.UUIDGenerator;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.lang.exception.ApiException;
@@ -29,7 +29,7 @@ public class ConsumeOrderManager {
     @Autowired
     private ConsumeMapper consumeMapper;
 
-    @Transactional(rollbackFor = {Exception.class, RuntimeException.class}, propagation = Propagation.REQUIRES_NEW)
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public Integer consume(String seqId,
                             Integer number,
                             String address,
@@ -46,7 +46,7 @@ public class ConsumeOrderManager {
         }
         Consume consume = consumeMapper.selectBySeqId(number, null, order.getSupply_id(), seqId);
         if (consume != null) {
-            throw new ApiException("重复的验证操作请求");
+            throw new ApiException(Result.UNIQUE_KEY_ERROR, "重复的验证操作请求");
         }
         Integer availableNumber = order.getNumber() -
                 (order.getConsume() == null ? 0 : order.getConsume())
