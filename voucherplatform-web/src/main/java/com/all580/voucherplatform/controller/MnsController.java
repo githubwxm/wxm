@@ -1,5 +1,7 @@
 package com.all580.voucherplatform.controller;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.all580.voucherplatform.api.service.All580Service;
 import com.framework.common.BaseController;
 import com.framework.common.Result;
@@ -45,6 +47,28 @@ public class MnsController extends BaseController {
         Result result = all580Service.supplyProcess(map);
         if (!result.isSuccess()) {
             log.debug(result.getError());
+        }
+        return "success";
+    }
+
+    @RequestMapping(value = "oss/event/put/consume")
+    @ResponseBody
+    public String consumeSyncOssPut(HttpServletRequest request) {
+        String messageId = request.getHeader("x-mns-message-id");
+        log.info("接收到MNS消息 MSGID={}", messageId);
+        try {
+            String content = getReqParams(request);
+            JSONObject jsonObject = JSONObject.parseObject(content);
+            JSONArray events = jsonObject.getJSONArray("events");
+            if (events != null && !events.isEmpty()) {
+                for (int i = 0; i < events.size(); i++) {
+                    JSONObject item = events.getJSONObject(i);
+                    String key = item.getJSONObject("oss").getJSONObject("object").getString("key");
+                    log.info("OSS PUT 事件通知 key: {}", key);
+                }
+            }
+        } catch (IOException ex) {
+            log.error("MNS读取请求数据流异常", ex);
         }
         return "success";
     }

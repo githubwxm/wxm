@@ -1,9 +1,6 @@
 package com.all580.voucherplatform.test.manager;
 
-import com.all580.voucherplatform.manager.order.ConsumeOrderManager;
-import com.all580.voucherplatform.manager.order.CreateOrderManager;
-import com.all580.voucherplatform.manager.order.RefundApplyManager;
-import com.all580.voucherplatform.manager.order.RefundResultManager;
+import com.all580.voucherplatform.manager.order.*;
 import com.framework.common.lang.DateFormatUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -51,9 +48,8 @@ public class OrderManageTest extends AbstractTransactionalJUnit4SpringContextTes
 
     @Test
     public void testConsume() throws Exception {
-        ConsumeOrderManager consumeOrderManager = applicationContext.getBean(ConsumeOrderManager.class);
-        consumeOrderManager.setOrder(1);
-        consumeOrderManager.submitConsume("12", 1, "aaa", new Date(), "11");
+        OrderManager orderManager = applicationContext.getBean(OrderManager.class);
+        orderManager.submitConsume("12", 1, "aaa", new Date(), "11", orderManager.getOrder(1));
     }
 
     @Test

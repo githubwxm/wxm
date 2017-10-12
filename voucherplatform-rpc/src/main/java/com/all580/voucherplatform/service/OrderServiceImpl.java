@@ -6,6 +6,7 @@ import com.all580.voucherplatform.dao.GroupOrderMapper;
 import com.all580.voucherplatform.dao.OrderMapper;
 import com.all580.voucherplatform.entity.Order;
 import com.all580.voucherplatform.manager.order.CreateOrderManager;
+import com.all580.voucherplatform.manager.order.OrderManager;
 import com.all580.voucherplatform.manager.order.OrderReverseManager;
 import com.framework.common.Result;
 import com.framework.common.vo.PageRecord;
@@ -34,11 +35,13 @@ public class OrderServiceImpl implements OrderService {
     private GroupOrderMapper groupOrderMapper;
     @Autowired
     private AdapterLoader adapterLoader;
+    @Autowired
+    private OrderManager orderManager;
 
     @Override
     public Result getOrder(int id) {
-        Result result = new Result(true);
-        Order order = orderMapper.selectByPrimaryKey(id);
+        Result<Order> result = new Result<>(true);
+        Order order = orderManager.getOrder(id);
         if (order != null) {
             result.put(order);
         }
@@ -47,8 +50,8 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Result getOrder(String orderCode) {
-        Result result = new Result(true);
-        Order order = orderMapper.selectByOrderCode(orderCode);
+        Result<Order> result = new Result<>(true);
+        Order order = orderManager.getOrder(orderCode);
         if (order != null) {
             result.put(order);
         }
@@ -196,5 +199,10 @@ public class OrderServiceImpl implements OrderService {
         orderReverseManager.setConsume(consumeId);
         orderReverseManager.submit(UUID.randomUUID().toString(), new Date());
         return new Result(true);
+    }
+
+    @Override
+    public void consumeSync() {
+
     }
 }
