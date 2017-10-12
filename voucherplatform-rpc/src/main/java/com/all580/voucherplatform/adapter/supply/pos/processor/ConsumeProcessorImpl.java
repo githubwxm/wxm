@@ -58,7 +58,7 @@ public class ConsumeProcessorImpl implements ProcessorService<Supply> {
         Map map = new HashMap();
         map.put("consumeId", consume.getConsumeCode());
         map.put("clientSeqId", consume.getSupplyConsumeSeqId());
-        map.put("consumeNumber", consume.getConsumeCode());
+        map.put("consumeNumber", consume.getConsumeNumber());
         map.put("consumeTime", DateFormatUtils.converToStringTime(consume.getConsumeTime()));
         map.put("beforeNumber", consume.getPrevNumber());
         map.put("afterNumber", consume.getAfterNumber());

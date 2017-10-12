@@ -84,10 +84,10 @@ public class BookingOrderManager extends BaseOrderManager {
             while (packageOrderItemDto != null){
                 List<OrderItem> packageOrderItems = packageOrderItemDto.getPackageOrderItems();
                 //所有子订单票据已使用，则套票订单已使用
-                Boolean isUsed = Boolean.FALSE;
+                Boolean isUsed = Boolean.TRUE;
                 for (OrderItem item : packageOrderItems) {
                     //使用数等于预定数，则已使用
-                    isUsed = item.getQuantity().intValue() == item.getUsed_quantity();
+                    isUsed = item.getQuantity().intValue() == item.getUsed_quantity() && isUsed;
                 }
                 if (isUsed){
                     //设置套票订单使用数
@@ -359,11 +359,11 @@ public class BookingOrderManager extends BaseOrderManager {
      * 预定时间现在
      *
      * @param bookingDate 预定时间
-     * @param dayInfoList
+     * @param salesInfo
      */
-    public void validateBookingDate(Date bookingDate, List<ProductSalesDayInfo> dayInfoList) {
+    public void validateBookingDate(Date bookingDate, ProductSalesInfo salesInfo) {
         Date when = new Date();
-        for (ProductSalesDayInfo dayInfo : dayInfoList) {
+        for (ProductSalesDayInfo dayInfo : salesInfo.getDay_info_list()) {
             if (dayInfo.isBooking_limit()) {
                 int dayLimit = dayInfo.getBooking_day_limit();
                 Date limit = DateUtils.addDays(bookingDate, -dayLimit);
@@ -379,7 +379,7 @@ public class BookingOrderManager extends BaseOrderManager {
                     throw new ApiException("预定时间限制数据不合法", e);
                 }
                 if (when.after(limit)) {
-                    throw new ApiException(String.format("该产品有预订限制，需在订购时间的前%d天的%s前预订", dayLimit, time == null ? "00:00" : time));
+                    throw new ApiException(String.format(salesInfo.getProduct_sub_name() + "产品有预订限制，需在订购时间的前%d天的%s前预订", dayLimit, time == null ? "00:00" : time));
                 }
             }
         }

@@ -12,6 +12,7 @@ import com.all580.order.entity.OrderItem;
 import com.all580.order.entity.RefundOrder;
 import com.all580.order.manager.LockTransactionManager;
 import com.all580.order.manager.RefundOrderManager;
+import com.all580.product.api.consts.ProductConstants;
 import com.framework.common.Result;
 import com.framework.common.distributed.lock.DistributedLockTemplate;
 import com.framework.common.distributed.lock.DistributedReentrantLock;
@@ -151,8 +152,10 @@ public class RefundOrderServiceImpl implements RefundOrderService {
         if (order == null) {
             throw new ApiException("订单不存在");
         }
-        if (!String.valueOf(params.get(EpConstant.EpKey.CORE_EP_ID)).equals(String.valueOf(order.getPayee_ep_id()))) {
-            throw new ApiException("非法请求:当前企业不能退款该退订订单");
+        if (orderItem.getPro_type() != ProductConstants.ProductType.PACKAGE){
+            if (!String.valueOf(params.get(EpConstant.EpKey.CORE_EP_ID)).equals(String.valueOf(order.getPayee_ep_id()))) {
+                throw new ApiException("非法请求:当前企业不能退款该退订订单");
+            }
         }
         // 退款
         Result result = refundOrderManager.refundMoney(order, refundOrder.getMoney(), String.valueOf(refundOrder.getNumber()), refundOrder.getId());
@@ -179,9 +182,17 @@ public class RefundOrderServiceImpl implements RefundOrderService {
         if (order == null) {
             throw new ApiException("订单不存在");
         }
-        if (!String.valueOf(params.get(EpConstant.EpKey.CORE_EP_ID)).equals(String.valueOf(order.getPayee_ep_id()))) {
-            throw new ApiException("非法请求:当前企业不能审核退款该退订订单");
+        if (orderItem.getPro_type() == ProductConstants.ProductType.PACKAGE){
+            //如果是套票，退款审核为打包商，也就是套票供应商
+            if (orderItem.getSupplier_ep_id().intValue() != CommonUtil.objectParseInteger(params.get(EpConstant.EpKey.EP_ID))){
+                throw new ApiException("非法请求:当前企业不能审核退款该退订订单");
+            }
+        }else {
+            if (!String.valueOf(params.get(EpConstant.EpKey.CORE_EP_ID)).equals(String.valueOf(order.getPayee_ep_id()))) {
+                throw new ApiException("非法请求:当前企业不能审核退款该退订订单");
+            }
         }
+
         refundOrder.setAudit_money_time(new Date());
         refundOrder.setAudit_money_user_id(CommonUtil.objectParseInteger(params.get("operator_id")));
         refundOrder.setAudit_money_user_name(CommonUtil.objectParseString(params.get("operator_name")));

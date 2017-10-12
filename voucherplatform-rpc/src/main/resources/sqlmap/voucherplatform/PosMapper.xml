@@ -117,7 +117,8 @@
         `t_order`.`invalidTime` as `invalidTime`,
         `t_order`.`validWeek` as `validWeek`,
         `t_order`.`invalidDate` as `invalidDate`,
-        `t_order`.`createTime` as `createTime`
+        `t_order`.`createTime` as `createTime`,
+        `t_order`.`number` as `number`
         from t_consume
         JOIN t_order on `t_consume`.`order_id`=`t_order`.`id`
         JOIN `t_supplyproduct` on `t_supplyproduct`.`id`=`t_order`.`supplyProdId`
