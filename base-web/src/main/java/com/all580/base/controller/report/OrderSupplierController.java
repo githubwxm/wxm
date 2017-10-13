@@ -62,6 +62,7 @@ public class OrderSupplierController extends BaseController {
                                            String pro_sub_name,String single_money,String condition) {
         Map<String,Object> map = new HashMap<>();
         map.put("ep_id",ep_id);
+        map.put("statistic_ep_id",statistic_ep_id);
         map.put("start",start);
         map.put("end",end);
         map.put("pro_sub_id",pro_sub_id);
