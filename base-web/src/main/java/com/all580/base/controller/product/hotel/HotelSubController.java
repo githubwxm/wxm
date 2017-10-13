@@ -109,10 +109,10 @@ public class HotelSubController {
 
     @RequestMapping("can_sale/list")
     @ResponseBody
-    public Result<?> canSaleList(@RequestParam Integer ep_id, @RequestParam Integer product_id, Integer ticket_flag, String in_date, String out_date) {
+    public Result<?> canSaleList(@RequestParam Integer ep_id, @RequestParam Integer product_id, Integer ticket_flag, Integer from, String in_date, String out_date) {
         Date start_time = DateFormatUtils.converToDate(in_date);
         Date end_time = DateFormatUtils.converToDate(out_date);
-        return hotelSubService.selectCanSaleByHotel(ep_id, product_id, ticket_flag, start_time, end_time);
+        return hotelSubService.selectCanSaleByHotel(ep_id, product_id, ticket_flag, from, start_time, end_time);
     }
 
 
