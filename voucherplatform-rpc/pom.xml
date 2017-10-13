@@ -103,6 +103,11 @@
             <artifactId>bcprov-jdk15on</artifactId>
             <version>1.56</version>
         </dependency>
+        <dependency>
+            <groupId>com.all580</groupId>
+            <artifactId>order-api</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>

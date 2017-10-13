@@ -150,7 +150,7 @@ public abstract class AbstractCreateOrderImpl implements CreateOrderInterface {
         ProductSalesInfo salesInfo = salesInfoResult.get();
         // 判断供应商状态是否为已冻结
         if (!bookingOrderManager.isEpStatus(epService.getEpStatus(salesInfo.getEp_id()), EpConstant.EpStatus.ACTIVE)) {
-            throw new ApiException("供应商企业已冻结");
+            throw new ApiException(salesInfo.getProduct_sub_name() + "供应商企业已冻结");
         }
         if (salesInfo.getDay_info_list().size() != sub.getDays()) {
             throw new ApiException(salesInfo.getProduct_sub_name() + "预定天数与获取产品天数不匹配");
@@ -183,7 +183,7 @@ public abstract class AbstractCreateOrderImpl implements CreateOrderInterface {
         int i = 0;
         for (ProductSalesDayInfo dayInfo : salesInfo.getDay_info_list()) {
             List<EpSalesInfo> daySales = allDaysSales.get(i);
-            Assert.notEmpty(daySales,  salesInfo.getProduct_sub_name() + "产品销售计划不全");
+            Assert.notEmpty(daySales, salesInfo.getProduct_sub_name() + "产品销售计划不全");
             EpSalesInfo saleInfo = bookingOrderManager.getSalePrice(daySales, item.getSupplier_ep_id());
             EpSalesInfo buyInfo = bookingOrderManager.getBuyingPrice(daySales, createOrder.getEpId());
             Assert.notNull(saleInfo, salesInfo.getProduct_sub_name() + "产品未正确配置");

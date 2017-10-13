@@ -70,6 +70,8 @@
                      id="pftService"/>
     <dubbo:reference interface="com.all580.voucher.api.service.third.ZybRPCService"
                      id="zybService"/>
+    <dubbo:reference interface="com.all580.voucher.api.service.third.YbxRPCService"
+                     id="ybxService"/>
     <dubbo:reference interface="com.all580.voucher.api.service.third.ThirdProductService" id="thirdProductService"/>
 
 

@@ -6,7 +6,6 @@ import com.all580.order.dto.ValidateProductSub;
 import com.all580.order.manager.BookingOrderManager;
 import com.all580.product.api.model.ProductSalesInfo;
 import com.all580.product.api.service.ProductSalesPlanRPCService;
-import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
@@ -31,7 +30,7 @@ public class TicketCreateOrderImpl extends AbstractCreateOrderImpl {
             int total = bookingOrderManager.validateVisitor(
                     (List<Map>) visitorList, salesInfo.getProduct_sub_code(), sub.getBooking(), salesInfo.getSid_day_count(), salesInfo.getSid_day_quantity());
             if (total != sub.getAllQuantity()) {
-                throw new ApiException("游客票数与总票数不符");
+                throw new ApiException(salesInfo.getProduct_sub_name() + "游客票数与总票数不符");
             }
         }
     }
