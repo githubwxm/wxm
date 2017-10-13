@@ -6,6 +6,7 @@ import com.all580.voucherplatform.entity.GroupOrder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.lang.exception.ApiException;
@@ -21,7 +22,7 @@ public class ConsumeGroupOrderManager {
     @Autowired
     private GroupVisitorMapper groupVisitorMapper;
 
-    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class}, propagation = Propagation.REQUIRES_NEW)
     public void consume(Integer number, GroupOrder groupOrder, String... IdNumbers) throws ApiException {
         Integer totalNumber = groupOrder.getTotalNumber();//已经核销的数量
 //        if (groupOrder.getActivateStatus()) {// 核销多次不适用
