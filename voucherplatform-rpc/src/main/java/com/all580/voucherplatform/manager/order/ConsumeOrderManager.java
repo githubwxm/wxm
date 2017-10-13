@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.lang.exception.ApiException;
@@ -29,7 +30,7 @@ public class ConsumeOrderManager {
     @Autowired
     private ConsumeMapper consumeMapper;
 
-    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class}, propagation = Propagation.REQUIRES_NEW)
     public Integer consume(String seqId,
                             Integer number,
                             String address,
