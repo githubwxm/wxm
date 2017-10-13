@@ -1,6 +1,7 @@
 package com.all580.voucherplatform.adapter.supply.ticketV3;
 
 import com.aliyun.mns.model.Message;
+import com.all580.order.api.OrderConstant;
 import com.all580.voucherplatform.adapter.supply.SupplyAdapterService;
 import com.all580.voucherplatform.adapter.supply.ticketV3.manager.ConfManager;
 import com.all580.voucherplatform.adapter.supply.ticketV3.manager.GroupOrderManager;
@@ -14,6 +15,7 @@ import com.all580.voucherplatform.entity.Order;
 import com.all580.voucherplatform.entity.Refund;
 import com.all580.voucherplatform.entity.Supply;
 import com.all580.voucherplatform.manager.order.OrderManager;
+import com.all580.voucherplatform.manager.OrderLogManager;
 import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.mns.QueuePushManager;
@@ -25,6 +27,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -54,6 +57,10 @@ public class TicketV3AdapterIImpl extends SupplyAdapterService {
     private QueuePushManager queuePushManager;
     @Autowired
     private ConfManager confManager;
+    @Autowired
+    private OrderLogManager orderLogManager;
+
+
 
     private void sendMnsMessage(Integer supplyId, String action, Object value) {
         Supply supply = supplyMapper.selectByPrimaryKey(supplyId);
@@ -98,6 +105,13 @@ public class TicketV3AdapterIImpl extends SupplyAdapterService {
             map = orderManager.getMap(orderId);
             Integer supplyId = CommonUtil.objectParseInteger(map.get("supplyId"));
             sendMnsMessage(supplyId, "saveOrder", map);
+            List<Map> list =(List<Map>) map.get("orders");
+            log.info(OrderConstant.LogOperateCode.NAME, orderLogManager.orderLog(null,
+                    CommonUtil.objectParseString(list.get(0).get("otaOrderId")),
+                    0,"saveOrder",
+                    OrderConstant.LogOperateCode.SEND_TICKET,
+                    CommonUtil.objectParseInteger(list.get(0).get("number")), String.format("发送到凭证:参数:%s", JsonUtils.toJson(map)),
+                    CommonUtil.objectParseString(list.get(0).get("voucherId"))));
         } catch (Exception ex) {
             log.error("action  saveOrder map {} exception {}",map,ex.getMessage());
         }
@@ -111,6 +125,12 @@ public class TicketV3AdapterIImpl extends SupplyAdapterService {
             map= groupOrderManager.getMap(groupOrderId);
             Integer supplyId = CommonUtil.objectParseInteger(map.get("supplyId"));
             sendMnsMessage(supplyId, "sendGroupOrder", map);
+            log.info(OrderConstant.LogOperateCode.NAME, orderLogManager.orderLog(null,
+                    CommonUtil.objectParseString(map.get("otaOrderId")),
+                    0,"sendGroupOrder",
+                    OrderConstant.LogOperateCode.SEND_TICKET,
+                    CommonUtil.objectParseInteger(map.get("number")), String.format("发送到凭证:参数:%s", JsonUtils.toJson(map)),
+                    CommonUtil.objectParseString(map.get("voucherId")) ));
         } catch (Exception ex) {
             log.error("action  sendGroupOrder  map {} exception {}",map,ex.getMessage());
         }
@@ -135,6 +155,12 @@ public class TicketV3AdapterIImpl extends SupplyAdapterService {
         map.put("consumeNumber", consume.getConsumeNumber());
         map.put("consumeReason", consume.getAddress());
         sendMnsMessage(consume.getSupply_id(), "verifyOrder", map);
+        log.info(OrderConstant.LogOperateCode.NAME, orderLogManager.orderLog(null,
+                CommonUtil.objectParseString(map.get("otaOrderId")),
+                0,"sendGroupOrder",
+                OrderConstant.LogOperateCode.SEND_XIAOMISHU,
+                CommonUtil.objectParseInteger(map.get("number")), String.format("发送到凭证:参数:%s", JsonUtils.toJson(map)),
+                consume.getOrder_code() ));
 
     }
 
@@ -153,6 +179,13 @@ public class TicketV3AdapterIImpl extends SupplyAdapterService {
         map.put("refTime", DateFormatUtils.converToStringTime(refund.getRefTime()));
         map.put("refReason", refund.getRefCause());
         sendMnsMessage(refund.getSupply_id(), action, map);
+        log.info(OrderConstant.LogOperateCode.NAME, orderLogManager.orderLog(null,
+                orderLogManager.getOrderId(refund.getOrder_code()),
+                0,action,
+                OrderConstant.LogOperateCode.SEND_XIAOMISHU,
+                CommonUtil.objectParseInteger(map.get("refNumber")), String.format("发送到凭证:参数:%s", JsonUtils.toJson(map)),
+                refund.getRefundCode() ));
+
     }
 
     @Override
@@ -178,5 +211,11 @@ public class TicketV3AdapterIImpl extends SupplyAdapterService {
         Map map = updateGroupManager.getMap(groupOrderId, seqId);
         Integer supplyId = CommonUtil.objectParseInteger(map.get("supplyId"));
         sendMnsMessage(supplyId, "updateGroupOrder", map);
+        log.info(OrderConstant.LogOperateCode.NAME, orderLogManager.orderLog(null,
+                orderLogManager.getOrderId(CommonUtil.objectParseString(map.get("voucherId"))),
+                0,"updateGroupOrder",
+                OrderConstant.LogOperateCode.SEND_XIAOMISHU,
+                CommonUtil.objectParseInteger(map.get("number")), String.format("发送到凭证:参数:%s", JsonUtils.toJson(map)),
+               null ));
     }
 }

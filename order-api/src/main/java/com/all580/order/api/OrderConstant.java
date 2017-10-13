@@ -227,6 +227,7 @@ public class OrderConstant {
     public static class LogOperateCode {
         public static final String NAME = "order-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}-_-{}";
         public static final String SYSTEM = "all580";
+        public static final String VOUCHERPLATFORM = "voucherplatform";
         public static final String CREATE_SUCCESS = "CA1000100";
         public static final String CANCEL_SUCCESS = "CA3000100";
         public static final String PAID = "CA40001";
@@ -256,6 +257,10 @@ public class OrderConstant {
         public static final String AUDIT_REJECT_SUCCESS = "CA20000200";
         public static final String MODIFY_TICKET_SEND = "CA30000100";
         public static final String MODIFY_TICKET_SUCCESS = "CA30000200";
+        public static final String RECEIVE_XIAOMISHU = "CV10001";
+        public static final String SEND_XIAOMISHU = "CV10002";
+        public static final String RECEIVE_TICKET = "CV20001";
+        public static final String SEND_TICKET = "CV20002";
     }
 
     public static String[] ORDER_TABLES = new String[]{
