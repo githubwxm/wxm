@@ -91,4 +91,12 @@ public class VoucherController extends BaseController {
     public Result providerList(@RequestParam("ep_id") Integer epId) {
         return voucherRPCService.selectSelfProviderList(epId);
     }
+
+    @RequestMapping(value = "sync/consume", method = RequestMethod.POST)
+    @ResponseBody
+    public Result syncConsume(@RequestBody Map params) {
+        // 验证参数
+        ParamsMapValidate.validate(params, voucherValidateManager.syncConsumeValidate());
+        return voucherRPCService.syncConsume(Integer.parseInt(params.get("ep_ma_id").toString()), params);
+    }
 }

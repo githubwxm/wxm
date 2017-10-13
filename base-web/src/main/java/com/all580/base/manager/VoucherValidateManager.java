@@ -62,4 +62,22 @@ public class VoucherValidateManager {
 
         return rules;
     }
+
+    /**
+     * 同步核销验证
+     * @return
+     */
+    public Map<String[], ValidRule[]> syncConsumeValidate() {
+        Map<String[], ValidRule[]> rules = new HashMap<>();
+        // 校验不为空的参数
+        rules.put(new String[]{
+                "ep_ma_id",
+                "startTime",
+                "endTime"
+        }, new ValidRule[]{new ValidRule.NotNull()});
+
+        rules.put(new String[]{"startTime", "endTime"}, new ValidRule[]{new ValidRule.Date()});
+
+        return rules;
+    }
 }
