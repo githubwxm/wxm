@@ -40,4 +40,6 @@ public abstract class SupplyAdapterService extends AbstractProcessorAdapter<Supp
 
     public abstract void updateGroup(Integer groupOrderId, String... seqId);
 
+    public abstract void syncConsume(Integer supplyId, Map params);
+
 }

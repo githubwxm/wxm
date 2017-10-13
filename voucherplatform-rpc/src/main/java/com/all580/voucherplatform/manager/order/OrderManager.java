@@ -3,21 +3,24 @@ package com.all580.voucherplatform.manager.order;
 import com.all580.voucherplatform.adapter.AdapterLoader;
 import com.all580.voucherplatform.adapter.platform.PlatformAdapterService;
 import com.all580.voucherplatform.api.VoucherConstant;
+import com.all580.voucherplatform.dao.GroupOrderMapper;
 import com.all580.voucherplatform.dao.OrderMapper;
 import com.all580.voucherplatform.dao.SupplyProductMapper;
+import com.all580.voucherplatform.entity.GroupOrder;
 import com.all580.voucherplatform.entity.Order;
 import com.all580.voucherplatform.entity.SupplyProduct;
+import com.all580.voucherplatform.manager.order.grouporder.ConsumeGroupOrderManager;
 import com.all580.voucherplatform.utils.async.AsyncService;
 import com.framework.common.distributed.lock.DistributedLockTemplate;
 import com.framework.common.distributed.lock.DistributedReentrantLock;
 import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.lang.exception.ApiException;
 import java.util.*;
 
 @Component
@@ -30,7 +33,11 @@ public class OrderManager {
     @Autowired
     private ConsumeOrderManager consumeOrderManager;
     @Autowired
+    private ConsumeGroupOrderManager consumeGroupOrderManager;
+    @Autowired
     public OrderMapper orderMapper;
+    @Autowired
+    private GroupOrderMapper groupOrderMapper;
     @Autowired
     public SupplyProductMapper supplyProductMapper;
 
@@ -65,7 +72,7 @@ public class OrderManager {
             return consumeId;
         } catch (Throwable ex) {
             log.error("核销订单异常", ex);
-            throw new ApiException(ex);
+            throw ex;
         } finally {
             distributedReentrantLock.unlock();
         }
@@ -86,6 +93,43 @@ public class OrderManager {
         return submitConsume(params, null);
     }
 
+    public void submitConsume(Integer number, String voucherId, final GroupOrder groupOrder, String idNumbers) {
+        DistributedReentrantLock lock = distributedLockTemplate.execute(voucherId, lockTimeOut);
+        try {
+            if (idNumbers == null || idNumbers.equals("[]")) {
+                consumeGroupOrderManager.consume(number, groupOrder);
+            } else {
+                consumeGroupOrderManager.consume(number, groupOrder, StringUtils.split(idNumbers, ","));
+            }
+            asyncService.run(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        PlatformAdapterService platformAdapterService = adapterLoader.getPlatformAdapterService(groupOrder.getPlatform_id());
+                        if (platformAdapterService != null) {
+                            platformAdapterService.activateGroupOrder(groupOrder.getId());
+                        }
+                    } catch (Throwable e) {
+                        log.error("异步调用异常", e);
+                    }
+                }
+            });
+        } catch (Throwable e) {
+            log.error("核销订单异常", e);
+            throw e;
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public void submitConsumeGroup(Map params) {
+        String voucherId = CommonUtil.objectParseString(params.get("voucherId"));
+        String idNumbers = CommonUtil.objectParseString(params.get("idNumbers"));
+        Map mapProd = (Map) params.get("product");
+        Integer number = CommonUtil.objectParseInteger(mapProd.get("number"));
+        submitConsume(number, voucherId, getGroupOrder(voucherId), idNumbers);
+    }
+
     public Order getOrder(String orderCode) {
         return orderMapper.selectByOrderCode(orderCode);
     }
@@ -95,8 +139,12 @@ public class OrderManager {
     }
 
     public Order getOrder(Integer supplyId,
-                         String supplyOrderId) throws Exception {
+                          String supplyOrderId) throws Exception {
         return orderMapper.selectBySupply(supplyId, supplyOrderId);
+    }
+
+    public GroupOrder getGroupOrder(String orderCode) {
+        return groupOrderMapper.selectByOrderCode(orderCode);
     }
 
     public Map getMap(Integer... orderId) throws Exception {
@@ -109,7 +157,8 @@ public class OrderManager {
         }
         SupplyProduct supplyProduct = supplyProductMapper.selectByPrimaryKey(orderList.get(0).getSupplyProdId());
 
-        if (supplyProduct == null) { log.debug("订单号为{}未绑定票务产品", new Object[]{orderList.get(0).getOrderCode()});
+        if (supplyProduct == null) {
+            log.debug("订单号为{}未绑定票务产品", new Object[]{orderList.get(0).getOrderCode()});
             throw new Exception("订单未绑定票务产品");
         }
         map.put("batch", batchNo);
@@ -136,7 +185,7 @@ public class OrderManager {
             mapOrder.put("mobile", order.getMobile());
             mapOrder.put("idNumber", order.getIdNumber());
             mapOrder.put("number", order.getNumber());
-            mapOrder.put("channel",order.getChannel());
+            mapOrder.put("channel", order.getChannel());
             mapList.add(mapOrder);
         }
         return mapList;

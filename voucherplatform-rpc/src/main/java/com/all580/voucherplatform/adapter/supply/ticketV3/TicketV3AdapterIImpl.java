@@ -14,8 +14,8 @@ import com.all580.voucherplatform.entity.Consume;
 import com.all580.voucherplatform.entity.Order;
 import com.all580.voucherplatform.entity.Refund;
 import com.all580.voucherplatform.entity.Supply;
-import com.all580.voucherplatform.manager.order.OrderManager;
 import com.all580.voucherplatform.manager.OrderLogManager;
+import com.all580.voucherplatform.manager.order.OrderManager;
 import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.mns.QueuePushManager;
@@ -217,5 +217,10 @@ public class TicketV3AdapterIImpl extends SupplyAdapterService {
                 OrderConstant.LogOperateCode.SEND_XIAOMISHU,
                 CommonUtil.objectParseInteger(map.get("number")), String.format("发送到凭证:参数:%s", JsonUtils.toJson(map)),
                null ));
+    }
+
+    @Override
+    public void syncConsume(Integer supplyId, Map params) {
+        sendMnsMessage(supplyId, "syncConsume", params);
     }
 }

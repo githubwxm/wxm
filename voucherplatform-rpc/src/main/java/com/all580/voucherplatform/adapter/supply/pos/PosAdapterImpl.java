@@ -99,4 +99,9 @@ public class PosAdapterImpl extends SupplyAdapterService {
     public void updateGroup(Integer groupOrderId, String... seqId) {
 
     }
+
+    @Override
+    public void syncConsume(Integer supplyId, Map params) {
+
+    }
 }

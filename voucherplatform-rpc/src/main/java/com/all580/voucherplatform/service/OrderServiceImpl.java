@@ -8,15 +8,14 @@ import com.all580.voucherplatform.entity.Order;
 import com.all580.voucherplatform.manager.order.OrderManager;
 import com.all580.voucherplatform.manager.order.OrderReverseManager;
 import com.framework.common.Result;
+import com.framework.common.validate.ParamsMapValidate;
+import com.framework.common.validate.ValidRule;
 import com.framework.common.vo.PageRecord;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Created by Linv2 on 2017/5/14.
@@ -199,7 +198,26 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void consumeSync(Map params) {
+    public void consumeSync(Map params, boolean isGroup) {
+        if (isGroup) {
+            validateGroup(params);
+            orderManager.submitConsumeGroup(params);
+            return;
+        }
+        validate(params);
         orderManager.submitConsume(params);
+    }
+
+    private void validateGroup(Map params) {
+        Map<String[], ValidRule[]> rules = new HashMap<>();
+        rules.put(new String[]{"voucherId", "idNumbers", "product", "product.number"}, new ValidRule[]{new ValidRule.NotNull()});
+        rules.put(new String[]{"product.number"}, new ValidRule[]{new ValidRule.Digits()});
+        ParamsMapValidate.validate(params, rules);
+    }
+    private void validate(Map params) {
+        Map<String[], ValidRule[]> rules = new HashMap<>();
+        rules.put(new String[]{"voucherId", "consumeSeqId", "consumeTime", "consumeNumber", "consumeAddress", "deviceId"}, new ValidRule[]{new ValidRule.NotNull()});
+        rules.put(new String[]{"consumeNumber"}, new ValidRule[]{new ValidRule.Digits()});
+        ParamsMapValidate.validate(params, rules);
     }
 }
