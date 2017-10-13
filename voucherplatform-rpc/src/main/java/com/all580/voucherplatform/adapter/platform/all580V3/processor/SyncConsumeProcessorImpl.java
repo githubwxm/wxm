@@ -46,7 +46,7 @@ public class SyncConsumeProcessorImpl implements ProcessorService<Platform> {
             @Override
             public void run() {
                try {
-                   SupplyAdapterService supplyAdapterService = adapterLoader.getSupplyAdapterService(platformRole.getSupply_id());
+                   SupplyAdapterService supplyAdapterService = adapterLoader.getSupplyAdapterService(platformRole.getPlatform_id());
                    if (supplyAdapterService != null) {
                        supplyAdapterService.syncConsume(platformRole.getSupply_id(), params);
                    }
