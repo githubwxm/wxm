@@ -47,7 +47,7 @@ public class OrderLogManager {
                 result.get("item_number"),
                 OrderConstant.LogOperateCode.VOUCHERPLATFORM,
                 operateId,
-                operateName,
+                "voucherPlatform_"+operateName,
                 code,
                 qty == null && (code.equals(OrderConstant.LogOperateCode.SEND_XIAOMISHU) ) ? result.get("quantity") : qty,
                 result.get("used_quantity"),
