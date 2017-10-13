@@ -61,6 +61,7 @@ public class GroupOrderManager {
         map.put("visitors", getVisitorMap(groupOrder));
         map.put("supplyId", groupOrder.getSupply_id());
         map.put("channel",groupOrder.getChannel());
+        map.put("number",groupOrder.getNumber());
         return map;
     }
 

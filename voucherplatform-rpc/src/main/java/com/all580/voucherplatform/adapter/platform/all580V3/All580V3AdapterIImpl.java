@@ -1,13 +1,16 @@
 package com.all580.voucherplatform.adapter.platform.all580V3;
 
+import com.all580.order.api.OrderConstant;
 import com.all580.voucher.api.service.VoucherCallbackService;
 import com.all580.voucherplatform.adapter.platform.PlatformAdapterService;
 import com.all580.voucherplatform.api.VoucherConstant;
 import com.all580.voucherplatform.dao.*;
 import com.all580.voucherplatform.entity.*;
+import com.all580.voucherplatform.manager.OrderLogManager;
 import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.lang.UUIDGenerator;
+import com.framework.common.util.CommonUtil;
 import com.github.ltsopensource.core.domain.Job;
 import com.github.ltsopensource.jobclient.JobClient;
 import lombok.extern.slf4j.Slf4j;
@@ -39,6 +42,8 @@ public class All580V3AdapterIImpl extends PlatformAdapterService {
 
     @Autowired
     private VoucherCallbackService voucherCallbackService;
+    @Autowired
+    private OrderLogManager orderLogManager;
 
     @Autowired
     private JobClient jobClient;
@@ -50,11 +55,27 @@ public class All580V3AdapterIImpl extends PlatformAdapterService {
 
     private final String MSGID = "70a7bce2-548d-11e7-b114-b2f933d5fe66";
 
-    private void sendMessage(String action, Object value) {
+    private void sendMessage(String action, Map value) {
         String content = JsonUtils.toJson(value);
         try {
             log.info("调用小秘书content{}",content);
             voucherCallbackService.process(action, MSGID, content, new Date());
+            Integer qty=CommonUtil.objectParseInteger(value.get("refNumber"));
+            if(qty==null){
+                qty=CommonUtil.objectParseInteger(value.get("consumeQuantity"));
+            }
+            String sn = CommonUtil.objectParseString(value.get("refId"));
+            if(sn==null){
+                sn = CommonUtil.objectParseString(value.get("validateSn"));
+            }
+
+            log.info(OrderConstant.LogOperateCode.NAME, orderLogManager.orderLog(null,
+                    CommonUtil.objectParseString(value.get("orderSn")),
+                    0,action,
+                    OrderConstant.LogOperateCode.SEND_XIAOMISHU,
+                    qty
+                    , String.format("发送到小秘书:参数:%s", JsonUtils.toJson(value)),
+                    sn ));
         } catch (Exception ex) {
             log.error("调用小秘书RPC异常:", ex);
             Job job = new Job();
@@ -67,6 +88,21 @@ public class All580V3AdapterIImpl extends PlatformAdapterService {
             job.setMaxRetryTimes(maxRetryTimes);
             job.setNeedFeedback(false);
             jobClient.submitJob(job);
+            Integer qty=CommonUtil.objectParseInteger(value.get("refNumber"));
+            if(qty==null){
+                qty=CommonUtil.objectParseInteger(value.get("consumeQuantity"));
+            }
+            String sn = CommonUtil.objectParseString(value.get("refId"));
+            if(sn==null){
+                sn = CommonUtil.objectParseString(value.get("validateSn"));
+            }
+            log.info(OrderConstant.LogOperateCode.NAME, orderLogManager.orderLog(null,
+                    CommonUtil.objectParseString(value.get("orderSn")),
+                    0,action,
+                    OrderConstant.LogOperateCode.SEND_XIAOMISHU,
+                    qty
+                    , String.format("异常添加任务 发送到小秘书:参数:%s", JsonUtils.toJson(value)),
+                    sn));
         }
     }
 

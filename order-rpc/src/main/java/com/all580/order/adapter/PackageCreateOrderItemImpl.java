@@ -133,18 +133,18 @@ public class PackageCreateOrderItemImpl extends AbstractCreateOrderImpl{
         ProductSalesInfo salesInfo = salesInfoResult.get().get(sub.getCode());
         // 判断供应商状态是否为已冻结
         if (!bookingOrderManager.isEpStatus(epService.getEpStatus(salesInfo.getEp_id()), EpConstant.EpStatus.ACTIVE)) {
-            throw new ApiException("供应商企业已冻结");
+            throw new ApiException(salesInfo.getProduct_sub_name() + "供应商企业已冻结");
         }
         if (salesInfo.getDay_info_list().size() != sub.getDays()) {
-            throw new ApiException("预定天数与获取产品天数不匹配");
+            throw new ApiException(salesInfo.getProduct_sub_name() + "预定天数与获取产品天数不匹配");
         }
         // 验证最低购票
         if (salesInfo.getMin_buy_quantity() != null && salesInfo.getMin_buy_quantity() > sub.getQuantity()) {
-            throw new ApiException("低于最低购买票数");
+            throw new ApiException(salesInfo.getProduct_sub_name() + "低于最低购买票数");
         }
         // 判断最高票数
         if (salesInfo.getMax_buy_quantity() != null && salesInfo.getMax_buy_quantity() > 0 && sub.getQuantity() > salesInfo.getMax_buy_quantity()) {
-            throw new ApiException(String.format("超过订单最高购买限制: 当前购买:%d, 最大购买:%d", sub.getQuantity(), salesInfo.getMax_buy_quantity())).dataMap()
+            throw new ApiException(String.format(salesInfo.getProduct_sub_name() + "超过订单最高购买限制: 当前购买:%d, 最大购买:%d", sub.getQuantity(), salesInfo.getMax_buy_quantity())).dataMap()
                     .putData("current", sub.getQuantity()).putData("max", salesInfo.getMax_buy_quantity());
         }
         return salesInfo;

@@ -1,55 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
-	   xmlns:tx="http://www.springframework.org/schema/tx" xmlns:jdbc="http://www.springframework.org/schema/jdbc"
-	   xmlns:context="http://www.springframework.org/schema/context" xmlns:p="http://www.springframework.org/schema/p"
-	   xsi:schemaLocation="
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+     xmlns:tx="http://www.springframework.org/schema/tx" xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+     xmlns:context="http://www.springframework.org/schema/context" xmlns:p="http://www.springframework.org/schema/p"
+     xsi:schemaLocation="
           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd         
           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd         
           http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.0.xsd         
           http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd         
           http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd"
-	   default-autowire="byName">
+     default-autowire="byName">
 
-	<bean id="defaultCookieSerializer" class="org.springframework.session.web.http.DefaultCookieSerializer">
-		<!--<property name="domainName" value=".example.com"/>-->
-		<property name="cookieName" value="JSESSIONID"/>
-		<!--<property name="domainNamePattern" value="^.+?\\.(\\w+\\.[a-z]+)$"/>-->
-	</bean>
+  <bean id="defaultCookieSerializer" class="org.springframework.session.web.http.DefaultCookieSerializer">
+    <!--<property name="domainName" value=".example.com"/>-->
+    <property name="cookieName" value="JSESSIONID"/>
+    <!--<property name="domainNamePattern" value="^.+?\\.(\\w+\\.[a-z]+)$"/>-->
+  </bean>
 
-	<bean id="redisHttpSessionConfiguration"
-		  class="org.springframework.session.data.redis.config.annotation.web.http.RedisHttpSessionConfiguration">
-		<property name="maxInactiveIntervalInSeconds" value="1800"/>
-		<property name="cookieSerializer" ref="defaultCookieSerializer"/>
-	</bean>
+  <bean id="redisHttpSessionConfiguration"
+      class="org.springframework.session.data.redis.config.annotation.web.http.RedisHttpSessionConfiguration">
+    <property name="maxInactiveIntervalInSeconds" value="1800"/>
+    <property name="cookieSerializer" ref="defaultCookieSerializer"/>
+  </bean>
 
-	<bean id="jedisConnectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
-		<property name="poolConfig" ref="jedisPoolConfig" />
-		<property name="hostName" value="${redis.host}" />
-		<property name="port" value="${redis.port}" />
-		<property name="password" value="${redis.password}" />
-		<property name="timeout" value="${redis.timeout}" />
-		<property name="usePool" value="true" />
-	</bean>
+  <bean id="jedisConnectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
+    <property name="poolConfig" ref="jedisPoolConfig" />
+    <property name="hostName" value="${redis.host}" />
+    <property name="port" value="${redis.port}" />
+    <property name="password" value="${redis.password}" />
+    <property name="timeout" value="${redis.timeout}" />
+    <property name="usePool" value="true" />
+  </bean>
 
-	<bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
-		<property name="minIdle" value="${redis.pool.minIdle}" />
-		<property name="maxIdle" value="${redis.pool.maxIdle}" />
-		<property name="testOnBorrow" value="${redis.pool.testOnBorrow}" />
-		<property name="testOnReturn" value="${redis.pool.testOnReturn}" />
-		<property name="testWhileIdle" value="${redis.pool.testWhileIdle}" />
-		<property name="timeBetweenEvictionRunsMillis" value="${redis.pool.timeBetweenEvictionRunsMillis}" />
-	</bean>
+  <bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
+    <property name="minIdle" value="${redis.pool.minIdle}" />
+    <property name="maxIdle" value="${redis.pool.maxIdle}" />
+    <property name="testOnBorrow" value="${redis.pool.testOnBorrow}" />
+    <property name="testOnReturn" value="${redis.pool.testOnReturn}" />
+    <property name="testWhileIdle" value="${redis.pool.testWhileIdle}" />
+    <property name="timeBetweenEvictionRunsMillis" value="${redis.pool.timeBetweenEvictionRunsMillis}" />
+  </bean>
 
-	<bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate">
-		<property name="connectionFactory" ref="jedisConnectionFactory" />
-		<property name="keySerializer">
-			<bean class="org.springframework.data.redis.serializer.StringRedisSerializer"/>
-		</property>
-		<property name="valueSerializer">
-			<bean class="org.springframework.data.redis.serializer.JdkSerializationRedisSerializer"/>
-		</property>
-	</bean>
+  <bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate">
+    <property name="connectionFactory" ref="jedisConnectionFactory" />
+    <property name="keySerializer">
+      <bean class="org.springframework.data.redis.serializer.StringRedisSerializer"/>
+    </property>
+    <property name="valueSerializer">
+      <bean class="org.springframework.data.redis.serializer.JdkSerializationRedisSerializer"/>
+    </property>
+  </bean>
 
 	<bean id="redisUtils" class="com.framework.common.io.cache.redis.RedisUtils">
 		<constructor-arg index="0" value="${redis.url}" />
@@ -61,4 +61,4 @@
 		<property name="accessKey" value="${oss.access.key}"/>
 		<property name="accountEndpoint" value="${oss.endpoint}"/>
 	</bean>
-</beans>  
+</beans>
