@@ -66,6 +66,7 @@ public class SyncConsumeProcessorImpl implements ProcessorService<Platform> {
                    if (supplyAdapterService != null) {
                        supplyAdapterService.syncConsume(platformRole.getSupply_id(), params);
                        sync.setStatus(2);
+                       sync.setSendTime(new Date());
                        consumeSyncMapper.updateByPrimaryKey(sync);
                    }
                } catch (Throwable e) {

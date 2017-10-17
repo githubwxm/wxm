@@ -33,6 +33,16 @@ public class ConsumeSync implements Serializable {
     private Date createTime;
 
     /**
+     * 发送时间
+     */
+    private Date sendTime;
+
+    /**
+     * 完成时间
+     */
+    private Date completeTime;
+
+    /**
      * 状态:1-已创建;2-已发送;3-发送失败;4-已接收
      */
     private Integer status;
