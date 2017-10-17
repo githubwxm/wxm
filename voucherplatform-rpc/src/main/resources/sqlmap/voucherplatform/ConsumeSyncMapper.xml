@@ -114,7 +114,7 @@
         </if>
     </sql>
     <select id="selectByTimeAndPlatformRole" resultType="map">
-        SELECT DISTINCT tcs.* FROM t_consume_sync tcs
+        SELECT DISTINCT tcs.*, tp.authId FROM t_consume_sync tcs
         JOIN t_platformrole tp ON tp.supply_id = tcs.supply
         <include refid="selectByTimeAndPlatformRoleWhere"/>
         <include refid="limit"/>
