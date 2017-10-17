@@ -2,8 +2,10 @@ package com.all580.voucherplatform.service;
 
 import com.all580.voucherplatform.adapter.AdapterLoader;
 import com.all580.voucherplatform.api.service.OrderService;
+import com.all580.voucherplatform.dao.ConsumeSyncMapper;
 import com.all580.voucherplatform.dao.GroupOrderMapper;
 import com.all580.voucherplatform.dao.OrderMapper;
+import com.all580.voucherplatform.entity.ConsumeSync;
 import com.all580.voucherplatform.entity.Order;
 import com.all580.voucherplatform.manager.order.OrderManager;
 import com.all580.voucherplatform.manager.order.OrderReverseManager;
@@ -33,6 +35,8 @@ public class OrderServiceImpl implements OrderService {
     private AdapterLoader adapterLoader;
     @Autowired
     private OrderManager orderManager;
+    @Autowired
+    private ConsumeSyncMapper consumeSyncMapper;
 
     @Override
     public Result getOrder(int id) {
@@ -206,6 +210,33 @@ public class OrderServiceImpl implements OrderService {
         }
         validate(params);
         orderManager.submitConsume(params);
+    }
+
+    @Override
+    public void consumeSyncComplete(int id) {
+        ConsumeSync consumeSync = consumeSyncMapper.selectByPrimaryKey(id);
+        if (consumeSync == null) {
+            log.warn("核销同步ID {} 不存在", id);
+            return;
+        }
+        consumeSync.setStatus(4);
+        consumeSyncMapper.updateByPrimaryKey(consumeSync);
+    }
+
+    @Override
+    public Result<PageRecord<Map>> selectConsumeSyncByPage(List<String> auths, Date startTime, Date endTime, Integer recordStart, Integer recordCount) {
+        PageRecord<Map> pageRecord = new PageRecord<>();
+        int count = consumeSyncMapper.selectByTimeAndPlatformRoleCount(auths, startTime, endTime);
+        pageRecord.setTotalCount(count);
+        if (count > 0) {
+            pageRecord.setList(
+                    consumeSyncMapper.selectByTimeAndPlatformRole(auths, startTime, endTime, recordStart, recordCount));
+        } else {
+            pageRecord.setList(new ArrayList<Map>());
+        }
+        Result<PageRecord<Map>> result = new Result<>(true);
+        result.put(pageRecord);
+        return result;
     }
 
     private void validateGroup(Map params) {
