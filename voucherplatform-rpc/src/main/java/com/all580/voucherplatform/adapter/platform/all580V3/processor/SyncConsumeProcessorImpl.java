@@ -52,7 +52,7 @@ public class SyncConsumeProcessorImpl implements ProcessorService<Platform> {
         params.put("endTime", endTime);
         final ConsumeSync sync = new ConsumeSync();
         sync.setStatus(1);
-        sync.setCreateTime(DateFormatUtils.converToDateTime(startTime.toString()));
+        sync.setStartTime(DateFormatUtils.converToDateTime(startTime.toString()));
         sync.setEndTime(DateFormatUtils.converToDateTime(endTime.toString()));
         sync.setSupply(platformRole.getSupply_id());
         sync.setCreateTime(new Date());
