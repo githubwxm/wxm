@@ -127,7 +127,7 @@
     </select>
     <sql id="selectByTimeAndPlatformRoleWhere">
         WHERE 1=1 AND tp.authId IN
-        <foreach collection="auths" item="item" open="(" close=")">
+        <foreach collection="auths" item="item" open="(" close=")" separator=",">
             #{item}
         </foreach>
         AND tcs.start_time &gt;= #{startTime} AND tcs.end_time &lt;= #{endTime}
