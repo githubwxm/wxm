@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -109,12 +110,11 @@ public class VoucherController extends BaseController {
 
     @RequestMapping(value = "sync/consume/list")
     @ResponseBody
-    public Result selectConsumeSync(@RequestParam String auth_id,
-                                    @RequestParam String auth_key,
+    public Result selectConsumeSync(@RequestParam String[] auths,
                                     @RequestParam String start_time,
                                     @RequestParam String end_time,
                                     Integer record_start, Integer record_count) {
         Date[] dates = Utils.checkDate(start_time, end_time);
-        return voucherOrderService.selectConsumeSyncByPage(auth_id, auth_key, dates[0], dates[1], record_start, record_count);
+        return voucherOrderService.selectConsumeSyncByPage(Arrays.asList(auths), dates[0], dates[1], record_start, record_count);
     }
 }
