@@ -224,13 +224,13 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Result<PageRecord<Map>> selectConsumeSyncByPage(String authId, String authKey, Date startTime, Date endTime, Integer recordStart, Integer recordCount) {
+    public Result<PageRecord<Map>> selectConsumeSyncByPage(List<String> auths, Date startTime, Date endTime, Integer recordStart, Integer recordCount) {
         PageRecord<Map> pageRecord = new PageRecord<>();
-        int count = consumeSyncMapper.selectByTimeAndPlatformRoleCount(authId, authKey, startTime, endTime);
+        int count = consumeSyncMapper.selectByTimeAndPlatformRoleCount(auths, startTime, endTime);
         pageRecord.setTotalCount(count);
         if (count > 0) {
             pageRecord.setList(
-                    consumeSyncMapper.selectByTimeAndPlatformRole(authId, authKey, startTime, endTime, recordStart, recordCount));
+                    consumeSyncMapper.selectByTimeAndPlatformRole(auths, startTime, endTime, recordStart, recordCount));
         } else {
             pageRecord.setList(new ArrayList<Map>());
         }
