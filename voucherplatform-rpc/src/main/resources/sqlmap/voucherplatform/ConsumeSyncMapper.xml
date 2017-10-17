@@ -117,6 +117,7 @@
         SELECT DISTINCT tcs.*, tp.authId FROM t_consume_sync tcs
         JOIN t_platformrole tp ON tp.supply_id = tcs.supply
         <include refid="selectByTimeAndPlatformRoleWhere"/>
+        ORDER BY tcs.create_time DESC
         <include refid="limit"/>
     </select>
     <select id="selectByTimeAndPlatformRoleCount" resultType="int">
