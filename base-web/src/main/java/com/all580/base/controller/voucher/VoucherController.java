@@ -1,17 +1,21 @@
 package com.all580.base.controller.voucher;
 
 import com.all580.base.manager.VoucherValidateManager;
+import com.all580.base.util.Utils;
 import com.all580.ep.api.conf.EpConstant;
 import com.all580.voucher.api.service.VoucherRPCService;
+import com.all580.voucherplatform.api.service.OrderService;
 import com.framework.common.BaseController;
 import com.framework.common.Result;
 import com.framework.common.util.CommonUtil;
 import com.framework.common.validate.ParamsMapValidate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -30,6 +34,9 @@ public class VoucherController extends BaseController {
 
     @Autowired
     private VoucherRPCService voucherRPCService;
+    @Autowired
+    @Qualifier("voucherOrderService")
+    private OrderService voucherOrderService;
 
     @RequestMapping(value = "add", method = RequestMethod.POST)
     @ResponseBody
@@ -98,5 +105,16 @@ public class VoucherController extends BaseController {
         // 验证参数
         ParamsMapValidate.validate(params, voucherValidateManager.syncConsumeValidate());
         return voucherRPCService.syncConsume(Integer.parseInt(params.get("ep_ma_id").toString()), params);
+    }
+
+    @RequestMapping(value = "sync/consume/list")
+    @ResponseBody
+    public Result selectConsumeSync(@RequestParam String auth_id,
+                                    @RequestParam String auth_key,
+                                    @RequestParam String start_time,
+                                    @RequestParam String end_time,
+                                    Integer record_start, Integer record_count) {
+        Date[] dates = Utils.checkDate(start_time, end_time);
+        return voucherOrderService.selectConsumeSyncByPage(auth_id, auth_key, dates[0], dates[1], record_start, record_count);
     }
 }

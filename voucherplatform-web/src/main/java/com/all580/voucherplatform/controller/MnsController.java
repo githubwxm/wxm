@@ -8,6 +8,7 @@ import com.framework.common.BaseController;
 import com.framework.common.Result;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.mns.OssStoreManager;
+import com.framework.common.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -92,7 +93,8 @@ public class MnsController extends BaseController {
     private void syncConsume(String key) {
         try {
             String folder = System.getProperty("java.io.tmpdir");
-            File file = new File(folder, key.substring(key.lastIndexOf("/") + 1));
+            String name = key.substring(key.lastIndexOf("/") + 1);
+            File file = new File(folder, name);
             ossStoreManager.download(key, file.getAbsolutePath());
             InputStream inputStream = new FileInputStream(file);
             int line = 0;
@@ -127,6 +129,8 @@ public class MnsController extends BaseController {
                     e.printStackTrace();
                 }
             }
+            String id = key.substring(0, name.indexOf("."));
+            orderService.consumeSyncComplete(CommonUtil.objectParseInteger(id, -1));
             ossStoreManager.getClient().deleteObject(ossStoreManager.getBucket(), key);
             log.info("文件 {} 同步完成一共 {} 行", key, line);
         } catch (Throwable e) {
