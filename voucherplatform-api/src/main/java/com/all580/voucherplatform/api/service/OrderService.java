@@ -87,8 +87,7 @@ public interface OrderService {
 
     void consumeSyncComplete(int id);
 
-    Result<PageRecord<Map>> selectConsumeSyncByPage(String authId,
-                                                    String authKey,
+    Result<PageRecord<Map>> selectConsumeSyncByPage(List<String> auths,
                                                     Date startTime,
                                                     Date endTime,
                                                     Integer recordStart,

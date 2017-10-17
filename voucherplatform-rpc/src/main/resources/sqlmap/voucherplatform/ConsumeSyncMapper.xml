@@ -125,7 +125,10 @@
         <include refid="selectByTimeAndPlatformRoleWhere"/>
     </select>
     <sql id="selectByTimeAndPlatformRoleWhere">
-        WHERE tp.authId = #{authId} AND tp.authKey = #{authKey}
+        WHERE 1=1 AND tp.authId IN
+        <foreach collection="auths" item="item" open="(" close=")">
+            #{item}
+        </foreach>
         AND tcs.start_time &gt;= #{startTime} AND tcs.end_time &lt;= #{endTime}
     </sql>
 </mapper>

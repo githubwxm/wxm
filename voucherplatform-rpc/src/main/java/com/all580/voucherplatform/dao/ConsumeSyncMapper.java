@@ -20,15 +20,13 @@ public interface ConsumeSyncMapper {
 
     int updateByPrimaryKey(ConsumeSync record);
 
-    List<Map> selectByTimeAndPlatformRole(@Param("authId") String authId,
-                                     @Param("authKey") String authKey,
+    List<Map> selectByTimeAndPlatformRole(@Param("auths") List auths,
                                      @Param("startTime") Date startTime,
                                      @Param("endTime") Date endTime,
                                      @Param("record_start") Integer recordStart,
                                      @Param("record_count") Integer recordCount);
 
-    int selectByTimeAndPlatformRoleCount(@Param("authId") String authId,
-                                   @Param("authKey") String authKey,
-                                   @Param("startTime") Date startTime,
-                                   @Param("endTime") Date endTime);
+    int selectByTimeAndPlatformRoleCount(@Param("auths") List auths,
+                                         @Param("startTime") Date startTime,
+                                         @Param("endTime") Date endTime);
 }
