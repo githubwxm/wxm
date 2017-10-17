@@ -219,6 +219,7 @@ public class OrderServiceImpl implements OrderService {
             log.warn("核销同步ID {} 不存在", id);
             return;
         }
+        consumeSync.setCompleteTime(new Date());
         consumeSync.setStatus(4);
         consumeSyncMapper.updateByPrimaryKey(consumeSync);
     }
