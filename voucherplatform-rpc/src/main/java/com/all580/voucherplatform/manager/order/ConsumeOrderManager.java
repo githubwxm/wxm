@@ -57,6 +57,14 @@ public class ConsumeOrderManager {
         if (number > availableNumber) {
             throw new ApiException("消费数量大于订单剩余数量");
         }
+        Date validTime = order.getValidTime();
+        if (validTime != null && validTime.getTime() > System.currentTimeMillis()) {
+            throw new ApiException("订单还未生效,生效开始时间：[" + DateFormatUtils.converToStringTime(validTime)+ "]");
+        }
+        Date invalidTime = order.getInvalidTime();
+        if (invalidTime != null && invalidTime.getTime() < System.currentTimeMillis()) {
+            throw new ApiException("订单已失效,失效时间：[" + DateFormatUtils.converToStringTime(invalidTime)+ "]");
+        }
         String validWeek = order.getValidWeek();
         if (!StringUtils.isEmpty(validWeek) && validWeek.length() == 7) {
             Calendar calendar = Calendar.getInstance();
