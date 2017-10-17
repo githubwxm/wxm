@@ -54,6 +54,27 @@ public class OrderSupplierController extends BaseController {
         return epOrderService.supplierClearance(map);
     }
 
+    @RequestMapping(value = "supplier/clearance/detail", method = RequestMethod.GET)
+    @ResponseBody
+    public Result supplierClearanceDetail( Integer ep_id,@RequestParam("statistic_ep_id") String statistic_ep_id,
+                                     @RequestParam("start") String start,
+                                     @RequestParam("end") String end,String pro_sub_id,
+                                           String pro_sub_name,String single_money,String condition
+    , Integer record_start, Integer record_count) {
+        Map<String,Object> map = new HashMap<>();
+        map.put("ep_id",ep_id);
+        map.put("statistic_ep_id",statistic_ep_id);
+        map.put("start",start);
+        map.put("end",end);
+        map.put("pro_sub_id",pro_sub_id);
+        map.put("pro_sub_name",pro_sub_name);
+        map.put("single_money",single_money);
+        map.put("condition",condition);
+        map.put("record_start",record_start);
+        map.put("record_count",record_count);
+        return epOrderService.supplierClearanceDetail(map);
+    }
+
 
 
 
