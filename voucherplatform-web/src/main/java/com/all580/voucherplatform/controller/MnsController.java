@@ -115,9 +115,9 @@ public class MnsController extends BaseController {
                         log.info("同步文件 {} 核销数据: {}", key, lineStr);
                     } catch (Throwable e) {
                         if (e instanceof ApiException || e instanceof ParamsMapValidationException) {
-                            log.warn("解析文件 {} 第 {} 行 失败:{}", new Object[]{key, line, e.getMessage()});
+                            log.warn("解析文件 {} 第 {} 行:{} 失败:{}", new Object[]{key, line, lineStr, e.getMessage()});
                         } else {
-                            log.warn("解析文件 {} 第 {} 行 异常", new Object[]{key, line, e});
+                            log.warn("解析文件 {} 第 {} 行:{} 异常", new Object[]{key, line, lineStr, e});
                         }
                     }
                     line++;
@@ -129,7 +129,7 @@ public class MnsController extends BaseController {
                     e.printStackTrace();
                 }
             }
-            String id = key.substring(0, name.indexOf("."));
+            String id = name.substring(0, name.indexOf("."));
             orderService.consumeSyncComplete(CommonUtil.objectParseInteger(id, -1));
             ossStoreManager.getClient().deleteObject(ossStoreManager.getBucket(), key);
             log.info("文件 {} 同步完成一共 {} 行", key, line);

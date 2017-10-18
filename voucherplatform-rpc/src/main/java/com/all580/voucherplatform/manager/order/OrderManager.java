@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import javax.lang.exception.ApiException;
 import java.util.*;
 
 @Component
@@ -52,6 +53,7 @@ public class OrderManager {
                                  Date consumeTime,
                                  String deviceId, final Order order) {
 
+        if (order == null) throw new ApiException("核销流水:" + seqId + "订单不存在");
         DistributedReentrantLock distributedReentrantLock = distributedLockTemplate.execute(
                 VoucherConstant.DISTRIBUTEDLOCKORDER + order.getOrderCode(), lockTimeOut);
         try {
@@ -94,6 +96,7 @@ public class OrderManager {
     }
 
     public void submitConsume(Integer number, String voucherId, final GroupOrder groupOrder, String idNumbers) {
+        if (groupOrder == null) throw new ApiException("核销流水:" + voucherId + "团队订单不存在");
         DistributedReentrantLock lock = distributedLockTemplate.execute(voucherId, lockTimeOut);
         try {
             if (idNumbers == null || idNumbers.equals("[]")) {
