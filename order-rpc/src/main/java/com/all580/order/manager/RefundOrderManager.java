@@ -24,6 +24,7 @@ import com.framework.common.event.MnsEventAspect;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.lang.UUIDGenerator;
 import com.framework.common.outside.JobAspect;
+import com.framework.common.outside.JobTask;
 import com.framework.common.synchronize.SyncAccess;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -218,6 +219,7 @@ public class RefundOrderManager extends BaseOrderManager {
      */
     @MnsEvent
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    @JobTask
     public void auditSuccess(OrderItem orderItem, RefundOrder refundOrder, Order order) {
         if (refundOrder.getAudit_time() == null) {
             refundOrder.setAudit_time(new Date());
@@ -580,7 +582,8 @@ public class RefundOrderManager extends BaseOrderManager {
      * 退票
      * @param refundOrder
      */
-    private void refundTicket(RefundOrder refundOrder) {
+    @JobTask
+    public void refundTicket(RefundOrder refundOrder) {
         // 生成退票流水
         RefundSerial refundSerial = new RefundSerial();
         refundSerial.setLocal_serial_no(UUIDGenerator.generateUUID());
@@ -593,7 +596,6 @@ public class RefundOrderManager extends BaseOrderManager {
         refundOrder.setStatus(OrderConstant.RefundOrderStatus.REFUNDING);
         refundOrder.setLocal_refund_serial_no(refundSerial.getLocal_serial_no());
 
-        int i = 0;
         OrderItem orderItem = orderItemMapper.selectByPrimaryKey(refundOrder.getOrder_item_id());
         if (orderItem.getGroup_id() != null && orderItem.getGroup_id() != 0 &&
                 orderItem.getPro_sub_ticket_type() != null && orderItem.getPro_sub_ticket_type() == ProductConstants.TeamTicketType.TEAM) {
@@ -629,16 +631,12 @@ public class RefundOrderManager extends BaseOrderManager {
                     if (!result.isSuccess()) {
                         throw new ApiException(result.getError());
                     }
-                    i++;
                 } catch (Exception e) {
                     log.warn("退票请求部分失败", e);
+                    Map<String, String> jobParams = JsonUtils.obj2map(ticketParams);
+                    jobParams.put("ep_ma_id", String.valueOf(orderItem.getEp_ma_id()));
+                    jobManager.addJob(OrderConstant.Actions.REFUND_TICKET, Collections.singleton(jobParams));
                 }
-            }
-            if (i != refundVisitorList.size()) {
-                if (i <= 0) {
-                    throw new ApiException("退票发起失败: " + refundOrder.getNumber());
-                }
-                log.warn("*****退票发起部分成功*****");
             }
         }
         log.info(OrderConstant.LogOperateCode.NAME, orderLog(null, orderItem.getId(),

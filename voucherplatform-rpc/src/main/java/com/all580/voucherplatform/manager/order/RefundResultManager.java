@@ -115,8 +115,31 @@ public class RefundResultManager {
         }
     }
 
+    public void submitSuccessTicket(String supplyRefId, Date procTime) {
+        DistributedReentrantLock distributedReentrantLock = distributedLockTemplate.execute(VoucherConstant.DISTRIBUTEDLOCKORDER + order.getOrderCode(), lockTimeOut);
+        try {
+            refundSuccess(supplyRefId, procTime);
+            notifyPlatform(order.getPlatform_id(), refund.getId());
+        } catch (Exception ex) {
+            log.error(ex.getMessage(), ex);
+        } finally {
+            distributedReentrantLock.unlock();
+        }
+    }
+
+
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class}, propagation = Propagation.REQUIRES_NEW)
     public void submitFaild() {
+        DistributedReentrantLock distributedReentrantLock = distributedLockTemplate.execute(VoucherConstant.DISTRIBUTEDLOCKORDER + order.getOrderCode(), lockTimeOut);
+        try {
+            refundFaild();
+            notifyPlatform(order.getPlatform_id(), refund.getId());
+        } finally {
+            distributedReentrantLock.unlock();
+        }
+    }
+
+    public void submitFaildTicket() {
         DistributedReentrantLock distributedReentrantLock = distributedLockTemplate.execute(VoucherConstant.DISTRIBUTEDLOCKORDER + order.getOrderCode(), lockTimeOut);
         try {
             refundFaild();
