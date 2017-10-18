@@ -44,6 +44,8 @@
     </logger>
     <logger name="util.CustomJacksonConvert" level="error" additivity="false">
     </logger>
+    <logger name="com.all580.voucherplatform.dao" level="DEBUG">
+    </logger>
 
     <!--根logger控制-->
     <root level="${log.level}">
