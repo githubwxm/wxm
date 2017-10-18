@@ -197,7 +197,7 @@
             </if>
         </set>
         where `id` = #{id,jdbcType=INTEGER}
-        and `group_order_id`=#{groupId}
+      <!--   and `group_order_id`=#{groupId}-->
         and `seqId`=#{seqId}
     </update>
     <update id="updateActivateByIdNumber">
