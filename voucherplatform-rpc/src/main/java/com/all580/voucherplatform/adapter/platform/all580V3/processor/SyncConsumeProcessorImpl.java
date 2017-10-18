@@ -5,9 +5,11 @@ import com.all580.voucherplatform.adapter.ProcessorService;
 import com.all580.voucherplatform.adapter.supply.SupplyAdapterService;
 import com.all580.voucherplatform.dao.ConsumeSyncMapper;
 import com.all580.voucherplatform.dao.PlatformRoleMapper;
+import com.all580.voucherplatform.dao.SupplyMapper;
 import com.all580.voucherplatform.entity.ConsumeSync;
 import com.all580.voucherplatform.entity.Platform;
 import com.all580.voucherplatform.entity.PlatformRole;
+import com.all580.voucherplatform.entity.Supply;
 import com.all580.voucherplatform.utils.async.AsyncService;
 import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.util.CommonUtil;
@@ -37,6 +39,8 @@ public class SyncConsumeProcessorImpl implements ProcessorService<Platform> {
     private AsyncService asyncService;
     @Autowired
     private ConsumeSyncMapper consumeSyncMapper;
+    @Autowired
+    private SupplyMapper supplyMapper;
 
     @Override
     public Object processor(Platform platform, Map map) {
@@ -45,6 +49,8 @@ public class SyncConsumeProcessorImpl implements ProcessorService<Platform> {
         String authKey = CommonUtil.objectParseString(map.get("mKey"));
         final PlatformRole platformRole = platformRoleMapper.getRoleByAuthInfo(authId, authKey);
         Assert.notNull(platformRole, "平台商户不存在");
+        final Supply supply = supplyMapper.selectByPrimaryKey(platformRole.getSupply_id());
+        Assert.notNull(supply, "商户不存在");
         final Map params = new HashMap();
         Object startTime = map.get("startTime");
         params.put("startTime", startTime);
@@ -62,9 +68,9 @@ public class SyncConsumeProcessorImpl implements ProcessorService<Platform> {
             @Override
             public void run() {
                try {
-                   SupplyAdapterService supplyAdapterService = adapterLoader.getSupplyAdapterService(platformRole.getPlatform_id());
+                   SupplyAdapterService supplyAdapterService = adapterLoader.getSupplyAdapterService(supply.getTicketsys_id());
                    if (supplyAdapterService != null) {
-                       supplyAdapterService.syncConsume(platformRole.getSupply_id(), params);
+                       supplyAdapterService.syncConsume(supply.getId(), params);
                        sync.setStatus(2);
                        sync.setSendTime(new Date());
                        consumeSyncMapper.updateByPrimaryKey(sync);
