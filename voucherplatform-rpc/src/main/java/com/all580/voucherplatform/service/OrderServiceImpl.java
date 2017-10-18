@@ -248,7 +248,7 @@ public class OrderServiceImpl implements OrderService {
     }
     private void validate(Map params) {
         Map<String[], ValidRule[]> rules = new HashMap<>();
-        rules.put(new String[]{"voucherId", "consumeSeqId", "consumeTime", "consumeNumber", "consumeAddress", "deviceId"}, new ValidRule[]{new ValidRule.NotNull()});
+        rules.put(new String[]{"voucherId", "consumeSeqId", "consumeTime", "consumeNumber"}, new ValidRule[]{new ValidRule.NotNull()});
         rules.put(new String[]{"consumeNumber"}, new ValidRule[]{new ValidRule.Digits()});
         ParamsMapValidate.validate(params, rules);
     }

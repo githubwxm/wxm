@@ -114,9 +114,10 @@
         </if>
     </sql>
     <select id="selectByTimeAndPlatformRole" resultType="map">
-        SELECT DISTINCT tcs.*, tp.authId FROM t_consume_sync tcs
+        SELECT tcs.*, tp.authId FROM t_consume_sync tcs
         JOIN t_platformrole tp ON tp.supply_id = tcs.supply
         <include refid="selectByTimeAndPlatformRoleWhere" />
+        GROUP BY tcs.id
         ORDER BY tcs.create_time DESC
         <include refid="limit" />
     </select>
