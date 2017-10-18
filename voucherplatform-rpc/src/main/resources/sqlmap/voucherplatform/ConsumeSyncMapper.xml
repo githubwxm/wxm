@@ -7,11 +7,14 @@
         <result column="start_time" jdbcType="TIMESTAMP" property="startTime" />
         <result column="end_time" jdbcType="TIMESTAMP" property="endTime" />
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="send_time" jdbcType="TIMESTAMP" property="sendTime" />
+        <result column="complete_time" jdbcType="TIMESTAMP" property="completeTime" />
         <result column="status" jdbcType="INTEGER" property="status" />
     </resultMap>
     <sql id="Base_Column_List">
-    `id`, `supply`, `start_time`, `end_time`, `create_time`, `status`
-  </sql>
+        `id`, `supply`, `start_time`, `end_time`, `create_time`, `send_time`, `complete_time`,
+        `status`
+    </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List" />
@@ -19,17 +22,19 @@
         where `id` = #{id,jdbcType=INTEGER}
     </select>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
-    delete from t_consume_sync
-    where `id` = #{id,jdbcType=INTEGER}
-  </delete>
+        delete from t_consume_sync
+        where `id` = #{id,jdbcType=INTEGER}
+    </delete>
     <insert id="insert" parameterType="com.all580.voucherplatform.entity.ConsumeSync">
         <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
             SELECT LAST_INSERT_ID()
         </selectKey>
         insert into t_consume_sync (`supply`, `start_time`, `end_time`,
-        `create_time`, `status`)
+        `create_time`, `send_time`, `complete_time`,
+        `status`)
         values (#{supply,jdbcType=INTEGER}, #{startTime,jdbcType=TIMESTAMP}, #{endTime,jdbcType=TIMESTAMP},
-        #{createTime,jdbcType=TIMESTAMP}, #{status,jdbcType=INTEGER})
+        #{createTime,jdbcType=TIMESTAMP}, #{sendTime,jdbcType=TIMESTAMP}, #{completeTime,jdbcType=TIMESTAMP},
+        #{status,jdbcType=INTEGER})
     </insert>
     <insert id="insertSelective" parameterType="com.all580.voucherplatform.entity.ConsumeSync">
         <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
@@ -49,6 +54,12 @@
             <if test="createTime != null">
                 `create_time`,
             </if>
+            <if test="sendTime != null">
+                `send_time`,
+            </if>
+            <if test="completeTime != null">
+                `complete_time`,
+            </if>
             <if test="status != null">
                 `status`,
             </if>
@@ -65,6 +76,12 @@
             </if>
             <if test="createTime != null">
                 #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="sendTime != null">
+                #{sendTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="completeTime != null">
+                #{completeTime,jdbcType=TIMESTAMP},
             </if>
             <if test="status != null">
                 #{status,jdbcType=INTEGER},
@@ -86,6 +103,12 @@
             <if test="createTime != null">
                 `create_time` = #{createTime,jdbcType=TIMESTAMP},
             </if>
+            <if test="sendTime != null">
+                `send_time` = #{sendTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="completeTime != null">
+                `complete_time` = #{completeTime,jdbcType=TIMESTAMP},
+            </if>
             <if test="status != null">
                 `status` = #{status,jdbcType=INTEGER},
             </if>
@@ -98,6 +121,8 @@
       `start_time` = #{startTime,jdbcType=TIMESTAMP},
       `end_time` = #{endTime,jdbcType=TIMESTAMP},
       `create_time` = #{createTime,jdbcType=TIMESTAMP},
+      `send_time` = #{sendTime,jdbcType=TIMESTAMP},
+      `complete_time` = #{completeTime,jdbcType=TIMESTAMP},
       `status` = #{status,jdbcType=INTEGER}
     where `id` = #{id,jdbcType=INTEGER}
   </update>
