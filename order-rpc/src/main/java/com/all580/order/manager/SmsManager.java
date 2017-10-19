@@ -503,10 +503,10 @@ public class SmsManager {
                     Shipping shipping = shippingMapper.selectByOrder(order.getId());
                     map.put(val, shipping.getName());
                     break;
-                case "${check_in}":
+                case "${checkIn}":
                     map.put(val, DateFormatUtils.parseDateToDatetimeString(orderItem.getStart()));
                     break;
-                case "${check_out}":
+                case "${checkOut}":
                     map.put(val, DateFormatUtils.parseDateToDatetimeString(orderItem.getEnd()));
                     break;
                 case "${voucher}":
@@ -521,7 +521,7 @@ public class SmsManager {
                     Date expiryDate = orderItemDetailMapper.selectByItemId(orderItem.getId()).get(0).getExpiry_date();
                     map.put(val, DateFormatUtils.parseDateToDatetimeString(expiryDate));
                     break;
-                case "${buy_ep}":
+                case "${buyEp}":
                     map.put(val, order.getBuy_ep_name());
                     break;
             }
