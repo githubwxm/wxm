@@ -45,7 +45,7 @@ public class ConsumeOrderManager {
         if (number == null || number < 1) {
             throw new ApiException(String.format("核销: %s 无效的验证数量", seqId));
         }
-        Consume consume = consumeMapper.selectBySeqId(number, null, order.getSupply_id(), seqId);
+        Consume consume = consumeMapper.selectBySeqId(order.getId(), null, order.getSupply_id(), seqId);
         if (consume != null) {
             throw new ApiException(Result.UNIQUE_KEY_ERROR, String.format("核销: %s 重复的验证操作请求", seqId));
         }
