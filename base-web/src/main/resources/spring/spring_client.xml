@@ -184,6 +184,9 @@
     <dubbo:reference id="refundMoneyApplyEvent" interface="com.all580.order.api.service.event.RefundMoneyApplyEvent"/>
     <dubbo:reference id="refundMoneyAuditEvent" interface="com.all580.order.api.service.event.RefundMoneyAuditEvent"/>
 
+    <dubbo:reference id="productSubDownEvent" interface="com.all580.product.api.service.event.ProductSubDownEvent"/>
+    <dubbo:reference id="productSubUpEvent" interface="com.all580.product.api.service.event.ProductSubUpEvent"/>
+
     <dubbo:reference id="userService" interface="com.all580.voucherplatform.api.service.UserService"/>
     <dubbo:reference id="qrService" interface="com.all580.voucherplatform.api.service.QrService"/>
     <dubbo:reference id="templateService" interface="com.all580.voucherplatform.api.service.TemplateService"/>
