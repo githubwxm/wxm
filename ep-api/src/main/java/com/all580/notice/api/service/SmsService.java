@@ -69,5 +69,7 @@ public interface SmsService {
 
     Result<?> listTemplate(int epId, Integer type);
 
+    Result<Map> getTemplate(int id);
+
     Result setIsSend(boolean isSend);
 }
