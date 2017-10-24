@@ -84,4 +84,12 @@ public interface OrderService {
     Result reConsume(Integer consumeId);
 
     void consumeSync(Map params, boolean isGroup);
+
+    void consumeSyncComplete(int id);
+
+    Result<PageRecord<Map>> selectConsumeSyncByPage(List<String> auths,
+                                                    Date startTime,
+                                                    Date endTime,
+                                                    Integer recordStart,
+                                                    Integer recordCount);
 }
