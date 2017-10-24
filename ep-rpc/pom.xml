@@ -110,6 +110,11 @@
             <artifactId>lts-spring</artifactId>
             <version>${lts_version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.all580</groupId>
+            <artifactId>report-api</artifactId>
+            <version>3.0.1-SNAPSHOT</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>

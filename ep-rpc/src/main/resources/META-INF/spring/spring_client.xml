@@ -13,6 +13,8 @@
 					 interface="com.all580.payment.api.service.BalancePayService"/>
 	<dubbo:reference id="epPaymentConfService"
 					 interface="com.all580.payment.api.service.EpPaymentConfService"/>
+	<dubbo:reference id="analysisService"
+					 interface="com.all580.report.api.service.AnalysisService"/>
 
 	<dubbo:reference id="planGroupService"
 					 interface="com.all580.product.api.service.PlanGroupRPCService"/>
