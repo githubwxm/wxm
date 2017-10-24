@@ -38,7 +38,7 @@ public class QueryTicketProcessorImpl implements ProcessorService<Platform> {
         log.info("QueryTicketProcessorImpl.processor 参数信息 platform{},map{}",platform.getId(),map.toString());
         String authId = CommonUtil.objectParseString(map.get("mId"));
         PlatformRole platformRole = platformRoleMapper.getRoleByAuthInfo(authId, null);
-        if (platformRole == null || platformRole.getPlatform_id() != platform.getId()) {
+        if (platformRole == null || platformRole.getPlatform_id().intValue() != platform.getId().intValue()) {
             throw new ApiException("企业信息不存在");
         }
         if (StringUtils.isEmpty(platformRole.getCode())) {

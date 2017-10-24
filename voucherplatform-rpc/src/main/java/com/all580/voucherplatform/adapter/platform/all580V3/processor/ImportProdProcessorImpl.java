@@ -13,11 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.lang.exception.ApiException;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -46,7 +43,7 @@ public class ImportProdProcessorImpl implements ProcessorService<Platform> {
         if (StringUtils.isEmpty(supplyprodId)) {
             throw new ApiException("票务产品Id不能为空");
         }
-        if (platformRole == null || platformRole.getPlatform_id() != platform.getId()) {
+        if (platformRole == null || platformRole.getPlatform_id().intValue() != platform.getId().intValue()) {
             throw new ApiException("企业信息不存在");
         }
         if (StringUtils.isEmpty(platformRole.getCode())) {
