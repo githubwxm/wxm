@@ -20,13 +20,13 @@ public class DataAnalysisManager {
     @Autowired
     EpMapper epMapper;
     @Autowired
-    OssStoreManager analysisStoreEpManager;
+    OssStoreManager analysisStoreManager;
     public void channelForAnalysis(String operation,String name,Integer ep_id){
         List<Map> list =  analysisService.selectSpotEpList().get();
         //Integer core_ep_id= epMapper.selectPlatformId(ep_id);
         for(Map map : list){
           int spot =   CommonUtil.objectParseInteger(map.get("spot_id"));
-            analysisStoreEpManager.dimensionForAnalysis(spot, "CHANNEL", operation, ep_id, name);
+            analysisStoreManager.dimensionForAnalysis(spot, "CHANNEL", operation, ep_id, name);
             //Integer spot_ep_id = CommonUtil.objectParseInteger(map.get("ep_id"));
 
 //           if(core_ep_id.equals(epMapper.selectPlatformId(spot_ep_id))){
