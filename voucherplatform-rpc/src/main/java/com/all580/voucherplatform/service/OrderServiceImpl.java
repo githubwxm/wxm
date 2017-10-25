@@ -2,21 +2,22 @@ package com.all580.voucherplatform.service;
 
 import com.all580.voucherplatform.adapter.AdapterLoader;
 import com.all580.voucherplatform.api.service.OrderService;
+import com.all580.voucherplatform.dao.ConsumeSyncMapper;
 import com.all580.voucherplatform.dao.GroupOrderMapper;
 import com.all580.voucherplatform.dao.OrderMapper;
+import com.all580.voucherplatform.entity.ConsumeSync;
 import com.all580.voucherplatform.entity.Order;
 import com.all580.voucherplatform.manager.order.OrderManager;
 import com.all580.voucherplatform.manager.order.OrderReverseManager;
 import com.framework.common.Result;
+import com.framework.common.validate.ParamsMapValidate;
+import com.framework.common.validate.ValidRule;
 import com.framework.common.vo.PageRecord;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Created by Linv2 on 2017/5/14.
@@ -34,6 +35,8 @@ public class OrderServiceImpl implements OrderService {
     private AdapterLoader adapterLoader;
     @Autowired
     private OrderManager orderManager;
+    @Autowired
+    private ConsumeSyncMapper consumeSyncMapper;
 
     @Override
     public Result getOrder(int id) {
@@ -199,7 +202,54 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void consumeSync(Map params) {
+    public void consumeSync(Map params, boolean isGroup) {
+        if (isGroup) {
+            validateGroup(params);
+            orderManager.submitConsumeGroup(params);
+            return;
+        }
+        validate(params);
         orderManager.submitConsume(params);
+    }
+
+    @Override
+    public void consumeSyncComplete(int id) {
+        ConsumeSync consumeSync = consumeSyncMapper.selectByPrimaryKey(id);
+        if (consumeSync == null) {
+            log.warn("核销同步ID {} 不存在", id);
+            return;
+        }
+        consumeSync.setCompleteTime(new Date());
+        consumeSync.setStatus(4);
+        consumeSyncMapper.updateByPrimaryKey(consumeSync);
+    }
+
+    @Override
+    public Result<PageRecord<Map>> selectConsumeSyncByPage(List<String> auths, Date startTime, Date endTime, Integer recordStart, Integer recordCount) {
+        PageRecord<Map> pageRecord = new PageRecord<>();
+        int count = consumeSyncMapper.selectByTimeAndPlatformRoleCount(auths, startTime, endTime);
+        pageRecord.setTotalCount(count);
+        if (count > 0) {
+            pageRecord.setList(
+                    consumeSyncMapper.selectByTimeAndPlatformRole(auths, startTime, endTime, recordStart, recordCount));
+        } else {
+            pageRecord.setList(new ArrayList<Map>());
+        }
+        Result<PageRecord<Map>> result = new Result<>(true);
+        result.put(pageRecord);
+        return result;
+    }
+
+    private void validateGroup(Map params) {
+        Map<String[], ValidRule[]> rules = new HashMap<>();
+        rules.put(new String[]{"voucherId", "idNumbers", "product", "product.number"}, new ValidRule[]{new ValidRule.NotNull()});
+        rules.put(new String[]{"product.number"}, new ValidRule[]{new ValidRule.Digits()});
+        ParamsMapValidate.validate(params, rules);
+    }
+    private void validate(Map params) {
+        Map<String[], ValidRule[]> rules = new HashMap<>();
+        rules.put(new String[]{"voucherId", "consumeSeqId", "consumeTime", "consumeNumber"}, new ValidRule[]{new ValidRule.NotNull()});
+        rules.put(new String[]{"consumeNumber"}, new ValidRule[]{new ValidRule.Digits()});
+        ParamsMapValidate.validate(params, rules);
     }
 }

@@ -10,6 +10,7 @@ import com.all580.ep.dao.EpMapper;
 import com.all580.ep.dao.EpParamMapper;
 import com.all580.ep.dao.EpSendVoucherMapper;
 import com.all580.ep.entity.EpSendVoucher;
+import com.all580.manager.DataAnalysisManager;
 import com.all580.manager.SyncEpData;
 import com.all580.notice.api.conf.SmsType;
 import com.all580.notice.api.service.SmsService;
@@ -75,6 +76,8 @@ public class EpServiceImpl implements EpService {
     private SyncEpData syncEpData;
     @Autowired
     private SmsService smsService;
+    @Autowired
+    private DataAnalysisManager dataAnalysisManager;
 
     @Autowired
     private JobClient jobClient;
@@ -415,6 +418,10 @@ public class EpServiceImpl implements EpService {
             result.put(resultMap);// 添加企业信息map
             result.setSuccess();
             result.setCode(200);
+            if(map.get(EpConstant.EpKey.EP_TYPE).equals(EpConstant.EpType.SELLER)){
+                dataAnalysisManager.channelForAnalysis("A",CommonUtil.objectParseString(map.get("name"))
+                        ,epId);
+            }
         } catch (ApiException e) {
             log.error(e.getMessage(), e);
             throw new ApiException(e.getMessage(), e);
@@ -717,8 +724,11 @@ public class EpServiceImpl implements EpService {
                 result.put(map);
                 result.setSuccess();
                 result.putExt(Result.SYNC_DATA, syncData);
+                if(map.get(EpConstant.EpKey.EP_TYPE).equals(EpConstant.EpType.SELLER)){
+                    dataAnalysisManager.channelForAnalysis("U",CommonUtil.objectParseString(map.get("name"))
+                            ,CommonUtil.objectParseInteger(map.get("id")));
+                }
             }
-
         } catch (ApiException e) {
             log.error(e.getMessage(), e);
             throw new ApiException(e.getMessage(), e);

@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.lang.exception.ApiException;
@@ -29,7 +30,7 @@ public class ConsumeOrderManager {
     @Autowired
     private ConsumeMapper consumeMapper;
 
-    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class}, propagation = Propagation.REQUIRES_NEW)
     public Integer consume(String seqId,
                             Integer number,
                             String address,
@@ -39,14 +40,14 @@ public class ConsumeOrderManager {
 
 
         if (StringUtils.isEmpty(seqId)) {
-            throw new ApiException("无效的验证流水号");
+            throw new ApiException(String.format("核销: %s 无效的验证流水号", seqId));
         }
         if (number == null || number < 1) {
-            throw new ApiException("无效的验证数量");
+            throw new ApiException(String.format("核销: %s 无效的验证数量", seqId));
         }
-        Consume consume = consumeMapper.selectBySeqId(number, null, order.getSupply_id(), seqId);
+        Consume consume = consumeMapper.selectBySeqId(order.getId(), null, order.getSupply_id(), seqId);
         if (consume != null) {
-            throw new ApiException(Result.UNIQUE_KEY_ERROR, "重复的验证操作请求");
+            throw new ApiException(Result.UNIQUE_KEY_ERROR, String.format("核销: %s 重复的验证操作请求", seqId));
         }
         Integer availableNumber = order.getNumber() -
                 (order.getConsume() == null ? 0 : order.getConsume())
@@ -54,7 +55,15 @@ public class ConsumeOrderManager {
                 - (order.getRefunding() == null ? 0 : order.getRefunding())
                 - (order.getRefund() == null ? 0 : order.getRefund());
         if (number > availableNumber) {
-            throw new ApiException("消费数量大于订单剩余数量");
+            throw new ApiException(String.format("核销: %s 消费数量大于订单剩余数量", seqId));
+        }
+        Date validTime = order.getValidTime();
+        if (validTime != null && validTime.getTime() > System.currentTimeMillis()) {
+            throw new ApiException("订单还未生效,生效开始时间：[" + DateFormatUtils.converToStringTime(validTime)+ "]");
+        }
+        Date invalidTime = order.getInvalidTime();
+        if (invalidTime != null && invalidTime.getTime() < System.currentTimeMillis()) {
+            throw new ApiException("订单已失效,失效时间：[" + DateFormatUtils.converToStringTime(invalidTime)+ "]");
         }
         String validWeek = order.getValidWeek();
         if (!StringUtils.isEmpty(validWeek) && validWeek.length() == 7) {
@@ -63,7 +72,7 @@ public class ConsumeOrderManager {
             int week = calendar.get(Calendar.DAY_OF_WEEK) - 2;
             week = week < 0 ? 6 : week;
             if (validWeek.toCharArray()[week] == '0') {
-                throw new ApiException("该订单星期" + (week + 1) + "不可用");
+                throw new ApiException(String.format("核销: %s 该订单星期 %d 不可用", seqId, week + 1));
             }
         }
         String invalidDate = order.getInvalidDate();
@@ -72,7 +81,7 @@ public class ConsumeOrderManager {
             String consumeDay = DateFormatUtils.parseDate(DateFormatUtils.DATE_FORMAT, consumeTime);
             for (String invalidDay : invalidArr) {
                 if (invalidDay.equals(consumeDay)) {
-                    throw new ApiException("该订单在" + invalidDay + "不可用");
+                    throw new ApiException(String.format("核销: %s 该订单在 %s 不可用", seqId, invalidDay));
                 }
             }
         }

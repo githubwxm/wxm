@@ -56,7 +56,7 @@ public class All580ServiceImpl implements All580Service {
         String content = CommonUtil.objectParseString(map.get("content"));
         Map mapContent = getMapFormContent(content);
         log.info("接收小秘书 identity={},action={},content={},signed={}", new Object[]{identity, action, content, signed});
-        addLogReceiveContent(action,mapContent);
+        addLogReceiveContent(action, mapContent);
         Platform platform = platformMapper.selectByPrimaryKey(identity);
         if (platform == null) {
             return new Result(false, "身份数据校检失败");
@@ -69,82 +69,91 @@ public class All580ServiceImpl implements All580Service {
         PlatformAdapterService platformAdapterService = adapterLoader.getPlatformAdapterService(platform);
         return platformAdapterService.process(action, platform, mapContent);
     }
-    private void addLogReceiveContent(String action,Map mapContent){
-        String itemId="";
-        Integer qty=0;
-        String sn=null;
-        String code ="";
-        try{
-            switch (action){
+
+    private void addLogReceiveContent(String action, Map mapContent) {
+        String itemId = "";
+        Integer qty = 0;
+        String sn = null;
+        String code = "";
+        String name="小秘书";
+        try {
+            switch (action) {
                 case "sendTicket":
-                    itemId=CommonUtil.objectParseString( mapContent.get("orderId"));
-                    List<Map<String, Object>> visitors =(List<Map<String, Object>> )mapContent.get("visitors");
-                    for(Map temp : visitors){
-                        qty+= CommonUtil.objectParseInteger(temp.get("number"));
+                    itemId = CommonUtil.objectParseString(mapContent.get("orderId"));
+                    List<Map<String, Object>> visitors = (List<Map<String, Object>>) mapContent.get("visitors");
+                    for (Map temp : visitors) {
+                        qty += CommonUtil.objectParseInteger(temp.get("number"));
                     }
-                    code=OrderConstant.LogOperateCode.RECEIVE_XIAOMISHU;
+                    code = OrderConstant.LogOperateCode.RECEIVE_XIAOMISHU;
                     break;
                 case "sendGroupTicket":
-                    itemId=CommonUtil.objectParseString(mapContent.get("orderId"));
-                    Map<String, Object> products =(Map<String, Object>)  mapContent.get("products");
-                    qty =CommonUtil.objectParseInteger( products.get("number"));
-                    code=OrderConstant.LogOperateCode.RECEIVE_XIAOMISHU;
+                    itemId = CommonUtil.objectParseString(mapContent.get("orderId"));
+                    Map<String, Object> products = (Map<String, Object>) mapContent.get("products");
+                    qty = CommonUtil.objectParseInteger(products.get("number"));
+                    code = OrderConstant.LogOperateCode.RECEIVE_XIAOMISHU;
                     break;
                 case "cancelTicket":
                 case "cancelGroupTicket":
-                    itemId=CommonUtil.objectParseString( mapContent.get("orderId"));
-                    qty=CommonUtil.objectParseInteger( mapContent.get("refNumber"));
-                    sn=CommonUtil.objectParseString( mapContent.get("refId"));
-                    code=OrderConstant.LogOperateCode.RECEIVE_XIAOMISHU;
+                    itemId = CommonUtil.objectParseString(mapContent.get("orderId"));
+                    qty = CommonUtil.objectParseInteger(mapContent.get("refNumber"));
+                    sn = CommonUtil.objectParseString(mapContent.get("refId"));
+                    code = OrderConstant.LogOperateCode.RECEIVE_XIAOMISHU;
                     break;
                 case "updateGroupTicket":
-                    itemId=CommonUtil.objectParseString( mapContent.get("orderId"));
-                    qty=null;
-                    sn=null;
-                    code=OrderConstant.LogOperateCode.RECEIVE_XIAOMISHU;
+                    itemId = CommonUtil.objectParseString(mapContent.get("orderId"));
+                    qty = null;
+                    sn = null;
+                    code = OrderConstant.LogOperateCode.RECEIVE_XIAOMISHU;
                     break;
                 case "saveOrderRsp":
                     List<Map> mapList = (List<Map>) mapContent.get("orders");
-                    itemId=orderLogManager.getOrderId(CommonUtil.objectParseString( mapList.get(0).get("voucherId"))) ;
-                    qty=null;
-                    sn=null;
-                    code=OrderConstant.LogOperateCode.RECEIVE_TICKET;
+                    itemId = orderLogManager.getOrderId(CommonUtil.objectParseString(mapList.get(0).get("voucherId")));
+                    qty = null;
+                    sn = null;
+                    code = OrderConstant.LogOperateCode.RECEIVE_TICKET;
+                    name="票务";
                     break;
                 case "sendGroupOrderRsp":
-                    itemId=orderLogManager.getOrderId(CommonUtil.objectParseString( mapContent.get("voucherId"))) ;
-                    qty=null;
-                    sn=null;
-                    code=OrderConstant.LogOperateCode.RECEIVE_TICKET;
+                    name="票务";
+                    itemId = orderLogManager.getOrderId(CommonUtil.objectParseString(mapContent.get("voucherId")));
+                    qty = null;
+                    sn = null;
+                    code = OrderConstant.LogOperateCode.RECEIVE_TICKET;
                     break;
                 case "cancelOrderRsp":
                 case "cancelGroupOrderRsp":
-                    itemId=orderLogManager.getOrderId(CommonUtil.objectParseString( mapContent.get("voucherId"))) ;
-                    qty=CommonUtil.objectParseInteger(mapContent.get("refNumber"));
-                    sn=CommonUtil.objectParseString(mapContent.get("refId"));
-                    code=OrderConstant.LogOperateCode.RECEIVE_TICKET;
+                    name="票务";
+                    itemId = orderLogManager.getOrderId(CommonUtil.objectParseString(mapContent.get("voucherId")));
+                    qty = CommonUtil.objectParseInteger(mapContent.get("refNumber"));
+                    sn = CommonUtil.objectParseString(mapContent.get("refId"));
+                    code = OrderConstant.LogOperateCode.RECEIVE_TICKET;
                     break;
                 case "consumeOrderRsp":
-                    itemId=orderLogManager.getOrderId(CommonUtil.objectParseString( mapContent.get("voucherId"))) ;
-                    qty=CommonUtil.objectParseInteger(mapContent.get("consumeNumber"));
-                    sn=CommonUtil.objectParseString( mapContent.get("voucherId"));
-                    code=OrderConstant.LogOperateCode.RECEIVE_TICKET;
+                    name="票务";
+                    itemId = orderLogManager.getOrderId(CommonUtil.objectParseString(mapContent.get("voucherId")));
+                    qty = CommonUtil.objectParseInteger(mapContent.get("consumeNumber"));
+                    sn = CommonUtil.objectParseString(mapContent.get("voucherId"));
+                    code = OrderConstant.LogOperateCode.RECEIVE_TICKET;
                     break;
                 case "activateGroupOrderRsp":
-                    itemId=orderLogManager.getOrderId(CommonUtil.objectParseString( mapContent.get("voucherId"))) ;                    qty=null;
-                    sn=CommonUtil.objectParseString( mapContent.get("voucherId"));
-                    qty=CommonUtil.objectParseInteger(mapContent.get("number"));
-                    code=OrderConstant.LogOperateCode.RECEIVE_TICKET;
+                    name="票务";
+                    itemId = orderLogManager.getOrderId(CommonUtil.objectParseString(mapContent.get("voucherId")));
+                    sn = CommonUtil.objectParseString(mapContent.get("voucherId"));
+                    qty = CommonUtil.objectParseInteger(mapContent.get("number"));
+                    code = OrderConstant.LogOperateCode.RECEIVE_TICKET;
                     break;
+                default:
+                    return;
             }
-        }catch (Exception e){
-            log.error(" 获取接收小秘书数据参数错误 action{} content{}",action,mapContent);
+        } catch (Exception e) {
+            log.error(" 获取接收"+name+"数据参数错误 action{} content{}", action, mapContent);
         }
         log.info(OrderConstant.LogOperateCode.NAME, orderLogManager.orderLog(null,
                 itemId,
-                0,action, code,
+                0, action, code,
                 qty
                 , String.format("接收到小秘书:参数:%s", JsonUtils.toJson(mapContent)),
-                sn ));
+                sn));
     }
 
     @Override
@@ -155,7 +164,7 @@ public class All580ServiceImpl implements All580Service {
         String content = CommonUtil.objectParseString(map.get("content"));
         Map mapContent = getMapFormContent(content);
         log.info("接收到票务 identity={},action={},content={},signed={}", new Object[]{identity, action, content, signed});
-        addLogReceiveContent(action,mapContent);
+        addLogReceiveContent(action, mapContent);
         Supply supply = supplyMapper.selectByPrimaryKey(identity);
         if (supply == null) {
             return new Result(false, "身份数据校检失败");

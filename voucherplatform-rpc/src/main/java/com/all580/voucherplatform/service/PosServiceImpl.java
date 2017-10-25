@@ -3,7 +3,10 @@ package com.all580.voucherplatform.service;
 import com.all580.voucherplatform.adapter.AdapterLoader;
 import com.all580.voucherplatform.adapter.supply.SupplyAdapterService;
 import com.all580.voucherplatform.api.service.PosService;
-import com.all580.voucherplatform.dao.*;
+import com.all580.voucherplatform.dao.DeviceApplyMapper;
+import com.all580.voucherplatform.dao.DeviceGroupMapper;
+import com.all580.voucherplatform.dao.DeviceMapper;
+import com.all580.voucherplatform.dao.SupplyMapper;
 import com.all580.voucherplatform.entity.Device;
 import com.all580.voucherplatform.entity.DeviceApply;
 import com.all580.voucherplatform.entity.DeviceGroup;
@@ -27,7 +30,6 @@ import java.util.Map;
  * Created by Linv2 on 2017-07-20.
  */
 @Service
-@Transactional(rollbackFor = {Exception.class, RuntimeException.class})
 @Slf4j
 public class PosServiceImpl implements PosService {
 
@@ -45,6 +47,7 @@ public class PosServiceImpl implements PosService {
     @Autowired
     private SignInstance signInstance;
 
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     @Override public Result apply(Map map) {
 
         String code = CommonUtil.emptyStringParseNull(map.get("deviceId"));

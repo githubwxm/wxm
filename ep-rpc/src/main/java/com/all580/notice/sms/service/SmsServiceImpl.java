@@ -233,6 +233,14 @@ public class SmsServiceImpl implements SmsService {
         return result;
     }
 
+    @Override
+    public Result<Map> getTemplate(int id) {
+        Result<Map> result = new Result<>(true);
+        SmsTmpl smsTmpl = smsTmplMapper.selectByPrimaryKey(id);
+        result.put(CommonUtil.obj2Map(smsTmpl));
+        return result;
+    }
+
     /**
      * 发送短信
      *
