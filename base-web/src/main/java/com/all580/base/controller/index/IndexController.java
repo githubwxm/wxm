@@ -1,5 +1,6 @@
 package com.all580.base.controller.index;
 
+import com.alibaba.fastjson.JSONObject;
 import com.aliyun.mns.model.SubscriptionMeta;
 import com.all580.base.manager.MnsEventCache;
 import com.all580.ep.api.conf.EpConstant;
@@ -10,11 +11,14 @@ import com.all580.order.api.service.OrderService;
 import com.all580.payment.api.service.EpPaymentConfService;
 import com.all580.payment.api.service.ThirdPayService;
 import com.all580.product.api.service.ProductRPCService;
+import com.all580.report.api.ReportConstant;
 import com.all580.report.api.service.QueryOrderService;
 import com.all580.report.api.service.ReportExportTaskService;
 import com.all580.voucher.api.service.VoucherRPCService;
 import com.framework.common.BaseController;
 import com.framework.common.Result;
+import com.framework.common.io.cache.redis.RedisUtils;
+import com.framework.common.lang.JsonUtils;
 import com.framework.common.mns.TopicPushManager;
 import com.framework.common.util.CommonUtil;
 import com.framework.common.validate.ParamsMapValidate;
@@ -63,12 +67,22 @@ public class IndexController extends BaseController {
 	private CoreEpAccessService coreEpAccessService;
 	@Autowired
 	private TopicPushManager topicPushManager;
+	@Autowired
+	private RedisUtils redisUtils;
 	@Value("${mns.notify.top}")
 	private String topicName;
 
 	@Autowired
 	private ReportExportTaskService reportExportTaskService;
 
+	@RequestMapping(value = "api/homepage/order/statistics", method = RequestMethod.GET)
+	@ResponseBody
+	public Result indexData(Integer ep_id){
+		Result result = new Result(true);
+          Map map = JsonUtils.json2Map( redisUtils.hget(ReportConstant.index_data,ep_id+""));
+         result.put(map);
+		return result;
+	}
 	@RequestMapping(value = "report/export/task/down", method = RequestMethod.GET)
 	public String downFile(HttpServletRequest request, HttpServletResponse response, @RequestParam("id") int id){
 		// return "redirect:http://www.baidu.com";
