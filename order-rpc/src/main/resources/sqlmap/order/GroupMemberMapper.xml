@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.all580.order.dao.GroupMemberMapper">
+  <sql id="limit">
+    <if test="record_start != null and record_count != null">
+      limit #{record_start},#{record_count}
+    </if>
+    <if test="record_start != null and record_count == null">
+      limit #{record_start}
+    </if>
+    <if test="record_start == null and record_count != null">
+      limit 0,#{record_count}
+    </if>
+  </sql>
   <resultMap id="BaseResultMap" type="com.all580.order.entity.GroupMember">
     <!--
       WARNING - @mbggenerated
@@ -229,4 +240,69 @@
         DELETE FROM t_group_member
         WHERE `group_id` = #{groupId,jdbcType=INTEGER}
     </update>
+  <select id="countMemberList" resultType="int">
+    SELECT
+    COUNT(*)
+    FROM
+    t_group_member g
+    WHERE 1 = 1
+    <include refid="selectMemberListWhere"/>
+  </select>
+  <select id="queryMemberList" resultType="map">
+    SELECT
+    *
+    FROM
+    t_group_member g
+    WHERE 1 = 1
+    <include refid="selectMemberListWhere"/>
+    <include refid="limit"/>
+  </select>
+  <select id="queryMemberNoPageList" resultType="map">
+    SELECT
+    *
+    FROM
+    t_group_member g
+    WHERE 1 = 1
+    <if test="group_id != null and group_id != ''">
+      AND g.group_id = #{group_id}
+    </if>
+  </select>
+  <sql id = "selectMemberListWhere">
+    <if test="name != null and name != ''">
+      AND g.name like CONCAT('%',#{name}, '%')
+    </if>
+    <if test="card != null and card != ''">
+      AND g.card like CONCAT('%',#{card}, '%')
+    </if>
+    <if test="phone != null and phone != ''">
+      AND g.phone = #{phone}
+    </if>
+    <if test="group_id != null and group_id != ''">
+      AND g.group_id = #{group_id}
+    </if>
+  </sql>
+  <select id="queryOrderMember" resultType="map">
+    SELECT
+    v.id,
+    v. name,
+    v.phone,
+    v.sid,
+    v.card_type
+    FROM
+    t_visitor v
+    INNER JOIN t_order_item oi ON oi.id = v.ref_id
+    WHERE 1 = 1
+    <if test="suborderid != null and suborderid != ''">
+      AND oi.id = #{suborderid,jdbcType=INTEGER}
+    </if>
+    <if test="name != null and name != ''">
+      AND v.name like CONCAT('%',#{name}, '%')
+    </if>
+    <if test="card != null and card != ''">
+      AND v.sid like CONCAT('%',#{card}, '%')
+    </if>
+    <if test="phone != null and phone != ''">
+      AND v.phone = #{phone}
+    </if>
+  </select>
 </mapper>

@@ -4,6 +4,7 @@ import com.all580.order.entity.GroupMember;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public interface GroupMemberMapper {
@@ -83,4 +84,41 @@ public interface GroupMemberMapper {
      * @return
      */
     int deleteByGroup(@Param("groupId") Integer groupId);
+
+    /**
+     * 统计团队成员数量
+     * @param group_id 团队ID
+     * @param name 游客姓名
+     * @param card 游客证件号
+     * @param phone 游客电话号码
+     * @return
+     */
+    int countMemberList(@Param("group_id") Integer group_id,@Param("name") String name, @Param("card") String card, @Param("phone") String phone);
+
+    /**
+     * 查询团队成员列表
+     * @param group_id 团队ID
+     * @param name 游客姓名
+     * @param card 游客证件号
+     * @param phone 游客电话号码
+     * @return
+     */
+    List<Map> queryMemberList(@Param("group_id") Integer group_id,@Param("name") String name, @Param("card") String card, @Param("phone") String phone, @Param("record_start") Integer record_start , @Param("record_count") Integer record_count);
+
+    /**
+     * 查询团队成员列表不分页
+     * @param group_id 团队ID
+     * @return
+     */
+    List<Map> queryMemberNoPageList(@Param("group_id") Integer group_id);
+
+    /**
+     * 查询订单团队成员列表不分页
+     * @param suborderid 子订单ID
+     * @param name 游客姓名
+     * @param card 游客证件号
+     * @param phone 游客电话号码
+     * @return
+     */
+    List<Map> queryOrderMember(@Param("suborderid") Integer suborderid,@Param("name") String name,@Param("card") String card,@Param("phone") String phone);
 }

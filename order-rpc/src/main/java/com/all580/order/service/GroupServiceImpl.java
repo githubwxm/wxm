@@ -14,6 +14,7 @@ import com.framework.common.lang.JsonUtils;
 import com.framework.common.util.CommonUtil;
 import com.framework.common.validate.CheckIdCardUtils;
 import com.framework.common.validate.ValidRule;
+import com.framework.common.vo.PageRecord;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -199,6 +200,115 @@ public class GroupServiceImpl implements GroupService {
         return new Result<>(ret > 0).putExt(Result.SYNC_DATA, groupSyncManager.syncDeleteMember(groupId, memberId));
     }
 
+    @Override
+    public Result<?> queryGroupList(Integer core_ep_id,String number,String guide_name,String start,String end,String province,String city,Integer record_start,Integer record_count){
+        PageRecord<Map> record = new PageRecord<>();
+        Result<PageRecord<Map>> result = new Result<>(true);
+        result.put(record);
+
+        int count = groupMapper.countGroupList(core_ep_id,number,guide_name,start,end,province,city);
+        record.setTotalCount(count);
+
+        if(count == 0){
+            record.setList(Collections.EMPTY_LIST);
+            return result;
+        }
+        //分页查询
+        List<Map> list = groupMapper.queryGroupList(core_ep_id,number,guide_name,start,end,province,city,record_start,record_count);
+        record.setList(list);
+        return result;
+    }
+
+    @Override
+    public Result<?> queryGuideList(Integer core_ep_id,String name,String phone,String card,Integer record_start,Integer record_count){
+        PageRecord<Map> record = new PageRecord<>();
+        Result<PageRecord<Map>> result = new Result<>(true);
+        result.put(record);
+
+        int count = guideMapper.countGuideList(core_ep_id,name,phone,card);
+        record.setTotalCount(count);
+
+        if(count == 0){
+            record.setList(Collections.EMPTY_LIST);
+            return result;
+        }
+        //分页查询
+        List<Map> list = guideMapper.queryGuideList(core_ep_id,name,phone,card,record_start,record_count);
+        record.setList(list);
+        return result;
+    }
+
+    @Override
+    public Result<Map> queryGroupById(Integer id){
+        Result<Map> result = new Result<>(true);
+        Map groupMap = groupMapper.queryGroupById(id);
+        result.put(groupMap);
+        return result;
+    }
+
+    @Override
+    public Result<Map> queryGuideById(Integer id){
+        Result<Map> result = new Result<>(true);
+        Map groupMap = guideMapper.queryGuideById(id);
+        result.put(groupMap);
+        return result;
+    }
+
+    @Override
+    public Result<?> queryMemberList(Integer group_id,String name,String card,String phone,Integer record_start,Integer record_count){
+        PageRecord<Map> record = new PageRecord<>();
+        Result<PageRecord<Map>> result = new Result<>(true);
+        result.put(record);
+
+        int count = groupMemberMapper.countMemberList(group_id,name,card,phone);
+        record.setTotalCount(count);
+
+        if(count == 0){
+            record.setList(Collections.EMPTY_LIST);
+            return result;
+        }
+        //分页查询
+        List<Map> list = groupMemberMapper.queryMemberList(group_id,name,card,phone,record_start,record_count);
+        record.setList(list);
+        return result;
+    }
+
+    @Override
+    public Result<?> queryMemberNoPageList(Integer group_id){
+        Result<List> result = new Result<>(true);
+        List<Map> list = groupMemberMapper.queryMemberNoPageList(group_id);
+        if(list.size() > 0){
+            result.put(list);
+        }else{
+            result.put(new ArrayList<>());
+        }
+        return result;
+    }
+
+    @Override
+    public Result<?> queryOrderGuideByOrderId(Integer orderId){
+        Result<?> result = new Result<>(true);
+        List<Map> list = guideMapper.queryOrderGuideByOrderId(orderId);
+        if(list.size() > 0){
+            result.put("list",list);
+        }else{
+            result.put("list",new ArrayList<>());
+        }
+        return result;
+    }
+
+    @Override
+    public Result<?> queryOrderMember(Integer suborderid,String name,String card,String phone){
+        Result<?> result = new Result<>(true);
+        List<Map> list = groupMemberMapper.queryOrderMember(suborderid,name,card,phone);
+        if(list.size() > 0){
+            result.put("list",list);
+        }else{
+            result.put("list",new ArrayList<>());
+        }
+        return result;
+    }
+
     private void checkGroupOperation(int groupId, boolean isOrder, Integer epId, Integer coreEpId) {
         Group old = groupMapper.selectByPrimaryKey(groupId);
         if (old == null) {
@@ -260,4 +370,5 @@ public class GroupServiceImpl implements GroupService {
         result.put(Collections.singletonMap("id", group.getId()));
         return result.putExt(Result.SYNC_DATA, groupSyncManager.syncGroup(group.getId(), guide.getId()));
     }
+
 }

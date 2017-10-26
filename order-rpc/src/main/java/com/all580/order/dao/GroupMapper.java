@@ -1,6 +1,10 @@
 package com.all580.order.dao;
 
 import com.all580.order.entity.Group;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
+import java.util.Map;
 
 public interface GroupMapper {
     /**
@@ -50,4 +54,30 @@ public interface GroupMapper {
      * @mbggenerated Thu Dec 01 11:25:59 CST 2016
      */
     int updateByPrimaryKey(Group record);
+
+    /**
+     * 统计团队数量
+     * @param number 团号
+     * @param guide_name 导游姓名
+     * @param start 出团开始时间
+     * @param end 出团结束时间
+     * @param province 省
+     * @param city 市
+     * @return
+     */
+    int countGroupList(@Param("core_ep_id") Integer core_ep_id,@Param("number") String number, @Param("guide_name") String guide_name, @Param("start") String start, @Param("end") String end, @Param("province") String province, @Param("city") String city);
+
+    /**
+     * 查询团队列表
+     * @param number 团号
+     * @param guide_name 导游姓名
+     * @param start 出团开始时间
+     * @param end 出团结束时间
+     * @param province 省
+     * @param city 市
+     * @return
+     */
+    List<Map> queryGroupList(@Param("core_ep_id") Integer core_ep_id,@Param("number") String number, @Param("guide_name") String guide_name, @Param("start") String start, @Param("end") String end, @Param("province") String province, @Param("city") String city, @Param("record_start") Integer record_start ,@Param("record_count") Integer record_count);
+
+    Map queryGroupById(@Param("id") Integer id);
 }
