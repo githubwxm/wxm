@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.all580.order.dao.GroupMapper" >
+  <sql id="limit">
+    <if test="record_start != null and record_count != null">
+      limit #{record_start},#{record_count}
+    </if>
+    <if test="record_start != null and record_count == null">
+      limit #{record_start}
+    </if>
+    <if test="record_start == null and record_count != null">
+      limit 0,#{record_count}
+    </if>
+  </sql>
   <resultMap id="BaseResultMap" type="com.all580.order.entity.Group" >
     <!--
       WARNING - @mbggenerated
@@ -354,4 +365,55 @@
       `update_time` = #{update_time,jdbcType=TIMESTAMP}
     where `id` = #{id,jdbcType=INTEGER}
   </update>
+
+  <select id="countGroupList" resultType="int">
+    SELECT
+    COUNT(*)
+    FROM
+    t_group g
+    WHERE 1 = 1
+    <include refid="selectGroupListWhere"/>
+  </select>
+  <select id="queryGroupList" resultType="map">
+    SELECT
+    *
+    FROM
+    t_group g
+    WHERE 1 = 1
+    <include refid="selectGroupListWhere"/>
+    <include refid="limit"/>
+  </select>
+  <sql id = "selectGroupListWhere">
+    <if test="number != null and number != ''">
+      AND g.number like CONCAT('%',#{number}, '%')
+    </if>
+    <if test="guide_name != null and guide_name != ''">
+      AND g.guide_name like CONCAT('%',#{guide_name}, '%')
+    </if>
+    <if test="province != null and province != ''">
+      AND g.province = #{province}
+    </if>
+    <if test="city != null and city != ''">
+      AND g.city = #{city}
+    </if>
+    <if test="core_ep_id != null and core_ep_id != ''">
+      AND g.ep_id = #{core_ep_id}
+    </if>
+    <if test="start != null">
+      AND g.`start_date` <![CDATA[  >=  ]]> #{start}
+    </if>
+    <if test="end != null">
+      AND g.`start_date` <![CDATA[  <=  ]]> #{end}
+    </if>
+  </sql>
+  <select id="queryGroupById" resultType="map">
+    SELECT
+    *
+    FROM
+    t_group g
+    WHERE 1 = 1
+    <if test="id != null and id != ''">
+      AND g.id = #{id,jdbcType=INTEGER}
+    </if>
+  </select>
 </mapper>

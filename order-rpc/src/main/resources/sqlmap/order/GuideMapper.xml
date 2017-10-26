@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.all580.order.dao.GuideMapper" >
+  <sql id="limit">
+    <if test="record_start != null and record_count != null">
+      limit #{record_start},#{record_count}
+    </if>
+    <if test="record_start != null and record_count == null">
+      limit #{record_start}
+    </if>
+    <if test="record_start == null and record_count != null">
+      limit 0,#{record_count}
+    </if>
+  </sql>
   <resultMap id="BaseResultMap" type="com.all580.order.entity.Guide" >
     <!--
       WARNING - @mbggenerated
@@ -201,4 +212,59 @@
       `update_time` = #{update_time,jdbcType=TIMESTAMP}
     where `id` = #{id,jdbcType=INTEGER}
   </update>
+  <select id="countGuideList" resultType="int">
+    SELECT
+    COUNT(*)
+    FROM
+    t_guide g
+    WHERE 1 = 1
+    <include refid="selectGuideListWhere"/>
+  </select>
+  <select id="queryGuideList" resultType="map">
+    SELECT
+    *
+    FROM
+    t_guide g
+    WHERE 1 = 1
+    <include refid="selectGuideListWhere"/>
+    <include refid="limit"/>
+  </select>
+  <sql id = "selectGuideListWhere">
+    <if test="name != null and name != ''">
+      AND g.name like CONCAT('%',#{name}, '%')
+    </if>
+    <if test="phone != null and phone != ''">
+      AND g.phone like CONCAT('%',#{phone}, '%')
+    </if>
+    <if test="card != null and card != ''">
+      AND g.card = #{card}
+    </if>
+    <if test="core_ep_id != null and core_ep_id != ''">
+      AND g.ep_id = #{core_ep_id}
+    </if>
+  </sql>
+  <select id="queryGuideById" resultType="map">
+    SELECT
+    *
+    FROM
+    t_guide g
+    WHERE 1 = 1
+    <if test="id != null and id != ''">
+      AND g.id = #{id,jdbcType=INTEGER}
+    </if>
+  </select>
+  <select id="queryOrderGuideByOrderId" resultType="map">
+    SELECT
+    s.id,
+    s. name,
+    s.phone,
+    s.sid
+    FROM
+    t_shipping s
+    INNER JOIN t_order o ON o.id = s.order_id
+    WHERE 1 = 1
+    <if test="orderId != null and orderId != ''">
+      AND o.id = #{orderId,jdbcType=INTEGER}
+    </if>
+  </select>
 </mapper>
