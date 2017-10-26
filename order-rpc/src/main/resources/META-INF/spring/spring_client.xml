@@ -12,6 +12,8 @@
 
 	<dubbo:reference id="productSalesPlanRPCService"
 		interface="com.all580.product.api.service.ProductSalesPlanRPCService" />
+	<dubbo:reference id="productService"
+					 interface="com.all580.product.api.service.ProductRPCService" />
 
 	<dubbo:reference id="epService"
 					 interface="com.all580.ep.api.service.EpService"/>

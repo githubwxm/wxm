@@ -25,14 +25,14 @@ import java.util.Map;
 /**
  * Created by xiangzw on 2017/7/14.
  */
-@Component(OrderConstant.REFUND_ADAPTER + "PACKAGE")
+@Component(OrderConstant.REFUND_ADAPTER + OrderConstant.OrderAdapter.PACKAGE)
 public class PackageRefundOrderServiceImpl extends AbstractRefundOrderImpl{
 
-    @Resource(name=OrderConstant.REFUND_ADAPTER + "TICKET",type = RefundOrderInterface.class)
+    @Resource(name=OrderConstant.REFUND_ADAPTER + OrderConstant.OrderAdapter.TICKET,type = RefundOrderInterface.class)
     private RefundOrderInterface ticketRefundOrder;
-    @Resource(name=OrderConstant.REFUND_ADAPTER + "HOTEL",type = RefundOrderInterface.class)
+    @Resource(name=OrderConstant.REFUND_ADAPTER + OrderConstant.OrderAdapter.HOTEL,type = RefundOrderInterface.class)
     private RefundOrderInterface hotelRefundOrder;
-    @Resource(name=OrderConstant.REFUND_ADAPTER + "LINE",type = RefundOrderInterface.class)
+    @Resource(name=OrderConstant.REFUND_ADAPTER + OrderConstant.OrderAdapter.LINE,type = RefundOrderInterface.class)
     private RefundOrderInterface lineRefundOrder;
     @Autowired
     private VisitorMapper visitorMapper;

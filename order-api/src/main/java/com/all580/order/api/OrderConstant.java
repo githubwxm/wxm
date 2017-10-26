@@ -1,5 +1,8 @@
 package com.all580.order.api;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @author zhouxianjun(Alone)
  * @ClassName:
@@ -11,6 +14,49 @@ public class OrderConstant {
     public static final String CREATE_ADAPTER = "CREATE_ADAPTER";
     public static final String REFUND_ADAPTER = "REFUND_ADAPTER";
 
+
+    public static class OrderAdapter{
+        public static final String TICKET = "TICKET";
+        public static final String TICKET_OTA = "TICKET_OTA";
+        public static final String TICKET_AUTO_PAY = "TICKET_AUTO_PAY";
+        public static final String TICKET_GROUP = "TICKET_GROUP";
+        public static final String HOTEL = "HOTEL";
+        public static final String HOTEL_GROUP = "HOTEL_GROUP";
+        public static final String LINE = "LINE";
+        public static final String PACKAGE = "PACKAGE";
+
+        public static final Adapter[] ADAPTERS = new Adapter[]{
+                new Adapter(TICKET,5101),
+                new Adapter(TICKET_OTA,5101),
+                new Adapter(TICKET_AUTO_PAY, 5101),
+                new Adapter(TICKET_GROUP,5101),
+                new Adapter(HOTEL, 5102),
+                new Adapter(HOTEL_GROUP,5102),
+                new Adapter(LINE,5103),
+                new Adapter(PACKAGE,5104)
+        };
+
+        private static final Map<String, Adapter> ADAPTER_MAP = new HashMap<>();
+        static {
+            for (Adapter adapter : ADAPTERS) {
+                ADAPTER_MAP.put(adapter.name, adapter);
+            }
+        }
+
+        public static Adapter getAdapter(String type){
+            return ADAPTER_MAP.get(type);
+        }
+
+        public static class Adapter{
+            public final String name;
+            public final Integer productType;
+
+            private Adapter(String name, Integer productType) {
+                this.name = name;
+                this.productType = productType;
+            }
+        }
+    }
 
     public static class OrderSourceType{
         public static final int SOURCE_TYPE_B2C = 3010; // B2C下单

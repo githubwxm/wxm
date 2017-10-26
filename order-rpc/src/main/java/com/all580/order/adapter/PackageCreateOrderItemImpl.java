@@ -30,14 +30,14 @@ import java.util.Map;
 /**
  * Created by xiangzw on 2017/7/13.
  */
-@Component(OrderConstant.CREATE_ADAPTER + "PACKAGE")
+@Component(OrderConstant.CREATE_ADAPTER + OrderConstant.OrderAdapter.PACKAGE)
 public class PackageCreateOrderItemImpl extends AbstractCreateOrderImpl{
 
-    @Resource(name=OrderConstant.CREATE_ADAPTER + "TICKET",type = CreateOrderInterface.class)
+    @Resource(name=OrderConstant.CREATE_ADAPTER + OrderConstant.OrderAdapter.TICKET,type = CreateOrderInterface.class)
     private CreateOrderInterface ticketCreateOrder;
-    @Resource(name=OrderConstant.CREATE_ADAPTER + "HOTEL",type = CreateOrderInterface.class)
+    @Resource(name=OrderConstant.CREATE_ADAPTER + OrderConstant.OrderAdapter.HOTEL,type = CreateOrderInterface.class)
     private CreateOrderInterface hotelCreateOrder;
-    @Resource(name=OrderConstant.CREATE_ADAPTER + "LINE",type = CreateOrderInterface.class)
+    @Resource(name=OrderConstant.CREATE_ADAPTER + OrderConstant.OrderAdapter.LINE,type = CreateOrderInterface.class)
     private CreateOrderInterface lineCreateOrder;
 
     private CreateOrderInterface getCreateOrderInterface(Integer productType){

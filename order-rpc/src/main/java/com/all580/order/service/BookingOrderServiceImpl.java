@@ -14,8 +14,8 @@ import com.all580.product.api.model.EpSalesInfo;
 import com.all580.product.api.model.ProductSalesDayInfo;
 import com.all580.product.api.model.ProductSalesInfo;
 import com.all580.product.api.model.ProductSearchParams;
+import com.all580.product.api.service.ProductRPCService;
 import com.all580.product.api.service.ProductSalesPlanRPCService;
-import com.all580.voucher.api.service.VoucherRPCService;
 import com.framework.common.Result;
 import com.framework.common.distributed.lock.DistributedLockTemplate;
 import com.framework.common.distributed.lock.DistributedReentrantLock;
@@ -68,7 +68,7 @@ public class BookingOrderServiceImpl implements BookingOrderService {
     @Autowired
     private ProductSalesPlanRPCService productSalesPlanRPCService;
     @Autowired
-    private VoucherRPCService voucherRPCService;
+    private ProductRPCService productService;
     @Autowired
     private DistributedLockTemplate distributedLockTemplate;
     @Value("${lock.timeout}")
@@ -91,6 +91,17 @@ public class BookingOrderServiceImpl implements BookingOrderService {
     public Result<?> create(Map params, String type) throws Exception {
         CreateOrderInterface orderInterface = applicationContext.getBean(OrderConstant.CREATE_ADAPTER + type, CreateOrderInterface.class);
         Assert.notNull(orderInterface, type + " 类型创建订单适配器没找到");
+        //BUG 3个类型的产品 每个产品都可以调用3个类型的下单接口
+        Long code = Long.parseLong(String.valueOf(orderInterface.getOrderItemParams(params).get(0).get("product_sub_code")));
+        Result<Map<String, Object>> product = productService.searchProductByProductSubCode(code);
+        if (product.isSuccess()){
+            Integer productType = Integer.parseInt(String.valueOf(product.get().get("type")));
+            OrderConstant.OrderAdapter.Adapter adapter = OrderConstant.OrderAdapter.getAdapter(type);
+            if (adapter.productType.compareTo(productType) != 0){
+                throw new ApiException(String.format("当前产品类型与下单接口不匹配，当前产品类型：%s,接口类型：%s", productType, adapter.productType));
+            }
+        }
+
         // 锁定库存集合(统一锁定)
         Map<Integer, LockStockDto> lockStockDtoMap = new HashMap<>();
         List<ProductSearchParams> lockParams = new ArrayList<>();

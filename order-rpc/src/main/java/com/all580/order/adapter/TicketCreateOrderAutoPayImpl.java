@@ -19,7 +19,7 @@ import java.util.Map;
  * @Description: 景点散客下单自动支付
  * @date 2017/2/15 14:49
  */
-@Component(OrderConstant.CREATE_ADAPTER + "TICKET_AUTO_PAY")
+@Component(OrderConstant.CREATE_ADAPTER + OrderConstant.OrderAdapter.TICKET_AUTO_PAY)
 public class TicketCreateOrderAutoPayImpl extends TicketCreateOrderImpl {
     @Autowired
     private LockTransactionManager lockTransactionManager;

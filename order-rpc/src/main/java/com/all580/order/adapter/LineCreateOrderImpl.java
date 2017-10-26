@@ -30,7 +30,7 @@ import java.util.Map;
  * @Description:
  * @date 17-5-22 下午3:23
  */
-@Component(OrderConstant.CREATE_ADAPTER + "LINE")
+@Component(OrderConstant.CREATE_ADAPTER + OrderConstant.OrderAdapter.LINE)
 public class LineCreateOrderImpl extends TicketCreateOrderImpl {
     @Autowired
     private LineGroupMapper lineGroupMapper;

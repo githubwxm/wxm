@@ -20,7 +20,7 @@ import java.util.Map;
  * @Description: 门票创建订单适配器
  * @date 2017/2/7 11:24
  */
-@Component(OrderConstant.CREATE_ADAPTER + "TICKET")
+@Component(OrderConstant.CREATE_ADAPTER + OrderConstant.OrderAdapter.TICKET)
 public class TicketCreateOrderImpl extends AbstractCreateOrderImpl {
 
     @Override

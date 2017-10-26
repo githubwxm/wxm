@@ -28,7 +28,7 @@ import java.util.*;
  * @Description: 门票团队创建订单适配器
  * @date 2017/2/7 11:24
  */
-@Component(OrderConstant.CREATE_ADAPTER + "TICKET_GROUP")
+@Component(OrderConstant.CREATE_ADAPTER + OrderConstant.OrderAdapter.TICKET_GROUP)
 public class TicketGroupCreateOrderImpl extends AbstractCreateOrderImpl {
     @Autowired
     private GroupMapper groupMapper;

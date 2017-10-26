@@ -25,7 +25,7 @@ import java.util.Map;
  * @Description:
  * @date 2017/2/8 14:07
  */
-@Component(OrderConstant.REFUND_ADAPTER + "HOTEL")
+@Component(OrderConstant.REFUND_ADAPTER + OrderConstant.OrderAdapter.HOTEL)
 public class TicketHotelRefundOrderImpl extends AbstractRefundOrderImpl {
     @Autowired
     private OrderItemDetailMapper orderItemDetailMapper;

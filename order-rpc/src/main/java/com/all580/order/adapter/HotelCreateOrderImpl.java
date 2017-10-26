@@ -25,7 +25,7 @@ import java.util.Map;
  * @Description: 酒店创建订单适配器
  * @date 2017/2/7 11:24
  */
-@Component(OrderConstant.CREATE_ADAPTER + "HOTEL")
+@Component(OrderConstant.CREATE_ADAPTER + OrderConstant.OrderAdapter.HOTEL)
 public class HotelCreateOrderImpl extends AbstractCreateOrderImpl {
 
     @Override

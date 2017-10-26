@@ -22,7 +22,7 @@ import java.util.Map;
  * @Description:
  * @date 2017/2/8 14:25
  */
-@Component(OrderConstant.REFUND_ADAPTER + "TICKET_OTA")
+@Component(OrderConstant.REFUND_ADAPTER + OrderConstant.OrderAdapter.TICKET_OTA)
 public class TicketRefundOrderOTAImpl extends TicketRefundOrderImpl {
     @Autowired
     private VisitorMapper visitorMapper;

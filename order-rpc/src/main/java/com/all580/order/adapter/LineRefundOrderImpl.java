@@ -14,7 +14,7 @@ import java.util.Map;
  * @Description: 线路退订
  * @date 17-5-24 下午2:40
  */
-@Component(OrderConstant.REFUND_ADAPTER + "LINE")
+@Component(OrderConstant.REFUND_ADAPTER + OrderConstant.OrderAdapter.LINE)
 public class LineRefundOrderImpl extends TicketRefundOrderImpl {
     @Override
     public void validateRefundVisitor(RefundOrderApply apply, Collection<RefundDay> refundDays, Map params) {

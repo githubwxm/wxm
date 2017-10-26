@@ -23,7 +23,7 @@ import java.util.Map;
  * @Description: 酒店团队订单创建适配器
  * @date 17-5-9 上午9:49
  */
-@Component(OrderConstant.CREATE_ADAPTER + "HOTEL_GROUP")
+@Component(OrderConstant.CREATE_ADAPTER + OrderConstant.OrderAdapter.HOTEL_GROUP)
 public class HotelGroupCreateOrderImpl extends TicketGroupCreateOrderImpl {
     @Autowired
     private GroupMapper groupMapper;
