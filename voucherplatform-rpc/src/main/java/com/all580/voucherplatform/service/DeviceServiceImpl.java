@@ -54,7 +54,7 @@ public class DeviceServiceImpl implements DeviceService {
         deviceGroup.setStatus(true);
         deviceGroup.setCode(UUIDGenerator.getUUID());
         deviceGroupMapper.insert(deviceGroup);
-        return new Result(true, "操作成功");
+        return new Result(true);
     }
 
     @Override
