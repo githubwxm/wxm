@@ -2,6 +2,7 @@ package com.all580.base.controller.order;
 
 import com.all580.base.manager.OrderValidateManager;
 import com.all580.base.util.Utils;
+import com.all580.order.api.OrderConstant;
 import com.all580.order.api.service.BookingOrderService;
 import com.all580.order.api.service.OrderService;
 import com.all580.order.api.service.RefundOrderService;
@@ -42,7 +43,7 @@ public class OrderController extends BaseController {
     public Result<?> create(@RequestBody Map params) throws Exception {
         // 验证参数
         ParamsMapValidate.validate(params, orderValidateManager.createValidate());
-        return bookingOrderService.create(params, "TICKET");
+        return bookingOrderService.create(params, OrderConstant.OrderAdapter.TICKET);
     }
 
     @RequestMapping(value = "create/pay", method = RequestMethod.POST)
@@ -50,7 +51,7 @@ public class OrderController extends BaseController {
     public Result<?> createPay(@RequestBody Map params) throws Exception {
         // 验证参数
         ParamsMapValidate.validate(params, orderValidateManager.createValidate());
-        return bookingOrderService.create(params, "TICKET_AUTO_PAY");
+        return bookingOrderService.create(params, OrderConstant.OrderAdapter.TICKET_AUTO_PAY);
     }
 
     @RequestMapping(value = "group/create", method = RequestMethod.POST)
@@ -58,7 +59,7 @@ public class OrderController extends BaseController {
     public Result<?> createForGroup(@RequestBody Map params) throws Exception {
         // 验证参数
         ParamsMapValidate.validate(params, orderValidateManager.createGroupValidate());
-        return bookingOrderService.create(params, "TICKET_GROUP");
+        return bookingOrderService.create(params, OrderConstant.OrderAdapter.TICKET_GROUP);
     }
 
     @RequestMapping(value = "hotel/create", method = RequestMethod.POST)
@@ -66,7 +67,7 @@ public class OrderController extends BaseController {
     public Result<?> createForHotel(@RequestBody Map params) throws Exception {
         // 验证参数
         ParamsMapValidate.validate(params, orderValidateManager.createHotelValidate());
-        return bookingOrderService.create(params, "HOTEL");
+        return bookingOrderService.create(params, OrderConstant.OrderAdapter.HOTEL);
     }
 
     @RequestMapping(value = "hotel/group/create", method = RequestMethod.POST)
@@ -74,7 +75,7 @@ public class OrderController extends BaseController {
     public Result<?> createForHotelGroup(@RequestBody Map params) throws Exception {
         // 验证参数
         ParamsMapValidate.validate(params, orderValidateManager.createHotelGroupValidate());
-        return bookingOrderService.create(params, "HOTEL_GROUP");
+        return bookingOrderService.create(params, OrderConstant.OrderAdapter.HOTEL_GROUP);
     }
 
     @RequestMapping(value = "line/create", method = RequestMethod.POST)
@@ -82,14 +83,14 @@ public class OrderController extends BaseController {
     public Result<?> createForLine(@RequestBody Map params) throws Exception {
         // 验证参数
         ParamsMapValidate.validate(params, orderValidateManager.createLineValidate());
-        return bookingOrderService.create(params, "LINE");
+        return bookingOrderService.create(params, OrderConstant.OrderAdapter.LINE);
     }
 
     @RequestMapping(value = "package/create", method = RequestMethod.POST)
     @ResponseBody
     public Result<?> createPackageOrder(@RequestBody Map params) throws Exception {
         ParamsMapValidate.validate(params, orderValidateManager.createPackageValidate());
-        return bookingOrderService.create(params, "PACKAGE");
+        return bookingOrderService.create(params, OrderConstant.OrderAdapter.PACKAGE);
     }
 
     @RequestMapping(value = "audit", method = RequestMethod.POST)
@@ -113,7 +114,7 @@ public class OrderController extends BaseController {
     public Result<?> refundApply(@RequestBody Map params) throws Exception {
         // 验证参数
         ParamsMapValidate.validate(params, orderValidateManager.refundApplyValidate());
-        return refundOrderService.apply(params, "TICKET");
+        return refundOrderService.apply(params, OrderConstant.OrderAdapter.TICKET);
     }
 
     @RequestMapping(value = "refund/ota/apply", method = RequestMethod.POST)
@@ -121,7 +122,7 @@ public class OrderController extends BaseController {
     public Result<?> refundApplyForOta(@RequestBody Map params) throws Exception {
         // 验证参数
         ParamsMapValidate.validate(params, orderValidateManager.refundApplyForOtaValidate());
-        return refundOrderService.apply(params, "TICKET_OTA");
+        return refundOrderService.apply(params, OrderConstant.OrderAdapter.TICKET_OTA);
     }
 
     @RequestMapping(value = "refund/group/apply", method = RequestMethod.POST)
@@ -129,7 +130,7 @@ public class OrderController extends BaseController {
     public Result<?> refundApplyForGroup(@RequestBody Map params) throws Exception {
         // 验证参数
         ParamsMapValidate.validate(params, orderValidateManager.refundApplyForGroupValidate());
-        return refundOrderService.apply(params, "TICKET_GROUP");
+        return refundOrderService.apply(params, OrderConstant.OrderAdapter.TICKET_GROUP);
     }
 
     @RequestMapping(value = "refund/hotel/apply", method = RequestMethod.POST)
@@ -137,7 +138,7 @@ public class OrderController extends BaseController {
     public Result<?> refundApplyForHotel(@RequestBody Map params) throws Exception {
         // 验证参数
         ParamsMapValidate.validate(params, orderValidateManager.refundApplyForHotelValidate());
-        return refundOrderService.apply(params, "HOTEL");
+        return refundOrderService.apply(params, OrderConstant.OrderAdapter.HOTEL);
     }
 
     @RequestMapping(value = "refund/line/apply", method = RequestMethod.POST)
@@ -145,7 +146,7 @@ public class OrderController extends BaseController {
     public Result<?> refundApplyForLine(@RequestBody Map params) throws Exception {
         // 验证参数
         ParamsMapValidate.validate(params, orderValidateManager.refundApplyValidate());
-        return refundOrderService.apply(params, "LINE");
+        return refundOrderService.apply(params, OrderConstant.OrderAdapter.LINE);
     }
 
     @RequestMapping(value = "refund/package/apply", method = RequestMethod.POST)
@@ -153,7 +154,7 @@ public class OrderController extends BaseController {
     public Result<?> refundApplyForPackage(@RequestBody Map params) throws Exception {
         // 验证参数
         ParamsMapValidate.validate(params, orderValidateManager.refundApplyForHotelValidate());
-        return refundOrderService.apply(params, "PACKAGE");
+        return refundOrderService.apply(params, OrderConstant.OrderAdapter.PACKAGE);
     }
 
 

@@ -144,7 +144,7 @@ public class OrderControllerTest {
                             put("quantity", "1");
                         }});
                     }});
-                    put("product_sub_id", "2");
+                    put("product_sub_code", "1499220704555281");
                     put("start", "2016-10-29 00:00:00");
                     put("days", "1");
                     put("quantity", "1");
@@ -158,7 +158,7 @@ public class OrderControllerTest {
             put("remark", "test");
         }};
         mockMvc.perform(
-                    post("/api/order/create").contentType(MediaType.APPLICATION_JSON).content(JsonUtils.toJson(params))
+                    post("/api/order/hotel/create").contentType(MediaType.APPLICATION_JSON).content(JsonUtils.toJson(params))
                 ).andExpect(
                     status().isOk()
                 ).andExpect(

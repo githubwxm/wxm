@@ -73,7 +73,7 @@ public class QueryOrderController extends BaseController {
 
     @RequestMapping(value = "item/list", method = RequestMethod.GET)
     @ResponseBody
-    public Result<PageRecord<OrderItemDto>> listOrderItems(OrderInfo orderInfo,
+    public Result<?> listOrderItems(OrderInfo orderInfo,
                                                            @RequestParam(defaultValue = "0") Integer record_start,
                                                            @RequestParam(defaultValue = "20") Integer record_count) {
         Integer coreEpId = CommonUtil.objectParseInteger(getAttribute(EpConstant.EpKey.CORE_EP_ID));
@@ -86,7 +86,7 @@ public class QueryOrderController extends BaseController {
 
     @RequestMapping(value = "item/get_item_detail", method = RequestMethod.GET)
     @ResponseBody
-    public Result<OrderItemDetailDto> getOrderDetailByNumber(@RequestParam("itemSn") Long itemSn,
+    public Result<?> getOrderDetailByNumber(@RequestParam("itemSn") Long itemSn,
                                                              @RequestParam(value = "show_accout", required = false, defaultValue = "0") Integer showAccount,
                                                              @RequestParam(value = "ep_type", required = false) Integer epType,
                                                              @RequestParam("ep_id") Integer epId) {
@@ -96,7 +96,7 @@ public class QueryOrderController extends BaseController {
 
     @RequestMapping(value = "scenery/list", method = RequestMethod.GET)
     @ResponseBody
-    public Result<PageRecord<SceneryOrder>> listSceneryOrderItems(OrderInfo orderInfo,
+    public Result<?> listSceneryOrderItems(OrderInfo orderInfo,
                                                                   @RequestParam(defaultValue = "0") Integer record_start,
                                                                   @RequestParam(defaultValue = "20") Integer record_count) {
         Integer coreEpId = CommonUtil.objectParseInteger(getAttribute(EpConstant.EpKey.CORE_EP_ID));
@@ -109,7 +109,7 @@ public class QueryOrderController extends BaseController {
 
     @RequestMapping(value = "scenery/get_item_detail", method = RequestMethod.GET)
     @ResponseBody
-    public Result<SceneryOrderDetail> getSceneryOrderDetailByNumber(@RequestParam("itemSn") Long itemSn,
+    public Result<?> getSceneryOrderDetailByNumber(@RequestParam("itemSn") Long itemSn,
                                                              @RequestParam(value = "show_accout", required = false, defaultValue = "0") Integer showAccount,
                                                              @RequestParam(value = "ep_type", required = false) Integer epType,
                                                              @RequestParam("ep_id") Integer epId) {
@@ -119,7 +119,7 @@ public class QueryOrderController extends BaseController {
 
     @RequestMapping(value = "hotel/list", method = RequestMethod.GET)
     @ResponseBody
-    public Result<PageRecord<HotelOrder>> listHotelOrderItems(OrderInfo orderInfo,
+    public Result<?> listHotelOrderItems(OrderInfo orderInfo,
                                                                   @RequestParam(defaultValue = "0") Integer record_start,
                                                                   @RequestParam(defaultValue = "20") Integer record_count) {
         Integer coreEpId = CommonUtil.objectParseInteger(getAttribute(EpConstant.EpKey.CORE_EP_ID));
@@ -132,7 +132,7 @@ public class QueryOrderController extends BaseController {
 
     @RequestMapping(value = "hotel/get_item_detail", method = RequestMethod.GET)
     @ResponseBody
-    public Result<HotelOrderDetail> getHotelOrderDetailByNumber(@RequestParam("itemSn") Long itemSn,
+    public Result<?> getHotelOrderDetailByNumber(@RequestParam("itemSn") Long itemSn,
                                                                     @RequestParam(value = "show_accout", required = false, defaultValue = "0") Integer showAccount,
                                                                     @RequestParam(value = "ep_type", required = false) Integer epType,
                                                                     @RequestParam("ep_id") Integer epId) {
@@ -142,7 +142,7 @@ public class QueryOrderController extends BaseController {
 
     @RequestMapping(value = "item/pre_refund", method = RequestMethod.GET)
     @ResponseBody
-    public Result<Map> preRefundOrder(@RequestParam("itemSn") Long itemSn,
+    public Result<?> preRefundOrder(@RequestParam("itemSn") Long itemSn,
                                       @RequestParam(value = "ep_type", required = false) Integer epType,
                                       @RequestParam("ep_id") Integer epId) {
         Integer coreEpId = CommonUtil.objectParseInteger(getAttribute(EpConstant.EpKey.CORE_EP_ID));
@@ -151,7 +151,7 @@ public class QueryOrderController extends BaseController {
 
     @RequestMapping(value = "item/refund_audit", method = RequestMethod.GET)
     @ResponseBody
-    public Result<RefundAuditInfo> getRefundOrderAuditInfo(@RequestParam("itemSn") Long itemSn,
+    public Result<?> getRefundOrderAuditInfo(@RequestParam("itemSn") Long itemSn,
                                                   @RequestParam(value = "ep_type", required = false) Integer epType,
                                                   @RequestParam("ep_id") Integer epId) {
         Integer coreEpId = CommonUtil.objectParseInteger(getAttribute(EpConstant.EpKey.CORE_EP_ID));
@@ -160,19 +160,19 @@ public class QueryOrderController extends BaseController {
 
     @RequestMapping(value = "hotel/pre_clearance", method = RequestMethod.GET)
     @ResponseBody
-    public Result<Map> preClearanceHotelInfo(@RequestParam("itemSn") Long itemSn) {
+    public Result<?> preClearanceHotelInfo(@RequestParam("itemSn") Long itemSn) {
         return queryOrderService.preClearanceHotelInfo(itemSn);
     }
 
     @RequestMapping(value = "visitor/get_list", method = RequestMethod.GET)
     @ResponseBody
-    public Result<List<VisitorDto>> getVisitorsByOrderItemNumber(@RequestParam("itemSn") Long itemSn) {
+    public Result<?> getVisitorsByOrderItemNumber(@RequestParam("itemSn") Long itemSn) {
         return queryOrderService.getVisitorsByOrderItemNumber(itemSn);
     }
 
     @RequestMapping(value = "package/list", method = RequestMethod.GET)
     @ResponseBody
-    public Result<PageRecord<PackageOrder>> listPackageOrderItem(OrderInfo orderInfo,
+    public Result<?> listPackageOrderItem(OrderInfo orderInfo,
                                                                  @RequestParam(defaultValue = "0") Integer record_start,
                                                                  @RequestParam(defaultValue = "20") Integer record_count) {
         Integer coreEpId = CommonUtil.objectParseInteger(getAttribute(EpConstant.EpKey.CORE_EP_ID));
@@ -182,7 +182,7 @@ public class QueryOrderController extends BaseController {
 
     @RequestMapping(value = "package/get_item_detail", method = RequestMethod.GET)
     @ResponseBody
-    public Result<PackageOrderDetail> getPackageOrderDetailByNumber(@RequestParam("itemSn") Long itemSn,
+    public Result<?> getPackageOrderDetailByNumber(@RequestParam("itemSn") Long itemSn,
                                                                 @RequestParam(value = "show_accout", required = false, defaultValue = "0") Integer showAccount,
                                                                 @RequestParam(value = "ep_type", required = false) Integer epType,
                                                                 @RequestParam("ep_id") Integer epId) {

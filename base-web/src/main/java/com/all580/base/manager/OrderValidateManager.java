@@ -28,6 +28,7 @@ public class OrderValidateManager {
                 "shipping.phone", // 订单联系人手机号码
                 "items.visitor.name", // 订单游客姓名
                 "items.visitor.phone", // 订单游客手机号码
+                "items.visitor.quantity", // 订单游客订票数量
                 //"items.visitor.sid", // 订单游客身份证号码
                 "items.product_sub_code", // 订单子产品CODE
                 "items.start", // 计划开始时间
@@ -44,13 +45,15 @@ public class OrderValidateManager {
                 "items.product_sub_code", // 订单子产品CODE
                 "items.days", // 天数：景点固定1
                 "items.quantity", // 订票数量
+                "items.visitor.quantity", // 订单游客订票数量
                 "ep_id", // 订票企业ID
                 "operator_id" // 订票用户ID
         }, new ValidRule[]{new ValidRule.Digits()});
 
         rules.put(new String[]{
                 "items.days", // 天数：景点固定1
-                "items.quantity" // 订票数量
+                "items.quantity", // 订票数量
+                "items.visitor.quantity"// 订单游客订票数量
         }, new ValidRule[]{new ValidRule.Digits(1L, 10000L)});
 
         // 校验身份证
@@ -178,6 +181,7 @@ public class OrderValidateManager {
                 "shipping.phone", // 订单联系人手机号码
                 "items.visitor.name", // 订单游客姓名
                 "items.visitor.phone", // 订单游客手机号码
+                "items.visitor.quantity", // 订单游客订票数量
                 "items.product_sub_code", // 订单子产品CODE
                 "items.start", // 计划开始时间
                 "items.days", // 天数：景点固定1
@@ -191,12 +195,14 @@ public class OrderValidateManager {
                 "items.product_sub_code", // 订单子产品CODE
                 "items.days", // 天数：景点固定1
                 "items.quantity", // 订票数量
+                "items.visitor.quantity", // 订单游客订票数量
                 "ep_id", // 订票企业ID
                 "operator_id" // 订票用户ID
         }, new ValidRule[]{new ValidRule.Digits()});
 
         rules.put(new String[]{
                 "items.days", // 天数：景点固定1
+                "items.visitor.quantity", // 订单游客订票数量
                 "items.quantity" // 订票数量
         }, new ValidRule[]{new ValidRule.Digits(1L, 10000L)});
 
