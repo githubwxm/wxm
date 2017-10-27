@@ -75,6 +75,7 @@ public class All580ServiceImpl implements All580Service {
         Integer qty = 0;
         String sn = null;
         String code = "";
+        String name="小秘书";
         try {
             switch (action) {
                 case "sendTicket":
@@ -110,8 +111,10 @@ public class All580ServiceImpl implements All580Service {
                     qty = null;
                     sn = null;
                     code = OrderConstant.LogOperateCode.RECEIVE_TICKET;
+                    name="票务";
                     break;
                 case "sendGroupOrderRsp":
+                    name="票务";
                     itemId = orderLogManager.getOrderId(CommonUtil.objectParseString(mapContent.get("voucherId")));
                     qty = null;
                     sn = null;
@@ -119,18 +122,21 @@ public class All580ServiceImpl implements All580Service {
                     break;
                 case "cancelOrderRsp":
                 case "cancelGroupOrderRsp":
+                    name="票务";
                     itemId = orderLogManager.getOrderId(CommonUtil.objectParseString(mapContent.get("voucherId")));
                     qty = CommonUtil.objectParseInteger(mapContent.get("refNumber"));
                     sn = CommonUtil.objectParseString(mapContent.get("refId"));
                     code = OrderConstant.LogOperateCode.RECEIVE_TICKET;
                     break;
                 case "consumeOrderRsp":
+                    name="票务";
                     itemId = orderLogManager.getOrderId(CommonUtil.objectParseString(mapContent.get("voucherId")));
                     qty = CommonUtil.objectParseInteger(mapContent.get("consumeNumber"));
                     sn = CommonUtil.objectParseString(mapContent.get("voucherId"));
                     code = OrderConstant.LogOperateCode.RECEIVE_TICKET;
                     break;
                 case "activateGroupOrderRsp":
+                    name="票务";
                     itemId = orderLogManager.getOrderId(CommonUtil.objectParseString(mapContent.get("voucherId")));
                     sn = CommonUtil.objectParseString(mapContent.get("voucherId"));
                     qty = CommonUtil.objectParseInteger(mapContent.get("number"));
@@ -140,7 +146,7 @@ public class All580ServiceImpl implements All580Service {
                     return;
             }
         } catch (Exception e) {
-            log.error(" 获取接收小秘书数据参数错误 action{} content{}", action, mapContent);
+            log.error(" 获取接收"+name+"数据参数错误 action{} content{}", action, mapContent);
         }
         log.info(OrderConstant.LogOperateCode.NAME, orderLogManager.orderLog(null,
                 itemId,

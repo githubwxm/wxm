@@ -35,4 +35,16 @@
 		<constructor-arg name="jedisPool" ref="jedisPool"/>
 	</bean>
 
+	<bean id="ossStoreManager" class="com.framework.common.mns.OssStoreManager">
+		<property name="accessId" value="${oss.access.id}"/>
+		<property name="accessKey" value="${oss.access.key}"/>
+		<property name="accountEndpoint" value="${oss.endpoint}"/>
+	</bean>
+	<bean id="analysisStoreManager" class="com.framework.common.mns.OssStoreManager">
+		<property name="accessId" value="${analysis.access.id}"/>
+		<property name="accessKey" value="${analysis.access.key}"/>
+		<property name="accountEndpoint" value="${analysis.endpoint}"/>
+		<property name="bucket" value="${analysis.bucket}"/>
+	</bean>
+
 </beans>  
