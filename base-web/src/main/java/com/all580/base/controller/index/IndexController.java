@@ -79,7 +79,7 @@ public class IndexController extends BaseController {
 	@ResponseBody
 	public Result indexData(Integer ep_id){
 		Result result = new Result(true);
-          Map map = JsonUtils.json2Map( redisUtils.hget(ReportConstant.index_data,ep_id+""));
+          Map map = JsonUtils.json2Map( redisUtils.get(ReportConstant.index_data+ep_id));
          result.put(map);
 		return result;
 	}
