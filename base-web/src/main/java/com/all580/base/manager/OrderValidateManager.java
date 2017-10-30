@@ -40,6 +40,7 @@ public class OrderValidateManager {
                 "from" // 来源 0-平台下单 1-接口下单
         }, new ValidRule[]{new ValidRule.NotNull()});
 
+
         // 校验整数
         rules.put(new String[]{
                 "items.product_sub_code", // 订单子产品CODE
@@ -55,6 +56,10 @@ public class OrderValidateManager {
                 "items.quantity", // 订票数量
                 "items.visitor.quantity"// 订单游客订票数量
         }, new ValidRule[]{new ValidRule.Digits(1L, 10000L)});
+
+        rules.put(new String[]{
+                "from"
+        }, new ValidRule[]{new ValidRule.Digits(new Long[]{(long) OrderConstant.FromType.TRUST, (long) OrderConstant.FromType.NON_TRUST, (long) OrderConstant.FromType.MINIMUM_SALE})});
 
         // 校验身份证
         rules.put(new String[]{
@@ -109,6 +114,9 @@ public class OrderValidateManager {
                 "items.days", // 天数：景点固定1
                 "items.quantity" // 订票数量
         }, new ValidRule[]{new ValidRule.Digits(1L, 10000L)});
+        rules.put(new String[]{
+                "from"
+        }, new ValidRule[]{new ValidRule.Digits(new Long[]{(long) OrderConstant.FromType.TRUST, (long) OrderConstant.FromType.NON_TRUST, (long) OrderConstant.FromType.MINIMUM_SALE})});
 
         // 校验手机号码
         rules.put(new String[]{
@@ -155,6 +163,10 @@ public class OrderValidateManager {
                 "items.days", // 天数：景点固定1
                 "items.quantity" // 订票数量
         }, new ValidRule[]{new ValidRule.Digits(1L, 10000L)});
+
+        rules.put(new String[]{
+                "from"
+        }, new ValidRule[]{new ValidRule.Digits(new Long[]{(long) OrderConstant.FromType.TRUST, (long) OrderConstant.FromType.NON_TRUST, (long) OrderConstant.FromType.MINIMUM_SALE})});
 
         // 校验手机号码
         rules.put(new String[]{
@@ -205,6 +217,10 @@ public class OrderValidateManager {
                 "items.visitor.quantity", // 订单游客订票数量
                 "items.quantity" // 订票数量
         }, new ValidRule[]{new ValidRule.Digits(1L, 10000L)});
+
+        rules.put(new String[]{
+                "from"
+        }, new ValidRule[]{new ValidRule.Digits(new Long[]{(long) OrderConstant.FromType.TRUST, (long) OrderConstant.FromType.NON_TRUST, (long) OrderConstant.FromType.MINIMUM_SALE})});
 
         // 校验身份证
         rules.put(new String[]{
@@ -270,6 +286,10 @@ public class OrderValidateManager {
                 "items.quantity" // 订票数量
         }, new ValidRule[]{new ValidRule.Digits(1L, 10000L)});
 
+        rules.put(new String[]{
+                "from"
+        }, new ValidRule[]{new ValidRule.Digits(new Long[]{(long) OrderConstant.FromType.TRUST, (long) OrderConstant.FromType.NON_TRUST, (long) OrderConstant.FromType.MINIMUM_SALE})});
+
         // 校验身份证
         rules.put(new String[]{
                 "items.items.visitor.sid" // 订单游客身份证号码
@@ -319,6 +339,10 @@ public class OrderValidateManager {
                 "ep_id", // 订票企业ID
                 "operator_id" // 订票用户ID
         }, new ValidRule[]{new ValidRule.Digits()});
+
+        rules.put(new String[]{
+                "from"
+        }, new ValidRule[]{new ValidRule.Digits(new Long[]{(long) OrderConstant.FromType.TRUST, (long) OrderConstant.FromType.NON_TRUST, (long) OrderConstant.FromType.MINIMUM_SALE})});
 
         // 校验日期
         rules.put(new String[]{
