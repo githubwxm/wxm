@@ -1,5 +1,6 @@
 package com.all580.order.service.event;
 
+import com.all580.order.api.OrderConstant;
 import com.all580.order.api.model.OrderAuditEventParam;
 import com.all580.order.api.service.event.OrderAuditNotifyEvent;
 import com.all580.order.dao.OrderItemMapper;
@@ -19,24 +20,23 @@ import java.util.Map;
  */
 @Slf4j
 @Service
-public class OrderAuditNotifyEventImpl  extends BaseNotifyEvent implements OrderAuditNotifyEvent {
+public class OrderAuditNotifyEventImpl extends BaseNotifyEvent implements OrderAuditNotifyEvent {
 
 
     @Autowired
     private OrderItemMapper orderItemMapper;
+
     @Override
     public Result process(String s, OrderAuditEventParam orderAuditEventParam, Date date) {
-        String op_code="ORTHER";
+        String op_code;
         OrderItem item = orderItemMapper.selectByPrimaryKey(orderAuditEventParam.getItemId());
         Assert.notNull(item);
-        if(orderAuditEventParam.isStatus()){
-            op_code="AUDIT_SUCCESS";
-        }else{
-            op_code="AUDIT_FAIL";
+        if (orderAuditEventParam.isStatus()) {
+            op_code = OrderConstant.OpCode.AUDIT_SUCCESS;
+        } else {
+            op_code = OrderConstant.OpCode.AUDIT_FAIL;
         }
-        Map<String,Object> map = new HashMap<>();
-        map.put("payment_flag",item.getPayment_flag());
-        notifyEvent(  orderAuditEventParam.getItemId(), op_code,map);
+        notifyEvent(orderAuditEventParam.getItemId(), op_code, null);
         return new Result(true);
     }
 }

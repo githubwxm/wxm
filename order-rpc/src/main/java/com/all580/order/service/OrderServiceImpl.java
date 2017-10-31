@@ -9,6 +9,7 @@ import com.all580.order.entity.OrderItem;
 import com.all580.order.entity.Visitor;
 import com.all580.order.manager.BookingOrderManager;
 import com.all580.order.manager.SmsManager;
+import com.all580.order.service.event.BaseNotifyEvent;
 import com.all580.order.service.event.BasicSyncDataEvent;
 import com.all580.product.api.consts.ProductConstants;
 import com.framework.common.Result;
@@ -52,6 +53,8 @@ public class OrderServiceImpl extends BasicSyncDataEvent implements OrderService
     private BookingOrderManager bookingOrderManager;
     @Autowired
     private SmsManager smsManager;
+    @Autowired
+    private BaseNotifyEvent baseNotifyEvent;
 
     @Value("${order.pay.timeout}")
     private Integer payTimeOut;
@@ -268,6 +271,20 @@ public class OrderServiceImpl extends BasicSyncDataEvent implements OrderService
         }
         Result<String> result = new Result<>(true);
         result.put(res);
+        return result;
+    }
+
+    /**
+     * 查詢推送内容
+     *
+     * @param number
+     * @return
+     */
+    @Override
+    public Result<?> queryPushContent(long number, String opCode, Map params) {
+        Map data = baseNotifyEvent.packaging(number, opCode, params);
+        Result<Map> result = new Result<>(true);
+        result.put(data);
         return result;
     }
 }

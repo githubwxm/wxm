@@ -396,8 +396,8 @@
     <if test="city != null and city != ''">
       AND g.city = #{city}
     </if>
-    <if test="core_ep_id != null and core_ep_id != ''">
-      AND g.ep_id = #{core_ep_id}
+    <if test="ep_id != null and ep_id != ''">
+      AND g.ep_id = #{ep_id}
     </if>
     <if test="start != null">
       AND g.`start_date` <![CDATA[  >=  ]]> #{start}

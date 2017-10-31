@@ -315,4 +315,19 @@ public class OrderConstant {
             "t_order", "t_order_item", "t_order_item_detail", "t_refund_order",
             "t_refund_serial", "t_refund_visitor", "t_shipping", "t_visitor", "t_order_clearance_detail",
             "t_order_clearance_serial", "t_ma_send_response", "t_clearance_washed_serial", "t_refund_account", "t_order_item_account"};
+
+    /**
+     * 推送类型
+     */
+    public static class OpCode {
+        public static final String CONSUME = "CONSUME"; // 核销
+        public static final String PAID = "PAID"; // 支付
+        public static final String REFUND_MONEY = "REFUND_MONEY"; // 退款结果
+        public static final String REFUND = "REFUND"; // 退票结果|订单退订审核
+        public static final String AUDIT_SUCCESS = "AUDIT_SUCCESS"; // 订单预定审核成功
+        public static final String AUDIT_FAIL = "AUDIT_FAIL"; // 订单预定审核失败
+        public static final String SENT = "SENT"; // 出票
+        public static final String CANCEL = "CANCEL"; // 取消
+        public static final String OTHER = "ORTHER"; // 其他|订单退订申请成功
+    }
 }

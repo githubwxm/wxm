@@ -1,6 +1,7 @@
 package com.all580.order.service.event;
 
 
+import com.all580.order.api.OrderConstant;
 import com.all580.order.api.model.RefundAuditEventParam;
 import com.all580.order.api.service.event.RefundAuditNotifyEvent;
 import com.all580.order.dao.OrderMapper;
@@ -45,7 +46,7 @@ public class RefundAuditNotifyEventImpl  extends BaseNotifyEvent implements Refu
             map.put("refund_ticket_time", refundOrder.getRefund_ticket_time());
             map.put("apply_time", refundOrder.getCreate_time());
             log.info("退订审核不通过 Order_item_id: {} " ,refundOrder.getOrder_item_id());
-            notifyEvent(refundOrder.getOrder_item_id(), "REFUND",map);
+            notifyEvent(refundOrder.getOrder_item_id(), OrderConstant.OpCode.REFUND,map);
         }
         return new Result(true);
     }

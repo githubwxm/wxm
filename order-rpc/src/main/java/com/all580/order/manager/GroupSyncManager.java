@@ -140,7 +140,7 @@ public class GroupSyncManager extends BasicSyncDataEvent {
         SyncAccess syncAccess = getAccessKeys(group.getCore_ep_id());
         syncAccess.getDataMap().add("t_group_member", groupMemberMapper.selectByGroup(groupId, lastId));
         Map data = syncAccess.getDataMap().asMap();
-        sync(syncAccess.getDataMaps());
+        //sync(syncAccess.getDataMaps());
         return data;
     }
 

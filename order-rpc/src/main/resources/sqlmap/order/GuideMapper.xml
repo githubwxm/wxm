@@ -239,8 +239,8 @@
     <if test="card != null and card != ''">
       AND g.card = #{card}
     </if>
-    <if test="core_ep_id != null and core_ep_id != ''">
-      AND g.ep_id = #{core_ep_id}
+    <if test="ep_id != null and ep_id != ''">
+      AND g.ep_id = #{ep_id}
     </if>
   </sql>
   <select id="queryGuideById" resultType="map">

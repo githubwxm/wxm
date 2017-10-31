@@ -96,11 +96,10 @@ public class GroupController extends BaseController {
                                                 String end,
                                                 String province,
                                                 String city,
+                                                @RequestParam Integer ep_id,
                                                 @RequestParam(defaultValue = "0") Integer record_start,
                                                 @RequestParam(defaultValue = "20") Integer record_count){
-        //Date[] dates = Utils.checkDateTime(start, end);
-        Integer core_ep_id = CommonUtil.objectParseInteger(getAttribute(EpConstant.EpKey.CORE_EP_ID));
-        return groupService.queryGroupList(core_ep_id,number,guide_name,start,end,province,city,record_start, record_count);
+        return groupService.queryGroupList(ep_id,number,guide_name,start,end,province,city,record_start, record_count);
     }
 
     @RequestMapping(value = "guide/list" , method = RequestMethod.GET)
@@ -108,10 +107,10 @@ public class GroupController extends BaseController {
     public  Result<?> queryGuideList(@RequestParam String name,
                                      String phone,
                                      String card,
+                                     @RequestParam Integer ep_id,
                                      @RequestParam(defaultValue = "0") Integer record_start,
                                      @RequestParam(defaultValue = "20") Integer record_count){
-        Integer core_ep_id = CommonUtil.objectParseInteger(getAttribute(EpConstant.EpKey.CORE_EP_ID));
-        return groupService.queryGuideList(core_ep_id,name,phone,card,record_start, record_count);
+        return groupService.queryGuideList(ep_id,name,phone,card,record_start, record_count);
     }
 
     @RequestMapping(value = "view" , method = RequestMethod.GET)

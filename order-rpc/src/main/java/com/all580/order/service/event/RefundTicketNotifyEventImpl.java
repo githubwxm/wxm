@@ -1,5 +1,6 @@
 package com.all580.order.service.event;
 
+import com.all580.order.api.OrderConstant;
 import com.all580.order.api.model.RefundMoneyEventParam;
 import com.all580.order.api.model.RefundTicketEventParam;
 import com.all580.order.api.service.event.RefundTicketNotifyEvent;
@@ -48,7 +49,7 @@ public class RefundTicketNotifyEventImpl extends BaseNotifyEvent implements Refu
         map.put("refund_money_time", refundOrder.getRefund_money_time());
         map.put("refund_ticket_time", refundOrder.getRefund_ticket_time());
         map.put("apply_time", refundOrder.getCreate_time());
-        notifyEvent(refundOrder.getOrder_item_id(), "REFUND",map);
+        notifyEvent(refundOrder.getOrder_item_id(), OrderConstant.OpCode.REFUND,map);
         return new Result(true);
     }
 }
