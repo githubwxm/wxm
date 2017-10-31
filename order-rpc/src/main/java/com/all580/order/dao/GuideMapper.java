@@ -62,7 +62,7 @@ public interface GuideMapper {
      * @param card 出团开始时间
      * @return
      */
-    int countGuideList(@Param("core_ep_id") Integer core_ep_id,@Param("name") String name, @Param("phone") String phone, @Param("card") String card);
+    int countGuideList(@Param("ep_id") Integer core_ep_id,@Param("name") String name, @Param("phone") String phone, @Param("card") String card);
 
     /**
      * 查询导游列表
@@ -71,7 +71,7 @@ public interface GuideMapper {
      * @param card 出团开始时间
      * @return
      */
-    List<Map> queryGuideList(@Param("core_ep_id") Integer core_ep_id,@Param("name") String name, @Param("phone") String phone, @Param("card") String card, @Param("record_start") Integer record_start , @Param("record_count") Integer record_count);
+    List<Map> queryGuideList(@Param("ep_id") Integer core_ep_id,@Param("name") String name, @Param("phone") String phone, @Param("card") String card, @Param("record_start") Integer record_start , @Param("record_count") Integer record_count);
 
     Map queryGuideById(@Param("id") Integer id);
 
