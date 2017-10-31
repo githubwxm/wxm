@@ -13,6 +13,7 @@ public class OrderConstant {
 
     public static final String CREATE_ADAPTER = "CREATE_ADAPTER";
     public static final String REFUND_ADAPTER = "REFUND_ADAPTER";
+    public static final String INDEX_DATA_CHANGE="index_data_change_";
 
 
     public static class OrderAdapter{
