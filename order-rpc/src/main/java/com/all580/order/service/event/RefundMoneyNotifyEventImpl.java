@@ -47,7 +47,7 @@ public class RefundMoneyNotifyEventImpl extends BaseNotifyEvent implements Refun
         map.put("refund_money_time", refundOrder.getRefund_money_time());
         map.put("refund_ticket_time", refundOrder.getRefund_ticket_time());
         map.put("apply_time", refundOrder.getCreate_time());
-        notifyEvent(refundOrder.getOrder_item_id(), "REFUND_MONEY",map);
+        notifyEvent(refundOrder.getOrder_item_id(), OrderConstant.OpCode.REFUND_MONEY,map);
         return new Result(true);
     }
 

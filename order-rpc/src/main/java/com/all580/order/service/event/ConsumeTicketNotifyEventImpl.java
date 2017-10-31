@@ -1,5 +1,6 @@
 package com.all580.order.service.event;
 
+import com.all580.order.api.OrderConstant;
 import com.all580.order.api.model.ConsumeTicketEventParam;
 import com.all580.order.api.service.event.ConsumeTicketNotifyEvent;
 import com.all580.order.api.service.event.SendTicketNotifyEvent;
@@ -46,7 +47,7 @@ public class ConsumeTicketNotifyEventImpl extends BaseNotifyEvent implements Con
         consumeInfo.put("consume_info",map);
         consumeInfo.put("total_usd_qty",item.getUsed_quantity());
         consumeInfo.put("usd_qty",serial.getQuantity());
-        notifyEvent(content.getItemId(), "CONSUME",consumeInfo);
+        notifyEvent(content.getItemId(), OrderConstant.OpCode.CONSUME,consumeInfo);
         return new Result(true);
 
 

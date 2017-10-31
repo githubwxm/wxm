@@ -149,4 +149,11 @@ public interface OrderService {
      * @return
      */
     Result<?> viewVoucherSms(long number, Integer visitor);
+
+    /**
+     * 查詢推送内容
+     * @param number
+     * @return
+     */
+    Result<?> queryPushContent(long number, String opCode, Map params);
 }

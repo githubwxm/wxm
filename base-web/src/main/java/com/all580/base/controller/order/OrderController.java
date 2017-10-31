@@ -8,8 +8,10 @@ import com.all580.order.api.service.OrderService;
 import com.all580.order.api.service.RefundOrderService;
 import com.framework.common.BaseController;
 import com.framework.common.Result;
+import com.framework.common.lang.JsonUtils;
 import com.framework.common.validate.ParamsMapValidate;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -326,6 +328,12 @@ public class OrderController extends BaseController {
     @ResponseBody
     public Result<?> viewVoucherSms(@RequestParam Long number, Integer visitor) {
         return orderService.viewVoucherSms(number, visitor);
+    }
+
+    @RequestMapping("query/push/content")
+    @ResponseBody
+    public Result<?> queryPushContent(@RequestParam Long number, @RequestParam String op_code, String data) {
+        return orderService.queryPushContent(number, op_code, StringUtils.isNotEmpty(data) ? JsonUtils.json2Map(data) : null);
     }
 
     private void checkPlatformOrderParams(String start_time, String end_time, String phone) {

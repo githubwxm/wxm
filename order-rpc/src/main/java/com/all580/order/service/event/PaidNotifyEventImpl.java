@@ -1,5 +1,6 @@
 package com.all580.order.service.event;
 
+import com.all580.order.api.OrderConstant;
 import com.all580.order.api.service.event.PaidNotifyEvent;
 import com.all580.order.dao.OrderItemMapper;
 import com.all580.order.dao.OrderMapper;
@@ -36,7 +37,7 @@ public class PaidNotifyEventImpl extends  BaseNotifyEvent implements PaidNotifyE
         if(payment_type != null && (payment_type.intValue()-PaymentConstant.PaymentType.ALI_PAY.intValue()==0||payment_type-PaymentConstant.PaymentType.WX_PAY.intValue()==0)){
             List<OrderItem> list = orderItemMapper.selectByOrderId(order.getId());
             Assert.notNull(list, "子订单不存在");
-            notifyEvent(list.get(0).getId(), "PAID",null);
+            notifyEvent(list.get(0).getId(), OrderConstant.OpCode.PAID,null);
         }
         return new Result(true);
     }
