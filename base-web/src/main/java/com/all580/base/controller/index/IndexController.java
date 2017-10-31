@@ -1,12 +1,12 @@
 package com.all580.base.controller.index;
 
-import com.alibaba.fastjson.JSONObject;
 import com.aliyun.mns.model.SubscriptionMeta;
 import com.all580.base.manager.MnsEventCache;
 import com.all580.ep.api.conf.EpConstant;
 import com.all580.ep.api.service.CoreEpAccessService;
 import com.all580.ep.api.service.EpService;
 import com.all580.notice.api.service.SmsService;
+import com.all580.order.api.OrderConstant;
 import com.all580.order.api.service.OrderService;
 import com.all580.payment.api.service.EpPaymentConfService;
 import com.all580.payment.api.service.ThirdPayService;
@@ -18,11 +18,13 @@ import com.all580.voucher.api.service.VoucherRPCService;
 import com.framework.common.BaseController;
 import com.framework.common.Result;
 import com.framework.common.io.cache.redis.RedisUtils;
+import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.lang.JsonUtils;
 import com.framework.common.mns.TopicPushManager;
 import com.framework.common.util.CommonUtil;
 import com.framework.common.validate.ParamsMapValidate;
 import com.framework.common.validate.ValidRule;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.BooleanUtils;
@@ -38,8 +40,7 @@ import javax.lang.exception.ParamsMapValidationException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Controller
 @Slf4j
@@ -79,9 +80,63 @@ public class IndexController extends BaseController {
 	@ResponseBody
 	public Result indexData(Integer ep_id){
 		Result result = new Result(true);
-          Map map = JsonUtils.json2Map( redisUtils.get(ReportConstant.index_data+ep_id));
-         result.put(map);
+		Map map = JsonUtils.json2Map( redisUtils.get(ReportConstant.INDEX_DATA+ep_id));
+		 String num= redisUtils.get(OrderConstant.INDEX_DATA_CHANGE+ep_id);
+		 if(num!=null){
+		 	if(map==null){
+		 		List list = new ArrayList();
+				List<String> typeList = Lists.newArrayList("5101","5102","5103");
+				List<String> days = new ArrayList<>();
+				Calendar ca = Calendar.getInstance();//得到一个Calendar的实例
+				for(int i=7;i>0;i--){
+					ca.setTime(new Date()); //设置时间为当前时间
+					ca.add(Calendar.DATE, -i); //年份减1
+					Date lastMonth = ca.getTime(); //结果
+					String start=  DateFormatUtils.converToStringDate(lastMonth);
+					days.add(start);
+				}
+				for(String type:typeList){
+					Map m = new HashMap();
+					m.put("ticket_type",type);
+					List<Map> initList =new ArrayList<>();
+					for(String day:days){
+						initList.add(getDayMap(day));
+					}
+					Map data_info = new HashMap();
+					data_info.put("report_infos",initList);
+					m.put("data_info",data_info);
+					list.add(m);
+
+				}
+				map.put("list",list);
+			}
+		 	if(map.get("list")!=null){
+				String [] nums= num.split(",");
+				List<Map<String,Object>> list =(List<Map<String,Object>>) map.get("list");
+				for(Map m:list){
+					Integer type = CommonUtil.objectParseInteger(m.get("ticket_type")) ;
+					if(type.intValue()- ReportConstant.ProductType.SCENERY==0){
+						Map data_info =(Map) m.get("data_info");
+						Map today_infos = new HashMap();
+						today_infos.put("nums",nums[0]);
+						Map tomorrow_infos = new HashMap();
+						today_infos.put("nums",nums[1]);
+						data_info.put("today_infos",today_infos);
+						data_info.put("tomorrow_infos",tomorrow_infos);
+					}
+				}
+			}
+
+		 }
+        result.put(map);
 		return result;
+	}
+	private Map getDayMap(String date){
+		Map dayMap = new HashMap();
+		dayMap.put(date,date);
+		dayMap.put("nums",0);
+		dayMap.put("money",0);
+		return  dayMap;
 	}
 	@RequestMapping(value = "report/export/task/down", method = RequestMethod.GET)
 	public String downFile(HttpServletRequest request, HttpServletResponse response, @RequestParam("id") int id){
