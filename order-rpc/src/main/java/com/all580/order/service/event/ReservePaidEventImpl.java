@@ -60,12 +60,18 @@ public class ReservePaidEventImpl implements PaidNotifyEvent {
                    String num="";
                    if(current.equals(start)){
                         num = redisUtils.get(key);
+                        if(num==null){
+                            num="0,0";
+                        }
                        String [] nums= num.split(",");
                        Integer day = CommonUtil.objectParseInteger(nums[0])+item.getQuantity();
                        num=day+","+nums[1];
                        redisUtils.set(key,num);
                    }else if(tomorrow.equals(start)){
                        num = redisUtils.get(key);
+                       if(num==null){
+                           num="0,0";
+                       }
                        String [] nums= num.split(",");
                        Integer day = CommonUtil.objectParseInteger(nums[1])+item.getQuantity();
                        num=nums[0]+","+day;
