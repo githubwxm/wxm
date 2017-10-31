@@ -78,7 +78,8 @@ public class ReservePaidEventImpl implements PaidNotifyEvent {
                        redisUtils.set(key,num);
                    }
                }catch (Exception e){
-                 log.error("计算预计入园异常 itemId{} error{} ",item.getNumber(),e.getMessage());
+                 log.error("计算预计入园异常 itemId{} error{} ",item.getNumber(),e.getStackTrace());
+                 e.printStackTrace();
                }finally {
                 lock.unlock();
                }
