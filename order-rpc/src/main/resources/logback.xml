@@ -44,7 +44,7 @@
     </logger>
     <logger name="util.CustomJacksonConvert" level="error" additivity="false">
     </logger>
-    <logger name="com.all580.order.dao" level="DEBUG">
+    <logger name="com.all580.order.dao" level="DEBUG" additivity="false">
     </logger>
 
     <!--根logger控制-->

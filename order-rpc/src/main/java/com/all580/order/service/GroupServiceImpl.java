@@ -201,12 +201,12 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
-    public Result<?> queryGroupList(Integer core_ep_id,String number,String guide_name,String start,String end,String province,String city,Integer record_start,Integer record_count){
+    public Result<?> queryGroupList(Integer ep_id,String number,String guide_name,String start,String end,String province,String city,Integer record_start,Integer record_count){
         PageRecord<Map> record = new PageRecord<>();
         Result<PageRecord<Map>> result = new Result<>(true);
         result.put(record);
 
-        int count = groupMapper.countGroupList(core_ep_id,number,guide_name,start,end,province,city);
+        int count = groupMapper.countGroupList(ep_id,number,guide_name,start,end,province,city);
         record.setTotalCount(count);
 
         if(count == 0){
@@ -214,18 +214,18 @@ public class GroupServiceImpl implements GroupService {
             return result;
         }
         //分页查询
-        List<Map> list = groupMapper.queryGroupList(core_ep_id,number,guide_name,start,end,province,city,record_start,record_count);
+        List<Map> list = groupMapper.queryGroupList(ep_id,number,guide_name,start,end,province,city,record_start,record_count);
         record.setList(list);
         return result;
     }
 
     @Override
-    public Result<?> queryGuideList(Integer core_ep_id,String name,String phone,String card,Integer record_start,Integer record_count){
+    public Result<?> queryGuideList(Integer ep_id,String name,String phone,String card,Integer record_start,Integer record_count){
         PageRecord<Map> record = new PageRecord<>();
         Result<PageRecord<Map>> result = new Result<>(true);
         result.put(record);
 
-        int count = guideMapper.countGuideList(core_ep_id,name,phone,card);
+        int count = guideMapper.countGuideList(ep_id,name,phone,card);
         record.setTotalCount(count);
 
         if(count == 0){
@@ -233,7 +233,7 @@ public class GroupServiceImpl implements GroupService {
             return result;
         }
         //分页查询
-        List<Map> list = guideMapper.queryGuideList(core_ep_id,name,phone,card,record_start,record_count);
+        List<Map> list = guideMapper.queryGuideList(ep_id,name,phone,card,record_start,record_count);
         record.setList(list);
         return result;
     }

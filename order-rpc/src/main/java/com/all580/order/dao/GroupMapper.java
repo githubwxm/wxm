@@ -65,7 +65,7 @@ public interface GroupMapper {
      * @param city 市
      * @return
      */
-    int countGroupList(@Param("core_ep_id") Integer core_ep_id,@Param("number") String number, @Param("guide_name") String guide_name, @Param("start") String start, @Param("end") String end, @Param("province") String province, @Param("city") String city);
+    int countGroupList(@Param("ep_id") Integer ep_id,@Param("number") String number, @Param("guide_name") String guide_name, @Param("start") String start, @Param("end") String end, @Param("province") String province, @Param("city") String city);
 
     /**
      * 查询团队列表
@@ -77,7 +77,7 @@ public interface GroupMapper {
      * @param city 市
      * @return
      */
-    List<Map> queryGroupList(@Param("core_ep_id") Integer core_ep_id,@Param("number") String number, @Param("guide_name") String guide_name, @Param("start") String start, @Param("end") String end, @Param("province") String province, @Param("city") String city, @Param("record_start") Integer record_start ,@Param("record_count") Integer record_count);
+    List<Map> queryGroupList(@Param("ep_id") Integer ep_id,@Param("number") String number, @Param("guide_name") String guide_name, @Param("start") String start, @Param("end") String end, @Param("province") String province, @Param("city") String city, @Param("record_start") Integer record_start ,@Param("record_count") Integer record_count);
 
     Map queryGroupById(@Param("id") Integer id);
 }
