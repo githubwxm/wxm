@@ -37,6 +37,13 @@ public class NoticeController extends BaseController {
         Assert.notNull(id, "id不能为空");
         return   noticeService.deleteNotice(id);
     }
+    @RequestMapping(value = "push", method = RequestMethod.POST)
+    @ResponseBody
+    public Result upNotice(@RequestBody Map<String,Object> params) {
+        Integer id = CommonUtil.objectParseInteger(params.get("id")) ;
+        Assert.notNull(id, "id不能为空");
+        return   noticeService.upNotice(id);
+    }
     @RequestMapping(value = "update", method = RequestMethod.POST)
     @ResponseBody
     public Result update(@RequestBody Map<String,Object> params) {
@@ -49,9 +56,13 @@ public class NoticeController extends BaseController {
     }
     @RequestMapping(value = "list", method = RequestMethod.GET)
     @ResponseBody
-    public Result selectList(Integer title, Integer content, Integer record_start,
+    public Result selectList(Integer title, Integer content,Integer status, Integer record_start,
                                                    Integer record_count){
         Map map = new HashMap();
+        if(status==null){
+            status=2;
+        }
+        map.put("status",status);
         map.put("title",title);
         map.put("content",content);
         map.put(record_start,record_start);
