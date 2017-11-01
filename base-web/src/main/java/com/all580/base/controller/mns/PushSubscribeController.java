@@ -76,6 +76,10 @@ public class PushSubscribeController extends AbstractSubscribeController {
             throw new ApiException("签名错误");
         }
 
+        response.addHeader("Access-Control-Allow-Origin", "*");
+        response.addHeader("Access-Control-Allow-Methods", "POST");
+        response.addHeader("Access-Control-Allow-Headers", "x-requested-with,content-type");
+
         List list = JsonUtils.json2List(body);
         for (Object o : list) {
             try {
@@ -84,6 +88,7 @@ public class PushSubscribeController extends AbstractSubscribeController {
                 log.warn("MANUAL PUSH ERROR", e);
             }
         }
+        responseWrite(response, "ok");
     }
 
     private void push(HttpServletResponse response, String id, String msg, Map map) {
