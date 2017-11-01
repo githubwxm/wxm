@@ -37,6 +37,13 @@ public class NoticeController extends BaseController {
         Assert.notNull(id, "id不能为空");
         return   noticeService.deleteNotice(id);
     }
+    @RequestMapping(value = "push", method = RequestMethod.POST)
+    @ResponseBody
+    public Result upNotice(@RequestBody Map<String,Object> params) {
+        Integer id = CommonUtil.objectParseInteger(params.get("id")) ;
+        Assert.notNull(id, "id不能为空");
+        return   noticeService.upNotice(id);
+    }
     @RequestMapping(value = "update", method = RequestMethod.POST)
     @ResponseBody
     public Result update(@RequestBody Map<String,Object> params) {
