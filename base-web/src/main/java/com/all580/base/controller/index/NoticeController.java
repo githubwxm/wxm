@@ -56,9 +56,13 @@ public class NoticeController extends BaseController {
     }
     @RequestMapping(value = "list", method = RequestMethod.GET)
     @ResponseBody
-    public Result selectList(Integer title, Integer content, Integer record_start,
+    public Result selectList(Integer title, Integer content,Integer status, Integer record_start,
                                                    Integer record_count){
         Map map = new HashMap();
+        if(status==null){
+            status=2;
+        }
+        map.put("status",status);
         map.put("title",title);
         map.put("content",content);
         map.put(record_start,record_start);
