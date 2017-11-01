@@ -9,7 +9,6 @@ import com.all580.order.entity.OrderItem;
 import com.all580.product.api.consts.ProductConstants;
 import com.framework.common.Result;
 import com.framework.common.distributed.lock.DistributedLockTemplate;
-import com.framework.common.distributed.lock.DistributedReentrantLock;
 import com.framework.common.io.cache.redis.RedisUtils;
 import com.framework.common.lang.DateFormatUtils;
 import com.framework.common.util.CommonUtil;
@@ -48,7 +47,9 @@ public class ReservePaidEventImpl implements ReservePaidEvent {
         for(OrderItem item:list){
            if(item.getPro_type().intValue()- ProductConstants.ProductType.SCENERY==0){
                String key = OrderConstant.INDEX_DATA_CHANGE+item.getSupplier_ep_id();
-               DistributedReentrantLock lock = distributedLockTemplate.execute(key, lockTimeOut);
+               log.info(key+"  "+item.getSupplier_ep_id());
+              // DistributedReentrantLock lock = distributedLockTemplate.execute(key, lockTimeOut);
+               String num="";
                try{
                    Calendar ca = Calendar.getInstance();//得到一个Calendar的实例
                    ca.setTime(new Date()); //设置时间为当前时间
@@ -57,9 +58,11 @@ public class ReservePaidEventImpl implements ReservePaidEvent {
                    String tomorrow= DateFormatUtils.converToStringDate(lastMonth);
                    String current =DateFormatUtils.converToStringDate(new Date());
                    String start=DateFormatUtils.converToStringDate(item.getStart());//游玩时间
-                   String num="";
                    if(current.equals(start)){
                         num = redisUtils.get(key);
+                       String INDEX_DATA_CHANGE = redisUtils.get(OrderConstant.INDEX_DATA_CHANGE);
+                       System.out.println("INDEX_DATA_CHANGE"+INDEX_DATA_CHANGE);
+                       System.out.println("key:"+key+"   "+"  num:"+num);
                         if(num==null){
                             num="0,0";
                         }
@@ -78,10 +81,10 @@ public class ReservePaidEventImpl implements ReservePaidEvent {
                        redisUtils.set(key,num);
                    }
                }catch (Exception e){
-                 log.error("计算预计入园异常 itemId{} error{} ",item.getNumber(),e.getStackTrace());
+                 log.error("计算预计入园异常 num{} error{} ",num,e.getStackTrace());
                  e.printStackTrace();
                }finally {
-                lock.unlock();
+              //  lock.unlock();
                }
            }
         }
