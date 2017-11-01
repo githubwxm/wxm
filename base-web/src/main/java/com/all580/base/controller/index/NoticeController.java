@@ -18,7 +18,7 @@ import java.util.Map;
  * Created by wxming on 2017/11/1 0001.
  */
 @Controller
-@RequestMapping("api/index/notice")
+@RequestMapping("api/notice")
 @Slf4j
 public class NoticeController extends BaseController {
     @Autowired
@@ -42,12 +42,12 @@ public class NoticeController extends BaseController {
     public Result update(@RequestBody Map<String,Object> params) {
       return   noticeService.updateNotice(params);
     }
-    @RequestMapping(value = "select/id", method = RequestMethod.GET)
+    @RequestMapping(value = "infos", method = RequestMethod.GET)
     @ResponseBody
     public Result<Map> selectId(@RequestParam("id") Integer id){
         return noticeService.selectNoticeId(id);
     }
-    @RequestMapping(value = "select/list", method = RequestMethod.GET)
+    @RequestMapping(value = "list", method = RequestMethod.GET)
     @ResponseBody
     public Result selectList(Integer title, Integer content, Integer record_start,
                                                    Integer record_count){
