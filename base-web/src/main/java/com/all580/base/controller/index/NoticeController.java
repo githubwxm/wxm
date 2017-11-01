@@ -42,7 +42,7 @@ public class NoticeController extends BaseController {
     public Result upNotice(@RequestBody Map<String,Object> params) {
         Integer id = CommonUtil.objectParseInteger(params.get("id")) ;
         Assert.notNull(id, "id不能为空");
-        return   noticeService.upNotice(id);
+        return   noticeService.upNotice(params);
     }
     @RequestMapping(value = "update", method = RequestMethod.POST)
     @ResponseBody
