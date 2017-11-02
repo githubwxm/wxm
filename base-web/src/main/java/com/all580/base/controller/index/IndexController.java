@@ -132,6 +132,9 @@ public class IndexController extends BaseController {
 					}
 				}
 			}
+		 }else if(map==null){
+		 	map = new HashMap();
+		 	map.put("list",null);
 		 }
         result.put(map);
 		return result;
