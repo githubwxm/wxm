@@ -195,4 +195,6 @@ public interface OrderItemMapper {
      * @return
      */
     List<OrderItem> selectOrderItemsForUpperPackageOrder(Order order);
+
+    int checkComplete(int id);
 }

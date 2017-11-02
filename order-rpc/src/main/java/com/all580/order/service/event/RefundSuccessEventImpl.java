@@ -1,6 +1,7 @@
 package com.all580.order.service.event;
 
 import com.all580.order.api.service.event.RefundSuccessEvent;
+import com.all580.order.dao.OrderItemMapper;
 import com.all580.order.dao.RefundOrderMapper;
 import com.all580.order.entity.RefundOrder;
 import com.all580.order.manager.SmsManager;
@@ -21,6 +22,8 @@ import java.util.Date;
 public class RefundSuccessEventImpl implements RefundSuccessEvent {
     @Autowired
     private RefundOrderMapper refundOrderMapper;
+    @Autowired
+    private OrderItemMapper orderItemMapper;
 
     @Autowired
     private SmsManager smsManager;
@@ -29,7 +32,7 @@ public class RefundSuccessEventImpl implements RefundSuccessEvent {
     public Result process(String msgId, Integer content, Date createDate) {
         RefundOrder refundOrder = refundOrderMapper.selectByPrimaryKey(content);
         Assert.notNull(refundOrder, "退订订单不存在");
-
+        orderItemMapper.checkComplete(refundOrder.getOrder_item_id());
         // 发送短信 退订
         smsManager.sendRefundSuccessSms(refundOrder);
         return new Result(true);

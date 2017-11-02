@@ -984,4 +984,8 @@
         ON poc.`ref_order_id` = oi.`order_id`
     WHERE poc.`order_id` = #{id}
   </select>
+
+  <update id="checkComplete">
+    UPDATE t_order_item SET `status` = 327 WHERE id = #{id} AND `status` != 327 AND quantity * days = used_quantity + refund_quantity
+  </update>
 </mapper>

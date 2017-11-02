@@ -62,6 +62,8 @@ public class ConsumeTicketEventImpl implements ConsumeTicketEvent {
 
             bookingOrderManager.dealPackageOrderItemConSume(orderItem);
         }
+
+        orderItemMapper.checkComplete(orderItem.getId());
         return new Result(true);
     }
 }
