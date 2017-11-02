@@ -234,7 +234,7 @@ public class BookingOrderManager extends BaseOrderManager {
         params.put("remark", "套票元素自动下单");
         params.put("operator_id", 0);
         params.put("operator_name", OrderConstant.CREATE_ADAPTER);
-        params.put("source", OrderConstant.OrderSourceType.SOURCE_TYPE_WEB);
+        params.put("from", OrderConstant.FromType.NON_TRUST);
         params.put("product_type", ProductConstants.ProductType.PACKAGE);
         params.put("source", OrderConstant.OrderSourceType.SOURCE_TYPE_SYS);
 
