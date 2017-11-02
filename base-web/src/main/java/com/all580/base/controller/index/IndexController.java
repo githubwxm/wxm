@@ -89,6 +89,7 @@ public class IndexController extends BaseController {
 				DateFormatUtils.DATE_FORMAT.format(DateUtils.addDays(now,1))));
 		 if(nowNum!=null || toNum!=null){
 		 	if(map==null){
+		 		map = new HashMap();
 		 		List list = new ArrayList();
 				List<String> typeList = Lists.newArrayList("5101","5102","5103");
 				List<String> days = new ArrayList<>();
@@ -115,6 +116,7 @@ public class IndexController extends BaseController {
 				}
 				map.put("list",list);
 			}
+			 redisUtils.set(ReportConstant.INDEX_DATA+ep_id,map);
 		 	if(map.get("list")!=null){
 				List<Map<String,Object>> list =(List<Map<String,Object>>) map.get("list");
 				for(Map m:list){
@@ -122,9 +124,9 @@ public class IndexController extends BaseController {
 					if(type.intValue()- ReportConstant.ProductType.SCENERY==0){
 						Map data_info =(Map) m.get("data_info");
 						Map today_infos = new HashMap();
-						today_infos.put("nums",nowNum==null?0:now);
+						today_infos.put("nums",nowNum==null?0:nowNum);
 						Map tomorrow_infos = new HashMap();
-						today_infos.put("nums",toNum==null?0:toNum);
+						tomorrow_infos.put("nums",toNum==null?0:toNum);
 						data_info.put("today_infos",today_infos);
 						data_info.put("tomorrow_infos",tomorrow_infos);
 					}
