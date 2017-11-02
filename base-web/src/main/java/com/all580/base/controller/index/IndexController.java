@@ -27,6 +27,7 @@ import com.framework.common.validate.ValidRule;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -81,8 +82,12 @@ public class IndexController extends BaseController {
 	public Result indexData(Integer ep_id){
 		Result result = new Result(true);
 		Map map = JsonUtils.json2Map( redisUtils.get(ReportConstant.INDEX_DATA+ep_id));
-		 String num= redisUtils.get(OrderConstant.INDEX_DATA_CHANGE+ep_id);
-		 if(num!=null){
+		Date now = new  Date();
+		String nowNum = redisUtils.get( String.format("%s%d:%s", OrderConstant.INDEX_DATA_CHANGE, ep_id,
+				DateFormatUtils.DATE_FORMAT.format(now)));
+		String toNum = redisUtils.get(String.format("%s%d:%s", OrderConstant.INDEX_DATA_CHANGE, ep_id,
+				DateFormatUtils.DATE_FORMAT.format(DateUtils.addDays(now,1))));
+		 if(nowNum!=null || toNum!=null){
 		 	if(map==null){
 		 		List list = new ArrayList();
 				List<String> typeList = Lists.newArrayList("5101","5102","5103");
@@ -111,22 +116,20 @@ public class IndexController extends BaseController {
 				map.put("list",list);
 			}
 		 	if(map.get("list")!=null){
-				String [] nums= num.split(",");
 				List<Map<String,Object>> list =(List<Map<String,Object>>) map.get("list");
 				for(Map m:list){
 					Integer type = CommonUtil.objectParseInteger(m.get("ticket_type")) ;
 					if(type.intValue()- ReportConstant.ProductType.SCENERY==0){
 						Map data_info =(Map) m.get("data_info");
 						Map today_infos = new HashMap();
-						today_infos.put("nums",nums[0]);
+						today_infos.put("nums",nowNum==null?0:now);
 						Map tomorrow_infos = new HashMap();
-						today_infos.put("nums",nums[1]);
+						today_infos.put("nums",toNum==null?0:toNum);
 						data_info.put("today_infos",today_infos);
 						data_info.put("tomorrow_infos",tomorrow_infos);
 					}
 				}
 			}
-
 		 }
         result.put(map);
 		return result;
