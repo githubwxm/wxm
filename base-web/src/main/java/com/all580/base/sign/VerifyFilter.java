@@ -95,7 +95,7 @@ public class VerifyFilter implements  Filter {
                 postParams=postParams.replaceAll("[\"\\\\\\[\\]\\{\\}]","");
                 log.info("Params:",postParams +", key:"+key);
                 boolean ref = SignVerify.verifyPost(postParams, currenttSing, key);
-                ref=true;
+//                ref=true;
 //                // 去掉的代码
 //                if(null == requestWrapper) {
 //                    chain.doFilter(request, response);
