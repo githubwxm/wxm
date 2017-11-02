@@ -1,5 +1,6 @@
 package com.all580.order.task.timer;
 
+import com.all580.order.api.OrderConstant;
 import com.all580.order.dao.OrderMapper;
 import com.all580.order.entity.Order;
 import com.all580.order.manager.RefundOrderManager;
@@ -53,7 +54,7 @@ public class CancelOrderTimer {
                     for (Order order : orderList) {
                         DistributedReentrantLock lock = distributedLockTemplate.execute(String.valueOf(order.getNumber()), lockTimeOut);
                         try {
-                            refundOrderManager.cancel(order);
+                            refundOrderManager.cancel(order, OrderConstant.OrderStatus.CANCEL_FOR_TIMEOUT);
                         } catch (Exception e) {
                             retry = false;
                             log.error("订单:" + order.getNumber() + "未支付超时取消异常", e);
@@ -83,7 +84,7 @@ public class CancelOrderTimer {
                     for (Order order : orderList) {
                         DistributedReentrantLock lock = distributedLockTemplate.execute(String.valueOf(order.getNumber()), lockTimeOut);
                         try {
-                            refundOrderManager.cancel(order);
+                            refundOrderManager.cancel(order, OrderConstant.OrderStatus.CANCEL_FOR_TIMEOUT);
                         } catch (Exception e) {
                             retry = false;
                             log.error("订单:" + order.getNumber() + "待审核超时取消异常", e);

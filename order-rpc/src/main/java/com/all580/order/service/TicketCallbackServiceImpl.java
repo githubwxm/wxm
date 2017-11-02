@@ -576,11 +576,11 @@ public class TicketCallbackServiceImpl extends BasicSyncDataEvent implements Tic
         if (orderItem.getGroup_id() == null || orderItem.getGroup_id() == 0) {
             return new Result(false, "该订单不是团队订单");
         }
-        if (orderItem.getStatus() != OrderConstant.OrderItemStatus.MODIFYING) {
-            return new Result(false, "该订单不在修改中状态,当前状态为:" + OrderConstant.OrderItemStatus.getName(orderItem.getStatus()));
+        if (orderItem.getModify_status() != OrderConstant.OrderItemStatus.ModifyStatus.MODIFYING) {
+            return new Result(false, "该订单不在修改中状态,当前状态为:" + OrderConstant.OrderItemStatus.getName(orderItem.getModify_status()));
         }
 
-        orderItem.setStatus(success ? OrderConstant.OrderItemStatus.MODIFY : OrderConstant.OrderItemStatus.MODIFY_FAIL);
+        orderItem.setModify_status(success ? OrderConstant.OrderItemStatus.ModifyStatus.MODIFY : OrderConstant.OrderItemStatus.ModifyStatus.MODIFY_FAIL);
         orderItemMapper.updateByPrimaryKeySelective(orderItem);
         if (success) {
             visitorMapper.modify(orderItem.getId());

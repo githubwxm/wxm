@@ -73,7 +73,7 @@ public class OrderAuditEventImpl implements OrderAuditEvent {
             bookingOrderManager.dealAuditFailOrderItemChainForPackage(item);
         }else {
             // 不通过取消订单
-            refundOrderManager.cancel(order);
+            refundOrderManager.cancel(order, OrderConstant.OrderStatus.CANCEL_FOR_AUDIT);
         }
 
         return new Result(true);

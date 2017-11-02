@@ -75,6 +75,8 @@ public class OrderConstant {
         public static final int PAID_HANDLING = 314; // 已支付,处理中
         public static final int PAID = 315; // 已支付,交易成功
         public static final int CANCEL = 316; // 已取消
+        public static final int CANCEL_FOR_AUDIT = 3160; // 审核不通过
+        public static final int CANCEL_FOR_TIMEOUT = 3161; // 超时
 
         public static String getName(int status) {
             switch (status) {
@@ -92,6 +94,10 @@ public class OrderConstant {
                     return "已支付,交易成功";
                 case CANCEL:
                     return "已取消";
+                case CANCEL_FOR_AUDIT:
+                    return "审核不通过，下单失败";
+                case CANCEL_FOR_TIMEOUT:
+                    return "超时，已取消";
             }
             return "未知";
         }
@@ -108,9 +114,12 @@ public class OrderConstant {
         public static final int TICKETING = 324; // 出票中
         public static final int SEND = 325; // 已出票
         public static final int CANCEL = 326; // 已取消
-        public static final int MODIFYING = 327; // 修改中
-        public static final int MODIFY = 328; // 已修改
-        public static final int MODIFY_FAIL = 329; // 修改失败
+        public static final int COMPLETE = 327; // 已完成
+        public static class ModifyStatus {
+            public static final int MODIFYING = 3280; // 修改中
+            public static final int MODIFY = 3281; // 已修改
+            public static final int MODIFY_FAIL = 3282; // 修改失败
+        }
 
         public static String getName(int status) {
             switch (status) {
@@ -128,12 +137,8 @@ public class OrderConstant {
                     return "已出票";
                 case CANCEL:
                     return "已取消";
-                case MODIFYING:
-                    return "修改中";
-                case MODIFY:
-                    return "已修改";
-                case MODIFY_FAIL:
-                    return "修改失败";
+                case COMPLETE:
+                    return "已完成";
             }
             return "未知";
         }
@@ -153,11 +158,13 @@ public class OrderConstant {
     public static class RefundOrderStatus {
         public static final int AUDIT_WAIT = 340; // 待审核
         public static final int FAIL = 341; // 退订失败
+        public static final int FAIL_FOR_AUDIT = 3410; // 审核不通过，退订失败
         public static final int REFUNDING = 342; // 退票中
         public static final int REFUND_MONEY = 343; // 退款中
         public static final int REFUND_MONEY_FAIL = 344; // 退款失败
         public static final int REFUND_SUCCESS = 345; // 退订成功
         public static final int REFUND_MONEY_AUDITING = 346; // 退款审核中
+        public static final int REFUND_MONEY_CONFIRM = 347; // 退款待确认（支付宝）
 
         public static String getName(int status) {
             switch (status) {
@@ -175,6 +182,10 @@ public class OrderConstant {
                     return "退订成功";
                 case REFUND_MONEY_AUDITING:
                     return "退款审核中";
+                case FAIL_FOR_AUDIT:
+                    return "审核不通过，退订失败";
+                case REFUND_MONEY_CONFIRM:
+                    return "退款待确认";
             }
             return "未知";
         }

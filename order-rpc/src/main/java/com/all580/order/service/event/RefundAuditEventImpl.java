@@ -61,7 +61,7 @@ public class RefundAuditEventImpl implements RefundAuditEvent {
         }
 
         // 拒绝
-        refundOrderManager.refundFail(orderItem, refundOrder);
+        refundOrderManager.refundFail(orderItem, refundOrder, OrderConstant.RefundOrderStatus.FAIL_FOR_AUDIT);
         smsManager.sendRefundFailSms(orderItem, refundOrder, "拒绝退订");
         return new Result(true);
     }

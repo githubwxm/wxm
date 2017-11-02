@@ -321,7 +321,7 @@ public class LockTransactionManager {
                     }
                     //已经退订的不重复退
                     RefundOrder r = refundOrderMapper.selectByPrimaryKey(orderItem.getLast_refund_id());
-                    if (r == null || r.getStatus() == OrderConstant.RefundOrderStatus.FAIL){
+                    if (r == null || r.getStatus() == OrderConstant.RefundOrderStatus.FAIL || r.getStatus() == OrderConstant.RefundOrderStatus.FAIL_FOR_AUDIT){
                         List<OrderItemDetail> orderItemDetails = orderItemDetailMapper.selectByItemId(orderItem.getId());
                         boolean refund = true;
                         for (OrderItemDetail detail : orderItemDetails) {
@@ -897,15 +897,14 @@ public class LockTransactionManager {
                 orderItem.getPro_sub_ticket_type() != null && orderItem.getPro_sub_ticket_type() == ProductConstants.TeamTicketType.TEAM)) {
             return new Result(false, "该订单不是团队订单");
         }
-        // 订单状态不在:已出票/已修改/修改失败 或者 已用大于0 则不可以修改
-        if ((orderItem.getStatus() != OrderConstant.OrderItemStatus.SEND &&
-                orderItem.getStatus() != OrderConstant.OrderItemStatus.MODIFY &&
-                orderItem.getStatus() != OrderConstant.OrderItemStatus.MODIFY_FAIL) ||
+        // 订单状态不在已出票 或者 修改状态为修改中 或者 已用大于0 则不可以修改
+        if (orderItem.getStatus() != OrderConstant.OrderItemStatus.SEND ||
+                orderItem.getModify_status() == OrderConstant.OrderItemStatus.ModifyStatus.MODIFYING ||
                 (orderItem.getUsed_quantity() != null && orderItem.getUsed_quantity() > 0)) {
             return new Result(false, "该订单不在可修改状态,当前状态为:" + OrderConstant.OrderItemStatus.getName(orderItem.getStatus()));
         }
 
-        orderItem.setStatus(OrderConstant.OrderItemStatus.MODIFYING);
+        orderItem.setModify_status(OrderConstant.OrderItemStatus.ModifyStatus.MODIFYING);
         orderItemMapper.updateByPrimaryKeySelective(orderItem);
         ModifyGroupTicketParams ticketParams = new ModifyGroupTicketParams();
         ticketParams.setOrderSn(orderItem.getNumber());
@@ -1030,7 +1029,7 @@ public class LockTransactionManager {
 
     private Result refundFail(OrderItem orderItem, RefundOrder refundOrder) {
         try {
-            refundOrderManager.refundFail(orderItem, refundOrder);
+            refundOrderManager.refundFail(orderItem, refundOrder, OrderConstant.RefundOrderStatus.FAIL);
         } catch (Exception e) {
             throw new ApiException("退票失败还原状态异常", e);
         }

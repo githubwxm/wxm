@@ -438,10 +438,16 @@
     SELECT count(*) FROM t_refund_order
     WHERE `order_item_id` = #{itemId}
     <if test="isTrue != null and isTrue==1">
-      and `status`=#{status}
+      and `status` in
+      <foreach collection="status" open="(" separator="," close=")" item="item">
+        #{item}
+      </foreach>
     </if>
     <if test="isTrue != null and isTrue==2">
-      and `status`!=#{status}
+      and `status` not in
+      <foreach collection="status" open="(" separator="," close=")" item="item">
+        #{item}
+      </foreach>
     </if>
 
   </select>

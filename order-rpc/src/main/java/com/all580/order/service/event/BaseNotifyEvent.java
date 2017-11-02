@@ -61,6 +61,8 @@ public class BaseNotifyEvent {
         map.put(1, 203);//PARTIAL_REFUND   // 部分退订  10 使用5  退了3  2张未用，没过期   315
         map.put(1, 204);//REFUND //全部退完 10 5 申请退订  退订未成功   315
         map.put(OrderConstant.OrderStatus.CANCEL, 205);//CANCEL
+        map.put(OrderConstant.OrderStatus.CANCEL_FOR_AUDIT, 205);//CANCEL
+        map.put(OrderConstant.OrderStatus.CANCEL_FOR_TIMEOUT, 205);//CANCEL
         map.put(1, 206);//COMPLETED// 以完成  全部用完 或过期5 2 3 且退订成功   315
         map.put(OrderConstant.OrderStatus.PAYING, 207);//PAYING
         map.put(OrderConstant.OrderStatus.PAID_HANDLING, 207);//PAYING
@@ -145,7 +147,7 @@ public class BaseNotifyEvent {
             if (rfd_qty == 0) {
                 itemStatus = 239;
             } else {
-                int ref = refundOrderMapper.selectByItemIdAndStatus(item.getId(), OrderConstant.RefundOrderStatus.AUDIT_WAIT,1);
+                int ref = refundOrderMapper.selectByItemIdAndStatus(item.getId(), new Integer[]{OrderConstant.RefundOrderStatus.AUDIT_WAIT},1);
                 if (ref > 0) {
                     itemStatus = 236;//查出有待审核的
                 } else {
@@ -157,11 +159,11 @@ public class BaseNotifyEvent {
             if(rfd_qty == 0){
                 orderStatus = 202;
             }else{
-                int num = refundOrderMapper.selectByItemIdAndStatus(item.getId(), OrderConstant.RefundOrderStatus.REFUND_SUCCESS,1);//获取退订成功的数量
+                int num = refundOrderMapper.selectByItemIdAndStatus(item.getId(), new Integer[]{OrderConstant.RefundOrderStatus.REFUND_SUCCESS},1);//获取退订成功的数量
                 if((quantity - usd_qty - num) == 0){
                     orderStatus = 206;
                 } else {
-                    num = refundOrderMapper.selectByItemIdAndStatus(item.getId(), OrderConstant.RefundOrderStatus.REFUND_SUCCESS,2);//获取退订不成功的数量
+                    num = refundOrderMapper.selectByItemIdAndStatus(item.getId(), new Integer[]{OrderConstant.RefundOrderStatus.REFUND_SUCCESS},2);//获取退订不成功的数量
                     if((quantity - usd_qty - num) == 0){//全部用完 有剩下不成功的
                         orderStatus = 204;
                     } else {

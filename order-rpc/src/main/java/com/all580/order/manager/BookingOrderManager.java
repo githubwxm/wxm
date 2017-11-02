@@ -161,7 +161,7 @@ public class BookingOrderManager extends BaseOrderManager {
         }
         //审核不通过，取消套票订单
         Order order = orderMapper.selectByPrimaryKey(packageOrderId);
-        refundOrderManager.cancel(order);
+        refundOrderManager.cancel(order, OrderConstant.OrderStatus.CANCEL_FOR_AUDIT);
     }
 
     /**

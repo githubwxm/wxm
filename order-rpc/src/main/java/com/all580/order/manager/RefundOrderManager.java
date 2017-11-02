@@ -113,6 +113,10 @@ public class RefundOrderManager extends BaseOrderManager {
                     packageRefundOrderDto.setStatus(OrderConstant.RefundOrderStatus.FAIL);
                     break;
                 }
+                if (refundItem.getStatus() == OrderConstant.RefundOrderStatus.FAIL_FOR_AUDIT){
+                    packageRefundOrderDto.setStatus(OrderConstant.RefundOrderStatus.FAIL_FOR_AUDIT);
+                    break;
+                }
             }
             refundOrderMapper.updateByPrimaryKeySelective(packageRefundOrderDto);
             //所有元素单都都退票成功
@@ -152,22 +156,12 @@ public class RefundOrderManager extends BaseOrderManager {
 
     /**
      * 取消订单
-     * @param sn 订单编号
-     * @return
-     */
-    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public Result cancel(long sn) {
-        return cancel(orderMapper.selectBySN(sn));
-    }
-
-    /**
-     * 取消订单
      * @param order 订单
      * @return
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     @MnsEvent
-    public Result cancel(Order order) {
+    public Result cancel(Order order, int status) {
         if (order == null) {
             throw new ApiException("订单不存在");
         }
@@ -175,20 +169,22 @@ public class RefundOrderManager extends BaseOrderManager {
         List<Order> pItemOrders = orderMapper.selectPackageItemOrderById(order.getId());
         if (!CollectionUtils.isEmpty(pItemOrders)){
             for (Order itemOrder : pItemOrders) {
-                cancel(itemOrder);
+                cancel(itemOrder, status);
             }
         }
         boolean paid = order.getStatus() == OrderConstant.OrderStatus.PAID || order.getStatus() == OrderConstant.OrderStatus.PAID_HANDLING;
         // 检查订单状态
         switch (order.getStatus()) {
             case OrderConstant.OrderStatus.CANCEL:
+            case OrderConstant.OrderStatus.CANCEL_FOR_AUDIT:
+            case OrderConstant.OrderStatus.CANCEL_FOR_TIMEOUT:
                 throw new ApiException("重复操作,订单已取消");
             case OrderConstant.OrderStatus.PAID:
                 throw new ApiException("订单已支付,请走退订流程");
             case OrderConstant.OrderStatus.PAYING:
                 throw new ApiException("支付中,不能取消");
             default:
-                order.setStatus(OrderConstant.OrderStatus.CANCEL);
+                order.setStatus(status);
         }
         List<OrderItem> orderItems = orderItemMapper.selectByOrderId(order.getId());
         for (OrderItem orderItem : orderItems) {
@@ -208,6 +204,28 @@ public class RefundOrderManager extends BaseOrderManager {
         eventManager.addEvent(OrderConstant.EventType.ORDER_CANCEL, order.getId());
 
         return new Result(true);
+    }
+
+    /**
+     * 取消订单
+     * @param sn 订单编号
+     * @return
+     */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    @MnsEvent
+    public Result cancel(long sn) {
+        return cancel(orderMapper.selectBySN(sn));
+    }
+
+    /**
+     * 取消订单
+     * @param order 订单
+     * @return
+     */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    @MnsEvent
+    public Result cancel(Order order) {
+        return cancel(order, OrderConstant.OrderStatus.CANCEL);
     }
 
     /**
@@ -549,8 +567,8 @@ public class RefundOrderManager extends BaseOrderManager {
      * @param refundOrder
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public void refundFail(OrderItem orderItem, RefundOrder refundOrder) {
-        updateRefundOrderForRefundFail(refundOrder);
+    public void refundFail(OrderItem orderItem, RefundOrder refundOrder, int status) {
+        updateRefundOrderForRefundFail(refundOrder, status);
 
 //        //处理套票元素订单
 //        Order order = orderMapper.selectByPrimaryKey(orderItem.getOrder_id());
@@ -570,8 +588,8 @@ public class RefundOrderManager extends BaseOrderManager {
 //        }
     }
 
-    private void updateRefundOrderForRefundFail(RefundOrder item){
-        item.setStatus(OrderConstant.RefundOrderStatus.FAIL);
+    private void updateRefundOrderForRefundFail(RefundOrder item, int status){
+        item.setStatus(status);
         List<OrderItemDetail> orderItemDetailList = orderItemDetailMapper.selectByItemId(item.getOrder_item_id());
         Collection<RefundDay> refundDayCollection = AccountUtil.decompileRefundDay(item.getData());
         returnRefundForDays(refundDayCollection, orderItemDetailList);
@@ -681,6 +699,8 @@ public class RefundOrderManager extends BaseOrderManager {
         }
 
         if (order.getPayment_type() != null && order.getPayment_type() == PaymentConstant.PaymentType.ALI_PAY.intValue()) {
+            refundOrder.setStatus(OrderConstant.RefundOrderStatus.REFUND_MONEY_CONFIRM);
+            refundOrderMapper.updateByPrimaryKeySelective(refundOrder);
             eventManager.addEvent(OrderConstant.EventType.REFUND_ALI_PAY_AUDIT, refundOrder.getId());
         }
         return new Result(true);
@@ -906,6 +926,7 @@ public class RefundOrderManager extends BaseOrderManager {
             if (refundOrder.getStatus() == OrderConstant.RefundOrderStatus.AUDIT_WAIT ||
                     refundOrder.getStatus() == OrderConstant.RefundOrderStatus.REFUND_MONEY ||
                     refundOrder.getStatus() == OrderConstant.RefundOrderStatus.REFUND_MONEY_AUDITING ||
+                    refundOrder.getStatus() == OrderConstant.RefundOrderStatus.REFUND_MONEY_CONFIRM ||
                     refundOrder.getStatus() == OrderConstant.RefundOrderStatus.REFUNDING) {
                 Collection<RefundDay> refundDays = AccountUtil.decompileRefundDay(refundOrder.getData());
                 for (RefundDay refundDay : refundDays) {
