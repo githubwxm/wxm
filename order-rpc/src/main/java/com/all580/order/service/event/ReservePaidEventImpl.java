@@ -11,14 +11,13 @@ import com.framework.common.Result;
 import com.framework.common.distributed.lock.DistributedLockTemplate;
 import com.framework.common.io.cache.redis.RedisUtils;
 import com.framework.common.lang.DateFormatUtils;
-import com.framework.common.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -44,49 +43,17 @@ public class ReservePaidEventImpl implements ReservePaidEvent {
         Order order = orderMapper.selectByPrimaryKey(integer);
         Assert.notNull(order, "订单不存在");
         List<OrderItem> list = orderItemMapper.selectByOrderId(order.getId());
-        for(OrderItem item:list){
-           if(item.getPro_type().intValue()- ProductConstants.ProductType.SCENERY==0){
-               String key = OrderConstant.INDEX_DATA_CHANGE+item.getSupplier_ep_id();
-               log.info(key+"  "+item.getSupplier_ep_id());
-              // DistributedReentrantLock lock = distributedLockTemplate.execute(key, lockTimeOut);
-               String num="";
-               try{
-                   Calendar ca = Calendar.getInstance();//得到一个Calendar的实例
-                   ca.setTime(new Date()); //设置时间为当前时间
-                   ca.add(Calendar.DATE, 1); //
-                   Date lastMonth = ca.getTime(); //结果
-                   String tomorrow= DateFormatUtils.converToStringDate(lastMonth);
-                   String current =DateFormatUtils.converToStringDate(new Date());
-                   String start=DateFormatUtils.converToStringDate(item.getStart());//游玩时间
-                   if(current.equals(start)){
-                        num = redisUtils.get(key);
-                       String INDEX_DATA_CHANGE = redisUtils.get(OrderConstant.INDEX_DATA_CHANGE);
-                       System.out.println("INDEX_DATA_CHANGE"+INDEX_DATA_CHANGE);
-                       System.out.println("key:"+key+"   "+"  num:"+num);
-                        if(num==null){
-                            num="0,0";
-                        }
-                       String [] nums= num.split(",");
-                       Integer day = CommonUtil.objectParseInteger(nums[0])+item.getQuantity();
-                       num=day+","+nums[1];
-                       redisUtils.set(key,num);
-                   }else if(tomorrow.equals(start)){
-                       num = redisUtils.get(key);
-                       if(num==null){
-                           num="0,0";
-                       }
-                       String [] nums= num.split(",");
-                       Integer day = CommonUtil.objectParseInteger(nums[1])+item.getQuantity();
-                       num=nums[0]+","+day;
-                       redisUtils.set(key,num);
-                   }
-               }catch (Exception e){
-                 log.error("计算预计入园异常 num{} error{} ",num,e.getStackTrace());
-                 e.printStackTrace();
-               }finally {
-              //  lock.unlock();
-               }
-           }
+        for (OrderItem item : list) {
+            if (item.getPro_type() == ProductConstants.ProductType.SCENERY) {
+                String dateStr = DateFormatUtils.DATE_FORMAT.format(item.getStart());
+                String key = String.format("%s%d:%s", OrderConstant.INDEX_DATA_CHANGE, item.getSupplier_ep_id(), dateStr);
+                boolean exists = redisUtils.exists(key);
+                redisUtils.incrBy(key, item.getQuantity());
+                if (!exists) {
+                    Date expireDate = DateUtils.addDays(item.getStart(), 3);
+                    redisUtils.expireAt(key, expireDate.getTime() / 1000);
+                }
+            }
         }
         return new Result(true);
     }
