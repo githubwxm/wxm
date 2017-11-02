@@ -1,7 +1,7 @@
 package com.all580.order.service.event;
 
 import com.all580.order.api.OrderConstant;
-import com.all580.order.api.service.event.PaidNotifyEvent;
+import com.all580.order.api.service.event.ReservePaidEvent;
 import com.all580.order.dao.OrderItemMapper;
 import com.all580.order.dao.OrderMapper;
 import com.all580.order.entity.Order;
@@ -28,7 +28,7 @@ import java.util.List;
  */
 @Service
 @Slf4j
-public class ReservePaidEventImpl implements PaidNotifyEvent {
+public class ReservePaidEventImpl implements ReservePaidEvent {
 
     @Autowired
     private OrderMapper orderMapper;
